@@ -16,8 +16,8 @@ declare namespace bookmarks {
     /**
      * @method api.bookmarks.get
      * @param {string} jid - The JID of the bookmark to return.
-     * @returns {Promise<import('./model').default>}
+     * @returns {Promise<import('./model').default|undefined>}
      */
-    function get(jid: string): Promise<import("./model").default>;
+    function get(jid: string): Promise<import("./model").default | undefined>;
 }
 //# sourceMappingURL=api.d.ts.map

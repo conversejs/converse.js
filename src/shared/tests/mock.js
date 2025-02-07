@@ -737,14 +737,14 @@ function getMockVcardFetcher (settings) {
         const vcard_el = vcard.tree();
 
         return {
-            'stanza': vcard_el,
-            'fullname': vcard_el.querySelector('FN')?.textContent,
-            'nickname': vcard_el.querySelector('NICKNAME')?.textContent,
-            'image': vcard_el.querySelector('PHOTO BINVAL')?.textContent,
-            'image_type': vcard_el.querySelector('PHOTO TYPE')?.textContent,
-            'url': vcard_el.querySelector('URL')?.textContent,
-            'vcard_updated': dayjs().format(),
-            'vcard_error': undefined
+            stanza: vcard_el,
+            fullname: vcard_el.querySelector('FN')?.textContent,
+            nickname: vcard_el.querySelector('NICKNAME')?.textContent,
+            image: vcard_el.querySelector('PHOTO BINVAL')?.textContent,
+            image_type: vcard_el.querySelector('PHOTO TYPE')?.textContent,
+            url: vcard_el.querySelector('URL')?.textContent,
+            vcard_updated: dayjs().format(),
+            vcard_error: undefined
         };
     }
 }

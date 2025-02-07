@@ -26,7 +26,7 @@ const bookmarks = {
     /**
      * @method api.bookmarks.get
      * @param {string} jid - The JID of the bookmark to return.
-     * @returns {Promise<import('./model').default>}
+     * @returns {Promise<import('./model').default|undefined>}
      */
     async get(jid) {
         const bookmarks = await waitUntil('bookmarksInitialized');

@@ -25,7 +25,7 @@ export default {
         config: {
             /**
              * Fetches the configuration for a PubSub node
-             * @method _converse.api.pubsub.configure
+             * @method _converse.api.pubsub.config.get
              * @param {string} jid - The JID of the pubsub service where the node resides
              * @param {string} node - The node to configure
              * @returns {Promise<import('./types').PubSubConfigOptions>}
@@ -56,7 +56,7 @@ export default {
 
             /**
              * Configures a PubSub node
-             * @method _converse.api.pubsub.configure
+             * @method _converse.api.pubsub.config.set
              * @param {string} jid The JID of the pubsub service where the node resides
              * @param {string} node The node to configure
              * @param {PubSubConfigOptions} config The configuration options
@@ -99,7 +99,7 @@ export default {
         },
 
         /**
-         * Publshes an item to a PubSub node
+         * Publishes an item to a PubSub node
          * @method _converse.api.pubsub.publish
          * @param {string} jid The JID of the pubsub service where the node resides.
          * @param {string} node The node being published to
@@ -113,8 +113,8 @@ export default {
          * @returns {Promise<void|Element>}
          */
         async publish(jid, node, item, options, strict_options = true) {
-            if (!node) throw new Error('api.pubsub.config.publish: node value required');
-            if (!item) throw new Error('api.pubsub.config.publish: item value required');
+            if (!node) throw new Error('api.pubsub.publish: node value required');
+            if (!item) throw new Error('api.pubsub.publish: item value required');
 
             const bare_jid = _converse.session.get('bare_jid');
             const entity_jid = jid || bare_jid;

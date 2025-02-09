@@ -2,32 +2,35 @@
  * A custom element that can be used to add auto-completion suggestions to a form input.
  * @class AutoCompleteComponent
  *
- * @property { "above" | "below" } [position="above"]
+ * @property {"above" | "below"} [position="above"]
  *  Should the autocomplete list show above or below the input element?
- * @property { Boolean } [autofocus=false]
+ * @property {Boolean} [autofocus=false]
  *  Should the `focus` attribute be set on the input element?
- * @property { Function } getAutoCompleteList
+ * @property {Function} getAutoCompleteList
  *  A function that returns the list of autocomplete suggestions
- * @property { Function } data
+ * @property {Function} data
  *  A function that maps the returned matches into the correct format
- * @property { Array } list
+ * @property {Array} list
  *  An array of suggestions, to be used instead of the `getAutoCompleteList` *  function
- * @property { Boolean } [auto_evaluate=true]
+ * @property {Boolean} [auto_evaluate=true]
  *  Should evaluation happen automatically without any particular key as trigger?
- * @property { Boolean } [auto_first=false]
+ * @property {Boolean} [auto_first=false]
  *  Should the first element automatically be selected?
  * @property { "contains" | "startswith" } [filter="contains"]
  *  Provide matches which contain the entered text, or which starts with the entered text
- * @property { String } [include_triggers=""]
+ * @property {String} [include_triggers=""]
  *  Space separated characters which should be included in the returned value
- * @property { Number } [min_chars=1]
+ * @property {Number} [min_chars=1]
  *  The minimum number of characters to be entered into the input before autocomplete starts.
- * @property { String } [name]
+ * @property {String} [name]
  *  The `name` attribute of the `input` element
- * @property { String } [placeholder]
+ * @property {String} [placeholder]
  *  The `placeholder` attribute of the `input` element
- * @property { String } [triggers]
+ * @property {String} [triggers]
  *  String of space separated characters which trigger autocomplete
+ * @property {Function} [validate]
+ *  A validation function that returns a string containing a validation error
+ *  message in case the validation failed.
  *
  * @example
  *     <converse-autocomplete
@@ -38,32 +41,32 @@
  */
 export default class AutoCompleteComponent extends CustomElement {
     static get properties(): {
-        position: {
-            type: StringConstructor;
-        };
-        autofocus: {
-            type: BooleanConstructor;
-        };
-        getAutoCompleteList: {
-            type: FunctionConstructor;
-        };
-        data: {
-            type: FunctionConstructor;
-        };
-        list: {
-            type: ArrayConstructor;
-        };
         auto_evaluate: {
             type: BooleanConstructor;
         };
         auto_first: {
             type: BooleanConstructor;
         };
+        autofocus: {
+            type: BooleanConstructor;
+        };
+        data: {
+            type: FunctionConstructor;
+        };
+        error_message: {
+            type: StringConstructor;
+        };
         filter: {
             type: StringConstructor;
         };
+        getAutoCompleteList: {
+            type: FunctionConstructor;
+        };
         include_triggers: {
             type: StringConstructor;
+        };
+        list: {
+            type: ArrayConstructor;
         };
         min_chars: {
             type: NumberConstructor;
@@ -74,38 +77,49 @@ export default class AutoCompleteComponent extends CustomElement {
         placeholder: {
             type: StringConstructor;
         };
-        value: {
-            type: StringConstructor;
-        };
-        triggers: {
+        position: {
             type: StringConstructor;
         };
         required: {
             type: BooleanConstructor;
         };
+        triggers: {
+            type: StringConstructor;
+        };
+        validate: {
+            type: FunctionConstructor;
+        };
+        value: {
+            type: StringConstructor;
+        };
     };
-    data: (a: any) => any;
-    value: string;
-    position: string;
     auto_evaluate: boolean;
     auto_first: boolean;
+    data: (a: any) => any;
+    error_message: string;
     filter: string;
+    getAutoCompleteList: any;
     include_triggers: string;
+    list: any;
     match_current_word: boolean;
     max_items: number;
     min_chars: number;
-    triggers: string;
-    getAutoCompleteList: any;
-    list: any;
     name: string;
     placeholder: string;
+    position: string;
     required: boolean;
+    triggers: string;
+    validate: any;
+    value: string;
     render(): import("lit").TemplateResult<1>;
     firstUpdated(): void;
     auto_complete: AutoComplete;
     auto_completing: boolean;
-    onKeyDown(ev: any): void;
-    onKeyUp(ev: any): void;
+    /** @param {KeyboardEvent} ev */
+    onKeyDown(ev: KeyboardEvent): void;
+    /** @param {KeyboardEvent} ev */
+    onKeyUp(ev: KeyboardEvent): void;
+    onChange(): this;
 }
 import { CustomElement } from 'shared/components/element.js';
 import AutoComplete from './autocomplete.js';

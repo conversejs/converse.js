@@ -1,6 +1,7 @@
 converse-add-muc-modal {
     .add-chatroom {
         converse-autocomplete {
+            width: 100%;
             .suggestion-box__results--below {
                 height: 10em;
                 overflow: auto;

@@ -53,14 +53,9 @@ describe("XEP-0363: HTTP File Upload", function () {
             expect(entities.get(_converse.domain).features.length).toBe(2);
             expect(entities.get(_converse.domain).identities.length).toBe(1);
 
-            api.disco.entities.get().then(entities => {
-                expect(entities.length).toBe(3);
-                expect(entities.pluck('jid')).toEqual(['montague.lit', 'romeo@montague.lit', 'upload.montague.lit']);
-                expect(api.disco.entities.items('montague.lit').length).toBe(1);
-                // Converse.js sees that the entity has a disco#info feature, so it will make a query for it.
-                const selector = 'iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]';
-                return u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(selector)).length > 0);
-            });
+            const domain_items = await api.disco.entities.items('montague.lit')
+            expect(domain_items.length).toBe(1);
+            // Converse.js sees that the entity has a disco#info feature, so it will make a query for it.
 
             selector = 'iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]';
             stanza = await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(selector)).pop(), 1000);
@@ -311,7 +306,9 @@ describe("XEP-0363: HTTP File Upload", function () {
                     expect(entities.get(_converse.domain).features.length).toBe(2);
                     expect(entities.get(_converse.domain).identities.length).toBe(1);
                     expect(entities.pluck('jid')).toEqual(['montague.lit', 'romeo@montague.lit', 'upload.montague.lit']);
-                    expect(api.disco.entities.items('montague.lit').length).toBe(1);
+
+                    const items = await api.disco.entities.items('montague.lit');
+                    expect(items.length).toBe(1);
                     await u.waitUntil(function () {
                         // Converse.js sees that the entity has a disco#info feature,
                         // so it will make a query for it.

@@ -3,37 +3,41 @@ import { CustomElement } from 'shared/components/element.js';
 import { FILTER_CONTAINS, FILTER_STARTSWITH } from './utils.js';
 import { api } from '@converse/headless';
 import { html } from 'lit';
+import {ancestor} from 'utils/html.js';
 
 /**
  * A custom element that can be used to add auto-completion suggestions to a form input.
  * @class AutoCompleteComponent
  *
- * @property { "above" | "below" } [position="above"]
+ * @property {"above" | "below"} [position="above"]
  *  Should the autocomplete list show above or below the input element?
- * @property { Boolean } [autofocus=false]
+ * @property {Boolean} [autofocus=false]
  *  Should the `focus` attribute be set on the input element?
- * @property { Function } getAutoCompleteList
+ * @property {Function} getAutoCompleteList
  *  A function that returns the list of autocomplete suggestions
- * @property { Function } data
+ * @property {Function} data
  *  A function that maps the returned matches into the correct format
- * @property { Array } list
+ * @property {Array} list
  *  An array of suggestions, to be used instead of the `getAutoCompleteList` *  function
- * @property { Boolean } [auto_evaluate=true]
+ * @property {Boolean} [auto_evaluate=true]
  *  Should evaluation happen automatically without any particular key as trigger?
- * @property { Boolean } [auto_first=false]
+ * @property {Boolean} [auto_first=false]
  *  Should the first element automatically be selected?
  * @property { "contains" | "startswith" } [filter="contains"]
  *  Provide matches which contain the entered text, or which starts with the entered text
- * @property { String } [include_triggers=""]
+ * @property {String} [include_triggers=""]
  *  Space separated characters which should be included in the returned value
- * @property { Number } [min_chars=1]
+ * @property {Number} [min_chars=1]
  *  The minimum number of characters to be entered into the input before autocomplete starts.
- * @property { String } [name]
+ * @property {String} [name]
  *  The `name` attribute of the `input` element
- * @property { String } [placeholder]
+ * @property {String} [placeholder]
  *  The `placeholder` attribute of the `input` element
- * @property { String } [triggers]
+ * @property {String} [triggers]
  *  String of space separated characters which trigger autocomplete
+ * @property {Function} [validate]
+ *  A validation function that returns a string containing a validation error
+ *  message in case the validation failed.
  *
  * @example
  *     <converse-autocomplete
@@ -45,42 +49,46 @@ import { html } from 'lit';
 export default class AutoCompleteComponent extends CustomElement {
     static get properties () {
         return {
-            'position': { type: String },
-            'autofocus': { type: Boolean },
-            'getAutoCompleteList': { type: Function },
-            'data': { type: Function },
-            'list': { type: Array },
-            'auto_evaluate': { type: Boolean },
-            'auto_first': { type: Boolean },
-            'filter': { type: String },
-            'include_triggers': { type: String },
-            'min_chars': { type: Number },
-            'name': { type: String },
-            'placeholder': { type: String },
-            'value': { type: String },
-            'triggers': { type: String },
-            'required': { type: Boolean },
+            auto_evaluate: { type: Boolean },
+            auto_first: { type: Boolean },
+            autofocus: { type: Boolean },
+            data: { type: Function },
+            error_message: { type: String },
+            filter: { type: String },
+            getAutoCompleteList: { type: Function },
+            include_triggers: { type: String },
+            list: { type: Array },
+            min_chars: { type: Number },
+            name: { type: String },
+            placeholder: { type: String },
+            position: { type: String },
+            required: { type: Boolean },
+            triggers: { type: String },
+            validate: { type: Function },
+            value: { type: String },
         };
     }
 
     constructor () {
         super();
-        this.data = (a) => a;
-        this.value = '';
-        this.position = 'above';
         this.auto_evaluate = true;
         this.auto_first = false;
+        this.data = (a) => a;
+        this.error_message = '';
         this.filter = 'contains';
+        this.getAutoCompleteList = null;
         this.include_triggers = '';
+        this.list = null;
         this.match_current_word = false; // Match only the current word, otherwise all input is matched
         this.max_items = 10;
         this.min_chars = 1;
-        this.triggers = '';
-        this.getAutoCompleteList = null;
-        this.list = null;
         this.name = '';
         this.placeholder = '';
+        this.position = 'above';
         this.required = false;
+        this.triggers = '';
+        this.validate = null;
+        this.value = '';
     }
 
     render () {
@@ -89,16 +97,18 @@ export default class AutoCompleteComponent extends CustomElement {
             <div class="suggestion-box suggestion-box__name">
                 <ul class="suggestion-box__results ${position_class}" hidden=""></ul>
                 <input
+                    .validate=${this.validate}
                     ?autofocus=${this.autofocus}
                     ?required=${this.required}
-                    type="text"
-                    name="${this.name}"
-                    autocomplete="off"
+                    @change=${this.onChange}
                     @keydown=${this.onKeyDown}
                     @keyup=${this.onKeyUp}
-                    class="form-control suggestion-box__input"
-                    value="${this.value}"
+                    autocomplete="off"
+                    class="form-control suggestion-box__input ${this.error_message ? 'is-invalid error' : ''}"
+                    name="${this.name}"
                     placeholder="${this.placeholder}"
+                    type="text"
+                    value="${this.value}"
                 />
                 <span
                     class="suggestion-box__additions visually-hidden"
@@ -107,6 +117,7 @@ export default class AutoCompleteComponent extends CustomElement {
                     aria-relevant="additions"
                 ></span>
             </div>
+            ${this.error_message ? html`<div class="invalid-feedback">${this.error_message}</div>` : ''}
         `;
     }
 
@@ -126,12 +137,21 @@ export default class AutoCompleteComponent extends CustomElement {
         this.auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
     }
 
+    /** @param {KeyboardEvent} ev */
     onKeyDown (ev) {
         this.auto_complete.onKeyDown(ev);
     }
 
+    /** @param {KeyboardEvent} ev */
     onKeyUp (ev) {
         this.auto_complete.evaluate(ev);
+    }
+
+    onChange() {
+        const input = this.querySelector('input');
+        this.error_message = this.validate?.(input.value);
+        if (this.error_message) this.requestUpdate();
+        return this;
     }
 }
 

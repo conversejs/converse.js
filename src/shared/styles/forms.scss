@@ -5,6 +5,11 @@
     }
 
     form {
+
+        .invalid-feedback {
+            display: block;
+        }
+
         .form-instructions {
             color: var(--text-color);
             margin-bottom: 1em;
@@ -95,10 +100,13 @@
             input[type=text] {
                 min-width: 50%;
             }
+
+            input.is_invalid,
             input.error {
-                border: 1px solid var(--error-color);
                 color: var(--text-color);
+                border-color: var(--error-color);
             }
+
             .text-muted {
                 color: var(--secondary-color) !important;
                 font-size: 85%;

@@ -84,9 +84,10 @@ declare namespace _default {
              * @method api.disco.entities.get
              * @param {string} jid The Jabber ID of the entity
              * @param {boolean} [create] Whether the entity should be created if it doesn't exist.
+             * @return {Promise<DiscoEntity|DiscoEntities|undefined>}
              * @example _converse.api.disco.entities.get(jid);
              */
-            function get(jid: string, create?: boolean): Promise<any>;
+            function get(jid: string, create?: boolean): Promise<DiscoEntity | DiscoEntities | undefined>;
             /**
              * Return any disco items advertised on this entity
              *
@@ -94,7 +95,7 @@ declare namespace _default {
              * @param {string} jid - The Jabber ID of the entity for which we want to fetch items
              * @example api.disco.entities.items(jid);
              */
-            function items(jid: string): any;
+            function items(jid: string): Promise<any>;
             /**
              * Create a new  disco entity. It's identity and features
              * will automatically be fetched from cache or from the
@@ -254,4 +255,5 @@ export default _default;
 export type DiscoState = import("./index").DiscoState;
 export type DiscoEntities = import("./entities").default;
 export type Collection = import("@converse/skeletor").Collection;
+import DiscoEntity from './entity.js';
 //# sourceMappingURL=api.d.ts.map

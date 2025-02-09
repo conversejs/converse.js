@@ -26,6 +26,7 @@ class DiscoEntity extends Model {
     initialize (_, options) {
         super.initialize();
         this.waitUntilFeaturesDiscovered = getOpenPromise();
+        this.waitUntilItemsFetched = getOpenPromise();
 
         this.dataforms = new Collection();
         let id = `converse.dataforms-${this.get('jid')}`;
@@ -144,7 +145,8 @@ class DiscoEntity extends Model {
             const jid = item.getAttribute('jid');
             const entity = _converse.state.disco_entities.get(jid);
             if (entity) {
-                entity.set({ parent_jids: [this.get('jid')] });
+                const parent_jids = entity.get('parent_jids');
+                entity.set({ parent_jids: [...parent_jids, this.get('jid')] });
             } else {
                 api.disco.entities.create({
                     jid,
@@ -191,6 +193,8 @@ class DiscoEntity extends Model {
         if (stanza.querySelector(`feature[var="${Strophe.NS.DISCO_ITEMS}"]`)) {
             await this.queryForItems();
         }
+        this.waitUntilItemsFetched.resolve();
+
         Array.from(stanza.querySelectorAll('feature')).forEach(feature => {
             this.features.create({
                 'var': feature.getAttribute('var'),

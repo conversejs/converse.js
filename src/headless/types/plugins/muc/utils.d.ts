@@ -1,4 +1,8 @@
 /**
+ * @returns {Promise<string|undefined>}
+ */
+export function getDefaultMUCService(): Promise<string | undefined>;
+/**
  * @param {import('@converse/skeletor').Model} model
  */
 export function isChatRoom(model: import("@converse/skeletor").Model): boolean;

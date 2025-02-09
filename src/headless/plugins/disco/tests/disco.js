@@ -114,9 +114,9 @@ describe("Service Discovery", function () {
             ]);
             const { api, domain } = _converse;
             let entity = entities.get(_converse.domain);
-            expect(api.disco.entities.items(domain).length).toBe(3);
-
-            expect(api.disco.entities.items(domain).map(e => e.get('jid'))).toEqual(
+            const domain_items = await api.disco.entities.items(domain);
+            expect(domain_items.length).toBe(3);
+            expect(domain_items.map(e => e.get('jid'))).toEqual(
                 ['people.shakespeare.lit', 'plays.shakespeare.lit', 'words.shakespeare.lit']
             )
 

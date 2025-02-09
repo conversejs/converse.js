@@ -5,10 +5,16 @@ import { Strophe } from 'strophe.js';
  * @returns {boolean}
  */
 export function isValidJID(jid) {
-    if (typeof jid === 'string') {
-        return jid.split('@').filter((s) => !!s).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+    if (!(typeof jid === 'string')) {
+        return false;
     }
-    return false;
+
+    const num_slashes = jid.split('/').length - 1;
+    if (num_slashes > 1) {
+        return false;
+    }
+
+    return jid.split('@').filter((s) => !!s).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
 }
 
 /**

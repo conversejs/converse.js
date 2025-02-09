@@ -10,6 +10,24 @@ import { getUnloadEvent } from '../../utils/session.js';
 const { Strophe, sizzle, u } = converse.env;
 
 /**
+ * @returns {Promise<string|undefined>}
+ */
+export async function getDefaultMUCService () {
+    let muc_service = api.settings.get('muc_domain');
+    if (!muc_service) {
+        const domain = _converse.session.get('domain');
+        const items = await api.disco.entities.items(domain);
+        for (const item of items) {
+            if (await api.disco.features.has(Strophe.NS.MUC, item.get('jid'))) {
+                muc_service = item.get('jid');
+                break;
+            }
+        }
+    }
+    return muc_service;
+}
+
+/**
  * @param {import('@converse/skeletor').Model} model
  */
 export function isChatRoom (model) {

@@ -387,6 +387,15 @@ async function receiveOwnMUCPresence (_converse, muc_jid, nick, affiliation='own
     _converse.api.connection.get()._dataRecv(createRequest(presence));
 }
 
+async function openAddMUCModal (_converse) {
+    await mock.openControlBox(_converse);
+    const controlbox = _converse.chatboxviews.get('controlbox');
+    controlbox.querySelector('converse-rooms-list .show-add-muc-modal').click();
+    const modal = _converse.api.modal.get('converse-add-muc-modal');
+    await u.waitUntil(() => u.isVisible(modal), 1000);
+    return modal;
+}
+
 async function openAndEnterChatRoom (
         _converse,
         muc_jid,
@@ -877,6 +886,7 @@ Object.assign(mock, {
     initConverse,
     initializedOMEMO,
     num_contacts,
+    openAddMUCModal,
     openAndEnterChatRoom,
     openChatBoxFor,
     openChatBoxes,

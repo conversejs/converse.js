@@ -9,12 +9,12 @@ const nickname_input = () => {
     const i18n_nickname = __('Nickname');
     const i18n_required_field = __('This field is required');
     return html`
-        <div>
+        <div class="mb-3">
             <label for="nickname" class="form-label">${i18n_nickname}:</label>
             <input
                 type="text"
                 title="${i18n_required_field}"
-                required="required"
+                required
                 name="nickname"
                 value="${_converse.exports.getDefaultMUCNickname() || ''}"
                 class="form-control"
@@ -28,50 +28,49 @@ const nickname_input = () => {
  */
 export default (el) => {
     const i18n_join = __('Join');
-    const muc_domain = el.model.get('muc_domain') || api.settings.get('muc_domain');
+    const muc_domain = api.settings.get('muc_domain');
 
     let placeholder = '';
-    if (!api.settings.get('locked_muc_domain')) {
+    let label_name;
+    if (api.settings.get('locked_muc_domain')) {
+        label_name = __('Groupchat name');
+    } else {
         placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
+        label_name = __('Groupchat name or address');
     }
 
-    const label_room_address = muc_domain ? __('Groupchat name') : __('Groupchat address');
-    const muc_roomid_policy_error_msg = el.muc_roomid_policy_error_msg;
-    const muc_roomid_policy_hint = api.settings.get('muc_roomid_policy_hint');
+    const policy_hint = api.settings.get('muc_roomid_policy_hint');
     const muc_search_service = api.settings.get('muc_search_service');
-    return html`
-        <form class="converse-form add-chatroom" @submit=${(ev) => el.openChatRoom(ev)}>
-            <div>
-                <label for="chatroom" class="form-label">${label_room_address}:</label>
-                ${muc_roomid_policy_error_msg
-                    ? html`<label class="form-label roomid-policy-error">${muc_roomid_policy_error_msg}</label>`
-                    : ''}
+
+    return html` <form
+        class="converse-form add-chatroom needs-validation"
+        @submit=${(ev) => el.openChatRoom(ev)}
+        novalidate
+    >
+        <div class="mb-3">
+            <label for="chatroom" class="form-label">${label_name}:</label>
+            <div class="input-group">
                 ${muc_search_service
                     ? html` <converse-autocomplete
-                          .getAutoCompleteList=${getAutoCompleteList}
-                          ?autofocus=${true}
-                          min_chars="3"
-                          position="below"
-                          placeholder="${placeholder}"
+                          .getAutoCompleteList="${getAutoCompleteList}"
+                          .validate="${/** @param {string} v */ (v) => el.validateMUCJID(v)}"
+                          ?autofocus="${true}"
                           class="add-muc-autocomplete"
+                          min_chars="3"
                           name="chatroom"
-                      >
-                      </converse-autocomplete>`
+                          placeholder="${placeholder}"
+                          position="below"
+                          required
+                      ></converse-autocomplete>`
                     : ''}
             </div>
-            ${muc_roomid_policy_hint
-                ? html`<div>
-                      ${unsafeHTML(DOMPurify.sanitize(muc_roomid_policy_hint, { 'ALLOWED_TAGS': ['b', 'br', 'em'] }))}
+            ${policy_hint
+                ? html`<div class="mb-3">
+                      ${unsafeHTML(DOMPurify.sanitize(policy_hint, { 'ALLOWED_TAGS': ['b', 'br', 'em'] }))}
                   </div>`
                 : ''}
-            ${!api.settings.get('locked_muc_nickname') ? nickname_input() : ''}
-            <input
-                type="submit"
-                class="btn btn-primary"
-                name="join"
-                value="${i18n_join || ''}"
-                ?disabled="${muc_roomid_policy_error_msg}"
-            />
-        </form>
-    `;
+        </div>
+        ${!api.settings.get('locked_muc_nickname') ? nickname_input() : ''}
+        <input type="submit" class="btn btn-primary mt-3" name="join" value="${i18n_join || ''}" />
+    </form>`;
 };

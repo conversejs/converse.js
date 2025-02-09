@@ -8,6 +8,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from '../../log.js';
+import DiscoEntity from './entity.js';
 
 const { Strophe, $iq } = converse.env;
 
@@ -174,7 +175,7 @@ export default {
          * @returns {promise} Promise which resolves once we have a result from the server.
          */
         items(jid, node) {
-            const attrs = { 'xmlns': Strophe.NS.DISCO_ITEMS };
+            const attrs = { xmlns: Strophe.NS.DISCO_ITEMS };
             if (node) {
                 attrs.node = node;
             }
@@ -200,6 +201,7 @@ export default {
              * @method api.disco.entities.get
              * @param {string} jid The Jabber ID of the entity
              * @param {boolean} [create] Whether the entity should be created if it doesn't exist.
+             * @return {Promise<DiscoEntity|DiscoEntities|undefined>}
              * @example _converse.api.disco.entities.get(jid);
              */
             async get(jid, create = false) {
@@ -227,7 +229,10 @@ export default {
              * @param {string} jid - The Jabber ID of the entity for which we want to fetch items
              * @example api.disco.entities.items(jid);
              */
-            items(jid) {
+            async items(jid) {
+                const entity = await api.disco.entities.get(jid);
+                await entity.waitUntilItemsFetched;
+
                 const disco_entities = /** @type {DiscoEntities} */ (_converse.state.disco_entities);
                 return disco_entities.filter((e) => e.get('parent_jids')?.includes(jid));
             },
@@ -293,9 +298,11 @@ export default {
                     return [];
                 }
 
+                const items = await api.disco.entities.items(jid);
+
                 const promises = [
                     entity.getFeature(feature),
-                    ...api.disco.entities.items(jid).map((i) => i.getFeature(feature)),
+                    ...items.map((i) => i.getFeature(feature)),
                 ];
                 const result = await Promise.all(promises);
                 return result.filter((f) => f instanceof Object);
@@ -331,7 +338,8 @@ export default {
                     return true;
                 }
 
-                const result = await Promise.all(api.disco.entities.items(jid).map((i) => i.getFeature(feature)));
+                const items = await api.disco.entities.items(jid);
+                const result = await Promise.all(items.map((i) => i.getFeature(feature)));
                 return result.map((f) => f instanceof Object).includes(true);
             },
         },

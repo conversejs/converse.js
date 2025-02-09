@@ -2287,7 +2287,7 @@ describe("Groupchats", function () {
         it("will show an error message if the groupchat requires a password",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
-            const muc_jid = 'protected';
+            const muc_jid = 'protected@montague.lit';
             await mock.openChatRoomViaModal(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
 

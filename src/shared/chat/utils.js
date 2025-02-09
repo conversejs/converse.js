@@ -287,5 +287,4 @@ export function shortnamesToEmojis (str, options={unicode_only: false, add_title
     return addEmojisMarkup(str, options);
 }
 
-
 Object.assign(u, { shortnamesToEmojis });

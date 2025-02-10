@@ -67,9 +67,6 @@ const rooms = {
      *     in the [XEP-0045 MUC specification](https://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner).
      *     The values should be named without the `muc#roomconfig_` prefix.
      * @param {boolean} [attrs.minimized] A boolean, indicating whether the room should be opened minimized or not.
-     * @param {boolean} [attrs.bring_to_foreground] A boolean indicating whether the room should be
-     *     brought to the foreground and therefore replace the currently shown chat.
-     *     If there is no chat currently open, then this option is ineffective.
      * @param {boolean} [force=false] - By default, a minimized
      *   room won't be maximized (in `overlayed` view mode) and in
      *   `fullscreen` view mode a newly opened room won't replace

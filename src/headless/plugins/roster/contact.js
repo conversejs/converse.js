@@ -64,10 +64,7 @@ class RosterContact extends ColorAwareModel(Model) {
     }
 
     openChat () {
-        // XXX: Doubtful whether it's necessary to pass in the contact
-        // attributes hers. If so, we should perhaps look them up inside the
-        // `open` API method.
-        api.chats.open(this.get('jid'), this.attributes, true);
+        api.chats.open(this.get('jid'), {}, true);
     }
 
     getDisplayName () {

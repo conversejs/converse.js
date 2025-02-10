@@ -44,7 +44,7 @@ export default class RosterContact extends CustomElement {
      */
     openChat(ev) {
         ev?.preventDefault?.();
-        api.chats.open(this.model.get('jid'), this.model.attributes, true);
+        api.chats.open(this.model.get('jid'), {}, true);
     }
 
     /**

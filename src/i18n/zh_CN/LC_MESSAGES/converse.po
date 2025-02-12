@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2025-01-20 02:00+0000\n"
+"PO-Revision-Date: 2025-02-13 10:00+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -182,7 +182,6 @@ msgid ""
 msgstr "您的消息无法成功发送，因为您不在群聊中。"
 
 #: dist/converse-no-dependencies.js:41016
-#, fuzzy
 msgid "A timeout happened while trying to retract your message."
 msgstr "尝试撤回您的消息时发生超时。"
 
@@ -507,7 +506,6 @@ msgid ""
 msgstr "由于从属关系更改，此群聊已将您移除了"
 
 #: dist/converse-no-dependencies.js:49980
-#, fuzzy
 msgid ""
 "You have been removed from this groupchat because it has changed to members-"
 "only and you're not a member"
@@ -534,9 +532,8 @@ msgid ""
 msgstr "服务器未在允许的时间内返回书签。您可以重新加载页面以再次请求它们。"
 
 #: dist/converse-no-dependencies.js:54299
-#, fuzzy
 msgid "You are blocked from sending messages."
-msgstr "不允许您发送消息。"
+msgstr "您被阻止发送消息。"
 
 #: dist/converse-no-dependencies.js:56320
 msgid "A timeout occurred"
@@ -951,15 +948,14 @@ msgid "What should your nickname for this groupchat be?"
 msgstr "您在此群聊的昵称是什么？"
 
 #: dist/converse-no-dependencies.js:86842
-#, fuzzy
 msgid "Password (for a protected groupchat)"
-msgstr "密码保护"
+msgstr "密码（用于受保护的群聊）"
 
 #: dist/converse-no-dependencies.js:86843
 msgid ""
 "If the groupchat requires a password to enter, you can save it here. Note "
 "this is not intended to be a secure storage."
-msgstr ""
+msgstr "如果群聊需要密码才能进入，您可以将密码保存在此处。请注意，这不是安全的存储。"
 
 #: dist/converse-no-dependencies.js:86844
 msgid "Update"
@@ -1102,36 +1098,35 @@ msgid "Are you sure you want to remove this contact?"
 msgstr "是否确定要移除此联系人？"
 
 #: dist/converse-no-dependencies.js:95529
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
-msgstr "抱歉，尝试将 %1$s 添加为联系人时出错。"
+msgstr "抱歉，尝试移除联系人 %1$s 时出错"
 
 #: dist/converse-no-dependencies.js:95565
 msgid "Do you want to block this contact, so they cannot send you messages?"
-msgstr ""
+msgstr "是否要屏蔽此联系人，以便他们无法向您发送消息？"
 
 #: dist/converse-no-dependencies.js:95603
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
-msgstr "抱歉，尝试将 %1$s 添加为联系人时出错。"
+msgstr "抱歉，尝试屏蔽 %1$s 时出错"
 
 #: dist/converse-no-dependencies.js:95635
 msgid "Do you want to unblock this contact, so they can send you messages?"
-msgstr ""
+msgstr "是否要取消屏蔽此联系人，以便他们可以向您发送消息？"
 
 #: dist/converse-no-dependencies.js:95655
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
-msgstr "抱歉，尝试发送消息时出错。"
+msgstr "抱歉，尝试取消屏蔽 %1$s 时出错"
 
 #: dist/converse-no-dependencies.js:96340
 msgid "Remove from blocklist"
-msgstr ""
+msgstr "从屏蔽列表移除"
 
 #: dist/converse-no-dependencies.js:96350
-#, fuzzy
 msgid "Add to blocklist"
-msgstr "添加到联系人"
+msgstr "添加到屏蔽列表"
 
 #: dist/converse-no-dependencies.js:96360
 msgid "Remove as contact"
@@ -1182,9 +1177,8 @@ msgid "Show less"
 msgstr "显示更少"
 
 #: dist/converse-no-dependencies.js:97575
-#, fuzzy
 msgid "Message delivery failed."
-msgstr "消息发送失败：“%1$s”"
+msgstr "消息发送失败。"
 
 #: dist/converse-no-dependencies.js:98279
 msgid "A moderator"
@@ -1192,14 +1186,13 @@ msgstr "主持人"
 
 #: dist/converse-no-dependencies.js:98280
 #: dist/converse-no-dependencies.js:98282
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed a message"
-msgstr "%1$s 移除了此消息"
+msgstr "%1$s 移除了消息"
 
 #: dist/converse-no-dependencies.js:98282
-#, fuzzy
 msgid "You have removed a message"
-msgstr "您有未读消息"
+msgstr "您移除了消息"
 
 #: dist/converse-no-dependencies.js:99429
 msgid "Search results"
@@ -1249,39 +1242,35 @@ msgstr "查看关于此用户的更多信息"
 
 #: dist/converse-no-dependencies.js:101940
 msgid "Unblock user"
-msgstr ""
+msgstr "取消屏蔽用户"
 
 #: dist/converse-no-dependencies.js:101940
-#, fuzzy
 msgid "Are you sure you want to unblock this user?"
-msgstr "是否确定要登出？"
+msgstr "是否确定要取消屏蔽此用户？"
 
 #: dist/converse-no-dependencies.js:101957
 msgid "Unblock this user"
-msgstr ""
+msgstr "取消屏蔽此用户"
 
 #: dist/converse-no-dependencies.js:101958
-#, fuzzy
 msgid "Allow this user to send you messages"
-msgstr "允许禁言用户发布消息"
+msgstr "允许此用户向您发送消息"
 
 #: dist/converse-no-dependencies.js:101974
-#, fuzzy
 msgid "Block user"
-msgstr "显示用户"
+msgstr "屏蔽用户"
 
 #: dist/converse-no-dependencies.js:101974
-#, fuzzy
 msgid "Are you sure you want to block this user?"
-msgstr "是否确定要登出？"
+msgstr "是否确定要屏蔽此用户？"
 
 #: dist/converse-no-dependencies.js:101994
 msgid "Block this user"
-msgstr ""
+msgstr "屏蔽此用户"
 
 #: dist/converse-no-dependencies.js:101995
 msgid "Prevent this user from sending you any further messages"
-msgstr ""
+msgstr "阻止此用户向您发送任何其他消息"
 
 #: dist/converse-no-dependencies.js:102009
 msgid "Close and end this conversation"
@@ -1707,7 +1696,7 @@ msgstr "移除此群聊"
 
 #: dist/converse-no-dependencies.js:117242
 msgid "Kick user from groupchat"
-msgstr "将用户从群聊中踢出"
+msgstr "将用户踢出群聊"
 
 #: dist/converse-no-dependencies.js:117242
 msgid "Write in 3rd person"
@@ -2342,7 +2331,7 @@ msgstr "未受信任"
 
 #: dist/converse-no-dependencies.js:128661
 msgid "Choose which devices you trust for OMEMO encrypted communication"
-msgstr ""
+msgstr "选择您信任的 OMEMO 加密通信设备"
 
 #. *
 #. * @param {import('../fingerprints').Fingerprints} el
@@ -2494,36 +2483,34 @@ msgid "Groupchat name"
 msgstr "群聊名"
 
 #: dist/converse-no-dependencies.js:134772
-#, fuzzy
 msgid "Groupchat name or address"
-msgstr "群聊地址"
+msgstr "群聊名称或地址"
 
 #: dist/converse-no-dependencies.js:135297
 msgid "Enter a new Groupchat"
 msgstr "进入新群聊"
 
 #: dist/converse-no-dependencies.js:135421
-#, fuzzy
 msgid "Invalid groupchat address, it cannot be empty."
-msgstr "此群聊（目前）还不存在。"
+msgstr "群聊地址无效，不能为空。"
 
 #: dist/converse-no-dependencies.js:135428
 msgid "Invalid groupchat address, a forward slash is not allowed."
-msgstr ""
+msgstr "群聊地址无效，不允许使用正斜杠。"
 
 #: dist/converse-no-dependencies.js:135435
 msgid "Invalid groupchat address, more than one @ sign is not allowed."
-msgstr ""
+msgstr "群聊地址无效，不允许多个 @ 符号。"
 
 #: dist/converse-no-dependencies.js:135441
 msgid "Invalid groupchat address, it cannot start or end with an @ sign."
-msgstr ""
+msgstr "群聊地址无效，不能以 @ 符号开始或结束。"
 
 #: dist/converse-no-dependencies.js:135455
 msgid ""
 "No default groupchat service found. You'll need to specify the full address, "
 "for example room@conference.example.org"
-msgstr ""
+msgstr "未找到默认的群聊服务。您需要指定完整地址，例如 room@conference.example.org"
 
 #: dist/converse-no-dependencies.js:135471
 msgid "Groupchat id is invalid."
@@ -2667,13 +2654,12 @@ msgid "Click to remove %1$s as a contact"
 msgstr "单击以移除联系人 %1$s"
 
 #: dist/converse-no-dependencies.js:137362
-#, fuzzy
 msgid "Click to chat with yourself"
-msgstr "单击将 %1$s 添加到您的联系人列表"
+msgstr "单击与自己聊天"
 
 #: dist/converse-no-dependencies.js:137363
 msgid "(me)"
-msgstr ""
+msgstr "（我）"
 
 #: dist/converse-no-dependencies.js:137388
 #, javascript-format
@@ -2681,9 +2667,8 @@ msgid "Click to add %1$s to your roster"
 msgstr "单击将 %1$s 添加到您的联系人列表"
 
 #: dist/converse-no-dependencies.js:137979
-#, fuzzy
 msgid "Decline contact request"
-msgstr "联系请求"
+msgstr "拒绝联系请求"
 
 #: dist/converse-no-dependencies.js:137979
 msgid "Are you sure you want to decline this contact request?"
@@ -2691,7 +2676,7 @@ msgstr "是否确定要拒绝此联系请求？"
 
 #: dist/converse-no-dependencies.js:137980
 msgid "Block this user from sending you further messages"
-msgstr ""
+msgstr "阻止此用户向您发送更多消息"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2715,9 +2700,8 @@ msgstr "已添加此联系人"
 
 #: dist/converse-no-dependencies.js:138568
 #: dist/converse-no-dependencies.js:139154
-#, fuzzy
 msgid "Sorry, something went wrong"
-msgstr "抱歉，尝试刷新时出现问题"
+msgstr "抱歉，出了点问题"
 
 #: dist/converse-no-dependencies.js:138612
 msgid "Sorry, could not find a contact with that name"
@@ -2728,15 +2712,13 @@ msgstr "抱歉，未找到有该名称的联系人"
 #.
 #. harmony default export
 #: dist/converse-no-dependencies.js:138653
-#, fuzzy
 msgid "Start Chat"
-msgstr "开始通话"
+msgstr "开始聊天"
 
 #: dist/converse-no-dependencies.js:139114
 #: dist/converse-no-dependencies.js:139365
-#, fuzzy
 msgid "Start a new chat"
-msgstr "开始通话"
+msgstr "开始新聊天"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:139258

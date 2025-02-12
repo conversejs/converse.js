@@ -1,18 +1,19 @@
-/**
- * @typedef {import('./index').DiscoState} DiscoState
- * @typedef {import('./entities').default} DiscoEntities
- * @typedef {import('@converse/skeletor').Collection} Collection
- */
 import { getOpenPromise } from '@converse/openpromise';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from '../../log.js';
-import DiscoEntity from './entity.js';
 
 const { Strophe, $iq } = converse.env;
 
 export default {
+    /**
+     * @typedef {import('./entities').default} DiscoEntities
+     * @typedef {import('./entity').default} DiscoEntity
+     * @typedef {import('./index').DiscoState} DiscoState
+     * @typedef {import('@converse/skeletor').Collection} Collection
+     */
+
     /**
      * The XEP-0030 service discovery API
      *

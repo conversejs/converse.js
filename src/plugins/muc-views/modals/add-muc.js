@@ -1,5 +1,4 @@
 import { _converse, api, converse } from '@converse/headless';
-import AutoCompleteComponent from 'shared/autocomplete/component.js';
 import tplAddMuc from './templates/add-muc.js';
 import BaseModal from 'plugins/modal/modal.js';
 import { __ } from 'i18n';
@@ -60,7 +59,7 @@ export default class AddMUCModal extends BaseModal {
         return s
             .trim()
             .replace(/\s+/g, '-')
-            .replace(/\u0142/g, "l")
+            .replace(/\u0142/g, 'l')
             .replace(/[^\x00-\x7F]/g, (c) => c.normalize('NFD').replace(/[\u0300-\u036f]/g, ''))
             .replace(/[^a-zA-Z0-9-]/g, '-')
             .replace(/-+/g, '-')
@@ -74,8 +73,8 @@ export default class AddMUCModal extends BaseModal {
     async openChatRoom(ev) {
         ev.preventDefault();
 
-        const autocomplete_el = /** @type {AutoCompleteComponent} */ (this.querySelector('converse-autocomplete'));
-        if (autocomplete_el.onChange().error_message) return;
+        const autocomplete_el = /** @type {import('shared/autocomplete/component').default} */ (this.querySelector('converse-autocomplete'));
+        if ((await autocomplete_el.onChange()).error_message) return;
 
         const { escapeNode, getNodeFromJid, getDomainFromJid } = Strophe;
         const form = /** @type {HTMLFormElement} */ (ev.target);
@@ -109,9 +108,9 @@ export default class AddMUCModal extends BaseModal {
 
     /**
      * @param {string} jid
-     * @return {string}
+     * @return {Promise<string>}
      */
-    validateMUCJID(jid) {
+    async validateMUCJID(jid) {
         if (jid.length === 0) {
             return __('Invalid groupchat address, it cannot be empty.');
         }
@@ -128,6 +127,16 @@ export default class AddMUCModal extends BaseModal {
 
         if (jid.startsWith('@') || jid.endsWith('@')) {
             return __('Invalid groupchat address, it cannot start or end with an @ sign.');
+        }
+
+        if (!jid.includes('@')) {
+            const muc_service = await u.muc.getDefaultMUCService();
+            if (!muc_service) {
+                return __(
+                    "No default groupchat service found. "+
+                    "You'll need to specify the full address, for example room@conference.example.org"
+                );
+            }
         }
 
         const policy = api.settings.get('muc_roomid_policy');

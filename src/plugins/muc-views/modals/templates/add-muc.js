@@ -28,14 +28,10 @@ const nickname_input = () => {
  */
 export default (el) => {
     const i18n_join = __('Join');
-    const muc_domain = api.settings.get('muc_domain');
-
-    let placeholder = '';
     let label_name;
     if (api.settings.get('locked_muc_domain')) {
         label_name = __('Groupchat name');
     } else {
-        placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
         label_name = __('Groupchat name or address');
     }
 
@@ -58,7 +54,6 @@ export default (el) => {
                           class="add-muc-autocomplete"
                           min_chars="3"
                           name="chatroom"
-                          placeholder="${placeholder}"
                           position="below"
                           required
                       ></converse-autocomplete>`

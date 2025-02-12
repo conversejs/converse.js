@@ -3,7 +3,6 @@ import { CustomElement } from 'shared/components/element.js';
 import { FILTER_CONTAINS, FILTER_STARTSWITH } from './utils.js';
 import { api } from '@converse/headless';
 import { html } from 'lit';
-import {ancestor} from 'utils/html.js';
 
 /**
  * A custom element that can be used to add auto-completion suggestions to a form input.
@@ -147,9 +146,9 @@ export default class AutoCompleteComponent extends CustomElement {
         this.auto_complete.evaluate(ev);
     }
 
-    onChange() {
+    async onChange() {
         const input = this.querySelector('input');
-        this.error_message = this.validate?.(input.value);
+        this.error_message = await this.validate?.(input.value);
         if (this.error_message) this.requestUpdate();
         return this;
     }

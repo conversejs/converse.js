@@ -911,7 +911,7 @@ export default function ModelWithMessages(BaseModel) {
 
             const stanza = stx`
                 <message xmlns="jabber:client"
-                        from="${message.get('from') || api.connection.get().jid}"
+                        from="${message.get('type') === 'groupchat' ? api.connection.get().jid : message.get('from')}"
                         to="${message.get('to') || this.get('jid')}"
                         type="${this.get('message_type')}"
                         id="${(edited && u.getUniqueId()) || msgid}">

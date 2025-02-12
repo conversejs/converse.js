@@ -4,6 +4,8 @@ const { Strophe, $iq, $msg, $pres, u, omemo } = converse.env;
 
 describe("An OMEMO encrypted message", function() {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("can be edited", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -211,6 +213,8 @@ describe("An OMEMO encrypted message", function() {
 
 describe("An OMEMO encrypted MUC message", function() {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("can be edited", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         // MEMO encryption works only in members only conferences
@@ -225,6 +229,8 @@ describe("An OMEMO encrypted MUC message", function() {
             'muc_unmoderated',
             'muc_nonanonymous'
         ];
+        const { api } = _converse;
+        const { jid: own_jid } = api.connection.get();
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
@@ -334,26 +340,26 @@ describe("An OMEMO encrypted MUC message", function() {
         await u.waitUntil(() => _converse.api.connection.get().send.calls.count(), 1000);
         const sent_stanza = _converse.api.connection.get().send.calls.all()[0].args[0];
 
-        expect(Strophe.serialize(sent_stanza)).toBe(
-            `<message from="${muc_jid}/${nick}" `+
-                     `id="${sent_stanza.getAttribute("id")}" `+
-                     `to="lounge@montague.lit" `+
-                     `type="groupchat" `+
-                     `xmlns="jabber:client">`+
-                `<body>This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo</body>`+
-                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                `<origin-id id="${sent_stanza.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>`+
-                `<encrypted xmlns="eu.siacs.conversations.axolotl">`+
-                    `<header sid="123456789">`+
-                        `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+
-                        `<key rid="4e30f35051b7b8b42abe083742187228">YzFwaDNSNzNYNw==</key>`+
-                        `<iv>${sent_stanza.querySelector("iv").textContent}</iv>`+
-                    `</header>`+
-                    `<payload>${sent_stanza.querySelector("payload").textContent}</payload>`+
-                `</encrypted>`+
-                `<store xmlns="urn:xmpp:hints"/>`+
-                `<encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>`+
-            `</message>`);
+        expect(sent_stanza).toEqualStanza(stx`
+            <message from="${own_jid}"
+                     id="${sent_stanza.getAttribute("id")}"
+                     to="lounge@montague.lit"
+                     type="groupchat"
+                     xmlns="jabber:client">
+                <body>This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo</body>
+                <active xmlns="http://jabber.org/protocol/chatstates"/>
+                <origin-id id="${sent_stanza.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>
+                <encrypted xmlns="eu.siacs.conversations.axolotl">
+                    <header sid="123456789">
+                        <key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>
+                        <key rid="4e30f35051b7b8b42abe083742187228">YzFwaDNSNzNYNw==</key>
+                        <iv>${sent_stanza.querySelector("iv").textContent}</iv>
+                    </header>
+                    <payload>${sent_stanza.querySelector("payload").textContent}</payload>
+                </encrypted>
+                <store xmlns="urn:xmpp:hints"/>
+                <encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>
+            </message>`);
 
         await u.waitUntil(() => textarea.value === '');
 
@@ -388,23 +394,23 @@ describe("An OMEMO encrypted MUC message", function() {
         await u.waitUntil(() => _converse.api.connection.get().sent_stanzas.filter(s => s.nodeName === 'message').length === 2);
         const msg = _converse.api.connection.get().sent_stanzas.pop();
 
-        expect(Strophe.serialize(msg))
-            .toBe(`<message from="${muc_jid}/${nick}" id="${msg.getAttribute("id")}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
-                    `<body>${fallback_text}</body>`+
-                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                    `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
-                    `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
-                    `<encrypted xmlns="eu.siacs.conversations.axolotl">`+
-                        `<header sid="123456789">`+
-                            `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+
-                            `<key rid="4e30f35051b7b8b42abe083742187228">YzFwaDNSNzNYNw==</key>`+
-                            `<iv>${msg.querySelector("iv").textContent}</iv>`+
-                        `</header>`+
-                        `<payload>${msg.querySelector("payload").textContent}</payload>`+
-                    `</encrypted>`+
-                    `<store xmlns="urn:xmpp:hints"/>`+
-                    `<encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>`+
-                `</message>`);
+        expect(msg).toEqualStanza(stx`
+            <message from="${own_jid}" id="${msg.getAttribute("id")}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">
+                <body>${fallback_text}</body>
+                <active xmlns="http://jabber.org/protocol/chatstates"/>
+                <replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>
+                <origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>
+                <encrypted xmlns="eu.siacs.conversations.axolotl">
+                    <header sid="123456789">
+                        <key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>
+                        <key rid="4e30f35051b7b8b42abe083742187228">YzFwaDNSNzNYNw==</key>
+                        <iv>${msg.querySelector("iv").textContent}</iv>
+                    </header>
+                    <payload>${msg.querySelector("payload").textContent}</payload>
+                </encrypted>
+                <store xmlns="urn:xmpp:hints"/>
+                <encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>
+            </message>`);
 
 
         // Test reception of an encrypted message

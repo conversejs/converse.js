@@ -90,6 +90,10 @@ export default class AddMUCModal extends BaseModal {
             const muc_service = await u.muc.getDefaultMUCService();
             if (muc_service) {
                 settings.name = data.jid;
+                settings.auto_configure = true;
+                settings.roomconfig = {
+                    roomname: data.jid,
+                };
                 jid = `${this.normalizeNode(data.jid)}@${muc_service}`.toLowerCase();
             }
         }

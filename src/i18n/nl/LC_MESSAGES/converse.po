@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-05 09:03+0200\n"
-"PO-Revision-Date: 2020-09-24 09:02+0200\n"
-"Last-Translator: Ezra Zebra <ezra.zebra@protonmail.com>\n"
+"PO-Revision-Date: 2025-01-04 10:02+0000\n"
+"Last-Translator: Tom Brand <tom9358@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/conversejs/"
 "translations/nl/>\n"
 "Language: nl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 "domain: converse\n"
 "lang: nl\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -46,11 +46,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:29253
 msgid "People"
-msgstr ""
+msgstr "Personen"
 
 #: dist/converse-no-dependencies.js:29254
 msgid "Activities"
-msgstr ""
+msgstr "Activiteiten"
 
 #: dist/converse-no-dependencies.js:29255
 msgid "Travel"
@@ -58,27 +58,27 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:29256
 msgid "Objects"
-msgstr ""
+msgstr "Objecten"
 
 #: dist/converse-no-dependencies.js:29257
 msgid "Animals and nature"
-msgstr ""
+msgstr "Dieren en natuur"
 
 #: dist/converse-no-dependencies.js:29258
 msgid "Food and drink"
-msgstr ""
+msgstr "Eten en drinken"
 
 #: dist/converse-no-dependencies.js:29259
 msgid "Symbols"
-msgstr ""
+msgstr "Symbolen"
 
 #: dist/converse-no-dependencies.js:29260
 msgid "Flags"
-msgstr ""
+msgstr "Vlaggen"
 
 #: dist/converse-no-dependencies.js:29261
 msgid "Stickers"
-msgstr ""
+msgstr "Stickers"
 
 #: dist/converse-no-dependencies.js:31144
 msgid "Undecryptable OMEMO message"
@@ -108,12 +108,12 @@ msgstr "Sorry, kon het bestand niet uploaden."
 #: dist/converse-no-dependencies.js:33372
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Fout: time-out tijdens het ophalen van de %1s lijst voor MUC %2s"
 
 #: dist/converse-no-dependencies.js:33381
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Fout: niet toegestaan om %1s lijst voor MUC %2s op te halen"
 
 #: dist/converse-no-dependencies.js:35431
 #: dist/converse-no-dependencies.js:41803
@@ -160,25 +160,21 @@ msgstr ""
 #: dist/converse-no-dependencies.js:36377
 #: dist/converse-no-dependencies.js:39453
 msgid "You're not allowed to retract your message."
-msgstr ""
+msgstr "Je mag je bericht niet intrekken."
 
 #: dist/converse-no-dependencies.js:36379
 #: dist/converse-no-dependencies.js:39457
-#, fuzzy
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "Sorry, er ging iets mis bij het verversen"
+msgstr "Sorry, er is een fout opgetreden bij het intrekken van je bericht."
 
 #: dist/converse-no-dependencies.js:36384
-#, fuzzy
 msgid "You're not allowed to send a message."
-msgstr ""
-"Je hebt geen toestemming om berichten te verzenden in deze gespreksruimte"
+msgstr "Je hebt geen toestemming om een bericht te verzenden."
 
 #: dist/converse-no-dependencies.js:36386
 #: dist/converse-no-dependencies.js:39466
-#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "Er trad een fout op bij het verwijderen van de apparaten."
+msgstr "Sorry, er trad een fout op bij het verzenden van je bericht."
 
 #: dist/converse-no-dependencies.js:39455
 #, fuzzy
@@ -215,10 +211,8 @@ msgstr "Sorry, er ging iets mis bij het opslaan van je profielgegevens."
 
 #: dist/converse-no-dependencies.js:40573
 #: dist/converse-no-dependencies.js:112893
-#, fuzzy
 msgid "Check your browser's developer console for details."
-msgstr ""
-"Je kan de ontwikkelaarsconsole van je browser nakijken voor foutenuitvoer."
+msgstr "Details zijn te vinden in de ontwikkelaarsconsole van je browser."
 
 #: dist/converse-no-dependencies.js:40592
 #: dist/converse-no-dependencies.js:40610
@@ -250,7 +244,7 @@ msgstr "Geen toestemming: je hebt niet de benodigde rol om dit te doen."
 
 #: dist/converse-no-dependencies.js:40799
 msgid "Error: couldn't register new nickname in members only room"
-msgstr ""
+msgstr "Fout: kon nieuwe bijnaam niet registreren in ruimte alleen voor leden"
 
 #: dist/converse-no-dependencies.js:41101
 msgid "You're not allowed to register yourself in this groupchat."
@@ -325,7 +319,7 @@ msgid "%1$s and %2$s"
 msgstr "%1$s zegt"
 
 #: dist/converse-no-dependencies.js:41830
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s are typing"
 msgstr "%1$s is aan het typen"
 
@@ -513,14 +507,12 @@ msgid "The groupchat configuration has changed"
 msgstr "De configuratie van het groepsgesprek is gewijzigd"
 
 #: dist/converse-no-dependencies.js:48687
-#, fuzzy
 msgid "Groupchat logging is now enabled"
-msgstr "loggen van groepsgesprek is nu ingeschakeld"
+msgstr "Logboeken van groepsgesprekken zijn nu ingeschakeld"
 
 #: dist/converse-no-dependencies.js:48688
-#, fuzzy
 msgid "Groupchat logging is now disabled"
-msgstr "loggen van groepsgesprek is nu uitgeschakeld"
+msgstr "Logboeken van groepsgesprekken zijn nu uitgeschakeld"
 
 #: dist/converse-no-dependencies.js:48689
 msgid "This groupchat is now no longer anonymous"
@@ -554,10 +546,8 @@ msgid "You have been banned from this groupchat"
 msgstr "Je bent verbannen uit dit groepsgesprek"
 
 #: dist/converse-no-dependencies.js:48701
-#, fuzzy
 msgid "You have exited this groupchat due to a technical problem"
-msgstr ""
-"Je bent uit dit groepsgesprek verwijderd wegens een wijziging in lidmaatschap"
+msgstr "Je hebt dit groepsgesprek verlaten vanwege een technisch probleem"
 
 #: dist/converse-no-dependencies.js:48702
 msgid "You have been kicked from this groupchat"
@@ -608,17 +598,19 @@ msgstr "Sorry, er ging iets mis bij het opslaan van je bladwijzer."
 
 #: dist/converse-no-dependencies.js:49449
 msgid "Timeout Error"
-msgstr ""
+msgstr "Timeout-fout"
 
 #: dist/converse-no-dependencies.js:49449
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"De server heeft je bladwijzers niet binnen de toegestane tijd opgeleverd. Je "
+"kunt de pagina herladen om ze opnieuw op te vragen."
 
 #: dist/converse-no-dependencies.js:52357
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Er is een time-out opgetreden"
 
 #: dist/converse-no-dependencies.js:55458
 #, fuzzy
@@ -675,7 +667,7 @@ msgstr "Sluiten"
 
 #: dist/converse-no-dependencies.js:72676
 msgid "OK"
-msgstr ""
+msgstr "Oké"
 
 #: dist/converse-no-dependencies.js:72676
 #: dist/converse-no-dependencies.js:75646
@@ -691,19 +683,19 @@ msgstr "Bestand ‘%1$s’ downloaden"
 
 #: dist/converse-no-dependencies.js:75615
 msgid "Execute"
-msgstr ""
+msgstr "Uitvoeren"
 
 #: dist/converse-no-dependencies.js:75616
 msgid "Previous"
-msgstr ""
+msgstr "Vorige"
 
 #: dist/converse-no-dependencies.js:75617
 msgid "Next"
-msgstr ""
+msgstr "Volgende"
 
 #: dist/converse-no-dependencies.js:75618
 msgid "Complete"
-msgstr ""
+msgstr "Klaar"
 
 #: dist/converse-no-dependencies.js:78177
 #, fuzzy
@@ -765,6 +757,9 @@ msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Moderatoren zijn gebruikers met extra rechten die rollen van andere "
+"gebruikers kunnen aanpassen (behalve die met administrator- of "
+"eigenaarsstatus)."
 
 #: dist/converse-no-dependencies.js:78397
 msgid "The default role, implies that you can read and write messages."
@@ -774,6 +769,8 @@ msgstr ""
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
+"Bezoekers kunnen geen berichten schrijven in een gemodereerde chat voor "
+"meerdere gebruikers."
 
 #: dist/converse-no-dependencies.js:78404
 msgid ""
@@ -799,11 +796,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:78435
 msgid "No users with that role found."
-msgstr ""
+msgstr "Geen gebruikers met die rol gevonden."
 
 #: dist/converse-no-dependencies.js:78436
 msgid "Type here to filter the search results"
-msgstr ""
+msgstr "Typ hier om de zoekresultaten te filteren"
 
 #: dist/converse-no-dependencies.js:78438
 #, fuzzy
@@ -817,6 +814,11 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"Rollen worden aan gebruikers toegewezen om ze bepaalde functies toe te "
+"kennen of te ontzeggen in een chat voor meerdere gebruikers. Ze worden "
+"expliciet of impliciet toegewezen als onderdeel van een lidmaatschap. Een "
+"rol die niet uit een lidmaatschap voortkomt, geldt alleen voor de duur van "
+"de sessie van de gebruiker."
 
 #: dist/converse-no-dependencies.js:78440
 msgid ""
@@ -874,7 +876,7 @@ msgstr "Weet je zeker dat je het gesprek ‘%1$s’ wil verlaten?"
 #: dist/converse-no-dependencies.js:104200
 #: dist/converse-no-dependencies.js:104747
 msgid "Reason"
-msgstr ""
+msgstr "Reden"
 
 #: dist/converse-no-dependencies.js:79801
 msgid "Optional XMPP address for a new groupchat that replaces this one"
@@ -891,7 +893,7 @@ msgstr "gebruiker@voorbeeld.be"
 #: dist/converse-no-dependencies.js:84720
 #: dist/converse-no-dependencies.js:114244
 msgid "Confirm"
-msgstr ""
+msgstr "Bevestigen"
 
 #: dist/converse-no-dependencies.js:79990
 msgid ""

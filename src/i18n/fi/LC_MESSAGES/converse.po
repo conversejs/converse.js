@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-05 09:03+0200\n"
-"PO-Revision-Date: 2022-03-27 17:07+0000\n"
+"PO-Revision-Date: 2025-01-17 10:48+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/conversejs/"
 "translations/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: dist/converse-no-dependencies.js:20585
 #: dist/converse-no-dependencies.js:20639
@@ -140,12 +140,10 @@ msgstr ""
 "Anteeksi, näyttää siltä, että palvelimesi ei tue tiedostojen uloslatausta."
 
 #: dist/converse-no-dependencies.js:35851
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
-msgstr ""
-"Tiedoston koko, %1$s, ylittää palvelimen salliman enimmäismäärän, joka on "
-"%2$s."
+msgstr "Tiedostosi koko %1$s ylittää palvelimesi salliman enimmäisarvon."
 
 #: dist/converse-no-dependencies.js:35851
 #, javascript-format
@@ -1026,9 +1024,9 @@ msgid "Bookmarks"
 msgstr "Kirjanmerkit"
 
 #: dist/converse-no-dependencies.js:82110
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "Kirjanmerkit"
+msgstr "Kirjanmerkki \"%1$s\":lle"
 
 #: dist/converse-no-dependencies.js:82111
 msgid "Would you like this groupchat to be automatically joined upon startup?"
@@ -1828,9 +1826,9 @@ msgid "Loading configuration form"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:112773
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Configure %1$s"
-msgstr "Vahvistaa"
+msgstr "Määritä %1$s"
 
 #: dist/converse-no-dependencies.js:112893
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -2601,9 +2599,8 @@ msgid "Description:"
 msgstr "Kuvaus:"
 
 #: dist/converse-no-dependencies.js:128607
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "Ryhmäkeskusteluosoite"
+msgstr "Ryhmäpikakeskustelun XMPP-osoite:"
 
 #: dist/converse-no-dependencies.js:128608
 msgid "Participants:"
@@ -2757,14 +2754,14 @@ msgid "Re-sync contacts"
 msgstr "Yhteystietojen synkronointi uudelleen"
 
 #: dist/converse-no-dependencies.js:131726
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to accept the contact request from %1$s (XMPP address: %2$s)"
-msgstr "Hyväksy yhteystietopyyntö kohteesta %1$s napsauttamalla tätä"
+msgstr "Napsauta hyväksyäksesi yhteydenottopyynnön %1$s:lta (XMPP-osoite: %2$s)"
 
 #: dist/converse-no-dependencies.js:131727
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to decline the contact request from %1$s (XMPP address: %2$s)"
-msgstr "Hylkää yhteystietopyyntö kohteesta %1$s napsauttamalla tätä"
+msgstr "Napsauta hylätäksesi yhteydenottopyynnön %1$s:lta (XMPP-osoite: %2$s)"
 
 #: dist/converse-no-dependencies.js:131728
 #: dist/converse-no-dependencies.js:131792

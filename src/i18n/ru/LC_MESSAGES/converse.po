@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-05 09:03+0200\n"
-"PO-Revision-Date: 2024-12-05 12:48+0000\n"
+"PO-Revision-Date: 2024-12-28 21:02+0000\n"
 "Last-Translator: solokot <solokot@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: dist/converse-no-dependencies.js:20585
 #: dist/converse-no-dependencies.js:20639
@@ -937,7 +937,7 @@ msgstr "Указанный объект не поддерживает коман
 
 #: dist/converse-no-dependencies.js:80751
 msgid "An error occurred while trying to fetch the command form"
-msgstr "Произошла ошибка при попытке получения списка команд."
+msgstr "Произошла ошибка при попытке получения списка команд"
 
 #: dist/converse-no-dependencies.js:80835
 msgid ""
@@ -961,7 +961,7 @@ msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
-"При попытке выполнить команду произошла ошибка. Подробнее см. в консоли "
+"При попытке отменить команду произошла ошибка. Подробнее см. в консоли "
 "разработчика."
 
 #: dist/converse-no-dependencies.js:80905
@@ -1392,7 +1392,7 @@ msgstr "Создать учётную запись"
 
 #: dist/converse-no-dependencies.js:99235
 msgid "Don't have a chat account?"
-msgstr "Не имеете учётную запись для чата?"
+msgstr "Нет учётной записи для чата?"
 
 #: dist/converse-no-dependencies.js:99244
 msgid "Log in"
@@ -2439,7 +2439,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:126581
 #: dist/converse-no-dependencies.js:126644
 msgid "Already have a chat account?"
-msgstr "Уже имеете учётную запись чата?"
+msgstr "Уже есть учётная запись чата?"
 
 #: dist/converse-no-dependencies.js:126582
 #: dist/converse-no-dependencies.js:126645

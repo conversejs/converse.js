@@ -119,7 +119,7 @@ export default class AutoCompleteComponent extends CustomElement {
     onKeyDown(ev: KeyboardEvent): void;
     /** @param {KeyboardEvent} ev */
     onKeyUp(ev: KeyboardEvent): void;
-    onChange(): this;
+    onChange(): Promise<this>;
 }
 import { CustomElement } from 'shared/components/element.js';
 import AutoComplete from './autocomplete.js';

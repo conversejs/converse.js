@@ -23,9 +23,9 @@ export default class AddMUCModal extends BaseModal {
     openChatRoom(ev: Event): Promise<void>;
     /**
      * @param {string} jid
-     * @return {string}
+     * @return {Promise<string>}
      */
-    validateMUCJID(jid: string): string;
+    validateMUCJID(jid: string): Promise<string>;
 }
 import BaseModal from 'plugins/modal/modal.js';
 //# sourceMappingURL=add-muc.d.ts.map

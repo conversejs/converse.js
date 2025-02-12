@@ -87,7 +87,7 @@ declare namespace _default {
              * @return {Promise<DiscoEntity|DiscoEntities|undefined>}
              * @example _converse.api.disco.entities.get(jid);
              */
-            function get(jid: string, create?: boolean): Promise<DiscoEntity | DiscoEntities | undefined>;
+            function get(jid: string, create?: boolean): Promise<import("./entity").default | import("./entities").default | undefined>;
             /**
              * Return any disco items advertised on this entity
              *
@@ -252,8 +252,4 @@ declare namespace _default {
     }
 }
 export default _default;
-export type DiscoState = import("./index").DiscoState;
-export type DiscoEntities = import("./entities").default;
-export type Collection = import("@converse/skeletor").Collection;
-import DiscoEntity from './entity.js';
 //# sourceMappingURL=api.d.ts.map

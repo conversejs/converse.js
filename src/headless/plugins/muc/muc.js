@@ -1221,7 +1221,7 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
     getDiscoInfo () {
         return api.disco
             .getIdentity('conference', 'text', this.get('jid'))
-            .then((identity) => this.save({ 'name': identity?.get('name') }))
+            .then((identity) => this.save({ name: identity?.get('name') }))
             .then(() => this.getDiscoInfoFields())
             .then(() => this.getDiscoInfoFeatures())
             .catch((e) => log.error(e));

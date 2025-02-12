@@ -4,6 +4,8 @@ const {  Promise, sizzle, u } = converse.env;
 
 describe('The "Groupchats" Add modal', function () {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it('can be opened from a link in the "Groupchats" section of the controlbox',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             const modal = await mock.openAddMUCModal(_converse);
@@ -112,6 +114,10 @@ describe('The "Groupchats" Add modal', function () {
                 [Strophe.NS.DISCO_ITEMS],
             );
 
+            const nick = 'max';
+            const muc_jid = 'the-lounge@muc.example.org';
+            const own_jid = _converse.session.get('jid');
+
             const modal = await mock.openAddMUCModal(_converse);
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
 
@@ -119,18 +125,88 @@ describe('The "Groupchats" Add modal', function () {
             name_input.value = 'The Lounge';
 
             const nick_input = modal.querySelector('input[name="nickname"]');
-            nick_input.value = 'max';
+            nick_input.value = nick;
 
             modal.querySelector('form input[type="submit"]').click();
 
             await mock.waitUntilDiscoConfirmed(_converse, domain, [], [], ['muc.example.org'], 'items');
             await mock.waitUntilDiscoConfirmed(_converse, 'muc.example.org', [], [Strophe.NS.MUC]);
 
-            await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
-            expect(_converse.chatboxes.models.map(m => m.get('id')).includes('the-lounge@muc.example.org')).toBe(true);
 
-            const muc = _converse.chatboxes.get('the-lounge@muc.example.org');
+            await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
+            expect(_converse.chatboxes.models.map(m => m.get('id')).includes(muc_jid)).toBe(true);
+
+            const muc = _converse.chatboxes.get(muc_jid);
             expect(muc.get('name')).toBe('The Lounge');
+
+            await mock.getRoomFeatures(_converse, muc_jid);
+
+            // Own presence which states that the room is locked and needs to
+            // be configured (code 201)
+            const presence =
+                stx`<presence
+                        id="5025e055-036c-4bc5-a227-706e7e352053"
+                        to="${own_jid}"
+                        from="${muc_jid}/${nick}"
+                        xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="owner" jid="${own_jid}" role="moderator"/>
+                        <status code="110"/>
+                        <status code="201"/>
+                    </x>
+                </presence>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+            const iq = await u.waitUntil(() => IQ_stanzas.filter(s => s.querySelector(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`)).pop());
+
+            spyOn(muc, 'sendConfiguration').and.callThrough();
+
+            expect(iq).toEqualStanza(stx`
+                <iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#owner"/>
+                </iq>`);
+
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
+                stx`<iq xmlns="jabber:client"
+                    type="result"
+                    to="${own_jid}"
+                    from="${muc_jid}" id="${iq.getAttribute('id')}">
+                <query xmlns="http://jabber.org/protocol/muc#owner">
+                    <x xmlns="jabber:x:data" type="form">
+                    <title>Configuration for ${muc_jid}</title>
+                    <instructions>Complete and submit this form to configure the room.</instructions>
+                    <field var="FORM_TYPE" type="hidden">
+                        <value>http://jabber.org/protocol/muc#roomconfig</value>
+                    </field>
+                    <field type="text-single" var="muc#roomconfig_roomname" label="Name"><value></value></field>
+                    <field type="text-single" var="muc#roomconfig_roomdesc" label="Description"><value/></field>
+                    <field type="boolean" var="muc#roomconfig_persistentroom" label="Make Room Persistent?"/>
+                    <field type="boolean" var="muc#roomconfig_publicroom" label="Make Room Publicly Searchable?"><value>1</value></field>
+                    <field type="boolean" var="muc#roomconfig_changesubject" label="Allow Occupants to Change Subject?"/>
+                    <field type="list-single" var="muc#roomconfig_whois" label="Who May Discover Real JIDs?"><option label="Moderators Only">
+                       <value>moderators</value></option><option label="Anyone"><value>anyone</value></option>
+                    </field>
+                    <field label="Roles and Affiliations that May Retrieve Member List"
+                           type="list-multi"
+                           var="muc#roomconfig_getmemberlist">
+                        <value>moderator</value>
+                        <value>participant</value>
+                        <value>visitor</value>
+                    </field>
+                    <field type="text-private" var="muc#roomconfig_roomsecret" label="Password"><value/></field>
+                    <field type="boolean" var="muc#roomconfig_moderatedroom" label="Make Room Moderated?"/>
+                    <field type="boolean" var="muc#roomconfig_membersonly" label="Make Room Members-Only?"/>
+                    <field type="text-single" var="muc#roomconfig_historylength" label="Maximum Number of History Messages Returned by Room">
+                       <value>20</value></field>
+                    </x>
+                </query>
+                </iq>`));
+
+            await u.waitUntil(() => muc.sendConfiguration.calls.count() === 1);
+
+            const sent_stanza = IQ_stanzas.filter(s => s.getAttribute('type') === 'set').pop();
+            expect(sizzle('field[var="muc#roomconfig_roomname"] value', sent_stanza).pop().textContent.trim()).toBe('The Lounge');
         })
     );
 

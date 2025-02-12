@@ -10,7 +10,7 @@ export default {
      * @namespace _converse.api.omemo
      * @memberOf _converse.api
      */
-    'omemo': {
+    omemo: {
         /**
          * Returns the device ID of the current device.
          */
@@ -19,7 +19,7 @@ export default {
             return _converse.state.omemo_store.get('device_id');
         },
 
-        'session': {
+        session: {
             async restore () {
                 const { state } = _converse;
                 if (state.omemo_store === undefined) {
@@ -38,7 +38,7 @@ export default {
          * @namespace _converse.api.omemo.devicelists
          * @memberOf _converse.api.omemo
          */
-        'devicelists': {
+        devicelists: {
             /**
              * Returns the {@link _converse.DeviceList} for a particular JID.
              * The device list will be created if it doesn't exist already.
@@ -62,14 +62,14 @@ export default {
          * @namespace _converse.api.omemo.bundle
          * @memberOf _converse.api.omemo
          */
-        'bundle': {
+        bundle: {
             /**
              * Lets you generate a new OMEMO device bundle
              *
              * @method _converse.api.omemo.bundle.generate
              * @returns {promise} Promise which resolves once we have a result from the server.
              */
-            'generate': async () => {
+            async generate () {
                 await api.waitUntil('OMEMOInitialized');
                 // Remove current device
                 const bare_jid = _converse.session.get('bare_jid');

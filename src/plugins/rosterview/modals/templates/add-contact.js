@@ -9,6 +9,9 @@ import { html } from "lit";
 import { FILTER_STARTSWITH } from 'shared/autocomplete/utils';
 
 
+/**
+ * @param {import('../add-contact.js').default} el
+ */
 export default (el) => {
     const i18n_add = __('Add');
     const i18n_contact_placeholder = __('name@example.org');
@@ -18,10 +21,10 @@ export default (el) => {
     const error = el.model.get('error');
 
     return html`
-        <form class="converse-form add-xmpp-contact" @submit=${ev => el.addContactFromForm(ev)}>
-            <div class="modal-body">
-                <span class="modal-alert"></span>
-                <div class="form-group add-xmpp-contact__jid">
+        <div class="modal-body">
+            ${error ? html`<div class="alert alert-danger" role="alert">${error}</div>` : ''}
+            <form class="converse-form add-xmpp-contact" @submit=${ev => el.addContactFromForm(ev)}>
+                <div class="add-xmpp-contact__jid mb-3">
                     <label class="form-label clearfix" for="jid">${i18n_xmpp_address}:</label>
                     ${api.settings.get('autocomplete_add_contact') ?
                         html`<converse-autocomplete
@@ -42,7 +45,7 @@ export default (el) => {
                     }
                 </div>
 
-                <div class="form-group add-xmpp-contact__name">
+                <div class="add-xmpp-contact__name mb-3">
                     <label class="form-label clearfix" for="name">${i18n_nickname}:</label>
                     ${api.settings.get('autocomplete_add_contact') && typeof api.settings.get('xhr_user_search_url') === 'string' ?
                         html`<converse-autocomplete
@@ -58,14 +61,13 @@ export default (el) => {
                             placeholder="${i18n_contact_placeholder}"/>`
                     }
                 </div>
-                <div class="form-group add-xmpp-contact__group">
+                <div class="add-xmpp-contact__group mb-3">
                     <label class="form-label clearfix" for="name">${i18n_group}:</label>
                     <converse-autocomplete
                         .list=${getGroupsAutoCompleteList()}
                         name="group"></converse-autocomplete>
                 </div>
-                ${error ? html`<div><div style="display: block" class="invalid-feedback">${error}</div></div>` : ''}
                 <button type="submit" class="btn btn-primary">${i18n_add}</button>
-            </div>
-        </form>`;
+            </form>
+        </div>`;
 }

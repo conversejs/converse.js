@@ -17,7 +17,7 @@ declare const ChatBox_base: {
         messages: any;
         fetchMessages(): any;
         afterMessagesFetched(): void;
-        onMessage(attrs_or_error: import("./types").MessageAttributes | Error): Promise<void>;
+        onMessage(_attrs_or_error: import("./types").MessageAttributes | Error): Promise<void>;
         getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./types").MessageAttributes): object;
         updateMessage(message: import("./message.js").default, attrs: import("./types").MessageAttributes): void;
         handleCorrection(attrs: import("./types").MessageAttributes | import("../muc/types.js").MUCMessageAttributes): Promise<import("./message.js").default | void>;
@@ -54,6 +54,7 @@ declare const ChatBox_base: {
         };
         sendMarkerForMessage(msg: import("./message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         handleUnreadMessage(message: import("./message.js").default): void;
+        getErrorAttributesForMessage(message: import("./message.js").default, attrs: import("./types").MessageAttributes): Promise<any>;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("./message.js").default): void;
         clearUnreadMsgCounter(): void;
@@ -274,7 +275,7 @@ declare class ChatBox extends ChatBox_base {
      * @typedef {import('./message.js').default} Message
      * @typedef {import('../muc/muc.js').default} MUC
      * @typedef {import('./types').MessageAttributes} MessageAttributes
-     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
+     * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
     defaults(): {
         bookmarked: boolean;
@@ -291,8 +292,11 @@ declare class ChatBox extends ChatBox_base {
     /**
      * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    onMessage(attrs_or_error: import("./types").MessageAttributes | import("../../shared/parsers").StanzaParseError): Promise<void>;
-    onPresenceChanged(item: any): void;
+    onMessage(attrs_or_error: import("./types").MessageAttributes | import("../../shared/errors").StanzaParseError): Promise<void>;
+    /**
+     * @param {import('../roster/presence').default} item
+     */
+    onPresenceChanged(item: import("../roster/presence").default): void;
     close(): Promise<void>;
     /**
      * @returns {string}

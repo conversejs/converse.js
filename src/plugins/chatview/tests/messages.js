@@ -1,5 +1,4 @@
 /*global mock, converse */
-
 const { Promise, Strophe, $msg, dayjs, sizzle, stx, u } = converse.env;
 
 
@@ -43,8 +42,8 @@ describe("A Chat Message", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         let models = await _converse.api.chats.get();
         expect(models.length).toBe(1);
-        const received_stanza = u.toStanza(`
-            <message to='${_converse.jid}' from='${contact_jid}' type='chat' id='${api.connection.get().getUniqueId()}'>
+        const received_stanza = stx`
+            <message xmlns="jabber:client" to='${_converse.jid}' from='${contact_jid}' type='chat' id='${api.connection.get().getUniqueId()}'>
                 <body>A most courteous exposition!</body>
                 <forwarded xmlns='urn:xmpp:forward:0'>
                     <delay xmlns='urn:xmpp:delay' stamp='2019-07-10T23:08:25Z'/>
@@ -59,13 +58,12 @@ describe("A Chat Message", function () {
                     </mood>
                     </message>
                 </forwarded>
-            </message>
-        `);
+            </message>`;
         api.connection.get()._dataRecv(mock.createRequest(received_stanza));
         const sent_stanzas = api.connection.get().sent_stanzas;
         const sent_stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.querySelector('error')).pop());
         expect(Strophe.serialize(sent_stanza)).toBe(
-            `<message id="${received_stanza.getAttribute('id')}" to="${contact_jid}" type="error" xmlns="jabber:client">`+
+            `<message id="${received_stanza.tree().getAttribute('id')}" to="${contact_jid}" type="error" xmlns="jabber:client">`+
                 '<error type="cancel">'+
                     '<not-allowed xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>'+
                     '<text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">'+
@@ -88,102 +86,102 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length)
         api.settings.set('filter_by_resource', true);
 
-        let msg = $msg({
-                'xmlns': 'jabber:client',
-                'id': api.connection.get().getUniqueId(),
-                'to': _converse.bare_jid,
-                'from': sender_jid,
-                'type': 'chat'})
-            .c('body').t("message").up()
-            .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T13:08:25Z'})
-            .tree();
+        let msg = stx`
+            <message xmlns="jabber:client"
+                     id="${api.connection.get().getUniqueId()}"
+                     to="${_converse.bare_jid}"
+                     from="${sender_jid}"
+                     type="chat">
+                <body>message</body>
+                <delay xmlns="urn:xmpp:delay" stamp="2018-01-02T13:08:25Z"/>
+            </message>`;
         await _converse.handleMessageStanza(msg);
         const view = _converse.chatboxviews.get(sender_jid);
 
-        msg = $msg({
-                'xmlns': 'jabber:client',
-                'id': api.connection.get().getUniqueId(),
-                'to': _converse.bare_jid,
-                'from': sender_jid,
-                'type': 'chat'})
-            .c('body').t("Older message").up()
-            .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2017-12-31T11:08:25Z'})
-            .tree();
+        msg = stx`
+            <message xmlns="jabber:client"
+                     id="${api.connection.get().getUniqueId()}"
+                     to="${_converse.bare_jid}"
+                     from="${sender_jid}"
+                     type="chat">
+                <body>Older message</body>
+                <delay xmlns="urn:xmpp:delay" stamp="2017-12-31T11:08:25Z"/>
+            </message>`;
         _converse.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
 
-        msg = $msg({
-                'xmlns': 'jabber:client',
-                'id': api.connection.get().getUniqueId(),
-                'to': _converse.bare_jid,
-                'from': sender_jid,
-                'type': 'chat'})
-            .c('body').t("Inbetween message").up()
-            .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'})
-            .tree();
+        msg = stx`
+            <message xmlns="jabber:client"
+                     id="${api.connection.get().getUniqueId()}"
+                     to="${_converse.bare_jid}"
+                     from="${sender_jid}"
+                     type="chat">
+                <body>Inbetween message</body>
+                <delay xmlns="urn:xmpp:delay" stamp="2018-01-01T13:18:23Z"/>
+            </message>`;
         _converse.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 3);
 
-        msg = $msg({
-                'xmlns': 'jabber:client',
-                'id': api.connection.get().getUniqueId(),
-                'to': _converse.bare_jid,
-                'from': sender_jid,
-                'type': 'chat'})
-            .c('body').t("another inbetween message").up()
-            .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'})
-            .tree();
+        msg = stx`
+            <message xmlns="jabber:client"
+                     id="${api.connection.get().getUniqueId()}"
+                     to="${_converse.bare_jid}"
+                     from="${sender_jid}"
+                     type="chat">
+                <body>another inbetween message</body>
+                <delay xmlns="urn:xmpp:delay" stamp="2018-01-01T13:18:23Z"/>
+            </message>`;
         _converse.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 4);
 
-        msg = $msg({
-                'xmlns': 'jabber:client',
-                'id': api.connection.get().getUniqueId(),
-                'to': _converse.bare_jid,
-                'from': sender_jid,
-                'type': 'chat'})
-            .c('body').t("An earlier message on the next day").up()
-            .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T12:18:23Z'})
-            .tree();
+        msg = stx`
+            <message xmlns="jabber:client"
+                     id="${api.connection.get().getUniqueId()}"
+                     to="${_converse.bare_jid}"
+                     from="${sender_jid}"
+                     type="chat">
+                <body>An earlier message on the next day</body>
+                <delay xmlns="urn:xmpp:delay" stamp="2018-01-02T12:18:23Z"/>
+            </message>`;
         _converse.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 5);
 
-        msg = $msg({
-                'xmlns': 'jabber:client',
-                'id': api.connection.get().getUniqueId(),
-                'to': _converse.bare_jid,
-                'from': sender_jid,
-                'type': 'chat'})
-            .c('body').t("newer message from the next day").up()
-            .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T20:28:23Z'})
-            .tree();
+        msg = stx`
+            <message xmlns="jabber:client"
+                     id="${api.connection.get().getUniqueId()}"
+                     to="${_converse.bare_jid}"
+                     from="${sender_jid}"
+                     type="chat">
+                <body>newer message from the next day</body>
+                <delay xmlns="urn:xmpp:delay" stamp="2018-01-02T20:28:23Z"/>
+            </message>`;
         _converse.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 6);
 
         // Insert <composing> message, to also check that
         // text messages are inserted correctly with
         // temporary chat events in the chat contents.
-        msg = $msg({
-                'id': api.connection.get().getUniqueId(),
-                'to': _converse.bare_jid,
-                'xmlns': 'jabber:client',
-                'from': sender_jid,
-                'type': 'chat'})
-            .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
-            .tree();
+        msg = stx`
+            <message xmlns="jabber:client"
+                     id="${api.connection.get().getUniqueId()}"
+                     to="${_converse.bare_jid}"
+                     from="${sender_jid}"
+                     type="chat">
+                <composing xmlns="${Strophe.NS.CHATSTATES}"/>
+            </message>`;
         _converse.handleMessageStanza(msg);
         const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
         expect(csntext.trim()).toEqual('Mercutio is typing');
 
-        msg = $msg({
-                'id': api.connection.get().getUniqueId(),
-                'to': _converse.bare_jid,
-                'xmlns': 'jabber:client',
-                'from': sender_jid,
-                'type': 'chat'})
-            .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
-            .c('body').t("latest message")
-            .tree();
+        msg = stx`
+            <message xmlns="jabber:client"
+                     id="${api.connection.get().getUniqueId()}"
+                     to="${_converse.bare_jid}"
+                     from="${sender_jid}"
+                     type="chat">
+                <composing xmlns="${Strophe.NS.CHATSTATES}"/>
+                <body>latest message</body>
+            </message>`;
 
         await _converse.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 7);
@@ -250,12 +248,14 @@ describe("A Chat Message", function () {
         // messages, but Prosody gives them the wrong 'type' :(
         spyOn(converse.env.log, 'info');
         spyOn(_converse.api.chatboxes, 'get');
-        const msg = $msg({
-                from: 'montague.lit',
-                to: _converse.bare_jid,
-                type: 'chat',
-                id: u.getUniqueId()
-            }).c('body').t("This headline message will not be shown").tree();
+        const msg = stx`
+            <message xmlns="jabber:client"
+                    from="montague.lit"
+                    to="${_converse.bare_jid}"
+                    type="chat"
+                    id="${u.getUniqueId()}">
+                <body>This headline message will not be shown</body>
+            </message>`;
         await _converse.handleMessageStanza(msg);
         expect(converse.env.log.info).toHaveBeenCalledWith(
             "handleMessageStanza: Ignoring incoming server message from JID: montague.lit"
@@ -547,9 +547,19 @@ describe("A Chat Message", function () {
     }));
 
     it("will remove url query parameters from hyperlinks as set",
-            mock.initConverse(['chatBoxesFetched'], {'filter_url_query_params': ['utm_medium', 'utm_content', 's']},
+            mock.initConverse(['chatBoxesFetched'], { filter_url_query_params: ['utm_medium', 'utm_content', 's']},
             async function (_converse) {
 
+        const originalFetch = window.fetch;
+        spyOn(window, 'fetch').and.callFake(async (...args) => {
+            if (args[1].method === 'HEAD') {
+                return new Response('', {
+                    status: 200,
+                    headers: { 'Content-Type': 'text/html' }
+                });
+            }
+            return await originalFetch(...args);
+        });
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -575,7 +585,16 @@ describe("A Chat Message", function () {
     }));
 
     it("properly renders URLs", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
-
+        const originalFetch = window.fetch;
+        spyOn(window, 'fetch').and.callFake(async (...args) => {
+            if (args[1].method === 'HEAD') {
+                return new Response('', {
+                    status: 200,
+                    headers: { 'Content-Type': 'text/html' }
+                });
+            }
+            return await originalFetch(...args);
+        });
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -595,41 +614,45 @@ describe("A Chat Message", function () {
         await mock.waitForRoster(_converse, 'current');
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const view = await mock.openChatBoxFor(_converse, contact_jid);
-        let stanza = u.toStanza(`
+        let stanza = stx`
             <message from="${contact_jid}"
                      type="chat"
-                     to="romeo@montague.lit/orchard">
+                     to="romeo@montague.lit/orchard"
+                     xmlns="jabber:client">
                 <body>Hey\nHave you heard the news?</body>
-            </message>`);
+            </message>`;
         api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         expect(view.querySelector('.chat-msg__text').innerHTML.replace(/<!-.*?->/g, '')).toBe('Hey\nHave you heard the news?');
-        stanza = u.toStanza(`
+        stanza = stx`
             <message from="${contact_jid}"
-                     type="chat"
-                     to="romeo@montague.lit/orchard">
+                    type="chat"
+                    to="romeo@montague.lit/orchard"
+                    xmlns="jabber:client">
                 <body>Hey\n\n\nHave you heard the news?</body>
-            </message>`);
+            </message>`;
         api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
         const text = view.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!-.*?->/g, '');
         expect(text).toBe('Hey\n\u200B\nHave you heard the news?');
-        stanza = u.toStanza(`
+        stanza = stx`
             <message from="${contact_jid}"
-                     type="chat"
-                     to="romeo@montague.lit/orchard">
+                    type="chat"
+                    to="romeo@montague.lit/orchard"
+                    xmlns="jabber:client">
                 <body>Hey\nHave you heard\nthe news?</body>
-            </message>`);
+            </message>`;
         api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
         expect(view.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!-.*?->/g, '')).toBe('Hey\nHave you heard\nthe news?');
 
-        stanza = u.toStanza(`
+        stanza = stx`
             <message from="${contact_jid}"
-                     type="chat"
-                     to="romeo@montague.lit/orchard">
+                    type="chat"
+                    to="romeo@montague.lit/orchard"
+                    xmlns="jabber:client">
                 <body>Hey\nHave you heard\n\n\nthe news?\nhttps://conversejs.org</body>
-            </message>`);
+            </message>`;
         api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 4);
         await u.waitUntil(() => {
@@ -949,6 +972,7 @@ describe("A Chat Message", function () {
                     async function (_converse) {
 
                 const { api } = _converse;
+                await mock.waitUntilBlocklistInitialized(_converse);
                 await mock.waitForRoster(_converse, 'current', 0);
                 spyOn(_converse.api, "trigger").and.callThrough();
 
@@ -994,7 +1018,6 @@ describe("A Chat Message", function () {
             }));
         });
 
-
         describe("who is not on the roster", function () {
 
             it("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true",
@@ -1002,6 +1025,7 @@ describe("A Chat Message", function () {
                     [], {'allow_non_roster_messaging': false},
                     async function (_converse) {
 
+                await mock.waitUntilBlocklistInitialized(_converse);
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const { api } = _converse;
@@ -1092,60 +1116,52 @@ describe("A Chat Message", function () {
                 msg_txt = sizzle('.chat-msg:last .chat-msg__text', view).pop().textContent;
                 expect(msg_txt).toEqual(msg_text);
 
-                /* <message xmlns="jabber:client"
-                 *          to="scotty@enterprise.com/_converse.js-84843526"
-                 *          type="error"
-                 *          id="82bc02ce-9651-4336-baf0-fa04762ed8d2"
-                 *          from="kirk@enterprise.com.com">
-                 *     <error type="cancel">
-                 *         <remote-server-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
-                 *         <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Server-to-server connection failed: Connecting failed: connection timeout</text>
-                 *     </error>
-                 * </message>
-                 */
-                let stanza = $msg({
-                        'to': api.connection.get().jid,
-                        'type': 'error',
-                        'id': message.get('msgid'),
-                        'from': sender_jid
-                    })
-                    .c('error', {'type': 'cancel'})
-                    .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
-                    .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
-                        .t(error_txt);
+                let stanza = stx`
+                    <message xmlns="jabber:client"
+                            to="${api.connection.get().jid}"
+                            type="error"
+                            id="${message.get('msgid')}"
+                            from="${sender_jid}">
+                        <error type="cancel">
+                            <remote-server-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                            <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">${error_txt}</text>
+                        </error>
+                    </message>`
                 api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-                let ui_error_txt = `Message delivery failed: "${error_txt}"`;
+                let ui_error_txt = `Message delivery failed.\n${error_txt}`;
                 await u.waitUntil(() => view.querySelector('.chat-msg__error')?.textContent.trim() === ui_error_txt);
 
                 const other_error_txt = 'Server-to-server connection failed: Connecting failed: connection timeout';
-                stanza = $msg({
-                        'to': api.connection.get().jid,
-                        'type': 'error',
-                        'id': second_message.get('id'),
-                        'from': sender_jid
-                    })
-                    .c('error', {'type': 'cancel'})
-                    .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
-                    .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
-                        .t(other_error_txt);
+                stanza = stx`
+                    <message xmlns="jabber:client"
+                            to="${api.connection.get().jid}"
+                            type="error"
+                            id="${second_message.get('id')}"
+                            from="${sender_jid}">
+                        <error type="cancel">
+                            <remote-server-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                            <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">${other_error_txt}</text>
+                        </error>
+                    </message>`;
                 api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-                ui_error_txt = `Message delivery failed: "${other_error_txt}"`;
+                ui_error_txt = `Message delivery failed.\n${other_error_txt}`;
                 await u.waitUntil(() =>
                     view.querySelector('converse-chat-message:last-child .chat-msg__error')?.textContent.trim() === ui_error_txt);
 
                 // We don't render duplicates
-                stanza = $msg({
-                        'to': api.connection.get().jid,
-                        'type':'error',
-                        'id': second_message.get('id'),
-                        'from': sender_jid
-                    })
-                    .c('error', {'type': 'cancel'})
-                    .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
-                    .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
-                        .t('Server-to-server connection failed: Connecting failed: connection timeout');
+                stanza = stx`
+                    <message xmlns="jabber:client"
+                            to="${api.connection.get().jid}"
+                            type="error"
+                            id="${second_message.get('id')}"
+                            from="${sender_jid}">
+                        <error type="cancel">
+                            <remote-server-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                            <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Server-to-server connection failed: Connecting failed: connection timeout</text>
+                        </error>
+                    </message>`;
                 api.connection.get()._dataRecv(mock.createRequest(stanza));
                 expect(view.querySelectorAll('.chat-msg__error').length).toEqual(2);
 
@@ -1154,16 +1170,17 @@ describe("A Chat Message", function () {
                 await u.waitUntil(() => sizzle('converse-chat-message:last-child .chat-msg__text', view).pop()?.textContent === msg_text);
 
                 // A different error message will however render
-                stanza = $msg({
-                        'to': api.connection.get().jid,
-                        'type':'error',
-                        'id': third_message.get('id'),
-                        'from': sender_jid
-                    })
-                    .c('error', {'type': 'cancel'})
-                    .c('not-allowed', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
-                    .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
-                        .t('Something else went wrong as well');
+                stanza = stx`
+                    <message xmlns="jabber:client"
+                            to="${api.connection.get().jid}"
+                            type="error"
+                            id="${third_message.get('id')}"
+                            from="${sender_jid}">
+                        <error type="cancel">
+                            <not-allowed xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                            <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Something else went wrong as well</text>
+                        </error>
+                    </message>`
                 api.connection.get()._dataRecv(mock.createRequest(stanza));
                 await u.waitUntil(() => view.model.messages.length > 2);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__error').length === 3);
@@ -1251,14 +1268,13 @@ describe("A Chat Message", function () {
                 // check the case where it's not done.
                 // See issue #2683
                 const err_txt = `Your message to ${contact_jid} was not end-to-end encrypted. For security reasons, using one of the following E2EE schemes is *REQUIRED* for conversations on this server: pgp, omemo`;
-                const error = u.toStanza(`
+                const error = stx`
                     <message xmlns="jabber:client" from="${contact_jid}" type="error" to="${_converse.jid}">
                         <error type="modify">
                             <policy-violation xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                             <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">${err_txt}</text>
                         </error>
-                    </message>
-                `);
+                    </message>`;
                 api.connection.get()._dataRecv(mock.createRequest(error));
 
                 expect(await u.waitUntil(() => view.querySelector('.chat-error')?.textContent?.trim())).toBe(err_txt);
@@ -1280,19 +1296,21 @@ describe("A Chat Message", function () {
             view.model.ui.set('scrolled', true);
 
             for (let i=0; i<20; i++) {
-                _converse.handleMessageStanza($msg({
-                        from: sender_jid,
-                        to: api.connection.get().jid,
-                        type: 'chat',
-                        id: api.connection.get().getUniqueId(),
-                    }).c('body').t('Message: '+i).up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+                _converse.handleMessageStanza(stx`
+                    <message xmlns="jabber:client"
+                            from="${sender_jid}"
+                            to="${api.connection.get().jid}"
+                            type="chat"
+                            id="${api.connection.get().getUniqueId()}">
+                        <body>Message: ${i}</body>
+                        <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>
+                `);
                 promises.push(new Promise(resolve => view.model.messages.once('rendered', resolve)));
             }
             await Promise.all(promises);
 
             const indicator_el = await u.waitUntil(() => view.querySelector('.new-msgs-indicator'));
-
             expect(view.model.ui.get('scrolled')).toBe(true);
             expect(view.querySelector('.chat-content').scrollTop).toBe(0);
             indicator_el.click();
@@ -1313,13 +1331,15 @@ describe("A Chat Message", function () {
             spyOn(_converse.api.chatboxes, 'create').and.callThrough();
             api.settings.set('filter_by_resource', true);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            let msg = $msg({
-                    from: sender_jid,
-                    to: _converse.bare_jid+"/some-other-resource",
-                    type: 'chat',
-                    id: u.getUniqueId()
-                }).c('body').t("This message will not be shown").up()
-                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+            let msg = stx`
+                <message xmlns="jabber:client"
+                        from="${sender_jid}"
+                        to="${_converse.bare_jid}/some-other-resource"
+                        type="chat"
+                        id="${u.getUniqueId()}">
+                    <body>This message will not be shown</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                </message>`;
             await _converse.handleMessageStanza(msg);
 
             expect(converse.env.log.error.calls.all().pop().args[0]).toBe(
@@ -1329,13 +1349,15 @@ describe("A Chat Message", function () {
             api.settings.set('filter_by_resource', false);
 
             const message = "This message sent to a different resource will be shown";
-            msg = $msg({
-                    from: sender_jid,
-                    to: _converse.bare_jid+"/some-other-resource",
-                    type: 'chat',
-                    id: '134234623462346'
-                }).c('body').t(message).up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+            msg = stx`
+                <message xmlns="jabber:client"
+                        from="${sender_jid}"
+                        to="${_converse.bare_jid}/some-other-resource"
+                        type="chat"
+                        id="134234623462346">
+                    <body>${message}</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                </message>`;
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => _converse.chatboxviews.keys().length > 1, 1000);
             const view = _converse.chatboxviews.get(sender_jid);

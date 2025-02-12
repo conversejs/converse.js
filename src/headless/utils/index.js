@@ -5,6 +5,7 @@
  */
 import { Model } from '@converse/skeletor';
 import log, { LEVELS } from '../log.js';
+import * as array from './array.js';
 import * as arraybuffer from './arraybuffer.js';
 import * as color from './color.js';
 import * as form from './form.js';
@@ -148,6 +149,7 @@ export function getUniqueId (suffix) {
 }
 
 export default Object.assign({
+    ...array,
     ...arraybuffer,
     ...color,
     ...form,

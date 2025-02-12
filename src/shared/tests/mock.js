@@ -38,7 +38,6 @@ function initConverse (promise_names=[], settings=null, func) {
         }
         document.title = "Converse Tests";
 
-
         await _initConverse(settings);
         await Promise.all((promise_names || []).map(_converse.api.waitUntil));
 
@@ -57,17 +56,19 @@ function initConverse (promise_names=[], settings=null, func) {
 
 async function waitUntilDiscoConfirmed (_converse, entity_jid, identities, features=[], items=[], type='info') {
     const sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`;
-    const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
-    const stanza = $iq({
-        'type': 'result',
-        'from': entity_jid,
-        'to': 'romeo@montague.lit/orchard',
-        'id': iq.getAttribute('id'),
-    }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#'+type});
-
-    identities?.forEach(identity => stanza.c('identity', {'category': identity.category, 'type': identity.type}).up());
-    features?.forEach(feature => stanza.c('feature', {'var': feature}).up());
-    items?.forEach(item => stanza.c('item', {'jid': item}).up());
+    const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.find(iq => sizzle(sel, iq).length));
+    const stanza = stx`
+            <iq type="result"
+                from="${entity_jid}"
+                to="${_converse.session.get('jid')}"
+                id="${iq.getAttribute('id')}"
+                xmlns="jabber:client">
+            <query xmlns="http://jabber.org/protocol/disco#${type}">
+                ${identities?.map(identity => stx`<identity category="${identity.category}" type="${identity.type}"></identity>`)}
+                ${features?.map(feature => stx`<feature var="${feature}"></feature>`)}
+                ${items?.map(item => stx`<item jid="${item}"></item>`)}
+            </query>
+            </iq>`;
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
 }
 
@@ -108,31 +109,95 @@ function closeControlBox () {
     u.isVisible(view) && view.querySelector(".controlbox-heading__btn.close")?.click();
 }
 
-async function waitUntilBookmarksReturned (_converse, bookmarks=[]) {
+async function waitUntilBlocklistInitialized (_converse, blocklist=[]) {
+    window.sessionStorage.removeItem('converse.blocklist-romeo@montague.lit-fetched');
+
+    const { api } = _converse;
+    await mock.waitUntilDiscoConfirmed(
+        _converse,
+        _converse.domain,
+        [{ 'category': 'server', 'type': 'IM' }],
+        ['urn:xmpp:blocking']
+    );
+    const connection = api.connection.get();
+    const IQ_stanzas = connection.IQ_stanzas;
+    const sent_stanza = await u.waitUntil(() => IQ_stanzas.find((s) => s.querySelector('iq blocklist')));
+
+    connection._dataRecv(mock.createRequest(stx`
+            <iq xmlns="jabber:client"
+                to="${connection.jid}"
+                type="result"
+                id="${sent_stanza.getAttribute('id')}">
+            <blocklist xmlns='urn:xmpp:blocking'>
+                ${blocklist.map((jid) => stx`<item jid='${jid}'/>`)}
+            </blocklist>
+        </iq>`));
+
+    return await api.waitUntil('blocklistInitialized');
+}
+
+async function waitUntilBookmarksReturned (
+    _converse,
+    bookmarks=[],
+    features=[
+        'http://jabber.org/protocol/pubsub#publish-options',
+        'urn:xmpp:bookmarks:1#compat'
+   ],
+    node='urn:xmpp:bookmarks:1'
+) {
     await waitUntilDiscoConfirmed(
         _converse, _converse.bare_jid,
         [{'category': 'pubsub', 'type': 'pep'}],
-        ['http://jabber.org/protocol/pubsub#publish-options']
+        features,
     );
     const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
     const sent_stanza = await u.waitUntil(
-        () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop()
+        () => IQ_stanzas.filter(s => sizzle(`items[node="${node}"]`, s).length).pop()
     );
-    const stanza = $iq({
-        'to': _converse.api.connection.get().jid,
-        'type':'result',
-        'id':sent_stanza.getAttribute('id')
-    }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-        .c('items', {'node': 'storage:bookmarks'})
-            .c('item', {'id': 'current'})
-                .c('storage', {'xmlns': 'storage:bookmarks'});
-    bookmarks.forEach(bookmark => {
-        stanza.c('conference', {
-            'name': bookmark.name,
-            'autojoin': bookmark.autojoin,
-            'jid': bookmark.jid
-        }).c('nick').t(bookmark.nick).up().up()
-    });
+
+    let stanza;
+    if (node === 'storage:bookmarks') {
+        stanza = stx`
+            <iq to="${_converse.api.connection.get().jid}"
+                type="result"
+                id="${sent_stanza.getAttribute('id')}"
+                xmlns="jabber:client">
+            <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                <items node="storage:bookmarks">
+                    <item id="current">
+                        <storage xmlns="storage:bookmarks">
+                        </storage>
+                    </item>
+                    ${bookmarks.map((b) => stx`
+                        <conference name="${b.name}" autojoin="${b.autojoin}" jid="${b.jid}">
+                            ${b.nick ? stx`<nick>${b.nick}</nick>` : ''}
+                        </conference>`)}
+                </items>
+            </pubsub>
+            </iq>`;
+    } else {
+        stanza = stx`
+            <iq type="result"
+                to="${_converse.jid}"
+                id="${sent_stanza.getAttribute('id')}"
+                xmlns="jabber:client">
+            <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                <items node="urn:xmpp:bookmarks:1">
+                ${bookmarks.map((b) => stx`
+                    <item id="${b.jid}">
+                        <conference xmlns="urn:xmpp:bookmarks:1"
+                                    name="${b.name}"
+                                    autojoin="${b.autojoin ?? false}">
+                            ${b.nick ? stx`<nick>${b.nick}</nick>` : ''}
+                            ${b.password ? stx`<password>${b.password}</password>` : ''}
+                        </conference>
+                    </item>`)
+                };
+                </items>
+            </pubsub>
+            </iq>`;
+    }
+
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
     await _converse.api.waitUntil('bookmarksInitialized');
 }
@@ -172,7 +237,7 @@ function openChatRoom (_converse, room, server) {
     return _converse.api.rooms.open(`${room}@${server}`);
 }
 
-async function getRoomFeatures (_converse, muc_jid, features=[]) {
+async function getRoomFeatures (_converse, muc_jid, features=[], settings={}) {
     const room = Strophe.getNodeFromJid(muc_jid);
     muc_jid = muc_jid.toLowerCase();
     const stanzas = _converse.api.connection.get().IQ_stanzas;
@@ -189,7 +254,7 @@ async function getRoomFeatures (_converse, muc_jid, features=[]) {
     }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
         .c('identity', {
             'category': 'conference',
-            'name': room[0].toUpperCase() + room.slice(1),
+            'name': settings.name ?? `${room[0].toUpperCase()}${room.slice(1)}`,
             'type': 'text'
         }).up();
 
@@ -322,6 +387,15 @@ async function receiveOwnMUCPresence (_converse, muc_jid, nick, affiliation='own
     _converse.api.connection.get()._dataRecv(createRequest(presence));
 }
 
+async function openAddMUCModal (_converse) {
+    await mock.openControlBox(_converse);
+    const controlbox = _converse.chatboxviews.get('controlbox');
+    controlbox.querySelector('converse-rooms-list .show-add-muc-modal').click();
+    const modal = _converse.api.modal.get('converse-add-muc-modal');
+    await u.waitUntil(() => u.isVisible(modal), 1000);
+    return modal;
+}
+
 async function openAndEnterChatRoom (
         _converse,
         muc_jid,
@@ -336,7 +410,7 @@ async function openAndEnterChatRoom (
     const { api } = _converse;
     muc_jid = muc_jid.toLowerCase();
     const room_creation_promise = api.rooms.open(muc_jid, settings, force_open);
-    await getRoomFeatures(_converse, muc_jid, features);
+    await getRoomFeatures(_converse, muc_jid, features, settings);
     await waitForReservedNick(_converse, muc_jid, nick);
     // The user has just entered the room (because join was called)
     // and receives their own presence from the server.
@@ -672,14 +746,14 @@ function getMockVcardFetcher (settings) {
         const vcard_el = vcard.tree();
 
         return {
-            'stanza': vcard_el,
-            'fullname': vcard_el.querySelector('FN')?.textContent,
-            'nickname': vcard_el.querySelector('NICKNAME')?.textContent,
-            'image': vcard_el.querySelector('PHOTO BINVAL')?.textContent,
-            'image_type': vcard_el.querySelector('PHOTO TYPE')?.textContent,
-            'url': vcard_el.querySelector('URL')?.textContent,
-            'vcard_updated': dayjs().format(),
-            'vcard_error': undefined
+            stanza: vcard_el,
+            fullname: vcard_el.querySelector('FN')?.textContent,
+            nickname: vcard_el.querySelector('NICKNAME')?.textContent,
+            image: vcard_el.querySelector('PHOTO BINVAL')?.textContent,
+            image_type: vcard_el.querySelector('PHOTO TYPE')?.textContent,
+            url: vcard_el.querySelector('URL')?.textContent,
+            vcard_updated: dayjs().format(),
+            vcard_error: undefined
         };
     }
 }
@@ -692,20 +766,21 @@ async function _initConverse (settings) {
 
     _converse = await converse.initialize(Object.assign({
         animate: false,
-        disable_effects: true,
         auto_subscribe: false,
         bosh_service_url: 'montague.lit/http-bind',
+        disable_effects: true,
         discover_connection_methods: false,
+        embed_3rd_party_media_players: false,
         enable_smacks: false,
+        fetch_url_headers: false,
         i18n: 'en',
         loglevel: window.location.pathname === '/debug.html' ? 'debug' : 'error',
         no_trimming: true,
         persistent_store: 'localStorage',
         play_sounds: false,
-        use_emojione: false,
         theme,
+        use_emojione: false,
         view_mode,
-        no_trimming: true,
     }, settings || {}));
 
     window._converse = _converse;
@@ -747,40 +822,44 @@ function bundleFetched (_converse, jid, device_id) {
     ).pop();
 }
 
-async function initializedOMEMO (_converse) {
-    await waitUntilDiscoConfirmed(
-        _converse, _converse.bare_jid,
-        [{'category': 'pubsub', 'type': 'pep'}],
-        ['http://jabber.org/protocol/pubsub#publish-options']
-    );
-    let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
+async function initializedOMEMO(
+    _converse,
+    identities = [{ 'category': 'pubsub', 'type': 'pep' }],
+    features = ['http://jabber.org/protocol/pubsub#publish-options']
+) {
+    await waitUntilDiscoConfirmed(_converse, _converse.bare_jid, identities, features);
+    let iq_stanza = await deviceListFetched(_converse, _converse.bare_jid);
     let stanza = $iq({
         'from': _converse.bare_jid,
         'id': iq_stanza.getAttribute('id'),
         'to': _converse.bare_jid,
         'type': 'result',
-    }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
-        .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
-            .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
-                .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
-                    .c('device', {'id': '482886413b977930064a5888b92134fe'});
+    })
+        .c('pubsub', { 'xmlns': 'http://jabber.org/protocol/pubsub' })
+        .c('items', { 'node': 'eu.siacs.conversations.axolotl.devicelist' })
+        .c('item', { 'xmlns': 'http://jabber.org/protocol/pubsub' }) // TODO: must have an id attribute
+        .c('list', { 'xmlns': 'eu.siacs.conversations.axolotl' })
+        .c('device', { 'id': '482886413b977930064a5888b92134fe' });
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
-    iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse))
+
+    iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse));
 
     stanza = $iq({
         'from': _converse.bare_jid,
         'id': iq_stanza.getAttribute('id'),
         'to': _converse.bare_jid,
-        'type': 'result'});
+        'type': 'result',
+    });
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
 
-    iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse))
+    iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse));
 
     stanza = $iq({
         'from': _converse.bare_jid,
         'id': iq_stanza.getAttribute('id'),
         'to': _converse.bare_jid,
-        'type': 'result'});
+        'type': 'result',
+    });
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
     await _converse.api.waitUntil('OMEMOInitialized');
 }
@@ -807,6 +886,7 @@ Object.assign(mock, {
     initConverse,
     initializedOMEMO,
     num_contacts,
+    openAddMUCModal,
     openAndEnterChatRoom,
     openChatBoxFor,
     openChatBoxes,
@@ -823,6 +903,7 @@ Object.assign(mock, {
     view_mode,
     waitForReservedNick,
     waitForRoster,
+    waitUntilBlocklistInitialized,
     waitUntilBookmarksReturned,
     waitUntilDiscoConfirmed
 });

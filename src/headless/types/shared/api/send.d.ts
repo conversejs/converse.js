@@ -1,9 +1,11 @@
 declare namespace _default {
     /**
+     * @typedef {import('strophe.js').Builder} Builder
+     *
      * Allows you to send XML stanzas.
      * @method _converse.api.send
-     * @param {Element|Strophe.Builder} stanza
-     * @return {void}
+     * @param {Element|Builder} stanza
+     * @returns {void}
      * @example
      * const msg = converse.env.$msg({
      *     'from': 'juliet@example.com/balcony',
@@ -12,11 +14,11 @@ declare namespace _default {
      * });
      * _converse.api.send(msg);
      */
-    function send(stanza: Element | Strophe.Builder): void;
+    function send(stanza: Element | import("strophe.js").Builder): void;
     /**
      * Send an IQ stanza
      * @method _converse.api.sendIQ
-     * @param {Element|Strophe.Builder} stanza
+     * @param {Element|Builder} stanza
      * @param {number} [timeout] - The default timeout value is taken from
      *  the `stanza_timeout` configuration setting.
      * @param {boolean} [reject=true] - Whether an error IQ should cause the promise
@@ -26,10 +28,7 @@ declare namespace _default {
      *  If the IQ stanza being sent is of type `result` or `error`, there's
      *  nothing to wait for, so an already resolved promise is returned.
      */
-    function sendIQ(stanza: Element | Strophe.Builder, timeout?: number, reject?: boolean): Promise<any>;
+    function sendIQ(stanza: Element | import("strophe.js").Builder, timeout?: number, reject?: boolean): Promise<any>;
 }
 export default _default;
-export namespace Strophe {
-    type Builder = any;
-}
 //# sourceMappingURL=send.d.ts.map

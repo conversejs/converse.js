@@ -9,8 +9,10 @@ export default (el) => {
     const i18n_heading = __('Bookmark for "%1$s"', name);
     const i18n_autojoin = __('Would you like this groupchat to be automatically joined upon startup?');
     const i18n_remove = __('Remove');
-    const i18n_name = __('The name for this bookmark:');
+    const i18n_name = __('Name');
     const i18n_nick = __('What should your nickname for this groupchat be?');
+    const i18n_password = __('Password (for a protected groupchat)');
+    const i18n_password_help = __('If the groupchat requires a password to enter, you can save it here. Note this is not intended to be a secure storage.');
     const i18n_submit = el.bookmark ? __('Update') : __('Save');
 
     return html`
@@ -23,6 +25,11 @@ export default (el) => {
             <fieldset>
                 <label class="form-label" for="converse_muc_bookmark_nick">${i18n_nick}</label>
                 <input class="form-control" type="text" name="nick" value="${nick || ''}" id="converse_muc_bookmark_nick"/>
+            </fieldset>
+            <fieldset>
+                <label for="muc-password" class="form-label">${i18n_password}</label>
+                <p class="form-help">${i18n_password_help}</p>
+                <input type="password" name="password" class="form-control" id="muc-password">
             </fieldset>
             <fieldset class="form-group form-check">
                 <input class="form-check-input" id="converse_muc_bookmark_autojoin" type="checkbox" ?checked=${el.bookmark?.get('autojoin')} name="autojoin"/>

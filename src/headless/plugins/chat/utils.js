@@ -2,7 +2,7 @@
  * @module:headless-plugins-chat-utils
  * @typedef {import('./model.js').default} ChatBox
  * @typedef {import('./types.ts').MessageAttributes} MessageAttributes
- * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
+ * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
  * @typedef {import('strophe.js').Builder} Builder
  */
 import sizzle from "sizzle";
@@ -42,7 +42,6 @@ export async function onClearSession () {
     }
 }
 
-
 /**
  * Given a stanza, determine whether it's a new
  * message, i.e. not a MAM archived one.
@@ -59,7 +58,6 @@ export function isNewMessage (message) {
     }
     return !(message['is_delayed'] && message['is_archived']);
 }
-
 
 /**
  * @param {Element} stanza

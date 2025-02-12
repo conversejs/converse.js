@@ -80,16 +80,8 @@ declare class RosterContact extends RosterContact_base {
     initialized: any;
     setPresence(): void;
     presence: any;
+    getStatus(): any;
     openChat(): void;
-    /**
-     * Return a string of tab-separated values that are to be used when
-     * matching against filter text.
-     *
-     * The goal is to be able to filter against the VCard fullname,
-     * roster nickname and JID.
-     * @returns {string} Lower-cased, tab-separated values
-     */
-    getFilterCriteria(): string;
     getDisplayName(): any;
     getFullname(): any;
     /**
@@ -116,19 +108,27 @@ declare class RosterContact extends RosterContact_base {
     ackUnsubscribe(): void;
     /**
      * Unauthorize this contact's presence subscription
-     * @param {string} message - Optional message to send to the person being unauthorized
+     * @param {string} [message] - Optional message to send to the person being unauthorized
      */
-    unauthorize(message: string): this;
+    unauthorize(message?: string): this;
     /**
      * Authorize presence subscription
      * @param {string} message - Optional message to send to the person being authorized
      */
     authorize(message: string): this;
     /**
+     * Remove this contact from the roster
+     * @async
+     * @param {boolean} [unauthorize] - Whether to also unauthorize the
+     * @returns {Promise<Error|Element>}
+     */
+    remove(unauthorize?: boolean): Promise<Error | Element>;
+    /**
      * Instruct the XMPP server to remove this contact from our roster
+     * @async
      * @returns {Promise}
      */
-    removeFromRoster(): Promise<any>;
+    sendRosterRemoveStanza(): Promise<any>;
 }
 import { Model } from '@converse/skeletor';
 //# sourceMappingURL=contact.d.ts.map

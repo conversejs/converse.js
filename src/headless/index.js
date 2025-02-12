@@ -15,6 +15,7 @@ import log from './log.js';
 
 export { EmojiPicker } from './plugins/emoji/index.js';
 export { Bookmark, Bookmarks } from './plugins/bookmarks/index.js'; // XEP-0199 XMPP Ping
+import './plugins/blocklist/index.js';
 import './plugins/bosh/index.js'; // XEP-0206 BOSH
 import './plugins/caps/index.js'; // XEP-0115 Entity Capabilities
 export { ChatBox, Message, Messages } from './plugins/chat/index.js'; // RFC-6121 Instant messaging
@@ -32,9 +33,8 @@ export { MAMPlaceholderMessage } from './plugins/mam/index.js';
 // XEP-0045 Multi-user chat
 export { MUCMessage, MUCMessages, MUC, MUCOccupant, MUCOccupants } from './plugins/muc/index.js';
 
-
 import './plugins/ping/index.js'; // XEP-0199 XMPP Ping
-import './plugins/pubsub.js'; // XEP-0060 Pubsub
+import './plugins/pubsub/index.js'; // XEP-0060 Pubsub
 
 // RFC-6121 Contacts Roster
 export { RosterContact, RosterContacts, RosterFilter, Presence, Presences } from './plugins/roster/index.js';

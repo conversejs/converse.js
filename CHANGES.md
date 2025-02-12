@@ -2,15 +2,26 @@
 
 ## 11.0.0 (Unreleased)
 
+### Github Issues
 - #122: Set horizontal layout direction based on the language
+- #317: Add the ability to render audio streams. New config option [fetch_url_headers](https://conversejs.org/docs/html/configuration.html#fetch-url-headers)
 - #698: Add support for MUC private messages
+- #1021: Message from non-roster contacts don't appear in fullscreen view_mode
+- #1038: Support setting node config manually
 - #1057: Removed the `mobile` view mode. Instead of setting `view_mode` to `mobile`, set it to `fullscreen`.
 - #1174: Show MUC avatars in the rooms list
 - #1195: Add actions to quote and copy messages
+- #1303: Display non-contacts who sent us a message somehow in fullscreen 
 - #1349: XEP-0392 Consistent Color Generation
+- #2383: Add modal to start chats with JIDs not in the roster
+- #2586: Add support for XEP-0402 Bookmarks
+- #2623: Merge MUC join and bookmark, leave and unset autojoin 
 - #2716: Fix issue with chat display when opening via URL
 - #2980: Allow setting an avatar for MUCs
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
+- #3038: Message to self from other client is ignored
+- #3038: Support showing yourself in the left sidebar. Adds new config option `[show_self_in_roster](https://conversejs.org/docs/html/configuration.html#show-self-in-roster)`.
+- #3100: fixed width `.box-flyout` breaks responsive design in embedded, mobile viewport mode.
 - #3155: Some ad-hoc commands not working
 - #3155: Some adhoc commands aren't working
 - #3299: Registration fails when a password contains an &
@@ -23,6 +34,8 @@
 - #3476: better UI for form "fixed" fields
 - #3478: MUC participant status indicator misplaced 
 - #3529: Unbookmarked channels no longer change their name when clicked with an unread indicator (or text icon)
+
+### Bugfixes
 - Fix: MUC occupant list does not sort itself on nicknames or roles changes
 - Fix: refresh the MUC sidebar when participants collection is sorted
 - Fix: room information not correctly refreshed when modifications are made by other users
@@ -32,22 +45,35 @@
 - Fix: unhandled exception in disconnect function when controlbox is not shown by UI
 - Fix: "Click to mention..." title was misplaced in MUC occupant list.
 - Fix: removing the "add to contact" button in occupant modal in singleton mode (as there is no roster).
+- Fix: trying to use emojis with an uppercase letter breaks the message field.
+- Fix: renaming getEmojisByAtrribute to getEmojisByAttribute.
+
+### Changes and features
+- Upgrade to the latest versions of XEP-0424 and XEP-0425 (Message Retraction and Message Moderation).
+  Converse loses the ability to retract or moderate messages in the older format,
+  so you might need to upgrade your XMPP server's implementation of these as well.
+- Embed the Spotify player for links to Spotify tracks. New config option [embed_3rd_party_media_players](https://conversejs.org/docs/html/configuration.html#embed-3rd-party-media-players).
+- Add support for XEP-0191 Blocking Command
+- Upgrade to Bootstrap 5
 - Add an occupants filter to the MUC sidebar
 - Change contacts filter to rename the anachronistic `Online` state to `Available`.
 - Enable [reuse_scram_keys](https://conversejs.org/docs/html/configuration.html#reuse-scram-keys) by default.
 - New `loadEmojis` hook, to customize emojis at runtime.
-- Upgrade to Bootstrap 5
 - Add new themes 'Cyberpunk' and 'Nord' and remove the old 'Concord' theme.
 - Improved accessibility.
 - New "getOccupantActionButtons" hook, so that plugins can add actions on MUC occupants.
 - MUC occupants badges: displays short labels, with full label as title.
-- Fix: trying to use emojis with an uppercase letter breaks the message field.
-- Fix: renaming getEmojisByAtrribute to getEmojisByAttribute.
 - New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#show-background)
+- Update the "Add MUC" modal to add validation and to allow specifying only the MUC name and not the whole address.
+
+### Default config changes
 - Make `fullscreen` the default `view_mode`.
+- Set `auto_register_muc_nickname` default to `'unregister'` so that your
+  nickname is automatically registered with a MUC upon entering and
+  unregistered upon explicitly leaving the MUC (by closing it).
+- The `allow_non_roster_messaging` setting now defaults to `true`.
 
 ### Breaking changes:
-
 - Remove the old `_converse.BootstrapModal` in favor of `_converse.BaseModal` which is a web component.
 - The connection is no longer available on the `_converse` object. Instead, use `api.connection.get()`.
 - Add a new `exports` attribute on the `_converse` object which is meant for

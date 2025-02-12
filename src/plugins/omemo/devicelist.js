@@ -9,7 +9,7 @@ const { Strophe, $build, $iq, sizzle } = converse.env;
  * @memberOf _converse
  */
 class DeviceList extends Model {
-    get idAttribute () { // eslint-disable-line class-methods-use-this
+    get idAttribute () {
         return 'jid';
     }
 
@@ -117,7 +117,7 @@ class DeviceList extends Model {
     publishDevices () {
         const item = $build('item', { 'id': 'current' }).c('list', { 'xmlns': Strophe.NS.OMEMO });
         this.devices.filter(d => d.get('active')).forEach(d => item.c('device', { 'id': d.get('id') }).up());
-        const options = { 'pubsub#access_model': 'open' };
+        const options = { access_model: 'open' };
         return api.pubsub.publish(null, Strophe.NS.OMEMO_DEVICELIST, item, options, false);
     }
 

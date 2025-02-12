@@ -30,6 +30,10 @@ class MUCMessage extends Message {
         api.trigger('chatRoomMessageInitialized', this);
     }
 
+    get occupants () {
+        return (this.get('type') === 'chat') ? this.chatbox.collection : this.chatbox.occupants;
+    }
+
     getDisplayName () {
         return this.occupant?.getDisplayName() || this.get('nick');
     }
@@ -37,11 +41,10 @@ class MUCMessage extends Message {
     /**
      * Determines whether this messsage may be moderated,
      * based on configuration settings and server support.
-     * @async
      * @method _converse.ChatRoomMessages#mayBeModerated
-     * @returns {boolean}
+     * @returns {Promise<boolean>}
      */
-    mayBeModerated () {
+    async mayBeModerated () {
         if (typeof this.get('from_muc')  === 'undefined') {
             // If from_muc is not defined, then this message hasn't been
             // reflected yet, which means we won't have a XEP-0359 stanza id.
@@ -49,8 +52,7 @@ class MUCMessage extends Message {
         }
         return (
             ['all', 'moderator'].includes(api.settings.get('allow_message_retraction')) &&
-            this.get(`stanza_id ${this.get('from_muc')}`) &&
-            this.chatbox.canModerateMessages()
+            this.get(`stanza_id ${this.get('from_muc')}`) && await this.chatbox.canModerateMessages()
         );
     }
 
@@ -63,7 +65,7 @@ class MUCMessage extends Message {
     onOccupantRemoved () {
         this.stopListening(this.occupant);
         delete this.occupant;
-        this.listenTo(this.chatbox.occupants, 'add', this.onOccupantAdded);
+        this.listenTo(this.occupants, 'add', this.onOccupantAdded);
     }
 
     /**
@@ -102,10 +104,9 @@ class MUCMessage extends Message {
         } else {
             if (this.occupant) return;
 
-            const occupants = (this.get('type') === 'chat') ? this.chatbox.collection : this.chatbox.occupants;
             const nick = Strophe.getResourceFromJid(this.get('from'));
             const occupant_id = this.get('occupant_id');
-            this.occupant = nick || occupant_id ? occupants.findOccupant({ nick, occupant_id }) : null;
+            this.occupant = nick || occupant_id ? this.occupants.findOccupant({ nick, occupant_id }) : null;
 
             if (!this.occupant) {
                 const jid = this.get('from_real_jid');
@@ -114,7 +115,7 @@ class MUCMessage extends Message {
                     return;
                 }
 
-                this.occupant = this.chatbox.occupants.create({ nick, occupant_id, jid });
+                this.occupant = this.occupants.create({ nick, occupant_id, jid });
 
                 if (api.settings.get('muc_send_probes')) {
                     const jid = `${this.chatbox.get('jid')}/${nick}`;
@@ -130,7 +131,7 @@ class MUCMessage extends Message {
         this.trigger('occupant:add');
         this.listenTo(this.occupant, 'change', (changed) => this.trigger('occupant:change', changed));
         this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
-        this.stopListening(this.chatbox.occupants, 'add', this.onOccupantAdded);
+        this.stopListening(this.occupants, 'add', this.onOccupantAdded);
 
         return this.occupant;
     }

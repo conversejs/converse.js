@@ -1,8 +1,8 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/mixins";
-@import "shared/styles/_variables.scss";
-@import "shared/styles/_mixins.scss";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+@import 'shared/styles/_variables.scss';
+@import 'shared/styles/_mixins.scss';
 
 .conversejs {
     .room-info {
@@ -102,9 +102,9 @@
             padding: 0;
 
             .add-chatroom {
-                input[type=button],
-                input[type=submit],
-                input[type=text] {
+                input[type='button'],
+                input[type='submit'],
+                input[type='text'] {
                     width: 100%;
                 }
                 margin: 0;
@@ -137,7 +137,7 @@
         }
 
         .controlbox-padded {
-            padding: 0 0.5em;
+            padding: 0 1em;
             align-items: center;
             line-height: normal;
         }
@@ -159,7 +159,6 @@
             .chatbox-btn {
                 margin: 0;
             }
-
         }
 
         .add-xmpp-contact {
@@ -178,7 +177,6 @@
 .conversejs {
     converse-chats {
         &.converse-overlayed {
-
             display: flex;
             flex-direction: row-reverse;
 
@@ -315,51 +313,63 @@
 }
 
 @include media-breakpoint-down(sm) {
-
     .conversejs {
-        left: 0;
-        right: 0;
-        padding-inline-start: env(safe-area-inset-left);
-        padding-inline-end: env(safe-area-inset-right);
-
-        .converse-chatboxes {
-            margin: 0 !important;
-            flex-direction: row !important;
-            justify-content: space-between;
-
-            .converse-chatroom {
-                font-size: 14px;
-            }
-
-            .chatbox {
-                .box-flyout {
-                    left: 0;
-                    bottom: 0;
-                    border-radius: 0;
-                    width: 100vw !important;
-                    height: var(--fullpage-chat-height);
+        &.converse-overlayed {
+            .converse-chatboxes {
+                .chatbox {
+                    .box-flyout {
+                        margin-left: -1em !important;
+                    }
                 }
             }
+        }
 
-            #controlbox {
-                margin-inline-start: 0;
-                width: 100vw !important;
-                .box-flyout {
-                    width: 100vw !important;
-                    height: var(--fullpage-chat-height);
-                }
-                .sidebar {
-                    display: block;
-                }
-            }
+        &.converse-fullscreen,
+        &.converse-overlayed {
+            left: 0;
+            right: 0;
+            padding-inline-start: env(safe-area-inset-left);
+            padding-inline-end: env(safe-area-inset-right);
 
-            &.sidebar-open {
-                .chatbox:not(#controlbox) {
-                    display: none;
+            .converse-chatboxes {
+                margin: 0 !important;
+                flex-direction: row !important;
+                justify-content: space-between;
+
+                .converse-chatroom {
+                    font-size: 14px;
                 }
+
+                .chatbox {
+                    .box-flyout {
+                        left: 0;
+                        bottom: 0;
+                        border-radius: 0;
+                        width: 100vw !important;
+                        height: var(--fullpage-chat-height);
+                    }
+                }
+
                 #controlbox {
-                    .controlbox-pane {
+                    margin-inline-start: 0;
+                    width: 100vw !important;
+                    .box-flyout {
+                        width: 100vw !important;
+                        height: var(--fullpage-chat-height);
+                    }
+                    .sidebar {
                         display: block;
+                    }
+                }
+
+                &.sidebar-open {
+                    .chatbox:not(#controlbox) {
+                        display: none;
+                    }
+                    #controlbox {
+                        .controlbox-pane {
+                            display: block;
+                        }
                     }
                 }
             }

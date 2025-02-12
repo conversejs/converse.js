@@ -452,7 +452,7 @@ or `electron <http://electron.atom.io/>`_.
 auto_register_muc_nickname
 --------------------------
 
-* Default: ``false``
+* Default: ``unregister``
 * Allowed values: ``false``, ``true``, ``'unregister'``
 
 If truthy, Converse will automatically register a user's nickname upon entering
@@ -809,6 +809,14 @@ domain_placeholder
 
 The placeholder text shown in the domain input on the registration form.
 
+embed_3rd_party_media_players
+-----------------------------
+
+* Default: ``true``
+
+If ``true``, links to 3rd party media sites, such as Spotify will be turned
+into embedded media players from those sites (if supported by Converse).
+
 
 emoji_categories
 ----------------
@@ -916,6 +924,14 @@ support is turned on or not.
 
 Recommended to set to ``true`` if a websocket connection is used.
 Please see the :ref:`websocket-url` configuration setting.
+
+fetch_url_headers
+-----------------
+
+* Default: ``true``
+
+If set to ``false``, then Converse won't fetch the headers of URLs to determine
+whether they link to media that can be embedded (e.g. streaming audio).
 
 filter_by_resource
 ------------------

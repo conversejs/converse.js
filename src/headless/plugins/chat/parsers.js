@@ -7,10 +7,9 @@ import converse from '../../shared/api/public.js';
 import dayjs from 'dayjs';
 import log from '../../log.js';
 import u from '../../utils/index.js';
-import { rejectMessage } from '../../shared/actions';
-
+import { rejectMessage } from '../../shared/actions.js';
+import { StanzaParseError } from '../../shared/errors.js';
 import {
-    StanzaParseError,
     getChatMarker,
     getChatState,
     getCorrectionAttributes,
@@ -45,8 +44,8 @@ export async function parseMessage (stanza) {
     const resource = _converse.session.get('resource');
     if (api.settings.get('filter_by_resource') && to_resource && to_resource !== resource) {
         return new StanzaParseError(
+            stanza,
             `Ignoring incoming message intended for a different resource: ${to_jid}`,
-            stanza
         );
     }
 
@@ -62,7 +61,7 @@ export async function parseMessage (stanza) {
         } else {
             // Prevent message forging via carbons: https://xmpp.org/extensions/xep-0280.html#security
             rejectMessage(stanza, 'Rejecting carbon from invalid JID');
-            return new StanzaParseError(`Rejecting carbon from invalid JID ${to_jid}`, stanza);
+            return new StanzaParseError(stanza, `Rejecting carbon from invalid JID ${to_jid}`);
         }
     }
 
@@ -75,8 +74,8 @@ export async function parseMessage (stanza) {
             from_jid = stanza.getAttribute('from');
         } else {
             return new StanzaParseError(
+                stanza,
                 `Invalid Stanza: alleged MAM message from ${stanza.getAttribute('from')}`,
-                stanza
             );
         }
     }
@@ -85,8 +84,8 @@ export async function parseMessage (stanza) {
     const is_me = from_bare_jid === bare_jid;
     if (is_me && to_jid === null) {
         return new StanzaParseError(
+            stanza,
             `Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`,
-            stanza
         );
     }
 
@@ -99,8 +98,8 @@ export async function parseMessage (stanza) {
         if (contact === undefined && !api.settings.get('allow_non_roster_messaging')) {
             log.error(stanza);
             return new StanzaParseError(
+                stanza,
                 `Blocking messaging with a JID not in our roster because allow_non_roster_messaging is false.`,
-                stanza
             );
         }
     }
@@ -122,7 +121,6 @@ export async function parseMessage (stanza) {
             'is_marker': !!marker,
             'is_unstyled': !!sizzle(`unstyled[xmlns="${Strophe.NS.STYLING}"]`, stanza).length,
             'marker_id': marker && marker.getAttribute('id'),
-            'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
             'nick': contact?.attributes?.nickname,
             'receipt_id': getReceiptId(stanza),
             'received': new Date().toISOString(),
@@ -146,7 +144,7 @@ export async function parseMessage (stanza) {
     if (attrs.is_archived) {
         const from = original_stanza.getAttribute('from');
         if (from && from !== bare_jid) {
-            return new StanzaParseError(`Invalid Stanza: Forged MAM message from ${from}`, stanza);
+            return new StanzaParseError(stanza, `Invalid Stanza: Forged MAM message from ${from}`);
         }
     }
     attrs = Object.assign(

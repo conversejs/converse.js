@@ -35,6 +35,9 @@ class Message extends ModelWithContact(ColorAwareModel(Model)) {
     constructor (models, options) {
         super(models, options);
         this.file = null;
+
+        /** @type {import('./types').MessageAttributes} */
+        this.attributes;
     }
 
     async initialize () {
@@ -138,6 +141,13 @@ class Message extends ModelWithContact(ColorAwareModel(Model)) {
     }
 
     /**
+     * @returns {boolean}
+     */
+    isRetracted () {
+        return this.get('retracted') || this.get('moderated') === 'retracted';
+    }
+
+    /**
      * Returns a boolean indicating whether this message is considered a followup
      * message from the previous one. Followup messages are shown grouped together
      * under one author heading.
@@ -158,6 +168,7 @@ class Message extends ModelWithContact(ColorAwareModel(Model)) {
         }
         const date = dayjs(this.get('time'));
         return this.get('from') === prev_model.get('from') &&
+            !this.isRetracted() && !prev_model.isRetracted() &&
             !this.isMeCommand() && !prev_model.isMeCommand() &&
             !!this.get('is_encrypted') === !!prev_model.get('is_encrypted') &&
             this.get('type') === prev_model.get('type') && this.get('type') !== 'info' &&
@@ -209,6 +220,9 @@ class Message extends ModelWithContact(ColorAwareModel(Model)) {
         return api.sendIQ(iq);
     }
 
+    /**
+     * @param {Element} stanza
+     */
     getUploadRequestMetadata (stanza) { // eslint-disable-line class-methods-use-this
         const headers = sizzle(`slot[xmlns="${Strophe.NS.HTTPUPLOAD}"] put header`, stanza);
         // https://xmpp.org/extensions/xep-0363.html#request

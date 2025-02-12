@@ -556,7 +556,7 @@ describe("Groupchats", function () {
             const room_creation_promise = await _converse.api.rooms.open(muc_jid, {nick});
             await mock.getRoomFeatures(_converse, muc_jid);
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-            await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
+            await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length));
 
             const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
             await _converse.api.waitUntil('chatRoomViewInitialized');
@@ -1841,12 +1841,15 @@ describe("Groupchats", function () {
             await u.waitUntil(() => u.isVisible(modal), 1000);
 
             let features_list = modal.querySelector('.features-list');
-            expect(features_list.textContent).toBe(
-                'Password protected - This groupchat requires a password before entry     '+
-                'Open - Anyone can join this groupchat  '+
+            let features_shown = Array.from(features_list.children).map((e) => e.textContent);
+            expect(features_shown.length).toBe(5);
+
+            expect(features_shown.join(' ')).toBe(
+                'Password protected - This groupchat requires a password before entry '+
+                'Open - Anyone can join this groupchat '+
                 'Temporary - This groupchat will disappear once the last person leaves '+
-                'Not anonymous - All other groupchat participants can see your XMPP address   '+
-                'Not moderated - Participants entering this groupchat can write right away ');
+                'Not anonymous - All other groupchat participants can see your XMPP address '+
+                'Not moderated - Participants entering this groupchat can write right away');
             expect(view.model.features.get('hidden')).toBe(false);
             expect(view.model.features.get('mam_enabled')).toBe(false);
             expect(view.model.features.get('membersonly')).toBe(false);
@@ -2001,13 +2004,16 @@ describe("Groupchats", function () {
             await u.waitUntil(() => u.isVisible(modal), 1000);
 
             features_list = modal.querySelector('.features-list');
-            expect(features_list.textContent).toBe(
-                'Password protected - This groupchat requires a password before entry  '+
-                'Hidden - This groupchat is not publicly searchable  '+
-                'Members only - This groupchat is restricted to members only   '+
+            features_shown = Array.from(features_list.children).map((e) => e.textContent);
+            expect(features_shown.length).toBe(6);
+
+            expect(features_shown.join(' ')).toBe(
+                'Password protected - This groupchat requires a password before entry '+
+                'Hidden - This groupchat is not publicly searchable '+
+                'Members only - This groupchat is restricted to members only '+
                 'Temporary - This groupchat will disappear once the last person leaves '+
-                'Not anonymous - All other groupchat participants can see your XMPP address   '+
-                'Not moderated - Participants entering this groupchat can write right away ');
+                'Not anonymous - All other groupchat participants can see your XMPP address '+
+                'Not moderated - Participants entering this groupchat can write right away');
             expect(view.model.features.get('hidden')).toBe(true);
             expect(view.model.features.get('mam_enabled')).toBe(false);
             expect(view.model.features.get('membersonly')).toBe(true);
@@ -2281,7 +2287,7 @@ describe("Groupchats", function () {
         it("will show an error message if the groupchat requires a password",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
-            const muc_jid = 'protected';
+            const muc_jid = 'protected@montague.lit';
             await mock.openChatRoomViaModal(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
 

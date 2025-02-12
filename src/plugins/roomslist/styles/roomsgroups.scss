@@ -14,13 +14,13 @@
 
         converse-rooms-list {
             display: block;
+            margin-bottom: 1em;
 
             svg {
                 fill: var(--muc-color);
             }
 
             .list-item {
-                padding: 0 0.5em;
                 .open-room {
                     display: flex;
                     flex-direction: row;

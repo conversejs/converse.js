@@ -33,7 +33,7 @@
  * @property {Array<String>} [whitelisted_plugins]
  */
 export const DEFAULT_SETTINGS = {
-    allow_non_roster_messaging: false,
+    allow_non_roster_messaging: true,
     allow_url_history_change: true,
     assets_path: '/dist',
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
@@ -45,6 +45,7 @@ export const DEFAULT_SETTINGS = {
     credentials_url: null, // URL from where login credentials can be fetched
     disable_effects: false, // Disabled UI transition effects. Mainly used for tests.
     discover_connection_methods: true,
+    embed_3rd_party_media_players: true,
     geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
     i18n: undefined,
@@ -86,6 +87,7 @@ export const DEFAULT_SETTINGS = {
         'ro',
         'ru',
         'sv',
+        'ta',
         'th',
         'tr',
         'ug',

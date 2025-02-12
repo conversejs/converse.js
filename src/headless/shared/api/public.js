@@ -1,9 +1,14 @@
 /**
  * @typedef {module:shared-api-public.ConversePrivateGlobal} ConversePrivateGlobal
  */
+import { sprintf } from 'sprintf-js';
 import dayjs from 'dayjs';
 import sizzle from 'sizzle';
 import URI from 'urijs';
+import { Strophe, $build, $iq, $msg, $pres, stx } from 'strophe.js';
+import { Collection, Model } from "@converse/skeletor";
+import { filesize } from 'filesize';
+import { html } from 'lit';
 
 import api from './index.js';
 import _converse from '../_converse.js';
@@ -13,13 +18,9 @@ import ConnectionFeedback from './../connection/feedback.js';
 import u, { setLogLevelFromRoute } from '../../utils/index.js';
 import { ANONYMOUS, CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';
 import { isTestEnv } from '../../utils/session.js';
-import { Collection, Model } from "@converse/skeletor";
-import { Strophe, $build, $iq, $msg, $pres, stx } from 'strophe.js';
 import { TimeoutError } from '../errors.js';
-import { filesize } from 'filesize';
-import { html } from 'lit';
 import { initAppSettings } from '../settings/utils.js';
-import { sprintf } from 'sprintf-js';
+import * as errors from '../errors.js';
 
 _converse.api = api;
 
@@ -178,7 +179,7 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).conv
      * @property {function} converse.env.sprintf
      * @property {object} converse.env._           - The instance of [lodash-es](http://lodash.com) used by Converse.
      * @property {object} converse.env.dayjs       - [DayJS](https://github.com/iamkun/dayjs) date manipulation library.
-     * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
+     * @property {Array<Error>} converse.env.errors
      * @memberOf converse
      */
     'env': {
@@ -195,6 +196,7 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).conv
         URI,
         VERSION_NAME,
         dayjs,
+        errors,
         filesize,
         html,
         log,

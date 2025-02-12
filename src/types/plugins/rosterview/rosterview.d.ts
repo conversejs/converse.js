@@ -9,6 +9,8 @@ export default class RosterView extends CustomElement {
     render(): import("lit").TemplateResult<1>;
     /** @param {MouseEvent} ev */
     showAddContactModal(ev: MouseEvent): void;
+    /** @param {MouseEvent} ev */
+    showNewChatModal(ev: MouseEvent): void;
     /** @param {MouseEvent} [ev] */
     syncContacts(ev?: MouseEvent): Promise<void>;
     syncing_contacts: boolean;

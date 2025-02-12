@@ -1,52 +1,33 @@
-import { _converse, api, converse, constants, Bookmarks } from '@converse/headless';
+import { _converse, api, converse } from '@converse/headless';
 import { __ } from 'i18n';
 
-const { CHATROOMS_TYPE } = constants;
-
-export function getHeadingButtons (view, buttons) {
-    if (api.settings.get('allow_bookmarks') && view.model.get('type') === CHATROOMS_TYPE) {
-        const data = {
-            'i18n_title': __('Bookmark this groupchat'),
-            'i18n_text': __('Bookmark'),
-            'handler': (ev) => view.showBookmarkModal(ev),
-            'a_class': 'toggle-bookmark',
-            'icon_class': 'fa-bookmark',
-            'name': 'bookmark'
-        };
-        const names = buttons.map(t => t.name);
-        const idx = names.indexOf('details');
-        const data_promise = Bookmarks.checkBookmarksSupport().then((s) => (s ? data : null));
-        return idx > -1
-            ? [...buttons.slice(0, idx+1), data_promise, ...buttons.slice(idx+1)]
-            : [data_promise, ...buttons];
-    }
-    return buttons;
-}
-
-export async function removeBookmarkViaEvent (ev) {
+/**
+ * @param {Event} ev
+ */
+export async function removeBookmarkViaEvent(ev) {
     ev.preventDefault();
-    const name = ev.currentTarget.getAttribute('data-bookmark-name');
-    const jid = ev.currentTarget.getAttribute('data-room-jid');
+    const el = /** @type {Element} */ (ev.currentTarget);
+    const name = el.getAttribute('data-bookmark-name');
+    const jid = el.getAttribute('data-room-jid');
     const result = await api.confirm(__('Are you sure you want to remove the bookmark "%1$s"?', name));
     if (result) {
-        _converse.state.bookmarks.where({ jid }).forEach(b => b.destroy());
+        _converse.state.bookmarks
+            .where({ jid })
+            .forEach(/** @param {import('@converse/headless').Bookmark} b */ (b) => b.destroy());
     }
 }
 
-export function addBookmarkViaEvent (ev) {
-    ev.preventDefault();
-    const jid = ev.currentTarget.getAttribute('data-room-jid');
-    api.modal.show('converse-bookmark-form-modal', { jid }, ev);
-}
-
-
-export function openRoomViaEvent (ev) {
+/**
+ * @param {Event} ev
+ */
+export function openRoomViaEvent(ev) {
     ev.preventDefault();
     const { Strophe } = converse.env;
-    const name = ev.target.textContent;
-    const jid = ev.target.getAttribute('data-room-jid');
+    const el = /** @type {Element} */ (ev.currentTarget);
+    const name = el.textContent;
+    const jid = el.getAttribute('data-room-jid');
     const data = {
-        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
+        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid,
     };
     api.rooms.open(jid, data, true);
 }

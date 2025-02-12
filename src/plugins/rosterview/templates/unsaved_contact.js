@@ -35,7 +35,7 @@ export default (el) => {
             ${num_unread ? html`<span class="msgs-indicator badge">${num_unread}</span>` : ''}
             <span class="contact-name ${num_unread ? 'unread-msgs' : ''}">${display_name}</span>
         </a>
-        <span>
+        <span class="contact-actions">
             <a
                 class="add-contact list-item-action"
                 @click="${(ev) => el.addContact(ev)}"

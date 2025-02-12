@@ -11,11 +11,11 @@ import converse from './api/public.js';
 import api from './api/index.js';
 import { isNewMessage } from '../plugins/chat/utils.js';
 import _converse from './_converse.js';
-import { NotImplementedError } from './errors.js';
+import { MethodNotImplementedError } from './errors.js';
 import { sendMarker, sendReceiptStanza, sendRetractionMessage } from './actions.js';
-import {parseMessage} from '../plugins/chat/parsers';
+import { parseMessage } from '../plugins/chat/parsers';
 
-const { Strophe, $msg, u } = converse.env;
+const { Strophe, stx, u } = converse.env;
 
 /**
  * Adds a messages collection to a model and various methods related to sending
@@ -30,7 +30,7 @@ const { Strophe, $msg, u } = converse.env;
  */
 export default function ModelWithMessages(BaseModel) {
     /**
-     * @typedef {import('./parsers').StanzaParseError} StanzaParseError
+     * @typedef {import('./errors').StanzaParseError} StanzaParseError
      * @typedef {import('../plugins/chat/message').default} Message
      * @typedef {import('../plugins/chat/model').default} ChatBox
      * @typedef {import('../plugins/muc/muc').default} MUC
@@ -155,10 +155,10 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {MessageAttributes|Error} attrs_or_error
+         * @param {MessageAttributes|Error} _attrs_or_error
          */
-        async onMessage(attrs_or_error) {
-            throw new NotImplementedError('onMessage is not implemented');
+        async onMessage(_attrs_or_error) {
+            throw new MethodNotImplementedError('onMessage is not implemented');
         }
 
         /**
@@ -262,7 +262,7 @@ export default function ModelWithMessages(BaseModel) {
          * @return {Promise<MessageAttributes>}
          */
         async getOutgoingMessageAttributes(_attrs) {
-            throw new NotImplementedError('getOutgoingMessageAttributes is not implemented');
+            throw new MethodNotImplementedError('getOutgoingMessageAttributes is not implemented');
         }
 
         /**
@@ -274,6 +274,8 @@ export default function ModelWithMessages(BaseModel) {
          *  chat.sendMessage({'body': 'hello world'});
          */
         async sendMessage(attrs) {
+            await converse.emojis?.initialized_promise;
+
             if (!this.canPostMessages()) {
                 log.warn('sendMessage was called but canPostMessages is false');
                 return;
@@ -333,18 +335,19 @@ export default function ModelWithMessages(BaseModel) {
          * @param {Message} message - The message which we're retracting.
          */
         retractOwnMessage(message) {
-            sendRetractionMessage(this.get('jid'), message);
+            const retraction_id = u.getUniqueId();
+            sendRetractionMessage(this.get('jid'), message, retraction_id);
             message.save({
                 'retracted': new Date().toISOString(),
                 'retracted_id': message.get('origin_id'),
-                'retraction_id': message.get('id'),
+                'retraction_id': retraction_id,
                 'is_ephemeral': true,
                 'editable': false,
             });
         }
 
         /**
-         * @param {File[]} files
+         * @param {File[]} files'
          */
         async sendFiles(files) {
             const { __, session } = _converse;
@@ -749,10 +752,47 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
+         * @param {Message} message
+         * @param {MessageAttributes} attrs
+         */
+        async getErrorAttributesForMessage(message, attrs) {
+            const { __ } = _converse;
+            const new_attrs = {
+                editable: false,
+                error: attrs.error,
+                error_condition: attrs.error_condition,
+                error_text: attrs.error_text,
+                error_type: attrs.error_type,
+                is_error: true,
+            };
+            if (attrs.msgid === message.get('retraction_id')) {
+                // The error message refers to a retraction
+                new_attrs.retraction_id = undefined;
+                if (!attrs.error) {
+                    if (attrs.error_condition === 'forbidden') {
+                        new_attrs.error = __("You're not allowed to retract your message.");
+                    } else {
+                        new_attrs.error = __('Sorry, an error occurred while trying to retract your message.');
+                    }
+                }
+            } else if (!attrs.error) {
+                if (attrs.error_condition === 'forbidden') {
+                    new_attrs.error = __("You're not allowed to send a message.");
+                } else {
+                    new_attrs.error = __('Sorry, an error occurred while trying to send your message.');
+                }
+            }
+            /**
+             * *Hook* which allows plugins to add application-specific attributes
+             * @event _converse#getErrorAttributesForMessage
+             */
+            return await api.hook('getErrorAttributesForMessage', attrs, new_attrs);
+        }
+
+        /**
          * @param {Element} stanza
          */
         async handleErrorMessageStanza(stanza) {
-            const { __ } = _converse;
             const attrs_or_error = await parseMessage(stanza);
             if (u.isErrorObject(attrs_or_error)) {
                 const { stanza, message } = /** @type {StanzaParseError} */ (attrs_or_error);
@@ -767,30 +807,7 @@ export default function ModelWithMessages(BaseModel) {
 
             const message = this.getMessageReferencedByError(attrs);
             if (message) {
-                const new_attrs = {
-                    'error': attrs.error,
-                    'error_condition': attrs.error_condition,
-                    'error_text': attrs.error_text,
-                    'error_type': attrs.error_type,
-                    'editable': false,
-                };
-                if (attrs.msgid === message.get('retraction_id')) {
-                    // The error message refers to a retraction
-                    new_attrs.retraction_id = undefined;
-                    if (!attrs.error) {
-                        if (attrs.error_condition === 'forbidden') {
-                            new_attrs.error = __("You're not allowed to retract your message.");
-                        } else {
-                            new_attrs.error = __('Sorry, an error occurred while trying to retract your message.');
-                        }
-                    }
-                } else if (!attrs.error) {
-                    if (attrs.error_condition === 'forbidden') {
-                        new_attrs.error = __("You're not allowed to send a message.");
-                    } else {
-                        new_attrs.error = __('Sorry, an error occurred while trying to send your message.');
-                    }
-                }
+                const new_attrs = await this.getErrorAttributesForMessage(message, attrs);
                 message.save(new_attrs);
             } else {
                 this.createMessage(attrs);
@@ -814,7 +831,7 @@ export default function ModelWithMessages(BaseModel) {
             if (this.get('num_unread') > 0) {
                 this.sendMarkerForMessage(this.messages.last());
             }
-            u.safeSave(this, { 'num_unread': 0 });
+            u.safeSave(this, { num_unread: 0 });
         }
 
         /**
@@ -827,23 +844,26 @@ export default function ModelWithMessages(BaseModel) {
         async handleRetraction(attrs) {
             const RETRACTION_ATTRIBUTES = ['retracted', 'retracted_id', 'editable'];
             if (attrs.retracted) {
-                if (attrs.is_tombstone) {
-                    return false;
+                if (attrs.is_tombstone) return false;
+
+                for (const m of this.messages.models) {
+                    if (m.get('from') !== attrs.from) continue;
+                    if (m.get('origin_id') === attrs.retracted_id ||
+                            m.get('msgid') === attrs.retracted_id) {
+                        m.save(pick(attrs, RETRACTION_ATTRIBUTES));
+                        return true;
+                    }
                 }
-                const message = this.messages.findWhere({ 'origin_id': attrs.retracted_id, 'from': attrs.from });
-                if (!message) {
-                    attrs['dangling_retraction'] = true;
-                    await this.createMessage(attrs);
-                    return true;
-                }
-                message.save(pick(attrs, RETRACTION_ATTRIBUTES));
+
+                attrs['dangling_retraction'] = true;
+                await this.createMessage(attrs);
                 return true;
             } else {
                 // Check if we have dangling retraction
                 const message = this.findDanglingRetraction(attrs);
                 if (message) {
                     const retraction_attrs = pick(message.attributes, RETRACTION_ATTRIBUTES);
-                    const new_attrs = Object.assign({ 'dangling_retraction': false }, attrs, retraction_attrs);
+                    const new_attrs = Object.assign({ dangling_retraction: false }, attrs, retraction_attrs);
                     delete new_attrs['id']; // Delete id, otherwise a new cache entry gets created
                     message.save(new_attrs);
                     return true;
@@ -873,64 +893,48 @@ export default function ModelWithMessages(BaseModel) {
         /**
          * Given a {@link Message} return the XML stanza that represents it.
          * @method ChatBox#createMessageStanza
-         * @param { Message } message - The message object
+         * @param {Message} message - The message object
          */
         async createMessageStanza(message) {
-            const stanza = $msg({
-                'from': message.get('from') || api.connection.get().jid,
-                'to': message.get('to') || this.get('jid'),
-                'type': this.get('message_type'),
-                'id': (message.get('edited') && u.getUniqueId()) || message.get('msgid'),
-            })
-                .c('body')
-                .t(message.get('body'))
-                .up()
-                .c(constants.ACTIVE, { 'xmlns': Strophe.NS.CHATSTATES })
-                .root();
+            const {
+                body,
+                edited,
+                is_encrypted,
+                is_spoiler,
+                msgid,
+                oob_url,
+                origin_id,
+                references,
+                spoiler_hint,
+                type,
+            } = message.attributes;
 
-            if (message.get('type') === 'chat') {
-                stanza.c('request', { 'xmlns': Strophe.NS.RECEIPTS }).root();
-            }
-
-            if (!message.get('is_encrypted')) {
-                if (message.get('is_spoiler')) {
-                    if (message.get('spoiler_hint')) {
-                        stanza.c('spoiler', { 'xmlns': Strophe.NS.SPOILER }, message.get('spoiler_hint')).root();
-                    } else {
-                        stanza.c('spoiler', { 'xmlns': Strophe.NS.SPOILER }).root();
+            const stanza = stx`
+                <message xmlns="jabber:client"
+                        from="${message.get('type') === 'groupchat' ? api.connection.get().jid : message.get('from')}"
+                        to="${message.get('to') || this.get('jid')}"
+                        type="${this.get('message_type')}"
+                        id="${(edited && u.getUniqueId()) || msgid}">
+                    ${body ? stx`<body>${body}</body>` : ''}
+                    <active xmlns="${Strophe.NS.CHATSTATES}"/>
+                    ${type === 'chat' ? stx`<request xmlns="${Strophe.NS.RECEIPTS}"></request>` : ''}
+                    ${!is_encrypted && oob_url ? stx`<x xmlns="${Strophe.NS.OUTOFBAND}"><url>${oob_url}</url></x>` : ''}
+                    ${!is_encrypted && is_spoiler ? stx`<spoiler xmlns="${Strophe.NS.SPOILER}">${spoiler_hint ?? ''}</spoiler>` : ''}
+                    ${
+                        !is_encrypted
+                            ? references?.map(
+                                  (ref) => stx`<reference xmlns="${Strophe.NS.REFERENCE}"
+                                                begin="${ref.begin}"
+                                                end="${ref.end}"
+                                                type="${ref.type}"
+                                                uri="${ref.uri}"></reference>`
+                              )
+                            : ''
                     }
-                }
-                (message.get('references') || []).forEach((reference) => {
-                    const attrs = {
-                        'xmlns': Strophe.NS.REFERENCE,
-                        'begin': reference.begin,
-                        'end': reference.end,
-                        'type': reference.type,
-                    };
-                    if (reference.uri) {
-                        attrs.uri = reference.uri;
-                    }
-                    stanza.c('reference', attrs).root();
-                });
+                    ${edited ? stx`<replace xmlns="${Strophe.NS.MESSAGE_CORRECT}" id="${msgid}"></replace>` : ''}
+                    ${origin_id ? stx`<origin-id xmlns="${Strophe.NS.SID}" id="${origin_id}"></origin-id>` : ''}
+                </message>`;
 
-                if (message.get('oob_url')) {
-                    stanza.c('x', { 'xmlns': Strophe.NS.OUTOFBAND }).c('url').t(message.get('oob_url')).root();
-                }
-            }
-
-            if (message.get('edited')) {
-                stanza
-                    .c('replace', {
-                        'xmlns': Strophe.NS.MESSAGE_CORRECT,
-                        'id': message.get('msgid'),
-                    })
-                    .root();
-            }
-
-            if (message.get('origin_id')) {
-                stanza.c('origin-id', { 'xmlns': Strophe.NS.SID, 'id': message.get('origin_id') }).root();
-            }
-            stanza.root();
             /**
              * *Hook* which allows plugins to update an outgoing message stanza
              * @event _converse#createMessageStanza

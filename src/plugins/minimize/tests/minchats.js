@@ -7,6 +7,7 @@ describe("A chat message", function () {
             mock.initConverse(['chatBoxesFetched'], {'view_mode': 'overlayed'}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
+        await mock.waitUntilBlocklistInitialized(_converse);
         const contact_name = mock.cur_names[0];
         const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openControlBox(_converse);
@@ -92,6 +93,7 @@ describe("A Chatbox", function () {
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
+        await mock.waitUntilBlocklistInitialized(_converse);
         await mock.openControlBox(_converse);
 
         const contact_jid = mock.cur_names[7].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -131,7 +133,7 @@ describe("A Chatbox", function () {
     it("can be trimmed to conserve space",
             mock.initConverse(
                 [],
-                { no_trimming: false },
+                { no_trimming: false, show_self_in_roster: false },
                 async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -214,6 +216,7 @@ describe("The Minimized Chats Widget", function () {
     it("shows chats that have been minimized",
             mock.initConverse([], {}, async function (_converse) {
 
+        await mock.waitUntilBlocklistInitialized(_converse);
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
         const minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));

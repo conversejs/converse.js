@@ -76,6 +76,7 @@ Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
 Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
 Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
 Strophe.addNamespace('EME', 'urn:xmpp:eme:0');
+Strophe.addNamespace('FALLBACK', 'urn:xmpp:fallback:0');
 Strophe.addNamespace('FASTEN', 'urn:xmpp:fasten:0');
 Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
 Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
@@ -84,7 +85,8 @@ Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
 Strophe.addNamespace('MARKERS', 'urn:xmpp:chat-markers:0');
 Strophe.addNamespace('MENTIONS', 'urn:xmpp:mmn:0');
 Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
-Strophe.addNamespace('MODERATE', 'urn:xmpp:message-moderate:0');
+Strophe.addNamespace('MODERATE', 'urn:xmpp:message-moderate:1');
+Strophe.addNamespace('MODERATE0', 'urn:xmpp:message-moderate:0');
 Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
 Strophe.addNamespace('OCCUPANTID', 'urn:xmpp:occupant-id:0');
 Strophe.addNamespace('OMEMO', 'eu.siacs.conversations.axolotl');
@@ -94,7 +96,8 @@ Strophe.addNamespace('RAI', 'urn:xmpp:rai:0');
 Strophe.addNamespace('RECEIPTS', 'urn:xmpp:receipts');
 Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
 Strophe.addNamespace('REGISTER', 'jabber:iq:register');
-Strophe.addNamespace('RETRACT', 'urn:xmpp:message-retract:0');
+Strophe.addNamespace('RETRACT', 'urn:xmpp:message-retract:1');
+Strophe.addNamespace('RETRACT0', 'urn:xmpp:message-retract:0');
 Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
 Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
 Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
@@ -112,6 +115,7 @@ Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
 export const CORE_PLUGINS = [
     'converse-adhoc',
     'converse-bookmarks',
+    'converse-blocklist',
     'converse-bosh',
     'converse-caps',
     'converse-chat',

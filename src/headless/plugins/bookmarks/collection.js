@@ -1,39 +1,45 @@
 /**
  * @typedef {import('../muc/muc.js').default} MUC
  */
-import { Collection } from "@converse/skeletor";
+import { Stanza } from 'strophe.js';
+import { Collection } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
-import "../../plugins/muc/index.js";
 import Bookmark from './model.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import log from "../../log.js";
+import { parseErrorStanza } from '../../shared/parsers.js';
+import log from '../../log.js';
 import { initStorage } from '../../utils/storage.js';
+import { parseStanzaForBookmarks } from './parsers.js';
+import '../../plugins/muc/index.js';
 
-const { Strophe, $iq, sizzle } = converse.env;
-
+const { Strophe, stx } = converse.env;
 
 class Bookmarks extends Collection {
+    get idAttribute() {
+        return 'jid';
+    }
 
-    async initialize () {
-        this.on('add', bm => this.openBookmarkedRoom(bm)
-            .then(bm => this.markRoomAsBookmarked(bm))
-            .catch(e => log.fatal(e))
+    async initialize() {
+        this.on('add', (bm) =>
+            this.openBookmarkedRoom(bm)
+                .then((bm) => this.markRoomAsBookmarked(bm))
+                .catch((e) => log.fatal(e))
         );
-
-        this.on('remove', this.markRoomAsUnbookmarked, this);
+        this.on('remove', this.leaveRoom, this);
+        this.on('change:autojoin', this.onAutoJoinChanged, this);
         this.on('remove', this.sendBookmarkStanza, this);
 
         const { session } = _converse;
         const cache_key = `converse.room-bookmarks${session.get('bare_jid')}`;
-        this.fetched_flag = cache_key+'fetched';
+        this.fetched_flag = cache_key + 'fetched';
         initStorage(this, cache_key);
 
         await this.fetchBookmarks();
 
         /**
-         * Triggered once the _converse.Bookmarks collection
+         * Triggered once the {@link Bookmarks} collection
          * has been created and cached bookmarks have been fetched.
          * @event _converse#bookmarksInitialized
          * @type {Bookmarks}
@@ -42,7 +48,7 @@ class Bookmarks extends Collection {
         api.trigger('bookmarksInitialized', this);
     }
 
-    static async checkBookmarksSupport () {
+    static async checkBookmarksSupport() {
         const bare_jid = _converse.session.get('bare_jid');
         if (!bare_jid) return false;
 
@@ -54,32 +60,31 @@ class Bookmarks extends Collection {
         }
     }
 
-    constructor () {
-        super([], { comparator: (/** @type {Bookmark} */b) => b.get('name').toLowerCase() });
+    constructor() {
+        super([], { comparator: (/** @type {Bookmark} */ b) => b.get('name').toLowerCase() });
         this.model = Bookmark;
     }
-
 
     /**
      * @param {Bookmark} bookmark
      */
-    async openBookmarkedRoom (bookmark) {
-        if ( api.settings.get('muc_respect_autojoin') && bookmark.get('autojoin')) {
-            const groupchat = await api.rooms.create(
-                bookmark.get('jid'),
-                {'nick': bookmark.get('nick')}
-            );
+    async openBookmarkedRoom(bookmark) {
+        if (api.settings.get('muc_respect_autojoin') && bookmark.get('autojoin')) {
+            const groupchat = await api.rooms.create(bookmark.get('jid'), {
+                nick: bookmark.get('nick'),
+                password: bookmark.get('password'),
+            });
             groupchat.maybeShow();
         }
         return bookmark;
     }
 
-    fetchBookmarks () {
+    fetchBookmarks() {
         const deferred = getOpenPromise();
         if (window.sessionStorage.getItem(this.fetched_flag)) {
             this.fetch({
-                'success': () => deferred.resolve(),
-                'error': () => deferred.resolve()
+                success: () => deferred.resolve(),
+                error: () => deferred.resolve(),
             });
         } else {
             this.fetchBookmarksFromServer(deferred);
@@ -87,72 +92,123 @@ class Bookmarks extends Collection {
         return deferred;
     }
 
-    createBookmark (options) {
-        this.create(options);
-        this.sendBookmarkStanza().catch(iq => this.onBookmarkError(iq, options));
-    }
+    /**
+     * @param {import('./types').BookmarkAttrs} attrs
+     */
+    setBookmark(attrs, create=true) {
+        if (!attrs.jid) return log.warn('No JID provided for setBookmark');
 
-    sendBookmarkStanza () {
-        const stanza = $iq({
-                'type': 'set',
-                'from': api.connection.get().jid,
-            })
-            .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                .c('publish', {'node': Strophe.NS.BOOKMARKS})
-                    .c('item', {'id': 'current'})
-                        .c('storage', {'xmlns': Strophe.NS.BOOKMARKS});
+        let send_stanza = false;
 
-        this.forEach(/** @param {MUC} model */(model) => {
-            stanza.c('conference', {
-                'name': model.get('name'),
-                'autojoin': model.get('autojoin'),
-                'jid': model.get('jid'),
-            });
-            const nick = model.get('nick');
-            if (nick) {
-                stanza.c('nick').t(nick).up().up();
-            } else {
-                stanza.up();
+        const existing = this.get(attrs.jid);
+        if (existing) {
+            // Check if any attrs changed
+            const has_changed = Object.keys(attrs).reduce((result, k) => {
+                return result || (attrs[k] ?? '') !== (existing.attributes[k] ?? '');
+            }, false);
+            if (has_changed) {
+                existing.save(attrs);
+                send_stanza = true;
             }
+        } else if (create) {
+            this.create(attrs);
+            send_stanza = true;
+        }
+        if (send_stanza) {
+            this.sendBookmarkStanza().catch((iq) => this.onBookmarkError(iq, attrs));
+        }
+    }
+
+    /**
+     * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
+     * @returns {Stanza|Stanza[]}
+     */
+    getPublishedItems(node) {
+        if (node === Strophe.NS.BOOKMARKS2) {
+            return this.map(
+                /** @param {MUC} model */ (model) => {
+                    const extensions = model.get('extensions') ?? [];
+                    return stx`<item id="${model.get('jid')}">
+                    <conference xmlns="${Strophe.NS.BOOKMARKS2}"
+                                name="${model.get('name')}"
+                                autojoin="${model.get('autojoin')}">
+                            ${model.get('nick') ? stx`<nick>${model.get('nick')}</nick>` : ''}
+                            ${model.get('password') ? stx`<password>${model.get('password')}</password>` : ''}
+                        ${
+                            extensions.length
+                                ? stx`<extensions>${extensions.map((e) => Stanza.unsafeXML(e))}</extensions>`
+                                : ''
+                        };
+                        </conference>
+                    </item>`;
+                }
+            );
+        } else {
+            return stx`<item id="current">
+                <storage xmlns="${Strophe.NS.BOOKMARKS}">
+                ${this.map(
+                    /** @param {MUC} model */ (model) =>
+                        stx`<conference name="${model.get('name')}" autojoin="${model.get('autojoin')}"
+                        jid="${model.get('jid')}">
+                        ${model.get('nick') ? stx`<nick>${model.get('nick')}</nick>` : ''}
+                        ${model.get('password') ? stx`<password>${model.get('password')}</password>` : ''}
+                    </conference>`
+                )}
+                </storage>
+            </item>`;
+        }
+    }
+
+    /**
+     * @returns {Promise<void|Element>}
+     */
+    async sendBookmarkStanza() {
+        const bare_jid = _converse.session.get('bare_jid');
+        const node = (await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid))
+            ? Strophe.NS.BOOKMARKS2
+            : Strophe.NS.BOOKMARKS;
+        return api.pubsub.publish(null, node, this.getPublishedItems(node), {
+            persist_items: true,
+            max_items: 'max',
+            send_last_published_item: 'never',
+            access_model: 'whitelist',
         });
-        stanza.up().up().up();
-        stanza.c('publish-options')
-            .c('x', {'xmlns': Strophe.NS.XFORM, 'type':'submit'})
-                .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
-                    .c('value').t('http://jabber.org/protocol/pubsub#publish-options').up().up()
-                .c('field', {'var':'pubsub#persist_items'})
-                    .c('value').t('true').up().up()
-                .c('field', {'var':'pubsub#access_model'})
-                    .c('value').t('whitelist');
-        return api.sendIQ(stanza);
     }
 
-    onBookmarkError (iq, options) {
-        const { __ } = _converse;
-        log.error("Error while trying to add bookmark");
+    /**
+     * @param {Element} iq
+     * @param {import('./types').BookmarkAttrs} attrs
+     */
+    onBookmarkError(iq, attrs) {
+        log.error('Error while trying to add bookmark');
         log.error(iq);
-        api.alert(
-            'error', __('Error'), [__("Sorry, something went wrong while trying to save your bookmark.")]
-        );
-        this.get(options.jid)?.destroy();
+        this.get(attrs.jid)?.destroy();
     }
 
-    fetchBookmarksFromServer (deferred) {
-        const stanza = $iq({
-            'from': api.connection.get().jid,
-            'type': 'get',
-        }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-            .c('items', {'node': Strophe.NS.BOOKMARKS});
+    /**
+     * @param {Promise} deferred
+     */
+    async fetchBookmarksFromServer(deferred) {
+        const bare_jid = _converse.session.get('bare_jid');
+        const ns = (await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid))
+            ? Strophe.NS.BOOKMARKS2
+            : Strophe.NS.BOOKMARKS;
+
+        const stanza = stx`
+            <iq type="get" from="${api.connection.get().jid}" xmlns="jabber:client">
+                <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <items node="${ns}"/>
+                </pubsub>
+            </iq>`;
         api.sendIQ(stanza)
-            .then(iq => this.onBookmarksReceived(deferred, iq))
-            .catch(iq => this.onBookmarksReceivedError(deferred, iq)
-        );
+            .then(/** @param {Element} iq */ (iq) => this.onBookmarksReceived(deferred, iq))
+            .catch(/** @param {Element} iq */ (iq) => this.onBookmarksReceivedError(deferred, iq));
     }
 
     /**
      * @param {Bookmark} bookmark
      */
-    markRoomAsBookmarked (bookmark) {
+    markRoomAsBookmarked(bookmark) {
         const { chatboxes } = _converse.state;
         const groupchat = chatboxes.get(bookmark.get('jid'));
         groupchat?.save('bookmarked', true);
@@ -161,68 +217,84 @@ class Bookmarks extends Collection {
     /**
      * @param {Bookmark} bookmark
      */
-    markRoomAsUnbookmarked (bookmark) {
-        const { chatboxes } = _converse.state;
-        const groupchat = chatboxes.get(bookmark.get('jid'));
-        groupchat?.save('bookmarked', false);
+    onAutoJoinChanged(bookmark) {
+        if (bookmark.get('autojoin')) {
+            this.openBookmarkedRoom(bookmark);
+        } else {
+            this.leaveRoom(bookmark);
+        }
+    }
+
+    /**
+     * @param {Bookmark} bookmark
+     */
+    async leaveRoom(bookmark) {
+        const groupchat = await api.rooms.get(bookmark.get('jid'));
+        groupchat?.close();
     }
 
     /**
      * @param {Element} stanza
      */
-    createBookmarksFromStanza (stanza) {
-        const xmlns = Strophe.NS.BOOKMARKS;
-        const sel = `items[node="${xmlns}"] item storage[xmlns="${xmlns}"] conference`;
-        sizzle(sel, stanza).forEach(/** @type {Element} */(el) => {
-            const jid = el.getAttribute('jid');
-            const bookmark = this.get(jid);
-            const attrs = {
-                'jid': jid,
-                'name': el.getAttribute('name') || jid,
-                'autojoin': el.getAttribute('autojoin') === 'true',
-                'nick': el.querySelector('nick')?.textContent || ''
+    async setBookmarksFromStanza(stanza) {
+        const bookmarks = await parseStanzaForBookmarks(stanza);
+        bookmarks.forEach(
+            /** @param {import('./types.js').BookmarkAttrs} attrs */
+            (attrs) => {
+                const bookmark = this.get(attrs.jid);
+                bookmark ? bookmark.save(attrs) : this.create(attrs);
             }
-            bookmark ? bookmark.save(attrs) : this.create(attrs);
-        });
+        );
     }
 
-    onBookmarksReceived (deferred, iq) {
-        this.createBookmarksFromStanza(iq);
+    /**
+     * @param {Object} deferred
+     * @param {Element} iq
+     */
+    async onBookmarksReceived(deferred, iq) {
+        await this.setBookmarksFromStanza(iq);
         window.sessionStorage.setItem(this.fetched_flag, 'true');
         if (deferred !== undefined) {
             return deferred.resolve();
         }
     }
 
-    onBookmarksReceivedError (deferred, iq) {
-        const { __ } = _converse;
+    /**
+     * @param {Object} deferred
+     * @param {Element} iq
+     */
+    async onBookmarksReceivedError(deferred, iq) {
         if (iq === null) {
+            const { __ } = _converse;
             log.error('Error: timeout while fetching bookmarks');
-            api.alert('error', __('Timeout Error'),
-                [__("The server did not return your bookmarks within the allowed time. "+
-                    "You can reload the page to request them again.")]
-            );
-        } else if (deferred) {
-            if (iq.querySelector('error[type="cancel"] item-not-found')) {
+            api.alert('error', __('Timeout Error'), [
+                __(
+                    'The server did not return your bookmarks within the allowed time. ' +
+                        'You can reload the page to request them again.'
+                ),
+            ]);
+            deferred?.reject(new Error('Could not fetch bookmarks'));
+
+        } else {
+            const { errors } = converse.env;
+            const e = await parseErrorStanza(iq);
+            if (e instanceof errors.ItemNotFoundError) {
                 // Not an exception, the user simply doesn't have any bookmarks.
                 window.sessionStorage.setItem(this.fetched_flag, 'true');
-                return deferred.resolve();
+                deferred?.resolve();
             } else {
                 log.error('Error while fetching bookmarks');
-                log.error(iq);
-                return deferred.reject(new Error("Could not fetch bookmarks"));
+                if (iq) log.error(iq);
+                deferred?.reject(new Error('Could not fetch bookmarks'));
             }
-        } else {
-            log.error('Error while fetching bookmarks');
-            log.error(iq);
         }
     }
 
-    async getUnopenedBookmarks () {
-        await api.waitUntil('bookmarksInitialized')
-        await api.waitUntil('chatBoxesFetched')
+    async getUnopenedBookmarks() {
+        await api.waitUntil('bookmarksInitialized');
+        await api.waitUntil('chatBoxesFetched');
         const { chatboxes } = _converse.state;
-        return this.filter(b => !chatboxes.get(b.get('jid')));
+        return this.filter((b) => !chatboxes.get(b.get('jid')));
     }
 }
 

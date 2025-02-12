@@ -33,9 +33,10 @@ converse.plugins.add('converse-vcard', {
         XMPPStatus: {
             getNickname () {
                 const { _converse } = this.__super__;
+                const { xmppstatus } = _converse.state;
                 const nick = this.__super__.getNickname.apply(this);
-                if (!nick && _converse.state.xmppstatus.vcard) {
-                    return _converse.state.xmppstatus.vcard.get('nickname');
+                if (!nick && xmppstatus?.vcard) {
+                    return xmppstatus.vcard.get('nickname');
                 } else {
                     return nick;
                 }
@@ -43,9 +44,10 @@ converse.plugins.add('converse-vcard', {
 
             getFullname () {
                 const { _converse } = this.__super__;
+                const { xmppstatus } = _converse.state;
                 const fullname = this.__super__.getFullname.apply(this);
-                if (!fullname && _converse.xmppstatus.vcard) {
-                    return _converse.xmppstatus.vcard.get('fullname');
+                if (!fullname && xmppstatus?.vcard) {
+                    return xmppstatus.vcard.get('fullname');
                 } else {
                     return fullname;
                 }

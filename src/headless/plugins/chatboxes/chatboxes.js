@@ -5,24 +5,23 @@
  */
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import { Collection } from "@converse/skeletor";
+import { Collection } from '@converse/skeletor';
 import { initStorage } from '../../utils/storage.js';
 
 class ChatBoxes extends Collection {
-
     /**
      * @param {Model[]} models
      * @param {object} options
      */
-    constructor (models, options) {
+    constructor(models, options) {
         super(models, Object.assign({ comparator: 'time_opened' }, options));
     }
 
     /**
      * @param {Collection} collection
      */
-    onChatBoxesFetched (collection) {
-        collection.filter(c => !c.isValid()).forEach(c => c.destroy());
+    onChatBoxesFetched(collection) {
+        collection.filter((c) => !c.isValid()).forEach((c) => c.destroy());
         /**
          * Triggered once all chat boxes have been recreated from the browser cache
          * @event _converse#chatBoxesFetched
@@ -38,14 +37,14 @@ class ChatBoxes extends Collection {
     /**
      * @param {boolean} reconnecting
      */
-    onConnected (reconnecting) {
+    onConnected(reconnecting) {
         if (reconnecting) return;
 
         const bare_jid = _converse.session.get('bare_jid');
         initStorage(this, `converse.chatboxes-${bare_jid}`);
         this.fetch({
             'add': true,
-            'success': c => this.onChatBoxesFetched(c)
+            'success': (c) => this.onChatBoxesFetched(c),
         });
     }
 
@@ -53,9 +52,9 @@ class ChatBoxes extends Collection {
      * @param {object} attrs
      * @param {object} options
      */
-    createModel (attrs, options) {
+    createModel(attrs, options) {
         if (!attrs.type) {
-            throw new Error("You need to specify a type of chatbox to be created");
+            throw new Error('You need to specify a type of chatbox to be created');
         }
         const ChatBox = api.chatboxes.registry.get(attrs.type);
         return new ChatBox(attrs, options);

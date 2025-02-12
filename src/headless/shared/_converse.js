@@ -89,7 +89,7 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
         this.storage = /** @type {Record<string, Storage.LocalForage>} */{};
 
         this.promises = {
-            'initialized': getOpenPromise(),
+            initialized: getOpenPromise(),
         };
 
         this.NUM_PREKEYS = 100; // DEPRECATED. Set here so that tests can override

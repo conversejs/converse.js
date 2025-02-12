@@ -36,7 +36,7 @@ export default o => {
                       ${o.title ? tplUrlWrapper(o, o => html`<h5 class="card-title">${o.title}</h5>`) : ''}
                       ${o.description
                           ? html`<p class="card-text">
-                                <converse-rich-text text=${o.description}></converse-rich-text>
+                                <converse-texture text=${o.description}></converse-texture>
                             </p>`
                           : ''}
                       ${o.url

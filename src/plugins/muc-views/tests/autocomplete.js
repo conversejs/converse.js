@@ -200,69 +200,73 @@ describe("The nickname autocomplete feature", function () {
     }));
 
     it("should order by query index position and length", mock.initConverse(
-            ['chatBoxesFetched'], {}, async function (_converse) {
-            await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
+                ['chatBoxesFetched'], {}, async function (_converse) {
 
-            // Nicknames from presences
-            ['bernard', 'naber', 'helberlo', 'john', 'jones'].forEach((nick) => {
-                _converse.api.connection.get()._dataRecv(mock.createRequest(
-                    stx`<presence
-                        to="tom@montague.lit/resource"
-                        from="lounge@montague.lit/${nick}"
-                        xmlns="jabber:client">
-                        <x xmlns="${Strophe.NS.MUC_USER}">
-                            <item affiliation="none" jid="${nick}@montague.lit/resource" role="participant"/>
-                        </x>
-                    </presence>`));
-            });
+        await mock.waitUntilBookmarksReturned(_converse);
+        const model = await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
+        const view = _converse.chatboxviews.get('lounge@montague.lit');
 
-            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            const at_event = {
-                'target': textarea,
-                'preventDefault': function preventDefault() { },
-                'stopPropagation': function stopPropagation() { },
-                'keyCode': 50,
-                'key': '@'
-            };
+        // Nicknames from presences
+        ['bernard', 'naber', 'helberlo', 'john', 'jones'].forEach((nick) => {
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
+                stx`<presence
+                    to="tom@montague.lit/resource"
+                    from="lounge@montague.lit/${nick}"
+                    xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" jid="${nick}@montague.lit/resource" role="participant"/>
+                    </x>
+                </presence>`));
+        });
+        await u.waitUntil(() => model.getOccupantByNickname('jones'));
 
-            const message_form = view.querySelector('converse-muc-message-form');
-            // Test that results are sorted by query index
-            message_form.onKeyDown(at_event);
-            textarea.value = '@ber';
-            message_form.onKeyUp(at_event);
-            await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 3);
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
+        const at_event = {
+            'target': textarea,
+            'preventDefault': function preventDefault() { },
+            'stopPropagation': function stopPropagation() { },
+            'keyCode': 50,
+            'key': '@'
+        };
 
-            const first_child = view.querySelector('.suggestion-box__results li:first-child converse-avatar');
-            expect(first_child.textContent).toBe('B');
-            expect(first_child.nextElementSibling.textContent).toBe('ber');
-            expect(first_child.nextElementSibling.nextSibling.textContent).toBe('nard');
+        const message_form = view.querySelector('converse-muc-message-form');
+        // Test that results are sorted by query index
+        message_form.onKeyDown(at_event);
+        textarea.value = '@ber';
+        message_form.onKeyUp(at_event);
+        await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 3);
 
-            const second_child = view.querySelector('.suggestion-box__results li:nth-child(2) converse-avatar');
-            expect(second_child.textContent).toBe('N');
-            expect(second_child.nextSibling.textContent).toBe('na');
-            expect(second_child.nextElementSibling.textContent).toBe('ber');
+        const first_child = view.querySelector('.suggestion-box__results li:first-child converse-avatar');
+        expect(first_child.textContent).toBe('B');
+        expect(first_child.nextElementSibling.textContent).toBe('ber');
+        expect(first_child.nextElementSibling.nextSibling.textContent).toBe('nard');
 
-            const third_child = view.querySelector('.suggestion-box__results li:nth-child(3) converse-avatar');
-            expect(third_child.textContent).toBe('H');
-            expect(third_child.nextSibling.textContent).toBe('hel');
-            expect(third_child.nextSibling.nextSibling.textContent).toBe('ber');
-            expect(third_child.nextSibling.nextSibling.nextSibling.textContent).toBe('lo');
+        const second_child = view.querySelector('.suggestion-box__results li:nth-child(2) converse-avatar');
+        expect(second_child.textContent).toBe('N');
+        expect(second_child.nextSibling.textContent).toBe('na');
+        expect(second_child.nextElementSibling.textContent).toBe('ber');
 
-            // Test that when the query index is equal, results should be sorted by length
-            textarea.value = '@jo';
-            message_form.onKeyUp(at_event);
-            await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 2);
+        const third_child = view.querySelector('.suggestion-box__results li:nth-child(3) converse-avatar');
+        expect(third_child.textContent).toBe('H');
+        expect(third_child.nextSibling.textContent).toBe('hel');
+        expect(third_child.nextSibling.nextSibling.textContent).toBe('ber');
+        expect(third_child.nextSibling.nextSibling.nextSibling.textContent).toBe('lo');
 
-            // First char is the avatar initial
-            expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('Jjohn');
-            expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('Jjones');
+        // Test that when the query index is equal, results should be sorted by length
+        textarea.value = '@jo';
+        message_form.onKeyUp(at_event);
+        await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 2);
+
+        // First char is the avatar initial
+        expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('Jjohn');
+        expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('Jjones');
     }));
 
     it("autocompletes when the user presses tab",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
-        await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+        await mock.waitUntilBookmarksReturned(_converse);
+        const model = await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         expect(view.model.occupants.length).toBe(1);
         let presence = stx`<presence
@@ -274,7 +278,8 @@ describe("The nickname autocomplete feature", function () {
                 </x>
             </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
-        expect(view.model.occupants.length).toBe(2);
+
+        await u.waitUntil(() => view.model.occupants.length === 2);
 
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = "hello som";
@@ -318,6 +323,7 @@ describe("The nickname autocomplete feature", function () {
             </x>
         </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+        await u.waitUntil(() => model.getOccupantByNickname('some2'));
 
         textarea.value = "hello s s";
         message_form.onKeyDown(tab_event);
@@ -356,6 +362,7 @@ describe("The nickname autocomplete feature", function () {
                     <item affiliation="none" jid="z3r0@montague.lit/resource" role="participant"/>
                 </x>
             </presence>`));
+        await u.waitUntil(() => model.getOccupantByNickname('z3r0'));
 
         textarea.value = "hello z";
         message_form.onKeyDown(tab_event);
@@ -370,6 +377,7 @@ describe("The nickname autocomplete feature", function () {
     it("autocompletes when the user presses backspace",
             mock.initConverse([], {}, async function (_converse) {
 
+        await mock.waitUntilBookmarksReturned(_converse);
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         expect(view.model.occupants.length).toBe(1);
@@ -382,7 +390,7 @@ describe("The nickname autocomplete feature", function () {
                     <item affiliation="none" jid="some1@montague.lit/resource" role="participant"/>
                 </x>
             </presence>`));
-        expect(view.model.occupants.length).toBe(2);
+        await u.waitUntil(() => view.model.occupants.length === 2);
 
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = "hello @some1 ";

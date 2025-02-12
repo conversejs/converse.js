@@ -11,6 +11,7 @@ export default DiscoEntity;
 declare class DiscoEntity extends Model {
     initialize(_: any, options: any): void;
     waitUntilFeaturesDiscovered: any;
+    waitUntilItemsFetched: any;
     dataforms: Collection;
     features: Collection;
     fields: Collection;

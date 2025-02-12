@@ -1,14 +1,27 @@
 import { EncryptionAttrs } from "../../shared/types";
-export type MessageAttributes = EncryptionAttrs & {
+export type Reference = {
+    begin: number;
+    end: number;
+    type: string;
+    uri: string;
+};
+export type MessageErrorAttributes = {
+    is_error: boolean;
+    error: string;
+    errors: {
+        name: string;
+        xmlns: string;
+    }[];
+    error_condition: string;
+    error_text: string;
+    error_type: string;
+};
+export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     body: string;
     chat_state: string;
     contact_jid: string;
     editable: boolean;
     edited: string;
-    error: string;
-    error_condition: string;
-    error_text: string;
-    error_type: string;
     from: string;
     message?: string;
     fullname: string;
@@ -16,7 +29,6 @@ export type MessageAttributes = EncryptionAttrs & {
     is_carbon: boolean;
     is_delayed: boolean;
     is_encrypted: boolean;
-    is_error: boolean;
     is_headline: boolean;
     is_markable: boolean;
     is_marker: boolean;
@@ -36,7 +48,7 @@ export type MessageAttributes = EncryptionAttrs & {
     plaintext: string;
     receipt_id: string;
     received: string;
-    references: Array<Object>;
+    references: Array<Reference>;
     replace_id: string;
     retracted: string;
     retracted_id: string;

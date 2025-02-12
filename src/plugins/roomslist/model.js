@@ -8,9 +8,9 @@ class RoomsListModel extends Model {
 
     defaults () {
         return {
-            'muc_domain': api.settings.get('muc_domain'),
-            'toggle_state':  OPENED,
-            'collapsed_domains': [],
+            muc_domain: api.settings.get('muc_domain'),
+            toggle_state:  OPENED,
+            collapsed_domains: [],
         };
     }
 

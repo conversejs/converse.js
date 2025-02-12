@@ -1,39 +1,41 @@
 /*global mock, converse */
-
-const { Strophe, u, $msg } = converse.env;
+const { Strophe, u, $msg, stx } = converse.env;
 
 describe("A MUC message", function () {
 
     it("saves the user's real JID as looked up via the XEP-0421 occupant id",
             mock.initConverse([], {}, async function (_converse) {
 
+        await mock.waitUntilBookmarksReturned(_converse);
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
         const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
         const occupant_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        const presence = u.toStanza(`
-            <presence
-                from="${muc_jid}/thirdwitch"
-                id="${u.getUniqueId()}"
-                to="${_converse.bare_jid}">
-            <x xmlns="http://jabber.org/protocol/muc#user">
-                <item jid="${occupant_jid}" />
-            </x>
-            <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
-            </presence>`);
+        const presence = stx`
+            <presence from="${muc_jid}/thirdwitch"
+                    id="${u.getUniqueId()}"
+                    to="${_converse.bare_jid}"
+                    xmlns="jabber:client">
+                <x xmlns="http://jabber.org/protocol/muc#user">
+                    <item jid="${occupant_jid}" />
+                </x>
+                <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
+            </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
-        expect(model.getOccupantByNickname('thirdwitch').get('occupant_id')).toBe('dd72603deec90a38ba552f7c68cbcc61bca202cd');
 
-        const stanza = u.toStanza(`
-            <message
-                from='${muc_jid}/thirdwitch'
-                id='hysf1v37'
-                to='${_converse.bare_jid}'
-                type='groupchat'>
-            <body>Harpier cries: 'tis time, 'tis time.</body>
-            <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
-            </message>`);
+        const occupant = await u.waitUntil(() => model.getOccupantByNickname('thirdwitch'));
+        expect(occupant.get('occupant_id')).toBe('dd72603deec90a38ba552f7c68cbcc61bca202cd');
+
+        const stanza = stx`
+            <message from='${muc_jid}/thirdwitch'
+                    id='hysf1v37'
+                    to='${_converse.bare_jid}'
+                    type='groupchat'
+                    xmlns="jabber:client">
+                <body>Harpier cries: 'tis time, 'tis time.</body>
+                <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => model.messages.length);
@@ -94,8 +96,12 @@ describe("A MUC message", function () {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const impersonated_jid = `${muc_jid}/alice`;
-        const received_stanza = u.toStanza(`
-            <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}'>
+        const received_stanza = stx`
+            <message to='${_converse.jid}'
+                    xmlns="jabber:client"
+                    from='${muc_jid}/mallory'
+                    type='groupchat'
+                    id='${_converse.api.connection.get().getUniqueId()}'>
                 <forwarded xmlns='urn:xmpp:forward:0'>
                     <delay xmlns='urn:xmpp:delay' stamp='2019-07-10T23:08:25Z'/>
                     <message from='${impersonated_jid}'
@@ -106,8 +112,7 @@ describe("A MUC message", function () {
                         <body>Yet I should kill thee with much cherishing.</body>
                     </message>
                 </forwarded>
-            </message>
-        `);
+            </message>`;
         spyOn(converse.env.log, 'error').and.callThrough();
         _converse.api.connection.get()._dataRecv(mock.createRequest(received_stanza));
         await u.waitUntil(() => converse.env.log.error.calls.count() === 1);
@@ -123,8 +128,8 @@ describe("A MUC message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const received_stanza = u.toStanza(`
-            <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}' >
+        const received_stanza = stx`
+            <message xmlns="jabber:client" to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}' >
                 <reply xmlns='urn:xmpp:reply:0' id='${_converse.api.connection.get().getUniqueId()}' to='${_converse.jid}'/>
                 <fallback xmlns='urn:xmpp:feature-fallback:0' for='urn:xmpp:reply:0'>
                     <body start='0' end='10'/>
@@ -134,7 +139,7 @@ describe("A MUC message", function () {
     pong</body>
                 <request xmlns='urn:xmpp:receipts'/>
             </message>
-        `);
+        `;
         await model.handleMessageStanza(received_stanza);
         await u.waitUntil(() => model.messages.last());
         expect(model.messages.last().get('body')).toBe('> ping\n    pong');

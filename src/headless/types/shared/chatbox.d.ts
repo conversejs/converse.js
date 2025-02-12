@@ -16,7 +16,7 @@ declare const ChatBoxBase_base: {
         messages: any;
         fetchMessages(): any;
         afterMessagesFetched(): void;
-        onMessage(attrs_or_error: import("../plugins/chat/types.js").MessageAttributes | Error): Promise<void>;
+        onMessage(_attrs_or_error: import("../plugins/chat/types.js").MessageAttributes | Error): Promise<void>;
         getUpdatedMessageAttributes(message: import("../index.js").Message, attrs: import("../plugins/chat/types.js").MessageAttributes): object;
         updateMessage(message: import("../index.js").Message, attrs: import("../plugins/chat/types.js").MessageAttributes): void;
         handleCorrection(attrs: import("../plugins/chat/types.js").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): Promise<import("../index.js").Message | void>;
@@ -53,6 +53,7 @@ declare const ChatBoxBase_base: {
         };
         sendMarkerForMessage(msg: import("../index.js").Message, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         handleUnreadMessage(message: import("../index.js").Message): void;
+        getErrorAttributesForMessage(message: import("../index.js").Message, attrs: import("../plugins/chat/types.js").MessageAttributes): Promise<any>;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../index.js").Message): void;
         clearUnreadMsgCounter(): void;

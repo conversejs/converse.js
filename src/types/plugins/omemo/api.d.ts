@@ -19,6 +19,12 @@ declare namespace _default {
             function get(jid: string, create?: boolean): Promise<any>;
         }
         namespace bundle {
+            /**
+             * Lets you generate a new OMEMO device bundle
+             *
+             * @method _converse.api.omemo.bundle.generate
+             * @returns {promise} Promise which resolves once we have a result from the server.
+             */
             function generate(): Promise<any>;
         }
     }

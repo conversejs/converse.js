@@ -17,7 +17,7 @@ import { MIMETYPES_MAP } from 'utils/file.js';
 import { IQError, UserFacingError } from 'shared/errors.js';
 import DeviceLists from './devicelists.js';
 
-const { Strophe, URI, sizzle } = converse.env;
+const { Strophe, URI, sizzle, stx } = converse.env;
 const { CHATROOMS_TYPE, PRIVATE_CHAT_TYPE } = constants;
 const {
     appendArrayBuffer,
@@ -467,24 +467,6 @@ async function decryptWhisperMessage (attrs) {
     }
 }
 
-export function addKeysToMessageStanza (stanza, dicts, iv) {
-    for (const i in dicts) {
-        if (Object.prototype.hasOwnProperty.call(dicts, i)) {
-            const payload = dicts[i].payload;
-            const device = dicts[i].device;
-            const prekey = 3 == parseInt(payload.type, 10);
-
-            stanza.c('key', { 'rid': device.get('id') }).t(btoa(payload.body));
-            if (prekey) {
-                stanza.attrs({ 'prekey': prekey });
-            }
-            stanza.up();
-        }
-    }
-    stanza.c('iv').t(iv).up().up();
-    return Promise.resolve(stanza);
-}
-
 /**
  * Given an XML element representing a user's OMEMO bundle, parse it
  * and return a map.
@@ -743,7 +725,7 @@ async function checkOMEMOSupported (chatbox) {
     } else if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
         supported = await contactHasOMEMOSupport(chatbox.get('jid'));
     }
-    chatbox.set('omemo_supported', supported);
+    chatbox.set('omemo_supported', !!supported);
     if (supported && api.settings.get('omemo_default')) {
         chatbox.set('omemo_active', true);
     }
@@ -873,16 +855,6 @@ export async function createOMEMOMessageStanza (chat, data) {
         throw new Error('No message body to encrypt!');
     }
     const devices = await getBundlesAndBuildSessions(chat);
-
-    // An encrypted header is added to the message for
-    // each device that is supposed to receive it.
-    // These headers simply contain the key that the
-    // payload message is encrypted with,
-    // and they are separately encrypted using the
-    // session corresponding to the counterpart device.
-    stanza.c('encrypted', { 'xmlns': Strophe.NS.OMEMO })
-        .c('header', { 'sid': _converse.state.omemo_store.get('device_id') });
-
     const { key_and_tag, iv, payload } = await omemo.encryptMessage(message.get('plaintext'));
 
     // The 16 bytes key and the GCM authentication tag (The tag
@@ -892,13 +864,33 @@ export async function createOMEMOMessageStanza (chat, data) {
     // concatenation is encrypted using the corresponding
     // long-standing SignalProtocol session.
     const dicts = await Promise.all(devices
-        .filter(device => device.get('trusted') != UNTRUSTED && device.get('active'))
-        .map(device => encryptKey(key_and_tag, device)));
+        .filter((device) => device.get('trusted') != UNTRUSTED && device.get('active'))
+        .map((device) => encryptKey(key_and_tag, device)));
 
-    stanza = await addKeysToMessageStanza(stanza, dicts, iv);
-    stanza.c('payload').t(payload).up().up();
-    stanza.c('store', { 'xmlns': Strophe.NS.HINTS }).up();
-    stanza.c('encryption', { 'xmlns': Strophe.NS.EME,  namespace: Strophe.NS.OMEMO });
+    // An encrypted header is added to the message for
+    // each device that is supposed to receive it.
+    // These headers simply contain the key that the
+    // payload message is encrypted with,
+    // and they are separately encrypted using the
+    // session corresponding to the counterpart device.
+    stanza.cnode(
+        stx`<encrypted xmlns="${Strophe.NS.OMEMO}">
+            <header sid="${_converse.state.omemo_store.get('device_id')}">
+                ${dicts.map(({ payload, device }) => {
+                    const prekey = 3 == parseInt(payload.type, 10);
+                    if (prekey) {
+                        return stx`<key rid="${device.get('id')}" prekey="true">${btoa(payload.body)}</key>`;
+                    }
+                    return stx`<key rid="${device.get('id')}">${btoa(payload.body)}</key>`;
+                })}
+                <iv>${iv}</iv>
+            </header>
+            <payload>${payload}</payload>
+        </encrypted>`
+    ).root();
+
+    stanza.cnode(stx`<store xmlns="${Strophe.NS.HINTS}"/>`).root();
+    stanza.cnode(stx`<encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO}"/>`).root();
     return { message, stanza };
 }
 

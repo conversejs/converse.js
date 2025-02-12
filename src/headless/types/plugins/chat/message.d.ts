@@ -157,6 +157,8 @@ declare class Message extends Message_base {
         is_ephemeral: boolean;
     };
     file: any;
+    /** @type {import('./types').MessageAttributes} */
+    attributes: import("./types").MessageAttributes;
     initialize(): Promise<void>;
     chatbox: any;
     initialized: any;
@@ -187,6 +189,10 @@ declare class Message extends Message_base {
      */
     isMeCommand(): boolean;
     /**
+     * @returns {boolean}
+     */
+    isRetracted(): boolean;
+    /**
      * Returns a boolean indicating whether this message is considered a followup
      * message from the previous one. Followup messages are shown grouped together
      * under one author heading.
@@ -204,7 +210,10 @@ declare class Message extends Message_base {
      * @method _converse.Message#sendSlotRequestStanza
      */
     private sendSlotRequestStanza;
-    getUploadRequestMetadata(stanza: any): {
+    /**
+     * @param {Element} stanza
+     */
+    getUploadRequestMetadata(stanza: Element): {
         headers: {
             name: string;
             value: string;

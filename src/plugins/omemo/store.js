@@ -182,7 +182,7 @@ class OMEMOStore extends Model {
                 .t(prekey.pubKey)
                 .up()
         );
-        const options = { 'pubsub#access_model': 'open' };
+        const options = { access_model: 'open' };
         return api.pubsub.publish(null, node, item, options, false);
     }
 
@@ -196,14 +196,14 @@ class OMEMOStore extends Model {
             .filter(id => !prekeyIds.includes(id));
 
         if (missing_keys.length < 1) {
-            log.warn('No missing prekeys to generate for our own device');
+            log.debug('No missing prekeys to generate for our own device');
             return Promise.resolve();
         }
 
         const keys = await Promise.all(
             missing_keys.map(id => KeyHelper.generatePreKey(parseInt(id, 10)))
         );
-        keys.forEach(k => this.storePreKey(k.keyId, k.keyPair));
+        keys.forEach((k) => this.storePreKey(k.keyId, k.keyPair));
 
         const prekeys = this.getPreKeys();
         const marshalled_keys = Object.keys(prekeys).map((id) => ({

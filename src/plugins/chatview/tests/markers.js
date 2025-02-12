@@ -35,9 +35,10 @@ describe("A XEP-0333 Chat Marker", function () {
     }));
 
     it("is not sent when a markable message is received from someone not on the roster",
-            mock.initConverse([], {'allow_non_roster_messaging': true}, async function (_converse) {
+            mock.initConverse([], { allow_non_roster_messaging: true }, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
+        await mock.waitUntilBlocklistInitialized(_converse);
         const contact_jid = 'someone@montague.lit';
         const msgid = u.getUniqueId();
         const stanza = stx`
@@ -58,7 +59,7 @@ describe("A XEP-0333 Chat Marker", function () {
             .map(s => s?.nodeTree ?? s)
             .filter(e => e.nodeName === 'message');
 
-        await u.waitUntil(() => sent_messages.length === 2);
+        await u.waitUntil(() => sent_messages.length === 1);
         expect(Strophe.serialize(sent_messages[0])).toBe(
             `<message id="${sent_messages[0].getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">`+
                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+

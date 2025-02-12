@@ -1,5 +1,4 @@
 /*global mock, converse */
-
 const u = converse.env.utils;
 const Strophe = converse.env.Strophe;
 const sizzle = converse.env.sizzle;
@@ -159,7 +158,7 @@ describe("The 'Add Contact' widget", function () {
         input_el.value = 'ambiguous';
         modal.querySelector('button[type="submit"]').click();
 
-        const feedback_el = await u.waitUntil(() => modal.querySelector('.invalid-feedback'));
+        const feedback_el = await u.waitUntil(() => modal.querySelector('.alert-danger'));
         expect(feedback_el.textContent).toBe('Sorry, could not find a contact with that name');
 
         input_el.value = 'existing';

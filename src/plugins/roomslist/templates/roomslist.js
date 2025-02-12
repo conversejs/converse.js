@@ -7,7 +7,6 @@ import { _converse, api, u, constants } from "@converse/headless";
 import 'plugins/muc-views/modals/add-muc.js';
 import 'plugins/muc-views/modals/muc-list.js';
 import { __ } from 'i18n';
-import { addBookmarkViaEvent } from 'plugins/bookmark-views/utils.js';
 import { getUnreadMsgsDisplay } from "shared/chat/utils";
 
 import '../styles/roomsgroups.scss';
@@ -18,24 +17,6 @@ const { isUniView } = u;
 /** @param {MUC} room */
 function isCurrentlyOpen (room) {
     return isUniView() && !room.get('hidden');
-}
-
-/** @param {MUC} room */
-function tplBookmark (room) {
-    const bm = room.get('bookmarked') ?? false;
-    const i18n_bookmark = __('Bookmark');
-    return html`
-        <a class="list-item-action add-bookmark"
-            tabindex="0"
-            data-room-jid="${room.get('jid')}"
-            data-bookmark-name="${room.getDisplayName()}"
-            @click=${(ev) => addBookmarkViaEvent(ev)}
-            title="${ i18n_bookmark }">
-
-            <converse-icon class="fa ${bm ? 'fa-bookmark' : 'fa-bookmark-empty'}"
-                           size="1.2em"
-                           color="${ isCurrentlyOpen(room) ? 'var(--foreground-color)' : '' }"></converse-icon>
-        </a>`;
 }
 
 /** @param {MUC} room */
@@ -74,8 +55,6 @@ function tplRoomItem (el, room) {
                             (room.get('has_activity') ? tplActivityIndicator() : '') }
                     ${room.getDisplayName()}</span>
             </a>
-
-            ${ api.settings.get('allow_bookmarks') ? tplBookmark(room) : '' }
 
             <a class="list-item-action close-room"
                 tabindex="0"
@@ -157,11 +136,12 @@ export default (el) => {
     const is_closed = el.model.get('toggle_state') === CLOSED;
 
     const btns = [
-        html`<a class="dropdown-item show-bookmark-list-modal" role="button"
-                @click="${(ev) => api.modal.show('converse-bookmark-list-modal', { 'model': el.model }, ev)}"
-                data-toggle="modal">
-                    <converse-icon class="fa fa-bookmark" size="1em"></converse-icon>
-                    ${i18n_show_bookmarks}
+        html`<a class="dropdown-item show-add-muc-modal" role="button"
+                @click="${(ev) => api.modal.show('converse-add-muc-modal', { 'model': el.model }, ev)}"
+                data-toggle="modal"
+                data-target="#add-chatrooms-modal">
+                    <converse-icon class="fa fa-plus" size="1em"></converse-icon>
+                    ${i18n_title_new_room}
         </a>`,
         html`<a class="dropdown-item show-list-muc-modal" role="button"
                 @click="${(ev) => api.modal.show('converse-muc-list-modal', { 'model': el.model }, ev)}"
@@ -170,12 +150,11 @@ export default (el) => {
                     <converse-icon class="fa fa-list-ul" size="1em"></converse-icon>
                     ${i18n_title_list_rooms}
         </a>`,
-        html`<a class="dropdown-item show-add-muc-modal" role="button"
-                @click="${(ev) => api.modal.show('converse-add-muc-modal', { 'model': el.model }, ev)}"
-                data-toggle="modal"
-                data-target="#add-chatrooms-modal">
-                    <converse-icon class="fa fa-plus" size="1em"></converse-icon>
-                    ${i18n_title_new_room}
+        html`<a class="dropdown-item show-bookmark-list-modal" role="button"
+                @click="${(ev) => api.modal.show('converse-bookmark-list-modal', { 'model': el.model }, ev)}"
+                data-toggle="modal">
+                    <converse-icon class="fa fa-bookmark" size="1em"></converse-icon>
+                    ${i18n_show_bookmarks}
         </a>`,
     ];
 

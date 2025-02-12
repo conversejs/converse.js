@@ -1,11 +1,13 @@
 /*global mock, converse */
-
-const { Strophe, u } = converse.env;
+const { Strophe, u, stx } = converse.env;
 
 describe("A MUC occupant", function () {
 
     it("does not stores the XEP-0421 occupant id if the feature isn't advertised",
             mock.initConverse([], {}, async function (_converse) {
+
+        await mock.waitUntilBookmarksReturned(_converse);
+
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
@@ -13,20 +15,25 @@ describe("A MUC occupant", function () {
         // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
         const id = u.getUniqueId();
         const name = mock.chatroom_names[0];
-        const presence = u.toStanza(`
+        const presence = stx`
             <presence
                 from="${muc_jid}/${name}"
                 id="${u.getUniqueId()}"
-                to="${_converse.bare_jid}">
+                to="${_converse.bare_jid}"
+                xmlns="jabber:client">
             <x xmlns="http://jabber.org/protocol/muc#user" />
             <occupant-id xmlns="urn:xmpp:occupant-id:0" id="${id}" />
-            </presence>`);
+            </presence>`;
+
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
-        expect(model.getOccupantByNickname(name).get('occupant_id')).toBe(undefined);
+        const occupant = await u.waitUntil(() => model.getOccupantByNickname(name));
+        expect(occupant.get('occupant_id')).toBe(undefined);
     }));
 
     it("stores the XEP-0421 occupant id received from a presence stanza",
             mock.initConverse([], {}, async function (_converse) {
+
+        await mock.waitUntilBookmarksReturned(_converse);
 
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
@@ -41,16 +48,18 @@ describe("A MUC occupant", function () {
             // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
             const id = u.getUniqueId();
             const name = mock.chatroom_names[i];
-            const presence = u.toStanza(`
+            const presence = stx`
                 <presence
                     from="${muc_jid}/${name}"
                     id="${u.getUniqueId()}"
-                    to="${_converse.bare_jid}">
+                    to="${_converse.bare_jid}"
+                    xmlns="jabber:client">
                 <x xmlns="http://jabber.org/protocol/muc#user" />
                 <occupant-id xmlns="urn:xmpp:occupant-id:0" id="${id}" />
-                </presence>`);
+                </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
-            expect(model.getOccupantByNickname(name).get('occupant_id')).toBe(id);
+            const occupant = await u.waitUntil(() => model.getOccupantByNickname(name));
+            expect(occupant.get('occupant_id')).toBe(id);
         }
         expect(model.occupants.length).toBe(mock.chatroom_names.length + 1);
     }));
@@ -69,15 +78,16 @@ describe("A MUC occupant", function () {
 
         const occupant_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
-        const stanza = u.toStanza(`
+        const stanza = stx`
             <message
                 from='${muc_jid}/3rdwitch'
                 id='hysf1v37'
                 to='${_converse.bare_jid}'
-                type='groupchat'>
+                type='groupchat'
+                xmlns="jabber:client">
             <body>Harpier cries: 'tis time, 'tis time.</body>
             <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => model.messages.length);
@@ -93,16 +103,17 @@ describe("A MUC occupant", function () {
 
         expect(message.getDisplayName()).toBe('3rdwitch');
 
-        const presence = u.toStanza(`
+        const presence = stx`
             <presence
                 from="${muc_jid}/thirdwitch"
                 id="${u.getUniqueId()}"
-                to="${_converse.bare_jid}">
+                to="${_converse.bare_jid}"
+                xmlns="jabber:client">
             <x xmlns="http://jabber.org/protocol/muc#user">
                 <item jid="${occupant_jid}" />
             </x>
             <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
-            </presence>`);
+            </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
         occupant = await u.waitUntil(() => model.getOccupantByNickname('thirdwitch'));

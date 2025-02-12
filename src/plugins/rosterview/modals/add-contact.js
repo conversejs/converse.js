@@ -1,5 +1,5 @@
 import { Strophe } from 'strophe.js';
-import { _converse, api } from '@converse/headless';
+import { _converse, api, log } from '@converse/headless';
 import 'shared/autocomplete/index.js';
 import BaseModal from 'plugins/modal/modal.js';
 import tplAddContactModal from './templates/add-contact.js';
@@ -23,10 +23,12 @@ export default class AddContactModal extends BaseModal {
     }
 
     getModalTitle () {
-        // eslint-disable-line class-methods-use-this
         return __('Add a Contact');
     }
 
+    /**
+     * @param {string} jid
+     */
     validateSubmission (jid) {
         if (!jid || jid.split('@').filter((s) => !!s).length < 2) {
             this.model.set('error', __('Please enter a valid XMPP address'));
@@ -39,15 +41,31 @@ export default class AddContactModal extends BaseModal {
         return true;
     }
 
-    afterSubmission (_form, jid, name, group) {
-        _converse.state.roster.addContact({ jid, name, groups: Array.isArray(group) ? group : [group] });
+    /**
+     * @param {HTMLFormElement} _form
+     * @param {string} jid
+     * @param {string} name
+     * @param {FormDataEntryValue} group
+     */
+    async afterSubmission (_form, jid, name, group) {
+        try {
+            await api.contacts.add({ jid, name, groups: Array.isArray(group) ? group : [group] });
+        } catch (e) {
+            log.error(e);
+            this.model.set('error', __('Sorry, something went wrong'));
+            return;
+        }
         this.model.clear();
         this.modal.hide();
     }
 
+    /**
+     * @param {Event} ev
+     */
     async addContactFromForm (ev) {
         ev.preventDefault();
-        const data = new FormData(ev.target);
+        const form = /** @type {HTMLFormElement} */(ev.target);
+        const data = new FormData(form);
         let name = /** @type {string} */ (data.get('name') || '').trim();
         let jid = /** @type {string} */ (data.get('jid') || '').trim();
 
@@ -63,7 +81,7 @@ export default class AddContactModal extends BaseModal {
         }
 
         if (this.validateSubmission(jid)) {
-            this.afterSubmission(ev.target, jid, name, data.get('group'));
+            this.afterSubmission(form, jid, name, data.get('group'));
         }
     }
 }

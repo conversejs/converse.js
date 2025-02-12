@@ -10,6 +10,25 @@ import { getUnloadEvent } from '../../utils/session.js';
 const { Strophe, sizzle, u } = converse.env;
 
 /**
+ * @returns {Promise<string|undefined>}
+ */
+export async function getDefaultMUCService () {
+    let muc_service = api.settings.get('muc_domain') || _converse.session.get('default_muc_service');
+    if (!muc_service) {
+        const domain = _converse.session.get('domain');
+        const items = await api.disco.entities.items(domain);
+        for (const item of items) {
+            if (await api.disco.features.has(Strophe.NS.MUC, item.get('jid'))) {
+                muc_service = item.get('jid');
+                _converse.session.save({ default_muc_service: muc_service });
+                break;
+            }
+        }
+    }
+    return muc_service;
+}
+
+/**
  * @param {import('@converse/skeletor').Model} model
  */
 export function isChatRoom (model) {
@@ -159,7 +178,7 @@ export function getDefaultMUCNickname () {
 /**
  * Determines info message visibility based on
  * muc_show_info_messages configuration setting
- * @param {*} code
+ * @param {import('./types').MUCStatusCode} code
  * @memberOf _converse
  */
 export function isInfoVisible (code) {

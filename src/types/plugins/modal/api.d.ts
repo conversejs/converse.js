@@ -37,11 +37,11 @@ declare namespace modal_api {
      * @method _converse.api.confirm
      * @param {String} title - The header text for the confirmation dialog
      * @param {(Array<String>|String)} messages - The text to show to the user
-     * @param {Array<import('./types.ts').Field>} fields - An object representing a field presented to the user.
+     * @param {Array<import('./types').Field>} fields - An object representing a field presented to the user.
      * @returns {Promise<Array|false>} A promise which resolves with an array of
      *  filled in fields or `false` if the confirm dialog was closed or canceled.
      */
-    function confirm(title: string, messages?: (Array<string> | string), fields?: Array<import("./types.ts").Field>): Promise<any[] | false>;
+    function confirm(title: string, messages?: (Array<string> | string), fields?: Array<import("./types").Field>): Promise<any[] | false>;
     /**
      * Show a prompt modal to the user.
      * @method _converse.api.prompt

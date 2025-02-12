@@ -4,6 +4,8 @@ const { Strophe, u, stx } = converse.env;
 
 describe("A Groupchat Message", function () {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("can be replaced with a correction",
             mock.initConverse([], {}, async function (_converse) {
 
@@ -173,6 +175,8 @@ describe("A Groupchat Message", function () {
     it("can be sent as a correction by using the up arrow",
             mock.initConverse([], {}, async function (_converse) {
 
+        const { api } = _converse;
+        const { jid: own_jid } = api.connection.get();
         const nick = 'romeo'
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
@@ -220,15 +224,15 @@ describe("A Groupchat Message", function () {
 
         expect(_converse.api.connection.get().send).toHaveBeenCalled();
         const msg = _converse.api.connection.get().send.calls.all()[0].args[0];
-        expect(Strophe.serialize(msg)).toBe(
-            `<message from="${muc_jid}/${nick}" id="${msg.getAttribute("id")}" `+
-                `to="lounge@montague.lit" type="groupchat" `+
-                `xmlns="jabber:client">`+
-                    `<body>But soft, what light through yonder window breaks?</body>`+
-                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                    `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
-                    `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
-            `</message>`);
+        expect(msg).toEqualStanza(stx`
+            <message from="${own_jid}" id="${msg.getAttribute("id")}"
+                to="lounge@montague.lit" type="groupchat"
+                xmlns="jabber:client">
+                    <body>But soft, what light through yonder window breaks?</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    <replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>
+                    <origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>
+            </message>`);
 
         expect(view.model.messages.models.length).toBe(1);
         const corrected_message = view.model.messages.at(0);

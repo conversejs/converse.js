@@ -11,20 +11,80 @@ import { decodeHTMLEntities } from '../utils/html.js';
 import { getAttributes } from '../utils/stanza.js';
 import { rejectMessage } from './actions.js';
 import { XFORM_TYPE_MAP,  XFORM_VALIDATE_TYPE_MAP } from './constants.js';
+import * as errors from './errors.js';
 
 
 const { NS } = Strophe;
 
-export class StanzaParseError extends Error {
+/**
+ * @param {Element|Error} stanza - The stanza to be parsed. As a convenience,
+ * an Error element can be passed in as well, so that this function can be
+ * called in a catch block without first checking if a stanza or Error
+ * element was received.
+ * @returns {Promise<Error|errors.StanzaError|null>}
+ */
+export async function parseErrorStanza(stanza) {
+    if (stanza instanceof Error) return stanza;
+    if (stanza.getAttribute('type') !== 'error') return null;
+
+    const error = stanza.querySelector('error');
+    if (!error) return null;
+
+    const e = sizzle(`[xmlns="${Strophe.NS.STANZAS}"]`, error).pop();
+    const name = e?.nodeName;
+
     /**
-     * @param {string} message
-     * @param {Element} stanza
+     * *Hook* which allows plugins to add application-specific error parsing
+     * @event _converse#parseErrorStanza
      */
-    constructor (message, stanza) {
-        super(message);
-        this.name = 'StanzaParseError';
-        this.stanza = stanza;
+    const extra = await api.hook('parseErrorStanza', stanza, {});
+
+    if (name === 'bad-request') {
+        return new errors.BadRequestError(name, error, extra);
+    } else if (name === 'conflict') {
+        return new errors.ConflictError(name, error, extra);
+    } else if (name === 'feature-not-implemented') {
+        return new errors.FeatureNotImplementedError(name, error, extra);
+    } else if (name === 'forbidden') {
+        return new errors.ForbiddenError(name, error, extra);
+    } else if (name === 'gone') {
+        return new errors.GoneError(name, error, extra);
+    } else if (name === 'internal-server-error') {
+        return new errors.InternalServerError(name, error, extra);
+    } else if (name === 'item-not-found') {
+        return new errors.ItemNotFoundError(name, error, extra);
+    } else if (name === 'jid-malformed') {
+        return new errors.JIDMalformedError(name, error, extra);
+    } else if (name === 'not-acceptable') {
+        return new errors.NotAcceptableError(name, error, extra);
+    } else if (name === 'not-allowed') {
+        return new errors.NotAllowedError(name, error, extra);
+    } else if (name === 'not-authorized') {
+        return new errors.NotAuthorizedError(name, error, extra);
+    } else if (name === 'payment-required') {
+        return new errors.PaymentRequiredError(name, error, extra);
+    } else if (name === 'recipient-unavailable') {
+        return new errors.RecipientUnavailableError(name, error, extra);
+    } else if (name === 'redirect') {
+        return new errors.RedirectError(name, error, extra);
+    } else if (name === 'registration-required') {
+        return new errors.RegistrationRequiredError(name, error, extra);
+    } else if (name === 'remote-server-not-found') {
+        return new errors.RemoteServerNotFoundError(name, error, extra);
+    } else if (name === 'remote-server-timeout') {
+        return new errors.RemoteServerTimeoutError(name, error, extra);
+    } else if (name === 'resource-constraint') {
+        return new errors.ResourceConstraintError(name, error, extra);
+    } else if (name === 'service-unavailable') {
+        return new errors.ServiceUnavailableError(name, error, extra);
+    } else if (name === 'subscription-required') {
+        return new errors.SubscriptionRequiredError(name, error, extra);
+    } else if (name === 'undefined-condition') {
+        return new errors.UndefinedConditionError(name, error, extra);
+    } else if (name === 'unexpected-request') {
+        return new errors.UnexpectedRequestError(name, error, extra);
     }
+    return new errors.StanzaError('unknown', error);
 }
 
 /**
@@ -36,14 +96,21 @@ export class StanzaParseError extends Error {
  * @returns {Object}
  */
 export function getStanzaIDs (stanza, original_stanza) {
-    const attrs = {};
-    // Store generic stanza ids
+    // Generic stanza ids
     const sids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
     const sid_attrs = sids.reduce((acc, s) => {
         acc[`stanza_id ${s.getAttribute('by')}`] = s.getAttribute('id');
         return acc;
     }, {});
-    Object.assign(attrs, sid_attrs);
+
+    // Origin id
+    const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop()?.getAttribute('id');
+
+    const attrs = {
+        origin_id,
+        msgid: stanza.getAttribute('id') || original_stanza.getAttribute('id'),
+        ...sid_attrs,
+    };
 
     // Store the archive id
     const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
@@ -53,11 +120,6 @@ export function getStanzaIDs (stanza, original_stanza) {
         attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
     }
 
-    // Store the origin id
-    const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-    if (origin_id) {
-        attrs['origin_id'] = origin_id.getAttribute('id');
-    }
     return attrs;
 }
 
@@ -83,33 +145,56 @@ export function getEncryptionAttributes (stanza) {
  * @param {Element} stanza - The message stanza
  * @param {Element} original_stanza - The original stanza, that contains the
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
- * @returns {Object}
+ * @returns {import('./types').RetractionAttrs | {}}
  */
-export function getRetractionAttributes (stanza, original_stanza) {
+export function getDeprecatedRetractionAttributes (stanza, original_stanza) {
     const fastening = sizzle(`> apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
     if (fastening) {
         const applies_to_id = fastening.getAttribute('id');
-        const retracted = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT}"]`, fastening).pop();
+        const retracted = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT0}"]`, fastening).pop();
         if (retracted) {
             const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
             const time = delay ? dayjs(delay.getAttribute('stamp')).toISOString() : new Date().toISOString();
             return {
-                'editable': false,
-                'retracted': time,
-                'retracted_id': applies_to_id
-            };
-        }
-    } else {
-        const tombstone = sizzle(`> retracted[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();
-        if (tombstone) {
-            return {
-                'editable': false,
-                'is_tombstone': true,
-                'retracted': tombstone.getAttribute('stamp')
+                editable: false,
+                retracted: time,
+                retracted_id: applies_to_id
             };
         }
     }
     return {};
+}
+
+/**
+ * @param {Element} stanza - The message stanza
+ * @param {Element} original_stanza - The original stanza, that contains the
+ *  message stanza, if it was contained, otherwise it's the message stanza itself.
+ * @returns {import('./types').RetractionAttrs | {}}
+ */
+export function getRetractionAttributes (stanza, original_stanza) {
+    const retraction = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();
+    if (retraction) {
+        const delay = sizzle(`> delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
+        const time = delay ? dayjs(delay.getAttribute('stamp')).toISOString() : new Date().toISOString();
+        return {
+            editable: false,
+            retracted: time,
+            retracted_id: retraction.getAttribute('id')
+        };
+    } else {
+        const tombstone =
+            sizzle(`> retracted[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop() ||
+            sizzle(`> retracted[xmlns="${Strophe.NS.RETRACT0}"]`, stanza).pop();
+        if (tombstone) {
+            return {
+                editable: false,
+                is_tombstone: true,
+                retracted: tombstone.getAttribute('stamp'),
+                retraction_id: tombstone.getAttribute('id')
+            };
+        }
+    }
+    return getDeprecatedRetractionAttributes(stanza, original_stanza);
 }
 
 /**
@@ -199,10 +284,11 @@ export function getErrorAttributes (stanza) {
         const error = stanza.querySelector('error');
         const text = sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop();
         return {
-            'is_error': true,
-            'error_text': text?.textContent,
-            'error_type': error.getAttribute('type'),
-            'error_condition': error.firstElementChild.nodeName
+            is_error: true,
+            error_text: text?.textContent,
+            error_type: error.getAttribute('type'),
+            error_condition: error.firstElementChild.nodeName,
+            errors: Array.from(error.children).map((e) => ({ name: e.nodeName, xmlns: e.getAttribute('xmlns') })),
         };
     }
     return {};
@@ -292,7 +378,7 @@ export function throwErrorIfInvalidForward (stanza) {
     if (bare_forward) {
         rejectMessage(stanza, 'Forwarded messages not part of an encapsulating protocol are not supported');
         const from_jid = stanza.getAttribute('from');
-        throw new StanzaParseError(`Ignoring unencapsulated forwarded message from ${from_jid}`, stanza);
+        throw new errors.StanzaParseError(stanza, `Ignoring unencapsulated forwarded message from ${from_jid}`);
     }
 }
 
@@ -480,9 +566,9 @@ export function getInputType(field) {
 }
 
 /**
-* @param {Element} stanza
-* @returns {import('./types').XForm}
-*/
+ * @param {Element} stanza
+ * @returns {import('./types').XForm}
+ */
 export function parseXForm(stanza) {
     const xs = sizzle(`x[xmlns="${Strophe.NS.XFORM}"]`, stanza);
     if (xs.length > 1) {

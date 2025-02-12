@@ -17,7 +17,7 @@ declare const MUC_base: {
         messages: any;
         fetchMessages(): any;
         afterMessagesFetched(): void;
-        onMessage(attrs_or_error: import("../chat/types").MessageAttributes | Error): Promise<void>;
+        onMessage(_attrs_or_error: import("../chat/types").MessageAttributes | Error): Promise<void>;
         getUpdatedMessageAttributes(message: import("../chat/message.js").default, attrs: import("../chat/types").MessageAttributes): object;
         updateMessage(message: import("../chat/message.js").default, attrs: import("../chat/types").MessageAttributes): void;
         handleCorrection(attrs: import("../chat/types").MessageAttributes | import("./types").MUCMessageAttributes): Promise<import("../chat/message.js").default | void>;
@@ -54,6 +54,7 @@ declare const MUC_base: {
         };
         sendMarkerForMessage(msg: import("../chat/message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         handleUnreadMessage(message: import("../chat/message.js").default): void;
+        getErrorAttributesForMessage(message: import("../chat/message.js").default, attrs: import("../chat/types").MessageAttributes): Promise<any>;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../chat/message.js").default): void;
         clearUnreadMsgCounter(): void;
@@ -209,9 +210,10 @@ declare class MUC extends MUC_base {
      * @typedef {import('./types').MemberListItem} MemberListItem
      * @typedef {import('../chat/types').MessageAttributes} MessageAttributes
      * @typedef {import('./types').MUCMessageAttributes} MUCMessageAttributes
+     * @typedef {import('./types').MUCPresenceAttributes} MUCPresenceAttributes
      * @typedef {module:shared.converse.UserMessage} UserMessage
      * @typedef {import('strophe.js').Builder} Builder
-     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
+     * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
     defaults(): {
         bookmarked: boolean;
@@ -390,7 +392,7 @@ declare class MUC extends MUC_base {
     sendDestroyIQ(reason?: string, new_jid?: string): any;
     /**
      * Leave the groupchat.
-     * @param { string } [exit_msg] - Message to indicate your reason for leaving
+     * @param {string} [exit_msg] - Message to indicate your reason for leaving
      */
     leave(exit_msg?: string): Promise<void>;
     /**
@@ -529,7 +531,7 @@ declare class MUC extends MUC_base {
     getOwnOccupant(): import("./occupant.js").default;
     /**
      * Send a presence stanza to update the user's nickname in this MUC.
-     * @param { String } nick
+     * @param {String} nick
      */
     setNickname(nick: string): Promise<void>;
     /**
@@ -621,10 +623,13 @@ declare class MUC extends MUC_base {
     sendUnregistrationIQ(): any;
     /**
      * Given a presence stanza, update the occupant model based on its contents.
-     * @param {Element} pres - The presence stanza
+     * @param {MUCPresenceAttributes} attrs - The presence stanza
      */
-    updateOccupantsOnPresence(pres: Element): boolean;
-    fetchFeaturesIfConfigurationChanged(stanza: any): void;
+    updateOccupantsOnPresence(attrs: import("./types").MUCPresenceAttributes): boolean;
+    /**
+     * @param {MUCMessageAttributes} attrs
+     */
+    fetchFeaturesIfConfigurationChanged(attrs: import("./types").MUCMessageAttributes): void;
     /**
      * Given two JIDs, which can be either user JIDs or MUC occupant JIDs,
      * determine whether they belong to the same user.
@@ -754,31 +759,38 @@ declare class MUC extends MUC_base {
      * should be called.
      * @param {MUCMessageAttributes|StanzaParseError} attrs_or_error - A promise which resolves to the message attributes.
      */
-    onMessage(attrs_or_error: import("./types").MUCMessageAttributes | import("../../shared/parsers.js").StanzaParseError): Promise<void>;
+    onMessage(attrs_or_error: import("./types").MUCMessageAttributes | import("../../shared/errors.js").StanzaParseError): Promise<void>;
     /**
      * @param {Element} pres
      */
     handleModifyError(pres: Element): void;
     /**
      * Handle a presence stanza that disconnects the user from the MUC
-     * @param { Element } stanza
+     * @param {MUCPresenceAttributes} attrs - The stanza
      */
-    handleDisconnection(stanza: Element): void;
-    getActionInfoMessage(code: any, nick: any, actor: any): any;
-    createAffiliationChangeMessage(occupant: any): void;
+    handleDisconnection(attrs: import("./types").MUCPresenceAttributes): void;
+    /**
+     * @param {import('./types').MUCStatusCode} code
+     * @param {MUCPresenceAttributes} attrs
+     */
+    getActionInfoMessage(code: import("./types").MUCStatusCode, attrs: import("./types").MUCPresenceAttributes): any;
+    /**
+     * @param {MUCOccupant} occupant
+     */
+    createAffiliationChangeMessage(occupant: import("./occupant.js").default): void;
     createRoleChangeMessage(occupant: any, changed: any): void;
     /**
-     * Create an info message based on a received MUC status code
-     * @param {string} code - The MUC status code
-     * @param {Element} stanza - The original stanza that contains the code
-     * @param {Boolean} is_self - Whether this stanza refers to our own presence
+     * Create an info message based on a received MUC status code in a
+     * <presence> stanza.
+     * @param {import('./types').MUCStatusCode} code
+     * @param {MUCPresenceAttributes} attrs - The original stanza
      */
-    createInfoMessage(code: string, stanza: Element, is_self: boolean): void;
+    createInfoMessageFromPresence(code: import("./types").MUCStatusCode, attrs: import("./types").MUCPresenceAttributes): void;
     /**
-     * Create info messages based on a received presence or message stanza
-     * @param {Element} stanza
+     * Create an info message based on a received MUC status code in a <message> stanza.
+     * @param {import('./types').MUCStatusCode} code
      */
-    createInfoMessages(stanza: Element): void;
+    createInfoMessage(code: import("./types").MUCStatusCode): void;
     /**
      * Set parameters regarding disconnection from this room. This helps to
      * communicate to the user why they were disconnected.
@@ -797,7 +809,7 @@ declare class MUC extends MUC_base {
      * Parses a <presence> stanza with type "error" and sets the proper
      * `connection_status` value for this {@link MUC} as
      * well as any additional output that can be shown to the user.
-     * @param { Element } stanza - The presence stanza
+     * @param {Element} stanza - The presence stanza
      */
     onErrorPresence(stanza: Element): void;
     /**
@@ -809,7 +821,7 @@ declare class MUC extends MUC_base {
      * Handles incoming presence stanzas coming from the MUC
      * @param {Element} stanza
      */
-    onPresence(stanza: Element): void;
+    onPresence(stanza: Element): Promise<void>;
     /**
      * Handles a received presence relating to the current user.
      *
@@ -821,9 +833,9 @@ declare class MUC extends MUC_base {
      * If the groupchat is not locked, then the groupchat will be
      * auto-configured only if applicable and if the current
      * user is the groupchat's owner.
-     * @param {Element} stanza - The stanza
+     * @param {MUCPresenceAttributes} attrs
      */
-    onOwnPresence(stanza: Element): Promise<void>;
+    onOwnPresence(attrs: import("./types").MUCPresenceAttributes): Promise<void>;
     /**
      * Returns a boolean to indicate whether the current user
      * was mentioned in a message.

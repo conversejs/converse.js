@@ -14,11 +14,11 @@ export default (el) => {
             data-value="${el.data_value}">
 
             <div class="chat-info__message">
-                <converse-rich-text
+                <converse-texture
                     .mentions=${el.model.get('references')}
                     render_styling
                     text=${el.model.getMessageText()}>
-                </converse-rich-text>
+                </converse-texture>
             </div>
             ${ el.model.get('reason') ? html`<q class="reason">${el.model.get('reason')}</q>` : `` }
             ${ el.model.get('error_text') ? html`<q class="reason">${el.model.get('error_text')}</q>` : `` }

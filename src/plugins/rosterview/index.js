@@ -3,11 +3,12 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { _converse, api, converse, RosterFilter } from "@converse/headless";
-import "../modal";
-import "./modals/add-contact.js";
-import './rosterview.js';
 import RosterContactView from './contactview.js';
 import { highlightRosterItem } from './utils.js';
+import "../modal";
+import "./modals/add-contact.js";
+import "./modals/new-chat.js";
+import './rosterview.js';
 
 import 'shared/styles/status.scss';
 import './styles/roster.scss';
@@ -15,7 +16,7 @@ import './styles/roster.scss';
 
 converse.plugins.add('converse-rosterview', {
 
-    dependencies: ["converse-roster", "converse-modal", "converse-chatboxviews"],
+    dependencies: ["converse-roster", "converse-modal", "converse-chatboxviews", "converse-blocklist"],
 
     initialize () {
         api.settings.extend({
@@ -33,8 +34,8 @@ converse.plugins.add('converse-rosterview', {
 
         /* -------- Event Handlers ----------- */
         api.listen.on('chatBoxesInitialized', () => {
-            _converse.state.chatboxes.on('destroy', c => highlightRosterItem(c));
-            _converse.state.chatboxes.on('change:hidden', c => highlightRosterItem(c));
+            _converse.state.chatboxes.on('destroy', c => highlightRosterItem(c.get('jid')));
+            _converse.state.chatboxes.on('change:hidden', c => highlightRosterItem(c.get('jid')));
         });
     }
 });

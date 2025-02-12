@@ -24,7 +24,9 @@ module.exports = function(config) {
       },
       { pattern: "src/shared/tests/mock.js", type: 'module' },
 
+      { pattern: "src/headless/plugins/blocklist/tests/blocklist.js", type: 'module' },
       { pattern: "src/headless/plugins/bookmarks/tests/bookmarks.js", type: 'module' },
+      { pattern: "src/headless/plugins/bookmarks/tests/deprecated.js", type: 'module' },
       { pattern: "src/headless/plugins/caps/tests/caps.js", type: 'module' },
       { pattern: "src/headless/plugins/chat/tests/api.js", type: 'module' },
       { pattern: "src/headless/plugins/disco/tests/disco.js", type: 'module' },
@@ -36,6 +38,7 @@ module.exports = function(config) {
       { pattern: "src/headless/plugins/muc/tests/pruning.js", type: 'module' },
       { pattern: "src/headless/plugins/muc/tests/registration.js", type: 'module' },
       { pattern: "src/headless/plugins/ping/tests/ping.js", type: 'module' },
+      { pattern: "src/headless/plugins/pubsub/tests/config.js", type: 'module' },
       { pattern: "src/headless/plugins/roster/tests/presence.js", type: 'module' },
       { pattern: "src/headless/plugins/smacks/tests/smacks.js", type: 'module' },
       { pattern: "src/headless/plugins/status/tests/status.js", type: 'module' },
@@ -46,9 +49,11 @@ module.exports = function(config) {
       { pattern: "src/plugins/adhoc-views/tests/adhoc.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks-list.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },
+      { pattern: "src/plugins/bookmark-views/tests/deprecated.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/actions.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/chatbox.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/corrections.js", type: 'module' },
+      { pattern: "src/plugins/chatview/tests/deprecated-retractions.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/emojis.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/http-file-upload.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/markers.js", type: 'module' },
@@ -61,6 +66,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/chatview/tests/messages.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/oob.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/receipts.js", type: 'module' },
+      { pattern: "src/plugins/chatview/tests/retractions.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/spoilers.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/styling.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/unreads.js", type: 'module' },
@@ -77,6 +83,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/component.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/corrections.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/csn.js", type: 'module' },
+      { pattern: "src/plugins/muc-views/tests/deprecated-retractions.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/disco.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/emojis.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/hats.js", type: 'module' },
@@ -95,10 +102,10 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/muc-list-modal.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/muc-mentions.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/muc-messages.js", type: 'module' },
+      { pattern: "src/plugins/muc-views/tests/muc-private-messages.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/muc-registration.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/muc.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/mute.js", type: 'module' },
-      { pattern: "src/plugins/muc-views/tests/muc-private-messages.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/nickname.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/occupants-filter.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/occupants.js", type: 'module' },
@@ -122,6 +129,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/roomslist/tests/grouplists.js", type: 'module' },
       { pattern: "src/plugins/rootview/tests/root.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/add-contact-modal.js", type: 'module' },
+      { pattern: "src/plugins/rosterview/tests/new-chat-modal.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/presence.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/protocol.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/roster.js", type: 'module' },
@@ -131,7 +139,8 @@ module.exports = function(config) {
     ],
 
     proxies: {
-      "/dist/images/custom_emojis/": "/base/dist/images/custom_emojis/"
+      "/dist/images/custom_emojis/": "/base/dist/images/custom_emojis/",
+      "/images/logo/": "/base/dist/images/logo/"
     },
 
     client: {

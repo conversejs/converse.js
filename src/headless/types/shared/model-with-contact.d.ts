@@ -5,25 +5,25 @@
 export default function ModelWithContact<T extends import("./types").ModelExtender>(BaseModel: T): {
     new (...args: any[]): {
         /**
-        * @typedef {import('../plugins/vcard/vcard').default} VCard
-        * @typedef {import('../plugins/roster/contact').default} RosterContact
-        * @typedef {import('./_converse.js').XMPPStatus} XMPPStatus
-        */
+         * @typedef {import('../plugins/vcard/vcard').default} VCard
+         * @typedef {import('../plugins/roster/contact').default} RosterContact
+         * @typedef {import('./_converse.js').XMPPStatus} XMPPStatus
+         */
         initialize(): void;
         rosterContactAdded: any;
         /**
-        * @public
-        * @type {RosterContact|XMPPStatus}
-        */
+         * @public
+         * @type {RosterContact|XMPPStatus}
+         */
         contact: import("../plugins/roster/contact").default | import("../index.js").XMPPStatus;
         /**
-        * @public
-        * @type {VCard}
-        */
+         * @public
+         * @type {VCard}
+         */
         vcard: import("../plugins/vcard/vcard").default;
         /**
-        * @param {string} jid
-        */
+         * @param {string} jid
+         */
         setModelContact(jid: string): Promise<void>;
         cid: any;
         attributes: {};

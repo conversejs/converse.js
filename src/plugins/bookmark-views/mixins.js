@@ -2,7 +2,7 @@ import { _converse, api, converse } from '@converse/headless';
 
 const { u } = converse.env;
 
-export const bookmarkableChatRoomView = {
+export const BookmarkableChatRoomView = {
     /**
      * Set whether the groupchat is bookmarked or not.
      * @private

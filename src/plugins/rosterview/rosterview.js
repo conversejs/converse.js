@@ -51,6 +51,11 @@ export default class RosterView extends CustomElement {
         api.modal.show('converse-add-contact-modal', {'model': new Model()}, ev);
     }
 
+    /** @param {MouseEvent} ev */
+    showNewChatModal (ev) {
+        api.modal.show('converse-new-chat-modal', {'model': new Model()}, ev);
+    }
+
     /** @param {MouseEvent} [ev] */
     async syncContacts (ev) {
         ev?.preventDefault();

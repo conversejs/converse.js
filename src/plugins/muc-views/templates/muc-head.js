@@ -1,10 +1,10 @@
-import 'shared/components/dropdown.js';
-import 'shared/components/rich-text.js';
+import { html } from "lit";
+import { until } from 'lit/directives/until.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless";
 import { getStandaloneButtons, getDropdownButtons } from 'shared/chat/utils.js';
-import { html } from "lit";
-import { until } from 'lit/directives/until.js';
+import 'shared/components/dropdown.js';
+import 'shared/texture/component.js';
 
 /** @param {import('../heading').default} el} */
 export default (el) => {
@@ -12,7 +12,6 @@ export default (el) => {
     const subject_hidden = el.user_settings?.get('mucs_with_hidden_subject', [])?.includes(el.model.get('jid'));
     const heading_buttons_promise = el.getHeadingButtons(subject_hidden);
     const i18n_hide_topic = __('Hide the groupchat topic');
-    const i18n_bookmarked = __('This groupchat is bookmarked');
     const subject = o.subject ? o.subject.text : '';
     const show_subject = (subject && !subject_hidden);
     return html`
@@ -37,13 +36,6 @@ export default (el) => {
                      role="heading" aria-level="2"
                      title="${ (api.settings.get('locked_muc_domain') !== 'hidden') ? o.jid : '' }">
                     ${ el.model.getDisplayName() }
-                    ${ (o.bookmarked) ?
-                        html`<converse-icon
-                                class="fa fa-bookmark chatbox-title__text--bookmarked"
-                                size="1em"
-                                color="var(--muc-color)"
-                                title="${i18n_bookmarked}">
-                            </converse-icon>` : '' }
                 </div>
             </div>
             <div class="chatbox-title__buttons btn-toolbar g-0">
@@ -52,7 +44,7 @@ export default (el) => {
             </div>
         </div>
         ${ show_subject ? html`<p class="chat-head__desc" title="${i18n_hide_topic}">
-            <converse-rich-text text=${subject} render_styling></converse-rich-text>
+            <converse-texture text=${subject} render_styling embed_audio></converse-texture>
           </p>` : '' }
     `;
 }

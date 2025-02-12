@@ -22,7 +22,7 @@ class ChatBox extends ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBox
      * @typedef {import('./message.js').default} Message
      * @typedef {import('../muc/muc.js').default} MUC
      * @typedef {import('./types').MessageAttributes} MessageAttributes
-     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
+     * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
 
     defaults () {
@@ -98,6 +98,9 @@ class ChatBox extends ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBox
         }
     }
 
+    /**
+     * @param {import('../roster/presence').default} item
+     */
     onPresenceChanged (item) {
         const { __ } = _converse;
         const show = item.get('show');
@@ -112,7 +115,7 @@ class ChatBox extends ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBox
         } else if (show === 'online') {
             text = __('%1$s is online', fullname);
         }
-        text && this.createMessage({ 'message': text, 'type': 'info' });
+        text && this.createMessage({ message: text, type: 'info', is_ephemeral: true });
     }
 
     async close () {
@@ -154,11 +157,16 @@ class ChatBox extends ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBox
         if (to_bare_jid !== _converse.session.get('bare_jid')) {
             return false;
         }
+
         if (attrs.is_markable) {
-            if (this.contact && !attrs.is_archived && !attrs.is_carbon) {
+            if (this.contact &&
+                    !['none', 'to'].includes(this.contact.get('subscription')) &&
+                    !attrs.is_archived &&
+                    !attrs.is_carbon) {
                 sendMarker(attrs.from, attrs.msgid, 'received');
             }
             return false;
+
         } else if (attrs.marker_id) {
             const message = this.messages.findWhere({'msgid': attrs.marker_id});
             const field_name = `marker_${attrs.marker}`;

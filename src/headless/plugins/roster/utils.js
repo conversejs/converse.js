@@ -45,7 +45,7 @@ function initRoster () {
      * @example _converse.api.listen.on('rosterInitialized', () => { ... });
      * @example _converse.api.waitUntil('rosterInitialized').then(() => { ... });
      */
-    api.trigger('rosterInitialized');
+    api.trigger('rosterInitialized', roster);
 }
 
 
@@ -64,7 +64,7 @@ async function populateRoster (ignore_cache=false) {
     const roster = /** @type {RosterContacts} */(_converse.state.roster);
     try {
         await roster.fetchRosterContacts();
-        api.trigger('rosterContactsFetched');
+        api.trigger('rosterContactsFetched', roster);
     } catch (reason) {
         log.error(reason);
     } finally {
@@ -123,7 +123,7 @@ export async function onClearSession () {
 
 /**
  * Roster specific event handler for the presencesInitialized event
- * @param { Boolean } reconnecting
+ * @param {Boolean} reconnecting
  */
 export function onPresencesInitialized (reconnecting) {
     if (reconnecting) {
@@ -212,8 +212,8 @@ export function onRosterContactsFetched () {
 /**
  * Reject or cancel another user's subscription to our presence updates.
  * @function rejectPresenceSubscription
- * @param { String } jid - The Jabber ID of the user whose subscription is being canceled
- * @param { String } message - An optional message to the user
+ * @param {String} jid - The Jabber ID of the user whose subscription is being canceled
+ * @param {String} message - An optional message to the user
  */
 export function rejectPresenceSubscription (jid, message) {
     const pres = $pres({to: jid, type: "unsubscribed"});

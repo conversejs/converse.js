@@ -5,6 +5,8 @@ const { Strophe, sizzle, u, stx } = converse.env;
 
 describe("XEP-0363: HTTP File Upload", function () {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     describe("When not supported", function () {
         describe("A file upload toolbar button", function () {
 
@@ -124,20 +126,20 @@ describe("XEP-0363: HTTP File Upload", function () {
                     _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
                     await u.waitUntil(() => sent_stanza, 1000);
-                    expect(Strophe.serialize(sent_stanza)).toBe(
-                        `<message `+
-                            `from="${muc_jid}/${nick}" `+
-                            `id="${sent_stanza.getAttribute("id")}" `+
-                            `to="lounge@montague.lit" `+
-                            `type="groupchat" `+
-                            `xmlns="jabber:client">`+
-                                `<body>${message}</body>`+
-                                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                                `<x xmlns="jabber:x:oob">`+
-                                    `<url>${message}</url>`+
-                                `</x>`+
-                                `<origin-id id="${sent_stanza.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
-                        `</message>`);
+                    expect(sent_stanza).toEqualStanza(stx`
+                        <message
+                            from="romeo@montague.lit/orchard"
+                            id="${sent_stanza.getAttribute("id")}"
+                            to="lounge@montague.lit"
+                            type="groupchat"
+                            xmlns="jabber:client">
+                                <body>${message}</body>
+                                <active xmlns="http://jabber.org/protocol/chatstates"/>
+                                <x xmlns="jabber:x:oob">
+                                    <url>${message}</url>
+                                </x>
+                                <origin-id id="${sent_stanza.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>
+                        </message>`);
                     const img_link_el = await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image__link'), 1000);
                     // Check that the image renders
                     expect(img_link_el.outerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(

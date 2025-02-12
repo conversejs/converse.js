@@ -22,5 +22,5 @@ declare class ChatBoxes extends Collection {
      */
     createModel(attrs: object, options: object): any;
 }
-import { Collection } from "@converse/skeletor";
+import { Collection } from '@converse/skeletor';
 //# sourceMappingURL=chatboxes.d.ts.map

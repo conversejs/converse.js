@@ -1,10 +1,10 @@
-import converse from '../../shared/api/public.js';
 import { Model } from '@converse/skeletor';
+import converse from '../../shared/api/public.js';
 
 const { Strophe } = converse.env;
 
 class Bookmark extends Model {
-    get idAttribute () { // eslint-disable-line class-methods-use-this
+    get idAttribute () {
         return 'jid';
     }
 

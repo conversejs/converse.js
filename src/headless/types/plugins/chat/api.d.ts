@@ -55,9 +55,9 @@ declare namespace _default {
          *
          * @method api.chats.get
          * @param {String|string[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-         * @param { Object } [attrs] - Attributes to be set on the _converse.ChatBox model.
-         * @param { Boolean } [create=false] - Whether the chat should be created if it's not found.
-         * @returns { Promise<ChatBox[]> }
+         * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
+         * @param {Boolean} [create=false] - Whether the chat should be created if it's not found.
+         * @returns {Promise<ChatBox[]>}
          *
          * @example
          * // To return a single chat, provide the JID of the contact you're chatting with in that chat:

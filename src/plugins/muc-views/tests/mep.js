@@ -1,8 +1,8 @@
 /*global mock, converse */
-
 const { u, Strophe, stx } = converse.env;
 
 describe("A XEP-0316 MEP notification", function () {
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
     it("is rendered as an info message",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
@@ -37,7 +37,7 @@ describe("A XEP-0316 MEP notification", function () {
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
-        expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
+        expect(view.querySelector('.chat-info__message converse-texture').textContent.trim()).toBe(msg);
         expect(view.querySelector('.reason').textContent.trim()).toBe(reason);
 
         // Check that duplicates aren't created
@@ -76,7 +76,7 @@ describe("A XEP-0316 MEP notification", function () {
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 2);
-        expect(view.querySelector('converse-chat-message:last-child .chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
+        expect(view.querySelector('converse-chat-message:last-child .chat-info__message converse-texture').textContent.trim()).toBe(msg);
         expect(view.querySelector('converse-chat-message:last-child .reason').textContent.trim()).toBe(reason);
 
         // Check that duplicates aren't created
@@ -129,7 +129,7 @@ describe("A XEP-0316 MEP notification", function () {
 
         const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1, 1000);
-        expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
+        expect(view.querySelector('.chat-info__message converse-texture').textContent.trim()).toBe(msg);
         expect(view.querySelector('.reason').textContent.trim()).toBe(reason);
     }));
 
@@ -165,8 +165,8 @@ describe("A XEP-0316 MEP notification", function () {
 
         const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1, 1000);
-        expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
-        expect(view.querySelector('.reason converse-rich-text').innerHTML.replace(/<!-.*?->/g, '').trim()).toBe(
+        expect(view.querySelector('.chat-info__message converse-texture').textContent.trim()).toBe(msg);
+        expect(view.querySelector('.reason converse-texture').innerHTML.replace(/<!-.*?->/g, '').trim()).toBe(
             'Check out <a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>');
     }));
 
@@ -205,7 +205,7 @@ describe("A XEP-0316 MEP notification", function () {
         ));
 
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
-        expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
+        expect(view.querySelector('.chat-info__message converse-texture').textContent.trim()).toBe(msg);
         expect(view.querySelector('.reason').textContent.trim()).toBe(reason);
         expect(view.querySelectorAll('converse-message-actions converse-dropdown .chat-msg__action').length).toBeGreaterThanOrEqual(1);
         const action = view.querySelector('converse-message-actions converse-dropdown .chat-msg__action');
@@ -216,19 +216,16 @@ describe("A XEP-0316 MEP notification", function () {
         submit_button.click();
 
         const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-        const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
+        const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq moderate')).pop());
         const message = view.model.messages.at(0);
         const stanza_id = message.get(`stanza_id ${view.model.get('jid')}`);
 
-        expect(Strophe.serialize(stanza)).toBe(
-            `<iq id="${stanza.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
-                `<apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">`+
-                    `<moderate xmlns="urn:xmpp:message-moderate:0">`+
-                        `<retract xmlns="urn:xmpp:message-retract:0"/>`+
-                        `<reason></reason>`+
-                    `</moderate>`+
-                `</apply-to>`+
-            `</iq>`);
+        expect(stanza).toEqualStanza(stx`
+            <iq id="${stanza.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">
+                <moderate id="${stanza_id}" xmlns="urn:xmpp:message-moderate:1">
+                    <retract xmlns="urn:xmpp:message-retract:1"/>
+                </moderate>
+            </iq>`);
 
         // The server responds with a retraction message
         const retraction = stx`
@@ -237,20 +234,17 @@ describe("A XEP-0316 MEP notification", function () {
                     from="${muc_jid}"
                     to="${muc_jid}/${nick}"
                     xmlns="jabber:client">
-                <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
-                    <moderated by="${_converse.bare_jid}" xmlns="urn:xmpp:message-moderate:0">
-                        <retract xmlns="urn:xmpp:message-retract:0" />
-                        <reason></reason>
-                    </moderated>
-                </apply-to>
+                <retract id="${stanza_id}" xmlns="urn:xmpp:message-retract:1">
+                    <moderated by="${_converse.bare_jid}" xmlns="urn:xmpp:message-moderate:1" />
+                </retract>
             </message>`;
         await view.model.handleMessageStanza(retraction);
         expect(view.model.messages.length).toBe(1);
         expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
-        expect(view.model.messages.at(0).get('moderation_reason')).toBe('');
+        expect(view.model.messages.at(0).get('moderation_reason')).toBeUndefined;
         expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
         expect(view.model.messages.at(0).get('editable')).toBe(false);
-        const msg_el = view.querySelector('.chat-msg--retracted .chat-info__message div');
-        expect(msg_el.textContent).toBe(`${nick} has removed this message`);
+        const msg_el = view.querySelector('.chat-msg--retracted .chat-info__message .retraction');
+        expect(msg_el.firstElementChild.textContent).toBe(`${nick} has removed a message`);
     }));
 });

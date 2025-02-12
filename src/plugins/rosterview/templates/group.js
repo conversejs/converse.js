@@ -41,16 +41,16 @@ function renderContact (contact) {
     } else if (subscription === 'both' || subscription === 'to' || u.isSameBareJID(jid, api.connection.get().jid)) {
         extra_classes.push('current-xmpp-contact');
         extra_classes.push(subscription);
-        extra_classes.push(contact.presence.get('show'));
+        extra_classes.push(contact.getStatus());
     }
     return html`
-        <li class="list-item d-flex controlbox-padded ${extra_classes.join(' ')}" data-status="${contact.presence.get('show')}">
+        <li class="list-item d-flex controlbox-padded ${extra_classes.join(' ')}" data-status="${contact.getStatus()}">
             <converse-roster-contact .model=${contact}></converse-roster-contact>
         </li>`;
 }
 
 
-export default  (o) => {
+export default (o) => {
     const i18n_title = __('Click to hide these contacts');
     const collapsed = _converse.state.roster.state.get('collapsed_groups');
     return html`

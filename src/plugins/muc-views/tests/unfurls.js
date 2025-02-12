@@ -4,6 +4,8 @@ const { Strophe, u, stx } = converse.env;
 
 describe("A Groupchat Message", function () {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("will render an unfurl based on OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
@@ -402,7 +404,11 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.querySelector('converse-message-unfurl .chat-image') !== null);
     }));
 
-    it("will not render an unfurl that has been removed in a subsequent correction", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+    it("will not render an unfurl that has been removed in a subsequent correction",
+            mock.initConverse(['chatBoxesFetched'], { auto_register_muc_nickname: false }, async function (_converse) {
+
+        const { api } = _converse;
+        const { jid: own_jid } = api.connection.get();
         const nick = 'romeo';
         const muc_jid = 'lounge@muc.montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
@@ -425,17 +431,15 @@ describe("A Groupchat Message", function () {
         message_form.onKeyDown(enter_event);
 
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
-        expect(view.querySelector('.chat-msg__text').textContent)
-            .toBe(unfurl_url);
+        expect(view.querySelector('.chat-msg__text').textContent).toBe(unfurl_url);
 
         let msg = _converse.api.connection.get().send.calls.all()[1].args[0];
-        expect(Strophe.serialize(msg))
-        .toBe(
-            `<message from="${muc_jid}/${nick}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
-                `<body>${unfurl_url}</body>`+
-                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                `<origin-id id="${msg.querySelector('origin-id')?.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>`+
-            `</message>`);
+        expect(msg).toEqualStanza(stx`
+            <message from="${own_jid}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">
+                <body>${unfurl_url}</body>
+                <active xmlns="http://jabber.org/protocol/chatstates"/>
+                <origin-id id="${msg.querySelector('origin-id')?.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>
+            </message>`);
 
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe(unfurl_url);
@@ -477,13 +481,12 @@ describe("A Groupchat Message", function () {
         const getSentMessages = () => _converse.api.connection.get().send.calls.all().map(c => c.args[0]).filter(s => s.nodeName === 'message');
         await u.waitUntil(() => getSentMessages().length == 2);
         msg = getSentMessages().pop();
-        expect(Strophe.serialize(msg))
-        .toBe(
-            `<message from="${muc_jid}/${nick}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
-                `<body>never mind</body>`+
-                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                `<replace id="${msg.querySelector('replace')?.getAttribute('id')}" xmlns="urn:xmpp:message-correct:0"/>`+
-                `<origin-id id="${msg.querySelector('origin-id')?.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>`+
-            `</message>`);
+        expect(msg).toEqualStanza(stx`
+            <message from="${own_jid}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">
+                <body>never mind</body>
+                <active xmlns="http://jabber.org/protocol/chatstates"/>
+                <replace id="${msg.querySelector('replace')?.getAttribute('id')}" xmlns="urn:xmpp:message-correct:0"/>
+                <origin-id id="${msg.querySelector('origin-id')?.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>
+            </message>`);
     }));
 });

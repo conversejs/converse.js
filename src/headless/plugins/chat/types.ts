@@ -1,15 +1,28 @@
 import {EncryptionAttrs} from "../../shared/types";
 
-export type MessageAttributes = EncryptionAttrs & {
+// Represents a XEP-0372 reference
+export type Reference = {
+    begin: number;
+    end: number;
+    type: string;
+    uri: string;
+}
+
+export type MessageErrorAttributes = {
+    is_error: boolean; // Whether an error was received for this message
+    error: string; // The error name
+    errors: { name: string; xmlns: string }[];
+    error_condition: string; // The defined error condition
+    error_text: string; // The error text received from the server
+    error_type: string; // The type of error received from the server
+}
+
+export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     body: string; // The contents of the <body> tag of the message stanza
     chat_state: string; // The XEP-0085 chat state notification contained in this message
     contact_jid: string; // The JID of the other person or entity
     editable: boolean; // Is this message editable via XEP-0308?
     edited: string; // An ISO8601 string recording the time that the message was edited per XEP-0308
-    error: string; // The error name
-    error_condition: string; // The defined error condition
-    error_text: string; // The error text received from the server
-    error_type: string; // The type of error received from the server
     from: string; // The sender JID
     message?: string; // Used with info and error messages
     fullname: string; // The full name of the sender
@@ -17,7 +30,6 @@ export type MessageAttributes = EncryptionAttrs & {
     is_carbon: boolean; // Is this message a XEP-0280 Carbon?
     is_delayed: boolean; // Was delivery of this message was delayed as per XEP-0203?
     is_encrypted: boolean; //  Is this message XEP-0384  encrypted?
-    is_error: boolean; // Whether an error was received for this message
     is_headline: boolean; // Is this a "headline" message?
     is_markable: boolean; // Can this message be marked with a XEP-0333 chat marker?
     is_marker: boolean; // Is this message a XEP-0333 Chat Marker?
@@ -37,7 +49,7 @@ export type MessageAttributes = EncryptionAttrs & {
     plaintext: string; // The decrypted text of this message, in case it was encrypted.
     receipt_id: string; // The `id` attribute of a XEP-0184 <receipt> element
     received: string; // An ISO8601 string recording the time that the message was received
-    references: Array<Object>; // A list of objects representing XEP-0372 references
+    references: Array<Reference>; // A list of objects representing XEP-0372 references
     replace_id: string; // The `id` attribute of a XEP-0308 <replace> element
     retracted: string; // An ISO8601 string recording the time that the message was retracted
     retracted_id: string; // The `id` attribute of a XEP-424 <retracted> element

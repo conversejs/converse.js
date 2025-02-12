@@ -20,7 +20,7 @@ export default {
      */
     async ping (jid, timeout) {
         if (!api.connection.authenticated()) {
-            log.warn("Not pinging when we know we're not authenticated");
+            log.debug("Not pinging when we know we're not authenticated");
             return null;
         }
 

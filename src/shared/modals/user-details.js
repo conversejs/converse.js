@@ -1,26 +1,32 @@
-/**
- * @typedef {import('@converse/headless').ChatBox} ChatBox
- */
+import { api } from "@converse/headless";
+import { blockContact, removeContact, unblockContact } from 'plugins/rosterview/utils.js';
 import BaseModal from "plugins/modal/modal.js";
-import { tplUserDetailsModal, tplFooter } from "./templates/user-details.js";
 import { __ } from 'i18n';
-import { api, converse, log } from "@converse/headless";
-import { removeContact } from 'plugins/rosterview/utils.js';
+import { tplUserDetailsModal } from "./templates/user-details.js";
 
-const u = converse.env.utils;
+import './styles/user-details.scss';
 
 
 export default class UserDetailsModal extends BaseModal {
 
     initialize () {
         super.initialize();
-        this.model.rosterContactAdded.then(() => this.registerContactEventHandlers());
+        this.model.rosterContactAdded.then(() => {
+            this.registerContactEventHandlers();
+            api.vcard.update(this.model.contact.vcard, true);
+        });
         this.listenTo(this.model, 'change', this.render);
-        this.registerContactEventHandlers();
+
+        if (this.model.contact !== undefined) {
+            this.registerContactEventHandlers();
+            // Refresh the vcard
+            api.vcard.update(this.model.contact.vcard, true);
+        }
+
         /**
          * Triggered once the UserDetailsModal has been initialized
          * @event _converse#userDetailsModalInitialized
-         * @type {ChatBox}
+         * @type {import('@converse/headless').ChatBox}
          * @example _converse.api.listen.on('userDetailsModalInitialized', (chatbox) => { ... });
          */
         api.trigger('userDetailsModalInitialized', this.model);
@@ -30,46 +36,47 @@ export default class UserDetailsModal extends BaseModal {
         return tplUserDetailsModal(this);
     }
 
-    renderModalFooter () {
-        return tplFooter(this);
-    }
-
     getModalTitle () {
         return this.model.getDisplayName();
     }
 
     registerContactEventHandlers () {
-        if (this.model.contact !== undefined) {
-            this.listenTo(this.model.contact, 'change', this.render);
-            this.listenTo(this.model.contact.vcard, 'change', this.render);
-            this.model.contact.on('destroy', () => {
-                delete this.model.contact;
-                this.render();
-            });
-        }
+        this.listenTo(this.model.contact, 'change', this.render);
+        this.listenTo(this.model.contact.vcard, 'change', this.render);
+        this.model.contact.on('destroy', () => {
+            delete this.model.contact;
+            this.close();
+        });
+
+        // Refresh the vcard
+        api.vcard.update(this.model.contact.vcard, true);
     }
 
-    async refreshContact (ev) {
-        if (ev && ev.preventDefault) { ev.preventDefault(); }
-        const refresh_icon = this.querySelector('.fa-refresh');
-        u.addClass('fa-spin', refresh_icon);
-        try {
-            await api.vcard.update(this.model.contact.vcard, true);
-        } catch (e) {
-            log.fatal(e);
-            this.alert(__('Sorry, something went wrong while trying to refresh'), 'danger');
-        }
-        u.removeClass('fa-spin', refresh_icon);
-    }
-
+    /**
+     * @param {MouseEvent} ev
+     */
     async removeContact (ev) {
         ev?.preventDefault?.();
-        if (!api.settings.get('allow_contact_removal')) { return; }
-        const result = await api.confirm(__("Are you sure you want to remove this contact?"));
-        if (result) {
-            setTimeout(() => removeContact(this.model.contact), 1);
-            this.modal.hide();
-        }
+        setTimeout(() => removeContact(this.model.contact), 1);
+        this.modal.hide();
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    async blockContact(ev) {
+        ev?.preventDefault?.();
+        setTimeout(() => blockContact(this.model.contact), 1);
+        this.modal.hide();
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    async unblockContact(ev) {
+        ev?.preventDefault?.();
+        setTimeout(() => unblockContact(this.model.contact), 1);
+        this.modal.hide();
     }
 }
 

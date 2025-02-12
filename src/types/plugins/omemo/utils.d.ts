@@ -25,7 +25,6 @@ export function parseEncryptedMessage(stanza: Element, attrs: (MUCMessageAttribu
 export function onChatBoxesInitialized(): void;
 export function onChatInitialized(el: any): void;
 export function getSessionCipher(jid: any, id: any): any;
-export function addKeysToMessageStanza(stanza: any, dicts: any, iv: any): Promise<any>;
 /**
  * Given an XML element representing a user's OMEMO bundle, parse it
  * and return a map.

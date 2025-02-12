@@ -32,7 +32,7 @@ declare class MUCOccupants extends Collection {
      * Lookup by occupant_id is done first, then jid, and then nick.
      *
      * @method _converse.MUCOccupants#findOccupant
-     * @param { OccupantData } data
+     * @param {OccupantData} data
      */
     findOccupant(data: {
         jid?: string;

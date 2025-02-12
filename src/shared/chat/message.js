@@ -123,10 +123,6 @@ export default class Message extends CustomElement {
         this.parentElement.removeChild(this);
     }
 
-    isRetracted () {
-        return this.model.get('retracted') || this.model.get('moderated') === 'retracted';
-    }
-
     hasMentions () {
         const is_groupchat = this.model.get('type') === 'groupchat';
         return is_groupchat && this.model.get('sender') === 'them' && this.model_with_messages.isUserMentioned(this.model);
@@ -141,11 +137,12 @@ export default class Message extends CustomElement {
     }
 
     getExtraMessageClasses () {
+        const is_action = this.model.isMeCommand() || this.model.isRetracted();
         const extra_classes = [
             this.model.isFollowup() ? 'chat-msg--followup' : null,
             this.model.get('is_delayed') ? 'delayed' : null,
-            this.model.isMeCommand() ? 'chat-msg--action' : null,
-            this.isRetracted() ? 'chat-msg--retracted' : null,
+            is_action ? 'chat-msg--action' : null,
+            this.model.isRetracted() ? 'chat-msg--retracted' : null,
             this.model.get('type'),
             this.shouldShowAvatar() ? 'chat-msg--with-avatar' : null,
         ].map(c => c);
@@ -171,9 +168,11 @@ export default class Message extends CustomElement {
                     occupants.findOccupant({'nick': Strophe.getResourceFromJid(retracted_by_mod)});
             }
             const modname = this.model.mod ? this.model.mod.getDisplayName() : __('A moderator');
-            return __('%1$s has removed this message', modname);
+            return __('%1$s has removed a message', modname);
         } else {
-            return __('%1$s has removed this message', this.model.getDisplayName());
+            return this.model.get('sender') === 'me' ?
+                __('You have removed a message') :
+                __('%1$s has removed a message', this.model.getDisplayName());
         }
     }
 

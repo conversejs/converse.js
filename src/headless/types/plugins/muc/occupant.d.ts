@@ -17,21 +17,21 @@ declare const MUCOccupant_base: {
         messages: any;
         fetchMessages(): any;
         afterMessagesFetched(): void;
-        onMessage(attrs_or_error: import("../chat/types").MessageAttributes | Error): Promise<void>;
-        getUpdatedMessageAttributes(message: import("../chat").Message, attrs: import("../chat/types").MessageAttributes): object;
-        updateMessage(message: import("../chat").Message, attrs: import("../chat/types").MessageAttributes): void;
-        handleCorrection(attrs: import("../chat/types").MessageAttributes | import("./types").MUCMessageAttributes): Promise<import("../chat").Message | void>;
+        onMessage(_attrs_or_error: import("../chat/types").MessageAttributes | Error): Promise<void>;
+        getUpdatedMessageAttributes(message: import("../chat/message").default, attrs: import("../chat/types").MessageAttributes): object;
+        updateMessage(message: import("../chat/message").default, attrs: import("../chat/types").MessageAttributes): void;
+        handleCorrection(attrs: import("../chat/types").MessageAttributes | import("./types").MUCMessageAttributes): Promise<import("../chat/message").default | void>;
         queueMessage(attrs: import("../chat/types").MessageAttributes): any;
         msg_chain: any;
         getOutgoingMessageAttributes(_attrs?: import("../chat/types").MessageAttributes): Promise<import("../chat/types").MessageAttributes>;
-        sendMessage(attrs?: any): Promise<import("../chat").Message>;
-        retractOwnMessage(message: import("../chat").Message): void;
+        sendMessage(attrs?: any): Promise<import("../chat/message").default>;
+        retractOwnMessage(message: import("../chat/message").default): void;
         sendFiles(files: File[]): Promise<void>;
         setEditable(attrs: any, send_time: string): void;
         setChatState(state: string, options?: object): any;
         chat_state_timeout: NodeJS.Timeout;
-        onMessageAdded(message: import("../chat").Message): void;
-        onMessageUploadChanged(message: import("../chat").Message): Promise<void>;
+        onMessageAdded(message: import("../chat/message").default): void;
+        onMessageUploadChanged(message: import("../chat/message").default): Promise<void>;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
         shouldShowErrorMessage(attrs: import("../chat/types").MessageAttributes): Promise<boolean>;
@@ -41,8 +41,8 @@ declare const MUCOccupant_base: {
         getOldestMessage(): any;
         getMostRecentMessage(): any;
         getMessageReferencedByError(attrs: object): any;
-        findDanglingRetraction(attrs: object): import("../chat").Message | null;
-        getDuplicateMessage(attrs: object): import("../chat").Message;
+        findDanglingRetraction(attrs: object): import("../chat/message").default | null;
+        getDuplicateMessage(attrs: object): import("../chat/message").default;
         getOriginIdQueryAttrs(attrs: object): {
             origin_id: any;
             from: any;
@@ -52,14 +52,15 @@ declare const MUCOccupant_base: {
             from: any;
             msgid: any;
         };
-        sendMarkerForMessage(msg: import("../chat").Message, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
-        handleUnreadMessage(message: import("../chat").Message): void;
+        sendMarkerForMessage(msg: import("../chat/message").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
+        handleUnreadMessage(message: import("../chat/message").default): void;
+        getErrorAttributesForMessage(message: import("../chat/message").default, attrs: import("../chat/types").MessageAttributes): Promise<any>;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
-        incrementUnreadMsgsCounter(message: import("../chat").Message): void;
+        incrementUnreadMsgsCounter(message: import("../chat/message").default): void;
         clearUnreadMsgCounter(): void;
         handleRetraction(attrs: import("../chat/types").MessageAttributes): Promise<boolean>;
         handleReceipt(attrs: import("../chat/types").MessageAttributes): boolean;
-        createMessageStanza(message: import("../chat").Message): Promise<any>;
+        createMessageStanza(message: import("../chat/message").default): Promise<any>;
         pruneHistory(): void;
         debouncedPruneHistory: import("lodash").DebouncedFunc<() => void>;
         isScrolledUp(): any;
@@ -202,7 +203,7 @@ declare const MUCOccupant_base: {
 declare class MUCOccupant extends MUCOccupant_base {
     /**
      * @typedef {import('../chat/types').MessageAttributes} MessageAttributes
-     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
+     * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
     constructor(attributes: any, options: any);
     vcard: any;
@@ -213,6 +214,7 @@ declare class MUCOccupant extends MUCOccupant_base {
         states: any[];
         hidden: boolean;
         num_unread: number;
+        message_type: string;
     };
     save(key: any, val: any, options: any): any;
     getMessagesCollection(): MUCMessages;
@@ -221,7 +223,7 @@ declare class MUCOccupant extends MUCOccupant_base {
      * This method houldn't be called directly, instead {@link MUC#queueMessage} should be called.
      * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    onMessage(attrs_or_error: import("../chat/types").MessageAttributes | import("../../shared/parsers").StanzaParseError): Promise<void>;
+    onMessage(attrs_or_error: import("../chat/types").MessageAttributes | import("../../shared/errors").StanzaParseError): Promise<void>;
     /**
      * Return roles which may be assigned to this occupant
      * @returns {typeof ROLES} - An array of assignable roles

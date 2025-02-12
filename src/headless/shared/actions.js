@@ -3,7 +3,7 @@ import { Strophe, $msg } from 'strophe.js';
 import api from './api/index.js';
 import converse from './api/public.js';
 
-const u = converse.env.utils;
+const { u, stx } = converse.env;
 
 /**
  * Reject an incoming message by replying with an error message of type "cancel".
@@ -19,10 +19,8 @@ export function rejectMessage(stanza, text) {
             'id': stanza.getAttribute('id'),
         })
             .c('error', { 'type': 'cancel' })
-            .c('not-allowed', { xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas' })
-            .up()
-            .c('text', { xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas' })
-            .t(text)
+            .c('not-allowed', { xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas' }).up()
+            .c('text', { xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas' }).t(text)
     );
     log.warn(`Rejecting message stanza with the following reason: ${text}`);
     log.warn(stanza);
@@ -58,10 +56,8 @@ export function sendReceiptStanza(to_jid, id) {
         'to': to_jid,
         'type': 'chat',
     })
-        .c('received', { 'xmlns': Strophe.NS.RECEIPTS, 'id': id })
-        .up()
-        .c('store', { 'xmlns': Strophe.NS.HINTS })
-        .up();
+        .c('received', { 'xmlns': Strophe.NS.RECEIPTS, 'id': id }).up()
+        .c('store', { 'xmlns': Strophe.NS.HINTS }).up();
     api.send(receipt_stanza);
 }
 
@@ -82,10 +78,8 @@ export function sendChatState(jid, chat_state) {
                 'to': jid,
                 'type': 'chat',
             })
-                .c(chat_state, { 'xmlns': Strophe.NS.CHATSTATES })
-                .up()
-                .c('no-store', { 'xmlns': Strophe.NS.HINTS })
-                .up()
+                .c(chat_state, { 'xmlns': Strophe.NS.CHATSTATES }).up()
+                .c('no-store', { 'xmlns': Strophe.NS.HINTS }).up()
                 .c('no-permanent-store', { 'xmlns': Strophe.NS.HINTS })
         );
     }
@@ -95,22 +89,22 @@ export function sendChatState(jid, chat_state) {
  * Sends a message stanza to retract a message in this chat
  * @param {string} jid
  * @param {import('../plugins/chat/message').default} message - The message which we're retracting.
+ * @param {string} retraction_id - Unique ID for the retraction message
  */
-export function sendRetractionMessage(jid, message) {
+export function sendRetractionMessage(jid, message, retraction_id) {
     const origin_id = message.get('origin_id');
     if (!origin_id) {
         throw new Error("Can't retract message without a XEP-0359 Origin ID");
     }
-    const msg = $msg({
-        'id': u.getUniqueId(),
-        'to': jid,
-        'type': 'chat',
-    })
-        .c('store', { xmlns: Strophe.NS.HINTS }).up()
-        .c('apply-to', {
-            'id': origin_id,
-            'xmlns': Strophe.NS.FASTEN,
-        })
-        .c('retract', { xmlns: Strophe.NS.RETRACT });
-    return api.connection.get().send(msg);
+    const stanza = stx`
+        <message id="${retraction_id}"
+                 to="${jid}"
+                 type="chat"
+                 xmlns="jabber:client">
+            <retract id="${origin_id}" xmlns="${Strophe.NS.RETRACT}"/>
+            <body>/me retracted a message</body>
+            <store xmlns="${Strophe.NS.HINTS}"/>
+            <fallback xmlns="${Strophe.NS.FALLBACK}" for="${Strophe.NS.RETRACT}" />
+        </message>`;
+    return api.connection.get().send(stanza);
 }

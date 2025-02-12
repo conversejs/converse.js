@@ -2,6 +2,9 @@ import { __ } from 'i18n';
 import { api } from "@converse/headless";
 import { html } from "lit";
 
+/**
+ * @param {import('../nickname-form').default} el
+ */
 export default (el) => {
     const i18n_nickname =  __('Nickname');
     const i18n_join = el.model?.isEntered() ? __('Change nickname') : __('Enter groupchat');

@@ -34,6 +34,8 @@
 - #3476: better UI for form "fixed" fields
 - #3478: MUC participant status indicator misplaced 
 - #3529: Unbookmarked channels no longer change their name when clicked with an unread indicator (or text icon)
+- #3579: Changing nickname in a groupchat once, forbids to change nickname in another groupchat afterwards
+
 
 ### Bugfixes
 - Fix: MUC occupant list does not sort itself on nicknames or roles changes

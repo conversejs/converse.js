@@ -21,7 +21,7 @@ export default class MUCDetailsModal extends BaseModal {
     }
 
     getModalTitle () {
-        return __('Groupchat info', this.model.getDisplayName());
+        return __('Groupchat info');
     }
 
 }

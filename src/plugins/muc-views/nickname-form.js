@@ -1,39 +1,46 @@
-import tplMUCNicknameForm from './templates/muc-nickname-form.js';
+import { _converse, api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element';
-import { _converse, api } from "@converse/headless";
+import tplMUCNicknameForm from './templates/muc-nickname-form.js';
 
 import './styles/nickname-form.scss';
 
-
 class MUCNicknameForm extends CustomElement {
-
-    constructor () {
+    constructor() {
         super();
         this.jid = null;
+        this.model = null;
     }
 
-    static get properties () {
+    static get properties() {
         return {
-            'jid': { type: String }
+            jid: { type: String },
+        };
+    }
+
+    /**
+     * @param {Map<string, any>} changed
+     */
+    shouldUpdate(changed) {
+        if (changed.has('jid') && this.jid) {
+            const { chatboxes } = _converse.state;
+            this.model = chatboxes.get(this.jid);
         }
+        return true;
     }
 
-    connectedCallback () {
-        super.connectedCallback();
-        const { chatboxes } = _converse.state;
-        this.model = chatboxes.get(this.jid);
-    }
-
-    render () {
+    render() {
         return tplMUCNicknameForm(this);
     }
 
-    submitNickname (ev) {
+    /**
+     * @param {Event} ev
+     */
+    submitNickname(ev) {
         ev.preventDefault();
-        const nick = ev.target.nick.value.trim();
-        if (!nick) {
-            return;
-        }
+        const form = /** @type {HTMLFormElement} */ (ev.target);
+        const nick = form.nick.value.trim();
+        if (!nick) return;
+
         if (this.model.isEntered()) {
             this.model.setNickname(nick);
             this.closeModal();
@@ -42,7 +49,7 @@ class MUCNicknameForm extends CustomElement {
         }
     }
 
-    closeModal () {
+    closeModal() {
         /** @type {import('plugins/modal/modal').default} */ (
             document.querySelector('converse-muc-nickname-modal')
         ).close();

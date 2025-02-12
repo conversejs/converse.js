@@ -9,7 +9,7 @@ export default class MUCNicknameModal extends BaseModal {
         return html`<converse-muc-nickname-form jid="${this.model.get('jid')}"></converse-muc-nickname-form>`;
     }
 
-    getModalTitle () { // eslint-disable-line class-methods-use-this
+    getModalTitle () {
         return __('Change your nickname');
     }
 }

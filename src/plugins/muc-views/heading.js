@@ -67,6 +67,14 @@ export default class MUCHeading extends CustomElement {
     /**
      * @param {Event} ev
      */
+    showNicknameModal (ev) {
+        ev.preventDefault();
+        api.modal.show('converse-muc-nickname-modal', { model: this.model }, ev);
+    }
+
+    /**
+     * @param {Event} ev
+     */
     toggleTopic (ev) {
         ev?.preventDefault?.();
         this.model.toggleSubjectHiddenState();
@@ -116,7 +124,7 @@ export default class MUCHeading extends CustomElement {
         buttons.push({
             'i18n_text': __('Details'),
             'i18n_title': __('Show more information about this groupchat'),
-            'handler': ev => this.showRoomDetailsModal(ev),
+            'handler': /** @param {Event} ev */(ev) => this.showRoomDetailsModal(ev),
             'a_class': 'show-muc-details-modal',
             'icon_class': 'fa-info-circle',
             'name': 'details'
@@ -126,7 +134,7 @@ export default class MUCHeading extends CustomElement {
             buttons.push({
                 'i18n_text': __('Configure'),
                 'i18n_title': __('Configure this groupchat'),
-                'handler': ev => this.showConfigModal(ev),
+                'handler': /** @param {Event} ev */(ev) => this.showConfigModal(ev),
                 'a_class': 'configure-chatroom-button',
                 'icon_class': 'fa-wrench',
                 'name': 'configure'
@@ -136,7 +144,7 @@ export default class MUCHeading extends CustomElement {
         buttons.push({
             'i18n_text': __('Nickname'),
             'i18n_title': __("Change the nickname you're using in this groupchat"),
-            'handler': ev => api.modal.show('converse-muc-nickname-modal', { 'model': this.model }, ev),
+            'handler': /** @param {Event} ev */(ev) => this.showNicknameModal(ev),
             'a_class': 'open-nickname-modal',
             'icon_class': 'fa-smile',
             'name': 'nickname'

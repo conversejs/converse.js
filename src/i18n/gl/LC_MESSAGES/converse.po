@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2024-12-06 13:00+0000\n"
+"PO-Revision-Date: 2025-02-14 05:32+0000\n"
 "Last-Translator: \"josé m.\" <correoxm@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.10-rc\n"
 
 #: dist/converse-no-dependencies.js:20630
 #: dist/converse-no-dependencies.js:20684
@@ -186,9 +186,8 @@ msgid ""
 msgstr "Non se entregou a mensaxe porque non estás presente neste grupo."
 
 #: dist/converse-no-dependencies.js:41016
-#, fuzzy
 msgid "A timeout happened while trying to retract your message."
-msgstr "Caducou a solicitude mentras intentabas retractar a mensaxe."
+msgstr "Caducou a solicitude ao intentar retractar a mensaxe."
 
 #: dist/converse-no-dependencies.js:41770
 msgid "Sorry, an error happened while running the command."
@@ -515,13 +514,12 @@ msgid ""
 msgstr "Sacáronte desta conversa en grupo debido a un cambio na afiliación"
 
 #: dist/converse-no-dependencies.js:49980
-#, fuzzy
 msgid ""
 "You have been removed from this groupchat because it has changed to members-"
 "only and you're not a member"
 msgstr ""
-"Elimináronte desta conversa en grupo porque o grupo cambiou a só-membros e "
-"ti non es membro"
+"Quitáronte desta conversa en grupo porque o grupo cambiou a só-membros e ti "
+"non es membro"
 
 #: dist/converse-no-dependencies.js:49981
 msgid ""
@@ -547,9 +545,8 @@ msgstr ""
 "recargar a páxina para solicitalos de novo."
 
 #: dist/converse-no-dependencies.js:54299
-#, fuzzy
 msgid "You are blocked from sending messages."
-msgstr "Non tes permiso para enviar unha mensaxe."
+msgstr "Non tes permiso para enviar mensaxes."
 
 #: dist/converse-no-dependencies.js:56320
 msgid "A timeout occurred"
@@ -981,15 +978,16 @@ msgid "What should your nickname for this groupchat be?"
 msgstr "Qué alcume desexa ter para esta conversa en grupo?"
 
 #: dist/converse-no-dependencies.js:86842
-#, fuzzy
 msgid "Password (for a protected groupchat)"
-msgstr "Protexido por contrasinal"
+msgstr "Contrasinal (para conversa en grupo protexida)"
 
 #: dist/converse-no-dependencies.js:86843
 msgid ""
 "If the groupchat requires a password to enter, you can save it here. Note "
 "this is not intended to be a secure storage."
 msgstr ""
+"Podes gardala aquí se a conversa en grupo require un contrasinal para "
+"participar. Ten en conta que isto non pretende ser unha almacenaxe segura."
 
 #: dist/converse-no-dependencies.js:86844
 msgid "Update"
@@ -1135,36 +1133,35 @@ msgid "Are you sure you want to remove this contact?"
 msgstr "Seguro que quere eliminar este contacto?"
 
 #: dist/converse-no-dependencies.js:95529
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
-msgstr "Lamentámolo, algo fallou ao intentar engadir a %1$s como contacto."
+msgstr "Lamentámolo, algo fallou ao intentar retirar a %1$s como contacto"
 
 #: dist/converse-no-dependencies.js:95565
 msgid "Do you want to block this contact, so they cannot send you messages?"
-msgstr ""
+msgstr "Queres bloquear este contacto? para que non che poida enviar mensaxes?"
 
 #: dist/converse-no-dependencies.js:95603
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
-msgstr "Lamentámolo, algo fallou ao intentar engadir a %1$s como contacto."
+msgstr "Lamentámolo, algo fallou ao intentar bloquear a %1$s"
 
 #: dist/converse-no-dependencies.js:95635
 msgid "Do you want to unblock this contact, so they can send you messages?"
-msgstr ""
+msgstr "Queres desbloquear este contacto para que poida enviarche mensaxes?"
 
 #: dist/converse-no-dependencies.js:95655
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
-msgstr "Lamentámolo, algo fallou ó intentar enviar a mensaxe."
+msgstr "Lamentámolo, algo fallou ó intentar desbloquear a %1$s"
 
 #: dist/converse-no-dependencies.js:96340
 msgid "Remove from blocklist"
-msgstr ""
+msgstr "Retirar da lista de bloqueo"
 
 #: dist/converse-no-dependencies.js:96350
-#, fuzzy
 msgid "Add to blocklist"
-msgstr "Engadir aos Contactos"
+msgstr "Engadir á lista de bloqueo"
 
 #: dist/converse-no-dependencies.js:96360
 msgid "Remove as contact"
@@ -1215,9 +1212,8 @@ msgid "Show less"
 msgstr "Mostrar menos"
 
 #: dist/converse-no-dependencies.js:97575
-#, fuzzy
 msgid "Message delivery failed."
-msgstr "Fallou a entrega da mensaxe: \"%1$s\""
+msgstr "Fallou a entrega da mensaxe."
 
 #: dist/converse-no-dependencies.js:98279
 msgid "A moderator"
@@ -1225,14 +1221,13 @@ msgstr "Moderadora"
 
 #: dist/converse-no-dependencies.js:98280
 #: dist/converse-no-dependencies.js:98282
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed a message"
-msgstr "%1$s foi eliminou esta mensaxe"
+msgstr "%1$s eliminou unha mensaxe"
 
 #: dist/converse-no-dependencies.js:98282
-#, fuzzy
 msgid "You have removed a message"
-msgstr "Ten mensaxes sen ler"
+msgstr "Eliminaches unha mensaxe"
 
 #: dist/converse-no-dependencies.js:99429
 msgid "Search results"
@@ -1282,39 +1277,35 @@ msgstr "Mostrar máis información sobre esta persoa"
 
 #: dist/converse-no-dependencies.js:101940
 msgid "Unblock user"
-msgstr ""
+msgstr "Desbloquear usuaria"
 
 #: dist/converse-no-dependencies.js:101940
-#, fuzzy
 msgid "Are you sure you want to unblock this user?"
-msgstr "Seguro que queres saír?"
+msgstr "Tes certeza de querer desbloquear esta usuaria?"
 
 #: dist/converse-no-dependencies.js:101957
 msgid "Unblock this user"
-msgstr ""
+msgstr "Desbloquear esta usuaria"
 
 #: dist/converse-no-dependencies.js:101958
-#, fuzzy
 msgid "Allow this user to send you messages"
-msgstr "Permitir as usuarias acaladas publicar mensaxes"
+msgstr "Permitir que esta usuaria che envíe mensaxes"
 
 #: dist/converse-no-dependencies.js:101974
-#, fuzzy
 msgid "Block user"
-msgstr "Mostrar usuarios"
+msgstr "Bloquear usuaria"
 
 #: dist/converse-no-dependencies.js:101974
-#, fuzzy
 msgid "Are you sure you want to block this user?"
-msgstr "Seguro que queres saír?"
+msgstr "Tes certeza de querer bloquear esta usuaria?"
 
 #: dist/converse-no-dependencies.js:101994
 msgid "Block this user"
-msgstr ""
+msgstr "Bloquear esta usuaria"
 
 #: dist/converse-no-dependencies.js:101995
 msgid "Prevent this user from sending you any further messages"
-msgstr ""
+msgstr "Evitar que esta usuaria che envíe máis mensaxes"
 
 #: dist/converse-no-dependencies.js:102009
 msgid "Close and end this conversation"
@@ -2405,6 +2396,7 @@ msgstr "Non confiable"
 #: dist/converse-no-dependencies.js:128661
 msgid "Choose which devices you trust for OMEMO encrypted communication"
 msgstr ""
+"Elixe os dispositivos nos que confías para a comunicación cifrada con OMEMO"
 
 #. *
 #. * @param {import('../fingerprints').Fingerprints} el
@@ -2563,36 +2555,37 @@ msgid "Groupchat name"
 msgstr "Nome da conversa en grupo"
 
 #: dist/converse-no-dependencies.js:134772
-#, fuzzy
 msgid "Groupchat name or address"
-msgstr "Enderezo da conversa en grupo"
+msgstr "Nome ou enderezo da conversa en grupo"
 
 #: dist/converse-no-dependencies.js:135297
 msgid "Enter a new Groupchat"
 msgstr "Entra nunha nova Conversa en grupo"
 
 #: dist/converse-no-dependencies.js:135421
-#, fuzzy
 msgid "Invalid groupchat address, it cannot be empty."
-msgstr "Esta conversa en grupo non existe (aínda)."
+msgstr "Enderezo da conversa non válido, non pode quedar baleiro."
 
 #: dist/converse-no-dependencies.js:135428
 msgid "Invalid groupchat address, a forward slash is not allowed."
-msgstr ""
+msgstr "Enderezo da conversa non válido, non se permite a barra inclinada."
 
 #: dist/converse-no-dependencies.js:135435
 msgid "Invalid groupchat address, more than one @ sign is not allowed."
-msgstr ""
+msgstr "Enderezo da conversa non válido, non se permiten máis dun símbolo @."
 
 #: dist/converse-no-dependencies.js:135441
 msgid "Invalid groupchat address, it cannot start or end with an @ sign."
 msgstr ""
+"Enderezo da conversa non válido, non pode comezar ou rematar co símbolo @."
 
 #: dist/converse-no-dependencies.js:135455
 msgid ""
 "No default groupchat service found. You'll need to specify the full address, "
 "for example room@conference.example.org"
 msgstr ""
+"Non se atopou un servizo de conversa en grupo predeterminado. Deberás "
+"indicar o enderezo completo, ex. sala@conferencias.exemplo.org"
 
 #: dist/converse-no-dependencies.js:135471
 msgid "Groupchat id is invalid."
@@ -2738,13 +2731,12 @@ msgid "Click to remove %1$s as a contact"
 msgstr "Pulse para eliminar %1$s como contacto"
 
 #: dist/converse-no-dependencies.js:137362
-#, fuzzy
 msgid "Click to chat with yourself"
-msgstr "Preme para engadir a %1$s aos teus contactos"
+msgstr "Preme para conversar contigo"
 
 #: dist/converse-no-dependencies.js:137363
 msgid "(me)"
-msgstr ""
+msgstr "(eu)"
 
 #: dist/converse-no-dependencies.js:137388
 #, javascript-format
@@ -2752,9 +2744,8 @@ msgid "Click to add %1$s to your roster"
 msgstr "Preme para engadir a %1$s aos teus contactos"
 
 #: dist/converse-no-dependencies.js:137979
-#, fuzzy
 msgid "Decline contact request"
-msgstr "Solicitudes de contacto"
+msgstr "Rexeitar a solicitude de contacto"
 
 #: dist/converse-no-dependencies.js:137979
 msgid "Are you sure you want to decline this contact request?"
@@ -2762,7 +2753,7 @@ msgstr "Seguro que desexa rexeitar a solicitude do contacto?"
 
 #: dist/converse-no-dependencies.js:137980
 msgid "Block this user from sending you further messages"
-msgstr ""
+msgstr "Bloquear esta usuaria para que non che envíe máis mensaxes"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2786,9 +2777,8 @@ msgstr "Este contacto xa foi engadido"
 
 #: dist/converse-no-dependencies.js:138568
 #: dist/converse-no-dependencies.js:139154
-#, fuzzy
 msgid "Sorry, something went wrong"
-msgstr "Lamentámolo, algo fallou ao intentar actualizar"
+msgstr "Lamentámolo, houbo un fallo"
 
 #: dist/converse-no-dependencies.js:138612
 msgid "Sorry, could not find a contact with that name"
@@ -2799,15 +2789,13 @@ msgstr "Lamentámolo, non atopamos un contacto con ese nome"
 #.
 #. harmony default export
 #: dist/converse-no-dependencies.js:138653
-#, fuzzy
 msgid "Start Chat"
-msgstr "Iniciar chamada"
+msgstr "Iniciar conversa"
 
 #: dist/converse-no-dependencies.js:139114
 #: dist/converse-no-dependencies.js:139365
-#, fuzzy
 msgid "Start a new chat"
-msgstr "Iniciar chamada"
+msgstr "Iniciar unha nova conversa"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:139258

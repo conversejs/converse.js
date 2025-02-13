@@ -2,7 +2,6 @@
 
 const { u } = converse.env;
 
-
 describe("The list of MUC domains", function () {
     it("is shown in controlbox", mock.initConverse(
             ['chatBoxesFetched'],
@@ -16,7 +15,10 @@ describe("The list of MUC domains", function () {
         const controlbox = _converse.chatboxviews.get('controlbox');
         let list = controlbox.querySelector('.list-container--openrooms');
         expect(u.hasClass('hidden', list)).toBeTruthy();
-        await mock.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC');
+
+        let muc_jid = 'room@conference.shakespeare.lit';
+        _converse.api.rooms.open(muc_jid, { nick: 'JC' });
+        await mock.getRoomFeatures(_converse, muc_jid);
 
         const lview = controlbox.querySelector('converse-rooms-list');
         // Check that the group is shown
@@ -32,11 +34,14 @@ describe("The list of MUC domains", function () {
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length);
         let room_els = lview.querySelectorAll(".open-room");
         expect(room_els.length).toBe(1);
-        expect(room_els[0].querySelector('span').innerText).toBe('room@conference.shakespeare.lit');
+        expect(room_els[0].querySelector('span').innerText).toBe('Room');
 
         // Check that a second room in the same domain is shown in the same
         // domain group.
-        await mock.openChatRoom(_converse, 'secondroom', 'conference.shakespeare.lit', 'JC');
+        muc_jid = 'secondroom@conference.shakespeare.lit';
+        _converse.api.rooms.open(muc_jid, { nick: 'JC' });
+        await mock.getRoomFeatures(_converse, muc_jid);
+
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length > 1);
         group_els = lview.querySelectorAll(".muc-domain-group");
         expect(group_els.length).toBe(1); // still only one group
@@ -44,8 +49,10 @@ describe("The list of MUC domains", function () {
         room_els = lview.querySelectorAll(".open-room");
         expect(room_els.length).toBe(2); // but two rooms inside it
 
+        muc_jid = 'lounge@montague.lit';
+        _converse.api.rooms.open(muc_jid, { nick: 'romeo' });
+        await mock.getRoomFeatures(_converse, muc_jid);
 
-        await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length > 2);
         room_els = lview.querySelectorAll(".open-room");
         expect(room_els.length).toBe(3);
@@ -64,7 +71,7 @@ describe("The list of MUC domains", function () {
         expect(room_els.length).toBe(1);
         group_els = lview.querySelectorAll(".muc-domain-group");
         expect(group_els.length).toBe(1);
-        expect(room_els[0].querySelector('span').innerText).toBe('lounge@montague.lit');
+        expect(room_els[0].querySelector('span').innerText).toBe('Lounge');
         expect(group_els[0].children[0].innerText.trim()).toBe('montague.lit');
         list = controlbox.querySelector('.list-container--openrooms');
         u.waitUntil(() => Array.from(list.classList).includes('hidden'));
@@ -93,7 +100,10 @@ describe("A MUC domain group", function () {
         await mock.openControlBox(_converse);
         const controlbox = _converse.chatboxviews.get('controlbox');
         const list = controlbox.querySelector('.list-container--openrooms');
-        await mock.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC');
+        const nick = 'JC';
+        const muc_jid = 'room@conference.shakespeare.lit';
+        _converse.api.rooms.open(muc_jid, { nick });
+        await mock.getRoomFeatures(_converse, muc_jid);
 
         const lview = controlbox.querySelector('converse-rooms-list');
         await u.waitUntil(() => lview.querySelectorAll(".muc-domain-group").length);

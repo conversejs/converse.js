@@ -110,13 +110,18 @@ describe("Groupchats", function () {
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
 
             let jid = 'lounge@montague.lit';
+            const nick = 'romeo';
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current');
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group .group-toggle').length);
 
-            let room = await _converse.api.rooms.open(jid);
             // Test on groupchat that's not yet open
+            let promise = _converse.api.rooms.open(jid);
+            await mock.getRoomFeatures(_converse, jid);
+            await mock.waitForReservedNick(_converse, jid, nick);
+
+            let room = await promise;
             expect(room instanceof Model).toBeTruthy();
             let mucview = await u.waitUntil(() => _converse.chatboxviews.get(jid));
             expect(mucview.is_chatroom).toBeTruthy();
@@ -132,7 +137,10 @@ describe("Groupchats", function () {
 
             // Test with mixed case in JID
             jid = 'Leisure@montague.lit';
-            room = await _converse.api.rooms.open(jid);
+            promise  = _converse.api.rooms.open(jid);
+            await mock.getRoomFeatures(_converse, jid);
+            await mock.waitForReservedNick(_converse, jid, nick);
+            room = await promise;
             expect(room instanceof Model).toBeTruthy();
             mucview = await u.waitUntil(() => _converse.chatboxviews.get(jid.toLowerCase()));
             await u.waitUntil(() => u.isVisible(mucview));
@@ -151,8 +159,10 @@ describe("Groupchats", function () {
             mucview.close();
 
             api.settings.set('muc_instant_rooms', false);
+
             // Test with configuration
-            room = await _converse.api.rooms.open('room@conference.example.org', {
+            jid = 'room@conference.example.org';
+            promise = _converse.api.rooms.open(jid, {
                 'nick': 'some1',
                 'auto_configure': true,
                 'roomconfig': {
@@ -165,6 +175,8 @@ describe("Groupchats", function () {
                     'whois': 'anyone'
                 }
             });
+            await mock.getRoomFeatures(_converse, jid);
+            room = await promise;
             expect(room instanceof Model).toBeTruthy();
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;

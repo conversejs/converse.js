@@ -213,6 +213,9 @@ describe("A bookmark", function () {
                 nick: ''
             });
             expect(_converse.api.rooms.create).toHaveBeenCalled();
+
+            await mock.getRoomFeatures(_converse, jid);
+            await mock.waitForReservedNick(_converse, jid, '');
             await u.waitUntil(() => state.chatboxes.length === 2);
 
             bookmarks.remove(model);
@@ -291,7 +294,6 @@ describe("A bookmark", function () {
 
         const bare_jid = _converse.session.get('bare_jid');
         const muc1_jid = 'theplay@conference.shakespeare.lit';
-        const { bookmarks } = _converse.state;
         const { api } = _converse;
 
         await api.bookmarks.set({

@@ -409,6 +409,8 @@ function parsePresenceUserItem(stanza, nick) {
  * @returns {Promise<import('./types').MUCPresenceAttributes>}
  */
 export async function parseMUCPresence(stanza, chatbox) {
+    await chatbox.initialized;
+
     /**
      * @typedef {import('./types').MUCPresenceAttributes} MUCPresenceAttributes
      */

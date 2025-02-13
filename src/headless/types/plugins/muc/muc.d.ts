@@ -237,7 +237,7 @@ declare class MUC extends MUC_base {
      */
     public vcard: import("../vcard/vcard").default;
     initialized: any;
-    debouncedRejoin: import("lodash").DebouncedFunc<() => Promise<this>>;
+    debouncedRejoin: import("lodash").DebouncedFunc<() => Promise<void>>;
     isEntered(): boolean;
     /**
      * Checks whether this MUC qualifies for subscribing to XEP-0437 Room Activity Indicators (RAI)
@@ -255,16 +255,18 @@ declare class MUC extends MUC_base {
      * @param {String} [password] - Optional password, if required by the groupchat.
      *  Will fall back to the `password` value stored in the room
      *  model (if available).
+     *  @returns {Promise<void>}
      */
-    join(nick?: string, password?: string): Promise<this>;
+    join(nick?: string, password?: string): Promise<void>;
     /**
      * Clear stale cache and re-join a MUC we've been in before.
      */
-    rejoin(): Promise<this>;
+    rejoin(): Promise<void>;
     /**
      * @param {string} password
+     * @param {boolean} is_new
      */
-    constructJoinPresence(password: string): Promise<import("strophe.js").Builder>;
+    constructJoinPresence(password: string, is_new: boolean): Promise<import("strophe.js").Builder>;
     clearOccupantsCache(): void;
     /**
      * Given the passed in MUC message, send a XEP-0333 chat marker.
@@ -586,6 +588,12 @@ declare class MUC extends MUC_base {
      *  to update the list.
      */
     updateMemberLists(members: object): Promise<any>;
+    /**
+     * Triggers a hook which gives 3rd party plugins an opportunity to determine
+     * the nickname to use.
+     * @return {Promise<string>} A promise which resolves with the nickname
+     */
+    getNicknameFromHook(): Promise<string>;
     /**
      * Given a nick name, save it to the model state, otherwise, look
      * for a server-side reserved nickname or default configured

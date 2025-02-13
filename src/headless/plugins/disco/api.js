@@ -396,7 +396,7 @@ export default {
                 entity.queryInfo();
             } else {
                 // Create it if it doesn't exist
-                entity = await api.disco.entities.create({ jid }, { 'ignore_cache': true });
+                entity = await api.disco.entities.create({ jid }, { ignore_cache: true });
             }
             return entity.waitUntilFeaturesDiscovered;
         },

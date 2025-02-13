@@ -92,11 +92,12 @@ describe("A Groupchat", function () {
                     Strophe.NS.SID
                 ];
                 const nick = 'romeo';
-                await _converse.api.rooms.open(muc_jid);
+                _converse.api.rooms.open(muc_jid);
                 await mock.getRoomFeatures(_converse, muc_jid, features);
                 await mock.waitForReservedNick(_converse, muc_jid, nick);
                 mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
-                const view = _converse.chatboxviews.get(muc_jid);
+
+                const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
                 await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
 
                 // Check in reverse order that we requested all three lists
@@ -173,8 +174,6 @@ describe("Someone being invited to a groupchat", function () {
                 `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
             `</iq>`);
 
-        // State that the chat is members-only via the features IQ
-        const view = _converse.chatboxviews.get(muc_jid);
         const features_stanza = stx`
             <iq from="coven@chat.shakespeare.lit"
                 id="${stanza.getAttribute('id')}"
@@ -192,6 +191,9 @@ describe("Someone being invited to a groupchat", function () {
         _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
         const sent_stanzas = _converse.api.connection.get().sent_stanzas;
         await u.waitUntil(() => sent_stanzas.filter(s => s.matches(`presence[to="${muc_jid}/${nick}"]`)).pop());
+
+        // State that the chat is members-only via the features IQ
+        const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
         expect(view.model.features.get('membersonly')).toBeTruthy();
 
         await room_creation_promise;

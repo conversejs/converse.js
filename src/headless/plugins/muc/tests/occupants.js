@@ -64,6 +64,31 @@ describe("A MUC occupant", function () {
         expect(model.occupants.length).toBe(mock.chatroom_names.length + 1);
     }));
 
+    it("stores our own XEP-0421 occupant id received from a presence stanza when joining a new MUC",
+            mock.initConverse([], {}, async function (_converse) {
+
+        await mock.waitUntilBookmarksReturned(_converse);
+
+        const { api } = _converse;
+        const muc_jid = 'lounge@montague.lit';
+        const nick = 'romeo';
+        const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
+
+        const promise = api.rooms.open(muc_jid, { nick });
+        await mock.waitForNewMUCDiscoInfo(_converse, muc_jid);
+        await mock.receiveOwnMUCPresence(_converse, muc_jid, nick, 'owner', 'moderator', features);
+        await mock.waitForMUCDiscoInfo(_converse, muc_jid, features);
+
+        const model = await promise;
+
+        const entity = await api.disco.entities.get(muc_jid);
+        expect(entity.getFeature(Strophe.NS.OCCUPANTID)).toBeTruthy();
+        expect(model.occupants.length).toBe(1);
+        expect(model.get('occupant_id')).not.toBeFalsy();
+        expect(model.get('occupant_id')).toBe(model.occupants.at(0).get('occupant_id'));
+    }));
+
+
     it("will be added to a MUC message based on the XEP-0421 occupant id",
             mock.initConverse([], {}, async function (_converse) {
 

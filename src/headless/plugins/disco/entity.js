@@ -1,13 +1,14 @@
+import { Collection, Model } from '@converse/skeletor';
+import { getOpenPromise } from '@converse/openpromise';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
+import { parseErrorStanza } from '../../shared/parsers.js';
 import log from '../../log.js';
 import sizzle from 'sizzle';
-import { Collection, Model } from '@converse/skeletor';
-import { getOpenPromise } from '@converse/openpromise';
 import { createStore } from '../../utils/storage.js';
 
-const { Strophe } = converse.env;
+const { Strophe, u } = converse.env;
 
 /**
  * @class
@@ -126,7 +127,7 @@ class DiscoEntity extends Model {
             stanza = await api.disco.info(this.get('jid'), null);
         } catch (iq) {
             iq === null ? log.error(`Timeout for disco#info query for ${this.get('jid')}`) : log.error(iq);
-            this.waitUntilFeaturesDiscovered.resolve(this);
+            this.waitUntilFeaturesDiscovered.resolve(u.isElement(iq) ? await parseErrorStanza(iq) : iq);
             return;
         }
         this.onInfo(stanza);

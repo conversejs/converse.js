@@ -13,13 +13,12 @@ describe("MUC Mention Notfications", function () {
                 view_mode: 'overlayed'},
             async function (_converse) {
 
-        const { api } = _converse;
-
         expect(_converse.session.get('rai_enabled_domains')).toBe(undefined);
 
-        const muc_jid = 'lounge@montague.lit';
+        const { api } = _converse;
         const nick = 'romeo';
-        const muc_creation_promise = await api.rooms.open(muc_jid, { nick }, false);
+        const muc_jid = 'lounge@montague.lit';
+        const muc_creation_promise = api.rooms.open(muc_jid, { nick }, false);
         await mock.getRoomFeatures(_converse, muc_jid, []);
         await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
         await muc_creation_promise;

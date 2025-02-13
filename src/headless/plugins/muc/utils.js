@@ -102,7 +102,8 @@ export async function routeToRoom (event) {
     api.rooms.open(jid, {}, true);
 }
 
-/* Opens a groupchat, making sure that certain attributes
+/**
+ * Opens a groupchat, making sure that certain attributes
  * are correct, for example that the "type" is set to
  * "chatroom".
  * @param {string} jid
@@ -150,7 +151,7 @@ export async function onDirectMUCInvitation (message) {
     }
 
     if (result) {
-        const chatroom = await openChatRoom(room_jid, { 'password': x_el.getAttribute('password') });
+        const chatroom = await openChatRoom(room_jid, { password: x_el.getAttribute('password') });
         if (chatroom.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
             _converse.state.chatboxes.get(room_jid).rejoin();
         }

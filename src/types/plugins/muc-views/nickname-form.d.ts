@@ -6,10 +6,16 @@ declare class MUCNicknameForm extends CustomElement {
         };
     };
     jid: any;
-    connectedCallback(): void;
     model: any;
+    /**
+     * @param {Map<string, any>} changed
+     */
+    shouldUpdate(changed: Map<string, any>): boolean;
     render(): import("lit").TemplateResult<1>;
-    submitNickname(ev: any): void;
+    /**
+     * @param {Event} ev
+     */
+    submitNickname(ev: Event): void;
     closeModal(): void;
 }
 import { CustomElement } from 'shared/components/element';

@@ -19,7 +19,14 @@ export function onWindowStateChanged(): Promise<void>;
  * @param {Event} [event]
  */
 export function routeToRoom(event?: Event): Promise<void>;
-export function openChatRoom(jid: any, settings: any): Promise<any>;
+/**
+ * Opens a groupchat, making sure that certain attributes
+ * are correct, for example that the "type" is set to
+ * "chatroom".
+ * @param {string} jid
+ * @param {Object} settings
+ */
+export function openChatRoom(jid: string, settings: any): Promise<any>;
 /**
  * A direct MUC invitation to join a groupchat has been received
  * See XEP-0249: Direct MUC invitations.

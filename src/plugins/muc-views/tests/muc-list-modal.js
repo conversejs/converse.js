@@ -73,7 +73,11 @@ describe('The "Groupchats" List modal', function () {
             expect(rooms[10].textContent.trim()).toBe('A street');
 
             rooms[4].querySelector('.open-room').click();
+
+            await mock.getRoomFeatures(_converse, 'inverness@chat.shakespeare.lit');
+            await mock.waitForReservedNick(_converse, 'inverness@chat.shakespeare.lit', 'romeo');
             await u.waitUntil(() => _converse.chatboxes.length > 1);
+
             expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
             const view = _converse.chatboxviews.get('inverness@chat.shakespeare.lit');
             expect(view.querySelector('.chatbox-title__text').textContent.trim()).toBe("Macbeth's Castle");

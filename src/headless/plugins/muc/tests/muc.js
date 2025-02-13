@@ -4,6 +4,8 @@ const { Strophe, sizzle, stx, u } = converse.env;
 
 describe("Groupchats", function () {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("keeps track of unread messages and mentions",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
@@ -51,12 +53,12 @@ describe("Groupchats", function () {
             const muc = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
 
             let pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
-            expect(Strophe.serialize(pres)).toBe(
-                `<presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="${muc_jid}/romeo" xmlns="jabber:client">`+
-                    `<x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>`+
-                    `<show>away</show>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
-                `</presence>`);
+            expect(pres).toEqualStanza(stx`
+                <presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="${muc_jid}/romeo" xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
+                    <show>away</show>
+                    <c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>
+                </presence>`);
 
             expect(muc.getOwnOccupant().get('show')).toBe('away');
 

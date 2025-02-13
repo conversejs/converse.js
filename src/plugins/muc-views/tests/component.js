@@ -11,9 +11,10 @@ describe("The <converse-muc> component", function () {
         const { api } = _converse;
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
-        const muc_creation_promise = await api.rooms.open(muc_jid, {nick, 'hidden': true}, false);
+        const muc_creation_promise = api.rooms.open(muc_jid, {nick, 'hidden': true}, false);
         await mock.getRoomFeatures(_converse, muc_jid, []);
         await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
+
         await muc_creation_promise;
         const model = _converse.chatboxes.get(muc_jid);
         await u.waitUntil(() => (model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));

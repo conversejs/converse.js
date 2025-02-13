@@ -20,10 +20,10 @@ describe("A chat room", function () {
                 'nick': 'Othello'
             });
             spyOn(_converse.ChatRoom.prototype, 'getAndPersistNickname').and.callThrough();
-            const room_creation_promise = _converse.api.rooms.open(muc_jid);
+            _converse.api.rooms.open(muc_jid);
             await mock.getRoomFeatures(_converse, muc_jid);
-            const room = await room_creation_promise;
-            await u.waitUntil(() => room.getAndPersistNickname.calls.count());
+            await mock.waitForReservedNick(_converse, muc_jid);
+            const room = await u.waitUntil(() => _converse.chatboxes.get(muc_jid));
             expect(room.get('nick')).toBe('Othello');
         }));
     });
@@ -36,6 +36,7 @@ describe("Bookmarks", function () {
     it("can be pushed from the XMPP server", mock.initConverse(
             ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
 
+        const { api } = _converse;
         const { u } = converse.env;
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilBookmarksReturned(_converse);
@@ -67,12 +68,13 @@ describe("Bookmarks", function () {
             </event>
         </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+        await mock.getRoomFeatures(_converse, 'theplay@conference.shakespeare.lit');
 
         const { bookmarks } = _converse.state;
         await u.waitUntil(() => bookmarks.length);
         expect(bookmarks.length).toBe(2);
         expect(bookmarks.map(b => b.get('name'))).toEqual(['Another bookmark', "The Play's the Thing"]);
-        expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
+        expect(await api.rooms.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
 
         stanza = stx`<message from="romeo@montague.lit"
                         to="${_converse.jid}"
@@ -247,10 +249,11 @@ describe("Bookmarks", function () {
         expect(theplay.get('name')).toBe("The Play's the Thing");
         expect(theplay.get('nick')).toBe('JC');
         expect(theplay.get('password')).toBe('secret');
-
         expect(bookmarks.get('orchard@conference.shakespeare.lit').get('autojoin')).toBe(false);
 
+        await mock.getRoomFeatures(_converse, autojoin_muc);
         await u.waitUntil(() => _converse.state.chatboxes.get(autojoin_muc));
+
         const features = [
             'http://jabber.org/protocol/muc',
             'jabber:iq:register',
@@ -269,7 +272,7 @@ describe("Bookmarks", function () {
                 id="${sent_stanza.getAttribute('id')}"
                 to="${autojoin_muc}/JC">
             <x xmlns="http://jabber.org/protocol/muc">
-                <history/>
+                <history maxstanzas="0"/>
                 <password>secret</password>
             </x>
             <c xmlns="http://jabber.org/protocol/caps"

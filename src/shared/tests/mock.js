@@ -215,26 +215,45 @@ async function openChatBoxFor (_converse, jid) {
     return u.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
 }
 
-async function openChatRoomViaModal (_converse, jid, nick='') {
-    // Opens a new chatroom
-    const model = await _converse.api.controlbox.open('controlbox');
-    await u.waitUntil(() => model.get('connected'));
+async function openChatRoomViaModal (_converse, muc_jid, nick='') {
+    const controlbox = await _converse.api.controlbox.open('controlbox');
+    await u.waitUntil(() => controlbox.get('connected'));
     await openControlBox(_converse);
+
     document.querySelector('converse-rooms-list .show-add-muc-modal').click();
     closeControlBox(_converse);
     const modal = _converse.api.modal.get('converse-add-muc-modal');
     await u.waitUntil(() => u.isVisible(modal), 1500)
-    modal.querySelector('input[name="chatroom"]').value = jid;
+    modal.querySelector('input[name="chatroom"]').value = muc_jid;
     if (nick) {
         modal.querySelector('input[name="nickname"]').value = nick;
     }
     modal.querySelector('form input[type="submit"]').click();
-    await u.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
-    return _converse.chatboxviews.get(jid);
+    await mock.getRoomFeatures(_converse, muc_jid);
+    if (!nick) await mock.waitForReservedNick(_converse, muc_jid, '');
 }
 
-function openChatRoom (_converse, room, server) {
-    return _converse.api.rooms.open(`${room}@${server}`);
+async function waitOnDiscoInfoForNewMUC(_converse, muc_jid) {
+    const { api } = _converse;
+    const connection = api.connection.get();
+    const own_jid = connection.jid;
+    const stanzas = connection.IQ_stanzas;
+    const stanza = await u.waitUntil(() => stanzas.filter(
+        iq => iq.querySelector(
+            `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+        )).pop()
+    );
+    const features_stanza =
+        stx`<iq from="${muc_jid}"
+                id="${stanza.getAttribute('id')}"
+                to="${own_jid}"
+                type="error"
+                xmlns="jabber:client">
+            <error type="cancel">
+                <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+            </error>
+        </iq>`;
+    _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 }
 
 async function getRoomFeatures (_converse, muc_jid, features=[], settings={}) {
@@ -409,6 +428,7 @@ async function openAndEnterChatRoom (
     ) {
     const { api } = _converse;
     muc_jid = muc_jid.toLowerCase();
+
     const room_creation_promise = api.rooms.open(muc_jid, settings, force_open);
     await getRoomFeatures(_converse, muc_jid, features, settings);
     await waitForReservedNick(_converse, muc_jid, nick);
@@ -890,7 +910,6 @@ Object.assign(mock, {
     openAndEnterChatRoom,
     openChatBoxFor,
     openChatBoxes,
-    openChatRoom,
     openChatRoomViaModal,
     openControlBox,
     ownDeviceHasBeenPublished,
@@ -903,6 +922,7 @@ Object.assign(mock, {
     view_mode,
     waitForReservedNick,
     waitForRoster,
+    waitOnDiscoInfoForNewMUC,
     waitUntilBlocklistInitialized,
     waitUntilBookmarksReturned,
     waitUntilDiscoConfirmed

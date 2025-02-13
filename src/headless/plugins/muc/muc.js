@@ -23,7 +23,7 @@ import {
 } from './constants.js';
 import { CHATROOMS_TYPE, GONE, INACTIVE, METADATA_ATTRIBUTES } from '../../shared/constants.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js';
-import { TimeoutError } from '../../shared/errors.js';
+import { TimeoutError, ItemNotFoundError, StanzaError } from '../../shared/errors.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList } from './affiliations/utils.js';
 import { initStorage, createStore } from '../../utils/storage.js';
 import { isArchived, parseErrorStanza } from '../../shared/parsers.js';
@@ -116,7 +116,7 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
 
         const restored = await this.restoreFromCache();
         if (!restored) {
-            this.join();
+            await this.join();
         }
         /**
          * Triggered once a {@link MUC} has been created and initialized.
@@ -170,26 +170,28 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      * @param {String} [password] - Optional password, if required by the groupchat.
      *  Will fall back to the `password` value stored in the room
      *  model (if available).
+     *  @returns {Promise<void>}
      */
     async join (nick, password) {
         if (this.isEntered()) {
             // We have restored a groupchat from session storage,
             // so we don't send out a presence stanza again.
-            return this;
+            return;
         }
         // Set this early, so we don't rejoin in onHiddenChange
         this.session.save('connection_status', ROOMSTATUS.CONNECTING);
-        await this.refreshDiscoInfo();
+
+        const is_new = (await this.refreshDiscoInfo() instanceof ItemNotFoundError);
         nick = await this.getAndPersistNickname(nick);
         if (!nick) {
             safeSave(this.session, { 'connection_status': ROOMSTATUS.NICKNAME_REQUIRED });
-            if (api.settings.get('muc_show_logs_before_join')) {
+            if (!is_new && api.settings.get('muc_show_logs_before_join')) {
                 await this.fetchMessages();
             }
-            return this;
+            return;
         }
-        api.send(await this.constructJoinPresence(password));
-        return this;
+        api.send(await this.constructJoinPresence(password, is_new));
+        if (is_new) await this.refreshDiscoInfo();
     }
 
     /**
@@ -204,16 +206,19 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
 
     /**
      * @param {string} password
+     * @param {boolean} is_new
      */
-    async constructJoinPresence (password) {
+    async constructJoinPresence (password, is_new) {
+        const maxstanzas = (is_new || this.features.get('mam_enabled'))
+            ? 0
+            : api.settings.get('muc_history_max_stanzas');
+
         let stanza = $pres({
             'id': getUniqueId(),
             'from': api.connection.get().jid,
             'to': this.getRoomJIDAndNick()
         }).c('x', { 'xmlns': Strophe.NS.MUC })
-          .c('history', {
-                'maxstanzas': this.features.get('mam_enabled') ? 0 : api.settings.get('muc_history_max_stanzas')
-            }).up();
+          .c('history', { maxstanzas }).up();
 
         password = password || this.get('password');
         if (password) {
@@ -1206,11 +1211,12 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      * *fields* are stored on the config {@link Model} attribute on this {@link MUC}.
      * @returns {Promise}
      */
-    refreshDiscoInfo () {
-        return api.disco
-            .refresh(this.get('jid'))
-            .then(() => this.getDiscoInfo())
-            .catch((e) => log.error(e));
+    async refreshDiscoInfo () {
+        const result = await api.disco.refresh(this.get('jid'));
+        if (result instanceof StanzaError) {
+            return result;
+        }
+        return this.getDiscoInfo().catch((e) => log.error(e));
     }
 
     /**

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2025-02-13 10:00+0000\n"
+"PO-Revision-Date: 2025-02-13 10:15+0000\n"
 "Last-Translator: solokot <solokot@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
@@ -129,7 +129,7 @@ msgstr "%1$s прекратил набирать текст"
 #: dist/converse-no-dependencies.js:45931
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr "%1$s отошёл"
+msgstr "%1$s ушёл"
 
 #: dist/converse-no-dependencies.js:36867
 #: dist/converse-no-dependencies.js:36886
@@ -304,7 +304,7 @@ msgstr "%1$s прекратил печатать"
 #: dist/converse-no-dependencies.js:42977
 #, javascript-format
 msgid "%1$s have gone away"
-msgstr "%1$s отошёл"
+msgstr "%1$s ушёл"
 
 #: dist/converse-no-dependencies.js:42979
 #, javascript-format
@@ -711,7 +711,7 @@ msgid ""
 msgstr ""
 "Модераторы - это привилегированные пользователи, которые могут менять роли "
 "других пользователей (за исключением тех, которые связаны с администратором "
-"или владельцем."
+"или владельцем)."
 
 #: dist/converse-no-dependencies.js:83175
 msgid "The default role, implies that you can read and write messages."
@@ -1238,7 +1238,7 @@ msgstr "Модератор"
 #: dist/converse-no-dependencies.js:98282
 #, javascript-format
 msgid "%1$s has removed a message"
-msgstr "%1$s удалил(а) сообщение"
+msgstr "%1$s удалил сообщение"
 
 #: dist/converse-no-dependencies.js:98282
 msgid "You have removed a message"

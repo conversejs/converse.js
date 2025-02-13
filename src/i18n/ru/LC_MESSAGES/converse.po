@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2024-12-28 21:02+0000\n"
+"PO-Revision-Date: 2025-02-13 10:00+0000\n"
 "Last-Translator: solokot <solokot@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
@@ -191,7 +191,6 @@ msgstr ""
 "чате."
 
 #: dist/converse-no-dependencies.js:41016
-#, fuzzy
 msgid "A timeout happened while trying to retract your message."
 msgstr "Истекло время ожидания при попытке отозвать ваше сообщение."
 
@@ -245,7 +244,7 @@ msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
 "Вам не разрешено регистрироваться в этом групповом чате, потому что он "
-"только для участников."
+"только по приглашению."
 
 #: dist/converse-no-dependencies.js:42548
 #, javascript-format
@@ -527,13 +526,12 @@ msgid ""
 msgstr "Вас удалили из-за изменения прав"
 
 #: dist/converse-no-dependencies.js:49980
-#, fuzzy
 msgid ""
 "You have been removed from this groupchat because it has changed to members-"
 "only and you're not a member"
 msgstr ""
-"Вы были удалены из этого группового чата, т.к. его режим был сменён на \"по "
-"приглашению\", а вы не были приглашены"
+"Вы были удалены из этого группового чата, т.к. его режим был сменён на "
+"\"по приглашению\", а вы не были приглашены"
 
 #: dist/converse-no-dependencies.js:49981
 msgid ""
@@ -558,7 +556,6 @@ msgstr ""
 "перезагрузить страницу, чтобы запросить их снова."
 
 #: dist/converse-no-dependencies.js:54299
-#, fuzzy
 msgid "You are blocked from sending messages."
 msgstr "Вам не разрешено отправлять сообщения."
 
@@ -997,15 +994,16 @@ msgid "What should your nickname for this groupchat be?"
 msgstr "Какой должен быть псевдоним для этого группового чата?"
 
 #: dist/converse-no-dependencies.js:86842
-#, fuzzy
 msgid "Password (for a protected groupchat)"
-msgstr "Защищён паролем"
+msgstr "Пароль (группового чата)"
 
 #: dist/converse-no-dependencies.js:86843
 msgid ""
 "If the groupchat requires a password to enter, you can save it here. Note "
 "this is not intended to be a secure storage."
 msgstr ""
+"Если для входа в групповой чат требуется пароль, вы можете сохранить его "
+"здесь. Обратите внимание, что это не надёжное хранилище."
 
 #: dist/converse-no-dependencies.js:86844
 msgid "Update"
@@ -1150,36 +1148,35 @@ msgid "Are you sure you want to remove this contact?"
 msgstr "Вы уверены, что хотите удалить этот контакт?"
 
 #: dist/converse-no-dependencies.js:95529
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
-msgstr "Извините, произошла ошибка при добавлении %1$s в качестве контакта."
+msgstr "Извините, произошла ошибка при удалении %1$s из контактов."
 
 #: dist/converse-no-dependencies.js:95565
 msgid "Do you want to block this contact, so they cannot send you messages?"
-msgstr ""
+msgstr "Заблокировать этот контакт, чтобы он не мог отправлять вам сообщения?"
 
 #: dist/converse-no-dependencies.js:95603
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
-msgstr "Извините, произошла ошибка при добавлении %1$s в качестве контакта."
+msgstr "Извините, произошла ошибка при попытке заблокировать %1$s"
 
 #: dist/converse-no-dependencies.js:95635
 msgid "Do you want to unblock this contact, so they can send you messages?"
-msgstr ""
+msgstr "Разблокировать этот контакт, чтобы он смог отправлять вам сообщения?"
 
 #: dist/converse-no-dependencies.js:95655
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
-msgstr "При отправке вашего сообщения произошла ошибка."
+msgstr "Извините, произошла ошибка при попытке разблокировать %1$s"
 
 #: dist/converse-no-dependencies.js:96340
 msgid "Remove from blocklist"
-msgstr ""
+msgstr "Удалить из чёрного списка"
 
 #: dist/converse-no-dependencies.js:96350
-#, fuzzy
 msgid "Add to blocklist"
-msgstr "Добавить в контакты"
+msgstr "Добавить в чёрный список"
 
 #: dist/converse-no-dependencies.js:96360
 msgid "Remove as contact"
@@ -1230,9 +1227,8 @@ msgid "Show less"
 msgstr "Показать меньше"
 
 #: dist/converse-no-dependencies.js:97575
-#, fuzzy
 msgid "Message delivery failed."
-msgstr "Не удалось доставить сообщение: \"%1$s\""
+msgstr "Невозможно доставить сообщение."
 
 #: dist/converse-no-dependencies.js:98279
 msgid "A moderator"
@@ -1240,14 +1236,13 @@ msgstr "Модератор"
 
 #: dist/converse-no-dependencies.js:98280
 #: dist/converse-no-dependencies.js:98282
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed a message"
-msgstr "%1$s удалил это сообщение"
+msgstr "%1$s удалил(а) сообщение"
 
 #: dist/converse-no-dependencies.js:98282
-#, fuzzy
 msgid "You have removed a message"
-msgstr "У вас есть непрочитанные сообщения"
+msgstr "Вы удалили сообщение"
 
 #: dist/converse-no-dependencies.js:99429
 msgid "Search results"
@@ -1297,39 +1292,35 @@ msgstr "Просмотреть больше информации об этом �
 
 #: dist/converse-no-dependencies.js:101940
 msgid "Unblock user"
-msgstr ""
+msgstr "Разблокировать пользователя"
 
 #: dist/converse-no-dependencies.js:101940
-#, fuzzy
 msgid "Are you sure you want to unblock this user?"
-msgstr "Вы уверены, что хотите выйти?"
+msgstr "Разблокировать пользователя?"
 
 #: dist/converse-no-dependencies.js:101957
 msgid "Unblock this user"
-msgstr ""
+msgstr "Разблокировать этого пользователя"
 
 #: dist/converse-no-dependencies.js:101958
-#, fuzzy
 msgid "Allow this user to send you messages"
-msgstr "Разрешить заглушенным пользователям отправлять сообщения"
+msgstr "Разрешить пользователю отправлять вам сообщения"
 
 #: dist/converse-no-dependencies.js:101974
-#, fuzzy
 msgid "Block user"
-msgstr "Показать пользователей"
+msgstr "Заблокировать пользователя"
 
 #: dist/converse-no-dependencies.js:101974
-#, fuzzy
 msgid "Are you sure you want to block this user?"
-msgstr "Вы уверены, что хотите выйти?"
+msgstr "Заблокировать пользователя?"
 
 #: dist/converse-no-dependencies.js:101994
 msgid "Block this user"
-msgstr ""
+msgstr "Заблокировать этого пользователя"
 
 #: dist/converse-no-dependencies.js:101995
 msgid "Prevent this user from sending you any further messages"
-msgstr ""
+msgstr "Запретить этому пользователю отправлять вам сообщения в дальнейшем"
 
 #: dist/converse-no-dependencies.js:102009
 msgid "Close and end this conversation"
@@ -2134,7 +2125,7 @@ msgstr "вышел из сети"
 
 #: dist/converse-no-dependencies.js:123594
 msgid "has gone away"
-msgstr "отошёл"
+msgstr "ушёл"
 
 #: dist/converse-no-dependencies.js:123596
 msgid "is busy"
@@ -2399,7 +2390,7 @@ msgid ""
 "support OMEMO encrypted messages"
 msgstr ""
 "Чтобы поддерживать зашифрованные сообщения OMEMO, этот групповой чат должен "
-"быть для пользователей и не анонимным"
+"быть по приглашению и не анонимным"
 
 #: dist/converse-no-dependencies.js:128446
 msgid "OMEMO encryption is not supported"
@@ -2422,7 +2413,7 @@ msgstr "Недоверенный"
 
 #: dist/converse-no-dependencies.js:128661
 msgid "Choose which devices you trust for OMEMO encrypted communication"
-msgstr ""
+msgstr "Выберите устройства, которым вы доверяете OMEMO-шифрование связи"
 
 #. *
 #. * @param {import('../fingerprints').Fingerprints} el
@@ -2579,36 +2570,39 @@ msgid "Groupchat name"
 msgstr "Имя группового чата"
 
 #: dist/converse-no-dependencies.js:134772
-#, fuzzy
 msgid "Groupchat name or address"
-msgstr "Адрес группового чата (идентификатор)"
+msgstr "Адрес или адрес группового чата"
 
 #: dist/converse-no-dependencies.js:135297
 msgid "Enter a new Groupchat"
 msgstr "Войти в новый групповой чат"
 
 #: dist/converse-no-dependencies.js:135421
-#, fuzzy
 msgid "Invalid groupchat address, it cannot be empty."
-msgstr "Этот групповой чат (пока) не существует."
+msgstr "Неправильный адрес группового чата: он не может быть пустым."
 
 #: dist/converse-no-dependencies.js:135428
 msgid "Invalid groupchat address, a forward slash is not allowed."
-msgstr ""
+msgstr "Неправильный адрес группового чата: косая черта в начале недопустима."
 
 #: dist/converse-no-dependencies.js:135435
 msgid "Invalid groupchat address, more than one @ sign is not allowed."
 msgstr ""
+"Неправильный адрес группового чата: более одного знака @ не допускается."
 
 #: dist/converse-no-dependencies.js:135441
 msgid "Invalid groupchat address, it cannot start or end with an @ sign."
 msgstr ""
+"Неправильный адрес группового чата: он не может начинаться или заканчиваться "
+"знаком @."
 
 #: dist/converse-no-dependencies.js:135455
 msgid ""
 "No default groupchat service found. You'll need to specify the full address, "
 "for example room@conference.example.org"
 msgstr ""
+"Служба группового чата по умолчанию не найдена. Нужно указать полный адрес, "
+"например room@conference.example.org"
 
 #: dist/converse-no-dependencies.js:135471
 msgid "Groupchat id is invalid."
@@ -2753,13 +2747,12 @@ msgid "Click to remove %1$s as a contact"
 msgstr "Нажмите, чтобы удалить %1$s как контакт"
 
 #: dist/converse-no-dependencies.js:137362
-#, fuzzy
 msgid "Click to chat with yourself"
-msgstr "Нажмите, чтобы добавить %1$s в свой список"
+msgstr "Нажмите, чтобы начать чат с собой"
 
 #: dist/converse-no-dependencies.js:137363
 msgid "(me)"
-msgstr ""
+msgstr "(я)"
 
 #: dist/converse-no-dependencies.js:137388
 #, javascript-format
@@ -2767,9 +2760,8 @@ msgid "Click to add %1$s to your roster"
 msgstr "Нажмите, чтобы добавить %1$s в свой список"
 
 #: dist/converse-no-dependencies.js:137979
-#, fuzzy
 msgid "Decline contact request"
-msgstr "Запросы на авторизацию"
+msgstr "Отклонить запрос контакта"
 
 #: dist/converse-no-dependencies.js:137979
 msgid "Are you sure you want to decline this contact request?"
@@ -2777,7 +2769,7 @@ msgstr "Вы уверены, что хотите отклонить запрос
 
 #: dist/converse-no-dependencies.js:137980
 msgid "Block this user from sending you further messages"
-msgstr ""
+msgstr "Запретить этому пользователю отправлять вам сообщения в дальнейшем"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2801,9 +2793,8 @@ msgstr "Этот контракт уже добавлен"
 
 #: dist/converse-no-dependencies.js:138568
 #: dist/converse-no-dependencies.js:139154
-#, fuzzy
 msgid "Sorry, something went wrong"
-msgstr "Извините, что-то пошло не так при попытке обновления"
+msgstr "Извините, что-то пошло не так"
 
 #: dist/converse-no-dependencies.js:138612
 msgid "Sorry, could not find a contact with that name"
@@ -2814,15 +2805,13 @@ msgstr "Извините, контакт с данным именем не на�
 #.
 #. harmony default export
 #: dist/converse-no-dependencies.js:138653
-#, fuzzy
 msgid "Start Chat"
-msgstr "Инициировать звонок"
+msgstr "Начать чат"
 
 #: dist/converse-no-dependencies.js:139114
 #: dist/converse-no-dependencies.js:139365
-#, fuzzy
 msgid "Start a new chat"
-msgstr "Инициировать звонок"
+msgstr "Новый чат"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:139258

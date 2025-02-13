@@ -20,21 +20,6 @@ Strophe.addNamespace('BOOKMARKS2', 'urn:xmpp:bookmarks:1');
 converse.plugins.add('converse-bookmarks', {
     dependencies: ['converse-chatboxes', 'converse-muc'],
 
-    overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-        // New functions which don't exist yet can also be added.
-
-        ChatRoom: {
-            /** @param {string} nick */
-            getAndPersistNickname(nick) {
-                nick = nick || getNicknameFromBookmark(this.get('jid'));
-                return this.__super__.getAndPersistNickname.call(this, nick);
-            },
-        },
-    },
-
     initialize() {
         // Configuration values for this plugin
         // ====================================
@@ -53,6 +38,18 @@ converse.plugins.add('converse-bookmarks', {
         const exports = { Bookmark, Bookmarks };
         Object.assign(_converse, exports); // TODO: DEPRECATED
         Object.assign(_converse.exports, exports);
+
+        api.listen.on(
+            'getNicknameForMUC',
+            /**
+             * @param {import('../muc/muc').default} muc
+             * @param {string|null} nick
+             * @returns {string}
+             */
+            (muc, nick) => {
+                return nick || getNicknameFromBookmark(muc.get('jid'));
+            }
+        );
 
         api.listen.on(
             'parseMUCPresence',

@@ -1637,6 +1637,21 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
     }
 
     /**
+     * Triggers a hook which gives 3rd party plugins an opportunity to determine
+     * the nickname to use.
+     * @return {Promise<string>} A promise which resolves with the nickname
+     */
+    async getNicknameFromHook() {
+        /**
+         * *Hook* which allows plugins to determine which nickname to use for
+         * the given MUC
+         * @event _converse#getNicknameForMUC
+         * @type {string} The nickname to use
+         */
+        return await api.hook('getNicknameForMUC', this, null);
+    }
+
+    /**
      * Given a nick name, save it to the model state, otherwise, look
      * for a server-side reserved nickname or default configured
      * nickname and if found, persist that to the model state.
@@ -1644,8 +1659,13 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      * @returns {Promise<string>} A promise which resolves with the nickname
      */
     async getAndPersistNickname (nick) {
-        nick = nick || this.get('nick') || (await this.getReservedNick()) || _converse.exports.getDefaultMUCNickname();
-        if (nick) safeSave(this, { nick }, { 'silent': true });
+        nick = nick ||
+            this.get('nick') ||
+            await this.getReservedNick() ||
+            await this.getNicknameFromHook() ||
+            _converse.exports.getDefaultMUCNickname();
+
+        if (nick) safeSave(this, { nick }, { silent: true });
         return nick;
     }
 

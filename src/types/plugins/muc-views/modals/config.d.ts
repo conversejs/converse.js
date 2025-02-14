@@ -1,4 +1,7 @@
 export default class MUCConfigModal extends BaseModal {
+    /**
+     * @typedef {import('@converse/headless/types/plugins/vcard/api').VCardData} VCardData
+     */
     constructor(options: any);
     renderModal(): import("lit").TemplateResult<1>;
     connectedCallback(): void;
@@ -13,6 +16,5 @@ export default class MUCConfigModal extends BaseModal {
      */
     submitConfigForm(ev: SubmitEvent): Promise<void>;
 }
-export type VCardData = import("@converse/headless/types/plugins/vcard/api").VCardData;
 import BaseModal from 'plugins/modal/modal.js';
 //# sourceMappingURL=config.d.ts.map

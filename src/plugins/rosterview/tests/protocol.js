@@ -58,7 +58,6 @@ describe("Presence subscriptions", function () {
 
             const modal = _converse.api.modal.get('converse-add-contact-modal');
             await u.waitUntil(() => u.isVisible(modal), 1000);
-            modal.delegateEvents();
 
             // Fill in the form and submit
             const form = modal.querySelector('form.add-xmpp-contact');

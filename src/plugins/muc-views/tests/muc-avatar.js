@@ -150,9 +150,10 @@ describe('Groupchats', () => {
                     expect(els[3].textContent).toBe('Online users: 2');
 
                     view.model.set({ 'subject': { 'author': 'someone', 'text': 'Hatching dark plots' } });
+                    await u.waitUntil(() => modal.querySelectorAll('p.room-info').length === 7);
+
                     els = modal.querySelectorAll('p.room-info');
                     expect(els[0].textContent).toBe('Name: A Dark Cave');
-
                     expect(els[1].querySelector('strong').textContent).toBe('XMPP address:');
                     expect(els[1].querySelector('converse-texture').textContent.trim()).toBe(
                         'xmpp:coven@chat.shakespeare.lit?join'
@@ -163,7 +164,6 @@ describe('Groupchats', () => {
                     await u.waitUntil(
                         () => els[3].querySelector('converse-texture').textContent === 'Hatching dark plots'
                     );
-
                     expect(els[4].textContent).toBe('Topic author: someone');
                     expect(els[5].textContent).toBe('Online users: 2');
                 }

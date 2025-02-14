@@ -10,7 +10,7 @@ const u = converse.env.utils;
 export default class ChatStatusModal extends BaseModal {
     initialize () {
         super.initialize();
-        this.render();
+        this.requestUpdate();
         this.addEventListener(
             'shown.bs.modal',
             () => {

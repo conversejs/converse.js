@@ -18,7 +18,7 @@ export default class OccupantModal extends BaseModal {
     initialize () {
         super.initialize()
         const model = this.model ?? this.message;
-        this.listenTo(model, 'change', () => this.render());
+        this.listenTo(model, 'change', () => this.requestUpdate());
         /**
          * Triggered once the OccupantModal has been initialized
          * @event _converse#occupantModalInitialized
@@ -61,7 +61,7 @@ export default class OccupantModal extends BaseModal {
         } else {
             this.show_affiliation_form = !this.show_affiliation_form;
         }
-        this.render();
+        this.requestUpdate();
     }
 }
 

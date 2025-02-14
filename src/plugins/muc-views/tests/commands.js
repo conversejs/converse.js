@@ -878,7 +878,7 @@ describe("Groupchats", function () {
             submit.click();
 
             expect(u.isVisible(modal)).toBeTruthy();
-            expect(u.hasClass('error', challenge_el)).toBeTruthy();
+            await u.waitUntil(() => u.hasClass('error', challenge_el));
             challenge_el.value = muc_jid;
             submit.click();
 

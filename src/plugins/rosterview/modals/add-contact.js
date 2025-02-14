@@ -9,8 +9,8 @@ import { getNamesAutoCompleteList } from '../utils.js';
 export default class AddContactModal extends BaseModal {
     initialize () {
         super.initialize();
-        this.listenTo(this.model, 'change', () => this.render());
-        this.render();
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
+        this.requestUpdate();
         this.addEventListener(
             'shown.bs.modal',
             () => /** @type {HTMLInputElement} */ (this.querySelector('input[name="jid"]'))?.focus(),
@@ -73,7 +73,7 @@ export default class AddContactModal extends BaseModal {
             const list = await getNamesAutoCompleteList(name);
             if (list.length !== 1) {
                 this.model.set('error', __('Sorry, could not find a contact with that name'));
-                this.render();
+                this.requestUpdate();
                 return;
             }
             jid = list[0].value;

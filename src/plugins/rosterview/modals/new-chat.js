@@ -6,8 +6,8 @@ import { __ } from 'i18n';
 export default class NewChatModal extends BaseModal {
     initialize() {
         super.initialize();
-        this.listenTo(this.model, 'change', () => this.render());
-        this.render();
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
+        this.requestUpdate();
         this.addEventListener(
             'shown.bs.modal',
             () => /** @type {HTMLInputElement} */ (this.querySelector('input[name="jid"]'))?.focus(),

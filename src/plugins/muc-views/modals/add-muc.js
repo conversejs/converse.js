@@ -11,11 +11,11 @@ const { Strophe } = converse.env;
 export default class AddMUCModal extends BaseModal {
     initialize() {
         super.initialize();
-        this.render();
+        this.requestUpdate();
         this.addEventListener(
             'shown.bs.modal',
             () => {
-                /** @type {HTMLInputElement} */ (this.querySelector('input[name="chatroom"]')).focus();
+                /** @type {HTMLInputElement} */ (this.querySelector('input[name="chatroom"]'))?.focus();
             },
             false
         );

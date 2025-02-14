@@ -82,7 +82,7 @@ export default class MUCOccupant extends CustomElement {
         } else {
             this.show_affiliation_form = !this.show_affiliation_form;
         }
-        this.render();
+        this.requestUpdate();
     }
 }
 

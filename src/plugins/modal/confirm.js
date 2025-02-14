@@ -11,7 +11,7 @@ export default class Confirm extends BaseModal {
 
     initialize() {
         super.initialize();
-        this.listenTo(this.model, 'change', () => this.render());
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.addEventListener(
             'hide.bs.modal',
             () => {

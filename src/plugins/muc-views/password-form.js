@@ -18,8 +18,8 @@ class MUCPasswordForm extends CustomElement {
         super.connectedCallback();
         const { chatboxes } = _converse.state;
         this.model = chatboxes.get(this.jid);
-        this.listenTo(this.model, 'change:password_validation_message', this.render);
-        this.render();
+        this.listenTo(this.model, 'change:password_validation_message', () => this.requestUpdate());
+        this.requestUpdate();
     }
 
     render () {

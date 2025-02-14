@@ -160,7 +160,7 @@ export default class ModeratorTools extends CustomElement {
 
     filterRoleResults (ev) {
         this.roles_filter = ev.target.value;
-        this.render();
+        this.requestUpdate();
     }
 
     filterAffiliationResults (ev) {

@@ -15,7 +15,7 @@ export default class MUCInviteModal extends BaseModal {
 
     initialize () {
         super.initialize();
-        this.listenTo(this.model, 'change', () => this.render());
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
     }
 
     renderModal () {

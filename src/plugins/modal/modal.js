@@ -1,17 +1,20 @@
 import { html } from 'lit';
 import { getOpenPromise } from '@converse/openpromise';
 import { Modal } from "bootstrap";
-import { ElementView } from '@converse/skeletor';
+import { CustomElement } from 'shared/components/element.js';
 import { u } from '@converse/headless';
 import { modal_close_button } from "./templates/buttons.js";
 import tplModal from './templates/modal.js';
 
 import './styles/_modal.scss';
 
-class BaseModal extends ElementView {
+class BaseModal extends CustomElement {
     /**
      * @typedef {import('lit').TemplateResult} TemplateResult
      */
+
+    /** @type {Modal} */
+    #modal;
 
     /**
      * @param {Object} options
@@ -37,12 +40,18 @@ class BaseModal extends ElementView {
         });
     }
 
+    get modal () {
+        if (!this.#modal) {
+            this.#modal = new Modal(this, {
+                backdrop: u.isTestEnv() ? false : true,
+                keyboard: true
+            });
+        }
+        return this.#modal;
+    }
+
     initialize () {
-        this.render()
-        this.modal = new Modal(this, {
-            backdrop: u.isTestEnv() ? false : true,
-            keyboard: true
-        });
+        this.requestUpdate()
         this.initialized.resolve();
     }
 
@@ -60,7 +69,7 @@ class BaseModal extends ElementView {
         return html`<div class="modal-footer">${ modal_close_button }</div>`;
     }
 
-    toHTML () {
+    render () {
         return tplModal(this);
     }
 
@@ -79,7 +88,7 @@ class BaseModal extends ElementView {
         ev?.stopPropagation();
         ev?.preventDefault();
         this.tab = /** @type {HTMLElement} */(ev.target).getAttribute('data-name');
-        this.render();
+        this.requestUpdate();
     }
 
     close () {
@@ -105,7 +114,7 @@ class BaseModal extends ElementView {
     async show () {
         await this.initialized;
         this.modal.show();
-        this.render();
+        this.requestUpdate();
     }
 }
 

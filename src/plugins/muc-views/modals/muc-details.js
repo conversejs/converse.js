@@ -10,10 +10,10 @@ export default class MUCDetailsModal extends BaseModal {
 
     initialize () {
         super.initialize();
-        this.listenTo(this.model, 'change', () => this.render());
-        this.listenTo(this.model.features, 'change', () => this.render());
-        this.listenTo(this.model.occupants, 'add', () => this.render());
-        this.listenTo(this.model.occupants, 'change', () => this.render());
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
+        this.listenTo(this.model.features, 'change', () => this.requestUpdate());
+        this.listenTo(this.model.occupants, 'add', () => this.requestUpdate());
+        this.listenTo(this.model.occupants, 'change', () => this.requestUpdate());
     }
 
     renderModal () {

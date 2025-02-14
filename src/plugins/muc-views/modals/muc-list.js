@@ -72,7 +72,7 @@ export default class MUCListModal extends BaseModal {
     initialize () {
         super.initialize();
         this.listenTo(this.model, 'change:muc_domain', this.onDomainChange);
-        this.listenTo(this.model, 'change:feedback_text', () => this.render());
+        this.listenTo(this.model, 'change:feedback_text', () => this.requestUpdate());
 
         this.addEventListener('shown.bs.modal', () => api.settings.get('locked_muc_domain') && this.updateRoomsList());
 
@@ -130,7 +130,7 @@ export default class MUCListModal extends BaseModal {
             this.items = [];
             this.model.set({'feedback_text': __('No groupchats found')}, {'silent': true});
         }
-        this.render();
+        this.requestUpdate();
         return true;
     }
 
@@ -153,7 +153,7 @@ export default class MUCListModal extends BaseModal {
     showRooms (ev) {
         ev.preventDefault();
         this.loading_items = true;
-        this.render();
+        this.requestUpdate();
 
         const data = new FormData(ev.target);
         this.model.setDomain(data.get('server'));

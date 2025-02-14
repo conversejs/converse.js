@@ -19,7 +19,7 @@ describe("MUC Mention Notfications", function () {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         const muc_creation_promise = api.rooms.open(muc_jid, { nick }, false);
-        await mock.getRoomFeatures(_converse, muc_jid, []);
+        await mock.waitForMUCDiscoFeatures(_converse, muc_jid, []);
         await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
         await muc_creation_promise;
 

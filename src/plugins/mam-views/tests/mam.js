@@ -281,7 +281,7 @@ describe("Message Archive Management", function () {
             const muc_jid = 'orchard@chat.shakespeare.lit';
             const nick = 'romeo';
             const room_creation_promise = api.rooms.open(muc_jid);
-            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
             await mock.waitForReservedNick(_converse, muc_jid, nick);
             await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
             await room_creation_promise;

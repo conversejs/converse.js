@@ -21,7 +21,7 @@ describe("A chat room", function () {
             });
             spyOn(_converse.ChatRoom.prototype, 'getAndPersistNickname').and.callThrough();
             _converse.api.rooms.open(muc_jid);
-            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
             await mock.waitForReservedNick(_converse, muc_jid);
             const room = await u.waitUntil(() => _converse.chatboxes.get(muc_jid));
             expect(room.get('nick')).toBe('Othello');
@@ -68,7 +68,7 @@ describe("Bookmarks", function () {
             </event>
         </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await mock.getRoomFeatures(_converse, 'theplay@conference.shakespeare.lit');
+        await mock.waitForMUCDiscoFeatures(_converse, 'theplay@conference.shakespeare.lit');
 
         const { bookmarks } = _converse.state;
         await u.waitUntil(() => bookmarks.length);
@@ -251,7 +251,7 @@ describe("Bookmarks", function () {
         expect(theplay.get('password')).toBe('secret');
         expect(bookmarks.get('orchard@conference.shakespeare.lit').get('autojoin')).toBe(false);
 
-        await mock.getRoomFeatures(_converse, autojoin_muc);
+        await mock.waitForMUCDiscoFeatures(_converse, autojoin_muc);
         await u.waitUntil(() => _converse.state.chatboxes.get(autojoin_muc));
 
         const features = [
@@ -259,7 +259,7 @@ describe("Bookmarks", function () {
             'jabber:iq:register',
             'muc_passwordprotected',
         ];
-        await mock.getRoomFeatures(_converse, autojoin_muc, features);
+        await mock.waitForMUCDiscoFeatures(_converse, autojoin_muc, features);
 
         const { sent_stanzas } = _converse.api.connection.get();
         const sent_stanza = await u.waitUntil(

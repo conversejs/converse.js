@@ -311,7 +311,7 @@ describe("A MUC", function () {
             while (IQ_stanzas.length) IQ_stanzas.pop();
 
             // Now that the user has entered the groupchat, the features are requested again.
-            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
 
             const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
             await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
@@ -328,7 +328,7 @@ describe("A MUC", function () {
             const { api } = _converse;
             const muc_jid = 'roomy@muc.montague.lit';
             api.rooms.open(muc_jid);
-            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
             await mock.waitForReservedNick(_converse, muc_jid, '');
             const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
             expect(view.model.get('nick')).toBe('Benedict-Cucumberpatch');
@@ -339,7 +339,7 @@ describe("A MUC", function () {
 
             const muc_jid = 'conflicted@muc.montague.lit';
             await mock.openChatRoomViaModal(_converse, muc_jid, 'romeo');
-            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
 
             _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
                 <presence
@@ -367,7 +367,7 @@ describe("A MUC", function () {
 
             api.settings.set('muc_nickname_from_jid', true);
             api.rooms.open(muc_jid, { nick: 'romeo' });
-            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
 
             const connection = api.connection.get();
             const sent_stanzas = connection.sent_stanzas;
@@ -393,7 +393,7 @@ describe("A MUC", function () {
                 </presence>`;
             api.connection.get()._dataRecv(mock.createRequest(presence));
 
-            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
 
             let sent_stanza = await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
             expect(sent_stanza).toEqualStanza(stx`
@@ -425,7 +425,7 @@ describe("A MUC", function () {
                 </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
-            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
 
             sent_stanza = await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
             expect(sent_stanza).toEqualStanza(stx`
@@ -457,7 +457,7 @@ describe("A MUC", function () {
                 </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
-            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
 
             sent_stanza = await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
             expect(sent_stanza).toEqualStanza(stx`
@@ -479,7 +479,7 @@ describe("A MUC", function () {
             const { api } = _converse;
             const muc_jid = 'conformist@muc.montague.lit'
             api.rooms.open(muc_jid, { nick: 'romeo' });
-            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
 
             const presence = stx`
                 <presence
@@ -521,7 +521,7 @@ describe("A MUC", function () {
             expect(modal.querySelector('input[name="nickname"]')).toBe(null);
             modal.querySelector('form input[type="submit"]').click();
 
-            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
             await u.waitUntil(() => _converse.chatboxes.length > 1);
             const chatroom = _converse.chatboxes.get(muc_jid);
             expect(chatroom.get('nick')).toBe('romeo');

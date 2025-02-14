@@ -18,7 +18,7 @@ describe("The list of MUC domains", function () {
 
         let muc_jid = 'room@conference.shakespeare.lit';
         _converse.api.rooms.open(muc_jid, { nick: 'JC' });
-        await mock.getRoomFeatures(_converse, muc_jid);
+        await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
 
         const lview = controlbox.querySelector('converse-rooms-list');
         // Check that the group is shown
@@ -40,7 +40,7 @@ describe("The list of MUC domains", function () {
         // domain group.
         muc_jid = 'secondroom@conference.shakespeare.lit';
         _converse.api.rooms.open(muc_jid, { nick: 'JC' });
-        await mock.getRoomFeatures(_converse, muc_jid);
+        await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
 
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length > 1);
         group_els = lview.querySelectorAll(".muc-domain-group");
@@ -51,7 +51,7 @@ describe("The list of MUC domains", function () {
 
         muc_jid = 'lounge@montague.lit';
         _converse.api.rooms.open(muc_jid, { nick: 'romeo' });
-        await mock.getRoomFeatures(_converse, muc_jid);
+        await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
 
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length > 2);
         room_els = lview.querySelectorAll(".open-room");
@@ -103,7 +103,7 @@ describe("A MUC domain group", function () {
         const nick = 'JC';
         const muc_jid = 'room@conference.shakespeare.lit';
         _converse.api.rooms.open(muc_jid, { nick });
-        await mock.getRoomFeatures(_converse, muc_jid);
+        await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
 
         const lview = controlbox.querySelector('converse-rooms-list');
         await u.waitUntil(() => lview.querySelectorAll(".muc-domain-group").length);

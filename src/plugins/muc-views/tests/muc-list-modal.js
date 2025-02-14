@@ -74,7 +74,7 @@ describe('The "Groupchats" List modal', function () {
 
             rooms[4].querySelector('.open-room').click();
 
-            await mock.getRoomFeatures(_converse, 'inverness@chat.shakespeare.lit');
+            await mock.waitForMUCDiscoFeatures(_converse, 'inverness@chat.shakespeare.lit');
             await mock.waitForReservedNick(_converse, 'inverness@chat.shakespeare.lit', 'romeo');
             await u.waitUntil(() => _converse.chatboxes.length > 1);
 

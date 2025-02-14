@@ -179,21 +179,6 @@ describe("Groupchats", function () {
             room = await promise;
             expect(room instanceof Model).toBeTruthy();
 
-            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-            const selector = `iq[to="room@conference.example.org"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
-            const features_query = await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(selector)).pop());
-
-            // We pretend this is a new room, so no disco info is returned.
-            const features_stanza = $iq({
-                    from: "room@conference.example.org",
-                    id: features_query.getAttribute("id"),
-                    to: "romeo@montague.lit/desktop",
-                    type: "error",
-                    xmlns: "jabber:client"
-                }).c("error", {"type": "cancel"})
-                    .c("item-not-found", {"xmlns": "urn:ietf:params:xml:ns:xmpp-stanzas"});
-            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
-
             _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
                 <presence xmlns="jabber:client" to="romeo@montague.lit/pda" from="room@conference.example.org/some1">
                     <x xmlns="http://jabber.org/protocol/muc#user">
@@ -203,6 +188,7 @@ describe("Groupchats", function () {
                     </x>
                 </presence>`));
 
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const iq = await u.waitUntil(() => IQ_stanzas.filter(s => s.querySelector(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`)).pop());
             expect(Strophe.serialize(iq)).toBe(
                 `<iq id="${iq.getAttribute('id')}" to="room@conference.example.org" type="get" xmlns="jabber:client">`+

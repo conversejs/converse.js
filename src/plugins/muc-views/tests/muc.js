@@ -31,21 +31,7 @@ describe("Groupchats", function () {
             view.querySelector('input[type=submit]').click();
             expect(view.model.join).toHaveBeenCalled();
 
-            const disco_selector = `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
-            const stanza = await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(disco_selector)).pop());
-
-            // We pretend this is a new room, so no disco info is returned.
-            const features_stanza =
-                stx`<iq from="${muc_jid}"
-                        id="${stanza.getAttribute('id')}"
-                        to="romeo@montague.lit/desktop"
-                        type="error"
-                        xmlns="jabber:client">
-                    <error type="cancel">
-                        <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
-                    </error>
-                </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
+            await mock.waitOnDiscoInfoForNewMUC(_converse, muc_jid);
 
             _converse.api.connection.get().IQ_stanzas = [];
             await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
@@ -1287,21 +1273,10 @@ describe("Groupchats", function () {
                 'vcard-temp',
             ]
             await mock.openAndEnterMUC(_converse, muc_jid, 'some1', features);
+            await mock.waitOnDiscoInfoForNewMUC(_converse, muc_jid);
+
             const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
             await u.waitUntil(() => u.isVisible(view));
-
-            // We pretend this is a new room, so no disco info is returned.
-            const features_stanza = stx`
-                <iq from="${muc_jid}"
-                        to="romeo@montague.lit/desktop"
-                        id="${IQ_id}"
-                        type="error"
-                        xmlns="jabber:client">
-                    <error type="cancel">
-                        <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
-                    </error>
-                </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
             const presence =
                 stx`<presence to="romeo@montague.lit/_converse.js-29092160"
@@ -1323,14 +1298,6 @@ describe("Groupchats", function () {
 
             /* Check that an IQ is sent out, asking for the
              * configuration form.
-             * See: // https://xmpp.org/extensions/xep-0045.html#example-163
-             *
-             *  <iq from='crone1@shakespeare.lit/desktop'
-             *      id='config1'
-             *      to='coven@chat.shakespeare.lit'
-             *      type='get'>
-             *  <query xmlns='http://jabber.org/protocol/muc#owner'/>
-             *  </iq>
              */
             expect(Strophe.serialize(iq)).toBe(
                 `<iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
@@ -2048,26 +2015,7 @@ describe("Groupchats", function () {
         it("indicates when a room is no longer anonymous",
                 mock.initConverse([], {}, async function (_converse) {
 
-            let IQ_id;
-            const sendIQ = _converse.api.connection.get().sendIQ;
-            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
-                IQ_id = sendIQ.bind(this)(iq, callback, errback);
-            });
             await mock.openAndEnterMUC(_converse, 'coven@chat.shakespeare.lit', 'some1');
-
-            const features_stanza =
-                stx`<iq from="coven@chat.shakespeare.lit"
-                        id="${IQ_id}"
-                        to="romeo@montague.lit/desktop"
-                        type="error"
-                        xmlns="jabber:client">
-                    <error type="cancel">
-                        <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
-                    </error>
-                </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
-
-            const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
             const message =
                 stx`<message xmlns="jabber:client"
                         type="groupchat"
@@ -2079,6 +2027,8 @@ describe("Groupchats", function () {
                     </x>
                 </message>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+
+            const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-info').length);
             const chat_body = view.querySelector('.chatroom-body');
             expect(sizzle('.message:last', chat_body).pop().textContent.trim())
@@ -2447,25 +2397,7 @@ describe("Groupchats", function () {
             const { api } = _converse;
             const muc_jid = 'impermissable@muc.montague.lit'
             api.rooms.open(muc_jid, { nick: 'romeo' });
-
-            // We pretend this is a new room, so no disco info is returned.
-            const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
-                iq => iq.querySelector(
-                    `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-                )).pop());
-
-            const features_stanza =
-                stx`<iq from="${muc_jid}"
-                        id="${iq.getAttribute('id')}"
-                        to="romeo@montague.lit/desktop"
-                        type="error"
-                        xmlns="jabber:client">
-                    <error type="cancel">
-                        <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
-                    </error>
-                </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
-
+            await mock.waitOnDiscoInfoForNewMUC(_converse, muc_jid);
 
             const presence =
                 stx`<presence xmlns="jabber:client"

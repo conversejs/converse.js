@@ -247,24 +247,7 @@ describe("A MUC", function () {
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const muc_jid = 'lounge@montague.lit';
             _converse.api.rooms.open(muc_jid);
-
-            let stanza = await u.waitUntil(() => IQ_stanzas.filter(
-                iq => iq.querySelector(
-                    `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-                )).pop()
-            );
-            // We pretend this is a new room, so no disco info is returned.
-            const features_stanza = stx`
-                <iq from="lounge@montague.lit"
-                        id="${stanza.getAttribute("id")}"
-                        to="romeo@montague.lit/desktop"
-                        type="error"
-                        xmlns="jabber:client">
-                    <error type="cancel">
-                        <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
-                    </error>
-                </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
+            await mock.waitOnDiscoInfoForNewMUC(_converse, muc_jid);
 
             const iq = await u.waitUntil(() => IQ_stanzas.filter(
                     s => sizzle(`iq[to="${muc_jid}"] query[node="x-roomuser-item"]`, s).length
@@ -275,7 +258,7 @@ describe("A MUC", function () {
                     <query node="x-roomuser-item" xmlns="http://jabber.org/protocol/disco#info"/>
                 </iq>`);
 
-            stanza = stx`
+            const stanza = stx`
                 <iq type="result"
                     id="${iq.getAttribute("id")}"
                     from="${muc_jid}"

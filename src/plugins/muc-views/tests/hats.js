@@ -28,7 +28,7 @@ describe("A XEP-0317 MUC Hat", function () {
                 <x xmlns="http://jabber.org/protocol/muc#user">
                     <item affiliation="member" role="participant"/>
                 </x>
-                <hats xmlns="xmpp:prosody.im/protocol/hats:1">
+                <hats xmlns="urn:xmpp:hats:0">
                     <hat title="Teacher&apos;s Assistant" id="${hat1_id}"/>
                     <hat title="Dark Mage" id="${hat2_id}"/>
                 </hats>
@@ -58,7 +58,7 @@ describe("A XEP-0317 MUC Hat", function () {
                 <x xmlns="http://jabber.org/protocol/muc#user">
                     <item affiliation="member" role="participant"/>
                 </x>
-                <hats xmlns="xmpp:prosody.im/protocol/hats:1">
+                <hats xmlns="urn:xmpp:hats:0">
                     <hat title="Teacher&apos;s Assistant" id="${hat1_id}"/>
                     <hat title="Dark Mage" id="${hat2_id}"/>
                     <hat title="Mad hatter" id="${hat3_id}"/>

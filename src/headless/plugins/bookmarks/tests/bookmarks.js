@@ -214,7 +214,7 @@ describe("A bookmark", function () {
             });
             expect(_converse.api.rooms.create).toHaveBeenCalled();
 
-            await mock.getRoomFeatures(_converse, jid);
+            await mock.waitForMUCDiscoFeatures(_converse, jid);
             await mock.waitForReservedNick(_converse, jid, '');
             await u.waitUntil(() => state.chatboxes.length === 2);
 

@@ -229,7 +229,7 @@ async function openChatRoomViaModal (_converse, muc_jid, nick='') {
         modal.querySelector('input[name="nickname"]').value = nick;
     }
     modal.querySelector('form input[type="submit"]').click();
-    await mock.getRoomFeatures(_converse, muc_jid);
+    await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
     if (!nick) await mock.waitForReservedNick(_converse, muc_jid, '');
 }
 
@@ -256,7 +256,7 @@ async function waitOnDiscoInfoForNewMUC(_converse, muc_jid) {
     _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 }
 
-async function getRoomFeatures (_converse, muc_jid, features=[], settings={}) {
+async function waitForMUCDiscoFeatures (_converse, muc_jid, features=[], settings={}) {
     const room = Strophe.getNodeFromJid(muc_jid);
     muc_jid = muc_jid.toLowerCase();
     const stanzas = _converse.api.connection.get().IQ_stanzas;
@@ -430,7 +430,7 @@ async function openAndEnterChatRoom (
     muc_jid = muc_jid.toLowerCase();
 
     const room_creation_promise = api.rooms.open(muc_jid, settings, force_open);
-    await getRoomFeatures(_converse, muc_jid, features, settings);
+    await waitForMUCDiscoFeatures(_converse, muc_jid, features, settings);
     await waitForReservedNick(_converse, muc_jid, nick);
     // The user has just entered the room (because join was called)
     // and receives their own presence from the server.
@@ -900,7 +900,7 @@ Object.assign(mock, {
     default_muc_features,
     deviceListFetched,
     event,
-    getRoomFeatures,
+    waitForMUCDiscoFeatures,
     groups,
     groups_map,
     initConverse,

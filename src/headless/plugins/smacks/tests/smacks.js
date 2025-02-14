@@ -296,7 +296,7 @@ describe("XEP-0198 Stream Management", function () {
 
         await api.waitUntil('chatBoxesFetched');
         const muc = _converse.chatboxes.get(muc_jid);
-        await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+        await mock.waitForMUCDiscoInfo(_converse, muc_jid);
         await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
         await u.waitUntil(() => (muc.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
         await muc.messages.fetched;

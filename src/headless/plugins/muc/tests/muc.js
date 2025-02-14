@@ -136,7 +136,7 @@ describe("Groupchats", function () {
 
             _converse.api.connection.get().IQ_stanzas = [];
             _converse.api.connection.get()._dataRecv(mock.createRequest(result));
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
             const pres = await u.waitUntil(
                 () => sent_stanzas.slice(index).filter(s => s.nodeName === 'presence').pop());

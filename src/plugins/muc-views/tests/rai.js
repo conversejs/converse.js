@@ -137,7 +137,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
         const sent_stanzas = _converse.api.connection.get().sent_stanzas;
 
         const muc_creation_promise = api.rooms.open(muc_jid, { nick }, false);
-        await mock.waitForMUCDiscoFeatures(_converse, muc_jid, []);
+        await mock.waitForMUCDiscoInfo(_converse, muc_jid, []);
         await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
         await muc_creation_promise;
 

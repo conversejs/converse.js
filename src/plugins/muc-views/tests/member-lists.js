@@ -93,7 +93,7 @@ describe("A Groupchat", function () {
                 ];
                 const nick = 'romeo';
                 _converse.api.rooms.open(muc_jid);
-                await mock.waitForMUCDiscoFeatures(_converse, muc_jid, features);
+                await mock.waitForMUCDiscoInfo(_converse, muc_jid, features);
                 await mock.waitForReservedNick(_converse, muc_jid, nick);
                 mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
 

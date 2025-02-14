@@ -215,7 +215,7 @@ async function openChatBoxFor (_converse, jid) {
     return u.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
 }
 
-async function waitOnDiscoInfoForNewMUC(_converse, muc_jid) {
+async function waitForNewMUCDiscoInfo(_converse, muc_jid) {
     const { api } = _converse;
     const connection = api.connection.get();
     const own_jid = connection.jid;
@@ -238,7 +238,7 @@ async function waitOnDiscoInfoForNewMUC(_converse, muc_jid) {
     _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 }
 
-async function waitForMUCDiscoFeatures (_converse, muc_jid, features=[], settings={}) {
+async function waitForMUCDiscoInfo (_converse, muc_jid, features=[], settings={}) {
     const room = Strophe.getNodeFromJid(muc_jid);
     muc_jid = muc_jid.toLowerCase();
     const stanzas = _converse.api.connection.get().IQ_stanzas;
@@ -412,7 +412,7 @@ async function openAndEnterMUC (
     muc_jid = muc_jid.toLowerCase();
 
     const room_creation_promise = api.rooms.open(muc_jid, settings, force_open);
-    await waitForMUCDiscoFeatures(_converse, muc_jid, features, settings);
+    await waitForMUCDiscoInfo(_converse, muc_jid, features, settings);
     await waitForReservedNick(_converse, muc_jid, nick);
     // The user has just entered the room (because join was called)
     // and receives their own presence from the server.
@@ -900,10 +900,10 @@ Object.assign(mock, {
     sendMessage,
     toggleControlBox,
     view_mode,
-    waitForMUCDiscoFeatures,
+    waitForMUCDiscoInfo,
+    waitForNewMUCDiscoInfo,
     waitForReservedNick,
     waitForRoster,
-    waitOnDiscoInfoForNewMUC,
     waitUntilBlocklistInitialized,
     waitUntilBookmarksReturned,
     waitUntilDiscoConfirmed

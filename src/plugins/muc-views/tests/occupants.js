@@ -13,7 +13,7 @@ describe("The occupants sidebar", function () {
             'jid': 'juliet@capulet.lit',
             'affiliation': 'member'
         }];
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => view.model.occupants.length === 2);
 
@@ -87,7 +87,7 @@ describe("The occupants sidebar", function () {
     it("shows users currently present in the groupchat",
         mock.initConverse([], {}, async function (_converse) {
 
-        await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+        await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
         var view = _converse.chatboxviews.get('lounge@montague.lit');
         const occupants = view.querySelector('.occupant-list');
         for (var i=0; i<mock.chatroom_names.length; i++) {
@@ -138,7 +138,7 @@ describe("The occupants sidebar", function () {
     it("indicates moderators and visitors by means of a special css class and tooltip",
             mock.initConverse([], {'view_mode': 'fullscreen'}, async function (_converse) {
 
-        await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+        await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         let contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 

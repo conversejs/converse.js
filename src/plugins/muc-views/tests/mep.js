@@ -9,7 +9,7 @@ describe("A XEP-0316 MEP notification", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
         let msg = 'An anonymous user has saluted romeo';
         let reason = 'Thank you for helping me yesterday';
@@ -97,7 +97,7 @@ describe("A XEP-0316 MEP notification", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], [], true, {'hidden': true});
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, nick, [], [], true, {'hidden': true});
         const msg = 'An anonymous user has saluted romeo';
         const reason = 'Thank you for helping me yesterday';
         const message = stx`
@@ -136,7 +136,7 @@ describe("A XEP-0316 MEP notification", function () {
     it("renders URLs as links", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], [], true);
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, nick, [], [], true);
         const msg = 'An anonymous user has waved at romeo';
         const reason = 'Check out https://conversejs.org';
         const message = stx`
@@ -176,7 +176,7 @@ describe("A XEP-0316 MEP notification", function () {
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
         const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick, features);
         const view = _converse.chatboxviews.get(muc_jid);
         const msg = 'An anonymous user has saluted romeo';
         const reason = 'Thank you for helping me yesterday';

@@ -8,7 +8,7 @@ describe("The nickname autocomplete feature", function () {
             mock.initConverse(['chatBoxesFetched'], {},
             async function (_converse) {
 
-        await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
+        await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'tom');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         // Nicknames from presences
         ['dick', 'harry'].forEach((nick) => {
@@ -71,7 +71,7 @@ describe("The nickname autocomplete feature", function () {
             mock.initConverse(['chatBoxesFetched'], {},
             async function (_converse) {
 
-        await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
+        await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'tom');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
 
         // Nicknames from presences
@@ -137,7 +137,7 @@ describe("The nickname autocomplete feature", function () {
             ['chatBoxesFetched'], {'opening_mention_characters':['(']},
             async function (_converse) {
 
-        await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
+        await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'tom');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
 
         // Nicknames from presences
@@ -203,7 +203,7 @@ describe("The nickname autocomplete feature", function () {
                 ['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitUntilBookmarksReturned(_converse);
-        const model = await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
+        const model = await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'tom');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
 
         // Nicknames from presences
@@ -266,7 +266,7 @@ describe("The nickname autocomplete feature", function () {
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitUntilBookmarksReturned(_converse);
-        const model = await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+        const model = await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         expect(view.model.occupants.length).toBe(1);
         let presence = stx`<presence
@@ -378,7 +378,7 @@ describe("The nickname autocomplete feature", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitUntilBookmarksReturned(_converse);
-        await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+        await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         expect(view.model.occupants.length).toBe(1);
         _converse.api.connection.get()._dataRecv(mock.createRequest(

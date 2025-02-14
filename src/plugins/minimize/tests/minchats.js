@@ -69,7 +69,7 @@ describe("A Groupchat", function () {
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const muc_jid = 'lounge@conference.shakespeare.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         spyOn(_converse.api, "trigger").and.callThrough();
         const button = await u.waitUntil(() => view.querySelector('.toggle-chatbox-button'));
@@ -353,7 +353,7 @@ describe("The Minimized Chats Widget", function () {
 
         const { minimize } = converse.env.u;
         const muc_jid = 'kitchen@conference.shakespeare.lit';
-        await mock.openAndEnterChatRoom(_converse, 'kitchen@conference.shakespeare.lit', 'fires');
+        await mock.openAndEnterMUC(_converse, 'kitchen@conference.shakespeare.lit', 'fires');
         const view = _converse.chatboxviews.get(muc_jid);
         minimize(view.model);
         const message = 'fires: Your attention is required';

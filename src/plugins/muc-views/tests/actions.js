@@ -8,7 +8,7 @@ describe("A Groupchat Message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 
         const stanza = stx`
             <presence
@@ -62,7 +62,7 @@ describe("A Groupchat Message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const stanza = stx`
             <presence
                 to="romeo@montague.lit/_converse.js-29092160"
@@ -110,7 +110,7 @@ describe("A Groupchat Message", function () {
     it("Cannot be quoted without permission to speak",
             mock.initConverse([], {}, async function (_converse) {
         const muc_jid = 'lounge@montague.lit';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', ['muc_moderated']);
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', ['muc_moderated']);
         const stanza = stx`
             <presence
                 to="romeo@montague.lit/_converse.js-29092160"

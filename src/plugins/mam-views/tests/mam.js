@@ -87,7 +87,7 @@ describe("Message Archive Management", function () {
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const muc_jid = 'orchard@chat.shakespeare.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             let view = _converse.chatboxviews.get(muc_jid);
             let iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
             expect(Strophe.serialize(iq_get)).toBe(
@@ -158,7 +158,7 @@ describe("Message Archive Management", function () {
 
             await u.waitUntil(() => _converse.chatboxes.length === 1);
 
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.model.messages.length);
 
@@ -438,7 +438,7 @@ describe("Message Archive Management", function () {
                     ['discoInitialized'], {},
                     async function (_converse) {
 
-                await mock.openAndEnterChatRoom(_converse, 'trek-radio@conference.lightwitch.org', 'romeo');
+                await mock.openAndEnterMUC(_converse, 'trek-radio@conference.lightwitch.org', 'romeo');
 
                 const view = _converse.chatboxviews.get('trek-radio@conference.lightwitch.org');
                 let stanza = u.toStanza(
@@ -485,7 +485,7 @@ describe("Message Archive Management", function () {
                     ['discoInitialized'], {},
                     async function (_converse) {
 
-                await mock.openAndEnterChatRoom(_converse, 'trek-radio@conference.lightwitch.org', 'jcbrand');
+                await mock.openAndEnterMUC(_converse, 'trek-radio@conference.lightwitch.org', 'jcbrand');
                 const view = _converse.chatboxviews.get('trek-radio@conference.lightwitch.org');
                 let stanza = u.toStanza(
                     `<message xmlns="jabber:client" to="jcbrand@lightwitch.org/converse.js-73057452" type="groupchat" from="trek-radio@conference.lightwitch.org/comndrdukath#0805 (STO)">
@@ -523,7 +523,7 @@ describe("Message Archive Management", function () {
                     ['discoInitialized'], {},
                     async function (_converse) {
 
-                await mock.openAndEnterChatRoom(_converse, 'discuss@conference.conversejs.org', 'romeo');
+                await mock.openAndEnterMUC(_converse, 'discuss@conference.conversejs.org', 'romeo');
                 const view = _converse.chatboxviews.get('discuss@conference.conversejs.org');
                 let stanza = u.toStanza(
                     `<message xmlns="jabber:client" to="romeo@montague.lit/orchard" from="discuss@conference.conversejs.org">

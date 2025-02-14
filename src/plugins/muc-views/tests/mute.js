@@ -9,7 +9,7 @@ describe("Groupchats", function () {
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'trollbox@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'troll');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'troll');
             const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
             textarea.value = 'Hello world';
@@ -63,7 +63,7 @@ describe("Groupchats", function () {
                 'muc_moderated',
             ]
             const muc_jid = 'trollbox@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'troll', features);
+            await mock.openAndEnterMUC(_converse, muc_jid, 'troll', features);
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.querySelector('.chat-textarea'));
 

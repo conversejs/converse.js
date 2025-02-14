@@ -7,7 +7,7 @@ describe("A XEP-0317 MUC Hat", function () {
     it("can be included in a presence stanza",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
 
 

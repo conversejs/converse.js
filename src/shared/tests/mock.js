@@ -415,7 +415,7 @@ async function openAddMUCModal (_converse) {
     return modal;
 }
 
-async function openAndEnterChatRoom (
+async function openAndEnterMUC (
         _converse,
         muc_jid,
         nick,
@@ -900,14 +900,13 @@ Object.assign(mock, {
     default_muc_features,
     deviceListFetched,
     event,
-    waitForMUCDiscoFeatures,
     groups,
     groups_map,
     initConverse,
     initializedOMEMO,
     num_contacts,
     openAddMUCModal,
-    openAndEnterChatRoom,
+    openAndEnterMUC,
     openChatBoxFor,
     openChatBoxes,
     openChatRoomViaModal,
@@ -920,6 +919,7 @@ Object.assign(mock, {
     sendMessage,
     toggleControlBox,
     view_mode,
+    waitForMUCDiscoFeatures,
     waitForReservedNick,
     waitForRoster,
     waitOnDiscoInfoForNewMUC,

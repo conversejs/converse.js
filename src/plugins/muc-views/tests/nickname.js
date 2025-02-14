@@ -14,7 +14,7 @@ describe("A MUC", function () {
 
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, nick);
 
         expect(model.get('nick')).toBe(nick);
         expect(model.occupants.length).toBe(1);
@@ -174,7 +174,7 @@ describe("A MUC", function () {
          *  </presence>
          */
         const { __ } = _converse;
-        await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'oldnick');
+        await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'oldnick');
 
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         await u.waitUntil(() => view.querySelectorAll('li .occupant-nick').length, 500);

@@ -10,7 +10,7 @@ describe("A Groupchat Message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
             <presence
                 to="romeo@montague.lit/_converse.js-29092160"
@@ -83,7 +83,7 @@ describe("A Groupchat Message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
             <presence
@@ -179,7 +179,7 @@ describe("A Groupchat Message", function () {
         const { jid: own_jid } = api.connection.get();
         const nick = 'romeo'
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
         expect(textarea.value).toBe('');
@@ -288,7 +288,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
         mock.initConverse([], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
-            const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+            const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
 
             const msg_id = u.getUniqueId();
             await model.handleMessageStanza(
@@ -368,7 +368,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
-            const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
+            const model = await mock.openAndEnterMUC(_converse, muc_jid, nick, features);
 
             expect(model.get('occupant_id')).toBe(model.occupants.at(0).get('occupant_id'));
 

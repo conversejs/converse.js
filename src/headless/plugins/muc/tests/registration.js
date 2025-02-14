@@ -13,7 +13,7 @@ describe("Groupchats", function () {
 
             const nick = 'romeo';
             const muc_jid = 'coven@chat.shakespeare.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+            await mock.openAndEnterMUC(_converse, muc_jid, nick);
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             let stanza = await u.waitUntil(() => IQ_stanzas.find(
@@ -67,7 +67,7 @@ describe("Groupchats", function () {
                 async function (_converse) {
 
             const muc_jid = 'coven@chat.shakespeare.lit';
-            const room = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const room = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 
             let stanza = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => sizzle(`iq[to="${muc_jid}"][type="get"] query[xmlns="jabber:iq:register"]`, iq).length

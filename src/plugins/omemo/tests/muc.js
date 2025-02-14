@@ -26,7 +26,7 @@ describe("The OMEMO module", function() {
         const { jid: own_jid } = api.connection.get();
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick, features);
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         await u.waitUntil(() => mock.initializedOMEMO(_converse));
 
@@ -198,7 +198,7 @@ describe("The OMEMO module", function() {
             'muc_unmoderated',
             'muc_nonanonymous'
         ];
-        await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo', features);
+        await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo', features);
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         await u.waitUntil(() => mock.initializedOMEMO(_converse));
 
@@ -332,7 +332,7 @@ describe("The OMEMO module", function() {
             'muc_unmoderated',
             'muc_nonanonymous'
         ];
-        await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo', features);
+        await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo', features);
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         await u.waitUntil(() => mock.initializedOMEMO(_converse));
 

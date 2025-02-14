@@ -10,7 +10,7 @@ describe('The MUC Affiliations API', function () {
             const { api } = _converse;
             const user_jid = 'annoyingguy@montague.lit';
             const muc_jid = 'lounge@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const presence = stx`
                 <presence from="lounge@montague.lit/annoyingGuy"
                         id="27C55F89-1C6A-459A-9EB5-77690145D624"

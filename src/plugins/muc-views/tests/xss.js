@@ -8,7 +8,7 @@ describe("XSS", function () {
         it("escapes occupant nicknames when rendering them, to avoid JS-injection attacks",
                 mock.initConverse([], {}, async function (_converse) {
 
-            await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+            await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
 
             const presence = stx`
                 <presence xmlns="jabber:client"
@@ -31,7 +31,7 @@ describe("XSS", function () {
         it("escapes the subject before rendering it, to avoid JS-injection attacks",
                 mock.initConverse([], {}, async function (_converse) {
 
-            await mock.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'jc');
+            await mock.openAndEnterMUC(_converse, 'jdev@conference.jabber.org', 'jc');
             spyOn(window, 'alert');
             const subject = '<img src="x" onerror="alert(\'XSS\');"/>';
             const view = _converse.chatboxviews.get('jdev@conference.jabber.org');

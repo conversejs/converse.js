@@ -9,7 +9,7 @@ describe("A Groupchat Message", function () {
     it("will render an unfurl based on OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
         const unfurl_image_src = "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg";
@@ -57,7 +57,7 @@ describe("A Groupchat Message", function () {
          * url. This test is to check that we fall back gracefully */
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = stx`
@@ -91,7 +91,7 @@ describe("A Groupchat Message", function () {
     it("will render an unfurl containing a GIF", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
         const unfurl_url = "https://giphy.com/gifs/giphyqa-4YY4DnqeUDBXNTcYMu";
         const gif_url = "https://media4.giphy.com/media/4YY4DnqeUDBXNTcYMu/giphy.gif?foo=bar";
@@ -129,7 +129,7 @@ describe("A Groupchat Message", function () {
     it("will render multiple unfurls based on OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = stx`
@@ -183,7 +183,7 @@ describe("A Groupchat Message", function () {
     it("will not render an unfurl received from a MUC participant", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = stx`
@@ -225,7 +225,7 @@ describe("A Groupchat Message", function () {
         const { api } = _converse;
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = stx`
@@ -272,7 +272,7 @@ describe("A Groupchat Message", function () {
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = stx`
@@ -317,7 +317,7 @@ describe("A Groupchat Message", function () {
 
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = stx`
@@ -359,7 +359,7 @@ describe("A Groupchat Message", function () {
 
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = stx`
@@ -411,7 +411,7 @@ describe("A Groupchat Message", function () {
         const { jid: own_jid } = api.connection.get();
         const nick = 'romeo';
         const muc_jid = 'lounge@muc.montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
         const unfurl_image_src = "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg";

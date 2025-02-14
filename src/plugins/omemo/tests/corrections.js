@@ -233,7 +233,7 @@ describe("An OMEMO encrypted MUC message", function() {
         const { jid: own_jid } = api.connection.get();
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick, features);
         await u.waitUntil(() => mock.initializedOMEMO(_converse));
 
         const view = _converse.chatboxviews.get(muc_jid);

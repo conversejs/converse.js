@@ -12,7 +12,7 @@ describe("Emojis", function () {
 
             await mock.waitForRoster(_converse, 'current', 0);
             const muc_jid = 'lounge@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.querySelector('converse-emoji-picker'));
             const textarea = view.querySelector('textarea.chat-textarea');
@@ -78,7 +78,7 @@ describe("Emojis", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.waitForRoster(_converse, 'current', 0);
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.querySelector('converse-emoji-picker'));
             const textarea = view.querySelector('textarea.chat-textarea');
@@ -127,7 +127,7 @@ describe("Emojis", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.waitForRoster(_converse, 'current', 0);
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.querySelector('converse-emoji-picker'));
             const textarea = view.querySelector('textarea.chat-textarea');
@@ -171,7 +171,7 @@ describe("Emojis", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.waitForRoster(_converse, 'current', 0);
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.querySelector('converse-emoji-dropdown'));
             const toolbar = view.querySelector('converse-chat-toolbar');

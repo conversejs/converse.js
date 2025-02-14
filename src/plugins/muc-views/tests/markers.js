@@ -10,7 +10,7 @@ describe("A XEP-0333 Chat Marker", function () {
 
         await mock.waitForRoster(_converse, 'current');
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'But soft, what light through yonder airlock breaks?';

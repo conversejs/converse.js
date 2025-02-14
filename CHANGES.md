@@ -31,6 +31,7 @@
 - #3307: Fix inconsistency between browsers on textarea outlines
 - #3337: Correctly display multiline nested quotes
 - #3362: Don't create empty nick element in bookmarks
+- #3386: Registration form is not fetched
 - #3476: better UI for form "fixed" fields
 - #3478: MUC participant status indicator misplaced 
 - #3529: Unbookmarked channels no longer change their name when clicked with an unread indicator (or text icon)

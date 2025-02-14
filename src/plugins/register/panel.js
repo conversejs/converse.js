@@ -94,8 +94,11 @@ class RegisterPanel extends CustomElement {
         const conn = api.connection.get();
         conn.connected = true;
 
-        const body = conn._proto._reqToData(req);
+        const body = /** @type {Element} */ (
+            '_reqToData' in conn._proto ? conn._proto._reqToData(/** @type {Request} */ (req)) : req
+        );
         if (!body) { return; }
+
         if (conn._proto._connect_cb(body) === Strophe.Status.CONNFAIL) {
             this.status = CHOOSE_PROVIDER;
             this.setErrorMessage(__("Sorry, we're unable to connect to your chosen provider."));

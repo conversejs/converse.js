@@ -215,24 +215,6 @@ async function openChatBoxFor (_converse, jid) {
     return u.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
 }
 
-async function openChatRoomViaModal (_converse, muc_jid, nick='') {
-    const controlbox = await _converse.api.controlbox.open('controlbox');
-    await u.waitUntil(() => controlbox.get('connected'));
-    await openControlBox(_converse);
-
-    document.querySelector('converse-rooms-list .show-add-muc-modal').click();
-    closeControlBox(_converse);
-    const modal = _converse.api.modal.get('converse-add-muc-modal');
-    await u.waitUntil(() => u.isVisible(modal), 1500)
-    modal.querySelector('input[name="chatroom"]').value = muc_jid;
-    if (nick) {
-        modal.querySelector('input[name="nickname"]').value = nick;
-    }
-    modal.querySelector('form input[type="submit"]').click();
-    await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
-    if (!nick) await mock.waitForReservedNick(_converse, muc_jid, '');
-}
-
 async function waitOnDiscoInfoForNewMUC(_converse, muc_jid) {
     const { api } = _converse;
     const connection = api.connection.get();
@@ -909,7 +891,6 @@ Object.assign(mock, {
     openAndEnterMUC,
     openChatBoxFor,
     openChatBoxes,
-    openChatRoomViaModal,
     openControlBox,
     ownDeviceHasBeenPublished,
     pend_names,

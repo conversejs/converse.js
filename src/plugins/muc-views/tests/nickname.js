@@ -337,8 +337,9 @@ describe("A MUC", function () {
         it("will render a nickname form if a nickname conflict happens and muc_nickname_from_jid=false",
                 mock.initConverse([], { vcard: { nickname: '' }}, async function (_converse) {
 
+            const { api } = _converse;
             const muc_jid = 'conflicted@muc.montague.lit';
-            await mock.openChatRoomViaModal(_converse, muc_jid, 'romeo');
+            api.rooms.open(muc_jid, { nick: 'romeo' });
             await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
 
             _converse.api.connection.get()._dataRecv(mock.createRequest(stx`

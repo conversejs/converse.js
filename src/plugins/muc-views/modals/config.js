@@ -18,6 +18,10 @@ export default class MUCConfigModal extends BaseModal {
 
     initialize () {
         super.initialize();
+        this.addListeners();
+    }
+
+    addListeners () {
         this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.listenTo(this.model.features, 'change:passwordprotected', () => this.requestUpdate());
         this.listenTo(this.model.session, 'change:config_stanza', () => this.requestUpdate());
@@ -27,9 +31,16 @@ export default class MUCConfigModal extends BaseModal {
         return tplMUCConfigForm(this);
     }
 
-    connectedCallback () {
-        super.connectedCallback();
-        this.getConfig();
+    /**
+     * @param {Map<string, any>} changed
+     */
+    shouldUpdate(changed) {
+        if (changed.has('model') && this.model) {
+            this.stopListening();
+            this.addListeners();
+            this.getConfig();
+        }
+        return true;
     }
 
     getModalTitle () {

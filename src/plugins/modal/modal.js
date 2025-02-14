@@ -1,5 +1,6 @@
 import { html } from 'lit';
 import { getOpenPromise } from '@converse/openpromise';
+import { Model} from '@converse/skeletor';
 import { Modal } from "bootstrap";
 import { CustomElement } from 'shared/components/element.js';
 import { u } from '@converse/headless';
@@ -12,6 +13,12 @@ class BaseModal extends CustomElement {
     /**
      * @typedef {import('lit').TemplateResult} TemplateResult
      */
+
+    static get properties () {
+        return {
+            model: { type: Model },
+        }
+    }
 
     /** @type {Modal} */
     #modal;

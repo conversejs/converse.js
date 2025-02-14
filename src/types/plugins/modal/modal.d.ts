@@ -1,6 +1,14 @@
 export default BaseModal;
 declare class BaseModal extends CustomElement {
     /**
+     * @typedef {import('lit').TemplateResult} TemplateResult
+     */
+    static get properties(): {
+        model: {
+            type: typeof Model;
+        };
+    };
+    /**
      * @param {Object} options
      */
     constructor(options: any);
@@ -11,28 +19,16 @@ declare class BaseModal extends CustomElement {
     /**
      * @returns {TemplateResult|string}
      */
-    renderModal(): {
-        _$litType$: 1 | 2;
-        strings: TemplateStringsArray;
-        values: unknown[];
-    } | string;
+    renderModal(): import("lit").TemplateResult<1 | 2> | string;
     /**
      * @returns {TemplateResult|string}
      */
-    renderModalFooter(): {
-        _$litType$: 1 | 2;
-        strings: TemplateStringsArray;
-        values: unknown[];
-    } | string;
+    renderModalFooter(): import("lit").TemplateResult<1 | 2> | string;
     render(): import("lit").TemplateResult<1>;
     /**
      * @returns {string|TemplateResult}
      */
-    getModalTitle(): string | {
-        _$litType$: 1 | 2;
-        strings: TemplateStringsArray;
-        values: unknown[];
-    };
+    getModalTitle(): string | import("lit").TemplateResult<1 | 2>;
     /**
      * @param {Event} [ev]
      */
@@ -50,4 +46,5 @@ declare class BaseModal extends CustomElement {
 }
 import { CustomElement } from 'shared/components/element.js';
 import { Modal } from "bootstrap";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=modal.d.ts.map

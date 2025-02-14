@@ -8,7 +8,7 @@ describe('Groupchats', () => {
             'has an avatar image',
             mock.initConverse(['chatBoxesFetched'], { vcard: { nickname: '' } }, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
-                await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 
                 const view = _converse.chatboxviews.get(muc_jid);
                 const avatar = view.querySelector('.chat-head converse-avatar .avatar-initials');

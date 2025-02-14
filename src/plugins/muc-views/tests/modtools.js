@@ -27,7 +27,7 @@ describe("The groupchat moderator tool", function () {
             {'jid': 'crone1@shakespeare.lit', 'nick': 'thirdwitch', 'affiliation': 'owner'},
             {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'},
         ];
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 5), 1000);
 
@@ -149,7 +149,7 @@ describe("The groupchat moderator tool", function () {
             {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'member'},
             {'jid': 'juliet@capulet.lit', 'nick': 'juliet', 'affiliation': 'member'},
         ];
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 6), 1000);
 
@@ -192,7 +192,7 @@ describe("The groupchat moderator tool", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', []);
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', []);
         const view = _converse.chatboxviews.get(muc_jid);
         _converse.api.connection.get()._dataRecv(mock.createRequest(
             stx`<presence to="${_converse.jid}" from="${muc_jid}/nomorenicks" xmlns="jabber:client">
@@ -292,7 +292,7 @@ describe("The groupchat moderator tool", function () {
             {'jid': 'crone1@shakespeare.lit', 'nick': 'thirdwitch', 'affiliation': 'owner'},
             {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'},
         ];
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 5));
         const modal = await openModtools(_converse, view);
@@ -343,7 +343,7 @@ describe("The groupchat moderator tool", function () {
             {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
             {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'},
         ];
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 2));
         const modal = await openModtools(_converse, view);
@@ -409,7 +409,7 @@ describe("The groupchat moderator tool", function () {
             {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
             {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'admin'},
         ];
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 3));
         const modal = await openModtools(_converse, view);
@@ -438,7 +438,7 @@ describe("The groupchat moderator tool", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const members = [{'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'}];
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = '/modtools';

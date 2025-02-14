@@ -36,7 +36,7 @@ describe("Notifications", function () {
                         mock.initConverse([], {}, async (_converse) => {
 
                     await mock.waitForRoster(_converse, 'current');
-                    await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+                    await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                     const view = _converse.chatboxviews.get('lounge@montague.lit');
                     const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                     spyOn(window, 'Notification').and.returnValue(stub);
@@ -144,7 +144,7 @@ describe("Notifications", function () {
             it("is played when the current user is mentioned in a groupchat", mock.initConverse([], {}, async (_converse) => {
 
                 await mock.waitForRoster(_converse, 'current');
-                await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+                await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                 const { api } = _converse;
                 api.settings.set('play_sounds', true);
 

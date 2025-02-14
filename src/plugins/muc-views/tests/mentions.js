@@ -9,7 +9,7 @@ describe("An incoming groupchat message", function () {
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         if (!view.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
         const message = 'romeo: Your attention is required';
@@ -31,7 +31,7 @@ describe("An incoming groupchat message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'tom');
         const view = _converse.chatboxviews.get(muc_jid);
         ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
             _converse.api.connection.get()._dataRecv(mock.createRequest(
@@ -88,7 +88,7 @@ describe("An incoming groupchat message", function () {
         const { jid: own_jid } = api.connection.get();
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
-        const muc = await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        const muc = await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
         api.connection.get()._dataRecv(mock.createRequest(
             stx`<presence
@@ -136,7 +136,7 @@ describe("An incoming groupchat message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'tom');
         const view = _converse.chatboxviews.get(muc_jid);
         ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
             _converse.api.connection.get()._dataRecv(mock.createRequest(
@@ -197,7 +197,7 @@ describe("A sent groupchat message", function () {
                 'muc_unmoderated',
                 'muc_nonanonymous'
             ];
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom', features);
+            await mock.openAndEnterMUC(_converse, muc_jid, 'tom', features);
             const view = _converse.chatboxviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh', 'Link Mauve', 'robot'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(
@@ -310,7 +310,7 @@ describe("A sent groupchat message", function () {
                 mock.initConverse([], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'tom');
             const view = _converse.chatboxviews.get(muc_jid);
             ['NotAnAdress', 'darnuria'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(
@@ -342,7 +342,7 @@ describe("A sent groupchat message", function () {
             const { jid: own_jid } = api.connection.get();
             const nick = 'tom';
             const muc_jid = 'lounge@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+            await mock.openAndEnterMUC(_converse, muc_jid, nick);
             const view = _converse.chatboxviews.get(muc_jid);
             _converse.api.connection.get()._dataRecv(mock.createRequest(
                 stx`<presence
@@ -400,7 +400,7 @@ describe("A sent groupchat message", function () {
                 'muc_unmoderated',
                 'muc_nonanonymous'
             ];
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom', features);
+            await mock.openAndEnterMUC(_converse, muc_jid, 'tom', features);
             const view = _converse.chatboxviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(
@@ -486,7 +486,7 @@ describe("A sent groupchat message", function () {
             const { jid: own_jid } = api.connection.get();
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
-            const muc = await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+            const muc = await mock.openAndEnterMUC(_converse, muc_jid, nick);
             const view = _converse.chatboxviews.get(muc_jid);
 
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
@@ -537,7 +537,7 @@ describe("A sent groupchat message", function () {
 
         const members = [{'jid': 'gibson@gibson.net', 'nick': 'gibson', 'affiliation': 'member'}];
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom', [], members);
+        await mock.openAndEnterMUC(_converse, muc_jid, 'tom', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = "Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/html/index.html";

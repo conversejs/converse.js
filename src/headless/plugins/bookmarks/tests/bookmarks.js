@@ -13,7 +13,7 @@ describe("A bookmark", function () {
         const nick = 'JC';
         const muc_jid = 'theplay@conference.shakespeare.lit';
         const settings = { name: "Play's the thing", password: 'secret' };
-        const muc = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], [], true, settings);
+        const muc = await mock.openAndEnterMUC(_converse, muc_jid, nick, [], [], true, settings);
 
         const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         const sent_stanza = await u.waitUntil(
@@ -76,7 +76,7 @@ describe("A bookmark", function () {
         const nick = 'JC';
         const muc_jid = 'theplay@conference.shakespeare.lit';
         const settings = { name: "Play's the thing", password: 'secret' };
-        const muc = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], [], true, settings);
+        const muc = await mock.openAndEnterMUC(_converse, muc_jid, nick, [], [], true, settings);
 
         const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         let sent_stanza = await u.waitUntil(
@@ -230,7 +230,7 @@ describe("A bookmark", function () {
             const nick = 'romeo';
             const muc_jid = 'theplay@conference.shakespeare.lit';
             const settings = { name:  'The Play' };
-            const muc = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], [], true, settings);
+            const muc = await mock.openAndEnterMUC(_converse, muc_jid, nick, [], [], true, settings);
 
             const { bookmarks } = _converse.state;
             await u.waitUntil(() => bookmarks.length);

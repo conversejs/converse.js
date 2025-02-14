@@ -23,7 +23,7 @@ describe("Groupchats", function () {
                 'muc_moderated',
                 'muc_anonymous'
             ]
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
 
             const view = _converse.chatboxviews.get(muc_jid);
             view.model.setChatState(_converse.ACTIVE);
@@ -69,7 +69,7 @@ describe("Groupchats", function () {
                     {'affiliation': 'member', 'nick': 'majortom', 'jid': 'majortom@example.org'},
                     {'affiliation': 'admin', 'nick': 'groundcontrol', 'jid': 'groundcontrol@example.org'}
                 ];
-                await mock.openAndEnterChatRoom(_converse, muc_jid, 'some1', [], members);
+                await mock.openAndEnterMUC(_converse, muc_jid, 'some1', [], members);
                 const view = _converse.chatboxviews.get(muc_jid);
 
                 let csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
@@ -181,7 +181,7 @@ describe("Groupchats", function () {
 
             it("will be shown if received", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'coven@chat.shakespeare.lit';
-                await mock.openAndEnterChatRoom(_converse, muc_jid, 'some1');
+                await mock.openAndEnterMUC(_converse, muc_jid, 'some1');
                 const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
 
                 /* <presence to="romeo@montague.lit/_converse.js-29092160"

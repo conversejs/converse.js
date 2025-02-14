@@ -10,15 +10,15 @@ describe("Groupchats", function () {
         it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments",
                 mock.initConverse([], {}, async function (_converse) {
 
-            await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+            await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
 
             const { api } = _converse;
             const connection = api.connection.get();
             connection.IQ_stanzas = [];
-            await mock.openAndEnterChatRoom(_converse, 'leisure@montague.lit', 'romeo');
+            await mock.openAndEnterMUC(_converse, 'leisure@montague.lit', 'romeo');
 
             connection.IQ_stanzas = [];
-            await mock.openAndEnterChatRoom(_converse, 'news@montague.lit', 'romeo');
+            await mock.openAndEnterMUC(_converse, 'news@montague.lit', 'romeo');
 
             expect(u.isVisible(_converse.chatboxviews.get('lounge@montague.lit'))).toBeTruthy();
             expect(u.isVisible(_converse.chatboxviews.get('leisure@montague.lit'))).toBeTruthy();
@@ -39,8 +39,8 @@ describe("Groupchats", function () {
             expect(_converse.chatboxviews.get('leisure@montague.lit')).toBeUndefined();
             expect(_converse.chatboxviews.get('news@montague.lit')).toBeUndefined();
 
-            await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-            await mock.openAndEnterChatRoom(_converse, 'leisure@montague.lit', 'romeo');
+            await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
+            await mock.openAndEnterMUC(_converse, 'leisure@montague.lit', 'romeo');
             expect(u.isVisible(_converse.chatboxviews.get('lounge@montague.lit'))).toBeTruthy();
             expect(u.isVisible(_converse.chatboxviews.get('leisure@montague.lit'))).toBeTruthy();
 
@@ -63,7 +63,7 @@ describe("Groupchats", function () {
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group .group-toggle').length, 300);
             let muc_jid = 'chillout@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             let room = await _converse.api.rooms.get(muc_jid);
             expect(room instanceof Object).toBeTruthy();
 
@@ -75,7 +75,7 @@ describe("Groupchats", function () {
 
             // Test with mixed case
             muc_jid = 'Leisure@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             room = await _converse.api.rooms.get(muc_jid);
             expect(room instanceof Object).toBeTruthy();
             chatroomview = _converse.chatboxviews.get(muc_jid.toLowerCase());

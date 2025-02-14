@@ -11,7 +11,7 @@ describe("A Groupchat Message", function () {
             async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         expect(model.ui.get('scrolled')).toBeFalsy();
 
         model.sendMessage({'body': '1st message'});

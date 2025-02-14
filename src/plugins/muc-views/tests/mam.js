@@ -10,7 +10,7 @@ describe("A MAM archived message", function () {
 
         const nick = 'romeo';
         const muc_jid = 'room@muc.example.com';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, nick);
 
         const messages = [
             stx`<message to="${_converse.api.connection.get().jid}" from="${muc_jid}" xmlns="jabber:server">
@@ -90,7 +90,7 @@ describe("A MAM archived message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'room@muc.example.com';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         spyOn(model, 'getDuplicateMessage').and.callThrough();
         let stanza = stx`
             <message xmlns="jabber:client"
@@ -139,7 +139,7 @@ describe("A MAM archived message", function () {
         const muc_jid = 'xsf@muc.xmpp.org';
         const sender_jid = `${muc_jid}/romeo`;
         const impersonated_jid = `${muc_jid}/i_am_groot`
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         _converse.api.connection.get()._dataRecv(mock.createRequest(
             stx`<presence to='romeo@montague.lit/_converse.js-29092160' from='${sender_jid}' xmlns="jabber:client">
                     <x xmlns='${Strophe.NS.MUC_USER}'>

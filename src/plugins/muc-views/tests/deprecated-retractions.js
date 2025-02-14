@@ -11,7 +11,7 @@ describe("Deprecated Message Retractions", function () {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE0];
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
 
             const received_stanza = stx`
                 <message to="${_converse.jid}"
@@ -61,7 +61,7 @@ describe("Deprecated Message Retractions", function () {
             const date = (new Date()).toISOString();
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE0];
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
 
             const retraction_stanza = stx`
                 <message type="groupchat"
@@ -122,7 +122,7 @@ describe("Deprecated Message Retractions", function () {
             const date = (new Date()).toISOString();
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE0];
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
             const retraction_stanza = stx`
                 <message xmlns="jabber:client" from="${muc_jid}" type="groupchat" id="retraction-id-1">
                     <apply-to xmlns="urn:xmpp:fasten:0" id="stanza-id-1">
@@ -296,7 +296,7 @@ describe("Deprecated Message Retractions", function () {
         it("can be followed up by a retraction by the author", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE0];
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
 
             const received_stanza = stx`
             <message to="${_converse.jid}"
@@ -341,7 +341,7 @@ describe("Deprecated Message Retractions", function () {
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
@@ -461,7 +461,7 @@ describe("Deprecated Message Retractions", function () {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE0];
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
             const view = _converse.chatboxviews.get(muc_jid);
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
@@ -538,7 +538,7 @@ describe("Deprecated Message Retractions", function () {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE0];
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
             const view = _converse.chatboxviews.get(muc_jid);
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;

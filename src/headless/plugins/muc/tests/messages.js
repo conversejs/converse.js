@@ -10,7 +10,7 @@ describe("A MUC message", function () {
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
         const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, nick, features);
         const occupant_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const presence = stx`
             <presence from="${muc_jid}/thirdwitch"
@@ -47,7 +47,7 @@ describe("A MUC message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const msg = $msg({
                 from: 'lounge@montague.lit/romeo',
                 id: u.getUniqueId(),
@@ -63,7 +63,7 @@ describe("A MUC message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'room@muc.example.com';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 
         model.sendMessage({'body': 'hello world'});
         await u.waitUntil(() => model.messages.length === 1);
@@ -94,7 +94,7 @@ describe("A MUC message", function () {
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const impersonated_jid = `${muc_jid}/alice`;
         const received_stanza = stx`
             <message to='${_converse.jid}'
@@ -127,7 +127,7 @@ describe("A MUC message", function () {
             mock.initConverse(['chatBoxesFetched'], {}, async function(_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const received_stanza = stx`
             <message xmlns="jabber:client" to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}' >
                 <reply xmlns='urn:xmpp:reply:0' id='${_converse.api.connection.get().getUniqueId()}' to='${_converse.jid}'/>

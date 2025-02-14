@@ -18,7 +18,7 @@ describe('MUC Private Messages', () => {
                     affiliation: 'member',
                 },
             ];
-            await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], members);
+            await mock.openAndEnterMUC(_converse, muc_jid, nick, [], members);
 
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.model.occupants.length === 2);
@@ -36,7 +36,7 @@ describe('MUC Private Messages', () => {
             mock.initConverse(['chatBoxesFetched'], { view_mode: 'fullscreen' }, async (_converse) => {
                 const nick = 'romeo';
                 const muc_jid = 'coven@chat.shakespeare.lit';
-                await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+                await mock.openAndEnterMUC(_converse, muc_jid, nick);
                 const view = _converse.chatboxviews.get(muc_jid);
 
                 _converse.api.connection.get()._dataRecv(
@@ -98,7 +98,7 @@ describe('MUC Private Messages', () => {
                 const { api } = _converse;
                 const nick = 'romeo';
                 const muc_jid = 'coven@chat.shakespeare.lit';
-                await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+                await mock.openAndEnterMUC(_converse, muc_jid, nick);
                 const view = _converse.chatboxviews.get(muc_jid);
 
                 _converse.api.connection.get()._dataRecv(
@@ -150,7 +150,7 @@ describe('MUC Private Messages', () => {
                 const { api } = _converse;
                 const nick = 'romeo';
                 const muc_jid = 'coven@chat.shakespeare.lit';
-                await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+                await mock.openAndEnterMUC(_converse, muc_jid, nick);
                 const view = _converse.chatboxviews.get(muc_jid);
 
                 _converse.api.connection.get()._dataRecv(
@@ -191,7 +191,7 @@ describe('MUC Private Messages', () => {
                     const { api } = _converse;
                     const nick = 'romeo';
                     const muc_jid = 'coven@chat.shakespeare.lit';
-                    await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+                    await mock.openAndEnterMUC(_converse, muc_jid, nick);
                     const view = _converse.chatboxviews.get(muc_jid);
 
                     _converse.api.connection.get()._dataRecv(

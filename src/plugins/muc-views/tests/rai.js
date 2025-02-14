@@ -17,7 +17,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
         expect(_converse.session.get('rai_enabled_domains')).toBe(undefined);
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         expect(view.model.get('hidden')).toBe(false);
 
@@ -196,7 +196,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
         expect(_converse.session.get('rai_enabled_domains')).toBe(undefined);
 
         const muc_jid = 'lounge@montague.lit';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         expect(model.get('hidden')).toBe(false);
         const sent_stanzas = [];
         spyOn(_converse.api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));

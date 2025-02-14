@@ -9,7 +9,7 @@ describe("An incoming groupchat Message", function () {
                 async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         const msg_text = "This *message mentions romeo*";
         const msg = stx`
@@ -38,7 +38,7 @@ describe("An incoming groupchat Message", function () {
                 async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         const msg_text = "x_y_z_ hello";
         const msg = stx`

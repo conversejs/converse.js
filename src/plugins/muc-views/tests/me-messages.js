@@ -10,7 +10,7 @@ describe("A Groupchat Message", function () {
         await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
         await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
         await mock.waitForRoster(_converse, 'current');
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         if (!view.querySelectorAll('.chat-area').length) {
             view.renderChatArea();

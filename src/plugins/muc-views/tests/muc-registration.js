@@ -11,7 +11,7 @@ describe("Chatrooms", function () {
                 async function (_converse) {
 
             const muc_jid = 'coven@chat.shakespeare.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo')
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo')
             const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/register';

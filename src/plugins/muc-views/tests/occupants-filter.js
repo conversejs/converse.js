@@ -19,7 +19,7 @@ describe("The MUC occupants filter", function () {
             'jid': 'tybalt@capulet.lit',
             'affiliation': 'member'
         }];
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => view.model.occupants.length === 3);
 

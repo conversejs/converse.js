@@ -14,7 +14,7 @@ describe("A Groupchat Message", function () {
                 mock.initConverse([], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = 'hello world'
@@ -54,7 +54,7 @@ describe("A Groupchat Message", function () {
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         if (!view.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
         const message = 'romeo: Your attention is required';
@@ -77,7 +77,7 @@ describe("A Groupchat Message", function () {
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         if (!view.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
         const id = u.getUniqueId();
@@ -109,7 +109,7 @@ describe("A Groupchat Message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'room@muc.example.com';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         spyOn(view.model, 'getStanzaIdQueryAttrs').and.callThrough();
         let stanza = stx`
@@ -154,7 +154,7 @@ describe("A Groupchat Message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         let msg = stx`
             <message xmlns="jabber:client"
@@ -297,7 +297,7 @@ describe("A Groupchat Message", function () {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick, features);
         const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'But soft, what light through yonder airlock breaks?';
@@ -340,7 +340,7 @@ describe("A Groupchat Message", function () {
 
         await mock.waitForRoster(_converse, 'current');
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'But soft, what light through yonder airlock breaks?';

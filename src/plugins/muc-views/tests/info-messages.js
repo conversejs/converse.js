@@ -8,7 +8,7 @@ describe("an info message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
         let presence = stx`
             <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
@@ -41,7 +41,7 @@ describe("an info message", function () {
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         const presence = stx`
             <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">

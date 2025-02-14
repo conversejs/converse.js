@@ -66,7 +66,7 @@ describe("A list of open groupchats", function () {
 
         const muc_jid = 'kitchen@conference.shakespeare.lit';
         const message = 'fires: Your attention is required';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'fires');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'fires');
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => roomspanel.querySelectorAll('.available-room').length);
         expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
@@ -153,7 +153,7 @@ describe("A groupchat shown in the groupchats list", function () {
         const muc_jid = 'coven@chat.shakespeare.lit';
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.openControlBox(_converse);
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 
         const rooms_list = document.querySelector('converse-rooms-list');
         await u.waitUntil(() => rooms_list.querySelectorAll(".open-room").length, 500);
@@ -314,7 +314,7 @@ describe("A groupchat shown in the groupchats list", function () {
         const room_jid = 'kitchen@conference.shakespeare.lit';
         const rooms_list = document.querySelector('converse-rooms-list');
         await u.waitUntil(() => rooms_list !== undefined, 500);
-        await mock.openAndEnterChatRoom(_converse, room_jid, 'romeo');
+        await mock.openAndEnterMUC(_converse, room_jid, 'romeo');
         const view = _converse.chatboxviews.get(room_jid);
         u.minimize(view.model);
         const nick = mock.chatroom_names[0];

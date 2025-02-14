@@ -9,7 +9,7 @@ describe("Groupchats", function () {
                 mock.initConverse([], {'muc_send_probes': true}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 
             let stanza = stx`<message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="${muc_jid}/ralphm">
                     <body>This message will trigger a presence probe</body>

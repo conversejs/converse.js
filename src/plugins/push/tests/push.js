@@ -83,7 +83,7 @@ describe("XEP-0357 Push Notifications", function () {
         expect(_converse.session.get('push_enabled').length).toBe(1);
         expect(_converse.session.get('push_enabled').includes('romeo@montague.lit')).toBe(true);
 
-        mock.openAndEnterChatRoom(_converse, 'coven@chat.shakespeare.lit', 'oldhag');
+        mock.openAndEnterMUC(_converse, 'coven@chat.shakespeare.lit', 'oldhag');
         await mock.waitUntilDiscoConfirmed(
             _converse, 'chat.shakespeare.lit',
             [{'category': 'account', 'type':'registered'}],

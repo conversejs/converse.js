@@ -10,7 +10,7 @@ describe("A MUC occupant", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, nick);
 
         // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
         const id = u.getUniqueId();
@@ -38,7 +38,7 @@ describe("A MUC occupant", function () {
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
         const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, nick, features);
 
         expect(model.occupants.length).toBe(1);
         expect(model.get('occupant_id')).not.toBeFalsy();
@@ -95,7 +95,7 @@ describe("A MUC occupant", function () {
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
         const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
-        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
+        const model = await mock.openAndEnterMUC(_converse, muc_jid, nick, features);
 
         expect(model.occupants.length).toBe(1);
         expect(model.get('occupant_id')).not.toBeFalsy();

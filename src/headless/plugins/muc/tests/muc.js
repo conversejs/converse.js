@@ -12,7 +12,7 @@ describe("Groupchats", function () {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         // Open a hidden room
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], [], false, {'hidden': true});
+        await mock.openAndEnterMUC(_converse, muc_jid, nick, [], [], false, {'hidden': true});
         const model = _converse.chatboxes.get(muc_jid);
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
@@ -50,7 +50,7 @@ describe("Groupchats", function () {
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             while (sent_stanzas.length) sent_stanzas.pop();
 
-            const muc = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const muc = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 
             let pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
             expect(pres).toEqualStanza(stx`
@@ -79,7 +79,7 @@ describe("Groupchats", function () {
             while (sent_stanzas.length) sent_stanzas.pop();
 
             const muc2_jid = 'cave@chat.shakespeare.lit';
-            const muc2 = await mock.openAndEnterChatRoom(_converse, muc2_jid, 'romeo');
+            const muc2 = await mock.openAndEnterMUC(_converse, muc2_jid, 'romeo');
 
             pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
             expect(Strophe.serialize(pres)).toBe(
@@ -98,7 +98,7 @@ describe("Groupchats", function () {
                 mock.initConverse([], {}, async function (_converse) {
 
             const muc_jid = 'coven@chat.shakespeare.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const model = _converse.chatboxes.get(muc_jid);
             expect(model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
             model.sendMessage({'body': 'hello world'});

@@ -11,7 +11,7 @@ describe("XEP-0363: HTTP File Upload", function () {
         describe("A file upload toolbar button", function () {
 
             it("does not appear in MUC chats", mock.initConverse([], {}, async (_converse) => {
-                await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+                await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                 mock.waitUntilDiscoConfirmed(
                     _converse, _converse.domain,
                     [{'category': 'server', 'type':'IM'}],
@@ -38,7 +38,7 @@ describe("XEP-0363: HTTP File Upload", function () {
 
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.lit'], 'items');
                 await mock.waitUntilDiscoConfirmed(_converse, 'upload.montague.lit', [], [Strophe.NS.HTTPUPLOAD], []);
-                await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+                await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                 await u.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit').querySelector('.fileupload'));
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 expect(view.querySelector('.chat-toolbar .fileupload')).not.toBe(null);
@@ -60,7 +60,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                     const nick = 'romeo';
                     await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items');
                     await mock.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
-                    await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+                    await mock.openAndEnterMUC(_converse, muc_jid, nick);
 
                     // Wait until MAM query has been sent out
                     const sent_stanzas = _converse.api.connection.get().sent_stanzas;

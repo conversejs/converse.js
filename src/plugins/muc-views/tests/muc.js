@@ -17,7 +17,7 @@ describe("Groupchats", function () {
             const muc_jid = 'lounge@montague.lit';
             const nick = 'nicky';
             const promise = api.rooms.open(muc_jid);
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             await mock.waitForReservedNick(_converse, muc_jid, '');
             const muc = await promise;
             await muc.initialized;
@@ -31,7 +31,7 @@ describe("Groupchats", function () {
             view.querySelector('input[type=submit]').click();
             expect(view.model.join).toHaveBeenCalled();
 
-            await mock.waitOnDiscoInfoForNewMUC(_converse, muc_jid);
+            await mock.waitForNewMUCDiscoInfo(_converse, muc_jid);
 
             _converse.api.connection.get().IQ_stanzas = [];
             await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
@@ -91,7 +91,7 @@ describe("Groupchats", function () {
             const { api } = _converse;
             const muc_jid = 'orchard@chat.shakespeare.lit';
             api.rooms.get(muc_jid);
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             await mock.waitForReservedNick(_converse, muc_jid, 'romeo');
             await mock.receiveOwnMUCPresence(_converse, muc_jid, 'romeo');
 
@@ -115,7 +115,7 @@ describe("Groupchats", function () {
             const muc_jid = 'orchard@chat.shakespeare.lit';
             const nick = 'romeo';
             api.rooms.open(muc_jid);
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             await mock.waitForReservedNick(_converse, muc_jid);
 
             const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
@@ -140,7 +140,7 @@ describe("Groupchats", function () {
             nick_input.value = nick;
             view.querySelector('.muc-nickname-form input[type="submit"]').click();
             _converse.api.connection.get().IQ_stanzas = [];
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
             await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
         }));
@@ -202,7 +202,7 @@ describe("Groupchats", function () {
 
             while (sent_IQs.length) { sent_IQs.pop(); } // Clear so that we don't match the older query
             await _converse.api.connection.reconnect();
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid, []);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid, []);
             await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
 
             // The user has just entered the room (because join was called)
@@ -511,7 +511,7 @@ describe("Groupchats", function () {
             await u.waitUntil(()  => view.querySelector('.chat-msg__text a'));
             view.querySelector('.chat-msg__text a').click();
 
-            await mock.waitForMUCDiscoFeatures(_converse, 'coven@chat.shakespeare.lit');
+            await mock.waitForMUCDiscoInfo(_converse, 'coven@chat.shakespeare.lit');
             await mock.waitForReservedNick(_converse, 'coven@chat.shakespeare.lit', 'romeo');
             await u.waitUntil(() => _converse.chatboxes.length === 3)
             expect(_converse.chatboxes.pluck('id').includes('coven@chat.shakespeare.lit')).toBe(true);
@@ -523,7 +523,7 @@ describe("Groupchats", function () {
             const muc_jid = 'coven@chat.shakespeare.lit';
             const nick = 'romeo';
             _converse.api.rooms.open(muc_jid);
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             await mock.waitForReservedNick(_converse, muc_jid, nick);
 
             const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
@@ -557,7 +557,7 @@ describe("Groupchats", function () {
             const muc_jid = 'coven@chat.shakespeare.lit';
             const nick = 'some1';
             const room_creation_promise = _converse.api.rooms.open(muc_jid, {nick});
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length));
 
@@ -1063,7 +1063,7 @@ describe("Groupchats", function () {
             const muc_jid = 'coven@chat.shakespeare.lit';
             _converse.api.rooms.open(muc_jid, {'nick': 'some1'});
 
-            await mock.waitOnDiscoInfoForNewMUC(_converse, muc_jid);
+            await mock.waitForNewMUCDiscoInfo(_converse, muc_jid);
 
             const presence =
                 stx`<presence to='${own_jid}'
@@ -1080,7 +1080,7 @@ describe("Groupchats", function () {
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             while (sent_IQs.length) sent_IQs.pop();
 
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
             const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
             await u.waitUntil(() => u.isVisible(view));
@@ -1273,7 +1273,7 @@ describe("Groupchats", function () {
                 'vcard-temp',
             ]
             await mock.openAndEnterMUC(_converse, muc_jid, 'some1', features);
-            await mock.waitOnDiscoInfoForNewMUC(_converse, muc_jid);
+            await mock.waitForNewMUCDiscoInfo(_converse, muc_jid);
 
             const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
             await u.waitUntil(() => u.isVisible(view));
@@ -1473,7 +1473,7 @@ describe("Groupchats", function () {
             const { api } = _converse;
             const muc_jid = 'problematic@muc.montague.lit';
             api.rooms.open(muc_jid, { nick: 'romeo' });
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
             const presence =
                 stx`<presence from="problematic@muc.montague.lit"
@@ -1596,7 +1596,7 @@ describe("Groupchats", function () {
                    <x xmlns="jabber:x:conference" jid="${muc_jid}" reason="${reason}"/>
                 </message>`.tree();
             const promise = _converse.onDirectMUCInvitation(stanza);
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             await mock.waitForReservedNick(_converse, muc_jid, 'romeo');
             await mock.receiveOwnMUCPresence(_converse, muc_jid, 'romeo');
             await promise;
@@ -2259,7 +2259,7 @@ describe("Groupchats", function () {
             const { api } = _converse;
             const muc_jid = 'protected@montague.lit';
             api.rooms.open(muc_jid, { nick: 'romeo' });
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
             const presence =
                     stx`<presence from="${muc_jid}/romeo"
@@ -2397,7 +2397,7 @@ describe("Groupchats", function () {
             const { api } = _converse;
             const muc_jid = 'impermissable@muc.montague.lit'
             api.rooms.open(muc_jid, { nick: 'romeo' });
-            await mock.waitOnDiscoInfoForNewMUC(_converse, muc_jid);
+            await mock.waitForNewMUCDiscoInfo(_converse, muc_jid);
 
             const presence =
                 stx`<presence xmlns="jabber:client"
@@ -2414,7 +2414,7 @@ describe("Groupchats", function () {
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             while (sent_IQs.length) sent_IQs.pop();
-            await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
             const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
             const el = await u.waitUntil(() => view.querySelector('.chatroom-body converse-muc-disconnected .disconnect-msg:last-child'));

@@ -118,7 +118,7 @@ describe("Groupchats", function () {
 
             // Test on groupchat that's not yet open
             let promise = _converse.api.rooms.open(jid);
-            await mock.waitForMUCDiscoFeatures(_converse, jid);
+            await mock.waitForMUCDiscoInfo(_converse, jid);
             await mock.waitForReservedNick(_converse, jid, nick);
 
             let room = await promise;
@@ -138,7 +138,7 @@ describe("Groupchats", function () {
             // Test with mixed case in JID
             jid = 'Leisure@montague.lit';
             promise  = _converse.api.rooms.open(jid);
-            await mock.waitForMUCDiscoFeatures(_converse, jid);
+            await mock.waitForMUCDiscoInfo(_converse, jid);
             await mock.waitForReservedNick(_converse, jid, nick);
             room = await promise;
             expect(room instanceof Model).toBeTruthy();
@@ -175,7 +175,7 @@ describe("Groupchats", function () {
                     'whois': 'anyone'
                 }
             });
-            await mock.waitForMUCDiscoFeatures(_converse, jid);
+            await mock.waitForMUCDiscoInfo(_converse, jid);
             room = await promise;
             expect(room instanceof Model).toBeTruthy();
 

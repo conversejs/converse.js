@@ -127,7 +127,7 @@ describe("The bookmarks list modal", function () {
         expect(modal.querySelectorAll('.bookmarks.rooms-list .room-item').length).toBe(2);
         modal.querySelector('.bookmarks.rooms-list .open-room').click();
 
-        await mock.waitForMUCDiscoFeatures(_converse, 'first@conference.shakespeare.lit');
+        await mock.waitForMUCDiscoInfo(_converse, 'first@conference.shakespeare.lit');
         await mock.waitForReservedNick(_converse, 'first@conference.shakespeare.lit', '');
         await u.waitUntil(() => _converse.chatboxes.length === 2);
         expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(false);
@@ -135,7 +135,7 @@ describe("The bookmarks list modal", function () {
         await u.waitUntil(() => modal.querySelectorAll('.list-container--bookmarks .available-chatroom').length);
         modal.querySelector('.list-container--bookmarks .available-chatroom:last-child .open-room').click();
 
-        await mock.waitForMUCDiscoFeatures(_converse, 'theplay@conference.shakespeare.lit');
+        await mock.waitForMUCDiscoInfo(_converse, 'theplay@conference.shakespeare.lit');
         await mock.waitForReservedNick(_converse, 'theplay@conference.shakespeare.lit', '');
         await u.waitUntil(() => _converse.chatboxes.length === 3);
 

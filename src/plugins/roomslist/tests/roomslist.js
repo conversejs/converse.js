@@ -22,7 +22,7 @@ describe("A list of open groupchats", function () {
 
         let muc_jid = 'room@conference.shakespeare.lit';
         api.rooms.open(muc_jid, { nick: 'romeo' });
-        await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+        await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
         const lview = controlbox.querySelector('converse-rooms-list');
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length);
@@ -32,7 +32,7 @@ describe("A list of open groupchats", function () {
 
         muc_jid = 'lounge@montague.lit';
         api.rooms.open(muc_jid, { nick: 'romeo' });
-        await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+        await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length > 1);
         room_els = lview.querySelectorAll(".open-room");
@@ -117,7 +117,7 @@ describe("A groupchat shown in the groupchats list", function () {
         const muc_jid = 'coven@chat.shakespeare.lit';
 
         _converse.api.rooms.open(muc_jid, {'nick': 'some1'}, true);
-        await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+        await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
         const lview = controlbox.querySelector('converse-rooms-list');
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length);
@@ -130,7 +130,7 @@ describe("A groupchat shown in the groupchats list", function () {
         expect(item.querySelector('.open-room span').textContent.trim()).toBe('Coven');
 
         _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'}, true);
-        await mock.waitForMUCDiscoFeatures(_converse, 'balcony@chat.shakespeare.lit');
+        await mock.waitForMUCDiscoInfo(_converse, 'balcony@chat.shakespeare.lit');
 
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length > 1);
         room_els = lview.querySelectorAll(".open-room");
@@ -283,7 +283,7 @@ describe("A groupchat shown in the groupchats list", function () {
         await mock.waitForRoster(_converse, 'current', 0);
         const muc_jid = 'lounge@conference.shakespeare.lit';
         _converse.api.rooms.open(muc_jid, { nick: 'romeo' });
-        await mock.waitForMUCDiscoFeatures(_converse, muc_jid);
+        await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
         await u.waitUntil(() => _converse.chatboxes.length === 2);
 

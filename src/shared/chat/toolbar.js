@@ -79,14 +79,6 @@ export class ChatToolbar extends CustomElement {
             );
         }
 
-        const message_limit = api.settings.get('message_limit');
-        if (message_limit) {
-            buttons.push(html`
-                <converse-message-limit-indicator .model=${this.model} class="right">
-                </converse-message-limit-indicator>`
-            );
-        }
-
         if (this.show_spoiler_button) {
             buttons.push(this.getSpoilerButton());
         }

@@ -1,6 +1,7 @@
-import { __ } from 'i18n';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
+import { __ } from 'i18n';
+import { api } from '@converse/headless';
 
 function tplSendButton() {
     const i18n_send_message = __('Send the message');
@@ -13,8 +14,12 @@ function tplSendButton() {
  * @param {import('../toolbar').ChatToolbar} el
  */
 export default (el) => {
+    const message_limit = api.settings.get('message_limit');
     return html`
         <span class="btn-group toolbar-buttons">${until(el.getButtons(), '')}</span>
-        ${el.show_send_button ? tplSendButton() : ''}
+        <span>
+            ${ message_limit ? html`<converse-message-limit-indicator .model="${el.model}"/>` : '' }
+            ${el.show_send_button ? tplSendButton() : ''}
+        </span>
     `;
 };

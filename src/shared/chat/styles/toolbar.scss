@@ -1,40 +1,38 @@
 .conversejs {
+    converse-chat-toolbar {
+        converse-message-limit-indicator {
+            padding: 0.75em 0.5em;
+        }
 
-    converse-chat-toolbar.btn-toolbar {
-        background-color: var(--background-color);
-        box-sizing: border-box;
-        width: 100%;
-        justify-content: space-between;
-        margin-bottom: 1px; // So that bottom border on toolbar buttons is visible
+        .btn-toolbar {
+            background-color: var(--background-color);
+            box-sizing: border-box;
+            width: 100%;
+            justify-content: space-between;
+            margin-bottom: 1px; // So that bottom border on toolbar buttons is visible
 
-        .toolbar-buttons {
-            .message-limit {
-                padding: 0.5em;
-                font-weight: bold;
+            .btn {
+                padding: 0.25em 0.5em !important;
             }
-        }
 
-        .btn {
-            padding: 0.25em 0.5em !important;
-        }
-
-        .send-button {
-            color: var(--background-color);
-            border-radius: 0;
-        }
-
-        .fa, .fa:hover,
-        .far, .far:hover,
-        .fas, .fas:hover {
-            color: var(--background-color);
-            font-size: var(--font-size-large);
-            svg {
-                fill: var(--background-color);
+            .send-button {
+                color: var(--background-color);
+                border-radius: 0;
             }
-        }
-        .unencrypted a,
-        .unencrypted {
-            color: var(--text-color);
+
+            .fa, .fa:hover,
+            .far, .far:hover,
+            .fas, .fas:hover {
+                color: var(--background-color);
+                font-size: var(--font-size-large);
+                svg {
+                    fill: var(--background-color);
+                }
+            }
+            .unencrypted a,
+            .unencrypted {
+                color: var(--text-color);
+            }
         }
     }
 
@@ -55,6 +53,7 @@
         converse-chat-toolbar {
             color: var(--chat-color);
             background-color: var(--background-color);
+            .message-limit,
             .fas, .fas:hover,
             .far, .far:hover,
             .fa, .fa:hover {

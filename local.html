@@ -5,40 +5,38 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Converse.js: A free chat client for your website" />
-    <script src="3rdparty/libsignal-protocol.js"></script>
+    <meta name="description" content="Converse XMPP/Jabber Chat" />
+    <meta name="author" content="JC Brand" />
+    <meta name="keywords" content="xmpp chat webchat converse.js" />
     <link rel="manifest" href="./manifest.json">
-    <link rel="shortcut icon" type="image/ico" href="favicon.ico"/>
-    <script src="https://cdn.conversejs.org/3rdparty/libsignal-protocol.min.js"></script>
+    <link rel="shortcut icon" type="image/ico" href="images/favicon.ico"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="dist/converse.css" />
+    <script src="3rdparty/libsignal-protocol.js"></script>
+    <script src="dist/converse.js"></script>
 </head>
-<body class="reset"></body>
+<body class="reset" style="background-color: var(--global-background-color)">
 <script>
-    window.addEventListener('converse-loaded', () => {
+    function initConverse() {
         converse.plugins.add('converse-debug', {
             initialize () {
                 const { _converse } = this;
                 window._converse = _converse;
             }
         });
+
         converse.initialize({
-            reuse_scram_keys: true,
             muc_subscribe_to_rai: true,
             theme: 'dracula',
-            show_send_button: true,
             auto_away: 300,
             message_limit: 300,
-            // singleton: true,
             // auto_join_rooms: ['ttt@conference.chat.example.org'],
-            auto_register_muc_nickname: true,
             loglevel: 'debug',
             // modtools_disable_assign: ['owner', 'moderator', 'participant', 'visitor'],
             // modtools_disable_query: ['moderator', 'participant', 'visitor'],
-            enable_smacks: true,
             // connection_options: { 'worker': '/dist/shared-connection-worker.js' },
             // persistent_store: 'IndexedDB',
             message_archiving: 'always',
             // muc_domain: 'conference.chat.example.org',
-            muc_respect_autojoin: true,
             view_mode: 'fullscreen',
             websocket_url: 'ws://chat.example.org:5380/xmpp-websocket',
             // websocket_url: 'wss://chat.example.org:5381/xmpp-websocket',
@@ -46,10 +44,16 @@
             // bosh_service_url: 'http://chat.example.org:5280/http-bind',
             allow_user_defined_connection_url: true,
             muc_show_logs_before_join: true,
-            whitelisted_plugins: ['converse-debug', 'converse-batched-probe'],
+            whitelisted_plugins: ['converse-debug'],
             blacklisted_plugins: [],
             show_background: true,
         });
-    });
+    }
+
+    if (typeof  converse === 'undefined') {
+        window.addEventListener('converse-loaded', initConverse);
+    } else {
+        initConverse();
+    }
 </script>
 </html>

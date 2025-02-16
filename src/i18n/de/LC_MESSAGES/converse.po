@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2024-12-06 13:00+0000\n"
+"PO-Revision-Date: 2025-02-16 19:22+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.10\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1018,9 +1018,8 @@ msgid "What should your nickname for this groupchat be?"
 msgstr "Welcher Spitzname soll für diesen Gruppenchat verwendet werden?"
 
 #: dist/converse-no-dependencies.js:86842
-#, fuzzy
 msgid "Password (for a protected groupchat)"
-msgstr "Passwortgeschützt"
+msgstr "Passwort (für einen geschützten Gruppenchat)"
 
 #: dist/converse-no-dependencies.js:86843
 msgid ""
@@ -1355,7 +1354,7 @@ msgstr "Möchten Sie sich wirklich abmelden?"
 
 #: dist/converse-no-dependencies.js:101994
 msgid "Block this user"
-msgstr ""
+msgstr "Diesen Benutzer blockieren"
 
 #: dist/converse-no-dependencies.js:101995
 msgid "Prevent this user from sending you any further messages"
@@ -1363,7 +1362,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:102009
 msgid "Close and end this conversation"
-msgstr "Schließen und beenden Sie dieses Gespräch"
+msgstr "Schließen und dieses Gespräch beenden"
 
 #. harmony default export
 #. *

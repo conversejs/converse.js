@@ -75,8 +75,14 @@ The `Converse releases page on Github <https://github.com/conversejs/converse.js
 has the release notes for every release as well as links to downloadable zip files
 containing all the files you need to host Converse yourself.
 
-Extract the zip file and include converse.min.js and converse.min.css files in
-the *<head>* element of your page, similar as shown in option 1 above.
+Extract the ``.zip`` (or ``.tar.gz``) file and include the ``converse.min.js`` and ``converse.min.css``
+files (found in ``package/dist``) in the ``<head>`` element of your page, similar to what's shown in
+option 1 above.
+
+The other files in ``dist`` should also be hosted by your server and available.
+During operation Converse will make HTTP calls to dynamically fetch more files
+from the ``dist`` folder. The exceptions here are the ``.map`` files and the
+unminified ``converse.js`` and ``converse.css`` files.
 
 
 Option 3: Building the files yourself

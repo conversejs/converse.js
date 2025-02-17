@@ -52,13 +52,11 @@ export default (el) => {
                             .getAutoCompleteList=${getNamesAutoCompleteList}
                             filter=${FILTER_STARTSWITH}
                             value="${el.model.get('nickname') || ''}"
-                            placeholder="${i18n_contact_placeholder}"
                             name="name"></converse-autocomplete>` :
 
                         html`<input type="text" name="name"
                             value="${el.model.get('nickname') || ''}"
-                            class="form-control"
-                            placeholder="${i18n_contact_placeholder}"/>`
+                            class="form-control" />`
                     }
                 </div>
                 <div class="add-xmpp-contact__group mb-3">

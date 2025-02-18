@@ -1,0 +1,10 @@
+converse-root#conversejs {
+    .popover-header {
+        color: var(--background-color);
+        background-color: var(--secondary-color);
+    }
+    .popover-body {
+        color: var(--foreground-color);
+        background-color: var(--background-color);
+    }
+}

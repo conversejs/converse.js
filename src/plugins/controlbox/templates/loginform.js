@@ -28,12 +28,7 @@ function tplTrustCheckbox(checked) {
                 ?checked=${checked}
             />
             <label for="converse-login-trusted" class="form-check-label login-trusted__desc">${i18n_trusted}</label>
-            <button type="button" class="btn p-0"
-                data-toggle="popover"
-                title="${i18n_hint_trusted}"
-                data-content="${i18n_hint_trusted}">
-                <converse-icon class="fa fa-info-circle" size="1.2em"></converse-icon>
-            </button>
+            <converse-popover title="${__('Info')}" text="${i18n_hint_trusted}"></converse-popover>
         </div>
     `;
 };

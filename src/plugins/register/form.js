@@ -1,4 +1,4 @@
-import { _converse, api, converse, log, constants, u, parsers } from "@converse/headless";
+import { _converse, api, converse, log, constants, u, parsers, errors } from "@converse/headless";
 import tplFormInput from "templates/form_input.js";
 import tplFormUrl from "templates/form_url.js";
 import tplFormUsername from "templates/form_username.js";
@@ -329,7 +329,6 @@ class RegistrationForm extends CustomElement {
     /**
      * Renders the registration form based on the XForm fields
      * received from the XMPP server.
-     * @method _converse.RegistrationForm#renderRegistrationForm
      * @param {Element} stanza - The IQ stanza received from the XMPP server.
      */
     renderRegistrationForm (stanza) {
@@ -340,13 +339,21 @@ class RegistrationForm extends CustomElement {
     /**
      * Report back to the user any error messages received from the
      * XMPP server after attempted registration.
-     * @method _converse.RegistrationForm#reportErrors
      * @param {Element} stanza - The IQ stanza received from the XMPP server
      */
-    reportErrors (stanza) {
-        const errors = Array.from(stanza.querySelectorAll('error'));
-        if (errors.length) {
-            this.setErrorMessage(errors.reduce((result, e) => `${result}\n${e.textContent}`, ''));
+    async reportErrors (stanza) {
+        const error = await parsers.parseErrorStanza(stanza);
+        if (error instanceof errors.ConflictError) {
+            this.setErrorMessage(
+                `${__('Registration failed.')} ${__('Please try a different username.')}`)
+            return;
+        }
+
+        const error_els = Array.from(stanza.querySelectorAll('error'));
+        if (error_els.length) {
+            this.setErrorMessage(
+                `${__('Registration failed.')}${error_els.reduce((result, e) => `${result}\n${e.textContent}`, '')}`
+            );
         } else {
             this.setErrorMessage(__('The provider rejected your registration attempt. '+
                 'Please check the values you entered for correctness.'));
@@ -404,7 +411,7 @@ class RegistrationForm extends CustomElement {
         }
 
         const connection = api.connection.get();
-        connection._addSysHandler(/** @param {Element} iq */(iq) => this._onRegisterIQ(iq), null, "iq", null, null);
+        connection._addSysHandler(/** @param {Element} iq */(iq) => this.#onRegisterIQ(iq), null, "iq", null, null);
         connection.send(iq);
         this.setFields(iq.tree());
     }
@@ -465,13 +472,12 @@ class RegistrationForm extends CustomElement {
      * Callback method that gets called when a return IQ stanza
      * is received from the XMPP server, after attempting to
      * register a new user.
-     * @method _converse.RegistrationForm#reportErrors
      * @param {Element} stanza - The IQ stanza.
      */
-    _onRegisterIQ (stanza) {
+    #onRegisterIQ (stanza) {
         const connection = api.connection.get();
         if (stanza.getAttribute("type") === "error") {
-            log.error("Registration failed.");
+            log.info("Registration failed.");
             this.reportErrors(stanza);
 
             const error_els = stanza.getElementsByTagName("error");

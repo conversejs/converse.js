@@ -8,11 +8,9 @@ import u from './utils/index.js';
 import converse from './shared/api/public.js';
 import log from './log.js';
 
-
 // START: Removable components
 // ---------------------------
 // The following components may be removed if they're not needed.
-
 export { EmojiPicker } from './plugins/emoji/index.js';
 export { Bookmark, Bookmarks } from './plugins/bookmarks/index.js'; // XEP-0199 XMPP Ping
 import './plugins/blocklist/index.js';
@@ -50,6 +48,7 @@ const constants = Object.assign({}, shared_constants, muc_constants);
 
 Object.assign(_converse.constants, constants);
 
-export { api, converse, _converse, i18n, log, u, constants, parsers };
+import * as errors from './shared/errors.js';
+export { api, converse, _converse, i18n, log, u, constants, parsers, errors };
 
 export default converse;

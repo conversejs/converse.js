@@ -80,12 +80,12 @@ export function initSessionData () {
 }
 
 function resetSessionData () {
-    _converse.session?.save({
-        'smacks_enabled': false,
-        'num_stanzas_handled': 0,
-        'num_stanzas_handled_by_server': 0,
-        'num_stanzas_since_last_ack': 0,
-        'unacked_stanzas': []
+    u.safeSave(_converse.session, {
+        smacks_enabled: false,
+        num_stanzas_handled: 0,
+        num_stanzas_handled_by_server: 0,
+        num_stanzas_since_last_ack: 0,
+        unacked_stanzas: []
     });
 }
 

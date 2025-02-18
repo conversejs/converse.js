@@ -87,7 +87,6 @@ declare class RegistrationForm extends CustomElement {
     /**
      * Renders the registration form based on the XForm fields
      * received from the XMPP server.
-     * @method _converse.RegistrationForm#renderRegistrationForm
      * @param {Element} stanza - The IQ stanza received from the XMPP server.
      */
     renderRegistrationForm(stanza: Element): void;
@@ -95,10 +94,9 @@ declare class RegistrationForm extends CustomElement {
     /**
      * Report back to the user any error messages received from the
      * XMPP server after attempted registration.
-     * @method _converse.RegistrationForm#reportErrors
      * @param {Element} stanza - The IQ stanza received from the XMPP server
      */
-    reportErrors(stanza: Element): void;
+    reportErrors(stanza: Element): Promise<void>;
     /**
      * @param {Event} ev
      */
@@ -130,14 +128,7 @@ declare class RegistrationForm extends CustomElement {
      * @param {Element} xform
      */
     setFieldsFromXForm(xform: Element): void;
-    /**
-     * Callback method that gets called when a return IQ stanza
-     * is received from the XMPP server, after attempting to
-     * register a new user.
-     * @method _converse.RegistrationForm#reportErrors
-     * @param {Element} stanza - The IQ stanza.
-     */
-    _onRegisterIQ(stanza: Element): boolean;
+    #private;
 }
 import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=form.d.ts.map

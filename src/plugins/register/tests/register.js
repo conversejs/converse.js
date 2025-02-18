@@ -551,7 +551,7 @@ describe("The Registration Form", function () {
         _converse.api.connection.get()._dataRecv(mock.createRequest(response_IQ));
 
         const alert = await u.waitUntil(() => view.querySelector('.alert'));
-        expect(alert.textContent.trim()).toBe('Too many CAPTCHA requests');
+        expect(alert.textContent.trim()).toBe('Registration failed.\nToo many CAPTCHA requests');
         // Hide the controlbox so that we can see whether the test passed or failed
         u.addClass('hidden', _converse.chatboxviews.get('controlbox'));
         _converse.api.connection.destroy();

@@ -13,6 +13,8 @@ const { ANONYMOUS } = constants;
 class LoginForm extends CustomElement {
 
     initialize () {
+        const settings = api.settings.get();
+        this.listenTo(settings, 'change:show_connection_url_input', () => this.requestUpdate());
         this.listenTo(_converse.state.connfeedback, 'change', () => this.requestUpdate());
         this.handler = () => this.requestUpdate()
     }

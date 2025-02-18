@@ -16,7 +16,7 @@ const trust_checkbox = (checked) => {
     );
     const i18n_trusted = __('This is a trusted device');
     return html`
-        <div class="form-group form-check login-trusted">
+        <div class="form-check login-trusted">
             <input
                 id="converse-login-trusted"
                 type="checkbox"
@@ -40,7 +40,7 @@ const connection_url_input = () => {
     const i18n_form_help = __('HTTP or websocket URL that is used to connect to your XMPP server');
     const i18n_placeholder = __('e.g. wss://example.org/xmpp-websocket');
     return html`
-        <div class="form-group fade-in">
+        <div class="mb-3 fade-in">
             <label for="converse-conn-url" class="form-label">${i18n_connection_url}</label>
             <p class="form-help instructions">${i18n_form_help}</p>
             <input
@@ -57,7 +57,7 @@ const connection_url_input = () => {
 const password_input = () => {
     const i18n_password = __('Password');
     return html`
-        <div>
+        <div class="mb-3">
             <label for="converse-login-password" class="form-label">${i18n_password}</label>
             <input
                 id="converse-login-password"
@@ -104,22 +104,24 @@ const auth_fields = (el) => {
 
     return html`
         <fieldset class="form-group">
+            <div class="mb-3">
             <label for="converse-login-jid" class="form-label">${i18n_xmpp_address}:</label>
-            <input
-                id="converse-login-jid"
-                ?autofocus=${api.settings.get('auto_focus') ? true : false}
-                @changed=${el.validate}
-                value="${api.settings.get('jid') ?? ''}"
-                required
-                class="form-control"
-                type="text"
-                name="jid"
-                placeholder="${placeholder_username}"
-            />
+                <input
+                    id="converse-login-jid"
+                    ?autofocus=${api.settings.get('auto_focus') ? true : false}
+                    @changed=${el.validate}
+                    value="${api.settings.get('jid') ?? ''}"
+                    required
+                    class="form-control"
+                    type="text"
+                    name="jid"
+                    placeholder="${placeholder_username}"
+                />
+            </div>
+            ${authentication !== EXTERNAL ? password_input() : ''}
+            ${api.settings.get('show_connection_url_input') ? connection_url_input() : ''}
+            ${show_trust_checkbox ? trust_checkbox(show_trust_checkbox === 'off' ? false : true) : ''}
         </fieldset>
-        ${authentication !== EXTERNAL ? password_input() : ''}
-        ${api.settings.get('show_connection_url_input') ? connection_url_input() : ''}
-        ${show_trust_checkbox ? trust_checkbox(show_trust_checkbox === 'off' ? false : true) : ''}
         <fieldset class="form-group buttons">
             <input class="btn btn-primary" type="submit" value="${i18n_login}" />
         </fieldset>

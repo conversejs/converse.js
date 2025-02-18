@@ -56,14 +56,14 @@ export class Connection extends Strophe.Connection {
         const text = await response.text();
         const xrd = (new DOMParser()).parseFromString(text, "text/xml").firstElementChild;
         if (xrd.nodeName != "XRD" || xrd.namespaceURI != "http://docs.oasis-open.org/ns/xri/xrd-1.0") {
-            return log.warn("Could not discover XEP-0156 connection methods");
+            return log.info("Could not discover XEP-0156 connection methods");
         }
         const bosh_links = sizzle(`Link[rel="urn:xmpp:alt-connections:xbosh"]`, xrd);
         const ws_links = sizzle(`Link[rel="urn:xmpp:alt-connections:websocket"]`, xrd);
         const bosh_methods = bosh_links.map(el => el.getAttribute('href')).filter(uri => uri.startsWith('https:'));
         const ws_methods = ws_links.map(el => el.getAttribute('href')).filter(uri => uri.startsWith('wss:'));
         if (bosh_methods.length === 0 && ws_methods.length === 0) {
-            log.warn("Neither BOSH nor WebSocket connection methods have been specified with XEP-0156.");
+            log.info("Neither BOSH nor WebSocket connection methods have been specified with XEP-0156.");
         } else {
             // TODO: support multiple endpoints
             api.settings.set("websocket_url", ws_methods.pop());
@@ -101,7 +101,7 @@ export class Connection extends Strophe.Connection {
         if (response.status >= 200 && response.status < 400) {
             await this.onDomainDiscovered(response);
         } else {
-            log.warn("Could not discover XEP-0156 connection methods");
+            log.info("Could not discover XEP-0156 connection methods");
         }
     }
 
@@ -121,7 +121,9 @@ export class Connection extends Strophe.Connection {
             await this.discoverConnectionMethods(domain);
         }
         if (!api.settings.get('bosh_service_url') && !api.settings.get("websocket_url")) {
-            throw new Error("You must supply a value for either the bosh_service_url or websocket_url or both.");
+            // If we don't have a connection URL, we show an input for the user
+            // to manually provide it.
+            api.settings.set('show_connection_url_input', true);
         }
         super.connect(jid, password, callback || this.onConnectStatusChanged, BOSH_WAIT);
     }

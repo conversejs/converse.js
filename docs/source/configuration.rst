@@ -795,9 +795,6 @@ Use `XEP-0156 <https://xmpp.org/extensions/xep-0156.html>`_ to discover whether
 the XMPP host for the current user advertises any Websocket or BOSH connection
 URLs that can be used.
 
-If this is set to ``false``, then a `websocket_url`_ or `bosh_service_url`_ need to be
-set.
-
 Currently only the XML encoded host-meta resource is supported as shown in
 `Example 2 under section 3.3 <https://xmpp.org/extensions/xep-0156.html#httpexamples>`_.
 

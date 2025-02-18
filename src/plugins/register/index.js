@@ -6,7 +6,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { api, converse, constants } from '@converse/headless';
-import './panel.js';
+import './form.js';
 import { __ } from 'i18n';
 import { routeToForm } from './utils.js';
 

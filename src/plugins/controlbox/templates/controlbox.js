@@ -14,7 +14,7 @@ function whenNotConnected(el) {
         return tplSpinner({class: 'vertically-centered'});
     }
     if (el.model.get('active-form') === 'register') {
-        return html`<converse-register-panel></converse-register-panel>`;
+        return html`<converse-registration-form></converse-registration-form>`;
     }
     return html`<converse-login-form
         id="converse-login-panel"

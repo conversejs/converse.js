@@ -30,8 +30,8 @@ export async function parseErrorStanza(stanza) {
     const error = stanza.querySelector('error');
     if (!error) return null;
 
-    const e = sizzle(`[xmlns="${Strophe.NS.STANZAS}"]`, error).pop();
-    const name = e?.nodeName;
+    const els = sizzle(`[xmlns="${Strophe.NS.STANZAS}"]`, error);
+    const name = els.filter((el) => el.nodeName && el.nodeName !== 'text').pop()?.nodeName;
 
     /**
      * *Hook* which allows plugins to add application-specific error parsing

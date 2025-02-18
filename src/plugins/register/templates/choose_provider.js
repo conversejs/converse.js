@@ -5,7 +5,10 @@ import { __ } from 'i18n';
 import { api } from '@converse/headless';
 import { html } from 'lit';
 
-const tplFormRequest = (el) => {
+/**
+ * @param {import('../form.js').default} el
+ */
+function tplFormRequest(el) {
     const default_domain = api.settings.get('registration_domain');
     const i18n_cancel = __('Cancel');
     return html`
@@ -21,7 +24,7 @@ const tplFormRequest = (el) => {
     `;
 };
 
-const tplDomainInput = () => {
+function tplDomainInput() {
     const domain_placeholder = api.settings.get('domain_placeholder');
     const i18n_providers = __('Tip: A list of public XMPP providers is available');
     const i18n_providers_link = __('here');
@@ -35,7 +38,7 @@ const tplDomainInput = () => {
     `;
 };
 
-const tplFetchFormButtons = () => {
+function tplFetchFormButtons() {
     const i18n_register = __('Fetch registration form');
     const i18n_existing_account = __('Already have a chat account?');
     const i18n_login = __('Log in here');
@@ -50,7 +53,10 @@ const tplFetchFormButtons = () => {
     `;
 };
 
-const tplChooseProvider = (el) => {
+/**
+ * @param {import('../form.js').default} el
+ */
+function tplChooseProvider(el) {
     const default_domain = api.settings.get('registration_domain');
     const i18n_create_account = __('Create your account');
     const i18n_choose_provider = __('Please enter the XMPP provider to register with:');
@@ -74,6 +80,9 @@ const FETCHING_FORM = 1;
 const REGISTRATION_FORM = 2;
 const REGISTRATION_FORM_ERROR = 3;
 
+/**
+ * @param {import('../form.js').default} el
+ */
 export default (el) => {
     return html`
         <converse-brand-logo></converse-brand-logo>

@@ -1,11 +1,8 @@
-/**
- * @typedef {import('strophe.js').Request} Request
- */
 import { _converse, api, converse, log, constants, u, parsers } from "@converse/headless";
 import tplFormInput from "templates/form_input.js";
 import tplFormUrl from "templates/form_url.js";
 import tplFormUsername from "templates/form_username.js";
-import tplRegisterPanel from "./templates/register_panel.js";
+import tplChooseProvider from "./templates/choose_provider.js";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { setActiveForm } from './utils.js';
@@ -22,12 +19,10 @@ const REGISTRATION_FORM = 2;
 const REGISTRATION_FORM_ERROR = 3;
 
 
-/**
- * @class
- * @namespace _converse.RegisterPanel
- * @memberOf _converse
- */
-class RegisterPanel extends CustomElement {
+class RegistrationForm extends CustomElement {
+    /**
+     * @typedef {import('strophe.js').Request} Request
+     */
 
     static get properties () {
         return {
@@ -60,7 +55,7 @@ class RegisterPanel extends CustomElement {
     }
 
     render () {
-        return tplRegisterPanel(this);
+        return tplChooseProvider(this);
     }
 
     setMessage(message, type) {
@@ -86,7 +81,7 @@ class RegisterPanel extends CustomElement {
 
     /**
      * Send an IQ stanza to the XMPP server asking for the registration fields.
-     * @method _converse.RegisterPanel#getRegistrationFields
+     * @method _converse.RegistrationForm#getRegistrationFields
      * @param {Request} req - The current request
      * @param {Function} callback - The callback function
      */
@@ -129,8 +124,8 @@ class RegisterPanel extends CustomElement {
     }
 
     /**
-     * Handler for {@link _converse.RegisterPanel#getRegistrationFields}
-     * @method _converse.RegisterPanel#onRegistrationFields
+     * Handler for {@link _converse.RegistrationForm#getRegistrationFields}
+     * @method _converse.RegistrationForm#onRegistrationFields
      * @param {Element} stanza - The query stanza.
      */
     onRegistrationFields (stanza) {
@@ -183,7 +178,7 @@ class RegisterPanel extends CustomElement {
 
     /**
      * Callback method that gets called when the user has chosen an XMPP provider
-     * @method _converse.RegisterPanel#onProviderChosen
+     * @method _converse.RegistrationForm#onProviderChosen
      * @param {HTMLElement} form - The form that was submitted
      */
     onProviderChosen (form) {
@@ -193,7 +188,7 @@ class RegisterPanel extends CustomElement {
 
     /**
      * Fetch a registration form from the requested domain
-     * @method _converse.RegisterPanel#fetchRegistrationForm
+     * @method _converse.RegistrationForm#fetchRegistrationForm
      * @param {string} domain_name - XMPP server domain
      */
     fetchRegistrationForm (domain_name) {
@@ -212,7 +207,7 @@ class RegisterPanel extends CustomElement {
     /**
      * Callback function called by Strophe whenever the connection status changes.
      * Passed to Strophe specifically during a registration attempt.
-     * @method _converse.RegisterPanel#onConnectStatusChanged
+     * @method _converse.RegistrationForm#onConnectStatusChanged
      * @param {number} status_code - The Strophe.Status status code
      */
     onConnectStatusChanged(status_code) {
@@ -294,7 +289,7 @@ class RegisterPanel extends CustomElement {
     /**
      * Renders the registration form based on the XForm fields
      * received from the XMPP server.
-     * @method _converse.RegisterPanel#renderRegistrationForm
+     * @method _converse.RegistrationForm#renderRegistrationForm
      * @param {Element} stanza - The IQ stanza received from the XMPP server.
      */
     renderRegistrationForm (stanza) {
@@ -305,7 +300,7 @@ class RegisterPanel extends CustomElement {
     /**
      * Report back to the user any error messages received from the
      * XMPP server after attempted registration.
-     * @method _converse.RegisterPanel#reportErrors
+     * @method _converse.RegistrationForm#reportErrors
      * @param {Element} stanza - The IQ stanza received from the XMPP server
      */
     reportErrors (stanza) {
@@ -342,7 +337,7 @@ class RegisterPanel extends CustomElement {
     /**
      * Handler, when the user submits the registration form.
      * Provides form error feedback or starts the registration process.
-     * @method _converse.RegisterPanel#submitRegistrationForm
+     * @method _converse.RegistrationForm#submitRegistrationForm
      * @param {HTMLElement} form - The HTML form that was submitted
      */
     submitRegistrationForm (form) {
@@ -367,7 +362,7 @@ class RegisterPanel extends CustomElement {
 
     /**
      * Stores the values that will be sent to the XMPP server during attempted registration.
-     * @method _converse.RegisterPanel#setFields
+     * @method _converse.RegistrationForm#setFields
      * @param {Element} stanza - the IQ stanza that will be sent to the XMPP server.
      */
     setFields (stanza) {
@@ -421,7 +416,7 @@ class RegisterPanel extends CustomElement {
      * Callback method that gets called when a return IQ stanza
      * is received from the XMPP server, after attempting to
      * register a new user.
-     * @method _converse.RegisterPanel#reportErrors
+     * @method _converse.RegistrationForm#reportErrors
      * @param {Element} stanza - The IQ stanza.
      */
     _onRegisterIQ (stanza) {
@@ -451,4 +446,6 @@ class RegisterPanel extends CustomElement {
     }
 }
 
-api.elements.define('converse-register-panel', RegisterPanel);
+api.elements.define('converse-registration-form', RegistrationForm);
+
+export default RegistrationForm;

@@ -84,9 +84,9 @@ export class Connection extends Strophe.Connection {
     async discoverConnectionMethods (domain) {
         // Use XEP-0156 to check whether this host advertises websocket or BOSH connection methods.
         const options = {
-            'mode': /** @type {RequestMode} */('cors'),
-            'headers': {
-                'Accept': 'application/xrd+xml, text/xml'
+            mode: /** @type {RequestMode} */('cors'),
+            headers: {
+                Accept: 'application/xrd+xml, text/xml'
             }
         };
         const url = `https://${domain}/.well-known/host-meta`;
@@ -94,7 +94,7 @@ export class Connection extends Strophe.Connection {
         try {
             response = await fetch(url, options);
         } catch (e) {
-            log.error(`Failed to discover alternative connection methods at ${url}`);
+            log.info(`Failed to discover alternative connection methods at ${url}`);
             log.error(e);
             return;
         }
@@ -114,7 +114,7 @@ export class Connection extends Strophe.Connection {
      * @param {Function} callback
      */
     async connect (jid, password, callback) {
-        const { api } = _converse;
+        const { __, api } = _converse;
 
         if (api.settings.get("discover_connection_methods")) {
             const domain = Strophe.getDomainFromJid(jid);
@@ -124,6 +124,11 @@ export class Connection extends Strophe.Connection {
             // If we don't have a connection URL, we show an input for the user
             // to manually provide it.
             api.settings.set('show_connection_url_input', true);
+            (callback || this.onConnectStatusChanged)(
+                Strophe.Status.DISCONNECTED,
+                __('Could not automatically determine a connection URL')
+            );
+            return;
         }
         super.connect(jid, password, callback || this.onConnectStatusChanged, BOSH_WAIT);
     }
@@ -346,7 +351,7 @@ export class Connection extends Strophe.Connection {
      * through various states while establishing or tearing down a
      * connection.
      * @param {Number} status
-     * @param {String} message
+     * @param {String} [message]
      */
     onConnectStatusChanged (status, message) {
         const { __ } = _converse;

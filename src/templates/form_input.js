@@ -1,7 +1,7 @@
 import { html } from "lit";
 
 export default  (o) => html`
-    <div class="pb-2">
+    <div class="mb-3">
         ${ o.type !== 'hidden' ? html`<label for="${o.id}" class="form-label">${o.label}
             ${(o.desc) ? html`<small class="form-text text-muted">${o.desc}</small>` : ''}
         </label>` : '' }

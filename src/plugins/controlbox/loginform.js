@@ -102,3 +102,5 @@ class LoginForm extends CustomElement {
 }
 
 api.elements.define('converse-login-form', LoginForm);
+
+export default LoginForm;

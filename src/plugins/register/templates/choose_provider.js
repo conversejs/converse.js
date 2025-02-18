@@ -1,9 +1,10 @@
-import tplRegistrationForm from './registration_form.js';
-import tplSpinner from 'templates/spinner.js';
-import tplSwitchForm from './switch_form.js';
-import { __ } from 'i18n';
-import { api } from '@converse/headless';
 import { html } from 'lit';
+import { api } from '@converse/headless';
+import tplSpinner from 'templates/spinner.js';
+import { __ } from 'i18n';
+import { tplConnectionURLInput } from '../../controlbox/templates/loginform.js';
+import tplSwitchForm from './switch_form.js';
+import tplRegistrationForm from './registration_form.js';
 
 /**
  * @param {import('../form.js').default} el
@@ -24,17 +25,26 @@ function tplFormRequest(el) {
     `;
 };
 
-function tplDomainInput() {
+/**
+ * @param {import('../form.js').default} el
+ */
+function tplDomainInput(el) {
     const domain_placeholder = api.settings.get('domain_placeholder');
     const i18n_providers = __('Tip: A list of public XMPP providers is available');
     const i18n_providers_link = __('here');
     const href_providers = api.settings.get('providers_link');
     return html`
-        <input class="form-control" required="required" type="text" name="domain" placeholder="${domain_placeholder}" />
+        <input class="form-control"
+            required="required"
+            type="text" name="domain"
+            placeholder="${domain_placeholder}"
+            value="${el.domain}"
+        />
         <p class="form-text text-muted">
             ${i18n_providers}
             <a href="${href_providers}" class="url" target="_blank" rel="noopener">${i18n_providers_link}</a>.
         </p>
+        ${api.settings.get('show_connection_url_input') ? tplConnectionURLInput() : ''}
     `;
 };
 
@@ -67,8 +77,7 @@ function tplChooseProvider(el) {
             <legend class="col-form-label">${i18n_create_account}</legend>
             <div>
                 <label class="form-label">${i18n_choose_provider}</label>
-
-                ${default_domain ? default_domain : tplDomainInput()}
+                ${default_domain ? default_domain : tplDomainInput(el)}
             </div>
             ${show_form_buttons ? tplFetchFormButtons() : ''}
         </form>

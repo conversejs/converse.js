@@ -7,6 +7,12 @@ declare class RegistrationForm extends CustomElement {
         status: {
             type: StringConstructor;
         };
+        domain: {
+            type: StringConstructor;
+        };
+        service_url: {
+            type: StringConstructor;
+        };
         alert_message: {
             type: StringConstructor;
         };
@@ -18,12 +24,16 @@ declare class RegistrationForm extends CustomElement {
     fields: {};
     domain: any;
     alert_type: string;
-    setErrorMessage: (m: any) => void;
-    setFeedbackMessage: (m: any) => void;
+    setErrorMessage: (m: string) => void;
+    setFeedbackMessage: (m: string) => void;
     initialize(): void;
     status: number;
     render(): import("lit").TemplateResult<1>;
-    setMessage(message: any, type: any): void;
+    /**
+     * @param {string} message
+     * @param {'info'|'danger'} type
+     */
+    setMessage(message: string, type: "info" | "danger"): void;
     alert_message: any;
     /**
      * Hook into Strophe's _connect_cb, so that we can send an IQ
@@ -53,23 +63,22 @@ declare class RegistrationForm extends CustomElement {
     onFormSubmission(ev: Event): void;
     /**
      * Callback method that gets called when the user has chosen an XMPP provider
-     * @method _converse.RegistrationForm#onProviderChosen
-     * @param {HTMLElement} form - The form that was submitted
+     * @param {HTMLFormElement} form - The form that was submitted
      */
-    onProviderChosen(form: HTMLElement): void;
+    onProviderChosen(form: HTMLFormElement): void;
     /**
      * Fetch a registration form from the requested domain
-     * @method _converse.RegistrationForm#fetchRegistrationForm
      * @param {string} domain_name - XMPP server domain
+     * @param {string|null} [service_url]
      */
-    fetchRegistrationForm(domain_name: string): boolean;
+    fetchRegistrationForm(domain_name: string, service_url?: string | null): boolean;
     /**
      * Callback function called by Strophe whenever the connection status changes.
      * Passed to Strophe specifically during a registration attempt.
-     * @method _converse.RegistrationForm#onConnectStatusChanged
      * @param {number} status_code - The Strophe.Status status code
+     * @param {string} message
      */
-    onConnectStatusChanged(status_code: number): void;
+    onConnectStatusChanged(status_code: number, message: string): void;
     getLegacyFormFields(): import("lit").TemplateResult<1>[];
     /**
      * @param {Element} stanza
@@ -90,8 +99,14 @@ declare class RegistrationForm extends CustomElement {
      * @param {Element} stanza - The IQ stanza received from the XMPP server
      */
     reportErrors(stanza: Element): void;
-    renderProviderChoiceForm(ev: any): void;
-    abortRegistration(): void;
+    /**
+     * @param {Event} ev
+     */
+    renderProviderChoiceForm(ev: Event): void;
+    /**
+     * @param {string} message
+     */
+    abortRegistration(message: string): void;
     /**
      * Handler, when the user submits the registration form.
      * Provides form error feedback or starts the registration process.

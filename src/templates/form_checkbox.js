@@ -1,7 +1,7 @@
 import { html } from "lit";
 
 export default  (o) => html`
-    <fieldset class="pb-2 form-check">
+    <fieldset class="mb-3 form-check">
         <input id="${o.id}"
                name="${o.name}"
                type="checkbox"

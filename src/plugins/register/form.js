@@ -27,6 +27,8 @@ class RegistrationForm extends CustomElement {
     static get properties () {
         return {
             status : { type: String },
+            domain: { type: String },
+            service_url: { type: String },
             alert_message: { type: String },
             alert_type: { type: String },
         }
@@ -38,13 +40,16 @@ class RegistrationForm extends CustomElement {
         this.fields = {};
         this.domain = null;
         this.alert_type = 'info';
-        this.setErrorMessage = (m) => this.setMessage(m, 'danger');
-        this.setFeedbackMessage = (m) => this.setMessage(m, 'info');
+        this.setErrorMessage = /** @param {string} m */(m) => this.setMessage(m, 'danger');
+        this.setFeedbackMessage = /** @param {string} m */(m) => this.setMessage(m, 'info');
     }
 
     initialize () {
         this.reset();
         this.listenTo(_converse, 'connectionInitialized', () => this.registerHooks());
+
+        const settings = api.settings.get();
+        this.listenTo(settings, 'change:show_connection_url_input', () => this.requestUpdate());
 
         const domain = api.settings.get('registration_domain');
         if (domain) {
@@ -58,6 +63,10 @@ class RegistrationForm extends CustomElement {
         return tplChooseProvider(this);
     }
 
+    /**
+     * @param {string} message
+     * @param {'info'|'danger'} type
+     */
     setMessage(message, type) {
         this.alert_type = type;
         this.alert_message = message;
@@ -168,61 +177,92 @@ class RegistrationForm extends CustomElement {
     onFormSubmission (ev) {
         ev?.preventDefault?.();
         const form = /** @type {HTMLFormElement} */(ev.target);
-        if (form.querySelector('input[name=domain]') === null) {
+
+        const domain_input = /** @type {HTMLInputElement} */(form.querySelector('input[name=domain]'));
+        if (domain_input === null) {
             this.submitRegistrationForm(form);
         } else {
             this.onProviderChosen(form);
         }
-
     }
 
     /**
      * Callback method that gets called when the user has chosen an XMPP provider
-     * @method _converse.RegistrationForm#onProviderChosen
-     * @param {HTMLElement} form - The form that was submitted
+     * @param {HTMLFormElement} form - The form that was submitted
      */
     onProviderChosen (form) {
         const domain = /** @type {HTMLInputElement} */(form.querySelector('input[name=domain]'))?.value;
-        if (domain) this.fetchRegistrationForm(domain.trim());
+        if (domain) {
+            const form_data = new FormData(form);
+            let service_url = null;
+            if (api.settings.get('show_connection_url_input')) {
+                service_url = /** @type {string} */(form_data.get('connection-url'));
+                if (service_url.startsWith('wss:')) {
+                    api.settings.set("websocket_url", service_url);
+                } else if (service_url.startsWith('https:')) {
+                    api.settings.set('bosh_service_url', service_url);
+                } else {
+                    this.alert_message = __('Invalid connection URL, only HTTPS and WSS accepted');
+                    this.alert_type = 'danger';
+                    this.status = CHOOSE_PROVIDER;
+                    this.requestUpdate();
+                    return;
+                }
+            }
+            this.fetchRegistrationForm(domain.trim(), service_url?.trim());
+        } else {
+            this.status = CHOOSE_PROVIDER;
+        }
     }
 
     /**
      * Fetch a registration form from the requested domain
-     * @method _converse.RegistrationForm#fetchRegistrationForm
      * @param {string} domain_name - XMPP server domain
+     * @param {string|null} [service_url]
      */
-    fetchRegistrationForm (domain_name) {
+    fetchRegistrationForm (domain_name, service_url) {
         this.status = FETCHING_FORM;
         this.reset({
-            'domain': Strophe.getDomainFromJid(domain_name),
-            '_registering': true
+            _registering: true,
+            domain: Strophe.getDomainFromJid(domain_name),
+            service_url,
         });
+
         api.connection.init();
+
         // When testing, the test tears down before the async function
         // above finishes. So we use optional chaining here
-        api.connection.get()?.connect(this.domain, "", (s) => this.onConnectStatusChanged(s));
+        api.connection.get()?.connect(
+            this.domain,
+            '',
+            /**
+             * @param {number} s
+             * @param {string} m
+             */
+            (s, m) => this.onConnectStatusChanged(s, m)
+        );
         return false;
     }
 
     /**
      * Callback function called by Strophe whenever the connection status changes.
      * Passed to Strophe specifically during a registration attempt.
-     * @method _converse.RegistrationForm#onConnectStatusChanged
      * @param {number} status_code - The Strophe.Status status code
+     * @param {string} message
      */
-    onConnectStatusChanged(status_code) {
+    onConnectStatusChanged(status_code, message) {
         log.debug('converse-register: onConnectStatusChanged');
         if ([Strophe.Status.DISCONNECTED,
-             Strophe.Status.CONNFAIL,
-             Strophe.Status.REGIFAIL,
+            Strophe.Status.CONNFAIL,
+            Strophe.Status.REGIFAIL,
              Strophe.Status.NOTACCEPTABLE,
              Strophe.Status.CONFLICT
             ].includes(status_code)) {
 
-            log.error(
+            log.warn(
                 `Problem during registration: Strophe.Status is ${CONNECTION_STATUS[status_code]}`
             );
-            this.abortRegistration();
+            this.abortRegistration(message);
         } else if (status_code === Strophe.Status.REGISTERED) {
             log.debug("Registered successfully.");
             api.connection.get().reset();
@@ -313,6 +353,9 @@ class RegistrationForm extends CustomElement {
         }
     }
 
+    /**
+     * @param {Event} ev
+     */
     renderProviderChoiceForm (ev) {
         ev?.preventDefault?.();
         const connection = api.connection.get();
@@ -321,17 +364,23 @@ class RegistrationForm extends CustomElement {
         this.status = CHOOSE_PROVIDER;
     }
 
-    abortRegistration () {
+    /**
+     * @param {string} message
+     */
+    abortRegistration (message) {
         const connection = api.connection.get();
         connection._proto._abortAllRequests();
         connection.reset();
         if ([FETCHING_FORM, REGISTRATION_FORM].includes(this.status)) {
             if (api.settings.get('registration_domain')) {
                 this.fetchRegistrationForm(api.settings.get('registration_domain'));
+                return;
             }
-        } else {
-            this.requestUpdate();
         }
+        this.alert_message = message;
+        this.alert_type = 'danger';
+        this.status = CHOOSE_PROVIDER;
+        this.requestUpdate();
     }
 
     /**

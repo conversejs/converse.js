@@ -4,7 +4,7 @@ import { u } from '@converse/headless';
 export default (o) => {
     const id = u.getUniqueId();
     return html`
-        <div class="pb-2">
+        <div class="mb-3">
             <label class="form-label label-ta" for="${o.id}">${o.label}
                 ${(o.desc) ? html`<small class="form-text text-muted">${o.desc}</small>` : ''}
             </label>

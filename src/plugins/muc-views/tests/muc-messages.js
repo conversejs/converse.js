@@ -290,7 +290,7 @@ describe("A Groupchat Message", function () {
         expect(view.model.messages.last().occupant.get('nick')).toBe('some1');
     }));
 
-    it("will be shown as received upon MUC reflection",
+    it("will be shown as received and have its body updated upon MUC reflection",
             mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -316,7 +316,7 @@ describe("A Groupchat Message", function () {
                      from="${msg_obj.get('from')}"
                      to="${_converse.api.connection.get().jid}"
                      type="groupchat">
-                <body>${msg_obj.get('message')}</body>
+                <body>${msg_obj.get('message').substring(0, 10) + '...'}</body>
                 <stanza-id xmlns="urn:xmpp:sid:0"
                            id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
                            by="lounge@montague.lit"/>

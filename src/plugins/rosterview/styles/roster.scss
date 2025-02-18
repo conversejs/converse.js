@@ -54,6 +54,10 @@
                 display: flex;
                 justify-content: space-between;
 
+                .open-chat {
+                    width: 100%;
+                }
+
                 .contact-actions {
                     .list-item-action {
                         line-height: 2em;

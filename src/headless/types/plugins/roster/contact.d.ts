@@ -103,7 +103,6 @@ declare class RosterContact extends RosterContact_base {
      * notification by sending a presence stanza of type "unsubscribe"
      * this step lets the user's server know that it MUST no longer
      * send notification of the subscription state change to the user.
-     * @method RosterContacts#ackUnsubscribe
      */
     ackUnsubscribe(): void;
     /**

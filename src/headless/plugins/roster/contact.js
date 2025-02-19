@@ -111,7 +111,6 @@ class RosterContact extends ColorAwareModel(Model) {
      * notification by sending a presence stanza of type "unsubscribe"
      * this step lets the user's server know that it MUST no longer
      * send notification of the subscription state change to the user.
-     * @method RosterContacts#ackUnsubscribe
      */
     ackUnsubscribe () {
         api.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
@@ -160,7 +159,12 @@ class RosterContact extends ColorAwareModel(Model) {
             this.destroy();
             return;
         }
+        if (this.get('ask') === 'subscribe' || subscription === 'to') {
+            // See: https://datatracker.ietf.org/doc/html/rfc6121#section-3.3.1
+            api.send($pres({ type: 'unsubscribe',  to: this.get('jid')}));
+        }
         if (unauthorize && ['from', 'both'].includes(subscription)) {
+            // See: https://datatracker.ietf.org/doc/html/rfc6121#section-3.2.1
             this.unauthorize();
         }
         const promise = this.sendRosterRemoveStanza();

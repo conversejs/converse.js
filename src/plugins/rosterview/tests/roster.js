@@ -681,7 +681,8 @@ describe("The Contacts Roster", function () {
             expect(el.getAttribute('data-group')).toBe('Ungrouped');
         }));
 
-        it("can be removed by the user", mock.initConverse([], {'roster_groups': false}, async function (_converse) {
+        it("can be removed by the user", mock.initConverse([], { roster_groups: false }, async function (_converse) {
+            const { api } = _converse;
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'all');
             await Promise.all(_converse.roster.map(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
@@ -689,25 +690,28 @@ describe("The Contacts Roster", function () {
             const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const contact = _converse.roster.get(jid);
             spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
-            spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
-            spyOn(contact, 'sendRosterRemoveStanza').and.callThrough();
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle(`.pending-xmpp-contact .contact-name:contains("${name}")`, rosterview).length, 500);
-            let sent_IQ;
-            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback) {
-                sent_IQ = iq;
-                callback();
-            });
             sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop().click();
             await u.waitUntil(() => !sizzle(`.pending-xmpp-contact .contact-name:contains("${name}")`, rosterview).length, 500);
-            expect(_converse.api.confirm).toHaveBeenCalled();
-            expect(contact.sendRosterRemoveStanza).toHaveBeenCalled();
-            expect(sent_IQ).toEqualStanza(stx`
-                <iq type="set" xmlns="jabber:client">
+            expect(api.confirm).toHaveBeenCalled();
+
+            const { sent_stanzas } = api.connection.get();
+            let stanza = await u.waitUntil(() => sent_stanzas.find(iq => iq.querySelector('iq item[subscription="remove"]')));
+            expect(stanza).toEqualStanza(stx`
+                <iq type="set" xmlns="jabber:client" id="${stanza.getAttribute('id')}">
                     <query xmlns="jabber:iq:roster">
                         <item jid="lord.capulet@montague.lit" subscription="remove"/>
                     </query>
                 </iq>`);
+
+            stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('presence[type="unsubscribed"]')).pop());
+            expect(stanza).toEqualStanza(
+                stx`<presence to="${contact.get('jid')}" type="unsubscribed" xmlns="jabber:client"/>`);
+
+            stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('presence[type="unsubscribe"]')).pop());
+            expect(stanza).toEqualStanza(
+                stx`<presence to="${contact.get('jid')}" type="unsubscribe" xmlns="jabber:client"/>`);
         }));
 
         it("can be removed by the user",

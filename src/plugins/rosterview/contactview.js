@@ -60,9 +60,7 @@ export default class RosterContact extends CustomElement {
      */
     async removeContact(ev) {
         ev?.preventDefault?.();
-        // TODO: ask user whether they want to unauthorize the contact's
-        // presence request as well.
-        await removeContact(this.model);
+        await removeContact(this.model, true);
     }
 
     /**

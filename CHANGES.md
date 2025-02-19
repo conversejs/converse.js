@@ -13,6 +13,7 @@
 - #1195: Add actions to quote and copy messages
 - #1303: Display non-contacts who sent us a message somehow in fullscreen 
 - #1349: XEP-0392 Consistent Color Generation
+- #1700: Deleted pending contacts reappear after page reload
 - #2118: Show reflected message in MUC 
 - #2383: Add modal to start chats with JIDs not in the roster
 - #2586: Add support for XEP-0402 Bookmarks

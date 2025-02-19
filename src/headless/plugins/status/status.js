@@ -61,7 +61,6 @@ export default class XMPPStatus extends ColorAwareModel(Model) {
     }
 
     getNickname() {
-        debugger;
         return this.vcard?.get('nickname') || api.settings.get('nickname');
     }
 

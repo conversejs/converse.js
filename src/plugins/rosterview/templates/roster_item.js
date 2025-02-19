@@ -31,7 +31,7 @@ export default  (el) => {
     } else if (show === 'away') {
         [classes, color] =  ['fa fa-circle', 'chat-status-away'];
     } else {
-        [classes, color] = ['fa fa-circle', 'comment'];
+        [classes, color] = ['fa fa-circle', 'chat-status-offline'];
     }
 
    const is_self = bare_jid === el.model.get('jid');

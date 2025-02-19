@@ -2,7 +2,7 @@
  * @typedef {import('@converse/headless').MUCOccupant} MUCOccupant
  */
 import { api } from '@converse/headless';
-import { PRETTY_CHAT_STATUS } from '../constants.js';
+import { PRETTY_CHAT_STATUS } from 'shared/constants.js';
 import { __ } from 'i18n';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';

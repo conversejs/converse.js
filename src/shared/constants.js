@@ -1,3 +1,5 @@
+import { __ } from 'i18n';
+
 // These are all the view-layer plugins.
 //
 // For the full Converse build, this list serves
@@ -26,3 +28,23 @@ export const VIEW_PLUGINS = [
     'converse-rosterview',
     'converse-singleton'
 ];
+
+/**
+ * @typedef {Object} PrettyChatStatus
+ * @property {string} offline
+ * @property {string} unavailable
+ * @property {string} xa
+ * @property {string} away
+ * @property {string} dnd
+ * @property {string} chatty
+ * @property {string} online
+ */
+export const PRETTY_CHAT_STATUS = {
+    offline:      __('Offline'),
+    unavailable:  __('Unavailable'),
+    xa:           __('Extended Away'),
+    away:         __('Away'),
+    dnd:          __('Do not disturb'),
+    chat:         __('Chatty'),
+    online:       __('Online')
+};

@@ -33,6 +33,7 @@
 - #3337: Correctly display multiline nested quotes
 - #3362: Don't create empty nick element in bookmarks
 - #3386: Registration form is not fetched
+- #3464: Missing localization: the online status is not localized
 - #3476: better UI for form "fixed" fields
 - #3478: MUC participant status indicator misplaced 
 - #3510: MUC's configuration panel loads endlessly, if it's the second one you want to configure 

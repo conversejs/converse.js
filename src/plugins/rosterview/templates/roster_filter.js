@@ -3,6 +3,7 @@
  */
 import { html } from "lit";
 import { __ } from 'i18n';
+import { PRETTY_CHAT_STATUS } from "shared/constants";
 
 /**
  * @param {ListFilter} el
@@ -14,12 +15,15 @@ export default (el) => {
     const title_status_filter = __('Filter by status');
     const label_any = __('Any');
     const label_unread_messages = __('Unread');
-    const label_available = __('Available');
-    const label_chatty = __('Chatty');
-    const label_busy = __('Busy');
-    const label_away = __('Away');
-    const label_xa = __('Extended Away');
-    const label_offline = __('Offline');
+
+    const {
+        offline: label_offline,
+        xa: label_xa,
+        away: label_away,
+        dnd: label_dnd,
+        chat: label_chatty,
+        online: label_online,
+    } = PRETTY_CHAT_STATUS;
 
     const chat_state = el.model.get('state');
     const filter_text = el.model.get('text');
@@ -48,9 +52,9 @@ export default (el) => {
                         @change=${ev => el.changeChatStateFilter(ev)}>
                     <option value="">${label_any}</option>
                     <option ?selected=${chat_state === 'unread_messages'} value="unread_messages">${label_unread_messages}</option>
-                    <option ?selected=${chat_state === 'online'} value="online">${label_available}</option>
+                    <option ?selected=${chat_state === 'online'} value="online">${label_online}</option>
                     <option ?selected=${chat_state === 'chat'} value="chat">${label_chatty}</option>
-                    <option ?selected=${chat_state === 'dnd'} value="dnd">${label_busy}</option>
+                    <option ?selected=${chat_state === 'dnd'} value="dnd">${label_dnd}</option>
                     <option ?selected=${chat_state === 'away'} value="away">${label_away}</option>
                     <option ?selected=${chat_state === 'xa'} value="xa">${label_xa}</option>
                     <option ?selected=${chat_state === 'offline'} value="offline">${label_offline}</option>

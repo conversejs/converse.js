@@ -212,8 +212,6 @@ export function populateContactsMap(contacts_map, contact) {
 
     if (contact.get('requesting')) {
         contact_groups.push(/** @type {string} */ (labels.HEADER_REQUESTING_CONTACTS));
-    } else if (contact.get('ask') === 'subscribe') {
-        contact_groups.push(/** @type {string} */ (labels.HEADER_PENDING_CONTACTS));
     } else if (contact.get('subscription') === 'none') {
         contact_groups.push(/** @type {string} */ (labels.HEADER_UNSAVED_CONTACTS));
     } else if (!api.settings.get('roster_groups')) {
@@ -264,14 +262,12 @@ export function groupsComparator(a, b) {
         HEADER_REQUESTING_CONTACTS,
         HEADER_CURRENT_CONTACTS,
         HEADER_UNGROUPED,
-        HEADER_PENDING_CONTACTS,
     } = _converse.labels;
 
     HEADER_WEIGHTS[HEADER_UNREAD] = 0;
     HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 1;
     HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS] = 2;
     HEADER_WEIGHTS[HEADER_UNGROUPED] = 3;
-    HEADER_WEIGHTS[HEADER_PENDING_CONTACTS] = 4;
 
     const WEIGHTS = HEADER_WEIGHTS;
     const special_groups = Object.keys(HEADER_WEIGHTS);

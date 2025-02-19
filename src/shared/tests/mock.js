@@ -440,11 +440,11 @@ async function createContact (_converse, name, ask, requesting, subscription) {
     }
     const contact = await new Promise((success, error) => {
         _converse.roster.create({
-            'ask': ask,
             'fullname': name,
-            'jid': jid,
-            'requesting': requesting,
-            'subscription': subscription
+            ask,
+            jid,
+            requesting,
+            subscription,
         }, {success, error});
     });
     return contact;
@@ -465,7 +465,7 @@ async function createContacts (_converse, type, length) {
         ask = null;
     } else if (type === 'pending') {
         names = pend_names;
-        subscription = 'none';
+        subscription = 'from';
         requesting = false;
         ask = 'subscribe';
     } else if (type === 'current') {
@@ -501,7 +501,7 @@ async function waitForRoster (_converse, type='current', length=-1, include_nick
             result.c('item', {
                 jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                 name: include_nick ? name : undefined,
-                subscription: 'none',
+                subscription: 'from',
                 ask: 'subscribe'
             }).up()
         );

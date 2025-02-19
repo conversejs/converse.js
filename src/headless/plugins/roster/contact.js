@@ -7,7 +7,7 @@ import converse from '../../shared/api/public.js';
 import ColorAwareModel from '../../shared/color.js';
 import { rejectPresenceSubscription } from './utils.js';
 
-const { Strophe, $iq, $pres } = converse.env;
+const { Strophe, $iq, $pres, stx } = converse.env;
 
 class RosterContact extends ColorAwareModel(Model) {
     get idAttribute () {
@@ -133,11 +133,18 @@ class RosterContact extends ColorAwareModel(Model) {
      * @param {string} message - Optional message to send to the person being authorized
      */
     authorize (message) {
-        const pres = $pres({'to': this.get('jid'), 'type': "subscribed"});
-        if (message && message !== "") {
-            pres.c("status").t(message);
-        }
-        api.send(pres);
+        api.send(stx`
+            <presence
+                to="${this.get('jid')}"
+                type="subscribed"
+                xmlns="jabber:client">
+                    ${message && message !== "" ? stx`<status>${message}</status>` : '' }
+            </presence>`);
+
+        this.save({
+            requesting: false,
+            subscription: 'from',
+        });
         return this;
     }
 

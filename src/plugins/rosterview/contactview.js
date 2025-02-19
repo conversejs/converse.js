@@ -52,7 +52,7 @@ export default class RosterContact extends CustomElement {
      */
     addContact(ev) {
         ev?.preventDefault?.();
-        api.modal.show('converse-add-contact-modal', { 'model': new Model() }, ev);
+        api.modal.show('converse-add-contact-modal', { model: new Model() }, ev);
     }
 
     /**
@@ -78,13 +78,11 @@ export default class RosterContact extends CustomElement {
      */
     async acceptRequest(ev) {
         ev?.preventDefault?.();
-
-        await _converse.state.roster.sendContactAddIQ({
-            jid: this.model.get('jid'),
-            name: this.model.getFullname(),
-            groups: [],
-        });
-        this.model.authorize().subscribe();
+        api.modal.show(
+            'converse-accept-contact-request-modal',
+            { model: new Model(), contact: this.model },
+            ev
+        );
     }
 
     /**

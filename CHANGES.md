@@ -18,6 +18,7 @@
 - #2586: Add support for XEP-0402 Bookmarks
 - #2623: Merge MUC join and bookmark, leave and unset autojoin 
 - #2716: Fix issue with chat display when opening via URL
+- #2844: Contact stays in "pending contacts"
 - #2980: Allow setting an avatar for MUCs
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
 - #3038: Message to self from other client is ignored
@@ -36,7 +37,7 @@
 - #3464: Missing localization: the online status is not localized
 - #3476: better UI for form "fixed" fields
 - #3478: MUC participant status indicator misplaced 
-- #3510: MUC's configuration panel loads endlessly, if it's the second one you want to configure 
+- #3510: MUC's configuration panel loads endlessly, if it's jthe second one you want to configure 
 - #3529: Unbookmarked channels no longer change their name when clicked with an unread indicator (or text icon)
 - #3579: Changing nickname in a groupchat once, forbids to change nickname in another groupchat afterwards
 - #3589: Hats namespace change

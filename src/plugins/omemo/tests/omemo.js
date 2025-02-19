@@ -1129,51 +1129,72 @@ describe("The OMEMO module", function() {
         await u.waitUntil(() => u.isVisible(modal), 1000);
 
         let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
-        expect(Strophe.serialize(iq_stanza)).toBe(
-            `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="mercutio@montague.lit" type="get" xmlns="jabber:client">`+
-                `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub>`+
-            `</iq>`);
+        expect(iq_stanza).toEqualStanza(stx`
+            <iq from="romeo@montague.lit"
+                    id="${iq_stanza.getAttribute("id")}"
+                    to="mercutio@montague.lit"
+                    type="get"
+                    xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub>
+            </iq>`);
 
-        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
-            'from': contact_jid,
-            'id': iq_stanza.getAttribute('id'),
-            'to': _converse.bare_jid,
-            'type': 'result',
-        }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
-            .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
-                .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
-                    .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
-                        .c('device', {'id': '555'})
-        ));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
+            stx`<iq from="${contact_jid}"
+                    id="${iq_stanza.getAttribute('id')}"
+                    to="${_converse.bare_jid}"
+                    xmlns="jabber:client"
+                    type="result">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <items node="eu.siacs.conversations.axolotl.devicelist">
+                        <item xmlns="http://jabber.org/protocol/pubsub">
+                            <list xmlns="eu.siacs.conversations.axolotl">
+                                <device id="555"/>
+                            </list>
+                        </item>
+                    </items>
+                </pubsub>
+            </iq>`));
 
         await u.waitUntil(() => u.isVisible(modal), 1000);
 
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '555'));
-        expect(Strophe.serialize(iq_stanza)).toBe(
-            `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="mercutio@montague.lit" type="get" xmlns="jabber:client">`+
-                `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
-                    `<items node="eu.siacs.conversations.axolotl.bundles:555"/>`+
-                `</pubsub>`+
-            `</iq>`);
+        expect(iq_stanza).toEqualStanza(stx`
+            <iq from="romeo@montague.lit"
+                    id="${iq_stanza.getAttribute("id")}"
+                    to="mercutio@montague.lit"
+                    type="get"
+                    xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <items node="eu.siacs.conversations.axolotl.bundles:555"/>
+                </pubsub>
+            </iq>`);
 
-        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
-            'from': contact_jid,
-            'id': iq_stanza.getAttribute('id'),
-            'to': _converse.bare_jid,
-            'type': 'result',
-        }).c('pubsub', {
-            'xmlns': 'http://jabber.org/protocol/pubsub'
-            }).c('items', {'node': "eu.siacs.conversations.axolotl.bundles:555"})
-                .c('item')
-                    .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
-                        .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t(btoa('1111')).up()
-                        .c('signedPreKeySignature').t(btoa('2222')).up()
-                        .c('identityKey').t('BQmHEOHjsYm3w5M8VqxAtqJmLCi7CaxxsdZz6G0YpuMI').up()
-                        .c('prekeys')
-                            .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1001')).up()
-                            .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
-                            .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'))
-        ));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
+            stx`<iq from="${contact_jid}"
+                id="${iq_stanza.getAttribute('id')}"
+                to="${_converse.bare_jid}"
+                xmlns="jabber:client"
+                type="result">
+            <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                <items node="eu.siacs.conversations.axolotl.bundles:555">
+                    <item>
+                        <bundle xmlns="eu.siacs.conversations.axolotl">
+                            <signedPreKeyPublic signedPreKeyId="4223">${btoa('1111')}</signedPreKeyPublic>
+                            <signedPreKeySignature>${btoa('2222')}</signedPreKeySignature>
+                            <identityKey>${'BQmHEOHjsYm3w5M8VqxAtqJmLCi7CaxxsdZz6G0YpuMI'}</identityKey>
+                            <prekeys>
+                                <preKeyPublic preKeyId="1">${btoa('1001')}</preKeyPublic>
+                                <preKeyPublic preKeyId="2">${btoa('1002')}</preKeyPublic>
+                                <preKeyPublic preKeyId="3">${btoa('1003')}</preKeyPublic>
+                            </prekeys>
+                        </bundle>
+                    </item>
+                </items>
+            </pubsub>
+        </iq>`));
+
+        // Open the OMEMO tab
+        modal.querySelector('.nav-item #omemo-tab').click();
 
         await u.waitUntil(() => modal.querySelectorAll('.fingerprints .fingerprint').length);
         expect(modal.querySelectorAll('.fingerprints .fingerprint').length).toBe(1);

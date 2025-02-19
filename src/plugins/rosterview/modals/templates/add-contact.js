@@ -24,7 +24,7 @@ export default (el) => {
         <div class="modal-body">
             ${error ? html`<div class="alert alert-danger" role="alert">${error}</div>` : ''}
             <form class="converse-form add-xmpp-contact" @submit=${ev => el.addContactFromForm(ev)}>
-                <div class="add-xmpp-contact__jid mb-3">
+                <div class="mb-3">
                     <label class="form-label clearfix" for="jid">${i18n_xmpp_address}:</label>
                     ${api.settings.get('autocomplete_add_contact') ?
                         html`<converse-autocomplete
@@ -45,7 +45,7 @@ export default (el) => {
                     }
                 </div>
 
-                <div class="add-xmpp-contact__name mb-3">
+                <div class="mb-3">
                     <label class="form-label clearfix" for="name">${i18n_nickname}:</label>
                     ${api.settings.get('autocomplete_add_contact') && typeof api.settings.get('xhr_user_search_url') === 'string' ?
                         html`<converse-autocomplete
@@ -59,7 +59,7 @@ export default (el) => {
                             class="form-control" />`
                     }
                 </div>
-                <div class="add-xmpp-contact__group mb-3">
+                <div class="mb-3">
                     <label class="form-label clearfix" for="name">${i18n_group}:</label>
                     <converse-autocomplete
                         .list=${getGroupsAutoCompleteList()}

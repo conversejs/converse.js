@@ -13,12 +13,12 @@ export default (el) => {
 
     return html` <div class="modal-body">
         ${error ? html`<div class="alert alert-danger" role="alert">${error}</div>` : ""}
-        <form class="converse-form add-xmpp-contact" @submit=${(ev) => el.acceptContactRequest(ev)}>
-            <div class="add-xmpp-contact__name mb-3">
+        <form class="converse-form" @submit=${(ev) => el.acceptContactRequest(ev)}>
+            <div class="mb-3">
                 <label class="form-label clearfix" for="name">${i18n_nickname}:</label>
                 <input type="text" name="name" value="${el.contact.vcard?.get('fullname') || ''}" class="form-control" />
             </div>
-            <div class="add-xmpp-contact__group mb-3">
+            <div class="mb-3">
                 <label class="form-label clearfix" for="name">${i18n_group}:</label>
                 <converse-autocomplete .list=${getGroupsAutoCompleteList()} name="group"></converse-autocomplete>
             </div>

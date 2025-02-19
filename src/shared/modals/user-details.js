@@ -9,20 +9,14 @@ import './styles/user-details.scss';
 
 export default class UserDetailsModal extends BaseModal {
 
+    constructor (options) {
+        super(options);
+        this.tab = 'profile';
+    }
+
     initialize () {
         super.initialize();
-        this.model.rosterContactAdded.then(() => {
-            this.registerContactEventHandlers();
-            api.vcard.update(this.model.contact.vcard, true);
-        });
-        this.listenTo(this.model, 'change', this.render);
-
-        if (this.model.contact !== undefined) {
-            this.registerContactEventHandlers();
-            // Refresh the vcard
-            api.vcard.update(this.model.contact.vcard, true);
-        }
-
+        this.addListeners();
         /**
          * Triggered once the UserDetailsModal has been initialized
          * @event _converse#userDetailsModalInitialized
@@ -30,6 +24,34 @@ export default class UserDetailsModal extends BaseModal {
          * @example _converse.api.listen.on('userDetailsModalInitialized', (chatbox) => { ... });
          */
         api.trigger('userDetailsModalInitialized', this.model);
+    }
+
+    addListeners() {
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
+
+        this.model.rosterContactAdded.then(() => {
+            this.registerContactEventHandlers();
+            api.vcard.update(this.model.contact.vcard, true);
+        });
+
+        if (this.model.contact !== undefined) {
+            this.registerContactEventHandlers();
+            // Refresh the vcard
+            api.vcard.update(this.model.contact.vcard, true);
+        }
+    }
+
+    /**
+     * @param {Map<string, any>} changed
+     */
+    shouldUpdate(changed) {
+        if (changed.has('model') && this.model) {
+            this.stopListening();
+            this.addListeners();
+            this.tab = 'profile';
+            this.requestUpdate();
+        }
+        return true;
     }
 
     renderModal () {
@@ -41,8 +63,8 @@ export default class UserDetailsModal extends BaseModal {
     }
 
     registerContactEventHandlers () {
-        this.listenTo(this.model.contact, 'change', this.render);
-        this.listenTo(this.model.contact.vcard, 'change', this.render);
+        this.listenTo(this.model.contact, 'change', () => this.requestUpdate());
+        this.listenTo(this.model.contact.vcard, 'change', () => this.requestUpdate());
         this.model.contact.on('destroy', () => {
             delete this.model.contact;
             this.close();
@@ -50,6 +72,22 @@ export default class UserDetailsModal extends BaseModal {
 
         // Refresh the vcard
         api.vcard.update(this.model.contact.vcard, true);
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    async updateContact(ev) {
+        ev?.preventDefault?.();
+        const form = /** @type {HTMLFormElement} */ (ev.target);
+        const data = new FormData(form);
+        const name = /** @type {string} */ (data.get("name") || "").trim();
+        const groups = /** @type {string} */(data.get('groups'))?.split(',') || [];
+        this.model.contact.save({
+            nickname: name,
+            groups,
+        });
+        this.modal.hide();
     }
 
     /**

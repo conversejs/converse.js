@@ -1,8 +1,9 @@
-import { html } from 'lit';
-import { until } from 'lit/directives/until.js';
-import { api, converse, _converse } from '@converse/headless';
-import { __ } from 'i18n';
-import avatar from 'shared/avatar/templates/avatar.js';
+import { html } from "lit";
+import { until } from "lit/directives/until.js";
+import { api, converse, _converse } from "@converse/headless";
+import { getGroupsAutoCompleteList } from "plugins/rosterview/utils.js";
+import { __ } from "i18n";
+import avatar from "shared/avatar/templates/avatar.js";
 
 const { Strophe } = converse.env;
 
@@ -10,7 +11,7 @@ const { Strophe } = converse.env;
  * @param {import('../user-details').default} el
  */
 function tplUnblockButton(el) {
-    const i18n_block = __('Remove from blocklist');
+    const i18n_block = __("Remove from blocklist");
     return html`
         <button type="button" @click="${(ev) => el.unblockContact(ev)}" class="btn btn-danger">
             <converse-icon class="fas fa-times" color="var(--background-color)" size="1em"></converse-icon
@@ -23,7 +24,7 @@ function tplUnblockButton(el) {
  * @param {import('../user-details').default} el
  */
 function tplBlockButton(el) {
-    const i18n_block = __('Add to blocklist');
+    const i18n_block = __("Add to blocklist");
     return html`
         <button type="button" @click="${(ev) => el.blockContact(ev)}" class="btn btn-danger">
             <converse-icon class="fas fa-times" color="var(--background-color)" size="1em"></converse-icon
@@ -36,7 +37,7 @@ function tplBlockButton(el) {
  * @param {import('../user-details').default} el
  */
 function tplRemoveButton(el) {
-    const i18n_remove_contact = __('Remove as contact');
+    const i18n_remove_contact = __("Remove as contact");
     return html`
         <button type="button" @click="${(ev) => el.removeContact(ev)}" class="btn btn-danger remove-contact">
             <converse-icon class="fas fa-trash-alt" color="var(--background-color)" size="1em"></converse-icon
@@ -54,15 +55,15 @@ export function tplUserDetailsModal(el) {
     const o = { ...el.model.toJSON(), ...vcard_json };
 
     const is_roster_contact = el.model.contact !== undefined;
-    const allow_contact_removal = api.settings.get('allow_contact_removal');
+    const allow_contact_removal = api.settings.get("allow_contact_removal");
 
-    const domain = _converse.session.get('domain');
+    const domain = _converse.session.get("domain");
     const blocking_supported = api.disco.supports(Strophe.NS.BLOCKING, domain).then(
         /** @param {boolean} supported */
         async (supported) => {
             const blocklist = await api.blocklist.get();
             if (supported) {
-                if (blocklist.get(el.model.get('jid'))) {
+                if (blocklist.get(el.model.get("jid"))) {
                     tplUnblockButton(el);
                 } else {
                     tplBlockButton(el);
@@ -71,45 +72,204 @@ export function tplUserDetailsModal(el) {
         }
     );
 
-    const i18n_address = __('XMPP Address');
-    const i18n_email = __('Email');
-    const i18n_full_name = __('Full Name');
-    const i18n_nickname = __('Nickname');
-    const i18n_profile = __("The User's Profile Image");
-    const i18n_role = __('Role');
-    const i18n_url = __('URL');
+    const i18n_address = __("XMPP Address");
+    const i18n_email = __("Email");
+    const i18n_full_name = __("Full Name");
+    const i18n_nickname = __("Nickname");
+    const i18n_role = __("Role");
+    const i18n_url = __("URL");
+    const i18n_groups = __("Groups");
+    const i18n_groups_help = __("Use commas to separate multiple values");
+    const i18n_omemo = __("OMEMO");
+    const i18n_profile = __("Profile");
+    const ii18n_edit = __("Edit");
 
     const avatar_data = {
-        alt_text: i18n_profile,
-        extra_classes: 'mb-3',
-        height: '120',
-        width: '120',
+        alt_text: __("The User's Profile Image"),
+        extra_classes: "mb-3",
+        height: "160",
+        width: "160",
     };
 
-    return html`
-        <span>
-            ${o.image ? html`<div class="mb-4">${avatar(Object.assign(o, avatar_data))}</div>` : ''}
-            ${o.fullname ? html`<p><label>${i18n_full_name}:</label> ${o.fullname}</p>` : ''}
-            <p><label>${i18n_address}:</label> <a href="xmpp:${o.jid}">${o.jid}</a></p>
-            ${o.nickname ? html`<p><label>${i18n_nickname}:</label> ${o.nickname}</p>` : ''}
-            ${o.url
-                ? html`<p>
-                      <label>${i18n_url}:</label> <a target="_blank" rel="noopener" href="${o.url}">${o.url}</a>
-                  </p>`
-                : ''}
-            ${o.email ? html`<p><label>${i18n_email}:</label> <a href="mailto:${o.email}">${o.email}</a></p>` : ''}
-            ${o.role ? html`<p><label>${i18n_role}:</label> ${o.role}</p>` : ''}
+    const navigation_tabs = [
+        html`<li role="presentation" class="nav-item">
+            <a
+                class="nav-link ${el.tab === "profile" ? "active" : ""}"
+                id="profile-tab"
+                href="#profile-tabpanel"
+                aria-controls="profile-tabpanel"
+                role="tab"
+                @click="${(ev) => el.switchTab(ev)}"
+                data-name="profile"
+                data-toggle="tab"
+                >${i18n_profile}</a
+            >
+        </li>`,
+    ];
 
-            <hr />
-            <div>
-                ${allow_contact_removal && is_roster_contact ? tplRemoveButton(el) : ''}
-                ${until(
-                    blocking_supported.then(() => tplBlockButton(el)),
-                    ''
-                )}
+    navigation_tabs.push(
+        html`<li role="presentation" class="nav-item">
+            <a
+                class="nav-link ${el.tab === "edit" ? "active" : ""}"
+                id="edit-tab"
+                href="#edit-tabpanel"
+                aria-controls="edit-tabpanel"
+                role="tab"
+                @click="${(ev) => el.switchTab(ev)}"
+                data-name="edit"
+                data-toggle="tab"
+                >${ii18n_edit}</a
+            >
+        </li>`
+    );
+
+    if (_converse.pluggable.plugins["converse-omemo"]?.enabled(_converse)) {
+        navigation_tabs.push(
+            html`<li role="presentation" class="nav-item">
+                <a
+                    class="nav-link ${el.tab === "omemo" ? "active" : ""}"
+                    id="omemo-tab"
+                    href="#omemo-tabpanel"
+                    aria-controls="omemo-tabpanel"
+                    role="tab"
+                    @click="${(ev) => el.switchTab(ev)}"
+                    data-name="omemo"
+                    data-toggle="tab"
+                    >${i18n_omemo}</a
+                >
+            </li>`
+        );
+    }
+
+    const { contact } = el.model;
+    const name = contact.get("nickname") || contact.vcard?.get('fullname');
+    const groups = contact.get("groups");
+
+    return html`
+        <ul class="nav nav-pills justify-content-center">
+            ${navigation_tabs}
+        </ul>
+        <div class="tab-content">
+            <div
+                class="tab-pane ${el.tab === "profile" ? "active" : ""}"
+                id="profile-tabpanel"
+                role="tabpanel"
+                aria-labelledby="profile-tab"
+            >
+                ${o.image ? html`<div class="mb-4">${avatar(Object.assign(o, avatar_data))}</div>` : ""}
+                ${o.fullname
+                    ? html`
+                          <div class="row mb-2">
+                              <div class="col-sm-4"><label>${i18n_full_name}:</label></div>
+                              <div class="col-sm-8">${o.fullname}</div>
+                          </div>
+                      `
+                    : ""}
+                <div class="row mb-2">
+                    <div class="col-sm-4"><label>${i18n_address}:</label></div>
+                    <div class="col-sm-8"><a href="xmpp:${o.jid}">${o.jid}</a></div>
+                </div>
+                ${o.nickname
+                    ? html`
+                          <div class="row mb-2">
+                              <div class="col-sm-4"><label>${i18n_nickname}:</label></div>
+                              <div class="col-sm-8">${o.nickname}</div>
+                          </div>
+                      `
+                    : ""}
+                ${o.url
+                    ? html`
+                          <div class="row mb-2">
+                              <div class="col-sm-4"><label>${i18n_url}:</label></div>
+                              <div class="col-sm-8">
+                                  <a target="_blank" rel="noopener" href="${o.url}">${o.url}</a>
+                              </div>
+                          </div>
+                      `
+                    : ""}
+                ${o.email
+                    ? html`
+                          <div class="row mb-2">
+                              <div class="col-sm-4"><label>${i18n_email}:</label></div>
+                              <div class="col-sm-8"><a href="mailto:${o.email}">${o.email}</a></div>
+                          </div>
+                      `
+                    : ""}
+                ${o.role
+                    ? html`
+                          <div class="row mb-2">
+                              <div class="col-sm-4"><label>${i18n_role}:</label></div>
+                              <div class="col-sm-8">${o.role}</div>
+                          </div>
+                      `
+                    : ""}
+                ${groups.length
+                    ? html`
+                          <div class="row mb-2">
+                              <div class="col-sm-4"><label>${i18n_groups}:</label></div>
+                              <div class="col-sm-8">
+                                  ${groups.map(
+                                      /** @param {string} group */ (group) =>
+                                          html`<span class="badge badge-roster-group me-1">${group}</span>`
+                                  )}
+                              </div>
+                          </div>
+                      `
+                    : ""}
             </div>
 
-            <converse-omemo-fingerprints jid=${o.jid}></converse-omemo-fingerprints>
-        </span>
+            <div
+                class="tab-pane ${el.tab === "edit" ? "active" : ""}"
+                id="edit-tabpanel"
+                role="tabpanel"
+                aria-labelledby="edit-tab"
+            >
+                ${el.tab === "edit"
+                    ? html`<form class="converse-form" @submit=${(ev) => el.updateContact(ev)}>
+                              <div class="mb-3">
+                                  <label class="form-label clearfix" for="name">${__("Name")}:</label>
+                                  <input
+                                      type="text"
+                                      name="name"
+                                      value="${name}"
+                                      class="form-control"
+                                  />
+                              </div>
+                              <div class="mb-3">
+                                  <label class="form-label clearfix" for="name">${i18n_groups}:</label>
+                                  <div class="mb-1">
+                                      <small class="form-text text-muted">${i18n_groups_help}</small>
+                                  </div>
+                                  <converse-autocomplete
+                                      .list=${getGroupsAutoCompleteList()}
+                                      name="groups"
+                                      value="${groups}"
+                                  ></converse-autocomplete>
+                              </div>
+                              <button type="submit" class="btn btn-primary">${__("Update")}</button>
+                          </form>
+                          <hr />
+
+                          ${allow_contact_removal && is_roster_contact ? tplRemoveButton(el) : ""}
+                          ${until(
+                              blocking_supported.then(() => tplBlockButton(el)),
+                              ""
+                          )}`
+                    : ""}
+            </div>
+
+            ${_converse.pluggable.plugins["converse-omemo"]?.enabled(_converse)
+                ? html` <div
+                      class="tab-pane ${el.tab === "omemo" ? "active" : ""}"
+                      id="omemo-tabpanel"
+                      role="tabpanel"
+                      aria-labelledby="omemo-tab"
+                  >
+                      ${el.tab === "omemo"
+                          ? html`<converse-omemo-fingerprints jid=${o.jid}></converse-omemo-fingerprints>`
+                          : ""}
+                  </div>`
+                : ""}
+        </div>
     `;
 }

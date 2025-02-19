@@ -1,6 +1,6 @@
-import tplFingerprints from './templates/fingerprints.js';
-import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless";
+import { CustomElement } from 'shared/components/element.js';
+import tplFingerprints from './templates/fingerprints.js';
 
 export class Fingerprints extends CustomElement {
 

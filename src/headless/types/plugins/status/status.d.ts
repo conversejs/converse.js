@@ -83,7 +83,6 @@ export default class XMPPStatus extends XMPPStatus_base {
     set(key: string | any, val?: string | any, options?: any): false | this;
     getDisplayName(): any;
     getNickname(): any;
-    getFullname(): string;
     /** Constructs a presence stanza
      * @param {string} [type]
      * @param {string} [to] - The JID to which this presence should be sent

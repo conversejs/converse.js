@@ -55,7 +55,10 @@ export default class AcceptContactRequest extends BaseModal {
             this.model.set("error", __("Sorry, something went wrong"));
             return;
         }
-        this.contact.save({ groups: [group] });
+        this.contact.save({
+            nickname: name,
+            groups: [group]
+        });
         this.modal.hide();
     }
 }

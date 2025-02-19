@@ -121,16 +121,13 @@ class RosterContacts extends Collection {
      * @param {Element} msg
      */
     subscribeToSuggestedItems (msg) {
-        const { xmppstatus } = _converse.state;
         Array.from(msg.querySelectorAll('item')).forEach((item) => {
             if (item.getAttribute('action') === 'add') {
-                this.addContact(
-                    {
-                        jid: item.getAttribute('jid'),
-                        name: xmppstatus.getNickname() || xmppstatus.getFullname(),
-                        subscription: 'to',
-                    },
-                );
+                this.addContact({
+                    jid: item.getAttribute('jid'),
+                    name: item.getAttribute('name'),
+                    subscription: 'to',
+                });
             }
         });
         return true;

@@ -25,53 +25,6 @@ converse.plugins.add('converse-vcard', {
 
     dependencies: ["converse-status", "converse-roster"],
 
-    // Overrides mentioned here will be picked up by converse.js's
-    // plugin architecture they will replace existing methods on the
-    // relevant objects or classes.
-    // New functions which don't exist yet can also be added.
-    overrides: {
-        XMPPStatus: {
-            getNickname () {
-                const { _converse } = this.__super__;
-                const { xmppstatus } = _converse.state;
-                const nick = this.__super__.getNickname.apply(this);
-                if (!nick && xmppstatus?.vcard) {
-                    return xmppstatus.vcard.get('nickname');
-                } else {
-                    return nick;
-                }
-            },
-
-            getFullname () {
-                const { _converse } = this.__super__;
-                const { xmppstatus } = _converse.state;
-                const fullname = this.__super__.getFullname.apply(this);
-                if (!fullname && xmppstatus?.vcard) {
-                    return xmppstatus.vcard.get('fullname');
-                } else {
-                    return fullname;
-                }
-            }
-        },
-
-        RosterContact: {
-            getDisplayName () {
-                if (!this.get('nickname') && this.vcard) {
-                    return this.vcard.getDisplayName();
-                } else {
-                    return this.__super__.getDisplayName.apply(this);
-                }
-            },
-            getFullname () {
-                if (this.vcard) {
-                    return this.vcard.get('fullname');
-                } else {
-                    return this.__super__.getFullname.apply(this);
-                }
-            }
-        }
-    },
-
     initialize () {
         api.promises.add('VCardsInitialized');
 

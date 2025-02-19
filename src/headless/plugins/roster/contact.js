@@ -14,25 +14,29 @@ class RosterContact extends ColorAwareModel(Model) {
         return 'jid';
     }
 
+    constructor (attrs, options) {
+        super(attrs, options);
+        /** @type {import('../vcard/vcard').default} */
+        this.vcard = null;
+    }
+
     defaults () {
         return {
-            'chat_state': undefined,
-            'groups': [],
-            'num_unread': 0,
-            'status': undefined,
+            groups: [],
+            num_unread: 0,
         }
     }
 
-    async initialize (attributes) {
+    async initialize (attrs) {
         super.initialize();
         this.initialized = getOpenPromise();
         this.setPresence();
-        const { jid } = attributes;
+        const { jid } = attrs;
         this.set({
-            ...attributes,
+            ...attrs,
             ...{
-                'jid': Strophe.getBareJidFromJid(jid).toLowerCase(),
-                'user_id': Strophe.getNodeFromJid(jid)
+                jid: Strophe.getBareJidFromJid(jid).toLowerCase(),
+                user_id: Strophe.getNodeFromJid(jid)
             }
         });
         /**
@@ -68,17 +72,7 @@ class RosterContact extends ColorAwareModel(Model) {
     }
 
     getDisplayName () {
-        // Gets overridden in converse-vcard where the fullname is may be returned
-        if (this.get('nickname')) {
-            return this.get('nickname');
-        } else {
-            return this.get('jid');
-        }
-    }
-
-    getFullname () {
-        // Gets overridden in converse-vcard where the fullname may be returned
-        return this.get('jid');
+        return this.get('nickname') || this.vcard?.getDisplayName() || this.get('jid');
     }
 
     /**

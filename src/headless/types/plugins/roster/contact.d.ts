@@ -70,20 +70,20 @@ declare const RosterContact_base: {
     };
 } & typeof Model;
 declare class RosterContact extends RosterContact_base {
+    constructor(attrs: any, options: any);
+    /** @type {import('../vcard/vcard').default} */
+    vcard: import("../vcard/vcard").default;
     defaults(): {
-        chat_state: any;
         groups: any[];
         num_unread: number;
-        status: any;
     };
-    initialize(attributes: any): Promise<void>;
+    initialize(attrs: any): Promise<void>;
     initialized: any;
     setPresence(): void;
     presence: any;
     getStatus(): any;
     openChat(): void;
     getDisplayName(): any;
-    getFullname(): any;
     /**
      * Send a presence subscription request to this roster contact
      * @param {string} message - An optional message to explain the

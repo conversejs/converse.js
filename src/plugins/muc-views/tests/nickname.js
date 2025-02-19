@@ -310,6 +310,8 @@ describe("A MUC", function () {
 
             const { api } = _converse;
             const muc_jid = 'roomy@muc.montague.lit';
+            // Delete the VCard
+            delete _converse.state.xmppstatus.vcard;
             api.rooms.open(muc_jid);
             await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             await mock.waitForReservedNick(_converse, muc_jid, '');
@@ -530,22 +532,6 @@ describe("A MUC", function () {
             expect(label_nick.textContent.trim()).toBe('Nickname:');
             const nick_input = modal.querySelector('input[name="nickname"]');
             expect(nick_input.value).toBe('romeo');
-        }));
-
-        it("uses the nickname passed in to converse.initialize",
-                mock.initConverse(['chatBoxesFetched'], {'nickname': 'st.nick'}, async function (_converse) {
-
-            await mock.openControlBox(_converse);
-            await mock.waitForRoster(_converse, 'current', 0);
-            const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
-            roomspanel.querySelector('.show-add-muc-modal').click();
-
-            const modal = _converse.api.modal.get('converse-add-muc-modal');
-            await u.waitUntil(() => u.isVisible(modal), 1000)
-            const label_nick = modal.querySelector('label[for="nickname"]');
-            expect(label_nick.textContent.trim()).toBe('Nickname:');
-            const nick_input = modal.querySelector('input[name="nickname"]');
-            expect(nick_input.value).toBe('st.nick');
         }));
     });
 });

@@ -57,15 +57,12 @@ export default class XMPPStatus extends ColorAwareModel(Model) {
     }
 
     getDisplayName() {
-        return this.getFullname() || this.getNickname() || this.get('jid');
+        return this.vcard?.get('fullname') || this.getNickname() || this.get('jid');
     }
 
     getNickname() {
-        return api.settings.get('nickname');
-    }
-
-    getFullname() {
-        return ''; // Gets overridden in converse-vcard
+        debugger;
+        return this.vcard?.get('nickname') || api.settings.get('nickname');
     }
 
     /** Constructs a presence stanza

@@ -5,6 +5,7 @@
 ### Github Issues
 - #122: Set horizontal layout direction based on the language
 - #317: Add the ability to render audio streams. New config option [fetch_url_headers](https://conversejs.org/docs/html/configuration.html#fetch-url-headers)
+- #690: Allow setting a custom name and the group for an existing contact
 - #698: Add support for MUC private messages
 - #1021: Message from non-roster contacts don't appear in fullscreen view_mode
 - #1038: Support setting node config manually

@@ -1,19 +1,18 @@
-
-/**
- * @typedef {import('@converse/headless/types/plugins/vcard/api').VCardData} VCardData
- * @typedef {import("@converse/headless").XMPPStatus} XMPPStatus
- */
 import { _converse, api, log } from "@converse/headless";
+import { compressImage, isImageWithAlphaChannel } from 'utils/file.js';
 import BaseModal from "plugins/modal/modal.js";
-import tplProfileModal from "../templates/profile_modal.js";
 import { __ } from 'i18n';
 import '../password-reset.js';
-import { compressImage, isImageWithAlphaChannel } from 'utils/file.js';
+import tplProfileModal from "../templates/profile_modal.js";
 
 import './styles/profile.scss';
 
 
 export default class ProfileModal extends BaseModal {
+    /**
+     * @typedef {import('@converse/headless/types/plugins/vcard/api').VCardData} VCardData
+     * @typedef {import("@converse/headless").XMPPStatus} XMPPStatus
+     */
 
     constructor (options) {
         super(options);

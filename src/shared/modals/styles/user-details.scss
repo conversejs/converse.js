@@ -1,5 +1,22 @@
 .conversejs {
-    .remove-contact {
-        margin-inline-end: 0.5em;
+    converse-user-details-modal {
+        .nav-pills {
+            margin-bottom: 1em;
+        }
+
+        .badge-roster-group {
+            background-color: var(--chat-color);
+        }
+
+        #profile-tabpanel {
+            label {
+                color: var(--subdued-color);
+                margin-inline-end: 0.5em;
+            }
+        }
+
+        .remove-contact {
+            margin-inline-end: 0.5em;
+        }
     }
 }

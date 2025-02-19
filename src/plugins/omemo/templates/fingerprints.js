@@ -50,7 +50,6 @@ export default (el) => {
     const i18n_no_devices = __("No OMEMO-enabled devices found");
     const devices = el.devicelist.devices;
     return html`
-        <hr/>
         <ul class="list-group fingerprints">
             <li class="list-group-item active">${i18n_fingerprints}</li>
             ${ devices.length ?

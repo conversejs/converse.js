@@ -1,6 +1,11 @@
 converse-omemo-fingerprints {
+    .fingerprints {
+        .list-group-item {
+            color: var(--foreground-color);
+        }
+    }
     .fingerprint {
-        margin-top: 0.5em;
+        margin-top: 1em;
         display: block;
     }
 }

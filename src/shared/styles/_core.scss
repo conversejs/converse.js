@@ -449,10 +449,10 @@
         font-size: 90%;
     }
 
-	.nav {
-		--converse-nav-link-color: var(--primary-color);
+    .nav {
+        --converse-nav-link-color: var(--primary-color);
         --converse-nav-link-hover-color: var(--focus-color);
-	}
+    }
     .nav-pills .nav-link.active,
     .nav-pills .show > .nav-link {
         background-color: var(--primary-color);

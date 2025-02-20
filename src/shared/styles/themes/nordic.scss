@@ -1,6 +1,6 @@
-&[data-converse-theme="nord"],
-&[data-bs-theme="nord"] {
-    $theme: 'nord' !default;
+&[data-converse-theme="nordic"],
+&[data-bs-theme="nordic"] {
+    $theme: 'nordic' !default;
 
     // Darker gray theme colors
     --polar-night-1: #2e3440;
@@ -8,23 +8,23 @@
     --polar-night-3: #434c5e;
     --polar-night-4: #4c566a;
 
-    // Lighter gray theme colors
     --snow-storm-1:  #d8dee9;
     --snow-storm-2:  #e5e9f0;
     --snow-storm-3:  #eceff4;
 
-    // Blues
-    --frost-1:       #8fbcbb;
-    --frost-2:       #88c0d0;
-    --frost-3:       #81a1c1;
-    --frost-4:       #5e81ac;
+    --green-1:       #5D9795;
+    --green-2:       #387C79;
+    --green-3:       #8FBCBA;
+    --green-4:       #0B4C4A;
 
-    --green:        #a3be8c;
-    --dark-green:   #5f8341;
-    --orange:       #d08770;
-    --purple:       #b48ead;
-    --red:          #bf616a;
-    --yellow:       #ebcb8b;
+    --blue-1:        #5D9795;
+    --blue-2:        #475D8B;
+
+    --orange:           #D0925F;
+    --orange-darker:    #A76632;
+    --purple:           #b48ead;
+    --red:              #bf616a;
+    --yellow:           #ebcb8b;
 
     // Base variables
     // --------------
@@ -32,20 +32,20 @@
     --foreground-color: var(--polar-night-2);
 
     // Bootstrap variables
-    --primary-color: var(--frost-1) !important;
-    --secondary-color: var(--frost-3) !important;
-    --success-color: var(--green);
+    --primary-color: var(--green-2) !important;
+    --primary-color-hover: var(--green-3) !important;
+    --secondary-color: var(--blue-1) !important;
+    --success-color: var(--green-3);
     --danger-color: var(--red);
     --warning-color: var(--orange);
     --info-color: var(--purple);
     --converse-highlight-color: var(--red);
-    --converse-btn-close-color: var(--background-color);
 
     // Online status indicators
     --chat-status-away: var(--orange);
     --chat-status-busy: var(--red);
     --chat-status-offline: gray;
-    --chat-status-online: var(--dark-green);
+    --chat-status-online: var(--green-4);
 
     --controlbox-color: var(--purple);
     --disabled-color: var(--secondary-color);
@@ -53,20 +53,20 @@
     --focus-color: var(--secondary-color);
     --heading-color: var(--purple);
     --headlines-color: var(--yellow);
-    --link-color: var(--frost-4);
+    --link-color: var(--blue-2);
     --subdued-color: gray;
 
     // The background when selecting text with your mouse
-    --selection-color: var(--frost-1);
+    --selection-color: var(--green-1);
 
     // Used to indicate selected or open items in lists.
     --highlight-color: var(--snow-storm-2);
     --highlight-color-hover: var(--snow-storm-1);
 
     // 1:1 Chat-related colors
-    --chat-color: var(--dark-green);
+    --chat-color: var(--green-1);
     --chat-header-fg-color: var(--background-color);
-    --chat-header-bg-color: var(--green);
+    --chat-header-bg-color: var(--chat-color);
 
     // MUC-related colors
     --muc-color: var(--orange);
@@ -75,7 +75,7 @@
 
     // Derived colors
     // --------------
-    --brand-heading-color: var(--frost-4);
+    --brand-heading-color: var(--green-4);
     --chat-color-hover: var(--chat-color);
     --danger-color-hover: var(--danger-color);
     --global-background-color: var(--background-color);

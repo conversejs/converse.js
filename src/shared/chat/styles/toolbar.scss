@@ -1,7 +1,14 @@
 .conversejs {
     converse-chat-toolbar {
+        justify-content: space-between !important;
+
         converse-message-limit-indicator {
             padding: 0.75em 0.5em;
+        }
+
+        .send-button {
+            color: var(--background-color);
+            border-radius: 0;
         }
 
         .btn-toolbar {
@@ -13,11 +20,6 @@
 
             .btn {
                 padding: 0.25em 0.5em !important;
-            }
-
-            .send-button {
-                color: var(--background-color);
-                border-radius: 0;
             }
 
             .fa, .fa:hover,

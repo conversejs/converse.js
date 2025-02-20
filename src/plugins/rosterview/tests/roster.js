@@ -1214,8 +1214,8 @@ describe("The Contacts Roster", function () {
             await u.waitUntil(() => u.isVisible(modal), 1000);
 
             expect(modal.querySelector('input[name="name"]')?.value).toBe('Escalus, prince of Verona');
-            const group_input = modal.querySelector('input[name="group"]');
-            group_input.value = 'Princes';
+            const groups_input = modal.querySelector('input[name="groups"]');
+            groups_input.value = 'Princes, Veronese';
 
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             while (sent_stanzas.length) sent_stanzas.pop();
@@ -1226,7 +1226,10 @@ describe("The Contacts Roster", function () {
             expect(stanza).toEqualStanza(
                 stx`<iq type="set" xmlns="jabber:client" id="${stanza.getAttribute('id')}">
                         <query xmlns="jabber:iq:roster">
-                            <item jid="${contact.get('jid')}" name="Escalus, prince of Verona"/>
+                            <item jid="${contact.get('jid')}" name="Escalus, prince of Verona">
+                                <group>Princes</group>
+                                <group>Veronese</group>
+                            </item>
                         </query>
                     </iq>`);
 
@@ -1240,7 +1243,7 @@ describe("The Contacts Roster", function () {
 
             await u.waitUntil(() => contact.authorize.calls.count());
             expect(contact.authorize).toHaveBeenCalled();
-            expect(contact.get('groups')).toEqual(['Princes']);
+            expect(contact.get('groups')).toEqual(['Princes', 'Veronese']);
         }));
 
         it("can have their requests denied by the user",

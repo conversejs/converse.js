@@ -15,7 +15,8 @@ import { FILTER_STARTSWITH } from 'shared/autocomplete/utils';
 export default (el) => {
     const i18n_add = __('Add');
     const i18n_contact_placeholder = __('name@example.org');
-    const i18n_group = __('Group');
+    const i18n_groups = __('Groups');
+    const i18n_groups_help = __("Use commas to separate multiple values");
     const i18n_nickname = __('Name');
     const i18n_xmpp_address = __('XMPP Address');
     const error = el.model.get('error');
@@ -60,10 +61,13 @@ export default (el) => {
                     }
                 </div>
                 <div class="mb-3">
-                    <label class="form-label clearfix" for="name">${i18n_group}:</label>
+                    <label class="form-label clearfix" for="name">${i18n_groups}:</label>
+                    <div class="mb-1">
+                        <small class="form-text text-muted">${i18n_groups_help}</small>
+                    </div>
                     <converse-autocomplete
                         .list=${getGroupsAutoCompleteList()}
-                        name="group"></converse-autocomplete>
+                        name="groups"></converse-autocomplete>
                 </div>
                 <button type="submit" class="btn btn-primary">${i18n_add}</button>
             </form>

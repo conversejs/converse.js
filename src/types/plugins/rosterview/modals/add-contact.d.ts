@@ -9,9 +9,9 @@ export default class AddContactModal extends BaseModal {
      * @param {HTMLFormElement} _form
      * @param {string} jid
      * @param {string} name
-     * @param {FormDataEntryValue} group
+     * @param {string[]} groups
      */
-    afterSubmission(_form: HTMLFormElement, jid: string, name: string, group: FormDataEntryValue): Promise<void>;
+    afterSubmission(_form: HTMLFormElement, jid: string, name: string, groups: string[]): Promise<void>;
     /**
      * @param {Event} ev
      */

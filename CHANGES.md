@@ -68,7 +68,7 @@
 - Change contacts filter to rename the anachronistic `Online` state to `Available`.
 - Enable [reuse_scram_keys](https://conversejs.org/docs/html/configuration.html#reuse-scram-keys) by default.
 - New `loadEmojis` hook, to customize emojis at runtime.
-- Add new themes 'Cyberpunk' and 'Nord' and remove the old 'Concord' theme.
+- Add new themes 'Cyberpunk' and 'Nordic' and remove the old 'Concord' theme.
 - Improved accessibility.
 - New "getOccupantActionButtons" hook, so that plugins can add actions on MUC occupants.
 - MUC occupants badges: displays short labels, with full label as title.

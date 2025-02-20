@@ -5,6 +5,8 @@ const sizzle = converse.env.sizzle;
 
 describe("The 'Add Contact' widget", function () {
 
+    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("opens up an add modal when you click on it",
             mock.initConverse([], {}, async function (_converse) {
 
@@ -26,6 +28,9 @@ describe("The 'Add Contact' widget", function () {
         const input_name = modal.querySelector('input[name="name"]');
         input_jid.value = 'someone@';
 
+        const groups_input = modal.querySelector('input[name="groups"]');
+        groups_input.value = 'Friends, Countrymen';
+
         const evt = new Event('input');
         input_jid.dispatchEvent(evt);
         expect(modal.querySelector('.suggestion-box li').textContent).toBe('someone@montague.lit');
@@ -35,10 +40,15 @@ describe("The 'Add Contact' widget", function () {
 
         const sent_IQs = _converse.api.connection.get().IQ_stanzas;
         const sent_stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`)).pop());
-        expect(Strophe.serialize(sent_stanza)).toEqual(
-            `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-                `<query xmlns="jabber:iq:roster"><item jid="someone@montague.lit" name="Someone"><group></group></item></query>`+
-            `</iq>`);
+        expect(sent_stanza).toEqualStanza(stx`
+            <iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster">
+                    <item jid="someone@montague.lit" name="Someone">
+                        <group>Friends</group>
+                        <group>Countrymen</group>
+                    </item>
+                </query>+
+            </iq>`);
     }));
 
     it("can be configured to not provide search suggestions",

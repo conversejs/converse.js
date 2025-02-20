@@ -45,11 +45,11 @@ export default class AddContactModal extends BaseModal {
      * @param {HTMLFormElement} _form
      * @param {string} jid
      * @param {string} name
-     * @param {FormDataEntryValue} group
+     * @param {string[]} groups
      */
-    async afterSubmission (_form, jid, name, group) {
+    async afterSubmission (_form, jid, name, groups) {
         try {
-            await api.contacts.add({ jid, name, groups: Array.isArray(group) ? group : [group] });
+            await api.contacts.add({ jid, name, groups });
         } catch (e) {
             log.error(e);
             this.model.set('error', __('Sorry, something went wrong'));
@@ -81,7 +81,8 @@ export default class AddContactModal extends BaseModal {
         }
 
         if (this.validateSubmission(jid)) {
-            this.afterSubmission(form, jid, name, data.get('group'));
+            const groups = /** @type {string} */(data.get('groups'))?.split(',').map((g) => g.trim()) || [];
+            this.afterSubmission(form, jid, name, groups);
         }
     }
 }

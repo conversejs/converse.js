@@ -63,7 +63,7 @@ describe("Presence subscriptions", function () {
             const form = modal.querySelector('form.add-xmpp-contact');
             form.querySelector('input[name="jid"]').value = 'contact@example.org';
             form.querySelector('input[name="name"]').value = 'Chris Contact';
-            form.querySelector('input[name="group"]').value = 'My Buddies';
+            form.querySelector('input[name="groups"]').value = 'My Buddies';
             form.querySelector('[type="submit"]').click();
 
             /* In preparation for being able to render the contact in the

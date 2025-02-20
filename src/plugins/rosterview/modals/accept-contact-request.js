@@ -42,12 +42,12 @@ export default class AcceptContactRequest extends BaseModal {
         const form = /** @type {HTMLFormElement} */ (ev.target);
         const data = new FormData(form);
         const name = /** @type {string} */ (data.get("name") || "").trim();
-        const group = data.get('group');
+        const groups = /** @type {string} */(data.get('groups'))?.split(',').map((g) => g.trim()) || [];
         try {
             await _converse.state.roster.sendContactAddIQ({
                 jid: this.contact.get("jid"),
                 name,
-                group,
+                groups,
             });
             this.contact.authorize().subscribe();
         } catch (e) {
@@ -57,7 +57,7 @@ export default class AcceptContactRequest extends BaseModal {
         }
         this.contact.save({
             nickname: name,
-            groups: [group]
+            groups,
         });
         this.modal.hide();
     }

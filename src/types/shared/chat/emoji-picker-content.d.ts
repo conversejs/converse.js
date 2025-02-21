@@ -20,7 +20,7 @@ export default class EmojiPickerContent extends CustomElement {
     render(): import("lit").TemplateResult<1>;
     firstUpdated(): void;
     initIntersectionObserver(): void;
-    observer: IntersectionObserver | undefined;
+    observer: IntersectionObserver;
     setCategoryOnVisibilityChange(entries: any): void;
     /**
      * @param {MouseEvent} ev

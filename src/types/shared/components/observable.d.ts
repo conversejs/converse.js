@@ -18,7 +18,7 @@ export class ObservableElement extends CustomElement {
     observableRatio: number;
     observableDelay: number;
     initIntersectionObserver(): void;
-    intersectionObserver: IntersectionObserver | undefined;
+    intersectionObserver: IntersectionObserver;
     /**
      * @param {IntersectionObserverEntry[]} entries
      */

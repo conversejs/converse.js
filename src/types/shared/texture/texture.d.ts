@@ -57,44 +57,44 @@ export class Texture extends String {
      * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLMetadata
      */
     constructor(text: string, offset?: number, options?: {
-        nick?: string | undefined;
-        render_styling?: boolean | undefined;
-        embed_audio?: boolean | undefined;
-        embed_videos?: boolean | undefined;
-        mentions?: any[] | undefined;
-        media_urls?: any[] | undefined;
-        show_images?: boolean | undefined;
-        show_me_message?: boolean | undefined;
-        onImgClick?: Function | undefined;
-        onImgLoad?: Function | undefined;
-        hide_media_urls?: boolean | undefined;
-    } | undefined);
-    embed_audio: boolean | undefined;
-    embed_videos: boolean | undefined;
+        nick?: string;
+        render_styling?: boolean;
+        embed_audio?: boolean;
+        embed_videos?: boolean;
+        mentions?: any[];
+        media_urls?: any[];
+        show_images?: boolean;
+        show_me_message?: boolean;
+        onImgClick?: Function;
+        onImgLoad?: Function;
+        hide_media_urls?: boolean;
+    });
+    embed_audio: boolean;
+    embed_videos: boolean;
     mentions: any[];
-    media_urls: any[] | undefined;
-    nick: string | undefined;
+    media_urls: any[];
+    nick: string;
     offset: number;
-    onImgClick: Function | undefined;
-    onImgLoad: Function | undefined;
+    onImgClick: Function;
+    onImgLoad: Function;
     options: {
-        nick?: string | undefined;
-        render_styling?: boolean | undefined;
-        embed_audio?: boolean | undefined;
-        embed_videos?: boolean | undefined;
-        mentions?: any[] | undefined;
-        media_urls?: any[] | undefined;
-        show_images?: boolean | undefined;
-        show_me_message?: boolean | undefined;
-        onImgClick?: Function | undefined;
-        onImgLoad?: Function | undefined;
-        hide_media_urls?: boolean | undefined;
+        nick?: string;
+        render_styling?: boolean;
+        embed_audio?: boolean;
+        embed_videos?: boolean;
+        mentions?: any[];
+        media_urls?: any[];
+        show_images?: boolean;
+        show_me_message?: boolean;
+        onImgClick?: Function;
+        onImgLoad?: Function;
+        hide_media_urls?: boolean;
     };
     payload: any[];
     references: any[];
-    render_styling: boolean | undefined;
-    show_images: boolean | undefined;
-    hide_media_urls: boolean | undefined;
+    render_styling: boolean;
+    show_images: boolean;
+    hide_media_urls: boolean;
     /**
      * @param {string} url - The URL to be checked
      * @param {'audio'|'image'|'video'} type - The type of media
@@ -173,6 +173,6 @@ export class Texture extends String {
      * instances to be rendered to the DOM.
      * @method Texture#marshall
      */
-    marshall(): string;
+    marshall(): any[];
 }
 //# sourceMappingURL=texture.d.ts.map

@@ -1,6 +1,6 @@
 export class RoomsList extends CustomElement {
     initialize(): void;
-    model: RoomsListModel | undefined;
+    model: RoomsListModel;
     render(): import("lit").TemplateResult<1>;
     /** @param {Model} model */
     renderIfChatRoom(model: Model): void;
@@ -11,7 +11,7 @@ export class RoomsList extends CustomElement {
     /** @param {Event} ev */
     closeRoom(ev: Event): Promise<void>;
     /** @param {Event} [ev] */
-    toggleRoomsList(ev?: Event | undefined): void;
+    toggleRoomsList(ev?: Event): void;
     /**
      * @param {Event} ev
      * @param {string} domain

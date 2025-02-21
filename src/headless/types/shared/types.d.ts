@@ -71,5 +71,67 @@ export type XEP372Reference = {
 export type ErrorExtra = Record<string, string>;
 export type ErrorName = 'bad-request' | 'conflict' | 'feature-not-implemented' | 'forbidden' | 'gone' | 'internal-server-error' | 'item-not-found' | 'jid-malformed' | 'not-acceptable' | 'not-allowed' | 'not-authorized' | 'payment-required' | 'recipient-unavailable' | 'redirect' | 'registration-required' | 'remote-server-not-found' | 'remote-server-timeout' | 'resource-constraint' | 'service-unavailable' | 'subscription-required' | 'undefined-condition' | 'unexpected-request';
 export type ErrorType = 'auth' | 'cancel' | 'continue' | 'modify' | 'wait';
+export type Reference = {
+    begin: number;
+    end: number;
+    type: string;
+    uri: string;
+};
+export type MessageErrorAttributes = {
+    is_error: boolean;
+    error: string;
+    errors: {
+        name: string;
+        xmlns: string;
+    }[];
+    error_condition: string;
+    error_text: string;
+    error_type: string;
+};
+export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
+    body: string;
+    chat_state: string;
+    contact_jid: string;
+    editable: boolean;
+    edited: string;
+    from: string;
+    message?: string;
+    fullname: string;
+    is_archived: boolean;
+    is_carbon: boolean;
+    is_delayed: boolean;
+    is_encrypted: boolean;
+    is_headline: boolean;
+    is_markable: boolean;
+    is_marker: boolean;
+    is_only_emojis: boolean;
+    is_spoiler: boolean;
+    is_tombstone: boolean;
+    is_unstyled: boolean;
+    is_valid_receipt_request: boolean;
+    marker: string;
+    marker_id: string;
+    msgid: string;
+    nick: string;
+    ogp_for_id?: string;
+    oob_desc: string;
+    oob_url: string;
+    origin_id: string;
+    plaintext: string;
+    receipt_id: string;
+    received: string;
+    references: Array<Reference>;
+    replace_id: string;
+    retracted: string;
+    retracted_id: string;
+    sender: 'me' | 'them';
+    spoiler_hint: string;
+    stanza_id: string;
+    subject: string;
+    thread: string;
+    time: string;
+    to: string;
+    type: string;
+};
 export {};
 //# sourceMappingURL=types.d.ts.map

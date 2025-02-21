@@ -31,10 +31,11 @@ import { getUniqueId, isErrorObject, safeSave } from '../../utils/index.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
+import BaseMessage from '../../shared/message';
+import ChatBoxBase from '../../shared/chatbox';
+import ColorAwareModel from '../../shared/color';
 import ModelWithMessages from '../../shared/model-with-messages';
 import ModelWithVCard from '../../shared/model-with-vcard';
-import ColorAwareModel from '../../shared/color';
-import ChatBoxBase from '../../shared/chatbox';
 import { shouldCreateGroupchatMessage, isInfoVisible } from './utils.js';
 import MUCSession from './session';
 
@@ -51,7 +52,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @typedef {import('./occupant.js').default} MUCOccupant
      * @typedef {import('./affiliations/utils.js').NonOutcastAffiliation} NonOutcastAffiliation
      * @typedef {import('./types').MemberListItem} MemberListItem
-     * @typedef {import('../chat/types').MessageAttributes} MessageAttributes
+     * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
      * @typedef {import('./types').MUCMessageAttributes} MUCMessageAttributes
      * @typedef {import('./types').MUCPresenceAttributes} MUCPresenceAttributes
      * @typedef {module:shared.converse.UserMessage} UserMessage
@@ -804,7 +805,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
     /**
      * Retract one of your messages in this groupchat
-     * @param {MUCMessage} message - The message which we're retracting.
+     * @param {BaseMessage} message - The message which we're retracting.
      */
     async retractOwnMessage(message) {
         const __ = _converse.__;
@@ -2329,11 +2330,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * passed in attributes map.
      * @param {object} attrs - Attributes representing a received
      *  message, as returned by {@link parseMUCMessage}
-     * @returns {Message}
+     * @returns {MUCMessage|BaseMessage}
      */
     getDuplicateMessage (attrs) {
         if (attrs.activities?.length) {
-            return this.messages.findWhere({ 'type': 'mep', 'msgid': attrs.msgid });
+            return this.messages.findWhere({ type: 'mep', msgid: attrs.msgid });
         } else {
             return super.getDuplicateMessage(attrs);
         }
@@ -2804,7 +2805,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     /**
      * Returns a boolean to indicate whether the current user
      * was mentioned in a message.
-     * @param {MUCMessage} message - The text message
+     * @param {BaseMessage} message - The text message
      */
     isUserMentioned (message) {
         const nick = this.get('nick');
@@ -2820,7 +2821,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
-     * @param {MUCMessage} message - The text message
+     * @param {BaseMessage} message - The text message
      */
     incrementUnreadMsgsCounter (message) {
         const settings = {

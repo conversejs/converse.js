@@ -45,7 +45,6 @@ export default class ModeratorTools extends CustomElement {
     tab: string;
     affiliation: any;
     affiliations_filter: string;
-    role: string;
     roles_filter: string;
     updated(changed: any): void;
     initialize(): Promise<void>;
@@ -54,7 +53,7 @@ export default class ModeratorTools extends CustomElement {
     render(): import("lit").TemplateResult<1> | "";
     switchTab(ev: any): void;
     onSearchAffiliationChange(): Promise<void>;
-    loading_users_with_affiliation: boolean | undefined;
+    loading_users_with_affiliation: boolean;
     users_with_affiliation: any;
     onSearchRoleChange(): Promise<void>;
     users_with_role: any;

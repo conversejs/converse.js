@@ -9,7 +9,7 @@ export function initializeChat(chat: ChatBox | MUC): void;
  * to create space.
  * @param {ChatView|MUCView|ControlBoxView|HeadlinesFeedView} [newchat]
  */
-export function trimChats(newchat?: import("plugins/chatview/chat").default | import("plugins/muc-views/muc").default | import("plugins/controlbox/controlbox").default | import("plugins/headlines-view/view").default | undefined): void;
+export function trimChats(newchat?: ChatView | MUCView | ControlBoxView | HeadlinesFeedView): void;
 export function addMinimizeButtonToChat(view: any, buttons: any): any[];
 export function addMinimizeButtonToMUC(view: any, buttons: any): any[];
 export function maximize(ev: any, chatbox: any): void;

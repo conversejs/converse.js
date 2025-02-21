@@ -1,7 +1,7 @@
 /**
  * @module:headless-plugins-chat-utils
  * @typedef {import('./model.js').default} ChatBox
- * @typedef {import('./types.ts').MessageAttributes} MessageAttributes
+ * @typedef {import('../../shared/types.ts').MessageAttributes} MessageAttributes
  * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
  * @typedef {import('strophe.js').Builder} Builder
  */

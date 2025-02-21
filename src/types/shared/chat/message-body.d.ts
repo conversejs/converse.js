@@ -21,7 +21,7 @@ export default class MessageBody extends CustomElement {
     onImgLoad(): void;
     render(): import("lit/directive").DirectiveResult<{
         new (_partInfo: import("lit/directive").PartInfo): {
-            render(text: string, offset: number, options: object, callback?: Function | undefined): import("lit").TemplateResult<1>;
+            render(text: string, offset: number, options: object, callback?: Function): import("lit").TemplateResult<1>;
             readonly _$isConnected: boolean;
             update(_part: import("lit").Part, props: Array<unknown>): unknown;
         };

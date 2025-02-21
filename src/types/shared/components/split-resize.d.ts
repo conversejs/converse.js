@@ -27,7 +27,7 @@ export default class SplitResize extends CustomElement {
          * 5. Actually size the pair elements, insert gutters and attach event listeners.
          */
         move: (this: Window, ev: Event) => any;
-    } | null;
+    };
     render(): import("lit").TemplateResult<1>;
     /**
      * @param {Map<string, any>} changed
@@ -203,18 +203,18 @@ export default class SplitResize extends CustomElement {
      * @param {HTMLElement[]} els
      */
     setupSplit(els: HTMLElement[], options?: {}): void;
-    parent: HTMLElement | null | undefined;
-    minSizes: any[] | undefined;
+    parent: HTMLElement;
+    minSizes: any[];
     gutterSize: any;
     gutterAlign: any;
     dragInterval: any;
     direction: any;
     cursor: any;
-    dimension: string | undefined;
-    clientAxis: string | undefined;
-    position: string | undefined;
-    positionEnd: string | undefined;
-    clientSize: string | undefined;
+    dimension: string;
+    clientAxis: string;
+    position: string;
+    positionEnd: string;
+    clientSize: string;
     elements: {
         element: HTMLElement;
         size: any;
@@ -222,7 +222,7 @@ export default class SplitResize extends CustomElement {
         maxSize: any;
         snapOffset: any;
         i: number;
-    }[] | undefined;
+    }[];
     /**
      * @param {HTMLElement[]} els
      * @param {HTMLElement} el

@@ -113,8 +113,8 @@ export default class AutoCompleteComponent extends CustomElement {
     value: string;
     render(): import("lit").TemplateResult<1>;
     firstUpdated(): void;
-    auto_complete: AutoComplete | undefined;
-    auto_completing: boolean | undefined;
+    auto_complete: AutoComplete;
+    auto_completing: boolean;
     /** @param {KeyboardEvent} ev */
     onKeyDown(ev: KeyboardEvent): void;
     /** @param {KeyboardEvent} ev */

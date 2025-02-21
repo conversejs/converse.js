@@ -11,7 +11,7 @@ declare class ControlBoxView extends CustomElement {
     setModel(): void;
     model: any;
     render(): import("lit").TemplateResult<1> | "";
-    close(ev: any): this | undefined;
+    close(ev: any): this;
     afterShown(): this;
 }
 import { CustomElement } from 'shared/components/element.js';

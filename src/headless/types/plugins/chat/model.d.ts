@@ -86,32 +86,32 @@ declare const ChatBox_base: {
         messages: any;
         fetchMessages(): any;
         afterMessagesFetched(): void;
-        onMessage(_attrs_or_error: import("./types").MessageAttributes | Error): Promise<void>;
-        getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./types").MessageAttributes): object;
-        updateMessage(message: import("./message.js").default, attrs: import("./types").MessageAttributes): void;
-        handleCorrection(attrs: import("./types").MessageAttributes | import("../muc/types.js").MUCMessageAttributes): Promise<import("./message.js").default | void>;
-        queueMessage(attrs: import("./types").MessageAttributes): any;
+        onMessage(_attrs_or_error: import("../../shared/types").MessageAttributes | Error): Promise<void>;
+        getUpdatedMessageAttributes(message: import("../../shared/message.js").default<any>, attrs: import("../../shared/types").MessageAttributes): object;
+        updateMessage(message: import("../../shared/message.js").default<any>, attrs: import("../../shared/types").MessageAttributes): void;
+        handleCorrection(attrs: import("../../shared/types").MessageAttributes | import("../muc/types.js").MUCMessageAttributes): Promise<import("../../shared/message.js").default<any> | void>;
+        queueMessage(attrs: import("../../shared/types").MessageAttributes): any;
         msg_chain: any;
-        getOutgoingMessageAttributes(_attrs?: import("./types").MessageAttributes): Promise<import("./types").MessageAttributes>;
-        sendMessage(attrs?: any): Promise<import("./message.js").default>;
-        retractOwnMessage(message: import("./message.js").default): void;
+        getOutgoingMessageAttributes(_attrs?: import("../../shared/types").MessageAttributes): Promise<import("../../shared/types").MessageAttributes>;
+        sendMessage(attrs?: any): Promise<import("../../shared/message.js").default<any>>;
+        retractOwnMessage(message: import("../../shared/message.js").default<any>): void;
         sendFiles(files: File[]): Promise<void>;
         setEditable(attrs: any, send_time: string): void;
         setChatState(state: string, options?: object): any;
         chat_state_timeout: NodeJS.Timeout;
-        onMessageAdded(message: import("./message.js").default): void;
-        onMessageUploadChanged(message: import("./message.js").default): Promise<void>;
+        onMessageAdded(message: import("../../shared/message.js").default<any>): void;
+        onMessageUploadChanged(message: import("../../shared/message.js").default<any>): Promise<void>;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
-        shouldShowErrorMessage(attrs: import("./types").MessageAttributes): Promise<boolean>;
+        shouldShowErrorMessage(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
         getOldestMessage(): any;
         getMostRecentMessage(): any;
         getMessageReferencedByError(attrs: object): any;
-        findDanglingRetraction(attrs: object): import("./message.js").default | null;
-        getDuplicateMessage(attrs: object): import("./message.js").default;
+        findDanglingRetraction(attrs: object): import("../../shared/message.js").default<any> | null;
+        getDuplicateMessage(attrs: object): import("../../shared/message.js").default<any>;
         getOriginIdQueryAttrs(attrs: object): {
             origin_id: any;
             from: any;
@@ -121,15 +121,15 @@ declare const ChatBox_base: {
             from: any;
             msgid: any;
         };
-        sendMarkerForMessage(msg: import("./message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
-        handleUnreadMessage(message: import("./message.js").default): void;
-        getErrorAttributesForMessage(message: import("./message.js").default, attrs: import("./types").MessageAttributes): Promise<any>;
+        sendMarkerForMessage(msg: import("../../shared/message.js").default<any>, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
+        handleUnreadMessage(message: import("../../shared/message.js").default<any>): void;
+        getErrorAttributesForMessage(message: import("../../shared/message.js").default<any>, attrs: import("../../shared/types").MessageAttributes): Promise<any>;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
-        incrementUnreadMsgsCounter(message: import("./message.js").default): void;
+        incrementUnreadMsgsCounter(message: import("../../shared/message.js").default<any>): void;
         clearUnreadMsgCounter(): void;
-        handleRetraction(attrs: import("./types").MessageAttributes): Promise<boolean>;
-        handleReceipt(attrs: import("./types").MessageAttributes): boolean;
-        createMessageStanza(message: import("./message.js").default): Promise<any>;
+        handleRetraction(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;
+        handleReceipt(attrs: import("../../shared/types").MessageAttributes): boolean;
+        createMessageStanza(message: import("../../shared/message.js").default<any>): Promise<any>;
         pruneHistory(): void;
         debouncedPruneHistory: import("lodash").DebouncedFunc<() => void>;
         isScrolledUp(): any;
@@ -342,7 +342,7 @@ declare class ChatBox extends ChatBox_base {
     /**
      * @typedef {import('./message.js').default} Message
      * @typedef {import('../muc/muc.js').default} MUC
-     * @typedef {import('./types').MessageAttributes} MessageAttributes
+     * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
      * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
     defaults(): {
@@ -360,7 +360,7 @@ declare class ChatBox extends ChatBox_base {
     /**
      * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    onMessage(attrs_or_error: import("./types").MessageAttributes | import("../../shared/errors").StanzaParseError): Promise<void>;
+    onMessage(attrs_or_error: import("../../shared/types").MessageAttributes | import("../../shared/errors").StanzaParseError): Promise<void>;
     /**
      * @param {import('../roster/presence').default} item
      */
@@ -378,12 +378,12 @@ declare class ChatBox extends ChatBox_base {
     /**
      * @param {MessageAttributes} attrs
      */
-    handleChatMarker(attrs: import("./types").MessageAttributes): boolean;
+    handleChatMarker(attrs: import("../../shared/types").MessageAttributes): boolean;
     /**
      * @param {MessageAttributes} [attrs]
      * @return {Promise<MessageAttributes>}
      */
-    getOutgoingMessageAttributes(attrs?: import("./types").MessageAttributes): Promise<import("./types").MessageAttributes>;
+    getOutgoingMessageAttributes(attrs?: import("../../shared/types").MessageAttributes): Promise<import("../../shared/types").MessageAttributes>;
     canPostMessages(): boolean;
 }
 import ChatBoxBase from '../../shared/chatbox.js';

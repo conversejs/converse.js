@@ -6,7 +6,7 @@ export default class MessageForm extends CustomElement {
     };
     model: any;
     initialize(): Promise<void>;
-    handleEmojiSelection: (({ detail }: CustomEvent) => void) | undefined;
+    handleEmojiSelection: ({ detail }: CustomEvent) => void;
     render(): import("lit").TemplateResult<1>;
     /**
      * Insert a particular string value into the textarea of this chat box.
@@ -18,7 +18,7 @@ export default class MessageForm extends CustomElement {
      * @param { number } [position] - The end index of the string to be
      *  replaced with the new value.
      */
-    insertIntoTextArea(value: string, replace?: string | boolean | undefined, correcting?: boolean, position?: number | undefined, separator?: string): void;
+    insertIntoTextArea(value: string, replace?: (boolean | string), correcting?: boolean, position?: number, separator?: string): void;
     onMessageCorrecting(message: any): void;
     onEscapePressed(ev: any): void;
     onPaste(ev: any): void;

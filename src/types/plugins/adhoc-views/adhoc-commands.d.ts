@@ -32,7 +32,7 @@ export default class AdHocCommands extends CustomElement {
      * @param {SubmitEvent} ev
      */
     fetchCommands(ev: SubmitEvent): Promise<void>;
-    alert_type: string | undefined;
+    alert_type: string;
     alert: any;
     /**
      * @param {MouseEvent} ev

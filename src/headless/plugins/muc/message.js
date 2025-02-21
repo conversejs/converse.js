@@ -1,27 +1,20 @@
 import { Strophe } from 'strophe.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import ModelWithVCard from '../../shared/model-with-vcard';
-import Message from '../chat/message.js';
+import BaseMessage from '../../shared/message.js';
 
 
-class MUCMessage extends ModelWithVCard(Message) {
+class MUCMessage extends BaseMessage {
     /**
      * @typedef {import('./occupant').default} MUCOccupant
      */
-    async initialize () { // eslint-disable-line require-await
-        if (!this.checkValidity()) return;
-        this.chatbox = this.collection?.chatbox;
+    initialize () {
+        super.initialize();
 
-        if (this.get('file')) {
-            this.on('change:put', () => this.uploadFile());
-        }
         // If `type` changes from `error` to `groupchat`, we want to set the occupant. See #2733
         this.on('change:type', () => this.setOccupant());
-        this.on('change:is_ephemeral', () => this.setTimerForEphemeralMessage());
-
-        this.setTimerForEphemeralMessage();
         this.setOccupant();
+
         /**
          * Triggered once a { @link MUCMessage} has been created and initialized.
          * @event _converse#chatRoomMessageInitialized
@@ -58,7 +51,7 @@ class MUCMessage extends ModelWithVCard(Message) {
     }
 
     checkValidity () {
-        const result = _converse.exports.Message.prototype.checkValidity.call(this);
+        const result = super.checkValidity();
         !result && this.chatbox.debouncedRejoin();
         return result;
     }

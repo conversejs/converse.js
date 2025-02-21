@@ -13,7 +13,6 @@ declare class BaseModal extends CustomElement {
      */
     constructor(options: any);
     model: any;
-    ariaHidden: string;
     initialized: any;
     get modal(): Modal;
     initialize(): void;
@@ -33,8 +32,8 @@ declare class BaseModal extends CustomElement {
     /**
      * @param {Event} [ev]
      */
-    switchTab(ev?: Event | undefined): void;
-    tab: string | null | undefined;
+    switchTab(ev?: Event): void;
+    tab: string;
     close(): void;
     insertIntoDOM(): void;
     /**

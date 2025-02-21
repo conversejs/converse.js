@@ -29,8 +29,8 @@ export function sendChatState(jid: string, chat_state: string): void;
 /**
  * Sends a message stanza to retract a message in this chat
  * @param {string} jid
- * @param {import('../plugins/chat/message').default} message - The message which we're retracting.
+ * @param {import('../shared/message').default} message - The message which we're retracting.
  * @param {string} retraction_id - Unique ID for the retraction message
  */
-export function sendRetractionMessage(jid: string, message: import("../plugins/chat/message").default, retraction_id: string): any;
+export function sendRetractionMessage(jid: string, message: import("../shared/message").default<any>, retraction_id: string): any;
 //# sourceMappingURL=actions.d.ts.map

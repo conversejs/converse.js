@@ -1,7 +1,7 @@
 export default LoginForm;
 declare class LoginForm extends CustomElement {
     initialize(): void;
-    handler: (() => void) | undefined;
+    handler: () => void;
     connectedCallback(): void;
     render(): import("lit").TemplateResult<1>;
     firstUpdated(): void;
@@ -17,7 +17,7 @@ declare class LoginForm extends CustomElement {
     /**
      * @param {string} [jid]
      */
-    connect(jid?: string | undefined): void;
+    connect(jid?: string): void;
 }
 import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=loginform.d.ts.map

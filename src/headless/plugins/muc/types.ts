@@ -1,5 +1,5 @@
 import { CHAT_STATES } from '../../shared/constants';
-import { MessageAttributes } from '../chat/types';
+import { MessageAttributes } from '../../shared/types';
 import MUC from './muc';
 
 export type MUCStatusCode =

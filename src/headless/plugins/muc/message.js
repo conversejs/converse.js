@@ -130,6 +130,8 @@ class MUCMessage extends Message {
 
         this.trigger('occupant:add');
         this.listenTo(this.occupant, 'change', (changed) => this.trigger('occupant:change', changed));
+        this.listenTo(this.occupant, 'vcard:add', (changed) => this.trigger('occupant:change', changed));
+        this.listenTo(this.occupant, 'vcard:change', (changed) => this.trigger('occupant:change', changed));
         this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
         this.stopListening(this.occupants, 'add', this.onOccupantAdded);
 

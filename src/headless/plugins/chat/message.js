@@ -8,6 +8,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import { SUCCESS, FAILURE } from '../../shared/constants.js';
 import ModelWithContact from '../../shared/model-with-contact.js';
+import ModelWithVCard from '../../shared/model-with-vcard';
 import ColorAwareModel from '../../shared/color.js';
 import { getUniqueId } from '../../utils/index.js';
 
@@ -18,7 +19,7 @@ import { getUniqueId } from '../../utils/index.js';
  * @memberOf _converse
  * @example const msg = new Message({'message': 'hello world!'});
  */
-class Message extends ModelWithContact(ColorAwareModel(Model)) {
+class Message extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
 
     defaults () {
         return {

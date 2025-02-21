@@ -10,7 +10,6 @@ import api from './api/index.js';
 export default function ModelWithContact(BaseModel) {
     return class ModelWithContact extends BaseModel {
         /**
-         * @typedef {import('../plugins/vcard/vcard').default} VCard
          * @typedef {import('../plugins/roster/contact').default} RosterContact
          * @typedef {import('./_converse.js').XMPPStatus} XMPPStatus
          */
@@ -23,12 +22,6 @@ export default function ModelWithContact(BaseModel) {
              * @type {RosterContact|XMPPStatus}
              */
             this.contact = null;
-
-            /**
-             * @public
-             * @type {VCard}
-             */
-            this.vcard = null;
         }
 
         /**

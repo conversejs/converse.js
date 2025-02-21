@@ -32,6 +32,7 @@ import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
 import ModelWithMessages from '../../shared/model-with-messages';
+import ModelWithVCard from '../../shared/model-with-vcard';
 import ColorAwareModel from '../../shared/color';
 import ChatBoxBase from '../../shared/chatbox';
 import { shouldCreateGroupchatMessage, isInfoVisible } from './utils.js';
@@ -42,7 +43,7 @@ const { u, stx } = converse.env;
 /**
  * Represents a groupchat conversation.
  */
-class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
+class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))) {
     /**
      * @typedef {import('../vcard/vcard').default} VCard
      * @typedef {import('../chat/message.js').default} Message
@@ -86,12 +87,6 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
 
     async initialize () {
         super.initialize();
-
-        /**
-         * @public
-         * @type {VCard}
-         */
-        this.vcard = null;
 
         this.initialized = getOpenPromise();
 

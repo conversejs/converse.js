@@ -1,6 +1,75 @@
 export default MUC;
 declare const MUC_base: {
     new (...args: any[]): {
+        _vcard: import("../vcard/vcard").default;
+        lazy_load_vcard: boolean;
+        initialize(): void;
+        readonly vcard: import("../vcard/vcard").default;
+        getVCard(create?: boolean): Promise<import("../vcard/vcard").default | null>;
+        cid: any;
+        attributes: {};
+        validationError: string;
+        collection: any;
+        changed: {};
+        browserStorage: Storage;
+        _browserStorage: Storage;
+        readonly idAttribute: string;
+        readonly cidPrefix: string;
+        preinitialize(): void;
+        validate(attrs: object, options?: object): string;
+        toJSON(): any;
+        sync(method: "create" | "update" | "patch" | "delete" | "read", model: Model, options: import("@converse/skeletor/src/types/model").Options): any;
+        get(attr: string): any;
+        keys(): string[];
+        values(): any[];
+        pairs(): [string, any][];
+        entries(): [string, any][];
+        invert(): any;
+        pick(...args: any[]): any;
+        omit(...args: any[]): any;
+        isEmpty(): any;
+        has(attr: string): boolean;
+        matches(attrs: import("@converse/skeletor/src/types/model").Attributes): boolean;
+        set(key: string | any, val?: string | any, options?: import("@converse/skeletor/src/types/model").Options): false | any;
+        _changing: boolean;
+        _previousAttributes: any;
+        id: any;
+        _pending: boolean | import("@converse/skeletor/src/types/model").Options;
+        unset(attr: string, options?: import("@converse/skeletor/src/types/model").Options): false | any;
+        clear(options: import("@converse/skeletor/src/types/model").Options): false | any;
+        hasChanged(attr?: string): any;
+        changedAttributes(diff: any): any;
+        previous(attr?: string): any;
+        previousAttributes(): any;
+        fetch(options?: import("@converse/skeletor/src/types/model").Options): any;
+        save(key?: string | import("@converse/skeletor/src/types/model").Attributes, val?: boolean | number | string | import("@converse/skeletor/src/types/model").Options, options?: import("@converse/skeletor/src/types/model").Options): any;
+        destroy(options?: import("@converse/skeletor/src/types/model").Options): boolean;
+        url(): any;
+        parse(resp: import("@converse/skeletor/src/types/model").Options, options?: import("@converse/skeletor/src/types/model").Options): import("@converse/skeletor/src/types/model").Options;
+        isNew(): boolean;
+        isValid(options?: import("@converse/skeletor/src/types/model").Options): boolean;
+        _validate(attrs: import("@converse/skeletor/src/types/model").Attributes, options?: import("@converse/skeletor/src/types/model").Options): boolean;
+        on(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
+        _events: any;
+        _listeners: {};
+        listenTo(obj: any, name: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        _listeningTo: {};
+        _listenId: any;
+        off(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context?: any): any;
+        stopListening(obj?: any, name?: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        once(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
+        listenToOnce(obj: any, name: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        trigger(name: string, ...args: any[]): any;
+        constructor: Function;
+        toString(): string;
+        toLocaleString(): string;
+        valueOf(): Object;
+        hasOwnProperty(v: PropertyKey): boolean;
+        isPrototypeOf(v: Object): boolean;
+        propertyIsEnumerable(v: PropertyKey): boolean;
+    };
+} & {
+    new (...args: any[]): {
         disable_mam: boolean;
         initialize(): Promise<void>;
         initNotifications(): void;
@@ -231,11 +300,6 @@ declare class MUC extends MUC_base {
         type: string;
     };
     initialize(): Promise<void>;
-    /**
-     * @public
-     * @type {VCard}
-     */
-    public vcard: import("../vcard/vcard").default;
     initialized: any;
     debouncedRejoin: import("lodash").DebouncedFunc<() => Promise<void>>;
     isEntered(): boolean;

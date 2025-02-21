@@ -9,11 +9,11 @@ export function createStanza(type: "get" | "set" | "result", jid: string, vcard_
  */
 export function onOccupantAvatarChanged(occupant: MUCOccupant): void;
 /**
- * @param {Model} model
+ * @param {Model|MUCOccupant|MUCMessage} model
  * @param {boolean} [create=true]
  * @returns {Promise<VCard>}
  */
-export function getVCardForModel(model: Model, create?: boolean): Promise<VCard>;
+export function getVCardForModel(model: Model | MUCOccupant | MUCMessage, create?: boolean): Promise<VCard>;
 /**
  * @param {MUCOccupant} occupant
  * @param {boolean} [create=true]

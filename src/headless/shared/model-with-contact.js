@@ -53,6 +53,10 @@ export default function ModelWithContact(BaseModel) {
                 this.contact = contact;
                 this.set('nickname', contact.get('nickname'));
 
+                this.listenTo(this.contact, 'vcard:add', (changed) => {
+                    this.trigger('contact:change', changed);
+                });
+
                 this.listenTo(this.contact, 'change', (changed) => {
                     if (changed.nickname) {
                         this.set('nickname', changed.nickname);

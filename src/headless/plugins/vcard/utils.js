@@ -2,8 +2,10 @@
  * @typedef {import('../../plugins/muc/message').default} MUCMessage
  * @typedef {import('../../plugins/status/status').default} XMPPStatus
  * @typedef {import('../../plugins/vcard/vcards').default} VCards
+ * @typedef {import('../../plugins/vcard/vcard').default} VCard
  * @typedef {import('../../shared/model-with-contact.js').default} ModelWithContact
  * @typedef {import('../muc/occupant.js').default} MUCOccupant
+ * @typedef {import('@converse/skeletor/src/types/helpers.js').Model} Model
  */
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
@@ -77,11 +79,20 @@ export function onOccupantAvatarChanged (occupant) {
 
 
 /**
- * @param {InstanceType<ReturnType<ModelWithContact>>} model
+ * @param {Model} model
+ * @param {boolean} [create=true]
+ * @returns {Promise<VCard>}
  */
-export async function setVCardOnModel (model) {
+export async function getVCardForModel (model, create=true) {
+    await initVCardCollection();
+
+    let vcard;
+    if (model instanceof _converse.exports.MUCOccupant) {
+        return getVCardForOccupant(/** @type {MUCOccupant} */(model), create);
+    }
+
     if (model instanceof _converse.exports.MUCMessage) {
-        return setVCardOnMUCMessage(/** @type {MUCMessage} */(model));
+        return getVCardForMUCMessage(/** @type {MUCMessage} */(model), create);
     }
 
     let jid;
@@ -99,87 +110,80 @@ export async function setVCardOnModel (model) {
         return;
     }
 
-    await api.waitUntil('VCardsInitialized');
     const { vcards } = _converse.state;
-    model.vcard = vcards.get(jid) || vcards.create({ jid });
-    model.vcard.on('change', () => model.trigger('vcard:change'));
-    model.trigger('vcard:add');
-}
+    vcard = vcards.get(jid) || create && vcards.create({ jid });
 
+    vcard.on('change', () => model.trigger('vcard:change'));
+    return vcard;
+}
 
 /**
  * @param {MUCOccupant} occupant
+ * @param {boolean} [create=true]
+ * @returns {Promise<VCard|null>}
  */
-function getVCardForOccupant (occupant) {
+export async function getVCardForOccupant(occupant, create=true) {
+    await api.waitUntil('VCardsInitialized');
+
     const { vcards, xmppstatus } = _converse.state;
     const muc = occupant?.collection?.chatroom;
     const nick = occupant.get('nick');
+    let vcard;
 
     if (nick && muc?.get('nick') === nick) {
-        return xmppstatus.vcard;
+        vcard = xmppstatus.vcard;
     } else {
         const jid = occupant.get('jid') || occupant.get('from');
         if (jid) {
-            return vcards.get(jid) || vcards.create({ jid });
+            vcard = vcards.get(jid) || create && vcards.create({ jid });
         } else {
             log.warn(`Could not get VCard for occupant because no JID found!`);
-            return;
+            return null;
         }
     }
-}
 
-/**
- * @param {MUCOccupant} occupant
- */
-export async function setVCardOnOccupant (occupant) {
-    await api.waitUntil('VCardsInitialized');
-    occupant.vcard = getVCardForOccupant(occupant);
-    if (occupant.vcard) {
-        occupant.vcard.on('change', () => occupant.trigger('vcard:change'));
-        occupant.trigger('vcard:add');
+    if (vcard) {
+        vcard.on('change', () => occupant.trigger('vcard:change'));
     }
+    return vcard;
 }
 
 
 /**
  * @param {MUCMessage} message
+ * @param {boolean} [create=true]
+ * @returns {Promise<VCard|null>}
  */
-function getVCardForMUCMessage (message) {
+async function getVCardForMUCMessage (message, create=true) {
+    if (['error', 'info'].includes(message.get('type'))) return;
+
+    await api.waitUntil('VCardsInitialized');
     const { vcards, xmppstatus } = _converse.state;
     const muc = message?.collection?.chatbox;
     const nick = Strophe.getResourceFromJid(message.get('from'));
+    let vcard;
 
     if (nick && muc?.get('nick') === nick) {
-        return xmppstatus.vcard;
+        vcard = xmppstatus.vcard;
     } else {
         const jid = message.occupant?.get('jid') || message.get('from');
         if (jid) {
-            return vcards.get(jid) || vcards.create({ jid });
+            vcard = vcards.get(jid) || create && vcards.create({ jid });
         } else {
             log.warn(`Could not get VCard for message because no JID found! msgid: ${message.get('msgid')}`);
-            return;
+            return null;
         }
     }
-}
 
-/**
- * @param {MUCMessage} message
- */
-export async function setVCardOnMUCMessage (message) {
-    if (['error', 'info'].includes(message.get('type'))) {
-        return;
-    } else {
-        await api.waitUntil('VCardsInitialized');
-        message.vcard = getVCardForMUCMessage(message);
-        if (message.vcard) {
-            message.vcard.on('change', () => message.trigger('vcard:change'));
-            message.trigger('vcard:add');
-        }
+    if (vcard) {
+        vcard.on('change', () => message.trigger('vcard:change'));
     }
+    return vcard;
 }
 
+async function initVCardCollection () {
+    if (_converse.state.vcards) return _converse.state.vcards;
 
-export async function initVCardCollection () {
     const vcards = new _converse.exports.VCards();
     _converse.state.vcards = vcards;
     Object.assign(_converse, { vcards }); // XXX DEPRECATED
@@ -189,16 +193,10 @@ export async function initVCardCollection () {
     initStorage(vcards, id);
     await new Promise(resolve => {
         vcards.fetch({
-            'success': resolve,
-            'error': resolve
+            success: resolve,
+            error: resolve
         }, {'silent': true});
     });
-    const { xmppstatus } = _converse.state;
-    xmppstatus.vcard = vcards.get(bare_jid) || vcards.create({'jid': bare_jid});
-    if (xmppstatus.vcard) {
-        xmppstatus.vcard.on('change', () => xmppstatus.trigger('vcard:change'));
-        xmppstatus.trigger('vcard:add');
-    }
     /**
      * Triggered as soon as the `_converse.vcards` collection has been initialized and populated from cache.
      * @event _converse#VCardsInitialized

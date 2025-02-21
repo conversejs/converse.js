@@ -59,14 +59,14 @@ declare class DOMNavigator {
      */
     init(): void;
     selected: any;
-    keydownHandler: ((event: any) => void) | null | undefined;
-    elements: {} | undefined;
-    keys: {} | undefined;
+    keydownHandler: (event: any) => void;
+    elements: {};
+    keys: {};
     /**
      * Enable this navigator.
      */
     enable(): void;
-    enabled: boolean | undefined;
+    enabled: boolean;
     /**
      * Disable this navigator.
      */
@@ -85,7 +85,7 @@ declare class DOMNavigator {
      * @param {HTMLElement} el The DOM element to select.
      * @param {string} [direction] The direction.
      */
-    select(el: HTMLElement, direction?: string | undefined): void;
+    select(el: HTMLElement, direction?: string): void;
     /**
      * Remove the current selection
      */

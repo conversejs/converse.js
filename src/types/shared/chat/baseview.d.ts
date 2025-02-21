@@ -10,8 +10,8 @@ export default class BaseChatView extends CustomElement {
     close(ev: any): any;
     maybeFocus(): void;
     focus(): this;
-    getBottomPanel(): Element | null;
-    getMessageForm(): Element | null;
+    getBottomPanel(): Element;
+    getMessageForm(): Element;
     /**
      * Scrolls the chat down.
      *
@@ -19,7 +19,7 @@ export default class BaseChatView extends CustomElement {
      * whether the user scrolled up manually or not.
      * @param { Event } [ev] - An optional event that is the cause for needing to scroll down.
      */
-    scrollDown(ev?: Event | undefined): void;
+    scrollDown(ev?: Event): void;
     onWindowStateChanged(): void;
 }
 export type Model = import("@converse/skeletor").Model;

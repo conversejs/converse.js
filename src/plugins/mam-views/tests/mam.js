@@ -471,7 +471,7 @@ describe("Message Archive Management", function () {
                 await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
                 expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
                 const result = view.model.getDuplicateMessage.calls.all()[0].returnValue
-                expect(result instanceof _converse.Message).toBe(true);
+                expect(result instanceof _converse.exports.MUCMessage).toBe(true);
                 expect(view.querySelectorAll('.chat-msg').length).toBe(1);
 
                 await u.waitUntil(() => view.model.updateMessage.calls.count());
@@ -514,7 +514,7 @@ describe("Message Archive Management", function () {
                 await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
                 expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
                 const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue
-                expect(result instanceof _converse.Message).toBe(true);
+                expect(result instanceof _converse.exports.MUCMessage).toBe(true);
                 expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             }));
 
@@ -563,7 +563,7 @@ describe("Message Archive Management", function () {
                 await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
                 expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
                 const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue
-                expect(result instanceof _converse.Message).toBe(true);
+                expect(result instanceof _converse.exports.MUCMessage).toBe(true);
                 expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             }))
         });

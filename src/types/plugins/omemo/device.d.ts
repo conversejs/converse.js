@@ -17,7 +17,7 @@ declare class Device extends Model {
             signature: any;
         };
         prekeys: any;
-    } | null>;
+    }>;
     /**
      * Fetch and save the bundle information associated with
      * this device, if the information is not cached already.

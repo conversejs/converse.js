@@ -8,7 +8,7 @@ export class HeadlinesFeedsList extends CustomElement {
     initialize(): void;
     model: any;
     render(): import("lit").TemplateResult<1>;
-    renderIfHeadline(model: any): false | void;
+    renderIfHeadline(model: any): void;
     openHeadline(ev: any): Promise<void>;
 }
 import { CustomElement } from 'shared/components/element.js';

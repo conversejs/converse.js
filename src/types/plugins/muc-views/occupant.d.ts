@@ -19,7 +19,7 @@ export default class MUCOccupant extends CustomElement {
     openChat(jid: string): void;
     closeSidebar(): void;
     /** @param {MouseEvent} [ev] */
-    showOccupantModal(ev?: MouseEvent | undefined): void;
+    showOccupantModal(ev?: MouseEvent): void;
     getVcard(): any;
     addToContacts(): void;
     /**

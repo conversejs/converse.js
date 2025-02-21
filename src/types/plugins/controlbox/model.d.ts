@@ -10,7 +10,7 @@ declare class ControlBox extends Model {
     defaults(): {
         bookmarked: boolean;
         box_id: string;
-        chat_state: undefined;
+        chat_state: any;
         closed: boolean;
         num_unread: number;
         time_opened: any;
@@ -21,7 +21,7 @@ declare class ControlBox extends Model {
     /**
      * @param {boolean} [force]
      */
-    maybeShow(force?: boolean | undefined): any;
+    maybeShow(force?: boolean): any;
     onReconnection(): void;
 }
 import { Model } from '@converse/skeletor';

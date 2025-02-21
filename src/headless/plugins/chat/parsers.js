@@ -34,7 +34,7 @@ const { Strophe, sizzle } = converse.env;
 /**
  * Parses a passed in message stanza and returns an object of attributes.
  * @param {Element} stanza - The message stanza
- * @returns {Promise<import('./types.ts').MessageAttributes|StanzaParseError>}
+ * @returns {Promise<import('../../shared/types.ts').MessageAttributes|StanzaParseError>}
  */
 export async function parseMessage (stanza) {
     throwErrorIfInvalidForward(stanza);

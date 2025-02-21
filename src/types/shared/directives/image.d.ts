@@ -7,7 +7,7 @@
  * @param { Function } onLoad - A callback function to be called once the image has loaded.
  * @param { Function } onClick - A callback function to be called once the image has been clicked.
  */
-export const renderImage: (src: string, href?: string | undefined, onLoad?: Function | undefined, onClick?: Function | undefined) => import("lit/async-directive.js").DirectiveResult<typeof ImageDirective>;
+export const renderImage: (src: string, href?: string, onLoad?: Function, onClick?: Function) => import("lit/async-directive.js").DirectiveResult<typeof ImageDirective>;
 declare class ImageDirective extends AsyncDirective {
     /**
      * @param {string} src - The source URL of the image.
@@ -16,7 +16,7 @@ declare class ImageDirective extends AsyncDirective {
      * @param {Function} [onClick] - Callback function to be called once the image has been clicked.
      * @returns {import('lit').TemplateResult}
      */
-    render(src: string, href?: string | undefined, onLoad?: Function | undefined, onClick?: Function | undefined): import("lit").TemplateResult;
+    render(src: string, href?: string, onLoad?: Function, onClick?: Function): import("lit").TemplateResult;
     /**
      * @param {string} src - The source URL of the image.
      * @param {string} [href] - The optional hyperlink for the image.
@@ -24,7 +24,7 @@ declare class ImageDirective extends AsyncDirective {
      * @param {Function} [onClick] - Callback function to be called once the image has been clicked.
      * @returns {import('lit').TemplateResult}
      */
-    renderImage(src: string, href?: string | undefined, onLoad?: Function | undefined, onClick?: Function | undefined): import("lit").TemplateResult;
+    renderImage(src: string, href?: string, onLoad?: Function, onClick?: Function): import("lit").TemplateResult;
     /**
      * Handles errors that occur during image loading.
      * @param {string} src - The source URL of the image that failed to load.
@@ -32,7 +32,7 @@ declare class ImageDirective extends AsyncDirective {
      * @param {Function} [onLoad] - Callback function to be called once the image has loaded.
      * @param {Function} [onClick] - Callback function to be called once the image has been clicked.
      */
-    onError(src: string, href?: string | undefined, onLoad?: Function | undefined, onClick?: Function | undefined): void;
+    onError(src: string, href?: string, onLoad?: Function, onClick?: Function): void;
 }
 import { AsyncDirective } from 'lit/async-directive.js';
 export {};

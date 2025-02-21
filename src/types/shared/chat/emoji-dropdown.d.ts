@@ -11,10 +11,10 @@ export default class EmojiDropdown extends DropdownBase {
         };
     };
     render_emojis: boolean;
-    state: EmojiPicker | null;
+    state: EmojiPicker;
     model: any;
     initModel(): Promise<void>;
-    init_promise: Promise<void> | undefined;
+    init_promise: Promise<void>;
     connectedCallback(): void;
     onShown(): Promise<void>;
 }

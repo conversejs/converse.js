@@ -17,10 +17,10 @@ export default class Message extends CustomElement {
     renderInfoMessage(): import("lit").TemplateResult<1>;
     renderFileProgress(): import("lit").TemplateResult<1> | "";
     renderChatMessage(): import("lit").TemplateResult<1>;
-    shouldShowAvatar(): any;
+    shouldShowAvatar(): boolean;
     onUnfurlAnimationEnd(): void;
     onRetryClicked(): Promise<void>;
-    show_spinner: boolean | undefined;
+    show_spinner: boolean;
     hasMentions(): any;
     getOccupantAffiliation(): any;
     getOccupantRole(): any;

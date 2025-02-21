@@ -19,7 +19,7 @@ const { Strophe, stx } = converse.env;
  */
 class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model))) {
     /**
-     * @typedef {import('../chat/types').MessageAttributes} MessageAttributes
+     * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
      * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
 

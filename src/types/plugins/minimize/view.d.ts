@@ -3,11 +3,11 @@ export default class MinimizedChats extends CustomElement {
     model: any;
     render(): import("lit").TemplateResult<1>;
     initToggle(): Promise<void>;
-    minchats: MinimizedChatsToggle | undefined;
+    minchats: MinimizedChatsToggle;
     /**
      * @param {Event} [ev]
      */
-    toggle(ev?: Event | undefined): void;
+    toggle(ev?: Event): void;
 }
 import { CustomElement } from 'shared/components/element';
 import MinimizedChatsToggle from './toggle.js';

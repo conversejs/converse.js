@@ -28,8 +28,8 @@ converse.plugins.add('converse-blocklist', {
         api.listen.on(
             'getErrorAttributesForMessage',
             /**
-             * @param {import('plugins/chat/types').MessageAttributes} attrs
-             * @param {import('plugins/chat/types').MessageErrorAttributes} new_attrs
+             * @param {import('shared/types').MessageAttributes} attrs
+             * @param {import('shared/types').MessageErrorAttributes} new_attrs
              */
             (attrs, new_attrs) => {
                 if (attrs.errors.find((e) => e.name === 'blocked' && e.xmlns === `${Strophe.NS.BLOCKING}:errors`)) {

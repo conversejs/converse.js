@@ -145,7 +145,7 @@ describe("A Groupchat Message", function () {
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
         result = await view.model.getDuplicateMessage.calls.all()[0].returnValue;
-        expect(result instanceof _converse.Message).toBe(true);
+        expect(result instanceof _converse.exports.MUCMessage).toBe(true);
         expect(view.model.messages.length).toBe(1);
         await u.waitUntil(() => view.model.updateMessage.calls.count());
     }));

@@ -126,7 +126,7 @@ describe("A MAM archived message", function () {
         _converse.handleMAMResult(model, { 'messages': [stanza.tree()] });
         await u.waitUntil(() => model.getDuplicateMessage.calls.count() === 2);
         result = await model.getDuplicateMessage.calls.all()[1].returnValue;
-        expect(result instanceof _converse.Message).toBe(true);
+        expect(result instanceof _converse.exports.MUCMessage).toBe(true);
         expect(model.messages.length).toBe(1);
         await u.waitUntil(() => model.updateMessage.calls.count());
     }));

@@ -6,7 +6,7 @@ export default class MUCOccupants extends CustomElement {
     };
     jid: any;
     initialize(): void;
-    filter: RosterFilter | undefined;
+    filter: RosterFilter;
     model: any;
     render(): import("lit").TemplateResult<1>;
     /**

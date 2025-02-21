@@ -30,13 +30,12 @@ const { Strophe, stx, u } = converse.env;
  */
 export default function ModelWithMessages(BaseModel) {
     /**
-     * @typedef {import('./errors').StanzaParseError} StanzaParseError
-     * @typedef {import('../plugins/chat/message').default} Message
      * @typedef {import('../plugins/chat/model').default} ChatBox
      * @typedef {import('../plugins/muc/muc').default} MUC
-     * @typedef {import('../plugins/muc/message').default} MUCMessage
-     * @typedef {import('../plugins/chat/types.ts').MessageAttributes} MessageAttributes
      * @typedef {import('../plugins/muc/parsers').MUCMessageAttributes} MUCMessageAttributes
+     * @typedef {import('../shared/types').MessageAttributes} MessageAttributes
+     * @typedef {import('./errors').StanzaParseError} StanzaParseError
+     * @typedef {import('./message').default} BaseMessage
      * @typedef {import('strophe.js').Builder} Builder
      */
 
@@ -162,7 +161,7 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {Message} message
+         * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
          * @returns {object}
          */
@@ -186,7 +185,7 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {Message} message
+         * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
          */
         updateMessage(message, attrs) {
@@ -199,7 +198,7 @@ export default function ModelWithMessages(BaseModel) {
          * represent a XEP-0308 correction and, if so, handles it appropriately.
          * @param {MessageAttributes|MUCMessageAttributes} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
-         * @returns {Promise<Message|void>} Returns the corrected
+         * @returns {Promise<BaseMessage|void>} Returns the corrected
          *  message or `undefined` if not applicable.
          */
         async handleCorrection(attrs) {
@@ -268,7 +267,7 @@ export default function ModelWithMessages(BaseModel) {
         /**
          * Responsible for sending off a text message inside an ongoing chat conversation.
          * @param {Object} [attrs] - A map of attributes to be saved on the message
-         * @returns {Promise<Message>}
+         * @returns {Promise<BaseMessage>}
          * @example
          *  const chat = api.chats.get('buddy1@example.org');
          *  chat.sendMessage({'body': 'hello world'});
@@ -324,7 +323,7 @@ export default function ModelWithMessages(BaseModel) {
              * @type {Object}
              * @param {Object} data
              * @property {(ChatBox|MUC)} data.chatbox
-             * @property {(Message|MUCMessage)} data.message
+             * @property {(BaseMessage)} data.message
              */
             api.trigger('sendMessage', { 'chatbox': this, message });
             return message;
@@ -332,7 +331,7 @@ export default function ModelWithMessages(BaseModel) {
 
         /**
          * Retract one of your messages in this chat
-         * @param {Message} message - The message which we're retracting.
+         * @param {BaseMessage} message - The message which we're retracting.
          */
         retractOwnMessage(message) {
             const retraction_id = u.getUniqueId();
@@ -469,7 +468,7 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {Message} message
+         * @param {BaseMessage} message
          */
         onMessageAdded(message) {
             if (
@@ -482,7 +481,7 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {Message} message
+         * @param {BaseMessage} message
          */
         async onMessageUploadChanged(message) {
             if (message.get('upload') === constants.SUCCESS) {
@@ -622,7 +621,7 @@ export default function ModelWithMessages(BaseModel) {
          * relevant message is only coming in now.
          * @param {object} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
-         * @returns {Message|null}
+         * @returns {BaseMessage|null}
          */
         findDanglingRetraction(attrs) {
             if (!attrs.origin_id || !this.messages.length) {
@@ -649,7 +648,7 @@ export default function ModelWithMessages(BaseModel) {
          * passed in attributes map.
          * @param {object} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
-         * @returns {Message}
+         * @returns {BaseMessage}
          */
         getDuplicateMessage(attrs) {
             const queries = [
@@ -702,7 +701,7 @@ export default function ModelWithMessages(BaseModel) {
 
         /**
          * Given the passed in message object, send a XEP-0333 chat marker.
-         * @param {Message} msg
+         * @param {BaseMessage} msg
          * @param {('received'|'displayed'|'acknowledged')} [type='displayed']
          * @param {boolean} [force=false] - Whether a marker should be sent for the
          *  message, even if it didn't include a `markable` element.
@@ -727,9 +726,9 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * Given a newly received {@link Message} instance,
+         * Given a newly received {@link BaseMessage} instance,
          * update the unread counter if necessary.
-         * @param {Message} message
+         * @param {BaseMessage} message
          */
         handleUnreadMessage(message) {
             if (!message?.get('body')) {
@@ -752,7 +751,7 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {Message} message
+         * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
          */
         async getErrorAttributesForMessage(message, attrs) {
@@ -815,7 +814,7 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {Message} message
+         * @param {BaseMessage} message
          */
         incrementUnreadMsgsCounter(message) {
             const settings = {
@@ -891,9 +890,9 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * Given a {@link Message} return the XML stanza that represents it.
+         * Given a {@link BaseMessage} return the XML stanza that represents it.
          * @method ChatBox#createMessageStanza
-         * @param {Message} message - The message object
+         * @param {BaseMessage} message - The message object
          */
         async createMessageStanza(message) {
             const {
@@ -940,8 +939,8 @@ export default function ModelWithMessages(BaseModel) {
              * @event _converse#createMessageStanza
              * @param {ChatBox|MUC} chat - The chat from
              *      which this message stanza is being sent.
-             * @param {Object} data - Message data
-             * @param {Message|MUCMessage} data.message
+             * @param {Object} data - BaseMessage data
+             * @param {BaseMessage} data.message
              *      The message object from which the stanza is created and which gets persisted to storage.
              * @param {Builder} data.stanza
              *      The stanza that will be sent out, as a Strophe.Builder object.

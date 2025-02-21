@@ -22,12 +22,12 @@ export default class ConverseGIFElement extends CustomElement {
     fallback: string;
     progress_color: any;
     initGIF(): void;
-    supergif: ConverseGif | undefined;
+    supergif: ConverseGif;
     updated(changed: any): void;
-    render(): string | import("utils/html.js").TemplateResult | undefined;
-    renderErrorFallback(): string | import("utils/html.js").TemplateResult | undefined;
+    render(): string | import("utils/html.js").TemplateResult;
+    renderErrorFallback(): string | import("utils/html.js").TemplateResult;
     setHover(): void;
-    hover_timeout: NodeJS.Timeout | undefined;
+    hover_timeout: NodeJS.Timeout;
     unsetHover(): void;
     onControlsClicked(ev: any): void;
 }

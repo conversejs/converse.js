@@ -40,52 +40,52 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         /**
          * @param {MessageAttributes|Error} _attrs_or_error
          */
-        onMessage(_attrs_or_error: import("../plugins/chat/types.ts").MessageAttributes | Error): Promise<void>;
+        onMessage(_attrs_or_error: import("./types").MessageAttributes | Error): Promise<void>;
         /**
-         * @param {Message} message
+         * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
          * @returns {object}
          */
-        getUpdatedMessageAttributes(message: import("../plugins/chat/message").default, attrs: import("../plugins/chat/types.ts").MessageAttributes): object;
+        getUpdatedMessageAttributes(message: import("./message").default<any>, attrs: import("./types").MessageAttributes): object;
         /**
-         * @param {Message} message
+         * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
          */
-        updateMessage(message: import("../plugins/chat/message").default, attrs: import("../plugins/chat/types.ts").MessageAttributes): void;
+        updateMessage(message: import("./message").default<any>, attrs: import("./types").MessageAttributes): void;
         /**
          * Determines whether the given attributes of an incoming message
          * represent a XEP-0308 correction and, if so, handles it appropriately.
          * @param {MessageAttributes|MUCMessageAttributes} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
-         * @returns {Promise<Message|void>} Returns the corrected
+         * @returns {Promise<BaseMessage|void>} Returns the corrected
          *  message or `undefined` if not applicable.
          */
-        handleCorrection(attrs: import("../plugins/chat/types.ts").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): Promise<import("../plugins/chat/message").default | void>;
+        handleCorrection(attrs: import("./types").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): Promise<import("./message").default<any> | void>;
         /**
          * Queue an incoming `chat` message stanza for processing.
          * @param {MessageAttributes} attrs - A promise which resolves to the message attributes
          */
-        queueMessage(attrs: import("../plugins/chat/types.ts").MessageAttributes): any;
+        queueMessage(attrs: import("./types").MessageAttributes): any;
         msg_chain: any;
         /**
          * @param {MessageAttributes} [_attrs]
          * @return {Promise<MessageAttributes>}
          */
-        getOutgoingMessageAttributes(_attrs?: import("../plugins/chat/types.ts").MessageAttributes): Promise<import("../plugins/chat/types.ts").MessageAttributes>;
+        getOutgoingMessageAttributes(_attrs?: import("./types").MessageAttributes): Promise<import("./types").MessageAttributes>;
         /**
          * Responsible for sending off a text message inside an ongoing chat conversation.
          * @param {Object} [attrs] - A map of attributes to be saved on the message
-         * @returns {Promise<Message>}
+         * @returns {Promise<BaseMessage>}
          * @example
          *  const chat = api.chats.get('buddy1@example.org');
          *  chat.sendMessage({'body': 'hello world'});
          */
-        sendMessage(attrs?: any): Promise<import("../plugins/chat/message").default>;
+        sendMessage(attrs?: any): Promise<import("./message").default<any>>;
         /**
          * Retract one of your messages in this chat
-         * @param {Message} message - The message which we're retracting.
+         * @param {BaseMessage} message - The message which we're retracting.
          */
-        retractOwnMessage(message: import("../plugins/chat/message").default): void;
+        retractOwnMessage(message: import("./message").default<any>): void;
         /**
          * @param {File[]} files'
          */
@@ -112,20 +112,20 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         setChatState(state: string, options?: object): any;
         chat_state_timeout: NodeJS.Timeout;
         /**
-         * @param {Message} message
+         * @param {BaseMessage} message
          */
-        onMessageAdded(message: import("../plugins/chat/message").default): void;
+        onMessageAdded(message: import("./message").default<any>): void;
         /**
-         * @param {Message} message
+         * @param {BaseMessage} message
          */
-        onMessageUploadChanged(message: import("../plugins/chat/message").default): Promise<void>;
+        onMessageUploadChanged(message: import("./message").default<any>): Promise<void>;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
         /**
          * @param {MessageAttributes} attrs
          * @returns {Promise<boolean>}
          */
-        shouldShowErrorMessage(attrs: import("../plugins/chat/types.ts").MessageAttributes): Promise<boolean>;
+        shouldShowErrorMessage(attrs: import("./types").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
@@ -144,17 +144,17 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * relevant message is only coming in now.
          * @param {object} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
-         * @returns {Message|null}
+         * @returns {BaseMessage|null}
          */
-        findDanglingRetraction(attrs: object): import("../plugins/chat/message").default | null;
+        findDanglingRetraction(attrs: object): import("./message").default<any> | null;
         /**
          * Returns an already cached message (if it exists) based on the
          * passed in attributes map.
          * @param {object} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
-         * @returns {Message}
+         * @returns {BaseMessage}
          */
-        getDuplicateMessage(attrs: object): import("../plugins/chat/message").default;
+        getDuplicateMessage(attrs: object): import("./message").default<any>;
         /**
          * @param {object} attrs - Attributes representing a received
          */
@@ -175,31 +175,31 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         };
         /**
          * Given the passed in message object, send a XEP-0333 chat marker.
-         * @param {Message} msg
+         * @param {BaseMessage} msg
          * @param {('received'|'displayed'|'acknowledged')} [type='displayed']
          * @param {boolean} [force=false] - Whether a marker should be sent for the
          *  message, even if it didn't include a `markable` element.
          */
-        sendMarkerForMessage(msg: import("../plugins/chat/message").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
+        sendMarkerForMessage(msg: import("./message").default<any>, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         /**
-         * Given a newly received {@link Message} instance,
+         * Given a newly received {@link BaseMessage} instance,
          * update the unread counter if necessary.
-         * @param {Message} message
+         * @param {BaseMessage} message
          */
-        handleUnreadMessage(message: import("../plugins/chat/message").default): void;
+        handleUnreadMessage(message: import("./message").default<any>): void;
         /**
-         * @param {Message} message
+         * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
          */
-        getErrorAttributesForMessage(message: import("../plugins/chat/message").default, attrs: import("../plugins/chat/types.ts").MessageAttributes): Promise<any>;
+        getErrorAttributesForMessage(message: import("./message").default<any>, attrs: import("./types").MessageAttributes): Promise<any>;
         /**
          * @param {Element} stanza
          */
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         /**
-         * @param {Message} message
+         * @param {BaseMessage} message
          */
-        incrementUnreadMsgsCounter(message: import("../plugins/chat/message").default): void;
+        incrementUnreadMsgsCounter(message: import("./message").default<any>): void;
         clearUnreadMsgCounter(): void;
         /**
          * Handles message retraction based on the passed in attributes.
@@ -208,17 +208,17 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @returns {Promise<Boolean>} Returns `true` or `false` depending on
          *  whether a message was retracted or not.
          */
-        handleRetraction(attrs: import("../plugins/chat/types.ts").MessageAttributes): Promise<boolean>;
+        handleRetraction(attrs: import("./types").MessageAttributes): Promise<boolean>;
         /**
          * @param {MessageAttributes} attrs
          */
-        handleReceipt(attrs: import("../plugins/chat/types.ts").MessageAttributes): boolean;
+        handleReceipt(attrs: import("./types").MessageAttributes): boolean;
         /**
-         * Given a {@link Message} return the XML stanza that represents it.
+         * Given a {@link BaseMessage} return the XML stanza that represents it.
          * @method ChatBox#createMessageStanza
-         * @param {Message} message - The message object
+         * @param {BaseMessage} message - The message object
          */
-        createMessageStanza(message: import("../plugins/chat/message").default): Promise<any>;
+        createMessageStanza(message: import("./message").default<any>): Promise<any>;
         /**
          * Prunes the message history to ensure it does not exceed the maximum
          * number of messages specified in the settings.
@@ -282,7 +282,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         _listeningTo: {};
         _listenId: any;
         off(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context?: any): any;
-        stopListening(obj?: any, name?: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        stopListening(obj?: any, name?: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor" /** @param {...any} args */).Collection, options: Record<string, any>) => any): any;
         once(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
         listenToOnce(obj: any, name: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
         trigger(name: string, ...args: any[]): any;

@@ -36,7 +36,7 @@ export function getAutoCompleteList(): Promise<any[]>;
  * @param {MUC} muc
  * @param {string} [affiliation]
  */
-export function showModeratorToolsModal(muc: MUC, affiliation?: string | undefined): void;
+export function showModeratorToolsModal(muc: MUC, affiliation?: string): void;
 export function showOccupantModal(ev: any, occupant: any): void;
 export function parseMessageForMUCCommands(data: any, handled: any): any;
 export type MUC = import("@converse/headless/types/plugins/muc/muc.js").default;

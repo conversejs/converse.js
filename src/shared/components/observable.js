@@ -1,3 +1,4 @@
+import { api } from '@converse/headless';
 import { CustomElement } from "./element";
 
 export class ObservableElement extends CustomElement {
@@ -63,8 +64,7 @@ export class ObservableElement extends CustomElement {
             const ratio = Number(entry.intersectionRatio.toFixed(2));
             if (ratio >= this.observableRatio) {
                 this.isVisible = true;
-                this.trigger("visibilityChanged", entry);
-                this.model?.trigger("visibilityChanged", entry);
+                api.trigger('visibilityChanged', { el: this, entry });
 
                 if (this.observable === "once") {
                     this.intersectionObserver.disconnect();

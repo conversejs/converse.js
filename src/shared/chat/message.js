@@ -13,23 +13,28 @@ import tplMessage from './templates/message.js';
 import tplMessageText from './templates/message-text.js';
 import tplRetraction from './templates/retraction.js';
 import tplSpinner from 'templates/spinner.js';
-import { CustomElement } from 'shared/components/element.js';
+import { ObservableElement } from 'shared/components/observable.js';
 import { __ } from 'i18n';
 
 const { Strophe } = converse.env;
 const { SUCCESS } = constants;
 
 
-export default class Message extends CustomElement {
+export default class Message extends ObservableElement {
+    /**
+     * @typedef {import('shared/components/types').ObservableProperty} ObservableProperty
+     */
 
     constructor () {
         super();
         this.model_with_messages = null;
         this.model = null;
+        this.observable = /** @type {ObservableProperty} */ ("once");
     }
 
     static get properties () {
         return {
+            ...super.properties,
             model_with_messages: { type: Object },
             model: { type: Object }
         }

@@ -4,14 +4,14 @@
  */
 export default function ModelWithVCard<T extends import("./types").ModelExtender>(BaseModel: T): {
     new (...args: any[]): {
-        _vcard: VCard;
+        _vcard: import("../plugins/vcard/vcard").default;
         lazy_load_vcard: boolean;
         initialize(): void;
-        readonly vcard: VCard;
+        readonly vcard: import("../plugins/vcard/vcard").default;
         /**
          * @returns {Promise<VCard|null>}
          */
-        getVCard(create?: boolean): Promise<VCard | null>;
+        getVCard(): Promise<import("../plugins/vcard/vcard").default | null>;
         cid: any;
         attributes: {};
         validationError: string;
@@ -75,5 +75,4 @@ export default function ModelWithVCard<T extends import("./types").ModelExtender
         propertyIsEnumerable(v: PropertyKey): boolean;
     };
 } & T;
-import VCard from "../plugins/vcard/vcard.js";
 //# sourceMappingURL=model-with-vcard.d.ts.map

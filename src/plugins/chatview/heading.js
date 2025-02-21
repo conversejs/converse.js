@@ -18,7 +18,7 @@ export default class ChatHeading extends CustomElement {
 
     static get properties () {
         return {
-            'jid': { type: String },
+            jid: { type: String },
         }
     }
 
@@ -35,17 +35,24 @@ export default class ChatHeading extends CustomElement {
             this.listenTo(this.model.contact, 'change:nickname', () => this.requestUpdate());
             this.requestUpdate();
         });
+        this.requestUpdate();
     }
 
     render () {
         return tplChatboxHead(this);
     }
 
+    /**
+     * @param {Event} ev
+     */
     showUserDetailsModal (ev) {
         ev.preventDefault();
         api.modal.show('converse-user-details-modal', { model: this.model }, ev);
     }
 
+    /**
+     * @param {Event} ev
+     */
     close (ev) {
         ev.preventDefault();
         this.model.close();

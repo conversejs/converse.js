@@ -30,9 +30,9 @@ declare namespace _default {
          *     attribute or a `muc_jid` attribute.
          * @param {boolean} [force] A boolean indicating whether the vcard should be
          *     fetched from the server even if it's been fetched before.
-         * @returns {promise} A Promise which resolves with the VCard data for a particular JID or for
-         *     a `Model` instance which represents an entity with a JID (such as a roster contact,
-         *     chat or chatroom occupant).
+         * @returns {Promise<import("./types").VCardResult|null>} A Promise which resolves
+         *     with the VCard data for a particular JID or for a `Model` instance which
+         *     represents an entity with a JID (such as a roster contact, chat or chatroom occupant).
          *
          * @example
          * const { api } = _converse;
@@ -44,7 +44,7 @@ declare namespace _default {
          *     );
          * });
          */
-        function get(model: Model | string, force?: boolean): Promise<any>;
+        function get(model: Model | string, force?: boolean): Promise<import("./types").VCardResult | null>;
         /**
          * Fetches the VCard associated with a particular `Model` instance
          * (by using its `jid` or `muc_jid` attribute) and then updates the model with the

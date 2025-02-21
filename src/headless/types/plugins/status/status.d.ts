@@ -4,7 +4,7 @@ declare const XMPPStatus_base: {
         lazy_load_vcard: boolean;
         initialize(): void;
         readonly vcard: import("../vcard/vcard.js").default;
-        getVCard(create?: boolean): Promise<import("../vcard/vcard.js").default | null>;
+        getVCard(): Promise<import("../vcard/vcard.js").default | null>;
         cid: any;
         attributes: {};
         validationError: string;

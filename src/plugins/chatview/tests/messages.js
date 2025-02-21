@@ -326,8 +326,9 @@ describe("A Chat Message", function () {
 
         expect(view.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(msgtext);
         expect(view.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-        await u.waitUntil(() => chatbox.vcard.get('fullname') === 'Juliet Capulet')
-        expect(view.querySelector('span.chat-msg__author').textContent.trim()).toBe('Juliet Capulet');
+        await u.waitUntil(() => chatbox.vcard.get('fullname') === 'Juliet Capulet');
+        expect(view.querySelector('.chatbox-title__text .show-msg-author-modal').textContent.trim()).toBe('Juliet Capulet');
+        await u.waitUntil(() => view.querySelector('span.chat-msg__author').textContent.trim() === 'Juliet Capulet');
     }));
 
     it("can be a carbon message that this user sent from a different client, as defined in XEP-0280",
@@ -461,7 +462,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => chatbox.vcard.get('fullname') === 'Juliet Capulet')
         expect(view.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
         expect(view.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-        expect(view.querySelector('span.chat-msg__author').textContent.trim()).toBe('Juliet Capulet');
+        await u.waitUntil(() => view.querySelector('span.chat-msg__author').textContent.trim() === 'Juliet Capulet');
 
         expect(view.querySelectorAll('.date-separator').length).toEqual(1);
         let day = view.querySelector('.date-separator');
@@ -933,7 +934,7 @@ describe("A Chat Message", function () {
             expect(mel.textContent).toEqual(message);
             expect(view.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
             await u.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0]);
-            expect(view.querySelector('span.chat-msg__author').textContent.trim()).toBe('Mercutio');
+            await u.waitUntil(() => view.querySelector('span.chat-msg__author').textContent.trim() === 'Mercutio');
         }));
 
         it("will be trimmed of leading and trailing whitespace",

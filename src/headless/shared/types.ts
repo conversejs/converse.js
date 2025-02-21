@@ -1,4 +1,13 @@
-import { Model } from '@converse/skeletor';
+import { Collection, Model } from '@converse/skeletor';
+
+export type ModelAttributes = Record<string, any>;
+
+export interface ModelOptions {
+    collection?: Collection;
+    parse?: boolean;
+    unset?: boolean;
+    silent?: boolean;
+}
 
 // Types for mixins.
 // -----------------

@@ -1575,7 +1575,7 @@ describe("Groupchats", function () {
         }));
 
         it("can be joined automatically, based on a received invite",
-                mock.initConverse([], {}, async function (_converse) {
+                mock.initConverse([], { lazy_load_vcards: false }, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current'); // We need roster contacts, who can invite us
             const muc_jid = 'lounge@montague.lit';

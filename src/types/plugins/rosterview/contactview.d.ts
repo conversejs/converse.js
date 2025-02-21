@@ -1,10 +1,12 @@
-export default class RosterContact extends CustomElement {
+export default class RosterContact extends ObservableElement {
     static get properties(): {
         model: {
             type: ObjectConstructor;
         };
+        observable: {
+            type: StringConstructor;
+        };
     };
-    model: any;
     initialize(): void;
     render(): import("lit").TemplateResult<1>;
     /**
@@ -32,5 +34,5 @@ export default class RosterContact extends CustomElement {
      */
     declineRequest(ev: MouseEvent): Promise<this>;
 }
-import { CustomElement } from 'shared/components/element.js';
+import { ObservableElement } from 'shared/components/observable.js';
 //# sourceMappingURL=contactview.d.ts.map

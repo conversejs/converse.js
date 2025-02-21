@@ -5,7 +5,7 @@ declare const MUCOccupant_base: {
         lazy_load_vcard: boolean;
         initialize(): void;
         readonly vcard: import("../vcard").VCard;
-        getVCard(create?: boolean): Promise<import("../vcard").VCard | null>;
+        getVCard(): Promise<import("../vcard").VCard | null>;
         cid: any;
         attributes: {};
         validationError: string;

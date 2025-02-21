@@ -37,7 +37,9 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
     }
 
     initialize() {
+        this.lazy_load_vcard = true;
         super.initialize();
+
         if (!this.checkValidity()) return;
         this.chatbox = this.collection?.chatbox;
 

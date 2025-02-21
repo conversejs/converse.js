@@ -8,8 +8,14 @@ export default class ChatHeading extends CustomElement {
     initialize(): void;
     model: any;
     render(): import("lit").TemplateResult<1 | 2>;
-    showUserDetailsModal(ev: any): void;
-    close(ev: any): void;
+    /**
+     * @param {Event} ev
+     */
+    showUserDetailsModal(ev: Event): void;
+    /**
+     * @param {Event} ev
+     */
+    close(ev: Event): void;
     /**
      * Returns a list of objects which represent buttons for the chat's header.
      * @emits _converse#getHeadingButtons

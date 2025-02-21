@@ -49,7 +49,7 @@ const emojis = {
             converse.emojis.shortnames = converse.emojis.list.map((m) => m.sn);
             const getShortNames = () =>
                 converse.emojis.shortnames.map((s) => s.replace(/[+]/g, '\\$&')).join('|');
-            converse.emojis.shortnames_regex = new RegExp(getShortNames(), 'gi');
+            converse.emojis.shortnames_regex = new RegExp(getShortNames(), 'g');
             converse.emojis.initialized_promise.resolve();
         }
         return converse.emojis.initialized_promise;

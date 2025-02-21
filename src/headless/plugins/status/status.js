@@ -2,19 +2,16 @@ import { Model } from '@converse/skeletor';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
+import ModelWithVCard from '../../shared/model-with-vcard';
 import ColorAwareModel from '../../shared/color.js';
 import { isIdle, getIdleSeconds } from './utils.js';
 
 const { Strophe, $pres } = converse.env;
 
-export default class XMPPStatus extends ColorAwareModel(Model) {
-    constructor(attributes, options) {
-        super(attributes, options);
-        this.vcard = null;
-    }
+export default class XMPPStatus extends ModelWithVCard(ColorAwareModel(Model)) {
 
     defaults() {
-        return { 'status': api.settings.get('default_state') };
+        return { status: api.settings.get('default_state') };
     }
 
     getStatus() {
@@ -46,6 +43,7 @@ export default class XMPPStatus extends ColorAwareModel(Model) {
     }
 
     initialize() {
+        super.initialize();
         this.on('change', (item) => {
             if (!(item.changed instanceof Object)) {
                 return;

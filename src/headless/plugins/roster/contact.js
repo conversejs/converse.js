@@ -5,19 +5,14 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import ColorAwareModel from '../../shared/color.js';
+import ModelWithVCard from '../../shared/model-with-vcard.js';
 import { rejectPresenceSubscription } from './utils.js';
 
 const { Strophe, $iq, $pres, stx } = converse.env;
 
-class RosterContact extends ColorAwareModel(Model) {
+class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
     get idAttribute () {
         return 'jid';
-    }
-
-    constructor (attrs, options) {
-        super(attrs, options);
-        /** @type {import('../vcard/vcard').default} */
-        this.vcard = null;
     }
 
     defaults () {

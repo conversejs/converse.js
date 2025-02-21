@@ -1,10 +1,11 @@
 import { Strophe } from 'strophe.js';
-import Message from '../chat/message.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
+import ModelWithVCard from '../../shared/model-with-vcard';
+import Message from '../chat/message.js';
 
 
-class MUCMessage extends Message {
+class MUCMessage extends ModelWithVCard(Message) {
     /**
      * @typedef {import('./occupant').default} MUCOccupant
      */

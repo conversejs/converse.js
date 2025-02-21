@@ -68,7 +68,7 @@ describe("A Chat Message", function () {
         const image_type = 'image/svg+xml';
 
         // Change contact avatar and check that it reflects
-        contact.vcard.set({
+        (await contact.getVCard()).set({
             image,
             image_type,
             vcard_updated: (new Date()).toISOString()

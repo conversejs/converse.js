@@ -6,7 +6,7 @@ declare class HeadlinesFeedView extends BaseChatView {
      * @param {Event} ev
      */
     close(ev: Event): Promise<this>;
-    getNotifications(): any[];
+    getNotifications(): never[];
     afterShown(): void;
 }
 import BaseChatView from 'shared/chat/baseview.js';

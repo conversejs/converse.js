@@ -42,11 +42,9 @@ export default class MUCOccupants extends CustomElement {
 
         this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.listenTo(this.model.occupants, 'add', debouncedRequestUpdate);
-        this.listenTo(this.model.occupants, 'remove', debouncedRequestUpdate);
         this.listenTo(this.model.occupants, 'change', debouncedRequestUpdate);
+        this.listenTo(this.model.occupants, 'remove', debouncedRequestUpdate);
         this.listenTo(this.model.occupants, 'sort', debouncedRequestUpdate);
-        this.listenTo(this.model.occupants, 'vcard:change', debouncedRequestUpdate);
-        this.listenTo(this.model.occupants, 'vcard:add', debouncedRequestUpdate);
         this.listenTo(this.model.features, 'change:open', () => this.requestUpdate());
 
         this.model.initialized.then(() => this.requestUpdate());
@@ -74,19 +72,6 @@ export default class MUCOccupants extends CustomElement {
     closeSidebar (ev) {
         ev?.preventDefault?.();
         u.safeSave(this.model, { 'hidden_occupants': true });
-    }
-
-    /**
-     * @param {MouseEvent} ev
-     * @param {import('@converse/headless/types/plugins/muc/occupant.js').default} occupant
-     */
-    onOccupantClicked (ev, occupant) {
-        ev.preventDefault();
-        if (this.model.getOwnOccupant() === occupant) {
-            api.modal.show('converse-profile-modal', {model: _converse.state.xmppstatus}, ev);
-        } else {
-            this.model.save({ 'sidebar_view': `occupant:${occupant.id}` })
-        }
     }
 }
 

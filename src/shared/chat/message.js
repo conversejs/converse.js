@@ -50,9 +50,10 @@ export default class Message extends CustomElement {
         this.listenTo(this.model_with_messages, 'change:first_unread_id', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.listenTo(this.model, 'contact:change', () => this.requestUpdate());
-        this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
-        this.listenTo(this.model, 'occupant:change', () => this.requestUpdate());
         this.listenTo(this.model, 'occupant:add', () => this.requestUpdate());
+        this.listenTo(this.model, 'occupant:change', () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:add',  () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
         this.requestUpdate();
     }
 

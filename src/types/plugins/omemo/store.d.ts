@@ -53,7 +53,7 @@ declare class OMEMOStore extends Model {
      */
     generateBundle(): Promise<void>;
     fetchSession(): Promise<any>;
-    _setup_promise: Promise<any>;
+    _setup_promise: Promise<any> | undefined;
 }
 import { Model } from '@converse/skeletor';
 //# sourceMappingURL=store.d.ts.map

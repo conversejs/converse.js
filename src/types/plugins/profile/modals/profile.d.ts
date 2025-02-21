@@ -1,9 +1,5 @@
 export default class ProfileModal extends BaseModal {
-    /**
-     * @typedef {import('@converse/headless/types/plugins/vcard/api').VCardData} VCardData
-     * @typedef {import("@converse/headless").XMPPStatus} XMPPStatus
-     */
-    constructor(options: any);
+    tab: string;
     renderModal(): import("lit").TemplateResult<1>;
     getModalTitle(): any;
     /**

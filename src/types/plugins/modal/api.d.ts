@@ -9,7 +9,7 @@ declare namespace modal_api {
          * @param {Object} [properties] - Optional properties that will be set on a newly created modal instance.
          * @param {Event} [ev] - The DOM event that causes the modal to be shown.
          */
-        function show(name: string | any, properties?: any, ev?: Event): any;
+        function show(name: string | any, properties?: any, ev?: Event | undefined): any;
         /**
          * Return a modal with the passed-in identifier, if it exists.
          * @param { String } id

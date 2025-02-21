@@ -3,7 +3,7 @@
  * @param {boolean} [unauthorize]
  * @returns {Promise<boolean>}
  */
-export function removeContact(contact: RosterContact, unauthorize?: boolean): Promise<boolean>;
+export function removeContact(contact: RosterContact, unauthorize?: boolean | undefined): Promise<boolean>;
 /**
  * @param {RosterContact} contact
  * @returns {Promise<boolean>}
@@ -58,7 +58,7 @@ export function contactsComparator(contact1: RosterContact | XMPPStatus, contact
  * @param {string} a
  * @param {string} b
  */
-export function groupsComparator(a: string, b: string): 0 | 1 | -1;
+export function groupsComparator(a: string, b: string): 0 | 1 | -1 | undefined;
 export function getGroupsAutoCompleteList(): any[];
 export function getJIDsAutoCompleteList(): any[];
 /**

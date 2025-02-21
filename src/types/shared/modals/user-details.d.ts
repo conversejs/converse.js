@@ -1,5 +1,6 @@
 export default class UserDetailsModal extends BaseModal {
     constructor(options: any);
+    tab: string;
     addListeners(): void;
     /**
      * @param {Map<string, any>} changed

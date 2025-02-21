@@ -43,7 +43,7 @@ describe("Presence subscriptions", function () {
             let stanza;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
-            await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'), 300);
+            await u.waitUntil(() => _converse.xmppstatus.vcard?.get('fullname'), 300);
             /* The process by which a user subscribes to a contact, including
              * the interaction between roster items and subscription states.
              */

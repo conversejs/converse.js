@@ -21,7 +21,7 @@ export class AutoComplete extends AutoComplete_base {
     is_opened: boolean;
     auto_evaluate: boolean;
     match_current_word: boolean;
-    sort: (a: any, b: any) => number;
+    sort: ((a: any, b: any) => number) | null;
     filter: (text: any, input: any) => boolean;
     ac_triggers: any[];
     include_triggers: any[];
@@ -30,10 +30,10 @@ export class AutoComplete extends AutoComplete_base {
     auto_first: boolean;
     data: (a: any, _v: any) => any;
     item: (text: any, input: any) => HTMLLIElement;
-    container: Element | HTMLElement;
+    container: Element | HTMLElement | null;
     input: HTMLInputElement;
-    ul: Element;
-    status: Element;
+    ul: Element | null;
+    status: Element | null;
     index: number;
     set list(list: any);
     get list(): any;
@@ -53,14 +53,14 @@ export class AutoComplete extends AutoComplete_base {
      */
     goto(i: number, scroll?: boolean): void;
     select(selected: any): void;
-    auto_completing: boolean;
+    auto_completing: boolean | undefined;
     onMouseOver(ev: any): void;
     onMouseDown(ev: any): void;
-    onKeyDown(ev: any): boolean;
+    onKeyDown(ev: any): true | undefined;
     /**
      * @param {KeyboardEvent} [ev]
      */
-    evaluate(ev?: KeyboardEvent): Promise<void>;
+    evaluate(ev?: KeyboardEvent | undefined): Promise<void>;
 }
 export default AutoComplete;
 //# sourceMappingURL=autocomplete.d.ts.map

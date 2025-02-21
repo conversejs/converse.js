@@ -9,7 +9,7 @@ export default class OccupantBottomPanel extends BottomPanel {
         };
     };
     muc: any;
-    canPostMessages(): boolean;
+    canPostMessages(): any;
     openChat(): any;
     invite(): any;
 }

@@ -4,14 +4,22 @@ import { _converse } from  "@converse/headless";
 import { html } from "lit";
 
 
-const tplOmemoPage = (el) => html`
-    <div class="tab-pane ${ el.tab === 'omemo' ? 'active' : ''}" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
-        ${ el.tab === 'omemo' ? html`<converse-omemo-profile></converse-omemo-profile>` : '' }
-    </div>`;
+/**
+ * @param {import('../modals/profile').default} el
+ */
+function tplOmemoPage(el) {
+    return html`
+        <div class="tab-pane ${ el.tab === 'omemo' ? 'active' : ''}" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
+            ${ el.tab === 'omemo' ? html`<converse-omemo-profile></converse-omemo-profile>` : '' }
+        </div>`;
+}
 
 
+/**
+ * @param {import('../modals/profile').default} el
+ */
 export default (el) => {
-    const o = { ...el.model.toJSON(), ...el.model.vcard.toJSON() };
+    const o = { ...el.model.toJSON(), ...el.model.vcard?.toJSON() };
     const i18n_email = __('Email');
     const i18n_fullname = __('Full Name');
     const i18n_jid = __('XMPP Address');
@@ -32,7 +40,7 @@ export default (el) => {
                href="#profile-tabpanel"
                aria-controls="profile-tabpanel"
                role="tab"
-               @click=${ev => el.switchTab(ev)}
+               @click="${ev => el.switchTab(ev)}"
                data-name="profile"
                data-toggle="tab">${ i18n_profile }</a>
             </li>`
@@ -40,12 +48,12 @@ export default (el) => {
 
     navigation_tabs.push(
         html`<li role="presentation" class="nav-item">
-                <a class="nav-link ${el.tab === "passwordreset" ? "active" : ""}"
+                <a class="nav-link ${el.tab === 'passwordreset' ? 'active' : ''}"
                 id="passwordreset-tab"
                 href="#passwordreset-tabpanel"
                 aria-controls="passwordreset-tabpanel"
                 role="tab"
-                @click=${ev => el.switchTab(ev)}
+                @click="${ev => el.switchTab(ev)}"
                 data-name="passwordreset"
                 data-toggle="tab">${ ii18n_reset_password }</a>
         </li>`
@@ -54,12 +62,12 @@ export default (el) => {
     if (_converse.pluggable.plugins['converse-omemo']?.enabled(_converse)) {
         navigation_tabs.push(
             html`<li role="presentation" class="nav-item">
-                <a class="nav-link ${el.tab === "omemo" ? "active" : ""}"
+                <a class="nav-link ${el.tab === 'omemo' ? 'active' : ''}"
                    id="omemo-tab"
                    href="#omemo-tabpanel"
                    aria-controls="omemo-tabpanel"
                    role="tab"
-                   @click=${ev => el.switchTab(ev)}
+                   @click="${ev => el.switchTab(ev)}"
                    data-name="omemo"
                    data-toggle="tab">${ i18n_omemo }</a>
             </li>`

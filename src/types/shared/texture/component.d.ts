@@ -57,7 +57,7 @@ export default class Texture extends LitElement {
     show_me_message: boolean;
     render(): import("lit/directive.js").DirectiveResult<{
         new (_partInfo: import("lit/directive.js").PartInfo): {
-            render(text: string, offset: number, options: object, callback?: Function): import("lit").TemplateResult<1>;
+            render(text: string, offset: number, options: object, callback?: Function | undefined): import("lit").TemplateResult<1>;
             readonly _$isConnected: boolean;
             update(_part: import("lit").Part, props: Array<unknown>): unknown;
         };

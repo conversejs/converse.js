@@ -13,8 +13,8 @@ declare const CustomElement_base: (new (...args: any[]) => {
 }) & typeof LitElement;
 export class CustomElement extends CustomElement_base {
     createRenderRoot(): this;
-    initialize(): any;
-    connectedCallback(): any;
+    initialize(): null;
+    connectedCallback(): null;
 }
 import { LitElement } from 'lit';
 export {};

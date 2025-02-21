@@ -6,7 +6,7 @@ export default class MUCOccupants extends CustomElement {
     };
     jid: any;
     initialize(): void;
-    filter: RosterFilter;
+    filter: RosterFilter | undefined;
     model: any;
     render(): import("lit").TemplateResult<1>;
     /**
@@ -17,11 +17,6 @@ export default class MUCOccupants extends CustomElement {
     toggleFilter(ev: MouseEvent): void;
     /** @param {MouseEvent} ev */
     closeSidebar(ev: MouseEvent): void;
-    /**
-     * @param {MouseEvent} ev
-     * @param {import('@converse/headless/types/plugins/muc/occupant.js').default} occupant
-     */
-    onOccupantClicked(ev: MouseEvent, occupant: import("@converse/headless/types/plugins/muc/occupant.js").default): void;
 }
 import { CustomElement } from 'shared/components/element.js';
 import { RosterFilter } from "@converse/headless";

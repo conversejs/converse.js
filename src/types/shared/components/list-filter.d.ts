@@ -21,7 +21,7 @@ export default class ListFilter extends CustomElement {
     template: any;
     promise: Promise<void>;
     initialize(): void;
-    liveFilter: import("lodash").DebouncedFunc<(ev: any) => any>;
+    liveFilter: import("lodash").DebouncedFunc<(ev: any) => any> | undefined;
     render(): any;
     dispatchUpdateEvent(): void;
     /**

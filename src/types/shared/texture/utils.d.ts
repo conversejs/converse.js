@@ -28,7 +28,7 @@ export function tplMention(o: any): import("lit").TemplateResult<1>;
  * @param {number} i
  */
 export function getDirectiveAndLength(text: import("./texture").Texture, i: number): {
-    d: string;
+    d: string | null;
     length: number;
 } | {
     d?: undefined;

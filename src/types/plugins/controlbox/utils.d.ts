@@ -2,7 +2,7 @@ export function addControlBox(): any;
 /**
  * @param {Event} [ev]
  */
-export function showControlBox(ev?: Event): void;
+export function showControlBox(ev?: Event | undefined): void;
 /**
  * @param {string} jid
  */

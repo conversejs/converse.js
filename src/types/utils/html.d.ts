@@ -78,6 +78,7 @@ export function xFormField2TemplateResult(xfield: import("@converse/headless/sha
  * @param {boolean} include_margin
  */
 export function getOuterWidth(el: HTMLElement, include_margin?: boolean): number;
+export function getRootElement(): any;
 export default u;
 export type TemplateResult = import("lit").TemplateResult;
 import { u } from '@converse/headless';

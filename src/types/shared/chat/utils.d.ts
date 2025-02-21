@@ -86,8 +86,8 @@ export function shortnamesToEmojis(str: string, options?: {
  */
 export const markScrolled: import("lodash").DebouncedFunc<(ev: Event) => void>;
 export type EmojiMarkupOptions = {
-    unicode_only?: boolean;
-    add_title_wrapper?: boolean;
+    unicode_only?: boolean | undefined;
+    add_title_wrapper?: boolean | undefined;
 };
 export type HeadingButtonAttributes = import("plugins/chatview/types").HeadingButtonAttributes;
 export type ChatView = import("../../plugins/chatview/chat.js").default;

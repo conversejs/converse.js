@@ -1,12 +1,12 @@
 /**
  * @typedef {import('@converse/headless').MUCOccupant} MUCOccupant
  */
-import 'shared/components/list-filter.js';
-import tplOccupant from "./occupant.js";
-import tplOccupantsFilter from './occupants-filter.js';
-import { __ } from 'i18n';
 import { html } from "lit";
 import { repeat } from 'lit/directives/repeat.js';
+import { __ } from 'i18n';
+import 'shared/components/list-filter.js';
+import './../sidebar-occupant.js';
+import tplOccupantsFilter from './occupants-filter.js';
 
 /**
  * @param {import('../occupants').default} el
@@ -109,7 +109,7 @@ export default (el) => {
                 ${repeat(
                     el.model.occupants.models,
                     (occ) => occ.get('jid'),
-                    (occ) => isOccupantFiltered(el, occ) ? '' : tplOccupant(el, occ)
+                    (occ) => isOccupantFiltered(el, occ) ? '' : html`<converse-muc-occupant-list-item .muc="${el.model}" .model="${occ}" />`
                 )}
             </ul>
         </div>

@@ -546,6 +546,16 @@ export function getOuterWidth (el, include_margin=false) {
     return width;
 }
 
+
+let root;
+
+export function getRootElement() {
+    if (!root) {
+        root = document.createElement("converse-root");
+    }
+    return root;
+}
+
 Object.assign(u, {
     addClass,
     ancestor,
@@ -555,6 +565,7 @@ Object.assign(u, {
     getNextElement,
     getOOBURLMarkup,
     getOuterWidth,
+    getRootElement,
     hasClass,
     hideElement,
     isEqualNode,
@@ -571,3 +582,4 @@ Object.assign(u, {
 });
 
 export default u;
+

@@ -823,6 +823,7 @@ describe("The Contacts Roster", function () {
                 [], {},
                 async function (_converse) {
 
+            const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.openControlBox(_converse);
             const rosterview = document.querySelector('converse-roster');
@@ -836,6 +837,8 @@ describe("The Contacts Roster", function () {
                 return u.waitUntil(() => contact.initialized);
             }));
             await u.waitUntil(() => sizzle('li', rosterview).length);
+            await api.waitUntil('VCardsInitialized');
+
             // Check that they are sorted alphabetically
             const els = sizzle('.current-xmpp-contact.offline a.open-chat .contact-name', rosterview)
             const t = els.reduce((result, value) => (result + value.textContent.trim()), '');

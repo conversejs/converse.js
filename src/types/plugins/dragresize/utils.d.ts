@@ -15,8 +15,8 @@ export function initializeDragResize(model: import("@converse/headless/types/sha
  * @returns {string}
  */
 export function getResizingDirection(): string;
-export function onStartVerticalResize(ev: any, trigger?: boolean): boolean;
-export function onStartHorizontalResize(ev: any, trigger?: boolean): boolean;
+export function onStartVerticalResize(ev: any, trigger?: boolean): true | undefined;
+export function onStartHorizontalResize(ev: any, trigger?: boolean): true | undefined;
 export function onStartDiagonalResize(ev: any): void;
 /**
  * Applies some resistance to `value` around the `default_value`.
@@ -27,8 +27,8 @@ export function onStartDiagonalResize(ev: any): void;
  * @returns { number }
  */
 export function applyDragResistance(value: number, default_value: number): number;
-export function onMouseMove(ev: any): boolean;
-export function onMouseUp(ev: any): boolean;
+export function onMouseMove(ev: any): true | undefined;
+export function onMouseUp(ev: any): true | undefined;
 export type ResizingData = {
     chatbox: HTMLElement;
     direction: string;

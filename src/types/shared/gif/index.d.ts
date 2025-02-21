@@ -17,21 +17,21 @@ export default class ConverseGif {
     constructor(el: import("lit").LitElement, opts: any);
     options: any;
     el: import("lit").LitElement;
-    gif_el: HTMLImageElement;
-    canvas: HTMLCanvasElement;
-    ctx: CanvasRenderingContext2D;
+    gif_el: HTMLImageElement | null;
+    canvas: HTMLCanvasElement | null;
+    ctx: CanvasRenderingContext2D | null;
     offscreenCanvas: HTMLCanvasElement;
     patchCanvas: HTMLCanvasElement;
     ctx_scaled: boolean;
     frames: any[];
-    load_error: boolean;
+    load_error: boolean | null;
     playing: any;
     frame_idx: number;
     iteration_count: number;
     start: any;
     hovering: any;
-    frameImageData: ImageData;
-    disposal_restore_from_idx: number;
+    frameImageData: ImageData | null;
+    disposal_restore_from_idx: number | null;
     initialize(): Promise<void>;
     initPlayer(): void;
     /**
@@ -83,7 +83,7 @@ export default class ConverseGif {
     } | {
         width: number;
         height: number;
-    };
+    } | undefined;
     lsd: {
         backgroundColorIndex: number;
         gct: {
@@ -95,7 +95,7 @@ export default class ConverseGif {
         height: number;
         width: number;
         pixelAspectRatio: number;
-    };
+    } | undefined;
     drawError(): void;
     showError(): void;
     manageDisposal(i: any): void;

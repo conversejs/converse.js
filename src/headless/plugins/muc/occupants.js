@@ -162,10 +162,9 @@ class MUCOccupants extends Collection {
      * @returns {MUCOccupant}
      */
     getOwnOccupant () {
-        const bare_jid = _converse.session.get('bare_jid');
         return this.findOccupant({
-            'jid': bare_jid,
-            'occupant_id': this.chatroom.get('occupant_id')
+            jid: _converse.session.get('bare_jid'),
+            occupant_id: this.chatroom.get('occupant_id')
         });
     }
 }

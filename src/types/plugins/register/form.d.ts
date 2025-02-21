@@ -27,7 +27,7 @@ declare class RegistrationForm extends CustomElement {
     setErrorMessage: (m: string) => void;
     setFeedbackMessage: (m: string) => void;
     initialize(): void;
-    status: number;
+    status: number | undefined;
     render(): import("lit").TemplateResult<1>;
     /**
      * @param {string} message
@@ -40,14 +40,14 @@ declare class RegistrationForm extends CustomElement {
      * requesting the registration fields.
      */
     registerHooks(): void;
-    _registering: boolean;
+    _registering: boolean | undefined;
     /**
      * Send an IQ stanza to the XMPP server asking for the registration fields.
      * @method _converse.RegistrationForm#getRegistrationFields
      * @param {Request} req - The current request
      * @param {Function} callback - The callback function
      */
-    getRegistrationFields(req: import("strophe.js").Request, callback: Function): boolean;
+    getRegistrationFields(req: import("strophe.js").Request, callback: Function): boolean | undefined;
     /**
      * Handler for {@link _converse.RegistrationForm#getRegistrationFields}
      * @method _converse.RegistrationForm#onRegistrationFields
@@ -71,7 +71,7 @@ declare class RegistrationForm extends CustomElement {
      * @param {string} domain_name - XMPP server domain
      * @param {string|null} [service_url]
      */
-    fetchRegistrationForm(domain_name: string, service_url?: string | null): boolean;
+    fetchRegistrationForm(domain_name: string, service_url?: string | null | undefined): boolean;
     /**
      * Callback function called by Strophe whenever the connection status changes.
      * Passed to Strophe specifically during a registration attempt.
@@ -90,7 +90,7 @@ declare class RegistrationForm extends CustomElement {
      * @param {Element} stanza - The IQ stanza received from the XMPP server.
      */
     renderRegistrationForm(stanza: Element): void;
-    form_fields: any[];
+    form_fields: any[] | undefined;
     /**
      * Report back to the user any error messages received from the
      * XMPP server after attempted registration.
@@ -123,7 +123,7 @@ declare class RegistrationForm extends CustomElement {
      */
     setFieldsFromLegacy(query: Element): void;
     instructions: any;
-    form_type: string;
+    form_type: string | undefined;
     /**
      * @param {Element} xform
      */

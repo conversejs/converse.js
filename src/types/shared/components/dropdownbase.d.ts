@@ -1,8 +1,8 @@
 export default class DropdownBase extends CustomElement {
     firstUpdated(changed: any): void;
-    menu: Element;
-    button: HTMLButtonElement;
-    dropdown: BootstrapDropdown;
+    menu: Element | null | undefined;
+    button: HTMLButtonElement | null | undefined;
+    dropdown: BootstrapDropdown | undefined;
 }
 import { CustomElement } from './element.js';
 import { Dropdown as BootstrapDropdown } from 'bootstrap';

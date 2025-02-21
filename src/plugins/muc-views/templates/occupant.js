@@ -146,10 +146,10 @@ async function tplActionButtons(o) {
 }
 
 /**
- * @param {import('../occupants').default} el
- * @param {MUCOccupant} o
+ * @param {import('../sidebar-occupant').default} el
  */
-export default (el, o) => {
+export default (el) => {
+    const o = el.model;
     const affiliation = o.get('affiliation');
     const hint_show = PRETTY_CHAT_STATUS[o.get('show')];
     const role = o.get('role');

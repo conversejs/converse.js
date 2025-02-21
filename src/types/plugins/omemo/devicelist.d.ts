@@ -10,7 +10,7 @@ declare class DeviceList extends Model {
     devices: any;
     onDevicesFound(collection: any): Promise<void>;
     fetchDevices(): Promise<any>;
-    _devices_promise: Promise<any>;
+    _devices_promise: Promise<any> | undefined;
     getOwnDeviceId(): Promise<any>;
     publishCurrentDevice(device_ids: any): Promise<any>;
     fetchDevicesFromServer(): Promise<any[]>;

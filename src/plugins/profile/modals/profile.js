@@ -14,6 +14,9 @@ export default class ProfileModal extends BaseModal {
      * @typedef {import("@converse/headless").XMPPStatus} XMPPStatus
      */
 
+    /**
+     * @param {Object} options
+     */
     constructor (options) {
         super(options);
         this.tab = 'profile';

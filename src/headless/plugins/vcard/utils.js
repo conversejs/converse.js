@@ -131,7 +131,7 @@ export async function getVCardForOccupant(occupant, create = true) {
         if (jid) {
             return vcards.get(jid) || (create ? vcards.create({ jid }) : null);
         } else {
-            log.warn(`Could not get VCard for occupant because no JID found!`);
+            log.debug(`Could not get VCard for occupant because no JID found!`);
             return null;
         }
     }
@@ -157,7 +157,6 @@ async function getVCardForMUCMessage(message, create = true) {
         if (jid) {
             return vcards.get(jid) || (create ? vcards.create({ jid }) : null);
         } else {
-            debugger;
             log.warn(`Could not get VCard for message because no JID found! msgid: ${message.get("msgid")}`);
             return null;
         }

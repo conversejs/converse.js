@@ -305,13 +305,13 @@ describe("A MUC", function () {
         }));
 
         it("will use the nickname set in the global settings if the user doesn't have a VCard nickname",
-                mock.initConverse(['chatBoxesFetched'], { nickname: 'Benedict-Cucumberpatch'},
-                async function (_converse) {
-
+            mock.initConverse(['chatBoxesFetched'], {
+                blacklisted_plugins: ['converse-vcard'],
+                nickname: 'Benedict-Cucumberpatch'
+            },
+        async function (_converse) {
             const { api } = _converse;
             const muc_jid = 'roomy@muc.montague.lit';
-            // Delete the VCard
-            delete _converse.state.xmppstatus.vcard;
             api.rooms.open(muc_jid);
             await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             await mock.waitForReservedNick(_converse, muc_jid, '');

@@ -29,7 +29,7 @@ export default class EmojiPicker extends CustomElement {
     _search_results: any[];
     debouncedFilter: import("lodash").DebouncedFunc<(input: HTMLInputElement) => any>;
     initialize(): void;
-    dropdown: Element;
+    dropdown: Element | null | undefined;
     firstUpdated(changed: any): void;
     set search_results(value: any[]);
     get search_results(): any[];
@@ -39,10 +39,10 @@ export default class EmojiPicker extends CustomElement {
     current_category: any;
     current_skintone: any;
     setScrollPosition(): void;
-    preserve_scroll: boolean;
-    updateSearchResults(changed: any): any[];
+    preserve_scroll: boolean | undefined;
+    updateSearchResults(changed: any): any[] | undefined;
     registerEvents(): void;
-    onGlobalKeyDown: (ev: any) => void;
+    onGlobalKeyDown: ((ev: any) => void) | undefined;
     connectedCallback(): void;
     onDropdownHide(): void;
     /**
@@ -74,7 +74,7 @@ export default class EmojiPicker extends CustomElement {
      */
     getTonedShortname(shortname: string): string;
     initArrowNavigation(): void;
-    navigator: DOMNavigator;
+    navigator: DOMNavigator | undefined;
     disableArrowNavigation(): void;
     /**
      * @param {KeyboardEvent} ev

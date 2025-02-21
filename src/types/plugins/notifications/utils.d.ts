@@ -15,7 +15,7 @@ export function showFeedbackNotification(data: any): void;
  * Event handler for the on('message') event. Will call methods
  * to play sounds and show HTML5 notifications.
  */
-export function handleMessageNotification(data: any): Promise<boolean>;
+export function handleMessageNotification(data: any): Promise<false | undefined>;
 export function handleFeedback(data: any): void;
 /**
  * Event handler for on('contactPresenceChanged').

@@ -666,7 +666,7 @@ describe("The Contacts Roster", function () {
 
         it("are shown in the roster when hide_offline_users",
             mock.initConverse(
-                [], {'hide_offline_users': true},
+                [], { hide_offline_users: true, lazy_load_vcards: false },
                 async function (_converse) {
 
             await mock.openControlBox(_converse);
@@ -681,7 +681,10 @@ describe("The Contacts Roster", function () {
             expect(el.getAttribute('data-group')).toBe('Ungrouped');
         }));
 
-        it("can be removed by the user", mock.initConverse([], { roster_groups: false }, async function (_converse) {
+        it("can be removed by the user", mock.initConverse([], {
+            roster_groups: false,
+            lazy_load_vcards: false,
+        }, async function (_converse) {
             const { api } = _converse;
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'all');
@@ -717,7 +720,7 @@ describe("The Contacts Roster", function () {
         it("can be removed by the user",
                 mock.initConverse(
                     [],
-                    {'roster_groups': false},
+                    { roster_groups: false, lazy_load_vcards: false },
                     async function (_converse) {
 
             spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
@@ -756,7 +759,7 @@ describe("The Contacts Roster", function () {
 
         it("can be collapsed under their own header",
             mock.initConverse(
-                [], {},
+                [], { lazy_load_vcards: false },
                 async function (_converse) {
 
             await _addContacts(_converse);
@@ -767,7 +770,7 @@ describe("The Contacts Roster", function () {
 
         it("will be hidden when appearing under a collapsed group",
             mock.initConverse(
-                [], { roster_groups: false, show_self_in_roster: false },
+                [], { roster_groups: false, show_self_in_roster: false, lazy_load_vcards: false },
                 async function (_converse) {
 
             await _addContacts(_converse);
@@ -789,7 +792,7 @@ describe("The Contacts Roster", function () {
 
         it("will have their online statuses shown correctly",
             mock.initConverse(
-                [], {},
+                [], { lazy_load_vcards: false },
                 async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
@@ -820,7 +823,7 @@ describe("The Contacts Roster", function () {
 
         it("can be added to the roster and they will be sorted alphabetically",
             mock.initConverse(
-                [], {},
+                [], { lazy_load_vcards: false },
                 async function (_converse) {
 
             const { api } = _converse;
@@ -847,7 +850,7 @@ describe("The Contacts Roster", function () {
 
         it("can be removed by the user",
             mock.initConverse(
-                [], {},
+                [], { lazy_load_vcards: false },
                 async function (_converse) {
 
             await _addContacts(_converse);
@@ -878,7 +881,7 @@ describe("The Contacts Roster", function () {
 
         it("do not have a header if there aren't any",
             mock.initConverse(
-                [], { show_self_in_roster: false },
+                [], { show_self_in_roster: false, lazy_load_vcards: false },
                 async function (_converse) {
 
             await mock.openControlBox(_converse);
@@ -905,7 +908,7 @@ describe("The Contacts Roster", function () {
 
         it("can change their status to online and be sorted alphabetically",
             mock.initConverse(
-                [], { show_self_in_roster: false },
+                [], { show_self_in_roster: false, lazy_load_vcards: false },
                 async function (_converse) {
 
             await _addContacts(_converse);
@@ -931,7 +934,7 @@ describe("The Contacts Roster", function () {
 
         it("can change their status to busy and be sorted alphabetically",
             mock.initConverse(
-                [], {},
+                [], { lazy_load_vcards: false },
                 async function (_converse) {
 
             await _addContacts(_converse);
@@ -957,7 +960,7 @@ describe("The Contacts Roster", function () {
 
         it("can change their status to away and be sorted alphabetically",
             mock.initConverse(
-                [], {},
+                [], { lazy_load_vcards: false },
                 async function (_converse) {
 
             await _addContacts(_converse);
@@ -983,7 +986,7 @@ describe("The Contacts Roster", function () {
 
         it("can change their status to xa and be sorted alphabetically",
             mock.initConverse(
-                [], {},
+                [], { lazy_load_vcards: false },
                 async function (_converse) {
 
             await _addContacts(_converse);
@@ -1009,7 +1012,7 @@ describe("The Contacts Roster", function () {
 
         it("can change their status to unavailable and be sorted alphabetically",
             mock.initConverse(
-                [], {},
+                [], { lazy_load_vcards: false },
                 async function (_converse) {
 
             await _addContacts(_converse);
@@ -1035,7 +1038,7 @@ describe("The Contacts Roster", function () {
 
         it("are ordered according to status: online, busy, away, xa, unavailable, offline",
             mock.initConverse(
-                [], { show_self_in_roster: false },
+                [], { show_self_in_roster: false, lazy_load_vcards: false },
                 async function (_converse) {
 
             await _addContacts(_converse);
@@ -1196,7 +1199,7 @@ describe("The Contacts Roster", function () {
 
         it("can have their requests accepted by the user",
             mock.initConverse(
-                [], {},
+                [], { lazy_load_vcards: false },
                 async function (_converse) {
 
             await mock.openControlBox(_converse);
@@ -1355,7 +1358,7 @@ describe("The Contacts Roster", function () {
 
         it("is shown upon receiving a message to a previously removed contact",
             mock.initConverse(
-                [], {},
+                [], { lazy_load_vcards: false },
                 async function (_converse) {
 
             const { api } = _converse;

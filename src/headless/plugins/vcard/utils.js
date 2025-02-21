@@ -14,30 +14,26 @@ import log from "../../log.js";
 import { initStorage } from "../../utils/storage.js";
 import { shouldClearCache } from "../../utils/session.js";
 import { isElement } from "../../utils/html.js";
+import { parseErrorStanza } from "../../shared/parsers.js";
 
 const { Strophe, $iq, u } = converse.env;
 
 /**
  * @param {Element} iq
+ * @returns {Promise<import("./types").VCardResult>}
  */
-async function onVCardData(iq) {
-    const vcard = iq.querySelector("vCard");
-    let result = {};
-    if (vcard !== null) {
-        result = {
-            "stanza": iq,
-            "fullname": vcard.querySelector("FN")?.textContent,
-            "nickname": vcard.querySelector("NICKNAME")?.textContent,
-            "image": vcard.querySelector("PHOTO BINVAL")?.textContent,
-            "image_type": vcard.querySelector("PHOTO TYPE")?.textContent,
-            "url": vcard.querySelector("URL")?.textContent,
-            "role": vcard.querySelector("ROLE")?.textContent,
-            "email": vcard.querySelector("EMAIL USERID")?.textContent,
-            "vcard_updated": new Date().toISOString(),
-            "vcard_error": undefined,
-            image_hash: undefined,
-        };
-    }
+export async function onVCardData(iq) {
+    const result = {
+        email: iq.querySelector("> vCard EMAIL USERID")?.textContent,
+        fullname: iq.querySelector("> vCard FN")?.textContent,
+        image: iq.querySelector("> vCard PHOTO BINVAL")?.textContent,
+        image_type: iq.querySelector("> vCard PHOTO TYPE")?.textContent,
+        nickname: iq.querySelector("vCard NICKNAME")?.textContent,
+        role: iq.querySelector("vCard ROLE")?.textContent,
+        stanza: iq, // TODO: remove?
+        url: iq.querySelector("URL")?.textContent,
+        vcard_updated: new Date().toISOString(),
+    };
     if (result.image) {
         const buffer = u.base64ToArrayBuffer(result["image"]);
         const ab = await crypto.subtle.digest("SHA-1", buffer);
@@ -76,17 +72,17 @@ export function onOccupantAvatarChanged(occupant) {
 
 /**
  * @param {Model|MUCOccupant|MUCMessage} model
- * @param {boolean} [create=true]
+ * @param {boolean} [lazy_load=false]
  * @returns {Promise<VCard|null>}
  */
-export async function getVCardForModel(model, create = true) {
+export async function getVCardForModel(model, lazy_load = false) {
     await initVCardCollection();
 
     let vcard;
     if (model instanceof _converse.exports.MUCOccupant) {
-        vcard = await getVCardForOccupant(/** @type {MUCOccupant} */ (model), create);
+        vcard = await getVCardForOccupant(/** @type {MUCOccupant} */ (model), lazy_load);
     } else if (model instanceof _converse.exports.MUCMessage) {
-        vcard = await getVCardForMUCMessage(/** @type {MUCMessage} */ (model), create);
+        vcard = await getVCardForMUCMessage(/** @type {MUCMessage} */ (model), lazy_load);
     } else {
         let jid;
         if (model instanceof _converse.exports.Message) {
@@ -103,7 +99,7 @@ export async function getVCardForModel(model, create = true) {
             return null;
         }
         const { vcards } = _converse.state;
-        vcard = vcards.get(jid) || (create ? vcards.create({ jid }) : null);
+        vcard = vcards.get(jid) || vcards.create({ jid }, { lazy_load });
     }
 
     if (vcard) {
@@ -114,10 +110,10 @@ export async function getVCardForModel(model, create = true) {
 
 /**
  * @param {MUCOccupant} occupant
- * @param {boolean} [create=true]
+ * @param {boolean} [lazy_load=false]
  * @returns {Promise<VCard|null>}
  */
-export async function getVCardForOccupant(occupant, create = true) {
+export async function getVCardForOccupant(occupant, lazy_load = true) {
     await api.waitUntil("VCardsInitialized");
 
     const { vcards, xmppstatus } = _converse.state;
@@ -129,7 +125,7 @@ export async function getVCardForOccupant(occupant, create = true) {
     } else {
         const jid = occupant.get("jid") || occupant.get("from");
         if (jid) {
-            return vcards.get(jid) || (create ? vcards.create({ jid }) : null);
+            return vcards.get(jid) || vcards.create({ jid }, { lazy_load });
         } else {
             log.debug(`Could not get VCard for occupant because no JID found!`);
             return null;
@@ -139,10 +135,10 @@ export async function getVCardForOccupant(occupant, create = true) {
 
 /**
  * @param {MUCMessage} message
- * @param {boolean} [create=true]
+ * @param {boolean} [lazy_load=true]
  * @returns {Promise<VCard|null>}
  */
-async function getVCardForMUCMessage(message, create = true) {
+async function getVCardForMUCMessage(message, lazy_load = true) {
     if (["error", "info"].includes(message.get("type"))) return;
 
     await api.waitUntil("VCardsInitialized");
@@ -155,7 +151,7 @@ async function getVCardForMUCMessage(message, create = true) {
     } else {
         const jid = message.occupant?.get("jid") || message.get("from");
         if (jid) {
-            return vcards.get(jid) || (create ? vcards.create({ jid }) : null);
+            return vcards.get(jid) || vcards.create({ jid }, { lazy_load });
         } else {
             log.warn(`Could not get VCard for message because no JID found! msgid: ${message.get("msgid")}`);
             return null;
@@ -179,7 +175,7 @@ async function initVCardCollection() {
                 success: resolve,
                 error: resolve,
             },
-            { "silent": true }
+            { silent: true }
         );
     });
     /**
@@ -203,7 +199,7 @@ export function clearVCardsSession() {
 /**
  * @param {string} jid
  */
-export async function getVCard(jid) {
+export async function fetchVCard(jid) {
     const bare_jid = _converse.session.get("bare_jid");
     const to = Strophe.getBareJidFromJid(jid) === bare_jid ? null : jid;
     let iq;
@@ -212,8 +208,8 @@ export async function getVCard(jid) {
     } catch (error) {
         return {
             jid,
-            stanza: isElement(error) ? error : null,
-            error: isElement(error) ? null : error,
+            stanza: isElement(error) ? error : null, // TODO: remove?
+            error: isElement(error) ? parseErrorStanza(error) : error,
             vcard_error: new Date().toISOString(),
         };
     }

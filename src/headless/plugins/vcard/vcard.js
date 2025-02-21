@@ -1,17 +1,37 @@
-import { Model } from '@converse/skeletor';
+import { Model } from "@converse/skeletor";
+import _converse from "../../shared/_converse";
+import api from "../../shared/api/index";
 
-/**
- * Represents a VCard
- * @namespace _converse.VCard
- * @memberOf _converse
- */
 class VCard extends Model {
-    get idAttribute () {
-        return 'jid';
+    /**
+     * @param {import("../../shared/types").ModelAttributes} attrs
+     * @param {import("./types").VCardModelOptions} options
+     */
+    constructor(attrs, options) {
+        super(attrs, options);
+        this._vcard = null;
     }
 
-    getDisplayName () {
-        return this.get('nickname') || this.get('fullname') || this.get('jid');
+    /**
+     * @param {import("../../shared/types").ModelAttributes} [_attrs]
+     * @param {import("./types").VCardModelOptions} [options]
+     */
+    initialize(_attrs, options) {
+        this.lazy_load = !!options?.lazy_load;
+
+        if (this.lazy_load) {
+            this.once("visibilityChanged", () => api.vcard.update(this));
+        } else {
+            api.vcard.update(this);
+        }
+    }
+
+    get idAttribute() {
+        return "jid";
+    }
+
+    getDisplayName() {
+        return this.get("nickname") || this.get("fullname") || this.get("jid");
     }
 }
 

@@ -1,4 +1,11 @@
-import { Model } from '@converse/skeletor';
+import { Collection, Model } from '@converse/skeletor';
+export type ModelAttributes = Record<string, any>;
+export interface ModelOptions {
+    collection?: Collection;
+    parse?: boolean;
+    unset?: boolean;
+    silent?: boolean;
+}
 type Constructor<T = {}> = new (...args: any[]) => T;
 export type ModelExtender = Constructor<Model>;
 type EncryptionPayloadAttrs = {

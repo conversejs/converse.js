@@ -29,15 +29,10 @@ export default class UserDetailsModal extends BaseModal {
     addListeners() {
         this.listenTo(this.model, 'change', () => this.requestUpdate());
 
-        this.model.rosterContactAdded.then(() => {
-            this.registerContactEventHandlers();
-            api.vcard.update(this.model.contact.vcard, true);
-        });
+        this.model.rosterContactAdded.then(() => this.registerContactEventHandlers());
 
         if (this.model.contact !== undefined) {
             this.registerContactEventHandlers();
-            // Refresh the vcard
-            api.vcard.update(this.model.contact.vcard, true);
         }
     }
 

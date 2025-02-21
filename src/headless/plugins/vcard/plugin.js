@@ -39,6 +39,11 @@ converse.plugins.add('converse-vcard', {
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.VCARD));
         api.listen.on('clearSession', () => clearVCardsSession());
 
+        api.listen.on('visibilityChanged', ({ el }) => {
+            const { model } = el;
+            if (model?.vcard) model.vcard.trigger('visibilityChanged');
+        });
+
         Object.assign(_converse.api, vcard_api);
     }
 });

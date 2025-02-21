@@ -1,4 +1,9 @@
 /**
+ * @param {Element} iq
+ * @returns {Promise<import("./types").VCardResult>}
+ */
+export function onVCardData(iq: Element): Promise<import("./types").VCardResult>;
+/**
  * @param {"get"|"set"|"result"} type
  * @param {string} jid
  * @param {Element} [vcard_el]
@@ -10,23 +15,21 @@ export function createStanza(type: "get" | "set" | "result", jid: string, vcard_
 export function onOccupantAvatarChanged(occupant: MUCOccupant): void;
 /**
  * @param {Model|MUCOccupant|MUCMessage} model
- * @param {boolean} [create=true]
+ * @param {boolean} [lazy_load=false]
  * @returns {Promise<VCard|null>}
  */
-export function getVCardForModel(model: Model | MUCOccupant | MUCMessage, create?: boolean): Promise<VCard | null>;
+export function getVCardForModel(model: Model | MUCOccupant | MUCMessage, lazy_load?: boolean): Promise<VCard | null>;
 /**
  * @param {MUCOccupant} occupant
- * @param {boolean} [create=true]
+ * @param {boolean} [lazy_load=false]
  * @returns {Promise<VCard|null>}
  */
-export function getVCardForOccupant(occupant: MUCOccupant, create?: boolean): Promise<VCard | null>;
+export function getVCardForOccupant(occupant: MUCOccupant, lazy_load?: boolean): Promise<VCard | null>;
 export function clearVCardsSession(): void;
 /**
  * @param {string} jid
  */
-export function getVCard(jid: string): Promise<{
-    image_hash: any;
-} | {
+export function fetchVCard(jid: string): Promise<import("./types").VCardResult | {
     jid: string;
     stanza: any;
     error: any;

@@ -23,6 +23,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
     }
 
     async initialize (attrs) {
+        this.lazy_load_vcard = true;
         super.initialize();
         this.initialized = getOpenPromise();
         this.setPresence();
@@ -66,8 +67,11 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
         api.chats.open(this.get('jid'), {}, true);
     }
 
-    getDisplayName () {
-        return this.get('nickname') || this.vcard?.getDisplayName() || this.get('jid');
+    /**
+     * @returns {string|null}
+     */
+    getDisplayName (jid_fallback=true) {
+        return this.get('nickname') || this.vcard?.getDisplayName() || (jid_fallback ? this.get('jid') : null);
     }
 
     /**

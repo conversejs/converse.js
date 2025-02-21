@@ -5,7 +5,7 @@ declare const BaseMessage_base: {
         lazy_load_vcard: boolean;
         initialize(): void;
         readonly vcard: import("../index.js").VCard;
-        getVCard(create?: boolean): Promise<import("../index.js").VCard | null>;
+        getVCard(): Promise<import("../index.js").VCard | null>;
         cid: any;
         attributes: {};
         validationError: string;

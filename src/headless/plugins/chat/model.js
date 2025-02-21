@@ -28,13 +28,13 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
 
     defaults () {
         return {
-            'bookmarked': false,
-            'hidden': isUniView() && !api.settings.get('singleton'),
-            'message_type': 'chat',
-            'num_unread': 0,
-            'time_opened': this.get('time_opened') || (new Date()).getTime(),
-            'time_sent': (new Date(0)).toISOString(),
-            'type': PRIVATE_CHAT_TYPE,
+            bookmarked: false,
+            hidden: isUniView() && !api.settings.get('singleton'),
+            message_type: 'chat',
+            num_unread: 0,
+            time_opened: this.get('time_opened') || (new Date()).getTime(),
+            time_sent: (new Date(0)).toISOString(),
+            type: PRIVATE_CHAT_TYPE,
         }
     }
 
@@ -130,12 +130,15 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
     }
 
     /**
-     * @returns {string}
+     * @returns {string|null}
      */
     getDisplayName () {
         if (this.contact) {
-            return this.contact.getDisplayName();
-        } else if (this.vcard) {
+            const display_name = this.contact.getDisplayName(false);
+            if (display_name) return display_name;
+        }
+
+        if (this.vcard) {
             return this.vcard.getDisplayName();
         } else {
             return this.get('jid');

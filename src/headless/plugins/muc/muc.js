@@ -31,7 +31,6 @@ import { getUniqueId, isErrorObject, safeSave } from '../../utils/index.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
-import BaseMessage from '../../shared/message';
 import ChatBoxBase from '../../shared/chatbox';
 import ColorAwareModel from '../../shared/color';
 import ModelWithMessages from '../../shared/model-with-messages';
@@ -46,8 +45,7 @@ const { u, stx } = converse.env;
  */
 class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))) {
     /**
-     * @typedef {import('../vcard/vcard').default} VCard
-     * @typedef {import('../chat/message.js').default} Message
+     * @typedef {import('../../shared/message.js').default} BaseMessage
      * @typedef {import('./message.js').default} MUCMessage
      * @typedef {import('./occupant.js').default} MUCOccupant
      * @typedef {import('./affiliations/utils.js').NonOutcastAffiliation} NonOutcastAffiliation
@@ -243,7 +241,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     /**
      * Given the passed in MUC message, send a XEP-0333 chat marker.
      * @async
-     * @param {Message} msg
+     * @param {BaseMessage} msg
      * @param {('received'|'displayed'|'acknowledged')} [type='displayed']
      * @param {boolean} [force=false] - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.

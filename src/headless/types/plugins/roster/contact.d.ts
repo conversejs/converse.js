@@ -5,7 +5,7 @@ declare const RosterContact_base: {
         lazy_load_vcard: boolean;
         initialize(): void;
         readonly vcard: import("../vcard/vcard.js").default;
-        getVCard(create?: boolean): Promise<import("../vcard/vcard.js").default | null>;
+        getVCard(): Promise<import("../vcard/vcard.js").default | null>;
         cid: any;
         attributes: {};
         validationError: string;
@@ -149,7 +149,10 @@ declare class RosterContact extends RosterContact_base {
     presence: any;
     getStatus(): any;
     openChat(): void;
-    getDisplayName(): any;
+    /**
+     * @returns {string|null}
+     */
+    getDisplayName(jid_fallback?: boolean): string | null;
     /**
      * Send a presence subscription request to this roster contact
      * @param {string} message - An optional message to explain the

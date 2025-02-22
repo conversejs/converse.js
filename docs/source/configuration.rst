@@ -742,6 +742,17 @@ a chat state indication of ``active`` will be sent out.
 
 A value of ``0`` means that this feature is disabled.
 
+.. _`lazy_load_vcards`:
+
+lazy_load_vcards
+----------------
+
+* Default:  ``true``
+
+Determines whether vCards are fetched lazily, i.e. only when their data should
+be shown in the UI, or eagerly, which is immediately once the entity the vCard
+relates to is known.
+
 .. _`loglevel`:
 
 loglevel

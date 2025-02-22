@@ -106,29 +106,37 @@ export default {
             // For a VCard fetch that returned an error, we
             // check how long ago it was fetched. If it was longer ago than
             // the last 7 days plus some jitter (to prevent an IQ fetch flood),
-            // then we try again.
+            // we try again.
             const { random, round } = Math;
+            const subtract_flag = round(random());
             const error_date = model.get("vcard_error");
-            const already_tried_recently =
+            const tried_recently =
                 error_date &&
-                dayjs(error_date).isBetween(
-                    dayjs().subtract(7, "days").subtract(round(random() * 24), "hours"),
-                    dayjs().subtract(7, "days").add(round(random() * 24), "hours")
+                dayjs(error_date).isBefore(
+                    dayjs().subtract(7, "days")
+                    .subtract(round(random() * 24)*subtract_flag, "hours")
+                    .add(round(random() * 24)*(!subtract_flag ? 1 : 0), "hours")
                 );
-            if (already_tried_recently) {
-                return;
-            }
+            if (tried_recently) return null;
 
+            // For a successful VCard fetch, we check how long ago it was fetched.
+            // If it was longer ago than the last 7 days plus some jitter
+            // (to prevent an IQ fetch flood), we try again.
+            const vcard_updated = model.get("vcard_updated");
+            const updated_recently =
+                dayjs(vcard_updated).isBefore(
+                    dayjs().subtract(7, "days")
+                    .subtract(round(random() * 24)*subtract_flag, "hours")
+                    .add(round(random() * 24)*(!subtract_flag ? 1 : 0), "hours")
+                );
+            if (!force && updated_recently) return null;
 
-            if (force || (!model.get("vcard_updated") && !already_tried_recently)) {
-                const jid = model.get("jid");
-                if (!jid) {
-                    log.error("No JID to get vcard for");
-                }
-                return fetchVCard(jid);
-            } else {
+            const jid = model.get("jid");
+            if (!jid) {
+                log.error("No JID to get vcard for");
                 return null;
             }
+            return fetchVCard(jid);
         },
 
         /**

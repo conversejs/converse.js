@@ -147,9 +147,9 @@ describe("Groupchats", function () {
 
         it("maintains its state across reloads",
             mock.initConverse([], {
-                    'clear_messages_on_reconnection': true,
-                    'enable_smacks': false
-                }, async function (_converse) {
+                clear_messages_on_reconnection: true,
+                enable_smacks: false
+            }, async function (_converse) {
 
             const { api } = _converse;
             const nick = 'romeo';
@@ -157,7 +157,14 @@ describe("Groupchats", function () {
             const muc_jid = 'lounge@montague.lit'
             await mock.openAndEnterMUC(_converse, muc_jid, nick, [], []);
             const view = _converse.chatboxviews.get(muc_jid);
-            let iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+            let iq_get = await u.waitUntil(() => sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop());
+            expect(iq_get).toEqualStanza(stx`
+                <iq id="${iq_get.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">
+                    <query queryid="${iq_get.querySelector('query').getAttribute('queryid')}" xmlns="${Strophe.NS.MAM}">
+                        <set xmlns="http://jabber.org/protocol/rsm"><before></before><max>50</max></set>
+                    </query>
+                </iq>`);
+
             const first_msg_id = _converse.api.connection.get().getUniqueId();
             const last_msg_id = _converse.api.connection.get().getUniqueId();
             _converse.api.connection.get()._dataRecv(mock.createRequest(
@@ -189,7 +196,7 @@ describe("Groupchats", function () {
             _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             const result = stx`<iq type='result' id='${iq_get.getAttribute('id')}' xmlns="jabber:client">
-                    <fin xmlns='urn:xmpp:mam:2'>
+                    <fin xmlns='urn:xmpp:mam:2' complete="true">
                         <set xmlns='http://jabber.org/protocol/rsm'>
                             <first index='0'>${first_msg_id}</first>
                             <last>${last_msg_id}</last>
@@ -233,16 +240,17 @@ describe("Groupchats", function () {
             const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
             await mock.returnMemberLists(_converse, muc_jid, [], all_affiliations);
 
-            iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
-            expect(Strophe.serialize(iq_get)).toBe(
-                `<iq id="${iq_get.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
-                    `<query queryid="${iq_get.querySelector('query').getAttribute('queryid')}" xmlns="${Strophe.NS.MAM}">`+
-                        `<x type="submit" xmlns="jabber:x:data">`+
-                            `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
-                        `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><before></before><max>50</max></set>`+
-                    `</query>`+
-                `</iq>`);
+            iq_get = await u.waitUntil(() => sent_IQs.filter(iq => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop());
+            expect(iq_get).toEqualStanza(stx`
+                <iq id="${iq_get.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">
+                    <query queryid="${iq_get.querySelector('query').getAttribute('queryid')}" xmlns="${Strophe.NS.MAM}">
+                        <x xmlns="jabber:x:data" type="submit">
+                            <field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>
+                            <field var="start"><value>2020-07-14T17:46:47.000Z</value></field>
+                        </x>
+                        <set xmlns="http://jabber.org/protocol/rsm"><before></before><max>50</max></set>
+                    </query>
+                </iq>`);
         }));
 
         it("shows a new messages indicator when you're scrolled up",

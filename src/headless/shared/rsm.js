@@ -19,13 +19,13 @@ const toNumber = (v) => Number(v);
 const toString = (v) => v.toString();
 
 export const RSM_TYPES = {
-    'after': toString,
-    'before': toString,
-    'count': toNumber,
-    'first': toString,
-    'index': toNumber,
-    'last': toString,
-    'max': toNumber
+    after: toString,
+    before: toString,
+    count: toNumber,
+    first: toString,
+    index: toNumber,
+    last: toString,
+    max: toNumber
 };
 
 const isUndefined = (x) => typeof x === 'undefined';
@@ -72,7 +72,7 @@ export class RSM {
 
     /**
      * Returns a `<set>` XML element that confirms to XEP-0059 Result Set Management.
-     * The element is constructed based on the RSMQueryParameters
+     * The element is constructed based on the RSMQueryOptions
      * that are set on this RSM instance.
      * @returns {Element}
      */

@@ -5,11 +5,11 @@ import dayjs from 'dayjs';
 import log from '../../log.js';
 import sizzle from "sizzle";
 import { RSM } from '../../shared/rsm';
-import { Strophe, $iq } from 'strophe.js';
+import { Strophe, Stanza } from 'strophe.js';
 import { TimeoutError } from '../../shared/errors.js';
 
 const { NS } = Strophe;
-const u = converse.env.utils;
+const { stx, u } = converse.env;
 
 
 export default {
@@ -33,7 +33,7 @@ export default {
           * RSM to enable easy querying between results pages.
           *
           * @method _converse.api.archive.query
-          * @param {import('./types').ArchiveQueryOptions} options - An object containing query parameters
+          * @param {import('./types').ArchiveQueryOptions} [options={}] - Optional query parameters
           * @throws {Error} An error is thrown if the XMPP server responds with an error.
           * @returns {Promise<import('./types').MAMQueryResult>}
           *
@@ -66,7 +66,7 @@ export default {
           * // For a particular user
           * let result;
           * try {
-          *    result = await api.archive.query({'with': 'john@doe.net'});
+          *    result = await api.archive.query({ mam: { with: 'john@doe.net' }});
           * } catch (e) {
           *     // The query was not successful
           * }
@@ -74,7 +74,7 @@ export default {
           * // For a particular room
           * let result;
           * try {
-          *    result = await api.archive.query({'with': 'discuss@conference.doglovers.net', 'groupchat': true});
+          *    result = await api.archive.query({ mam: { with: 'discuss@conference.doglovers.net' }}, is_groupchat: true });
           * } catch (e) {
           *     // The query was not successful
           * }
@@ -83,14 +83,16 @@ export default {
           * // Requesting all archived messages before or after a certain date
           * // ===============================================================
           * //
-          * // The `start` and `end` parameters are used to query for messages
+          * // The MAM `start` and `end` parameters are used to query for messages
           * // within a certain timeframe. The passed in date values may either be ISO8601
           * // formatted date strings, or JavaScript Date objects.
           *
           *  const options = {
-          *      'with': 'john@doe.net',
-          *      'start': '2010-06-07T00:00:00Z',
-          *      'end': '2010-07-07T13:23:54Z'
+          *      mam: {
+          *          'with': 'john@doe.net',
+          *          'start': '2010-06-07T00:00:00Z',
+          *          'end': '2010-07-07T13:23:54Z'
+          *      },
           *  };
           * let result;
           * try {
@@ -109,7 +111,7 @@ export default {
           * // Return maximum 10 archived messages
           * let result;
           * try {
-          *     result = await api.archive.query({'with': 'john@doe.net', 'max':10});
+          *     result = await api.archive.query({ mam: { with: 'john@doe.net', max:10 }});
           * } catch (e) {
           *     // The query was not successful
           * }
@@ -131,7 +133,7 @@ export default {
           * // archived messages. Please note, when calling these methods, pass in an integer
           * // to limit your results.
           *
-          * const options = {'with': 'john@doe.net', 'max':10};
+          * const options = { mam: { with: 'john@doe.net' }, rsm: { max:10 }};
           * let result;
           * try {
           *     result = await api.archive.query(options);
@@ -143,7 +145,13 @@ export default {
           *
           * while (!result.complete) {
           *     try {
-          *         result = await api.archive.query(Object.assign(options, rsm.next(10).query));
+          *         result = await api.archive.query({
+          *             mam: { ...options.mam },
+          *             rsm: {
+          *                 ...options.rsm,
+          *                 ...rsm.next(10).query
+          *                 }
+          *             });
           *     } catch (e) {
           *         // The query was not successful
           *     }
@@ -161,7 +169,7 @@ export default {
           * // message, pass in the `before` parameter with an empty string value `''`.
           *
           * let result;
-          * const options = {'before': '', 'max':5};
+          * const options = { rsm: { before: '', max:5 }};
           * try {
           *     result = await api.archive.query(options);
           * } catch (e) {
@@ -172,7 +180,14 @@ export default {
           *
           * // Now we query again, to get the previous batch.
           * try {
-          *      result = await api.archive.query(Object.assign(options, rsm.previous(5).query));
+          *     try {
+          *         result = await api.archive.query({
+          *             mam: { ...options.mam },
+          *             rsm: {
+          *                 ...options.rsm,
+          *                 ...rsm.previous(5).query
+          *                 }
+          *             });
           * } catch (e) {
           *     // The query was not successful
           * }
@@ -180,57 +195,68 @@ export default {
           * result.messages.forEach(m => this.showMessage(m));
           *
           */
-        async query (options) {
+        async query (options={}) {
             if (!api.connection.connected()) {
                 throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
             }
-            const attrs = {'type':'set'};
-            if (options && options.groupchat) {
-                if (!options['with']) {
+
+            let toJID;
+            if (options && options.is_groupchat) {
+                if (!options.mam?.with) {
                     throw new Error(
                         'You need to specify a "with" value containing '+
-                        'the chat room JID, when querying groupchat messages.');
+                        'the groupchat JID, when querying groupchat messages.');
                 }
-                attrs.to = options['with'];
+                toJID = options.mam.with;
             }
 
+            const withJID = !options.is_groupchat && options.mam?.with || null;
+
             const bare_jid = _converse.session.get('bare_jid');
-            const jid = attrs.to || bare_jid;
+            const jid = toJID || bare_jid;
             const supported = await api.disco.supports(NS.MAM, jid);
             if (!supported) {
                 log.warn(`Did not fetch MAM archive for ${jid} because it doesn't support ${NS.MAM}`);
-                return {'messages': []};
+                return { messages: [] };
             }
 
-            const queryid = u.getUniqueId();
-            const stanza = $iq(attrs).c('query', {'xmlns':NS.MAM, 'queryid':queryid});
-            if (options) {
-                stanza.c('x', {'xmlns':NS.XFORM, 'type': 'submit'})
-                        .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
-                        .c('value').t(NS.MAM).up().up();
-
-                if (options['with'] && !options.groupchat) {
-                    stanza.c('field', {'var':'with'}).c('value')
-                        .t(options['with']).up().up();
-                }
-                ['start', 'end'].forEach(t => {
-                    if (options[t]) {
-                        const date = dayjs(options[t]);
-                        if (date.isValid()) {
-                            stanza.c('field', {'var':t}).c('value').t(date.toISOString()).up().up();
-                        } else {
-                            throw new TypeError(`archive.query: invalid date provided for: ${t}`);
-                        }
+            // Validate start and end dates and add them to attrs (in the right format)
+            const { start: startDate, end: endDate } = ['start', 'end'].reduce((acc, t) => {
+                if (options.mam?.[t]) {
+                    const date = dayjs(options.mam[t]);
+                    if (date.isValid()) {
+                        acc[t] = date.toISOString();
+                    } else {
+                        throw new TypeError(`archive.query: invalid date provided for: ${t}`);
                     }
-                });
-                stanza.up();
-                const rsm = new RSM(options);
-                if (Object.keys(rsm.query).length) {
-                    stanza.cnode(rsm.toXML());
                 }
-            }
+                return acc;
+            }, { start: null, end: null });
 
             const connection = api.connection.get();
+            const rsm = options.rsm ? new RSM(options.rsm) : {};
+            const queryid = u.getUniqueId();
+
+            const stanza = stx`
+                <iq id="${u.getUniqueId()}"
+                        ${toJID ? Stanza.unsafeXML(`to="${Strophe.xmlescape(toJID)}"`) : ""}
+                        type="set"
+                        xmlns="jabber:client">
+                    <query queryid="${queryid}" xmlns="${NS.MAM}">
+                        ${
+                            withJID || startDate || endDate
+                                ? stx`
+                            <x type="submit" xmlns="${NS.XFORM}">
+                                <field type="hidden" var="FORM_TYPE"><value>${NS.MAM}</value></field>
+                                ${withJID ? stx`<field var="with"><value>${withJID}</value></field>` : ""}
+                                ${startDate ? stx`<field var="start"><value>${startDate}</value></field>` : ""}
+                                ${endDate ? stx`<field var="end"><value>${endDate}</value></field>` : ""}
+                            </x>`
+                                : ""
+                        }
+                        ${Object.keys(rsm.query ?? {}).length ? stx`${Stanza.unsafeXML(rsm.toXML().outerHTML)}` : ""}
+                    </query>
+                </iq>`;
 
             const messages = [];
             const message_handler = connection.addHandler(/** @param {Element} stanza */(stanza) => {
@@ -239,8 +265,8 @@ export default {
                     return true;
                 }
                 const from = stanza.getAttribute('from') || bare_jid;
-                if (options.groupchat) {
-                    if (from !== options['with']) {
+                if (options.is_groupchat) {
+                    if (from !== options.mam?.with) {
                         log.warn(`Ignoring alleged groupchat MAM message from ${stanza.getAttribute('from')}`);
                         return true;
                     }
@@ -254,7 +280,7 @@ export default {
 
             let error;
             const timeout = api.settings.get('message_archiving_timeout');
-            const iq_result = await api.sendIQ(stanza, timeout, false)
+            const iq_result = await api.sendIQ(stanza, timeout, false);
             if (iq_result === null) {
                 const { __ } = _converse;
                 const err_msg = __("Timeout while trying to fetch archived messages.");
@@ -272,14 +298,14 @@ export default {
             }
             connection.deleteHandler(message_handler);
 
-            let rsm;
+            let rsm_result;
             const fin = iq_result && sizzle(`fin[xmlns="${NS.MAM}"]`, iq_result).pop();
-            const complete = fin?.getAttribute('complete') === 'true'
+            const complete = fin?.getAttribute('complete') === 'true';
             const set = sizzle(`set[xmlns="${NS.RSM}"]`, fin).pop();
             if (set) {
-                rsm = new RSM({...options, 'xml': set});
+                rsm_result = new RSM({...options.rsm, xml: set});
             }
-            return { messages, rsm, complete };
+            return { messages, rsm: rsm_result, complete };
         }
     }
 }

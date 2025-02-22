@@ -1,6 +1,5 @@
 /*global mock, converse */
-
-const { Strophe, u, stx } = converse.env;
+const { Strophe, u, stx, sizzle } = converse.env;
 
 describe("A Groupchat Message", function () {
 
@@ -423,17 +422,18 @@ describe("A Groupchat Message", function () {
         const message_form = view.querySelector('converse-muc-message-form');
         textarea.value = unfurl_url;
         const enter_event = {
-            'target': textarea,
-            'preventDefault': function preventDefault () {},
-            'stopPropagation': function stopPropagation () {},
-            'keyCode': 13 // Enter
+            target: textarea,
+            preventDefault: function preventDefault () {},
+            stopPropagation: function stopPropagation () {},
+            keyCode: 13 // Enter
         }
         message_form.onKeyDown(enter_event);
 
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
         expect(view.querySelector('.chat-msg__text').textContent).toBe(unfurl_url);
 
-        let msg = _converse.api.connection.get().send.calls.all()[1].args[0];
+        const sent_stanzas = _converse.api.connection.get().sent_stanzas;
+        let msg = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('message')).pop());
         expect(msg).toEqualStanza(stx`
             <message from="${own_jid}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">
                 <body>${unfurl_url}</body>

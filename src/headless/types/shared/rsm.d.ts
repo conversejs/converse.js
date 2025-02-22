@@ -27,7 +27,7 @@ export class RSM {
     result: {};
     /**
      * Returns a `<set>` XML element that confirms to XEP-0059 Result Set Management.
-     * The element is constructed based on the RSMQueryParameters
+     * The element is constructed based on the RSMQueryOptions
      * that are set on this RSM instance.
      * @returns {Element}
      */

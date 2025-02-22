@@ -1,18 +1,19 @@
 /**
- * @description UI code XEP-0313 Message Archive Management
- * @copyright 2021, the Converse.js contributors
+ * @description UI code for XEP-0313 Message Archive Management
  * @license Mozilla Public License (MPLv2)
  */
 import './placeholder.js';
 import { api, converse } from '@converse/headless';
-import { fetchMessagesOnScrollUp, getPlaceholderTemplate } from './utils.js';
+import { getPlaceholderTemplate } from './utils.js';
 
 
 converse.plugins.add('converse-mam-views', {
     dependencies: ['converse-mam', 'converse-chatview', 'converse-muc-views'],
 
     initialize () {
-        api.listen.on('chatBoxScrolledUp', fetchMessagesOnScrollUp);
+        api.settings.extend({
+            auto_fill_history_gaps: true,
+        });
         api.listen.on('getMessageTemplate', getPlaceholderTemplate);
     }
 });

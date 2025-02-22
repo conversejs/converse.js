@@ -1,37 +1,50 @@
-import { api, u } from "@converse/headless";
-import { CustomElement } from 'shared/components/element.js';
-import tplPlaceholder from './templates/placeholder.js';
+import { api } from "@converse/headless";
+import { ObservableElement } from "shared/components/observable.js";
+import tplPlaceholder from "./templates/placeholder.js";
 
-import './styles/placeholder.scss';
+import "./styles/placeholder.scss";
 
+class Placeholder extends ObservableElement {
+    /**
+     * @typedef {import('shared/components/types').ObservableProperty} ObservableProperty
+     */
 
-class Placeholder extends CustomElement {
-
-    static get properties () {
+    static get properties() {
         return {
-            'model': { type: Object }
-        }
+            ...super.properties,
+            model: { type: Object },
+        };
     }
 
-    constructor () {
+    constructor() {
         super();
         this.model = null;
+        this.observable = /** @type {ObservableProperty} */ ("once");
+        this.intersectionRatio = 0.1;
     }
 
-    render () {
+    render() {
         return tplPlaceholder(this);
     }
 
-    async fetchMissingMessages (ev) {
+    /**
+     * @param {Event} [ev]
+     */
+    fetchMissingMessages(ev) {
         ev?.preventDefault?.();
-        this.model.set('fetching', true);
-        const options = {
-            'before': this.model.get('before'),
-            'start': this.model.get('start')
+        this.model.fetchMissingMessages();
+    }
+
+    /**
+     * @param {IntersectionObserverEntry} _entry
+     */
+    onVisibilityChanged(_entry) {
+        if (api.settings.get("auto_fill_history_gaps") && this.isVisible && !this.model.get("fetching")) {
+            this.fetchMissingMessages();
         }
-        await u.mam.fetchArchivedMessages(this.model.collection.chatbox, options);
-        this.model.destroy();
     }
 }
 
-api.elements.define('converse-mam-placeholder', Placeholder);
+api.elements.define("converse-mam-placeholder", Placeholder);
+
+export default Placeholder;

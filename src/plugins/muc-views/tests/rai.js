@@ -1,6 +1,5 @@
 /*global mock, converse */
-
-const { Strophe, u, stx } = converse.env;
+const { Strophe, u, stx, sizzle } = converse.env;
 
 // See: https://xmpp.org/rfcs/rfc3921.html
 
@@ -22,7 +21,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
         expect(view.model.get('hidden')).toBe(false);
 
         const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-        const iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+        const iq_get = await u.waitUntil(() => sent_IQs.filter(iq => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop());
         const first_msg_id = _converse.api.connection.get().getUniqueId();
         const last_msg_id = _converse.api.connection.get().getUniqueId();
         let message =
@@ -58,7 +57,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
             stx`<iq type="result"
                     id="${iq_get.getAttribute("id")}"
                     xmlns="jabber:client">
-                <fin xmlns="urn:xmpp:mam:2">
+                <fin xmlns="urn:xmpp:mam:2" complete="true">
                     <set xmlns="http://jabber.org/protocol/rsm">
                         <first index="0">${first_msg_id}</first>
                         <last>${last_msg_id}</last>

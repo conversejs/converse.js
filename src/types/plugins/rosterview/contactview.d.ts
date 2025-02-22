@@ -6,6 +6,9 @@ export default class RosterContact extends ObservableElement {
         observable: {
             type: StringConstructor;
         };
+        intersectionRatio: {
+            type: NumberConstructor;
+        };
     };
     initialize(): void;
     render(): import("lit").TemplateResult<1>;

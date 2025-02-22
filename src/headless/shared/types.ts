@@ -9,6 +9,12 @@ export interface ModelOptions {
     silent?: boolean;
 }
 
+export type RSMResult = {
+    count?: string;
+    first?: string;
+    last?: string;
+};
+
 // Types for mixins.
 // -----------------
 

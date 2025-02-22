@@ -73,6 +73,7 @@
 - New "getOccupantActionButtons" hook, so that plugins can add actions on MUC occupants.
 - MUC occupants badges: displays short labels, with full label as title.
 - New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#show-background)
+- New config option [lazy_load_vcards](https://conversejs.org/docs/html/configuration.html#lazy-load-vcards)
 - Update the "Add MUC" modal to add validation and to allow specifying only the MUC name and not the whole address.
 
 ### Default config changes

@@ -17,7 +17,7 @@ class VCard extends Model {
      * @param {import("./types").VCardModelOptions} [options]
      */
     initialize(_attrs, options) {
-        this.lazy_load = !!options?.lazy_load;
+        this.lazy_load = api.settings.get('lazy_load_vcards') && !!options?.lazy_load;
 
         if (this.lazy_load) {
             this.once("visibilityChanged", () => api.vcard.update(this));

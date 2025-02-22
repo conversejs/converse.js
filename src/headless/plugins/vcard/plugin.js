@@ -26,6 +26,10 @@ converse.plugins.add('converse-vcard', {
     },
 
     initialize () {
+        api.settings.extend({
+            lazy_load_vcards: true,
+        });
+
         api.promises.add('VCardsInitialized');
 
         const exports = { VCard, VCards };

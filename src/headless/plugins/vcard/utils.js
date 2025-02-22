@@ -24,14 +24,14 @@ const { Strophe, $iq, u } = converse.env;
  */
 export async function onVCardData(iq) {
     const result = {
-        email: iq.querySelector("> vCard EMAIL USERID")?.textContent,
-        fullname: iq.querySelector("> vCard FN")?.textContent,
-        image: iq.querySelector("> vCard PHOTO BINVAL")?.textContent,
-        image_type: iq.querySelector("> vCard PHOTO TYPE")?.textContent,
-        nickname: iq.querySelector("vCard NICKNAME")?.textContent,
-        role: iq.querySelector("vCard ROLE")?.textContent,
+        email: iq.querySelector(":scope > vCard EMAIL USERID")?.textContent,
+        fullname: iq.querySelector(":scope > vCard FN")?.textContent,
+        image: iq.querySelector(":scope > vCard PHOTO BINVAL")?.textContent,
+        image_type: iq.querySelector(":scope > vCard PHOTO TYPE")?.textContent,
+        nickname: iq.querySelector(":scope > vCard NICKNAME")?.textContent,
+        role: iq.querySelector(":scope > vCard ROLE")?.textContent,
         stanza: iq, // TODO: remove?
-        url: iq.querySelector("URL")?.textContent,
+        url: iq.querySelector(":scope > vCard URL")?.textContent,
         vcard_updated: new Date().toISOString(),
     };
     if (result.image) {

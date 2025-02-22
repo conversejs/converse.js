@@ -1,10 +1,14 @@
-import { api, u } from "@converse/headless";
+import { api } from "@converse/headless";
 import { ObservableElement } from "shared/components/observable.js";
 import tplPlaceholder from "./templates/placeholder.js";
 
 import "./styles/placeholder.scss";
 
 class Placeholder extends ObservableElement {
+    /**
+     * @typedef {import('shared/components/types').ObservableProperty} ObservableProperty
+     */
+
     static get properties() {
         return {
             ...super.properties,
@@ -15,6 +19,8 @@ class Placeholder extends ObservableElement {
     constructor() {
         super();
         this.model = null;
+        this.observable = /** @type {ObservableProperty} */ ("once");
+        this.intersectionRatio = 0;
     }
 
     render() {
@@ -24,15 +30,18 @@ class Placeholder extends ObservableElement {
     /**
      * @param {Event} [ev]
      */
-    async fetchMissingMessages(ev) {
+    fetchMissingMessages(ev) {
         ev?.preventDefault?.();
-        this.model.set("fetching", true);
-        const options = {
-            before: this.model.get("before"),
-            start: this.model.get("start"),
-        };
-        await u.mam.fetchArchivedMessages(this.model.collection.chatbox, options);
-        this.model.destroy();
+        this.model.fetchMissingMessages();
+    }
+
+    /**
+     * @param {IntersectionObserverEntry} _entry
+     */
+    onVisibilityChanged(_entry) {
+        if (this.isVisible) {
+            this.fetchMissingMessages();
+        }
     }
 }
 

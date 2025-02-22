@@ -5,7 +5,9 @@ describe("MAM archived messages", function () {
 
     beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
-    fit("will be fetched newest first", mock.initConverse([], {
+    it("will be fetched newest first and will automatically fetch again if the placeholder message becomes visible",
+
+    mock.initConverse([], {
         archived_messages_page_size: 3,
     }, async function (_converse) {
         const { api } = _converse;
@@ -78,20 +80,20 @@ describe("MAM archived messages", function () {
         const messages = [..._converse.chatboxes.get(muc_jid).messages];
         expect(messages.shift() instanceof _converse.exports.MAMPlaceholderMessage).toBe(true);
 
-        // iq = await u.waitUntil(() => conn.IQ_stanzas.filter(iq => iq.querySelector('iq[type="set"] query[xmlns="urn:xmpp:mam:2"]')).pop());
-        // iq_id = iq.getAttribute('id');
-        // query_id = iq.querySelector('query').getAttribute('queryid');
-        // expect(iq).toEqualStanza(
-        //     stx`<iq type="set" to="${muc_jid}" xmlns="jabber:client" id="${iq_id}">
-        //         <query xmlns="urn:xmpp:mam:2" queryid="${query_id}">
-        //             <x xmlns="jabber:x:data" type="submit">
-        //                 <field var="FORM_TYPE" type="hidden"><value>urn:xmpp:mam:2</value></field>
-        //             </x>
-        //             <set xmlns="http://jabber.org/protocol/rsm">
-        //                 <before>c2c07703-b285-4529-a4b4-12594f749c58</before><max>3</max>
-        //             </set>
-        //         </query>
-        //     </iq>`);
+        iq = await u.waitUntil(() => conn.IQ_stanzas.filter(iq => iq.querySelector('iq[type="set"] query[xmlns="urn:xmpp:mam:2"]')).pop());
+        iq_id = iq.getAttribute('id');
+        query_id = iq.querySelector('query').getAttribute('queryid');
+        expect(iq).toEqualStanza(
+            stx`<iq type="set" to="${muc_jid}" xmlns="jabber:client" id="${iq_id}">
+                <query xmlns="urn:xmpp:mam:2" queryid="${query_id}">
+                    <x xmlns="jabber:x:data" type="submit">
+                        <field var="FORM_TYPE" type="hidden"><value>urn:xmpp:mam:2</value></field>
+                    </x>
+                    <set xmlns="http://jabber.org/protocol/rsm">
+                        <before>9fe1a9d9-c979-488c-93a4-8a3c4dcbc63e</before><max>3</max>
+                    </set>
+                </query>
+            </iq>`);
     }));
 
     it("will appear in the correct order", mock.initConverse([], {}, async function (_converse) {

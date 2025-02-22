@@ -1,31 +1,39 @@
-converse-mam-placeholder {
-    .mam-placeholder {
-        position: relative;
-        height: 2em;
-        margin: 0.5em 0;
-        &:before,
-        &:after {
-            content: "";
-            display: block;
-            position: absolute;
-            left: 0;
-            right: 0;
-        }
-        &:before {
+.conversejs {
+    converse-mam-placeholder {
+        .spinner-grow {
             height: 1em;
-            top: 1em;
-            background: linear-gradient(-135deg, lightgray 0.5em, transparent 0) 0 0.5em, linear-gradient( 135deg, lightgray 0.5em, transparent 0) 0 0.5em;
-            background-position: top left;
-            background-repeat: repeat-x;
-            background-size: 1em 1em;
+            width: 1em;
+            margin: 1em;
         }
-        &:after {
-            height: 1em;
-            top: 0.75em;
-            background: linear-gradient(-135deg, var(--background-color) 0.5em, transparent 0) 0 0.5em, linear-gradient( 135deg, var(--background-color) 0.5em, transparent 0) 0 0.5em;
-            background-position: top left;
-            background-repeat: repeat-x;
-            background-size: 1em 1em;
+
+        .mam-placeholder {
+            position: relative;
+            height: 2em;
+            margin: 0.5em 0;
+            &:before,
+            &:after {
+                content: "";
+                display: block;
+                position: absolute;
+                left: 0;
+                right: 0;
+            }
+            &:before {
+                height: 1em;
+                top: 1em;
+                background: linear-gradient(-135deg, lightgray 0.5em, transparent 0) 0 0.5em, linear-gradient( 135deg, lightgray 0.5em, transparent 0) 0 0.5em;
+                background-position: top left;
+                background-repeat: repeat-x;
+                background-size: 1em 1em;
+            }
+            &:after {
+                height: 1em;
+                top: 0.75em;
+                background: linear-gradient(-135deg, var(--background-color) 0.5em, transparent 0) 0 0.5em, linear-gradient( 135deg, var(--background-color) 0.5em, transparent 0) 0 0.5em;
+                background-position: top left;
+                background-repeat: repeat-x;
+                background-size: 1em 1em;
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 /*global mock, converse */
+const { stx } = converse.env;
 const dayjs = converse.env.dayjs;
 const Strophe = converse.env.Strophe;
 const $iq = converse.env.$iq;
@@ -9,7 +10,9 @@ const sizzle = converse.env.sizzle;
 describe("Message Archive Management", function () {
     describe("The archive.query API", function () {
 
-       it("can be used to query for all archived messages",
+        beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
+        it("can be used to query for all archived messages",
                 mock.initConverse(['discoInitialized'], {}, async function (_converse) {
 
             const sendIQ = _converse.api.connection.get().sendIQ;
@@ -22,8 +25,8 @@ describe("Message Archive Management", function () {
             _converse.api.archive.query();
             await u.waitUntil(() => sent_stanza);
             const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
-            expect(Strophe.serialize(sent_stanza)).toBe(
-                `<iq id="${IQ_id}" type="set" xmlns="jabber:client"><query queryid="${queryid}" xmlns="urn:xmpp:mam:2"/></iq>`);
+            expect(sent_stanza).toEqualStanza(
+                stx`<iq id="${IQ_id}" type="set" xmlns="jabber:client"><query queryid="${queryid}" xmlns="urn:xmpp:mam:2"/></iq>`);
         }));
 
        it("can be used to query for all messages to/from a particular JID",
@@ -39,19 +42,19 @@ describe("Message Archive Management", function () {
             _converse.api.archive.query({'with':'juliet@capulet.lit'});
             await u.waitUntil(() => sent_stanza);
             const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
-            expect(Strophe.serialize(sent_stanza)).toBe(
-                `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
-                    `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
-                        `<x type="submit" xmlns="jabber:x:data">`+
-                        `<field type="hidden" var="FORM_TYPE">`+
-                            `<value>urn:xmpp:mam:2</value>`+
-                        `</field>`+
-                        `<field var="with">`+
-                            `<value>juliet@capulet.lit</value>`+
-                        `</field>`+
-                        `</x>`+
-                    `</query>`+
-                `</iq>`);
+            expect(sent_stanza).toEqualStanza(stx`
+                <iq id="${IQ_id}" type="set" xmlns="jabber:client">
+                    <query queryid="${queryid}" xmlns="urn:xmpp:mam:2">
+                        <x type="submit" xmlns="jabber:x:data">
+                        <field type="hidden" var="FORM_TYPE">
+                            <value>urn:xmpp:mam:2</value>
+                        </field>
+                        <field var="with">
+                            <value>juliet@capulet.lit</value>
+                        </field>
+                        </x>
+                    </query>
+                </iq>`);
         }));
 
        it("can be used to query for archived messages from a chat room",

@@ -3,7 +3,7 @@ import { getUniqueId } from '../../utils/index.js';
 
 export default class MAMPlaceholderMessage extends Model {
 
-    defaults () { // eslint-disable-line class-methods-use-this
+    defaults () {
         return {
             msgid: getUniqueId(),
             is_ephemeral: false

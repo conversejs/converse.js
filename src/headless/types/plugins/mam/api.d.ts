@@ -7,7 +7,7 @@ declare namespace _default {
          * RSM to enable easy querying between results pages.
          *
          * @method _converse.api.archive.query
-         * @param {import('./types').ArchiveQueryOptions} options - An object containing query parameters
+         * @param {import('./types').ArchiveQueryOptions} [options={}] - Optional query parameters
          * @throws {Error} An error is thrown if the XMPP server responds with an error.
          * @returns {Promise<import('./types').MAMQueryResult>}
          *
@@ -40,7 +40,7 @@ declare namespace _default {
          * // For a particular user
          * let result;
          * try {
-         *    result = await api.archive.query({'with': 'john@doe.net'});
+         *    result = await api.archive.query({ mam: { with: 'john@doe.net' }});
          * } catch (e) {
          *     // The query was not successful
          * }
@@ -48,7 +48,7 @@ declare namespace _default {
          * // For a particular room
          * let result;
          * try {
-         *    result = await api.archive.query({'with': 'discuss@conference.doglovers.net', 'groupchat': true});
+         *    result = await api.archive.query({ mam: { with: 'discuss@conference.doglovers.net' }}, is_groupchat: true });
          * } catch (e) {
          *     // The query was not successful
          * }
@@ -57,14 +57,16 @@ declare namespace _default {
          * // Requesting all archived messages before or after a certain date
          * // ===============================================================
          * //
-         * // The `start` and `end` parameters are used to query for messages
+         * // The MAM `start` and `end` parameters are used to query for messages
          * // within a certain timeframe. The passed in date values may either be ISO8601
          * // formatted date strings, or JavaScript Date objects.
          *
          *  const options = {
-         *      'with': 'john@doe.net',
-         *      'start': '2010-06-07T00:00:00Z',
-         *      'end': '2010-07-07T13:23:54Z'
+         *      mam: {
+         *          'with': 'john@doe.net',
+         *          'start': '2010-06-07T00:00:00Z',
+         *          'end': '2010-07-07T13:23:54Z'
+         *      },
          *  };
          * let result;
          * try {
@@ -83,7 +85,7 @@ declare namespace _default {
          * // Return maximum 10 archived messages
          * let result;
          * try {
-         *     result = await api.archive.query({'with': 'john@doe.net', 'max':10});
+         *     result = await api.archive.query({ mam: { with: 'john@doe.net', max:10 }});
          * } catch (e) {
          *     // The query was not successful
          * }
@@ -105,7 +107,7 @@ declare namespace _default {
          * // archived messages. Please note, when calling these methods, pass in an integer
          * // to limit your results.
          *
-         * const options = {'with': 'john@doe.net', 'max':10};
+         * const options = { mam: { with: 'john@doe.net' }, rsm: { max:10 }};
          * let result;
          * try {
          *     result = await api.archive.query(options);
@@ -117,7 +119,13 @@ declare namespace _default {
          *
          * while (!result.complete) {
          *     try {
-         *         result = await api.archive.query(Object.assign(options, rsm.next(10).query));
+         *         result = await api.archive.query({
+         *             mam: { ...options.mam },
+         *             rsm: {
+         *                 ...options.rsm,
+         *                 ...rsm.next(10).query
+         *                 }
+         *             });
          *     } catch (e) {
          *         // The query was not successful
          *     }
@@ -135,7 +143,7 @@ declare namespace _default {
          * // message, pass in the `before` parameter with an empty string value `''`.
          *
          * let result;
-         * const options = {'before': '', 'max':5};
+         * const options = { rsm: { before: '', max:5 }};
          * try {
          *     result = await api.archive.query(options);
          * } catch (e) {
@@ -146,7 +154,14 @@ declare namespace _default {
          *
          * // Now we query again, to get the previous batch.
          * try {
-         *      result = await api.archive.query(Object.assign(options, rsm.previous(5).query));
+         *     try {
+         *         result = await api.archive.query({
+         *             mam: { ...options.mam },
+         *             rsm: {
+         *                 ...options.rsm,
+         *                 ...rsm.previous(5).query
+         *                 }
+         *             });
          * } catch (e) {
          *     // The query was not successful
          * }
@@ -154,7 +169,7 @@ declare namespace _default {
          * result.messages.forEach(m => this.showMessage(m));
          *
          */
-        function query(options: import("./types").ArchiveQueryOptions): Promise<import("./types").MAMQueryResult>;
+        function query(options?: import("./types").ArchiveQueryOptions): Promise<import("./types").MAMQueryResult>;
     }
 }
 export default _default;

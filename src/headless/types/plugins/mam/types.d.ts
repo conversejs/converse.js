@@ -1,26 +1,21 @@
 import { RSM } from '../../shared/rsm';
-export type MAMOptions = {
-    max?: number;
-    after?: string;
-    before?: string;
+export type MAMQueryOptions = {
     end?: string;
     start?: string;
     with?: string;
-    groupchat?: boolean;
 };
-type RSMQueryParameters = {
+type RSMQueryOptions = {
     after?: string;
     before?: string;
     index?: number;
     max?: number;
 };
-export type MAMFilterParameters = RSMQueryParameters & {
-    end?: string;
-    start?: string;
-    with?: string;
+export type FetchArchivedMessagesOptions = {
+    mam?: MAMQueryOptions;
+    rsm?: RSMQueryOptions;
 };
-export type ArchiveQueryOptions = MAMFilterParameters & {
-    groupchat?: boolean;
+export type ArchiveQueryOptions = FetchArchivedMessagesOptions & {
+    is_groupchat?: boolean;
 };
 export type MAMQueryResult = {
     messages: any[];

@@ -9,6 +9,9 @@ export default class Message extends ObservableElement {
         observable: {
             type: StringConstructor;
         };
+        intersectionRatio: {
+            type: NumberConstructor;
+        };
     };
     model_with_messages: any;
     initialize(): Promise<void>;

@@ -136,9 +136,9 @@ class Bookmarks extends Collection {
                             ${model.get('password') ? stx`<password>${model.get('password')}</password>` : ''}
                         ${
                             extensions.length
-                                ? stx`<extensions>${extensions.map((e) => Stanza.unsafeXML(e))}</extensions>`
+                                ? stx`<extensions>${extensions.map((e) => Stanza.fromString(e))}</extensions>`
                                 : ''
-                        };
+                        }
                         </conference>
                     </item>`;
                 }

@@ -6,6 +6,11 @@ export interface ModelOptions {
     unset?: boolean;
     silent?: boolean;
 }
+export type RSMResult = {
+    count?: string;
+    first?: string;
+    last?: string;
+};
 type Constructor<T = {}> = new (...args: any[]) => T;
 export type ModelExtender = Constructor<Model>;
 type EncryptionPayloadAttrs = {

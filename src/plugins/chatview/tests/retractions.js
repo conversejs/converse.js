@@ -1,6 +1,5 @@
 /*global mock, converse */
-
-const { Strophe, u, stx, dayjs } = converse.env;
+const { Strophe, u, stx, dayjs, sizzle } = converse.env;
 
 describe('A sent chat message', function () {
     beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
@@ -211,7 +210,7 @@ describe('A message retraction', function () {
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const stanza = await u.waitUntil(() =>
-                sent_IQs.filter((iq) => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop()
+                sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop()
             );
             const queryid = stanza.querySelector('query').getAttribute('queryid');
             const view = _converse.chatboxviews.get(contact_jid);
@@ -262,7 +261,7 @@ describe('A message retraction', function () {
 
             const iq_result = stx`
                 <iq type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
-                    <fin xmlns="urn:xmpp:mam:2">
+                    <fin xmlns="urn:xmpp:mam:2" complete="true">
                         <set xmlns="http://jabber.org/protocol/rsm">
                             <first index="0">${first_id}</first>
                             <last>${last_id}</last>

@@ -40,8 +40,8 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
         this.lazy_load_vcard = true;
         super.initialize();
 
-        if (!this.checkValidity()) return;
         this.chatbox = this.collection?.chatbox;
+        if (!this.checkValidity()) return;
 
         if (this.get('file')) {
             this.on('change:put', () => this.uploadFile());

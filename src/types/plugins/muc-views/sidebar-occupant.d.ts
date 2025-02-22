@@ -9,6 +9,9 @@ export default class MUCOccupantListItem extends ObservableElement {
         observable: {
             type: StringConstructor;
         };
+        intersectionRatio: {
+            type: NumberConstructor;
+        };
     };
     muc: any;
     initialize(): Promise<void>;

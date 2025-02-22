@@ -1,13 +1,97 @@
 /*global mock, converse */
+const { Strophe, stx, u, sizzle } = converse.env;
 
-const { Strophe, stx } = converse.env;
-const u = converse.env.utils;
+describe("MAM archived messages", function () {
 
-describe("A MAM archived message", function () {
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
-    it("will appear in the correct order",
-            mock.initConverse([], {}, async function (_converse) {
+    it("will be fetched newest first and will automatically fetch again if the placeholder message becomes visible",
 
+    mock.initConverse([], {
+        archived_messages_page_size: 3,
+    }, async function (_converse) {
+        const { api } = _converse;
+        const nick = 'romeo';
+        const muc_jid = 'room@muc.example.com';
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
+
+        const conn = api.connection.get();
+        let iq = await u.waitUntil(() => conn.IQ_stanzas.filter((iq) => sizzle('query[xmlns="urn:xmpp:mam:2"]', iq).length).pop());
+        let iq_id = iq.getAttribute('id');
+        let query_id = iq.querySelector('query').getAttribute('queryid');
+        expect(iq).toEqualStanza(
+            stx`<iq type="set" to="${muc_jid}" xmlns="jabber:client" id="${iq_id}">
+                <query xmlns="urn:xmpp:mam:2" queryid="${query_id}">
+                    <set xmlns="http://jabber.org/protocol/rsm"><before></before><max>3</max></set>
+                </query>
+            </iq>`);
+
+        [
+            stx`<message to="${conn.jid}" from="${muc_jid}" xmlns="jabber:server">
+                    <result xmlns="urn:xmpp:mam:2" queryid="${query_id}" id="9fe1a9d9-c979-488c-93a4-8a3c4dcbc63e">
+                        <forwarded xmlns="urn:xmpp:forward:0">
+                            <delay xmlns="urn:xmpp:delay" stamp="2024-10-13T17:51:20Z"/>
+                            <message xmlns="jabber:client" xml:lang="en" from="${muc_jid}/dadmin" type="groupchat" id="bc4caee0-380a-4f08-b20b-9015177a95bb">
+                                <body>first message</body>
+                            </message>
+                        </forwarded>
+                    </result>
+                </message>`,
+
+            stx`<message to="${conn.jid}" from="${muc_jid}" xmlns="jabber:server">
+                    <result xmlns="urn:xmpp:mam:2" queryid="${query_id}" id="64f68d52-76e6-4fa6-93ef-9fbf96bb237b">
+                        <forwarded xmlns="urn:xmpp:forward:0">
+                            <delay xmlns="urn:xmpp:delay" stamp="2024-10-13T17:51:25Z"/>
+                            <message xmlns="jabber:client" xml:lang="en" from="${muc_jid}/dadmin" type="groupchat" id="7aae4842-6a8b-4a10-a9c4-47cc408650ef">
+                                <body>2nd message</body>
+                            </message>
+                        </forwarded>
+                    </result>
+                </message>`,
+
+            stx`<message to="${conn.jid}" from="${muc_jid}" xmlns="jabber:server">
+                    <result xmlns="urn:xmpp:mam:2" queryid="${query_id}" id="c2c07703-b285-4529-a4b4-12594f749c58">
+                        <forwarded xmlns="urn:xmpp:forward:0">
+                            <delay xmlns="urn:xmpp:delay" stamp="2024-10-13T17:52:34Z"/>
+                            <message xmlns="jabber:client" from="${muc_jid}/dadmin" type="groupchat" id="hDs1J0QHfimjggw2">
+                                <body>3rd message</body>
+                            </message>
+                        </forwarded>
+                    </result>
+                </message>`,
+        ].forEach((stanza) => conn._dataRecv(mock.createRequest(stanza)));
+
+        while (conn.IQ_stanzas.length) conn.IQ_stanzas.pop();
+
+        conn._dataRecv(mock.createRequest(stx`
+            <iq type="result" id="${iq_id}" xmlns="jabber:client">
+                <fin xmlns="urn:xmpp:mam:2">
+                    <set xmlns="http://jabber.org/protocol/rsm">
+                        <first index="0">9fe1a9d9-c979-488c-93a4-8a3c4dcbc63e</first>
+                        <last>c2c07703-b285-4529-a4b4-12594f749c58</last>
+                    </set>
+                </fin>
+            </iq>`));
+
+        await u.waitUntil(() => _converse.chatboxes.get(muc_jid).messages.length === 4);
+        const messages = [..._converse.chatboxes.get(muc_jid).messages];
+        expect(messages.shift() instanceof _converse.exports.MAMPlaceholderMessage).toBe(true);
+
+        iq = await u.waitUntil(() => conn.IQ_stanzas.filter((iq) => sizzle('query[xmlns="urn:xmpp:mam:2"]', iq).length).pop());
+        iq_id = iq.getAttribute('id');
+        query_id = iq.querySelector('query').getAttribute('queryid');
+        expect(iq).toEqualStanza(
+            stx`<iq type="set" to="${muc_jid}" xmlns="jabber:client" id="${iq_id}">
+                <query xmlns="urn:xmpp:mam:2" queryid="${query_id}">
+                    <set xmlns="http://jabber.org/protocol/rsm">
+                        <before>9fe1a9d9-c979-488c-93a4-8a3c4dcbc63e</before>
+                        <max>3</max>
+                    </set>
+                </query>
+            </iq>`);
+    }));
+
+    it("will appear in the correct order", mock.initConverse([], {}, async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'room@muc.example.com';
         const model = await mock.openAndEnterMUC(_converse, muc_jid, nick);

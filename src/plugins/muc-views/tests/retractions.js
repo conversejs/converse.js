@@ -1,6 +1,5 @@
 /*global mock, converse */
-
-const { Strophe, u, stx } = converse.env;
+const { Strophe, u, stx, sizzle } = converse.env;
 
 async function sendAndThenRetractMessage (_converse, view) {
     view.model.sendMessage({'body': 'hello world'});
@@ -816,13 +815,13 @@ describe("Message Retractions", function () {
             const view = _converse.chatboxviews.get(muc_jid);
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-            const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+            const stanza = await u.waitUntil(() => sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop());
             const queryid = stanza.querySelector('query').getAttribute('queryid');
 
             const first_id = u.getUniqueId();
             const tombstone = stx`
                 <message id="${u.getUniqueId()}" to="${_converse.jid}" from="${muc_jid}" xmlns="jabber:client">
-                    <result xmlns="urn:xmpp:mam:2" queryid="${queryid}" id="stanza-id">
+                    <result xmlns="urn:xmpp:mam:2" queryid="${queryid}" id="${first_id}">
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2019-09-20T23:08:25Z"/>
                             <message type="groupchat" from="${muc_jid}/eve" to="${_converse.bare_jid}" id="message-id-1">
@@ -852,7 +851,7 @@ describe("Message Retractions", function () {
 
             const iq_result = stx`
                 <iq type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
-                    <fin xmlns="urn:xmpp:mam:2">
+                    <fin xmlns="urn:xmpp:mam:2" complete="true">
                         <set xmlns="http://jabber.org/protocol/rsm">
                             <first index="0">${first_id}</first>
                             <last>${last_id}</last>
@@ -892,13 +891,13 @@ describe("Message Retractions", function () {
             const view = _converse.chatboxviews.get(muc_jid);
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-            const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+            const stanza = await u.waitUntil(() => sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop());
             const queryid = stanza.querySelector('query').getAttribute('queryid');
 
             const first_id = u.getUniqueId();
             const tombstone = stx`
                 <message id="${u.getUniqueId()}" to="${_converse.jid}" from="${muc_jid}" xmlns="jabber:client">
-                    <result xmlns="urn:xmpp:mam:2" queryid="${queryid}" id="stanza-id">
+                    <result xmlns="urn:xmpp:mam:2" queryid="${queryid}" id="${first_id}">
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2019-09-20T23:08:25Z"/>
                             <message type="groupchat" from="${muc_jid}/eve" to="${_converse.bare_jid}" id="message-id-1">
@@ -920,7 +919,7 @@ describe("Message Retractions", function () {
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2019-09-20T23:08:25Z"/>
                             <message type="groupchat" from="${muc_jid}" to="${_converse.bare_jid}" id="retract-message-1">
-                                <retract id="stanza-id" xmlns='urn:xmpp:message-retract:1'>
+                                <retract id="${first_id}" xmlns='urn:xmpp:message-retract:1'>
                                     <moderated by='room@muc.example.com/macbeth' xmlns='urn:xmpp:message-moderate:1'/>
                                     <reason>This message contains inappropriate content</reason>
                                 </retract>
@@ -932,7 +931,7 @@ describe("Message Retractions", function () {
 
             const iq_result = stx`
                 <iq type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
-                    <fin xmlns="urn:xmpp:mam:2">
+                    <fin xmlns="urn:xmpp:mam:2" complete="true">
                         <set xmlns="http://jabber.org/protocol/rsm">
                             <first index="0">${first_id}</first>
                             <last>${last_id}</last>

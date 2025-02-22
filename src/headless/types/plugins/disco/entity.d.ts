@@ -20,15 +20,15 @@ declare class DiscoEntity extends Model {
      * Returns a Promise which resolves with a map indicating
      * whether a given identity is provided by this entity.
      * @method _converse.DiscoEntity#getIdentity
-     * @param { String } category - The identity category
-     * @param { String } type - The identity type
+     * @param {String} category - The identity category
+     * @param {String} type - The identity type
      */
     getIdentity(category: string, type: string): Promise<any>;
     /**
      * Returns a Promise which resolves with a map indicating
      * whether a given feature is supported.
      * @method _converse.DiscoEntity#getFeature
-     * @param { String } feature - The feature that might be supported.
+     * @param {String} feature - The feature that might be supported.
      */
     getFeature(feature: string): Promise<this>;
     onFeatureAdded(feature: any): void;

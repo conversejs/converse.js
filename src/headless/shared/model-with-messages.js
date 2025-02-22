@@ -128,12 +128,12 @@ export default function ModelWithMessages(BaseModel) {
             this.messages.fetched_flag = true;
             const resolve = this.messages.fetched.resolve;
             this.messages.fetch({
-                'add': true,
-                'success': () => {
+                add: true,
+                success: () => {
                     this.afterMessagesFetched();
                     resolve();
                 },
-                'error': () => {
+                error: () => {
                     this.afterMessagesFetched();
                     resolve();
                 },

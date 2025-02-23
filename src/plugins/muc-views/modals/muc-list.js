@@ -112,6 +112,7 @@ export default class MUCListModal extends BaseModal {
 
     onDomainChange () {
         this.getElementsByClassName('form-control')[0].value = this.model.get('muc_domain');
+        this.items = [];
         api.settings.get('auto_list_rooms') && this.updateRoomsList();
     }
 

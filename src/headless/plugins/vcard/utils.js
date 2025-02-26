@@ -209,7 +209,7 @@ export async function fetchVCard(jid) {
         return {
             jid,
             stanza: isElement(error) ? error : null, // TODO: remove?
-            error: isElement(error) ? parseErrorStanza(error) : error,
+            error: isElement(error) ? await parseErrorStanza(error) : error.message,
             vcard_error: new Date().toISOString(),
         };
     }

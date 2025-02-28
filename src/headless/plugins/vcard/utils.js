@@ -11,7 +11,6 @@ import _converse from "../../shared/_converse.js";
 import api from "../../shared/api/index.js";
 import converse from "../../shared/api/public.js";
 import log from "../../log.js";
-import { initStorage } from "../../utils/storage.js";
 import { shouldClearCache } from "../../utils/session.js";
 import { isElement } from "../../utils/html.js";
 import { parseErrorStanza } from "../../shared/parsers.js";
@@ -76,7 +75,7 @@ export function onOccupantAvatarChanged(occupant) {
  * @returns {Promise<VCard|null>}
  */
 export async function getVCardForModel(model, lazy_load = false) {
-    await initVCardCollection();
+    await api.waitUntil('VCardsInitialized');
 
     let vcard;
     if (model instanceof _converse.exports.MUCOccupant) {
@@ -157,32 +156,6 @@ async function getVCardForMUCMessage(message, lazy_load = true) {
             return null;
         }
     }
-}
-
-async function initVCardCollection() {
-    if (_converse.state.vcards) return _converse.state.vcards;
-
-    const vcards = new _converse.exports.VCards();
-    _converse.state.vcards = vcards;
-    Object.assign(_converse, { vcards }); // XXX DEPRECATED
-
-    const bare_jid = _converse.session.get("bare_jid");
-    const id = `${bare_jid}-converse.vcards`;
-    initStorage(vcards, id);
-    await new Promise((resolve) => {
-        vcards.fetch(
-            {
-                success: resolve,
-                error: resolve,
-            },
-            { silent: true }
-        );
-    });
-    /**
-     * Triggered as soon as the `_converse.vcards` collection has been initialized and populated from cache.
-     * @event _converse#VCardsInitialized
-     */
-    api.trigger("VCardsInitialized");
 }
 
 export function clearVCardsSession() {

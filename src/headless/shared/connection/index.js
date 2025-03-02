@@ -124,7 +124,7 @@ export class Connection extends Strophe.Connection {
             // If we don't have a connection URL, we show an input for the user
             // to manually provide it.
             api.settings.set('show_connection_url_input', true);
-            (callback || this.onConnectStatusChanged)(
+            (callback || this.onConnectStatusChanged.bind(this))(
                 Strophe.Status.DISCONNECTED,
                 __('Could not automatically determine a connection URL')
             );

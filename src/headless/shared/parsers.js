@@ -17,13 +17,14 @@ import * as errors from './errors.js';
 const { NS } = Strophe;
 
 /**
- * @param {Element|Error} stanza - The stanza to be parsed. As a convenience,
+ * @param {Element|Error|null} stanza - The stanza to be parsed. As a convenience,
  * an Error element can be passed in as well, so that this function can be
  * called in a catch block without first checking if a stanza or Error
  * element was received.
  * @returns {Promise<Error|errors.StanzaError|null>}
  */
 export async function parseErrorStanza(stanza) {
+    if (stanza === null) return null;
     if (stanza instanceof Error) return stanza;
     if (stanza.getAttribute('type') !== 'error') return null;
 

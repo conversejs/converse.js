@@ -1757,8 +1757,14 @@ that number. As new messages come in, older messages will be deleted to
 maintain the history size.
 
 .. note::
-  When deleting locally stored decrypted OMEMO messages, you will **not** be
-  able to decrypt them again after fetching them from the server archive.
+    When deleting locally stored decrypted OMEMO messages, you will **not** be
+    able to decrypt them again after fetching them from the server archive.
+
+.. note::
+    This feature was implemented before we had list virtualization for the chat
+    history (release in version 11) and was largely a backstop until that
+    feature became available. This feature can therefore be considered
+    DEPRECATED and will likely be removed in future versions.
 
 pruning_behavior
 ----------------
@@ -1773,7 +1779,6 @@ If set to ``'scrolled'``, then pruning will also happen when the chat is
 scrolled up. Be aware that this will interfere with MAM-based infinite
 scrolling, and this setting only makes sense when infinite scrolling with MAM
 is disabled.
-
 
 push_app_servers
 ----------------

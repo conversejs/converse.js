@@ -10,7 +10,6 @@ export default (model) => html`
             <div class="chat-body">
                 <div class="chat-content" aria-live="polite">
                     <converse-chat-content
-                        class="chat-content__messages"
                         .model=${model}></converse-chat-content>
                 </div>
             </div>` : '' }

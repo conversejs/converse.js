@@ -29,7 +29,6 @@ export default (el) => {
         <div class="chat-area ${el.shouldShowSidebar() ? chat_area_classes : 'col-xs-12' }">
             <div class="chat-content ${show_send_button ? 'chat-content-sendbutton' : ''}" aria-live="polite">
                 <converse-muc-chat-content
-                    class="chat-content__messages"
                     .model="${el.model}"></converse-muc-chat-content>
 
                 ${(el.model?.get('show_help_messages')) ?

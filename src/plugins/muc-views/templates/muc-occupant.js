@@ -85,7 +85,6 @@ export default (el) => {
             ? html`<div class="chat-body">
                   <div class="chat-content chat-content-sendbutton" aria-live="polite">
                       <converse-chat-content
-                          class="chat-content__messages"
                           .model="${el.model}"
                       ></converse-chat-content>
                   </div>

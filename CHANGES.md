@@ -11,6 +11,7 @@
 - #1038: Support setting node config manually
 - #1057: Removed the `mobile` view mode. Instead of setting `view_mode` to `mobile`, set it to `fullscreen`.
 - #1174: Show MUC avatars in the rooms list
+- #1181: Show OMEMO fingerprint as QR code
 - #1195: Add actions to quote and copy messages
 - #1303: Display non-contacts who sent us a message somehow in fullscreen 
 - #1349: XEP-0392 Consistent Color Generation

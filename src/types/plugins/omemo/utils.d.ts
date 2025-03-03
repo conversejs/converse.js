@@ -1,4 +1,5 @@
 export function formatFingerprint(fp: any): any;
+export function formatFingerprintForQRCode(fp: any): string;
 /**
  * @param {Error|IQError|UserFacingError} e
  * @param {ChatBox} chat

@@ -1,8 +1,8 @@
 import { html } from 'lit';
 import { Model } from '@converse/skeletor';
+import { api } from "@converse/headless";
 import { CustomElement } from './element.js';
 import { __ } from 'i18n';
-import { api } from "@converse/headless";
 
 const i18n_profile_picture = __('Click to set a new picture');
 

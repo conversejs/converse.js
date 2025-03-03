@@ -383,7 +383,12 @@ declare class MUC extends MUC_base {
     occupants: any;
     fetchOccupants(): any;
     /**
+     * If a user's affiliation has been changed, a <presence> stanza is sent
+     * out, but if the user is not in a room, a <message> stanza MAY be sent
+     * out. This handler handles such message stanzas. See "Example 176" in
+     * XEP-0045.
      * @param {Element} stanza
+     * @returns {void}
      */
     handleAffiliationChangedMessage(stanza: Element): void;
     /**

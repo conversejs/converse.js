@@ -538,6 +538,48 @@ describe("Message Archive Management", function () {
                     </query>
                 </iq>`);
         }));
+
+        it("queries with the right 'start' value if a new message is received before the MAM query is made",
+            mock.initConverse(['discoInitialized'],
+                {
+                    auto_fill_history_gaps: false,
+                    archived_messages_page_size: 2,
+                    muc_nickname_from_jid: false,
+                    muc_clear_messages_on_leave: false,
+                }, async function (_converse) {
+
+            const { api } = _converse;
+            const sent_IQs = api.connection.get().IQ_stanzas;
+            const muc_jid = 'orchard@chat.shakespeare.lit';
+            const nick = 'romeo';
+            const own_jid = _converse.session.get('jid');
+            const muc = await mock.openAndEnterMUC(_converse, muc_jid, nick);
+            const first_msg_id = u.getUniqueId();
+
+            // We first receive a new message before the MAM query could have been made.
+            let message = stx`
+                <message xmlns="jabber:client" type="groupchat" id="${first_msg_id}" to="${own_jid}" from="${muc_jid}/juliet">
+                    <body>First p0st!</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    <stanza-id xmlns="urn:xmpp:sid:0" id="${first_msg_id}" by="${muc_jid}"/>
+                </message>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+
+            await u.waitUntil(() => muc.messages.length);
+
+            let iq_get = await u.waitUntil(() => sent_IQs.filter(iq => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop());
+            const query_id = iq_get.querySelector('query').getAttribute('queryid');
+
+            // Even though a new message was received, we don't want to
+            // use its `start` value, since we want to query for
+            // messages older than it.
+            expect(iq_get).toEqualStanza(stx`
+                <iq id="${iq_get.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">
+                    <query queryid="${query_id}" xmlns="${Strophe.NS.MAM}">
+                        <set xmlns="http://jabber.org/protocol/rsm"><before></before><max>2</max></set>
+                    </query>
+                </iq>`);
+        }));
     });
 
     describe("An archived message", function () {

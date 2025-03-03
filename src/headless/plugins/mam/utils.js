@@ -89,7 +89,7 @@ export function getMAMPrefsFromFeature(feature) {
 /**
  * @param {MUC} muc
  */
-export async function preMUCJoinMAMFetch(muc) {
+export function preMUCJoinMAMFetch(muc) {
     if (
         !api.settings.get("muc_show_logs_before_join") ||
         !muc.features.get("mam_enabled") ||
@@ -97,8 +97,8 @@ export async function preMUCJoinMAMFetch(muc) {
     ) {
         return;
     }
-    await fetchNewestMessages(muc);
-    muc.save({ "prejoin_mam_fetched": true });
+    fetchNewestMessages(muc);
+    muc.save({ prejoin_mam_fetched: true });
 }
 
 /**
@@ -258,24 +258,22 @@ export function createScrollupPlaceholder(model) {
  * the last archived message in our local cache.
  * @param {ChatBox|MUC} model
  */
-export async function fetchNewestMessages(model) {
+export function fetchNewestMessages(model) {
     if (model.disable_mam) return;
 
-    const is_muc = model.get("type") === CHATROOMS_TYPE;
-    const disco_jid = is_muc ? model.get("jid") : _converse.session.get("bare_jid");
-    const supported = await api.disco.supports(NS.MAM, disco_jid);
-    if (!supported) return;
-
+    // XXX: It's important to first get the most recent message, before making any
+    // async calls, like `api.disco.supports`, so that we can avoid a race
+    // condition with possible new incoming messages.
+    // We want the most recent cached message, otherwise we would query with
+    // the wrong `start` value. This function used to call
+    // `api.disco.supports`, but it's also called in `fetchArchivedMessages`,
+    // so it's not necessary here.
     const most_recent_msg = model.getMostRecentMessage();
     const should_page = api.settings.get("mam_request_all_pages") ? "backwards" : false;
 
     if (most_recent_msg) {
-        // FIXME: A race condition might happen where, where a new message comes in
-        // before we've fetched the archived messages.
-        // Can be fixed by preventing processing of new messages until MAM
-        // has been fetched and processed.
-        fetchArchivedMessages(model, { mam: { start: most_recent_msg.get("time") }, rsm: { before: "" } }, should_page);
+        return fetchArchivedMessages(model, { mam: { start: most_recent_msg.get("time") }, rsm: { before: "" } }, should_page);
     } else {
-        fetchArchivedMessages(model, { rsm: { before: "" } }, should_page);
+        return fetchArchivedMessages(model, { rsm: { before: "" } }, should_page);
     }
 }

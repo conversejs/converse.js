@@ -25,7 +25,7 @@ export function getMAMPrefsFromFeature(feature: Model): void;
 /**
  * @param {MUC} muc
  */
-export function preMUCJoinMAMFetch(muc: MUC): Promise<void>;
+export function preMUCJoinMAMFetch(muc: MUC): void;
 /**
  * @param {ChatBox|MUC} model
  * @param {Object} result

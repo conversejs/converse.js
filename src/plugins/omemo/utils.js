@@ -44,6 +44,13 @@ export function formatFingerprint (fp) {
     return fp;
 }
 
+export function formatFingerprintForQRCode (fp) {
+    const sid = _converse.state.omemo_store.get('device_id');
+    const jid = _converse.session.get('bare_jid');
+    fp = fp.replace(/^05/, '');
+    return `xmpp:${jid}?omemo-sid-${sid}=${fp}`;
+}
+
 /**
  * @param {Error|IQError|UserFacingError} e
  * @param {ChatBox} chat

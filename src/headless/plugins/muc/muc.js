@@ -307,9 +307,8 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 }
             }
         } else {
-            if (conn_status === roomstatus.DISCONNECTED) {
-                this.rejoin();
-            }
+            await this.initialized;
+            if (conn_status === roomstatus.DISCONNECTED) this.rejoin();
             this.clearUnreadMsgCounter();
         }
     }

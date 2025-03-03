@@ -22,6 +22,7 @@
 - #2623: Merge MUC join and bookmark, leave and unset autojoin 
 - #2716: Fix issue with chat display when opening via URL
 - #2844: Contact stays in "pending contacts"
+- #2940: Avoid gaps in history when new message is received before MAM query is made
 - #2980: Allow setting an avatar for MUCs
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
 - #3038: Message to self from other client is ignored

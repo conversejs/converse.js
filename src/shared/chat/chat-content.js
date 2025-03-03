@@ -1,72 +1,256 @@
-import './message-history';
+import { html } from "lit";
+import { api } from "@converse/headless";
 import tplSpinner from "templates/spinner.js";
-import { CustomElement } from '../components/element.js';
-import { api } from '@converse/headless';
-import { html } from 'lit';
-import { markScrolled } from './utils.js';
+import { CustomElement } from "../components/element.js";
+import { onScrolledDown } from "./utils.js";
+import "./message-history";
 
-import './styles/chat-content.scss';
+import "./styles/chat-content.scss";
 
+// Default estimated height for messages
+const ESTIMATED_MESSAGE_HEIGHT = 140; // px
+const VISIBLE_BUFFER = 20; // Number of extra messages to render above/below
 
+/**
+ * Implements a virtualized list of chat messages, which means only a subset of
+ * messages, the `WINDOW_SIZE`, gets rendered to the DOM, and this subset
+ * gets updated as the user scrolls up and down.
+ */
 export default class ChatContent extends CustomElement {
-
-    constructor () {
+    /**
+     * @typedef {import('../../plugins/chatview/chat.js').default} ChatView
+     * @typedef {import('../../plugins/muc-views/muc.js').default} MUCView
+     * @typedef {import('../../plugins/muc-views/occupant').default} MUCOccupantView
+     */
+    constructor() {
         super();
         this.model = null;
+        this.message_heights = new Map(); // Cache of actual message heights
+        this.scrollTop = 0;
+        this.scroll_debounce = null;
+
+        // Index of the top message in the virtualized list window.
+        // If all messages are shown, this value is equal to zero.
+        this.window_top = 0;
+
+        // Index of the bottom message in the virtualized list window.
+        // If all messages are shown, this value is equal to the total minus one.
+        this.window_bottom = 0;
+
+        this.scrollHandler = /** @param {Event} ev */ (ev) => {
+            if (this.scroll_debounce) {
+                clearTimeout(this.scroll_debounce);
+            }
+            this.scroll_debounce = setTimeout(() => {
+                this.#markScrolled(ev);
+                this.#calculateWindow();
+            }, 150);
+        };
     }
 
-    static get properties () {
+    static get properties() {
         return {
-            model: { type: Object }
-        }
+            model: { type: Object },
+        };
     }
 
-    disconnectedCallback () {
+    disconnectedCallback() {
         super.disconnectedCallback();
-        this.removeEventListener('scroll', markScrolled);
+        this.removeEventListener("scroll", this.scrollHandler);
     }
 
-    connectedCallback () {
+    connectedCallback() {
         super.connectedCallback();
-        this.addEventListener('scroll', markScrolled);
+        this.addEventListener("scroll", this.scrollHandler);
     }
 
-    async initialize () {
+    async initialize() {
         await this.model.initialized;
-        this.listenTo(this.model.messages, 'add', () => this.requestUpdate());
-        this.listenTo(this.model.messages, 'change', () => this.requestUpdate());
-        this.listenTo(this.model.messages, 'remove', () => this.requestUpdate());
-        this.listenTo(this.model.messages, 'rendered', () => this.requestUpdate());
-        this.listenTo(this.model.messages, 'reset', () => this.requestUpdate());
-        this.listenTo(this.model.notifications, 'change', () => this.requestUpdate());
-        this.listenTo(this.model.ui, 'change', () => this.requestUpdate());
-        this.listenTo(this.model.ui, 'change:scrolled', this.scrollDown);
+        this.listenTo(this.model.messages, "add", () => this.requestUpdate());
+        this.listenTo(this.model.messages, "change", () => this.requestUpdate());
+        this.listenTo(this.model.messages, "remove", () => this.requestUpdate());
+        this.listenTo(this.model.messages, "rendered", () => this.requestUpdate());
+        this.listenTo(this.model.messages, "reset", () => this.requestUpdate());
+        this.listenTo(this.model.notifications, "change", () => this.requestUpdate());
+        this.listenTo(this.model.ui, "change", () => this.requestUpdate());
+        this.listenTo(this.model.ui, "change:scrolled", () => this.scrollDown());
+
+        this.#calculateWindow();
+
+        // Listen for message visibility changes
+        api.listen.on("visibilityChanged", ({ el }) => this.handleMessageVisibility(el));
         this.requestUpdate();
     }
 
-    render () {
-        if (!this.model) {
-            return '';
+    render() {
+        if (!this.model) return "";
+
+        /** @type {Array<import('@converse/headless').BaseMessage>} */
+        let visible_messages = [];
+        let window_top = 0;
+        let window_bottom = 0;
+
+        // Calculate visible range
+        const total_messages = this.model.messages.length;
+        if (total_messages) {
+            if (total_messages === 21) debugger;
+            window_bottom = Math.min(total_messages - 1, this.window_bottom + VISIBLE_BUFFER);
+            window_top = Math.max(0, this.window_top - VISIBLE_BUFFER);
+            visible_messages = this.model.messages.slice(window_top, window_bottom + 1);
         }
-        // This element has "flex-direction: reverse", so elements here are
-        // shown in reverse order.
+
+        // Calculate placeholder heights
+        const height_above = total_messages ? this.calculateHeightAbove(window_top) : 0;
+        const height_below = total_messages ? this.calculateHeightBelow(window_bottom) : 0;
+
         return html`
             <div class="chat-content__notifications">${this.model.getNotificationsText()}</div>
-            <converse-message-history
-                .model=${this.model}
-                .messages=${[...this.model.messages.models]}>
-            </converse-message-history>
-            ${ this.model.ui?.get('chat-content-spinner-top') ? tplSpinner() : '' }
+            <div style="height: ${this.totalHeight}px">
+                <div style="height: ${height_below}px"></div>
+                <converse-message-history .model=${this.model} .messages=${visible_messages}>
+                </converse-message-history>
+                <div style="height: ${height_above}px"></div>
+            </div>
+            ${this.model.ui?.get("chat-content-spinner-top") ? tplSpinner() : ""}
         `;
     }
 
-    scrollDown () {
-        if (this.model.ui.get('scrolled')) {
+    get totalHeight() {
+        return this.calculateHeightAbove(this.model.messages.length - 1);
+    }
+
+    /**
+     * Called when the chat content is scrolled up or down.
+     * We want to record when the user has scrolled away from
+     * the bottom, so that we don't automatically scroll away
+     * from what the user is reading when new messages are received.
+     * @param {Event} ev
+     */
+    #markScrolled(ev) {
+        let scrolled = true;
+
+        const el = /** @type {ChatView|MUCView|MUCOccupantView} */ (ev.target);
+        const is_at_bottom = Math.floor(el.scrollTop) === 0;
+        const is_at_top =
+            Math.ceil(el.clientHeight - el.scrollTop) >= el.scrollHeight - Math.ceil(el.scrollHeight / 20);
+
+        if (is_at_bottom) {
+            scrolled = false;
+            onScrolledDown(el.model);
+        } else if (is_at_top) {
+            /**
+             * Triggered once the chat's message area has been scrolled to the top
+             * @event _converse#chatBoxScrolledUp
+             * @property { _converse.ChatBoxView | MUCView } view
+             * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
+             */
+            api.trigger("chatBoxScrolledUp", el);
+        }
+        if (el.model.get("scolled") !== scrolled) {
+            el.model.ui.set({ scrolled });
+        }
+    }
+
+    /**
+     * Determine and set the `window_bottom` and `window_top` indexes for the virtualized list window.
+     */
+    #calculateWindow() {
+        const total_messages = this.model.messages.length;
+        const scroll_bottom = Math.round(Math.abs(this.scrollTop)); // Reversed because of `flex-direction: reverse`
+        const container_height = this.offsetHeight;
+
+        // Because we use `flex-direction: reverse`, scrollTop is zero when
+        // scrolled down and minus this.totalHeight when scrolled all the way up.
+        // Note, this is the opposite of our window, where the top index is
+        // zero and the bottom index is the total number of messages.
+        const scroll_top = scroll_bottom + container_height;
+
+        // Find new window bottom, which is the first visible message (from the bottom).
+        let height = 0;
+        let new_window_bottom = total_messages - 1;
+        for (let i = total_messages - 1; i >= 0; i--) {
+            const message = this.model.messages.at(i);
+            const message_height = this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
+            if (height + message_height > scroll_bottom) {
+                new_window_bottom = i;
+                break;
+            }
+            height += message_height;
+        }
+
+        // Find new window top, which is last visible message (from the bottom).
+        let new_window_top = new_window_bottom;
+        while (height < scroll_top && new_window_top > 0) {
+            const message = this.model.messages.at(new_window_top - 1);
+            const message_height = this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
+            height += message_height;
+            new_window_top--;
+        }
+
+        if (new_window_bottom !== this.window_bottom || new_window_top !== this.window_top) {
+            this.window_bottom = new_window_bottom;
+            this.window_top = new_window_top;
+            this.requestUpdate();
+        }
+    }
+
+    /**
+     * @param {import('./message').default} el
+     */
+    handleMessageVisibility(el) {
+        // FIXME: only set for messages inside this chat content
+        if (el.model) {
+            // Cache actual message height
+            this.message_heights.set(
+                el.model.get("id"),
+                /** @type {HTMLElement} */ (el.firstElementChild).offsetHeight
+            );
+        }
+    }
+
+    /**
+     * Calculate the height of the virtual (i.e. not in the DOM)
+     * messages above the visible window of chat messages.
+     *
+     * The topmost (virtual) message has an index of zero, so we count down
+     * from `window_top` to zero.
+     * @param {Number} window_top
+     */
+    calculateHeightAbove(window_top) {
+        let height = 0;
+        for (let i = window_top; i >= 0; i--) {
+            const message = this.model.messages.at(i);
+            height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
+        }
+        return height;
+    }
+
+    /**
+     * Calculate the height of the virutal (i.e. not in the DOM)
+     * messages below the visible window of chat messages.
+     *
+     * The bottom-most (virtual) message has an index equal to the total minus one.
+     * So we count up to it from from `window_bottom`.
+     * @param {Number} window_bottom
+     */
+    calculateHeightBelow(window_bottom) {
+        const total = this.model.messages.length;
+
+        let height = 0;
+        for (let i = window_bottom; i < total - 1; i++) {
+            const message = this.model.messages.at(i);
+            height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
+        }
+        return height;
+    }
+
+    scrollDown() {
+        if (this.model.ui.get("scrolled")) {
             return;
         }
         if (this.scrollTo) {
-            const behavior = this.scrollTop ? 'smooth' : 'auto';
-            this.scrollTo({ 'top': 0, behavior });
+            const behavior = this.scrollTop ? "smooth" : "auto";
+            this.scrollTo({ "top": 0, behavior });
         } else {
             this.scrollTop = 0;
         }
@@ -77,8 +261,8 @@ export default class ChatContent extends CustomElement {
          * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
          * @example _converse.api.listen.on('chatBoxScrolledDown', obj => { ... });
          */
-        api.trigger('chatBoxScrolledDown', { 'chatbox': this.model });
+        api.trigger("chatBoxScrolledDown", { chatbox: this.model });
     }
 }
 
-api.elements.define('converse-chat-content', ChatContent);
+api.elements.define("converse-chat-content", ChatContent);

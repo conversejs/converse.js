@@ -1,14 +1,10 @@
 /**
  * @typedef {import('plugins/chatview/types').HeadingButtonAttributes} HeadingButtonAttributes
- * @typedef {import('../../plugins/chatview/chat.js').default} ChatView
- * @typedef {import('../../plugins/muc-views/muc.js').default} MUCView
- * @typedef {import('../../plugins/muc-views/occupant').default} MUCOccupantView
  * @typedef {import('@converse/headless').Message} Message
  * @typedef {import('@converse/headless').MUCMessage} MUCMessage
  * @typedef {import('@converse/skeletor').Model} Model
  * @typedef {import('lit').TemplateResult} TemplateResult
  */
-import debounce from 'lodash-es/debounce';
 import { api, converse } from '@converse/headless';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
@@ -99,41 +95,6 @@ export function onScrolledDown (model) {
         }
     }
 }
-
-/**
- * Called when the chat content is scrolled up or down.
- * We want to record when the user has scrolled away from
- * the bottom, so that we don't automatically scroll away
- * from what the user is reading when new messages are received.
- */
-export const markScrolled = debounce(
-    /** @param {Event} ev */
-    function _markScrolled(ev) {
-        let scrolled = true;
-
-        const el = /** @type {ChatView|MUCView|MUCOccupantView} */ (ev.target);
-        const is_at_bottom = Math.floor(el.scrollTop) === 0;
-        const is_at_top =
-            Math.ceil(el.clientHeight - el.scrollTop) >= el.scrollHeight - Math.ceil(el.scrollHeight / 20);
-
-        if (is_at_bottom) {
-            scrolled = false;
-            onScrolledDown(el.model);
-        } else if (is_at_top) {
-            /**
-             * Triggered once the chat's message area has been scrolled to the top
-             * @event _converse#chatBoxScrolledUp
-             * @property { _converse.ChatBoxView | MUCView } view
-             * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
-             */
-            api.trigger('chatBoxScrolledUp', el);
-        }
-        if (el.model.get('scolled') !== scrolled) {
-            el.model.ui.set({ scrolled });
-        }
-    },
-    50
-);
 
 /**
  * Given a message object, returns a TemplateResult indicating a new day if

@@ -18,6 +18,7 @@
 - #1700: Deleted pending contacts reappear after page reload
 - #1810: Create clickable link to load older MAM messages if there is no scrollbars.
 - #2118: Show reflected message in MUC 
+- #2335: Support list virtualization of the message history
 - #2383: Add modal to start chats with JIDs not in the roster
 - #2586: Add support for XEP-0402 Bookmarks
 - #2623: Merge MUC join and bookmark, leave and unset autojoin 

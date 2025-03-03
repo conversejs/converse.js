@@ -495,7 +495,7 @@ describe("Chatboxes", function () {
                     api.connection.get()._dataRecv(mock.createRequest(msg));
                     const view = _converse.chatboxviews.get(sender_jid);
                     let csn = mock.cur_names[1] + ' is typing';
-                    await u.waitUntil( () => view.querySelector('.chat-content__notifications').innerText === csn);
+                    await u.waitUntil( () => view.querySelector('.chat-content__notifications')?.innerText === csn);
                     expect(view.model.messages.length).toEqual(0);
 
                     // <paused> state

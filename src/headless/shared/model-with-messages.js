@@ -968,11 +968,8 @@ export default function ModelWithMessages(BaseModel) {
                          * Triggered once the message history has been pruned, i.e.
                          * once older messages have been removed to keep the
                          * number of messages below the value set in `prune_messages_above`.
-                         * @event _converse#historyPruned
-                         * @type { ChatBox | MUC }
-                         * @example _converse.api.listen.on('historyPruned', this => { ... });
                          */
-                        api.trigger('historyPruned', this);
+                        this.trigger('historyPruned');
                     }
                 }
             }

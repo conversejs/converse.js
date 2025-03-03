@@ -157,11 +157,11 @@
             }
 
             .chat-msg__message {
-                line-height: 1.65em;
                 display: inline-flex;
                 flex-direction: column;
-                width: 100%;
+                line-height: 1.5em;
                 overflow-wrap: break-word;
+                width: 100%;
                 .chat-msg__body--wrapper {
                     .chat-msg__text {
                         color: var(--foreground-color);
@@ -244,6 +244,7 @@
             .chat-msg__heading {
                 width: 100%;
                 padding-inline-end: 0.25rem;
+                margin-bottom: 0.25em;
 
                 .badge {
                     margin-inline-start: 0.5em;
@@ -304,7 +305,7 @@
                     display: none;
                 }
                 &.chat-msg--with-avatar .chat-msg__content {
-                    margin-inline-start: 2.75rem;
+                    margin-inline-start: 3rem;
                     width: 100%;
                 }
             }

@@ -18,7 +18,7 @@ export function isSpotifyTrack(url) {
         const { hostname, pathname } = new URL(url);
         return hostname === 'open.spotify.com' && pathname.startsWith('/track/');
     } catch (e) {
-        console.warn(`Could not create URL object from ${url}`);
+        console.debug(`Could not create URL object from ${url}`);
         return false;
     }
 }
@@ -32,7 +32,7 @@ export async function getHeaders(url) {
         const response = await fetch(url, { method: 'HEAD' });
         return response.headers;
     } catch (e) {
-        console.warn(`Error calling HEAD on url ${url}: ${e}`);
+        console.debug(`Error calling HEAD on url ${url}: ${e}`);
         return null;
     }
 }

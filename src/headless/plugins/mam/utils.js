@@ -238,6 +238,7 @@ export function createScrollupPlaceholder(model) {
         const mam_jid = is_muc ? model.get("jid") : _converse.session.get("bare_jid");
         const key = `stanza_id ${mam_jid}`;
         const oldest_message = model.getOldestMessage();
+        if (!oldest_message) return;
 
         const msg_data = {
             before: oldest_message.get(key),

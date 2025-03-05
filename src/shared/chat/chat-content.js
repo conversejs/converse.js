@@ -10,7 +10,7 @@ import "./styles/chat-content.scss";
 // Default estimated height for messages
 // A single toplevel message is 46.7px high.
 // A followup message is 24px high.
-const ESTIMATED_MESSAGE_HEIGHT = 50; // px
+const ESTIMATED_MESSAGE_HEIGHT = 70; // px
 const VISIBLE_BUFFER = 20; // Number of extra messages to render above/below
 
 /**
@@ -60,12 +60,12 @@ export default class ChatContent extends CustomElement {
 
     async initialize() {
         await this.model.initialized;
-        this.listenTo(this.model.messages, "add", () => this.requestUpdate());
+        this.listenTo(this.model.messages, "add", () => this.#onNumMessagesChanged());
+        this.listenTo(this.model.messages, "remove", () => this.#onNumMessagesChanged());
+        this.listenTo(this.model.messages, "reset", () => this.#onNumMessagesChanged());
         this.listenTo(this.model.messages, "change", () => this.requestUpdate());
-        this.listenTo(this.model.messages, "remove", () => this.requestUpdate());
         this.listenTo(this.model.messages, "rendered", () => this.requestUpdate());
-        this.listenTo(this.model.messages, "reset", () => this.requestUpdate());
-        this.listenTo(this.model, 'historyPruned', () => this.#setWindow());
+        this.listenTo(this.model, "historyPruned", () => this.#setWindow());
         this.listenTo(this.model.notifications, "change", () => this.requestUpdate());
         this.listenTo(this.model.ui, "change", () => this.requestUpdate());
         this.listenTo(this.model.ui, "change:scrolled", () => this.scrollDown());
@@ -118,6 +118,11 @@ export default class ChatContent extends CustomElement {
 
     get totalHeight() {
         return this.calculateHeightAbove(this.model.messages.length - 1);
+    }
+
+    #onNumMessagesChanged() {
+        this.#setWindow();
+        this.requestUpdate();
     }
 
     /**

@@ -7,11 +7,8 @@ import "./message-history";
 
 import "./styles/chat-content.scss";
 
-// Default estimated height for messages
-// A single toplevel message is 46.7px high.
-// A followup message is 24px high.
-const ESTIMATED_MESSAGE_HEIGHT = 70; // px
-const VISIBLE_BUFFER = 20; // Number of extra messages to render above/below
+const WINDOW_DELTA = 5; // How much the window should move at a time.
+const WINDOW_SIZE = 100;
 
 /**
  * Implements a virtualized list of chat messages, which means only a subset of
@@ -27,7 +24,6 @@ export default class ChatContent extends CustomElement {
     constructor() {
         super();
         this.model = null;
-        this.message_heights = new Map(); // Cache of actual message heights
         this.scrollTop = 0;
         this.scroll_debounce = null;
 
@@ -40,13 +36,14 @@ export default class ChatContent extends CustomElement {
         this.window_bottom = 0;
 
         this.scrollHandler = /** @param {Event} ev */ (ev) => {
-            if (this.scroll_debounce) {
+            if (this.mark_scrolled_debounce) {
                 clearTimeout(this.scroll_debounce);
             }
-            this.scroll_debounce = setTimeout(() => {
+            this.mark_scrolled_debounce = setTimeout(() => {
                 this.#markScrolled(ev);
-                this.#setWindowOnScroll();
             }, 250);
+
+            requestAnimationFrame(() => this.#setWindow());
         };
     }
 
@@ -70,10 +67,9 @@ export default class ChatContent extends CustomElement {
         this.listenTo(this.model.ui, "change", () => this.requestUpdate());
         this.listenTo(this.model.ui, "change:scrolled", () => this.scrollDown());
 
-        this.#setWindow();
+        this.window_bottom = this.model.messages.length - 1;
+        this.window_top = this.window_bottom - WINDOW_SIZE;
 
-        // Listen for message visibility changes
-        api.listen.on("visibilityChanged", ({ el }) => this.handleMessageVisibility(el));
         this.requestUpdate();
     }
 
@@ -88,36 +84,18 @@ export default class ChatContent extends CustomElement {
         // Calculate visible range
         const total_messages = this.model.messages.length;
         if (total_messages) {
-            window_bottom = Math.min(total_messages - 1, this.window_bottom + VISIBLE_BUFFER);
-            window_top = Math.max(0, this.window_top - VISIBLE_BUFFER);
+            window_bottom = Math.min(total_messages - 1, this.window_bottom + WINDOW_DELTA);
+            window_top = Math.max(0, this.window_top - WINDOW_DELTA);
             visible_messages = this.model.messages.slice(window_top, window_bottom + 1);
         }
 
-        // Calculate placeholder heights
-        let height_above = 0;
-        let height_below = 0;
-        if (total_messages) {
-            height_above = window_top > 0 ? this.calculateHeightAbove(window_top) : 0;
-            height_below = window_bottom < total_messages - 1 ? this.calculateHeightBelow(window_bottom) : 0;
-        }
-
         return html`
-            <div
-                class="chat-content__messages"
-                style="height: ${this.totalHeight ? this.totalHeight + "px" : "100%"}"
-                @scroll="${/** @param {Event} ev */ (ev) => this.scrollHandler(ev)}"
-            >
-                <div style="height: ${height_below + "px"}"></div>
+            <div class="chat-content__messages" @scroll="${/** @param {Event} ev */ (ev) => this.scrollHandler(ev)}">
                 <div class="chat-content__notifications">${this.model.getNotificationsText()}</div>
                 <converse-message-history .model=${this.model} .messages=${visible_messages}></converse-message-history>
-                <div style="height: ${height_above + "px"}"></div>
             </div>
             ${this.model.ui?.get("chat-content-spinner-top") ? tplSpinner() : ""}
         `;
-    }
-
-    get totalHeight() {
-        return this.calculateHeightAbove(this.model.messages.length - 1);
     }
 
     #onNumMessagesChanged() {
@@ -162,136 +140,36 @@ export default class ChatContent extends CustomElement {
      * scrollbar is at the top or bottom, or otherwise based on which
      * messages are visible within the scrollable area.
      */
-    #setWindowOnScroll() {
+    #setWindow() {
         const total_messages = this.model.messages.length;
         const container = /** @type {HTMLElement} */ (this.querySelector(".chat-content__messages"));
 
+        // The amount before the actual top/bottom where we are close enough to
+        // want to update the window. Set to 25% of the scrollable container.
+        const delta = Math.ceil(container.scrollHeight / 5);
+
         const is_at_top =
-            Math.ceil(container.clientHeight - container.scrollTop) >=
-            container.scrollHeight - Math.ceil(container.scrollHeight / 20);
+            Math.ceil(container.clientHeight - container.scrollTop) >= container.scrollHeight - delta;
 
         if (is_at_top) {
-            this.window_top = Math.max(0, this.window_top - VISIBLE_BUFFER);
+            this.window_top = Math.max(0, this.window_top - WINDOW_DELTA);
+            this.window_bottom = this.window_top + WINDOW_SIZE;
             return;
         }
 
         const is_at_bottom = Math.floor(container.scrollTop) === 0;
         if (is_at_bottom) {
-            this.window_bottom = Math.min(total_messages - 1, this.window_bottom + VISIBLE_BUFFER);
+            this.window_bottom = total_messages - 1;
+            this.window_top = this.window_bottom - WINDOW_SIZE;
             return;
         }
 
-        this.#setWindow();
-    }
-
-    /**
-     * Determine and set the `window_bottom` and `window_top` indexes for the virtualized list window.
-     */
-    #setWindow() {
-        const total_messages = this.model.messages.length;
-        const container = /** @type {HTMLElement} */ (this.querySelector(".chat-content__messages"));
-
-        // Because we use `flex-direction: reverse`, scrollTop is zero when
-        // scrolled down and minus this.totalHeight when scrolled all the way up.
-        // Note, this is the opposite of our window, where the top index is
-        // zero and the bottom index is the total number of messages.
-        const scroll_bottom = Math.round(Math.abs(container.scrollTop));
-        const container_height = container.offsetHeight;
-        const scroll_top = scroll_bottom + container_height;
-
-        // Find new window bottom, which is the first visible message (from the bottom).
-        let height = 0;
-        let new_window_bottom = total_messages - 1;
-        let i;
-
-        for (i = total_messages - 1; i >= 0; i--) {
-            const message = this.model.messages.at(i);
-            const message_height = this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
-            if (height + message_height > scroll_bottom) {
-                new_window_bottom = i;
-                break;
-            }
-            height += message_height;
+        const is_close_to_bottom = Math.floor(Math.abs(container.scrollTop)) < delta;
+        if (is_close_to_bottom) {
+            this.window_bottom = Math.min(total_messages - 1, this.window_bottom + WINDOW_DELTA);
+            this.window_top = this.window_bottom - WINDOW_SIZE;
+            return;
         }
-
-        // Find new window top, which is last visible message (from the bottom).
-        let new_window_top = new_window_bottom;
-
-        for (let j = i - 1; j >= 0; j--) {
-            const message = this.model.messages.at(j);
-            const message_height = this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
-            if (height + message_height >= scroll_top) {
-                new_window_top = j;
-                break;
-            }
-            height += message_height;
-        }
-
-        if (new_window_bottom !== this.window_bottom || new_window_top !== this.window_top) {
-            this.window_bottom = new_window_bottom;
-            this.window_top = new_window_top;
-            console.log(`New window_top is ${this.window_top}`);
-            console.log(`New window_bottom is ${this.window_bottom}`);
-        }
-    }
-
-    /**
-     * @param {import('./message').default} el
-     */
-    handleMessageVisibility(el) {
-        // FIXME: only set for messages inside this chat content
-        if (el.model) {
-            // Cache actual message height
-            this.message_heights.set(
-                el.model.get("id"),
-                /** @type {HTMLElement} */ (el.firstElementChild).offsetHeight
-            );
-        }
-    }
-
-    /**
-     * Calculate the height of the virtual (i.e. not in the DOM)
-     * messages above the visible window of chat messages.
-     *
-     * The message indexes decrease as one moves up (i.e. the topmost
-     * message has index zero). So we count down from window_top to
-     * determine the height.
-     * @param {Number} window_top
-     */
-    calculateHeightAbove(window_top) {
-        let height = 0;
-        for (let i = window_top - 1; i >= 0; i--) {
-            const message = this.model.messages.at(i);
-            try {
-                height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
-            } catch (e) {
-                debugger;
-            }
-        }
-        return height;
-    }
-
-    /**
-     * Calculate the height of the virutal (i.e. not in the DOM)
-     * messages below the visible window of chat messages.
-     *
-     * The bottom-most (virtual) message has an index equal to the total minus one.
-     * So we count up to it from from `window_bottom`.
-     * @param {Number} window_bottom
-     */
-    calculateHeightBelow(window_bottom) {
-        const total = this.model.messages.length;
-
-        let height = 0;
-        for (let i = window_bottom; i < total - 1; i++) {
-            const message = this.model.messages.at(i);
-            try {
-                height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
-            } catch (e) {
-                debugger;
-            }
-        }
-        return height;
     }
 
     scrollDown() {
@@ -300,7 +178,7 @@ export default class ChatContent extends CustomElement {
         }
         if (this.scrollTo) {
             const behavior = this.scrollTop ? "smooth" : "auto";
-            this.scrollTo({ "top": 0, behavior });
+            this.scrollTo({ top: 0, behavior });
         } else {
             this.scrollTop = 0;
         }

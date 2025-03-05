@@ -8,8 +8,8 @@ import "./message-history";
 import "./styles/chat-content.scss";
 
 // Default estimated height for messages
-const ESTIMATED_MESSAGE_HEIGHT = 140; // px
-const VISIBLE_BUFFER = 20; // Number of extra messages to render above/below
+const ESTIMATED_MESSAGE_HEIGHT = 100; // px
+const VISIBLE_BUFFER = 5; // Number of extra messages to render above/below
 
 /**
  * Implements a virtualized list of chat messages, which means only a subset of
@@ -44,7 +44,7 @@ export default class ChatContent extends CustomElement {
             this.scroll_debounce = setTimeout(() => {
                 this.#markScrolled(ev);
                 this.#calculateWindow();
-            }, 150);
+            }, 250);
         };
     }
 
@@ -93,7 +93,6 @@ export default class ChatContent extends CustomElement {
         // Calculate visible range
         const total_messages = this.model.messages.length;
         if (total_messages) {
-            if (total_messages === 21) debugger;
             window_bottom = Math.min(total_messages - 1, this.window_bottom + VISIBLE_BUFFER);
             window_top = Math.max(0, this.window_top - VISIBLE_BUFFER);
             visible_messages = this.model.messages.slice(window_top, window_bottom + 1);
@@ -212,13 +211,14 @@ export default class ChatContent extends CustomElement {
      * Calculate the height of the virtual (i.e. not in the DOM)
      * messages above the visible window of chat messages.
      *
-     * The topmost (virtual) message has an index of zero, so we count down
-     * from `window_top` to zero.
+     * The message indexes decrease as one moves up (i.e. the topmost
+     * message has index zero). So we count down from window_top to
+     * determine the height.
      * @param {Number} window_top
      */
     calculateHeightAbove(window_top) {
         let height = 0;
-        for (let i = window_top; i >= 0; i--) {
+        for (let i = window_top - 1; i >= 0; i--) {
             const message = this.model.messages.at(i);
             height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
         }

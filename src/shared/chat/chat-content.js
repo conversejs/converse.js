@@ -8,7 +8,7 @@ import "./message-history";
 import "./styles/chat-content.scss";
 
 // Default estimated height for messages
-const ESTIMATED_MESSAGE_HEIGHT = 60; // px
+const ESTIMATED_MESSAGE_HEIGHT = 40; // px
 const VISIBLE_BUFFER = 20; // Number of extra messages to render above/below
 
 /**
@@ -194,7 +194,9 @@ export default class ChatContent extends CustomElement {
         // Find new window bottom, which is the first visible message (from the bottom).
         let height = 0;
         let new_window_bottom = total_messages - 1;
-        for (let i = total_messages - 1; i >= 0; i--) {
+        let i;
+
+        for (i = total_messages - 1; i >= 0; i--) {
             const message = this.model.messages.at(i);
             const message_height = this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
             if (height + message_height > scroll_bottom) {
@@ -206,11 +208,15 @@ export default class ChatContent extends CustomElement {
 
         // Find new window top, which is last visible message (from the bottom).
         let new_window_top = new_window_bottom;
-        while (height < scroll_top && new_window_top > 0) {
-            const message = this.model.messages.at(new_window_top - 1);
+
+        for (let j = i - 1; j >= 0; j--) {
+            const message = this.model.messages.at(j);
             const message_height = this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
+            if (height + message_height >= scroll_top) {
+                new_window_top = j;
+                break;
+            }
             height += message_height;
-            new_window_top--;
         }
 
         if (new_window_bottom !== this.window_bottom || new_window_top !== this.window_top) {
@@ -246,11 +252,7 @@ export default class ChatContent extends CustomElement {
         let height = 0;
         for (let i = window_top - 1; i >= 0; i--) {
             const message = this.model.messages.at(i);
-            try {
-                height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
-            } catch (e) {
-                debugger;
-            }
+            height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
         }
         return height;
     }
@@ -269,11 +271,7 @@ export default class ChatContent extends CustomElement {
         let height = 0;
         for (let i = window_bottom; i < total - 1; i++) {
             const message = this.model.messages.at(i);
-            try {
-                height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
-            } catch (e) {
-                debugger;
-            }
+            height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
         }
         return height;
     }

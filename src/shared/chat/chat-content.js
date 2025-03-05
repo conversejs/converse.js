@@ -8,7 +8,9 @@ import "./message-history";
 import "./styles/chat-content.scss";
 
 // Default estimated height for messages
-const ESTIMATED_MESSAGE_HEIGHT = 40; // px
+// A single toplevel message is 46.7px high.
+// A followup message is 24px high.
+const ESTIMATED_MESSAGE_HEIGHT = 50; // px
 const VISIBLE_BUFFER = 20; // Number of extra messages to render above/below
 
 /**
@@ -63,6 +65,7 @@ export default class ChatContent extends CustomElement {
         this.listenTo(this.model.messages, "remove", () => this.requestUpdate());
         this.listenTo(this.model.messages, "rendered", () => this.requestUpdate());
         this.listenTo(this.model.messages, "reset", () => this.requestUpdate());
+        this.listenTo(this.model, 'historyPruned', () => this.#setWindow());
         this.listenTo(this.model.notifications, "change", () => this.requestUpdate());
         this.listenTo(this.model.ui, "change", () => this.requestUpdate());
         this.listenTo(this.model.ui, "change:scrolled", () => this.scrollDown());
@@ -222,6 +225,8 @@ export default class ChatContent extends CustomElement {
         if (new_window_bottom !== this.window_bottom || new_window_top !== this.window_top) {
             this.window_bottom = new_window_bottom;
             this.window_top = new_window_top;
+            console.log(`New window_top is ${this.window_top}`);
+            console.log(`New window_bottom is ${this.window_bottom}`);
         }
     }
 
@@ -252,7 +257,11 @@ export default class ChatContent extends CustomElement {
         let height = 0;
         for (let i = window_top - 1; i >= 0; i--) {
             const message = this.model.messages.at(i);
-            height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
+            try {
+                height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
+            } catch (e) {
+                debugger;
+            }
         }
         return height;
     }
@@ -271,7 +280,11 @@ export default class ChatContent extends CustomElement {
         let height = 0;
         for (let i = window_bottom; i < total - 1; i++) {
             const message = this.model.messages.at(i);
-            height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
+            try {
+                height += this.message_heights.get(message.get("id")) || ESTIMATED_MESSAGE_HEIGHT;
+            } catch (e) {
+                debugger;
+            }
         }
         return height;
     }

@@ -171,6 +171,9 @@
             }
 
             .chat-content__messages {
+                display: flex;
+                flex-direction: column-reverse;
+                justify-content: space-between;
                 overflow-x: hidden;
                 overflow-y: auto;
                 height: 100%;

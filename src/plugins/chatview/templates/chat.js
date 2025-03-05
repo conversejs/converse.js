@@ -11,7 +11,6 @@ export default (o) => html`
             <div class="chat-body">
                 <div class="chat-content ${ o.show_send_button ? 'chat-content-sendbutton' : '' }" aria-live="polite">
                     <converse-chat-content
-                        class="chat-content__messages"
                         .model="${o.model}"></converse-chat-content>
 
                     ${o.show_help_messages ? html`<div class="chat-content__help">

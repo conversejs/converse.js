@@ -1,3 +1,7 @@
+export type RosterContactUpdateAttrs = {
+    nickname?: string;
+    groups?: string[];
+};
 export type RosterContactAttributes = {
     jid: string;
     subscription: ('none' | 'to' | 'from' | 'both');

@@ -167,15 +167,33 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
     }
 
     /**
-     * Instruct the XMPP server to remove this contact from our roster
-     * @async
+     * @param {import('./types').RosterContactUpdateAttrs} attrs
      * @returns {Promise}
      */
-    sendRosterRemoveStanza () {
-        const iq = $iq({type: 'set'})
-            .c('query', {xmlns: Strophe.NS.ROSTER})
-            .c('item', {jid: this.get('jid'), subscription: "remove"});
-        return api.sendIQ(iq);
+    async update (attrs) {
+        this.save(attrs);
+        return await api.sendIQ(
+            stx`<iq xmlns="jabber:client" type="set">
+                <query xmlns="${Strophe.NS.ROSTER}">
+                    <item jid="${this.get("jid")}" name="${this.get("nickname")}">
+                        ${this.get("groups")?.map(/** @param {string} group */ (group) => stx`<group>${group}</group>`)}
+                    </item>
+                </query>
+            </iq>`
+        );
+    }
+
+    /**
+     * Instruct the XMPP server to remove this contact from our roster
+     * @returns {Promise}
+     */
+    async sendRosterRemoveStanza () {
+        const iq = stx`<iq type="set" xmlns="jabber:client">
+            <query xmlns="${Strophe.NS.ROSTER}">
+                <item jid="${this.get('jid')}" subscription="remove"/>
+            </query>
+        </iq>`;
+        return await api.sendIQ(iq);
     }
 }
 

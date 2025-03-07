@@ -192,8 +192,12 @@ declare class RosterContact extends RosterContact_base {
      */
     remove(unauthorize?: boolean): Promise<Error | Element>;
     /**
+     * @param {import('./types').RosterContactUpdateAttrs} attrs
+     * @returns {Promise}
+     */
+    update(attrs: import("./types").RosterContactUpdateAttrs): Promise<any>;
+    /**
      * Instruct the XMPP server to remove this contact from our roster
-     * @async
      * @returns {Promise}
      */
     sendRosterRemoveStanza(): Promise<any>;

@@ -45,7 +45,7 @@ module.exports = function(config) {
       { pattern: "src/headless/shared/settings/tests/settings.js", type: 'module' },
       { pattern: "src/headless/tests/converse.js", type: 'module' },
       { pattern: "src/headless/tests/eventemitter.js", type: 'module' },
-      { pattern: "src/modals/tests/user-details-modal.js", type: 'module' },
+      { pattern: "src/shared/modals/tests/user-details-modal.js", type: 'module' },
       { pattern: "src/plugins/adhoc-views/tests/adhoc.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks-list.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },

@@ -142,6 +142,8 @@ export function tplUserDetailsModal(el) {
     }
 
     const { contact } = el.model;
+    if (!contact) return ''; // Happens during tests
+
     const name = contact.get("nickname") || contact.vcard?.get('fullname');
     const groups = contact.get("groups");
 

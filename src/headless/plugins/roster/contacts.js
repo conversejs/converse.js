@@ -328,7 +328,7 @@ class RosterContacts extends Collection {
     /**
      * Update or create RosterContact models based on the given `item` XML
      * node received in the resulting IQ stanza from the server.
-     * @param { Element } item
+     * @param {Element} item
      */
     updateContact (item) {
         const jid = item.getAttribute('jid');

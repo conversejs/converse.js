@@ -78,7 +78,7 @@ export default class UserDetailsModal extends BaseModal {
         const data = new FormData(form);
         const name = /** @type {string} */ (data.get("name") || "").trim();
         const groups = /** @type {string} */(data.get('groups'))?.split(',').map((g) => g.trim()) || [];
-        this.model.contact.save({
+        this.model.contact.update({
             nickname: name,
             groups,
         });

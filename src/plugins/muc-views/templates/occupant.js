@@ -183,7 +183,6 @@ export default (el) => {
                         <converse-icon
                             title="${hint_show}"
                             color="var(--${color})"
-                            style="margin-top: -0.1em"
                             size="0.82em"
                             class="${classes} chat-status chat-status--avatar"
                         ></converse-icon>

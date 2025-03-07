@@ -58,6 +58,10 @@
                     }
                     &.occupant {
                         cursor: pointer;
+                        .chat-status {
+                            margin-top: -0.1em;
+                        }
+
                         .msgs-indicator {
                             margin-inline-start: -3em;
                             margin-inline-end: 0.5em;

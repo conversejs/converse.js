@@ -63,7 +63,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
          * @type { ChatBox}
          * @example _converse.api.listen.on('chatBoxInitialized', model => { ... });
          */
-        await api.trigger('chatBoxInitialized', this, {'Synchronous': true});
+        await api.trigger('chatBoxInitialized', this, {synchronous: true});
         this.initialized.resolve();
     }
 

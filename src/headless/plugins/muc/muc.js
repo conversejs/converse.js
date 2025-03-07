@@ -118,7 +118,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
          * @type { MUC }
          * @example _converse.api.listen.on('chatRoomInitialized', model => { ... });
          */
-        await api.trigger('chatRoomInitialized', this, { 'Synchronous': true });
+        await api.trigger('chatRoomInitialized', this, { synchronous: true });
         this.initialized.resolve();
     }
 

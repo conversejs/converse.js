@@ -49,7 +49,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
          * @event _converse#rosterContactInitialized
          * @param {RosterContact} contact
          */
-        await api.trigger('rosterContactInitialized', this, {'Synchronous': true});
+        await api.trigger('rosterContactInitialized', this, {synchronous: true});
         this.initialized.resolve();
     }
 

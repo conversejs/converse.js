@@ -75,7 +75,7 @@ export function onOccupantAvatarChanged(occupant) {
  * @returns {Promise<VCard|null>}
  */
 export async function getVCardForModel(model, lazy_load = false) {
-    await api.waitUntil('VCardsInitialized');
+    await api.waitUntil("VCardsInitialized");
 
     let vcard;
     if (model instanceof _converse.exports.MUCOccupant) {
@@ -182,7 +182,7 @@ export async function fetchVCard(jid) {
         return {
             jid,
             stanza: isElement(error) ? error : null, // TODO: remove?
-            error: isElement(error) ? await parseErrorStanza(error) : error.message,
+            error: isElement(error) ? await parseErrorStanza(error) : error?.message ?? '',
             vcard_error: new Date().toISOString(),
         };
     }

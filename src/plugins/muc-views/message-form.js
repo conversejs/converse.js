@@ -2,7 +2,7 @@ import AutoComplete from 'shared/autocomplete/autocomplete.js';
 import MessageForm from 'plugins/chatview/message-form.js';
 import tplMUCMessageForm from './templates/message-form.js';
 import { FILTER_CONTAINS, FILTER_STARTSWITH } from 'shared/autocomplete/utils.js';
-import { api, converse } from "@converse/headless";
+import { MUCOccupant, api, converse, log } from "@converse/headless";
 import { getAutoCompleteListItem } from './utils.js';
 
 
@@ -18,9 +18,17 @@ export default class MUCMessageForm extends MessageForm {
         return tplMUCMessageForm(this);
     }
 
+    /**
+     * @returns {boolean}
+     */
     shouldAutoComplete () {
-        const entered = this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
-        return entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
+        const muc = (this.model instanceof MUCOccupant) ? this.model.collection.chatroom : this.model;
+        if (muc) {
+            const entered = muc.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
+            return entered && !(muc.features.get('moderated') && muc.getOwnRole() === 'visitor');
+        }
+        log.debug("Could not determine MUC for MUCMessageForm element");
+        return false;
     }
 
     initMentionAutoComplete () {

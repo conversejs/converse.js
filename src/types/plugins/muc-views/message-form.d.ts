@@ -1,4 +1,7 @@
 export default class MUCMessageForm extends MessageForm {
+    /**
+     * @returns {boolean}
+     */
     shouldAutoComplete(): boolean;
     initMentionAutoComplete(): void;
     mention_auto_complete: AutoComplete;

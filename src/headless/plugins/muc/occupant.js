@@ -62,6 +62,11 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
         return super.save(attrs, options);
     }
 
+    getMessagesCacheKey() {
+        const id = this.get('occupant_id') ? this.get('occupant_id') : `${this.get('from')}`;
+        return `converse.messages-${id}-${_converse.session.get('bare_jid')}`;
+    }
+
     getMessagesCollection() {
         return new MUCMessages();
     }

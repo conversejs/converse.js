@@ -3,12 +3,11 @@
  * Returns an array of {@link MemberListItem} objects, representing occupants
  * that have the given affiliation.
  * See: https://xmpp.org/extensions/xep-0045.html#modifymember
- * @typedef {("admin"|"owner"|"member")} NonOutcastAffiliation
- * @param {NonOutcastAffiliation} affiliation
+ * @param {import('../types').NonOutcastAffiliation} affiliation
  * @param {string} muc_jid - The JID of the MUC for which the affiliation list should be fetched
  * @returns {Promise<MemberListItem[]|Error>}
  */
-export function getAffiliationList(affiliation: NonOutcastAffiliation, muc_jid: string): Promise<MemberListItem[] | Error>;
+export function getAffiliationList(affiliation: import("../types").NonOutcastAffiliation, muc_jid: string): Promise<MemberListItem[] | Error>;
 /**
  * Send IQ stanzas to the server to modify affiliations for users in this groupchat.
  * See: https://xmpp.org/extensions/xep-0045.html#modifymember
@@ -63,13 +62,6 @@ export function setAffiliation(affiliation: AFFILIATIONS[number], muc_jids: stri
  * @returns {array}
  */
 export function computeAffiliationsDelta(exclude_existing: boolean, remove_absentees: boolean, new_list: any[], old_list: any[]): any[];
-/**
- * Sends an IQ stanza to the server, asking it for the relevant affiliation list .
- * Returns an array of {@link MemberListItem} objects, representing occupants
- * that have the given affiliation.
- * See: https://xmpp.org/extensions/xep-0045.html#modifymember
- */
-export type NonOutcastAffiliation = ("admin" | "owner" | "member");
 export type MemberListItem = any;
 export type User = any;
 export type Model = import("@converse/skeletor").Model;

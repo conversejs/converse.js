@@ -71,7 +71,6 @@ class MUCOccupants extends Collection {
         const muc_jid = this.chatroom.get('jid');
         const aff_lists = await Promise.all(affiliations.map(a => getAffiliationList(a, muc_jid)));
 
-
         const new_members = aff_lists.reduce(
             /**
              * @param {MemberListItem[]} acc
@@ -80,7 +79,6 @@ class MUCOccupants extends Collection {
              */
             (acc, val) => {
                 if (val instanceof Error) {
-                    log.error(val);
                     return acc;
                 }
                 return [...val, ...acc];

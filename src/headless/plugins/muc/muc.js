@@ -48,7 +48,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @typedef {import('../../shared/message.js').default} BaseMessage
      * @typedef {import('./message.js').default} MUCMessage
      * @typedef {import('./occupant.js').default} MUCOccupant
-     * @typedef {import('./affiliations/utils.js').NonOutcastAffiliation} NonOutcastAffiliation
+     * @typedef {import('./types').NonOutcastAffiliation} NonOutcastAffiliation
      * @typedef {import('./types').MemberListItem} MemberListItem
      * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
      * @typedef {import('./types').MUCMessageAttributes} MUCMessageAttributes

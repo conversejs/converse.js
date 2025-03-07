@@ -70,6 +70,9 @@ export type MUCMessageAttributes = MessageAttributes & ExtraMUCAttributes;
 export type MUCAffiliation = 'owner'|'admin'|'member'|'outcast'|'none';
 export type MUCRole = 'moderator'|'participant'|'visitor'|'none';
 
+
+ export type NonOutcastAffiliation = 'admin' | 'owner' | 'member';
+
 /**
  * Either the JID or the nickname (or both) will be available.
  */

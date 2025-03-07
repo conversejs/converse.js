@@ -13,32 +13,34 @@ import converse from '../../../shared/api/public.js';
 import log from '../../../log.js';
 import { parseMemberListIQ } from '../parsers.js';
 
-const { Strophe, $iq, u } = converse.env;
+const { Strophe, $iq, u, stx } = converse.env;
 
 /**
  * Sends an IQ stanza to the server, asking it for the relevant affiliation list .
  * Returns an array of {@link MemberListItem} objects, representing occupants
  * that have the given affiliation.
  * See: https://xmpp.org/extensions/xep-0045.html#modifymember
- * @typedef {("admin"|"owner"|"member")} NonOutcastAffiliation
- * @param {NonOutcastAffiliation} affiliation
+ * @param {import('../types').NonOutcastAffiliation} affiliation
  * @param {string} muc_jid - The JID of the MUC for which the affiliation list should be fetched
  * @returns {Promise<MemberListItem[]|Error>}
  */
 export async function getAffiliationList (affiliation, muc_jid) {
-    const { __ } = _converse;
-    const iq = $iq({ 'to': muc_jid, 'type': 'get' })
-        .c('query', { xmlns: Strophe.NS.MUC_ADMIN })
-        .c('item', { 'affiliation': affiliation });
+    const iq = stx`
+        <iq xmlns="jabber:client" to="${muc_jid}" type="get">
+            <query xmlns="${Strophe.NS.MUC_ADMIN}">
+                <item affiliation="${affiliation}"/>
+            </query>
+        </iq>`;
+
     const result = await api.sendIQ(iq, null, false);
     if (result === null) {
-        const err_msg = __('Error: timeout while fetching %1s list for MUC %2s', affiliation, muc_jid);
+        const err_msg = `Error: timeout while fetching ${affiliation} list for MUC ${muc_jid}`;
         const err = new Error(err_msg);
         log.warn(err_msg);
         return err;
     }
     if (u.isErrorStanza(result)) {
-        const err_msg = __('Error: not allowed to fetch %1s list for MUC %2s', affiliation, muc_jid);
+        const err_msg = `Error: not allowed to fetch ${affiliation} list for MUC ${muc_jid}`;
         const err = new Error(err_msg);
         log.warn(err_msg);
         log.warn(result);

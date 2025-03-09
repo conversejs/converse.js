@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="UTF-8"?><XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'><Link href='https://disroot.org/http-bind' rel='urn:xmpp:alt-connections:xbosh'/><Link href='wss://disroot.org/xmpp-websocket' rel='urn:xmpp:alt-connections:websocket'/></XRD>

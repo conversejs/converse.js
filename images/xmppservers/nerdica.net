@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<XRD xmlns:hm="http://host-meta.net/xrd/1.0" xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
+  <hm:Host>nerdica.net</hm:Host>
+  <link rel="lrdd" type="application/xrd+xml" template="https://nerdica.net/xrd?uri={uri}"/>
+  <link rel="lrdd" type="application/json" template="https://nerdica.net/.well-known/webfinger?resource={uri}"/>
+  <link rel="acct-mgmt" href="https://nerdica.net/amcd"/>
+  <link rel="http://services.mozilla.com/amcd/0.1" href="https://nerdica.net/amcd"/>
+</XRD>

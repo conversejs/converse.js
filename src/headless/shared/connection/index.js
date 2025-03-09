@@ -20,27 +20,27 @@ Strophe.Status.RECONNECTING = i + 1;
  */
 export class Connection extends Strophe.Connection {
 
-    constructor (service, options) {
+    constructor(service, options) {
         super(service, options);
         this.debouncedReconnect = debounce(this.reconnect, 3000);
     }
 
-    static generateResource () {
-        return `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
+    static generateResource() {
+        return `/converse.js-${Math.floor(Math.random() * 139749528).toString()}`;
     }
 
-    async bind () {
+    async bind() {
         /**
          * Synchronous event triggered before we send an IQ to bind the user's
          * JID resource for this session.
          * @event _converse#beforeResourceBinding
          */
-        await api.trigger('beforeResourceBinding', {'synchronous': true});
+        await api.trigger('beforeResourceBinding', { 'synchronous': true });
         super.bind();
     }
 
 
-    async onDomainDiscovered (response) {
+    async onDomainDiscovered(response) {
         const text = await response.text();
         const xrd = (new window.DOMParser()).parseFromString(text, "text/xml").firstElementChild;
         if (xrd.nodeName != "XRD" || xrd.namespaceURI != "http://docs.oasis-open.org/ns/xri/xrd-1.0") {
@@ -68,27 +68,41 @@ export class Connection extends Strophe.Connection {
      * host of Converse.js.
      * @method Connnection.discoverConnectionMethods
      */
-    async discoverConnectionMethods (domain) {
+    async discoverConnectionMethods(domain) {
+        // 先尝试加载本地镜像文件
+        const localMirrorPath = `./images/xmppservers/${domain}`;
+        let localResponse;
+        try {
+            localResponse = await fetch(localMirrorPath);
+            if (localResponse.status >= 200 && localResponse.status < 400) {
+                await this.onDomainDiscovered(localResponse);
+                return;
+            }
+        } catch (localError) {
+            console.log(`加载本地镜像文件 ${localMirrorPath} 失败:`, localError);
+        }
+
+        // 若本地镜像文件加载失败，再尝试加载远程文件
         // Use XEP-0156 to check whether this host advertises websocket or BOSH connection methods.
         const options = {
-            'mode': 'cors',
-            'headers': {
-                'Accept': 'application/xrd+xml, text/xml'
+            mode: /** @type {RequestMode} */('cors'),
+            headers: {
+                Accept: 'application/xrd+xml, text/xml'
             }
         };
         const url = `https://${domain}/.well-known/host-meta`;
-        let response;
+        let remoteResponse;
         try {
-            response = await fetch(url, options);
+            remoteResponse = await fetch(url, options);
         } catch (e) {
-            log.error(`Failed to discover alternative connection methods at ${url}`);
-            log.error(e);
+            console.log(`Failed to discover alternative connection methods at ${url}`);
+            console.error(e);
             return;
         }
-        if (response.status >= 200 && response.status < 400) {
-            await this.onDomainDiscovered(response);
+        if (remoteResponse.status >= 200 && remoteResponse.status < 400) {
+            await this.onDomainDiscovered(remoteResponse);
         } else {
-            log.warn("Could not discover XEP-0156 connection methods");
+            console.log("Could not discover XEP-0156 connection methods");
         }
     }
 
@@ -100,7 +114,7 @@ export class Connection extends Strophe.Connection {
      * @param { String } password
      * @param { Funtion } callback
      */
-    async connect (jid, password, callback) {
+    async connect(jid, password, callback) {
         if (api.settings.get("discover_connection_methods")) {
             const domain = Strophe.getDomainFromJid(jid);
             await this.discoverConnectionMethods(domain);
@@ -121,7 +135,7 @@ export class Connection extends Strophe.Connection {
      * We also call `_proto._doDisconnect` so that connection event handlers
      * for the old transport are removed.
      */
-    async switchTransport () {
+    async switchTransport() {
         if (api.connection.isType('websocket') && api.settings.get('bosh_service_url')) {
             await setUserJID(_converse.bare_jid);
             this._proto._doDisconnect();
@@ -142,7 +156,7 @@ export class Connection extends Strophe.Connection {
         }
     }
 
-    async reconnect () {
+    async reconnect() {
         log.debug('RECONNECTING: the connection has dropped, attempting to reconnect.');
         this.reconnecting = true;
         await tearDown();
@@ -176,7 +190,7 @@ export class Connection extends Strophe.Connection {
      * @method Connection.onConnected
      * @param { Boolean } reconnecting - Whether Converse.js reconnected from an earlier dropped session.
      */
-    async onConnected (reconnecting) {
+    async onConnected(reconnecting) {
         delete this.reconnecting;
         this.flush(); // Solves problem of returned PubSub BOSH response not received by browser
         await setUserJID(this.jid);
@@ -192,7 +206,7 @@ export class Connection extends Strophe.Connection {
          * user's JID resource for this session.
          * @event _converse#afterResourceBinding
          */
-        await api.trigger('afterResourceBinding', reconnecting, {'synchronous': true});
+        await api.trigger('afterResourceBinding', reconnecting, { 'synchronous': true });
 
         if (reconnecting) {
             /**
@@ -223,7 +237,7 @@ export class Connection extends Strophe.Connection {
      * @param { Boolean } [override] - An optional flag to replace any previous
      *  disconnection cause and reason.
      */
-    setDisconnectionCause (cause, reason, override) {
+    setDisconnectionCause(cause, reason, override) {
         if (cause === undefined) {
             delete this.disconnection_cause;
             delete this.disconnection_reason;
@@ -233,12 +247,12 @@ export class Connection extends Strophe.Connection {
         }
     }
 
-    setConnectionStatus (status, message) {
+    setConnectionStatus(status, message) {
         this.status = status;
-        _converse.connfeedback.set({'connection_status': status, message });
+        _converse.connfeedback.set({ 'connection_status': status, message });
     }
 
-    async finishDisconnection () {
+    async finishDisconnection() {
         // Properly tear down the session so that it's possible to manually connect again.
         log.debug('DISCONNECTED');
         delete this.reconnecting;
@@ -261,7 +275,7 @@ export class Connection extends Strophe.Connection {
      * to reconnect.
      * @method onDisconnected
      */
-    onDisconnected () {
+    onDisconnected() {
         if (api.settings.get("auto_reconnect")) {
             const reason = this.disconnection_reason;
             if (this.disconnection_cause === Strophe.Status.AUTHFAIL) {
@@ -307,7 +321,7 @@ export class Connection extends Strophe.Connection {
      * @param { Number } status
      * @param { String } message
      */
-    onConnectStatusChanged (status, message) {
+    onConnectStatusChanged(status, message) {
         const { __ } = _converse;
         log.debug(`Status changed to: ${CONNECTION_STATUS[status]}`);
         if (status === Strophe.Status.ATTACHFAIL) {
@@ -373,7 +387,7 @@ export class Connection extends Strophe.Connection {
         }
     }
 
-    isType (type) {
+    isType(type) {
         if (type.toLowerCase() === 'websocket') {
             return this._proto instanceof Strophe.Websocket;
         } else if (type.toLowerCase() === 'bosh') {
@@ -381,7 +395,7 @@ export class Connection extends Strophe.Connection {
         }
     }
 
-    hasResumed () {
+    hasResumed() {
         if (api.settings.get("connection_options")?.worker || this.isType('bosh')) {
             return _converse.connfeedback.get('connection_status') === Strophe.Status.ATTACHED;
         } else {
@@ -390,7 +404,7 @@ export class Connection extends Strophe.Connection {
         }
     }
 
-    restoreWorkerSession () {
+    restoreWorkerSession() {
         this.attach(this.onConnectStatusChanged);
         this.worker_attach_promise = getOpenPromise();
         return this.worker_attach_promise;
@@ -404,7 +418,7 @@ export class Connection extends Strophe.Connection {
  */
 export class MockConnection extends Connection {
 
-    constructor (service, options) {
+    constructor(service, options) {
         super(service, options);
 
         this.sent_stanzas = [];
@@ -412,22 +426,22 @@ export class MockConnection extends Connection {
         this.IQ_ids = [];
 
         this.features = Strophe.xmlHtmlNode(
-            '<stream:features xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client">'+
-                '<ver xmlns="urn:xmpp:features:rosterver"/>'+
-                '<csi xmlns="urn:xmpp:csi:0"/>'+
-                '<this xmlns="http://jabber.org/protocol/caps" ver="UwBpfJpEt3IoLYfWma/o/p3FFRo=" hash="sha-1" node="http://prosody.im"/>'+
-                '<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind">'+
-                    '<required/>'+
-                '</bind>'+
-                `<sm xmlns='urn:xmpp:sm:3'/>`+
-                '<session xmlns="urn:ietf:params:xml:ns:xmpp-session">'+
-                    '<optional/>'+
-                '</session>'+
+            '<stream:features xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client">' +
+            '<ver xmlns="urn:xmpp:features:rosterver"/>' +
+            '<csi xmlns="urn:xmpp:csi:0"/>' +
+            '<this xmlns="http://jabber.org/protocol/caps" ver="UwBpfJpEt3IoLYfWma/o/p3FFRo=" hash="sha-1" node="http://prosody.im"/>' +
+            '<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind">' +
+            '<required/>' +
+            '</bind>' +
+            `<sm xmlns='urn:xmpp:sm:3'/>` +
+            '<session xmlns="urn:ietf:params:xml:ns:xmpp-session">' +
+            '<optional/>' +
+            '</session>' +
             '</stream:features>').firstChild;
 
-        this._proto._processRequest = () => {};
+        this._proto._processRequest = () => { };
         this._proto._disconnect = () => this._onDisconnectTimeout();
-        this._proto._onDisconnectTimeout = () => {};
+        this._proto._onDisconnectTimeout = () => { };
         this._proto._connect = () => {
             this.connected = true;
             this.mock = true;
@@ -436,11 +450,11 @@ export class MockConnection extends Connection {
         }
     }
 
-    _processRequest () { // eslint-disable-line class-methods-use-this
+    _processRequest() { // eslint-disable-line class-methods-use-this
         // Don't attempt to send out stanzas
     }
 
-    sendIQ (iq, callback, errback) {
+    sendIQ(iq, callback, errback) {
         iq = iq.tree?.() ?? iq;
 
         this.IQ_stanzas.push(iq);
@@ -449,14 +463,14 @@ export class MockConnection extends Connection {
         return id;
     }
 
-    send (stanza) {
+    send(stanza) {
         stanza = stanza.tree?.() ?? stanza;
         this.sent_stanzas.push(stanza);
         return super.send(stanza);
     }
 
-    async bind () {
-        await api.trigger('beforeResourceBinding', {'synchronous': true});
+    async bind() {
+        await api.trigger('beforeResourceBinding', { 'synchronous': true });
         this.authenticated = true;
         if (!_converse.no_connection_on_bind) {
             this._changeConnectStatus(Strophe.Status.CONNECTED);

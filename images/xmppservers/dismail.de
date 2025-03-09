@@ -1,0 +1,8 @@
+<XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'>
+  <Link rel="urn:xmpp:alt-connections:xbosh"
+             href="https://dismail.de:443/http-bind" />
+  <Link rel="urn:xmpp:alt-connections:websocket"
+          href="wss://dismail.de:443/ws" />
+
+</XRD>
+

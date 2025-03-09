@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='utf-8'?>
+<XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'>
+	<Link rel="urn:xmpp:alt-connections:xbosh" href="https://xmpp.jix.im/bosh" />
+	<Link rel="urn:xmpp:alt-connections:websocket" href="wss://xmpp.jix.im:443/ws" />
+</XRD>

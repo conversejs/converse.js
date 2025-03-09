@@ -61,14 +61,14 @@ export default {
             const div = document.createElement('div');
             const vcard_el = u.toStanza(`
                 <vCard xmlns="vcard-temp">
-                    <FN>${data.fn}</FN>
-                    <NICKNAME>${data.nickname}</NICKNAME>
-                    <URL>${data.url}</URL>
-                    <ROLE>${data.role}</ROLE>
-                    <EMAIL><INTERNET/><PREF/><USERID>${data.email}</USERID></EMAIL>
+                    <FN>${data.fn ?? ''}</FN>
+                    <NICKNAME>${data.nickname ?? ''}</NICKNAME>
+                    <URL>${data.url ?? ''}</URL>
+                    <ROLE>${data.role ?? ''}</ROLE>
+                    <EMAIL><INTERNET/><PREF/><USERID>${data.email ?? ''}</USERID></EMAIL>
                     <PHOTO>
-                        <TYPE>${data.image_type}</TYPE>
-                        <BINVAL>${data.image}</BINVAL>
+                        <TYPE>${data.image_type ?? ''}</TYPE>
+                        <BINVAL>${data.image ?? ''}</BINVAL>
                     </PHOTO>
                 </vCard>`, div);
             let result;

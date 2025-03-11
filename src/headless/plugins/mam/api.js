@@ -4,7 +4,7 @@ import converse from '../../shared/api/public.js';
 import dayjs from 'dayjs';
 import log from '../../log.js';
 import sizzle from "sizzle";
-import { RSM } from '../../shared/rsm';
+import { RSM } from '../../shared/rsm.js';
 import { Strophe, Stanza } from 'strophe.js';
 import { TimeoutError } from '../../shared/errors.js';
 
@@ -254,7 +254,7 @@ export default {
                             </x>`
                                 : ""
                         }
-                        ${Object.keys(rsm.query ?? {}).length ? stx`${Stanza.unsafeXML(rsm.toXML().outerHTML)}` : ""}
+                        ${Object.keys(rsm.query ?? {}).length ? Stanza.fromString(rsm.toString()) : ""}
                     </query>
                 </iq>`;
 

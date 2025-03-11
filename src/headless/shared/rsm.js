@@ -1,13 +1,12 @@
 /**
- * @module converse-rsm
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description XEP-0059 Result Set Management
  *   Some code taken from the Strophe RSM plugin, licensed under the MIT License
  *   Copyright 2006-2017 Strophe (https://github.com/strophe/strophejs)
  */
+import { isUndefined } from "../utils/object.js";
 import converse from "./api/public.js";
-import pick from "lodash-es/pick";
 
 const { Strophe, $build } = converse.env;
 
@@ -28,8 +27,6 @@ export const RSM_TYPES = {
     max: toNumber,
 };
 
-const isUndefined = (x) => typeof x === "undefined";
-
 // This array contains both query attributes and response attributes
 export const RSM_ATTRIBUTES = Object.keys(RSM_TYPES);
 
@@ -39,7 +36,12 @@ export const RSM_ATTRIBUTES = Object.keys(RSM_TYPES);
  */
 export class RSM {
     static getQueryParameters(options = {}) {
-        return pick(options, RSM_QUERY_PARAMETERS);
+        return RSM_QUERY_PARAMETERS.reduce((result, key) => {
+            if (options[key] !== undefined) {
+                result[key] = options[key];
+            }
+            return result;
+        }, {});
     }
 
     static parseXMLResult(set) {
@@ -58,9 +60,8 @@ export class RSM {
     }
 
     /**
-     * Create a new RSM instance
+     * Creates a new RSM instance
      * @param { Object } options - Configuration options
-     * @constructor
      */
     constructor(options = {}) {
         this.query = RSM.getQueryParameters(options);
@@ -85,11 +86,27 @@ export class RSM {
         return RSM_QUERY_PARAMETERS.reduce(reducer, xml).tree();
     }
 
+    /**
+     * Returns a string representation of the result-set XML
+     * @returns {string}
+     */
+    toString() {
+        return Strophe.serialize(this.toXML());
+    }
+
+    /**
+     * @param {string} max
+     * @param {string} before
+     */
     next(max, before) {
         const options = Object.assign({}, this.query, { after: this.result.last, before, max });
         return new RSM(options);
     }
 
+    /**
+     * @param {string} max
+     * @param {string} after
+     */
     previous(max, after) {
         const options = Object.assign({}, this.query, { after, before: this.result.first, max });
         return new RSM(options);

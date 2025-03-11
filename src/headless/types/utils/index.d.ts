@@ -61,8 +61,9 @@ declare const _default: {
     waitUntil(func: Function, max_wait?: number, check_delay?: number): Promise<any>;
     getOpenPromise: any;
     merge(dst: any, src: any): void;
-    isError(obj: any): boolean;
-    isFunction(val: any): boolean;
+    isError(obj: unknown): boolean;
+    isFunction(val: unknown): boolean;
+    isUndefined(x: unknown): boolean;
     isValidJID(jid?: string | null): boolean;
     isValidMUCJID(jid: string): boolean;
     isSameBareJID(jid1: string, jid2: string): boolean;

@@ -13,17 +13,16 @@ export const RSM_ATTRIBUTES: string[];
  * @class RSM
  */
 export class RSM {
-    static getQueryParameters(options?: {}): Partial<{}>;
+    static getQueryParameters(options?: {}): {};
     static parseXMLResult(set: any): {
         index: number;
     };
     /**
-     * Create a new RSM instance
+     * Creates a new RSM instance
      * @param { Object } options - Configuration options
-     * @constructor
      */
     constructor(options?: any);
-    query: Partial<{}>;
+    query: {};
     result: {};
     /**
      * Returns a `<set>` XML element that confirms to XEP-0059 Result Set Management.
@@ -32,8 +31,21 @@ export class RSM {
      * @returns {Element}
      */
     toXML(): Element;
-    next(max: any, before: any): RSM;
-    previous(max: any, after: any): RSM;
+    /**
+     * Returns a string representation of the result-set XML
+     * @returns {string}
+     */
+    toString(): string;
+    /**
+     * @param {string} max
+     * @param {string} before
+     */
+    next(max: string, before: string): RSM;
+    /**
+     * @param {string} max
+     * @param {string} after
+     */
+    previous(max: string, after: string): RSM;
 }
 declare function toString(v: any): any;
 declare function toNumber(v: any): number;

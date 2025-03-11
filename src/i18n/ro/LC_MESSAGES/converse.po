@@ -2820,7 +2820,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:137388
 #, fuzzy, javascript-format
 msgid "Click to add %1$s to your roster"
-msgstr "Faceți clic pentru a discuta cu dvs."
+msgstr "Faceți clic pentru a adăuga %1$s la lista dvs"
 
 #: dist/converse-no-dependencies.js:137979
 msgid "Decline contact request"

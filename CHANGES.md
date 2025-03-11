@@ -60,6 +60,7 @@
 - Fix: removing the "add to contact" button in occupant modal in singleton mode (as there is no roster).
 - Fix: trying to use emojis with an uppercase letter breaks the message field.
 - Fix: renaming getEmojisByAtrribute to getEmojisByAttribute.
+- Fix: replace duplicated Romanian strings with correct values
 
 ### Changes and features
 - Upgrade to the latest versions of XEP-0424 and XEP-0425 (Message Retraction and Message Moderation).

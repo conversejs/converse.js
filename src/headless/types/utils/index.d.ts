@@ -8,7 +8,6 @@ export function isEmptyMessage(attrs: any): boolean;
  * inserted before the mentioned nicknames.
  */
 export function prefixMentions(message: any): any;
-export function isErrorObject(o: any): o is Error;
 export function safeSave(model: any, attributes: any, options: any): void;
 export function getRandomInt(max: any): number;
 /**
@@ -20,7 +19,6 @@ declare const _default: {
     getRandomInt: typeof getRandomInt;
     getUniqueId: typeof getUniqueId;
     isEmptyMessage: typeof isEmptyMessage;
-    isErrorObject: typeof isErrorObject;
     onMultipleEvents: typeof onMultipleEvents;
     prefixMentions: typeof prefixMentions;
     safeSave: typeof safeSave;
@@ -64,11 +62,21 @@ declare const _default: {
     isError(obj: unknown): boolean;
     isFunction(val: unknown): boolean;
     isUndefined(x: unknown): boolean;
+    isErrorObject(o: unknown): boolean;
     isValidJID(jid?: string | null): boolean;
     isValidMUCJID(jid: string): boolean;
     isSameBareJID(jid1: string, jid2: string): boolean;
     isSameDomain(jid1: string, jid2: string): boolean;
     getJIDFromURI(jid: string): string;
+    initPlugins(_converse: ConversePrivateGlobal): void;
+    initClientConfig(_converse: ConversePrivateGlobal): Promise<void>;
+    initSessionStorage(_converse: ConversePrivateGlobal): Promise<void>;
+    setUserJID(jid: string): Promise<string>;
+    initSession(_converse: ConversePrivateGlobal, jid: string): Promise<void>;
+    registerGlobalEventHandlers(_converse: ConversePrivateGlobal): void;
+    cleanup(_converse: ConversePrivateGlobal): Promise<void>;
+    attemptNonPreboundSession(credentials?: import("./types.js").Credentials, automatic?: boolean): Promise<void>;
+    savedLoginInfo(jid: string): Promise<Model>;
     isElement(el: unknown): boolean;
     isTagEqual(stanza: Element | typeof import("strophe.js").Builder, name: string): boolean;
     stringToElement(s: string): Element;
@@ -116,4 +124,6 @@ declare function shouldCreateMessage(attrs: any): any;
 declare function triggerEvent(el: Element, name: string, type?: string, bubbles?: boolean, cancelable?: boolean): void;
 import * as url from './url.js';
 import * as session from './session.js';
+import * as init from './init.js';
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=index.d.ts.map

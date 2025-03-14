@@ -39,3 +39,11 @@ export function isFunction(val) {
 export function isUndefined(x) {
     return typeof x === "undefined";
 }
+
+/**
+ * @param {unknown} o - The value to check.
+ * @returns {boolean} True if the value is an Error
+ */
+export function isErrorObject (o) {
+    return o instanceof Error;
+}

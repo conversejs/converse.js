@@ -27,7 +27,7 @@ import { TimeoutError, ItemNotFoundError, StanzaError } from '../../shared/error
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList } from './affiliations/utils.js';
 import { initStorage, createStore } from '../../utils/storage.js';
 import { isArchived, parseErrorStanza } from '../../shared/parsers.js';
-import { getUniqueId, isErrorObject, safeSave } from '../../utils/index.js';
+import { getUniqueId, safeSave } from '../../utils/index.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
@@ -1699,7 +1699,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             'node': 'x-roomuser-item',
         });
         const result = await api.sendIQ(stanza, null, false);
-        if (isErrorObject(result)) {
+        if (u.isErrorObject(result)) {
             throw result;
         }
         // Result might be undefined due to a timeout
@@ -2359,7 +2359,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @param {MUCMessageAttributes|StanzaParseError} attrs_or_error - A promise which resolves to the message attributes.
      */
     async onMessage (attrs_or_error) {
-        if (isErrorObject(attrs_or_error)) {
+        if (u.isErrorObject(attrs_or_error)) {
             return log.error(/** @type {Error} */ (attrs_or_error).message);
         }
 

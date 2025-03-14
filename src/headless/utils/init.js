@@ -284,7 +284,7 @@ export async function cleanup (_converse) {
  * Fetches login credentials from the server.
  * @param {number} [wait=0]
  *  The time to wait and debounce subsequent calls to this function before making the request.
- * @returns {Promise<{jid: string, password: string}>}
+ * @returns {Promise<import('./types').Credentials>}
  *  A promise that resolves with the provided login credentials (JID and password).
  * @throws {Error} If the request fails or returns an error status.
  */
@@ -319,6 +319,9 @@ function fetchLoginCredentials (wait=0) {
 }
 
 
+/**
+ * @returns {Promise<import('./types').Credentials>}
+ */
 async function getLoginCredentialsFromURL () {
     let credentials;
     let wait = 0;
@@ -365,10 +368,14 @@ async function getLoginCredentialsFromSCRAMKeys () {
 
     const login_info = await savedLoginInfo(jid);
     const scram_keys = login_info.get('scram_keys');
-    return scram_keys ? { jid , 'password': scram_keys } : null;
+    return scram_keys ? { jid , password: scram_keys } : null;
 }
 
 
+/**
+ * @param {import('./types').Credentials} [credentials]
+ * @param {boolean} [automatic]
+ */
 export async function attemptNonPreboundSession (credentials, automatic) {
     const { api } = _converse;
 
@@ -417,8 +424,8 @@ export async function attemptNonPreboundSession (credentials, automatic) {
  * The user's plaintext password is not stored, nor any material from which
  * the user's plaintext password could be recovered.
  *
- * @param { String } jid - The XMPP address for which to fetch the SCRAM keys
- * @returns { Promise } A promise which resolves once we've fetched the previously
+ * @param {String} jid - The XMPP address for which to fetch the SCRAM keys
+ * @returns {Promise<Model>} A promise which resolves once we've fetched the previously
  *  used login keys.
  */
 export async function savedLoginInfo (jid) {
@@ -431,11 +438,11 @@ export async function savedLoginInfo (jid) {
 
 
 /**
- * @param { Object } [credentials]
- * @param { string } credentials.password
- * @param { Object } credentials.password
- * @param { string } credentials.password.ck
- * @returns { Promise<void> }
+ * @param {Object} [credentials]
+ * @param {string} credentials.password
+ * @param {Object} credentials.password
+ * @param {string} credentials.password.ck
+ * @returns {Promise<void>}
  */
 async function connect (credentials) {
     const { api } = _converse;

@@ -10,6 +10,7 @@ import * as arraybuffer from './arraybuffer.js';
 import * as color from './color.js';
 import * as form from './form.js';
 import * as html from './html.js';
+import * as init from './init.js';
 import * as jid from './jid';
 import * as object from './object.js';
 import * as promise from './promise.js';
@@ -18,6 +19,7 @@ import * as stanza from './stanza.js';
 import * as storage from './storage.js';
 import * as text from './text.js';
 import * as url from './url.js';
+
 
 /**
  * @typedef {Record<string, Function>} CommonUtils
@@ -75,10 +77,6 @@ export function prefixMentions (message) {
 function shouldCreateMessage (attrs) {
     return attrs['retracted'] || // Retraction received *before* the message
         !isEmptyMessage(attrs);
-}
-
-export function isErrorObject (o) {
-    return o instanceof Error;
 }
 
 /**
@@ -154,6 +152,7 @@ export default Object.assign({
     ...color,
     ...form,
     ...html,
+    ...init,
     ...jid,
     ...object,
     ...promise,
@@ -165,7 +164,6 @@ export default Object.assign({
     getRandomInt,
     getUniqueId,
     isEmptyMessage,
-    isErrorObject,
     onMultipleEvents,
     prefixMentions,
     safeSave,

@@ -19,4 +19,9 @@ export function isFunction(val: unknown): boolean;
  * @returns {boolean} True if the value is undefined, false otherwise.
  */
 export function isUndefined(x: unknown): boolean;
+/**
+ * @param {unknown} o - The value to check.
+ * @returns {boolean} True if the value is an Error
+ */
+export function isErrorObject(o: unknown): boolean;
 //# sourceMappingURL=object.d.ts.map

@@ -30,6 +30,8 @@ export class StanzaError extends Error {
         super(e.querySelector('text')?.textContent ?? '');
         /** @type {ErrorName} */
         this.name = name
+        /** @type {string} */
+        this.message = name;
         /** @type {ErrorType} */
         this.type = /** @type {ErrorType} */ (e.getAttribute('type'));
         /** @type {Element} */

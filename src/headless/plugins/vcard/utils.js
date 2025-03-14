@@ -32,6 +32,8 @@ export async function onVCardData(iq) {
         stanza: iq, // TODO: remove?
         url: iq.querySelector(":scope > vCard URL")?.textContent,
         vcard_updated: new Date().toISOString(),
+        error: undefined,
+        vcard_error: undefined,
     };
     if (result.image) {
         const buffer = u.base64ToArrayBuffer(result["image"]);
@@ -179,10 +181,11 @@ export async function fetchVCard(jid) {
     try {
         iq = await api.sendIQ(createStanza("get", to));
     } catch (error) {
+        const { message: error_msg } = (isElement(error) ? await parseErrorStanza(error) : error) ?? {};
         return {
             jid,
             stanza: isElement(error) ? error : null, // TODO: remove?
-            error: isElement(error) ? await parseErrorStanza(error) : error?.message ?? '',
+            error: error_msg,
             vcard_error: new Date().toISOString(),
         };
     }

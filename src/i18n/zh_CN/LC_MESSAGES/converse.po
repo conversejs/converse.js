@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2025-02-13 10:00+0000\n"
+"PO-Revision-Date: 2025-03-15 05:54+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.10-dev\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: dist/converse-no-dependencies.js:20630
 #: dist/converse-no-dependencies.js:20684
@@ -31,7 +31,7 @@ msgstr "您的 XMPP 地址和/或密码不正确，请重试。"
 #: dist/converse-no-dependencies.js:20700
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "抱歉，我们无法连接到以下域的 XMPP 主机：%1$s"
+msgstr "抱歉，我们无法连接到域为“%1$s”的 XMPP 主机"
 
 #: dist/converse-no-dependencies.js:20702
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -43,7 +43,7 @@ msgstr "微笑和表情"
 
 #: dist/converse-no-dependencies.js:29597
 msgid "People"
-msgstr "人们"
+msgstr "人物"
 
 #: dist/converse-no-dependencies.js:29598
 msgid "Activities"

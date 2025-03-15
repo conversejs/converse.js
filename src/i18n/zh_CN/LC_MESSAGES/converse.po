@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2025-03-15 05:54+0000\n"
+"PO-Revision-Date: 2025-03-15 06:06+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -55,7 +55,7 @@ msgstr "旅行"
 
 #: dist/converse-no-dependencies.js:29600
 msgid "Objects"
-msgstr "物品"
+msgstr "物件"
 
 #: dist/converse-no-dependencies.js:29601
 msgid "Animals and nature"

@@ -1,10 +1,5 @@
 converse-root#conversejs {
-    .popover-header {
-        color: var(--background-color);
-        background-color: var(--secondary-color);
-    }
-    .popover-body {
-        color: var(--foreground-color);
-        background-color: var(--background-color);
+    converse-popover {
+        margin-left: 0.5em;
     }
 }

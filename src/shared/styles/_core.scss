@@ -402,37 +402,22 @@
     .left {
         float: left;
     }
+
     .right {
         float: right;
     }
+
     .centered {
         text-align: center;
         display: block;
         margin: auto;
     }
+
     .hor_centered {
         text-align: center;
         display: block !important;
         margin: 0 auto;
         clear: both;
-    }
-
-    .error {
-        color: var(--error-color) !important;
-    }
-    .info {
-        color: var(--info-color);
-    }
-    .reg-feedback {
-        font-size: 85%;
-        margin-bottom: 1em;
-    }
-
-    .reg-feedback,
-    #converse-login .conn-feedback {
-        display: block;
-        text-align: center;
-        width: 100%;
     }
 
     .avatar-autocomplete {

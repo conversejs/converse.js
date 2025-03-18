@@ -85,17 +85,9 @@
             font-weight: bold;
         }
 
-        .conn-feedback {
-            color: var(--controlbox-color);
-            &.error {
-                color: var(--error-color);
-            }
-            p {
-                padding-bottom: 1em;
-                &.feedback-subject.error {
-                    font-weight: bold;
-                }
-            }
+        #converse-login .conn-feedback {
+            text-align: center;
+            width: 100%;
         }
 
         #chatrooms {

@@ -2540,7 +2540,7 @@ msgstr "Haal die registrasie vorm"
 
 #: dist/converse-no-dependencies.js:133062
 msgid "Create your account"
-msgstr "Skep u kontak"
+msgstr "Skep u rekening"
 
 #: dist/converse-no-dependencies.js:133063
 msgid "Please enter the XMPP provider to register with:"

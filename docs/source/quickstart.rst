@@ -84,6 +84,9 @@ During operation Converse will make HTTP calls to dynamically fetch more files
 from the ``dist`` folder. The exceptions here are the ``.map`` files and the
 unminified ``converse.js`` and ``converse.css`` files.
 
+If you want to host these files at a different path than ``/dist/``, you can
+specify it with the :ref:`assets_path` configuration setting.
+
 
 Option 3: Building the files yourself
 *************************************

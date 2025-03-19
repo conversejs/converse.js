@@ -267,10 +267,14 @@ docsdev: ./bin/activate requirements.txt
 .PHONY: html
 html: doc
 
-.PHONY: doc
-doc: node_modules docsdev
+.PHONY: sphinx
+sphinx: node_modules docsdev
 	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+
+.PHONY: doc
+doc:
+	make sphinx
 	make apidoc
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

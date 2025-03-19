@@ -630,9 +630,16 @@ For example, if you want to prevent the chat history from getting too long or
 if you want to avoid gaps in the chat history (for example due to MAM not
 returning all messages since the last cached message).
 
-Beware, if you're using OMEMO, then you probably don't want to set this setting to
-``true``. OMEMO messages can be decrypted only once, so if they then
-subsequently get cleared, you won't get the plaintext back.
+.. note::
+    If you're using OMEMO, then you probably don't want to set this setting to
+    ``true``. OMEMO messages can be decrypted only once, so if they then
+    subsequently get cleared, you won't get the plaintext back.
+
+.. note::
+    This feature was implemented before we had list virtualization for the chat
+    history (release in version 11) and was largely a backstop until that
+    feature became available. This feature can therefore be considered
+    DEPRECATED and will likely be removed in future versions.
 
 
 chatstate_notification_blacklist
@@ -1250,7 +1257,14 @@ muc_clear_messages_on_leave
 
 Starting with Converse 8.0.0, when leaving a MUC, all cached messages in the history is cleared.
 
-Note: This means that you lose your history of decrypted OMEMO messages and cannot recover it.
+.. note::
+    This means that you lose your history of decrypted OMEMO messages and cannot recover it.
+
+.. note::
+    This feature was implemented before we had list virtualization for the chat
+    history (release in version 11) and was largely a backstop until that
+    feature became available. This feature can therefore be considered
+    DEPRECATED and will likely be removed in future versions.
 
 
 muc_disable_slash_commands

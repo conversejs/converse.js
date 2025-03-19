@@ -27,7 +27,8 @@ import { TimeoutError, ItemNotFoundError, StanzaError } from '../../shared/error
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList } from './affiliations/utils.js';
 import { initStorage, createStore } from '../../utils/storage.js';
 import { isArchived, parseErrorStanza } from '../../shared/parsers.js';
-import { getUniqueId, safeSave } from '../../utils/index.js';
+import { getUniqueId } from '../../utils/index.js';
+import { safeSave } from '../../utils/init.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';

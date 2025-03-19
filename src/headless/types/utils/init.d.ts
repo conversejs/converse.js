@@ -57,6 +57,12 @@ export function attemptNonPreboundSession(credentials?: import("./types").Creden
  *  used login keys.
  */
 export function savedLoginInfo(jid: string): Promise<Model>;
+/**
+ * @param {Model} model
+ * @param {Object} attributes
+ * @param {Object} options
+ */
+export function safeSave(model: Model, attributes: any, options: any): void;
 export type ConversePrivateGlobal = any;
-import { Model } from '@converse/skeletor';
+import { Model } from "@converse/skeletor";
 //# sourceMappingURL=init.d.ts.map

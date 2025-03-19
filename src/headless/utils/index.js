@@ -99,18 +99,6 @@ function onMultipleEvents (events=[], callback) {
     events.forEach(e => e.object.on(e.event, handler));
 }
 
-function isPersistableModel (model) {
-    return model.collection && model.collection.browserStorage;
-}
-
-export function safeSave (model, attributes, options) {
-    if (isPersistableModel(model)) {
-        model.save(attributes, options);
-    } else {
-        model.set(attributes, options);
-    }
-}
-
 /**
  * @param {Element} el
  * @param {string} name
@@ -166,7 +154,6 @@ export default Object.assign({
     isEmptyMessage,
     onMultipleEvents,
     prefixMentions,
-    safeSave,
     shouldCreateMessage,
     triggerEvent,
 }, u);

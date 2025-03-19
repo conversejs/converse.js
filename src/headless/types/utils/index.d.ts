@@ -8,7 +8,6 @@ export function isEmptyMessage(attrs: any): boolean;
  * inserted before the mentioned nicknames.
  */
 export function prefixMentions(message: any): any;
-export function safeSave(model: any, attributes: any, options: any): void;
 export function getRandomInt(max: any): number;
 /**
  * @param {string} [suffix]
@@ -21,7 +20,6 @@ declare const _default: {
     isEmptyMessage: typeof isEmptyMessage;
     onMultipleEvents: typeof onMultipleEvents;
     prefixMentions: typeof prefixMentions;
-    safeSave: typeof safeSave;
     shouldCreateMessage: typeof shouldCreateMessage;
     triggerEvent: typeof triggerEvent;
     isValidURL(text: string): boolean;
@@ -63,6 +61,7 @@ declare const _default: {
     isFunction(val: unknown): boolean;
     isUndefined(x: unknown): boolean;
     isErrorObject(o: unknown): boolean;
+    isPersistableModel(model: import("@converse/skeletor").Model): boolean;
     isValidJID(jid?: string | null): boolean;
     isValidMUCJID(jid: string): boolean;
     isSameBareJID(jid1: string, jid2: string): boolean;
@@ -77,6 +76,7 @@ declare const _default: {
     cleanup(_converse: ConversePrivateGlobal): Promise<void>;
     attemptNonPreboundSession(credentials?: import("./types.js").Credentials, automatic?: boolean): Promise<void>;
     savedLoginInfo(jid: string): Promise<Model>;
+    safeSave(model: Model, attributes: any, options: any): void;
     isElement(el: unknown): boolean;
     isTagEqual(stanza: Element | typeof import("strophe.js").Builder, name: string): boolean;
     stringToElement(s: string): Element;
@@ -124,6 +124,6 @@ declare function shouldCreateMessage(attrs: any): any;
 declare function triggerEvent(el: Element, name: string, type?: string, bubbles?: boolean, cancelable?: boolean): void;
 import * as url from './url.js';
 import * as session from './session.js';
-import * as init from './init.js';
 import { Model } from '@converse/skeletor';
+import * as init from './init.js';
 //# sourceMappingURL=index.d.ts.map

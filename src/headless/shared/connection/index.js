@@ -278,7 +278,7 @@ export class Connection extends Strophe.Connection {
      */
     setConnectionStatus (status, message) {
         this.status = status;
-        _converse.state.connfeedback.set({'connection_status': status, message });
+        _converse.state.connfeedback.set({ connection_status: status, message });
     }
 
     async finishDisconnection () {

@@ -3,7 +3,7 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from '../../log.js';
 import { MUC_ROLE_WEIGHTS } from './constants.js';
-import { safeSave } from '../../utils/index.js';
+import { safeSave } from '../../utils/init.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
 import { getUnloadEvent } from '../../utils/session.js';
 

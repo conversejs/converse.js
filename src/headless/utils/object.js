@@ -44,6 +44,14 @@ export function isUndefined(x) {
  * @param {unknown} o - The value to check.
  * @returns {boolean} True if the value is an Error
  */
-export function isErrorObject (o) {
+export function isErrorObject(o) {
     return o instanceof Error;
+}
+
+/**
+ * @param {import('@converse/skeletor').Model} model
+ * @returns {boolean}
+ */
+export function isPersistableModel(model) {
+    return model.collection && model.collection.browserStorage;
 }

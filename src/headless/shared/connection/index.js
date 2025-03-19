@@ -391,6 +391,7 @@ export class Connection extends Strophe.Connection {
                 status,
                 __('An error occurred while connecting to the chat server.')
             );
+
         } else if (status === Strophe.Status.CONNECTING) {
             this.setConnectionStatus(status);
         } else if (status === Strophe.Status.AUTHENTICATING) {
@@ -402,16 +403,18 @@ export class Connection extends Strophe.Connection {
             this.setConnectionStatus(status, message);
             this.setDisconnectionCause(status, message, true);
             this.onDisconnected();
+
         } else if (status === Strophe.Status.CONNFAIL) {
             let feedback = message;
             if (message === "host-unknown" || message == "remote-connection-failed") {
-                feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
-                    `\"${Strophe.getDomainFromJid(this.jid)}\"`);
+                feedback = __("We could not connect to %1$s, is your XMPP address correct?",
+                    Strophe.getDomainFromJid(this.jid));
             } else if (message !== undefined && message === Strophe?.ErrorCondition?.NO_AUTH_MECH) {
                 feedback = __("The XMPP server did not offer a supported authentication mechanism");
             }
             this.setConnectionStatus(status, feedback);
             this.setDisconnectionCause(status, message);
+
         } else if (status === Strophe.Status.DISCONNECTING) {
             this.setDisconnectionCause(status, message);
         }

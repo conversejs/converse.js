@@ -468,6 +468,7 @@ async function connect (credentials) {
             connection.reset();
         }
         connection.connect(jid.toLowerCase());
+
     } else if (api.settings.get("authentication") === LOGIN) {
         const password = credentials?.password ?? (connection?.pass || api.settings.get("password"));
         if (!password) {
@@ -494,16 +495,17 @@ async function connect (credentials) {
         ) {
             // Store scram keys in scram storage
             const login_info = await savedLoginInfo(jid);
-
             callback =
-                /** @param {string} status */
-                (status) => {
+                /**
+                 * @param {string} status
+                 * @param {string} message
+                 */
+                (status, message) => {
                     const { scram_keys } = connection;
                     if (scram_keys) login_info.save({ scram_keys });
-                    connection.onConnectStatusChanged(status);
+                    connection.onConnectStatusChanged(status, message);
                 };
         }
-
         connection.connect(jid, password, callback);
     }
 }

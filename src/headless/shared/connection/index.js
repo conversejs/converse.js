@@ -351,9 +351,9 @@ export class Connection extends Strophe.Connection {
      * through various states while establishing or tearing down a
      * connection.
      * @param {Number} status
-     * @param {String} [message]
+     * @param {String} [condition]
      */
-    onConnectStatusChanged (status, message) {
+    onConnectStatusChanged (status, condition) {
         const { __ } = _converse;
         log.debug(`Status changed to: ${CONNECTION_STATUS[status]}`);
         if (status === Strophe.Status.ATTACHFAIL) {
@@ -382,7 +382,7 @@ export class Connection extends Strophe.Connection {
                 this.onConnected();
             }
         } else if (status === Strophe.Status.DISCONNECTED) {
-            this.setDisconnectionCause(status, message);
+            this.setDisconnectionCause(status, condition);
             this.onDisconnected();
         } else if (status === Strophe.Status.BINDREQUIRED) {
             this.bind();
@@ -397,26 +397,29 @@ export class Connection extends Strophe.Connection {
         } else if (status === Strophe.Status.AUTHENTICATING) {
             this.setConnectionStatus(status);
         } else if (status === Strophe.Status.AUTHFAIL) {
-            if (!message) {
-                message = __('Your XMPP address and/or password is incorrect. Please try again.');
+            if (!condition) {
+                condition = __('Your XMPP address and/or password is incorrect. Please try again.');
             }
-            this.setConnectionStatus(status, message);
-            this.setDisconnectionCause(status, message, true);
+            this.setConnectionStatus(status, condition);
+            this.setDisconnectionCause(status, condition, true);
             this.onDisconnected();
 
         } else if (status === Strophe.Status.CONNFAIL) {
-            let feedback = message;
-            if (message === "host-unknown" || message == "remote-connection-failed") {
+            let feedback = condition;
+            if (condition === "host-unknown" || condition == "remote-connection-failed") {
                 feedback = __("We could not connect to %1$s, is your XMPP address correct?",
                     Strophe.getDomainFromJid(this.jid));
-            } else if (message !== undefined && message === Strophe?.ErrorCondition?.NO_AUTH_MECH) {
+            } else if (condition === 'policy-violation') {
+                feedback = __("The XMPP server rejected the connection because of a policy violation");
+            } else if (condition !== undefined && condition === Strophe?.ErrorCondition?.NO_AUTH_MECH) {
                 feedback = __("The XMPP server did not offer a supported authentication mechanism");
             }
+
             this.setConnectionStatus(status, feedback);
-            this.setDisconnectionCause(status, message);
+            this.setDisconnectionCause(status, condition);
 
         } else if (status === Strophe.Status.DISCONNECTING) {
-            this.setDisconnectionCause(status, message);
+            this.setDisconnectionCause(status, condition);
         }
     }
 

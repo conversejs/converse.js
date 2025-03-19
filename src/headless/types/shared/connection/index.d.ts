@@ -86,9 +86,9 @@ export class Connection extends Connection_base {
      * through various states while establishing or tearing down a
      * connection.
      * @param {Number} status
-     * @param {String} [message]
+     * @param {String} [condition]
      */
-    onConnectStatusChanged(status: number, message?: string): void;
+    onConnectStatusChanged(status: number, condition?: string): void;
     /**
      * @param {string} type
      */

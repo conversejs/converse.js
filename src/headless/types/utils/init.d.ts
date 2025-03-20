@@ -14,6 +14,13 @@ export function initClientConfig(_converse: ConversePrivateGlobal): Promise<void
  */
 export function initSessionStorage(_converse: ConversePrivateGlobal): Promise<void>;
 /**
+ * Initializes persistent storage
+ * @param {ConversePrivateGlobal} _converse
+ * @param {string} store_name - The name of the store.
+ * @param {string} [key="persistent"] - The key for `_converse.storage`.
+ */
+export function initPersistentStorage(_converse: ConversePrivateGlobal, store_name: string, key?: string): void;
+/**
  * Stores the passed in JID for the current user, potentially creating a
  * resource if the JID is bare.
  *

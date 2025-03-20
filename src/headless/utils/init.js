@@ -102,21 +102,22 @@ export async function initSessionStorage(_converse) {
  * Initializes persistent storage
  * @param {ConversePrivateGlobal} _converse
  * @param {string} store_name - The name of the store.
+ * @param {string} [key="persistent"] - The key for `_converse.storage`.
  */
-function initPersistentStorage(_converse, store_name) {
+export function initPersistentStorage(_converse, store_name, key="persistent") {
     if (_converse.api.settings.get("persistent_store") === "sessionStorage") {
         return;
     } else if (_converse.api.settings.get("persistent_store") === "BrowserExtLocal") {
         Storage.localForage
             .defineDriver(localDriver)
             .then(() => Storage.localForage.setDriver("webExtensionLocalStorage"));
-        _converse.storage["persistent"] = Storage.localForage;
+        _converse.storage[key] = Storage.localForage;
         return;
     } else if (_converse.api.settings.get("persistent_store") === "BrowserExtSync") {
         Storage.localForage
             .defineDriver(syncDriver)
             .then(() => Storage.localForage.setDriver("webExtensionSyncStorage"));
-        _converse.storage["persistent"] = Storage.localForage;
+        _converse.storage[key] = Storage.localForage;
         return;
     }
 
@@ -131,7 +132,7 @@ function initPersistentStorage(_converse, store_name) {
         config["description"] = "indexedDB instance";
         config["driver"] = [Storage.localForage.INDEXEDDB];
     }
-    _converse.storage["persistent"] = Storage.localForage.createInstance(config);
+    _converse.storage[key] = Storage.localForage.createInstance(config);
 }
 
 /**

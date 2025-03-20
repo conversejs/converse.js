@@ -255,7 +255,6 @@ export class Connection extends Strophe.Connection {
     /**
      * Used to keep track of why we got disconnected, so that we can
      * decide on what the next appropriate action is (in onDisconnected)
-     * @method Connection.setDisconnectionCause
      * @param {Number|'logout'} [cause] - The status number as received from Strophe.
      * @param {String} [reason] - An optional user-facing message as to why
      *  there was a disconnection.
@@ -454,7 +453,6 @@ export class Connection extends Strophe.Connection {
 
 /**
  * The MockConnection class is used during testing, to mock an XMPP connection.
- * @class
  */
 export class MockConnection extends Connection {
 
@@ -494,6 +492,11 @@ export class MockConnection extends Connection {
             this.jid = 'romeo@montague.lit/orchard';
             this._changeConnectStatus(Strophe.Status.BINDREQUIRED);
         }
+    }
+
+    // @ts-ignore
+    get _sasl_mechanism () {
+        return new Strophe.SASLSHA256();
     }
 
     _processRequest () { // eslint-disable-line class-methods-use-this

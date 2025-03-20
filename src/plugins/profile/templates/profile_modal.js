@@ -2,6 +2,7 @@ import "shared/components/image-picker.js";
 import { __ } from "i18n";
 import { _converse } from "@converse/headless";
 import { html } from "lit";
+import { shouldShowPasswordResetForm } from "../utils";
 
 /**
  * @param {import('../modals/profile').default} el
@@ -37,7 +38,11 @@ export default (el) => {
     const i18n_profile = __("Profile");
     const ii18n_reset_password = __("Reset Password");
 
-    const navigation_tabs = [
+    // Initialize navigation_tabs as a Map
+    const navigation_tabs = new Map();
+
+    navigation_tabs.set(
+        "profile",
         html`<li role="presentation" class="nav-item">
             <a
                 class="nav-link ${el.tab === "profile" ? "active" : ""}"
@@ -50,27 +55,31 @@ export default (el) => {
                 data-toggle="tab"
                 >${i18n_profile}</a
             >
-        </li>`,
-    ];
-
-    navigation_tabs.push(
-        html`<li role="presentation" class="nav-item">
-            <a
-                class="nav-link ${el.tab === "passwordreset" ? "active" : ""}"
-                id="passwordreset-tab"
-                href="#passwordreset-tabpanel"
-                aria-controls="passwordreset-tabpanel"
-                role="tab"
-                @click="${(ev) => el.switchTab(ev)}"
-                data-name="passwordreset"
-                data-toggle="tab"
-                >${ii18n_reset_password}</a
-            >
         </li>`
     );
 
+    if (shouldShowPasswordResetForm()) {
+        navigation_tabs.set(
+            "passwordreset",
+            html`<li role="presentation" class="nav-item">
+                <a
+                    class="nav-link ${el.tab === "passwordreset" ? "active" : ""}"
+                    id="passwordreset-tab"
+                    href="#passwordreset-tabpanel"
+                    aria-controls="passwordreset-tabpanel"
+                    role="tab"
+                    @click="${(ev) => el.switchTab(ev)}"
+                    data-name="passwordreset"
+                    data-toggle="tab"
+                    >${ii18n_reset_password}</a
+                >
+            </li>`
+        );
+    }
+
     if (_converse.pluggable.plugins["converse-omemo"]?.enabled(_converse)) {
-        navigation_tabs.push(
+        navigation_tabs.set(
+            "omemo",
             html`<li role="presentation" class="nav-item">
                 <a
                     class="nav-link ${el.tab === "omemo" ? "active" : ""}"
@@ -88,7 +97,13 @@ export default (el) => {
     }
 
     return html`
-        <ul class="nav nav-pills justify-content-center">${navigation_tabs}</ul>
+        ${
+            navigation_tabs.size
+                ? html`<ul class="nav nav-pills justify-content-center">
+                      ${Array.from(navigation_tabs.values())}
+                  </ul>`
+                : ""
+        }
         <div class="tab-content">
             <div class="tab-pane ${el.tab === "profile" ? "active" : ""}" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
                 <form class="converse-form converse-form--modal" action="#" @submit=${(ev) => el.onFormSubmitted(ev)}>
@@ -130,12 +145,21 @@ export default (el) => {
                     </div>
                 </form>
             </div>
-
-            <div class="tab-pane ${el.tab === "passwordreset" ? "active" : ""}" id="passwordreset-tabpanel" role="tabpanel" aria-labelledby="passwordreset-tab">
-                ${el.tab === "passwordreset" ? html`<converse-change-password-form></converse-change-password-form>` : ""}
-            </div>
-
-            ${_converse.pluggable.plugins["converse-omemo"]?.enabled(_converse) ? tplOmemoPage(el) : ""}
+            ${
+                navigation_tabs.get("passwordreset")
+                    ? html` <div
+                          class="tab-pane ${el.tab === "passwordreset" ? "active" : ""}"
+                          id="passwordreset-tabpanel"
+                          role="tabpanel"
+                          aria-labelledby="passwordreset-tab"
+                      >
+                          ${el.tab === "passwordreset"
+                              ? html`<converse-change-password-form></converse-change-password-form>`
+                              : ""}
+                      </div>`
+                    : ""
+            }
+            ${navigation_tabs.get("omemo") ? tplOmemoPage(el) : ""}
         </div>
     </div>`;
 };

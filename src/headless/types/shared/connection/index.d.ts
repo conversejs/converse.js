@@ -57,7 +57,6 @@ export class Connection extends Connection_base {
     /**
      * Used to keep track of why we got disconnected, so that we can
      * decide on what the next appropriate action is (in onDisconnected)
-     * @method Connection.setDisconnectionCause
      * @param {Number|'logout'} [cause] - The status number as received from Strophe.
      * @param {String} [reason] - An optional user-facing message as to why
      *  there was a disconnection.

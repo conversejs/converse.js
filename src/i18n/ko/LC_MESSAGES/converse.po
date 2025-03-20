@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 10.1.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2024-06-23 09:43+0000\n"
-"Last-Translator: 홍다연 <ekdus00@ajou.ac.kr>\n"
+"PO-Revision-Date: 2025-03-20 13:09+0000\n"
+"Last-Translator: Joseph Moon <yurinboy@hotmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/conversejs/"
 "translations/ko/>\n"
 "Language: ko\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.6-rc\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: dist/converse-no-dependencies.js:20630
 #: dist/converse-no-dependencies.js:20684
@@ -94,7 +94,7 @@ msgstr "죄송합니다. 파일 업로드 URL을 확인할 수 없습니다."
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
 "\"%1$s\""
-msgstr "죄송합니다. 파일을 업로드하지 못했습니다. 서버의 응답: \"파일명\""
+msgstr "죄송합니다. 파일을 업로드하지 못했습니다. 서버의 응답: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:32073
 msgid "Sorry, could not succesfully upload your file."
@@ -103,33 +103,31 @@ msgstr "죄송합니다. 파일을 업로드하지 못했습니다."
 #: dist/converse-no-dependencies.js:34364
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
-"오류: MUC \"MUC명\"에 대한  \"목록 리스트\"  목록을 가져오는 동안 시간이 초과"
-"되었습니다"
+msgstr "오류: MUC %2s에 대한 %1s 목록을 가져오는 동안 시간이 초과되었습니다"
 
 #: dist/converse-no-dependencies.js:34373
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr "오류: MUC \"MUC명\"에 대한 \"목록명\" 목록을 가져올 수 없습니다"
+msgstr "오류: MUC %2s에 대한 %1s 목록을 가져올 수 없습니다"
 
 #: dist/converse-no-dependencies.js:36482
 #: dist/converse-no-dependencies.js:42946
 #, javascript-format
 msgid "%1$s is typing"
-msgstr "\"사용자\"가 입력하는 중..."
+msgstr "%1$s(이)가 입력하는 중..."
 
 #: dist/converse-no-dependencies.js:36484
 #: dist/converse-no-dependencies.js:42948
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr "\"사용자\"가 입력을 멈췄습니다."
+msgstr "%1$s(이)가 입력을 멈췄습니다."
 
 #: dist/converse-no-dependencies.js:36486
 #: dist/converse-no-dependencies.js:42950
 #: dist/converse-no-dependencies.js:45931
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr "\"사용자\"가 채팅방을 나갔습니다."
+msgstr "%1$s(이)가 채팅방을 나갔습니다."
 
 #: dist/converse-no-dependencies.js:36867
 #: dist/converse-no-dependencies.js:36886
@@ -140,14 +138,14 @@ msgstr "죄송합니다. 서버에서 파일 업로드를 지원하지 않는 �
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
-msgstr "파일 \"파일명\"의 크기는 서버의 최대 용량을 초과합니다."
+msgstr "%1$s 파일의 크기는 서버의 최대 용량을 초과합니다."
 
 #: dist/converse-no-dependencies.js:36907
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
-msgstr "파일 \"파일명\"의 크기는 서버 설정 용량인 \"설정값\"을 초과합니다."
+msgstr "%1$s 파일의 크기는 서버 설정 용량인 %2$s(을)를 초과합니다."
 
 #: dist/converse-no-dependencies.js:37411
 #: dist/converse-no-dependencies.js:40661
@@ -185,7 +183,6 @@ msgid ""
 msgstr "그룹 채팅에 참여하지 않으셨기 때문에 메시지가 전달되지 않았습니다."
 
 #: dist/converse-no-dependencies.js:41016
-#, fuzzy
 msgid "A timeout happened while trying to retract your message."
 msgstr "메시지를 전송을 취소하는 동안 시간 초과가 발생했습니다."
 
@@ -212,14 +209,13 @@ msgstr "오류 : 입력값에 따른 여러 명의 채팅 참가자가 존재하
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
-msgstr ""
-"오류: \"명령어 이름\" 명령은 사용자의 아이디와 경우에 따라서는 이유,  두 가지"
-"를 필요로 합니다."
+msgstr "오류: \"%1$s\" 명령은 사용자의 아이디와 경우에 따라서는 이유, 두 가지를 "
+"필요로 합니다."
 
 #: dist/converse-no-dependencies.js:41882
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr ""
+msgstr "허가 제한 : 해당 사항 처리를 위한 필수적인 역할을 보유하고 있지 않습니다."
 
 #: dist/converse-no-dependencies.js:41912
 msgid "Forbidden: you do not have the necessary role in order to do that."
@@ -238,305 +234,307 @@ msgstr "이 그룹 채팅은 회원 전용이므로 등록할 수 없습니다."
 #: dist/converse-no-dependencies.js:42548
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr "\"사용자\"가 항목을 설정하였습니다."
+msgstr "%1$s(이)가 설정한 주제"
 
 #: dist/converse-no-dependencies.js:42548
 #, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr "\"사용자\"가 항목을 삭제하였습니다."
+msgstr "%1$s(이)가 삭제한 주제"
 
 #: dist/converse-no-dependencies.js:42952
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr "\"사용자\"가 그룹 채팅방에 참여하였습니다."
+msgstr "%1$s(이)가 그룹 채팅방에 참여하였습니다."
 
 #: dist/converse-no-dependencies.js:42954
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr "\"사용자\"가 그룹 채팅방을 나갔습니다."
+msgstr "%1$s (이)가 그룹 채팅방을 나갔습니다."
 
 #: dist/converse-no-dependencies.js:42956
 #, javascript-format
 msgid "%1$s is now a moderator"
-msgstr "현재 \"관리자명\"이 관리자입니다."
+msgstr "현재 %1$s(이)가 조정자입니다."
 
 #: dist/converse-no-dependencies.js:42958
 #, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr "\"사용자명\"은 더 이상 관리자가 아닙니다."
+msgstr "%1$s은(는) 더 이상 조정자가 아닙니다."
 
 #: dist/converse-no-dependencies.js:42960
 #, javascript-format
 msgid "%1$s has been given a voice"
-msgstr "\"사용자명\"가 발언 중입니다."
+msgstr "%1$s(이)가 발언 중입니다."
 
 #: dist/converse-no-dependencies.js:42962
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr "\"사용자\"가 묵음 처리되었습니다."
+msgstr "%1$s(이)가 음소거되었습니다."
 
 #: dist/converse-no-dependencies.js:42970
 #, javascript-format
 msgid "%1$s and %2$s"
-msgstr "\"사용자1\"과 \"사용자2\""
+msgstr "%1$s 및 %2$s"
 
 #: dist/converse-no-dependencies.js:42973
 #, javascript-format
 msgid "%1$s are typing"
-msgstr "\"사용자\"들이 현재 입력 중입니다."
+msgstr "%1$s(이)가 현재 입력 중입니다."
 
 #: dist/converse-no-dependencies.js:42975
 #, javascript-format
 msgid "%1$s have stopped typing"
-msgstr "\"사용자명\"가 입력을 중지했습니다."
+msgstr "%1$s(이)가 입력을 중지했습니다."
 
 #: dist/converse-no-dependencies.js:42977
 #, javascript-format
 msgid "%1$s have gone away"
-msgstr "\"사용자명\"가 채팅방에 자리를 비웠습니다."
+msgstr "%1$s(이)가 채팅방에 자리를 비웠습니다."
 
 #: dist/converse-no-dependencies.js:42979
 #, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr "\"사용자명\"가 채팅방에 입장하였습니다."
+msgstr "%1$s(이)가 채팅방에 입장하였습니다."
 
 #: dist/converse-no-dependencies.js:42981
 #, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr "\"사용자명\"가 채팅방을 나갔습니다."
+msgstr "%1$s(이)가 채팅방을 나갔습니다."
 
 #: dist/converse-no-dependencies.js:42983
 #, javascript-format
 msgid "%1$s are now moderators"
-msgstr "현재 \"사용자명\"들이 관리자가 되었습니다."
+msgstr "현재 %1$s(이)가 조정자가 되었습니다."
 
 #: dist/converse-no-dependencies.js:42985
 #, javascript-format
 msgid "%1$s are no longer moderators"
-msgstr "\"사용자명\"들은 더이상 관리자가 아닙니다."
+msgstr "%1$s(은)는 더 이상 조정자가 아닙니다."
 
 #: dist/converse-no-dependencies.js:42987
 #, javascript-format
 msgid "%1$s have been given voices"
-msgstr "\"사용자명\"은 현재 발언 중입니다."
+msgstr "%1$s(이)가 현재 발언 중입니다."
 
 #: dist/converse-no-dependencies.js:42989
 #, javascript-format
 msgid "%1$s have been muted"
-msgstr "\"사용자명\"가 현재 음소거되었습니다."
+msgstr "%1$s(이)가 현재 음소거되었습니다."
 
 #: dist/converse-no-dependencies.js:43329
 #, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "\"사용자1\"이 \"사용자2\"에 의해 강퇴되었습니다."
+msgstr "%1$s(이)가 %2$s에 의해 강퇴되었습니다."
 
 #: dist/converse-no-dependencies.js:43329
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr "\"사용자\"가 강퇴되었습니다."
+msgstr "%1$s(이)가 강퇴되었습니다."
 
 #: dist/converse-no-dependencies.js:43331
 #, javascript-format
 msgid "%1$s's nickname has changed"
-msgstr ""
+msgstr "%1$s의 별명이 변경되었습니다."
 
 #: dist/converse-no-dependencies.js:43333
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr ""
+msgstr "%1$s(이)가 %2$s에 의해 강퇴되었습니다."
 
 #: dist/converse-no-dependencies.js:43333
 #, javascript-format
 msgid "%1$s has been kicked out"
-msgstr ""
+msgstr "%1$s(이)가 강퇴되었습니다."
 
 #: dist/converse-no-dependencies.js:43335
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr ""
+msgstr "%1$s(은)는 소속 변경 때문에 퇴출되었습니다."
 
 #: dist/converse-no-dependencies.js:43337
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr ""
+msgstr "%1$s(은)는 회원이 아니기 때문에 퇴출되었습니다."
 
 #: dist/converse-no-dependencies.js:43361
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr ""
+msgstr "%1$s(은)는 더 이상 이 그룹 채팅의 관리자가 아닙니다."
 
 #: dist/converse-no-dependencies.js:43366
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr ""
+msgstr "%1$s(은)는 더 이상 이 그룹 채팅의 소유자가 아닙니다."
 
 #: dist/converse-no-dependencies.js:43371
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr ""
+msgstr "%1$s(은)는 더 이상 이 그룹 채팅에서 차단되지 않습니다."
 
 #: dist/converse-no-dependencies.js:43377
 #, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
-msgstr ""
+msgstr "%1$s(은)는 더 이상 이 그룹 채팅의 회원이 아닙니다."
 
 #: dist/converse-no-dependencies.js:43383
 #, javascript-format
 msgid "%1$s is now a member of this groupchat"
-msgstr ""
+msgstr "%1$s(은)는 이제 이 그룹 채팅의 회원입니다."
 
 #: dist/converse-no-dependencies.js:43389
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr ""
+msgstr "%1$s(은)는 이제 이 그룹 채팅의 %2$s입니다."
 
 #: dist/converse-no-dependencies.js:43515
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
-msgstr ""
+msgstr "선택한 별명은 예약되어 있거나 현재 사용 중입니다. 다른 별명을 선택하십시오."
 
 #: dist/converse-no-dependencies.js:43542
 msgid "Password incorrect"
-msgstr ""
+msgstr "잘못된 비밀번호"
 
 #: dist/converse-no-dependencies.js:43549
 msgid "You are not on the member list of this groupchat."
-msgstr ""
+msgstr "귀하는 이 그룹 채팅의 회원 목록에 없습니다."
 
 #: dist/converse-no-dependencies.js:43557
 msgid "You are not allowed to create new groupchats."
-msgstr ""
+msgstr "새 그룹 채팅을 만들 수 없습니다."
 
 #: dist/converse-no-dependencies.js:43560
 msgid "Your nickname doesn't conform to this groupchat's policies."
-msgstr ""
+msgstr "귀하의 별명은 이 그룹 채팅의 정책을 준수하지 않습니다."
 
 #: dist/converse-no-dependencies.js:43575
 msgid "This groupchat does not (yet) exist."
-msgstr ""
+msgstr "이 그룹 채팅은 (아직) 존재하지 않습니다."
 
 #: dist/converse-no-dependencies.js:43578
 msgid "This groupchat has reached its maximum number of participants."
-msgstr ""
+msgstr "이 그룹 채팅은 최대 인원 수에 도달했습니다."
 
 #: dist/converse-no-dependencies.js:43581
 msgid "Remote server not found"
-msgstr ""
+msgstr "원격 서버 찾을 수 없습니다."
 
 #: dist/converse-no-dependencies.js:43584
 msgid "You're not allowed to enter this groupchat"
-msgstr ""
+msgstr "이 그룹 채팅에 입장할 수 없습니다."
 
 #: dist/converse-no-dependencies.js:43587
 msgid "An error happened while trying to enter this groupchat"
-msgstr ""
+msgstr "이 그룹 채팅에 입장을 시도하는 동안 오류가 발생했습니다."
 
 #: dist/converse-no-dependencies.js:45929
 #, javascript-format
 msgid "%1$s has gone offline"
-msgstr "\"사용자\"가 오프라인 상태가 되었습니다."
+msgstr "%1$s(이)가 오프라인 상태가 되었습니다."
 
 #: dist/converse-no-dependencies.js:45933
 #, javascript-format
 msgid "%1$s is busy"
-msgstr "\"사용자\"가 현재 바쁜 상태입니다."
+msgstr "%1$s(이)가 현재 바쁜 상태입니다."
 
 #: dist/converse-no-dependencies.js:45935
 #, javascript-format
 msgid "%1$s is online"
-msgstr "\"사용자\"가 접속중입니다."
+msgstr "%1$s(이)가 접속중입니다."
 
 #: dist/converse-no-dependencies.js:49963
 msgid "This groupchat is not anonymous"
-msgstr ""
+msgstr "이 그룹 채팅은 익명이 아닙니다."
 
 #: dist/converse-no-dependencies.js:49964
 msgid "This groupchat now shows unavailable members"
-msgstr ""
+msgstr "이 그룹 채팅은 현재 사용할 수 없는 회원이 표시됩니다."
 
 #: dist/converse-no-dependencies.js:49965
 msgid "This groupchat does not show unavailable members"
-msgstr ""
+msgstr "이 그룹 채팅은 사용할 수 없는 회원을 표시하지 않습니다."
 
 #: dist/converse-no-dependencies.js:49966
 msgid "The groupchat configuration has changed"
-msgstr ""
+msgstr "그룹 채팅 구성이 변경되었습니다."
 
 #: dist/converse-no-dependencies.js:49967
 msgid "Groupchat logging is now enabled"
-msgstr ""
+msgstr "그룹 채팅 로깅이 활성화되었습니다."
 
 #: dist/converse-no-dependencies.js:49968
 msgid "Groupchat logging is now disabled"
-msgstr ""
+msgstr "그룹 채팅 로깅이 비활성화되었습니다."
 
 #: dist/converse-no-dependencies.js:49969
 msgid "This groupchat is now no longer anonymous"
-msgstr ""
+msgstr "이 그룹 채팅은 이제 더 이상 익명이 아닙니다."
 
 #: dist/converse-no-dependencies.js:49970
 msgid "This groupchat is now semi-anonymous"
-msgstr ""
+msgstr "이 그룹 채팅은 이제 반 익명입니다."
 
 #: dist/converse-no-dependencies.js:49971
 msgid "This groupchat is now fully-anonymous"
-msgstr ""
+msgstr "이 그룹 채팅은 이제 완전히 익명입니다."
 
 #: dist/converse-no-dependencies.js:49972
 msgid "A new groupchat has been created"
-msgstr ""
+msgstr "새로운 그룹 채팅이 생성되었습니다."
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:49974
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr ""
+msgstr "별명이 자동으로 %1$s(으)로 설정되었습니다."
 
 #: dist/converse-no-dependencies.js:49975
 msgid "You have been banned from this groupchat"
-msgstr ""
+msgstr "이 그룹 채팅에서 차단되었습니다."
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:49977
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr ""
+msgstr "별명이 %1$s(으)로 변경되었습니다."
 
 #: dist/converse-no-dependencies.js:49978
 msgid "You have been kicked from this groupchat"
-msgstr ""
+msgstr "이 그룹 채팅에서 강퇴되었습니다."
 
 #: dist/converse-no-dependencies.js:49979
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
-msgstr ""
+msgstr "소속 변경으로 인해 이 그룹 채팅에서 퇴장되었습니다."
 
 #: dist/converse-no-dependencies.js:49980
 msgid ""
 "You have been removed from this groupchat because it has changed to members-"
 "only and you're not a member"
-msgstr ""
+msgstr "이 그룹 채팅은 회원 전용으로 변경되었으며 귀하는 회원이 아니기 때문에 "
+"퇴장되었습니다."
 
 #: dist/converse-no-dependencies.js:49981
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
-msgstr ""
+msgstr "호스팅 서비스가 중단되어 이 그룹 채팅에서 퇴장되었습니다."
 
 #: dist/converse-no-dependencies.js:49982
 msgid "You have exited this groupchat due to a technical problem"
-msgstr ""
+msgstr "기술적 문제로 인해 이 채팅 그룹이 종료되었습니다."
 
 #: dist/converse-no-dependencies.js:50893
 msgid "Timeout Error"
-msgstr ""
+msgstr "시간 초과 오류"
 
 #: dist/converse-no-dependencies.js:50893
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
-msgstr ""
+msgstr "서버가 허용된 시간 내에 북마크를 반환하지 못했습니다. 페이지를 다시 로드하여 "
+"다시 요청할 수 있습니다."
 
 #: dist/converse-no-dependencies.js:54299
 #, fuzzy
@@ -545,32 +543,32 @@ msgstr "메세지 전송이 불가한 상대입니다."
 
 #: dist/converse-no-dependencies.js:56320
 msgid "A timeout occurred"
-msgstr ""
+msgstr "시간 초과가 발생했습니다."
 
 #: dist/converse-no-dependencies.js:59395
 msgid "Timeout while trying to fetch archived messages."
-msgstr ""
+msgstr "보관된 메시지 가져오기 시도 중 시간 초과."
 
 #: dist/converse-no-dependencies.js:59408
 msgid "An error occurred while querying for archived messages."
-msgstr ""
+msgstr "보관된 메시지 쿼리 중 오류가 발생했습니다."
 
 #: dist/converse-no-dependencies.js:63505
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
-msgstr "죄송합니다, 메세지 전송 도중 오류가 발생하였습니다."
+msgstr "죄송합니다. %1$s(을)를 연락처로 추가 중 오류가 발생하였습니다."
 
 #: dist/converse-no-dependencies.js:63819
 msgid "This client does not allow presence subscriptions"
-msgstr ""
+msgstr "이 클라이언트는 프레즌스 구독을 허용하지 않습니다."
 
 #: dist/converse-no-dependencies.js:65764
 msgid "Unsaved contacts"
-msgstr ""
+msgstr "저장되지 않은 연락처"
 
 #: dist/converse-no-dependencies.js:65765
 msgid "My contacts"
-msgstr ""
+msgstr "내 연락처"
 
 #: dist/converse-no-dependencies.js:65766
 msgid "Pending contacts"
@@ -578,23 +576,23 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:65767
 msgid "Contact requests"
-msgstr ""
+msgstr "연락처 요청"
 
 #: dist/converse-no-dependencies.js:65768
 msgid "Ungrouped"
-msgstr ""
+msgstr "그룹 해제됨"
 
 #: dist/converse-no-dependencies.js:65769
 #: dist/converse-no-dependencies.js:97508
 msgid "New messages"
-msgstr ""
+msgstr "새 메시지"
 
 #: dist/converse-no-dependencies.js:76240
 #: dist/converse-no-dependencies.js:76241
 #: dist/converse-no-dependencies.js:102008
 #: dist/converse-no-dependencies.js:108452
 msgid "Close"
-msgstr ""
+msgstr "닫기"
 
 #: dist/converse-no-dependencies.js:77051
 #: dist/converse-no-dependencies.js:84584
@@ -603,39 +601,39 @@ msgstr ""
 #: dist/converse-no-dependencies.js:89460
 #: dist/converse-no-dependencies.js:120640
 msgid "Confirm"
-msgstr ""
+msgstr "확인"
 
 #: dist/converse-no-dependencies.js:77051
 #: dist/converse-no-dependencies.js:80429
 #: dist/converse-no-dependencies.js:133038
 msgid "Cancel"
-msgstr ""
+msgstr "취소"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:79606
 #, javascript-format
 msgid "Download file \"%1$s\""
-msgstr ""
+msgstr "\"%1$s\" 파일 다운로드"
 
 #: dist/converse-no-dependencies.js:80398
 msgid "Execute"
-msgstr ""
+msgstr "실행"
 
 #: dist/converse-no-dependencies.js:80399
 msgid "Previous"
-msgstr ""
+msgstr "이전"
 
 #: dist/converse-no-dependencies.js:80400
 msgid "Next"
-msgstr ""
+msgstr "다음"
 
 #: dist/converse-no-dependencies.js:80401
 msgid "Complete"
-msgstr ""
+msgstr "완료"
 
 #: dist/converse-no-dependencies.js:82955
 msgid "Add to Contacts"
-msgstr ""
+msgstr "연락처에 추가"
 
 #: dist/converse-no-dependencies.js:82967
 #: dist/converse-no-dependencies.js:96409
@@ -644,7 +642,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:124117
 #: dist/converse-no-dependencies.js:134758
 msgid "Nickname"
-msgstr ""
+msgstr "별명"
 
 #: dist/converse-no-dependencies.js:82967
 #: dist/converse-no-dependencies.js:84948
@@ -655,84 +653,87 @@ msgstr ""
 #: dist/converse-no-dependencies.js:138054
 #: dist/converse-no-dependencies.js:138654
 msgid "XMPP Address"
-msgstr ""
+msgstr "XMPP 주소"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:82967
 #: dist/converse-no-dependencies.js:83211
 msgid "Affiliation"
-msgstr ""
+msgstr "소속"
 
 #: dist/converse-no-dependencies.js:82969
 #: dist/converse-no-dependencies.js:83215
 #: dist/converse-no-dependencies.js:96411
 #: dist/converse-no-dependencies.js:124118
 msgid "Role"
-msgstr ""
+msgstr "역할"
 
 #: dist/converse-no-dependencies.js:82971
 msgid "Hats"
-msgstr ""
+msgstr "직책"
 
 #: dist/converse-no-dependencies.js:82971
 msgid "Occupant Id"
-msgstr ""
+msgstr "사용자 ID"
 
 #: dist/converse-no-dependencies.js:83079
 #: dist/converse-no-dependencies.js:83702
 msgid "Affiliation changed"
-msgstr ""
+msgstr "소속 변경됨"
 
 #: dist/converse-no-dependencies.js:83082
 msgid "role changed"
-msgstr ""
+msgstr "역할 변경됨"
 
 #: dist/converse-no-dependencies.js:83173
 msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
-msgstr ""
+msgstr "조정자는 (관리자 또는 소유자 소속이 있는 사용자를 제외하고) 다른 사용자의 "
+"역할을 변경할 수 있는 권한이 있는 사용자입니다."
 
 #: dist/converse-no-dependencies.js:83175
 msgid "The default role, implies that you can read and write messages."
-msgstr ""
+msgstr "기본 역할은 메시지를 읽고 작성할 수 있습니다."
 
 #: dist/converse-no-dependencies.js:83177
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
-msgstr ""
+msgstr "방문자는 조정된 다중 사용자 채팅에서 메시지를 작성할 수 없습니다."
 
 #: dist/converse-no-dependencies.js:83182
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
-msgstr ""
+msgstr "소유자는 가장 높은 소속입니다. 소유자는 다른 모든 사용자의 역할과 소속을 "
+"변경할 수 있습니다."
 
 #: dist/converse-no-dependencies.js:83184
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
-msgstr ""
+msgstr "관리자는 두 번째로 높은 소속입니다. 관리자는 소유자를 제외한 다른 모든 "
+"사용자의 역할과 소속을 변경할 수 있습니다."
 
 #: dist/converse-no-dependencies.js:83186
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
-msgstr ""
+msgstr "사용자를 차단하려면 \"추방\" 소속을 부여하십시오."
 
 #: dist/converse-no-dependencies.js:83212
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "해당 소속의 사용자가 없습니다."
 
 #: dist/converse-no-dependencies.js:83213
 msgid "No users with that role found."
-msgstr ""
+msgstr "해당 역할의 사용자가 없습니다."
 
 #: dist/converse-no-dependencies.js:83214
 msgid "Type here to filter the search results"
-msgstr ""
+msgstr "검색 결과를 필터링하려면 여기에 입력하십시오."
 
 #: dist/converse-no-dependencies.js:83216
 msgid "Show users"
-msgstr ""
+msgstr "사용자 표시"
 
 #: dist/converse-no-dependencies.js:83217
 msgid ""
@@ -741,6 +742,9 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"다중 사용자 채팅에서 특정 권한을 부여하거나 거부하기 위해 사용자에게 역할이 "
+"할당됩니다. 명시적으로 또는 소속의 일환으로 묵시적으로 부여됩니다. 소속에 "
+"기인하지 않은 역할은 사용자의 세션 중에만 유효합니다."
 
 #: dist/converse-no-dependencies.js:83218
 msgid ""
@@ -748,74 +752,76 @@ msgid ""
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
 msgstr ""
+"소속은 영속적인 권리이며 일반적으로 특정 역할을 의미하고 권한과 책임을 "
+"부여합니다. 예를 들어, 관리자와 소유자는 자동적으로 조정자 역할을 갖습니다."
 
 #: dist/converse-no-dependencies.js:83707
 msgid "Role changed"
-msgstr ""
+msgstr "역할 변경됨"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:84118
 msgid "Moderator Tools"
-msgstr ""
+msgstr "조정자 도구"
 
 #: dist/converse-no-dependencies.js:84535
 #, javascript-format
 msgid "%1$s has invited you to join a groupchat: %2$s"
-msgstr ""
+msgstr "%1$s(이)가 %2$s 그룹 채팅에 초대했습니다."
 
 #: dist/converse-no-dependencies.js:84537
 #, javascript-format
 msgid ""
 "%1$s has invited you to join a groupchat: %2$s, and left the following "
 "reason: \"%3$s\""
-msgstr ""
+msgstr "%1$s(이)가 %2$s 그룹 채팅에 초대했으며, \"%3$s\" 때문에 나갔습니다."
 
 #: dist/converse-no-dependencies.js:84566
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr ""
+msgstr "이 그룹 채팅을 파괴하시겠습니까?"
 
 #: dist/converse-no-dependencies.js:84569
 msgid "Please enter the XMPP address of this groupchat to confirm"
-msgstr ""
+msgstr "확인하려면 이 그룹 채팅의 XMPP 주소를 입력하십시오."
 
 #: dist/converse-no-dependencies.js:84571
 #: dist/converse-no-dependencies.js:138051
 msgid "name@example.org"
-msgstr ""
+msgstr "이름@example.org"
 
 #: dist/converse-no-dependencies.js:84575
 msgid "Optional reason for destroying this groupchat"
-msgstr ""
+msgstr "이 그룹 채팅을 파괴하는 이유(선택사항)"
 
 #: dist/converse-no-dependencies.js:84576
 #: dist/converse-no-dependencies.js:110604
 #: dist/converse-no-dependencies.js:111151
 msgid "Reason"
-msgstr ""
+msgstr "이유"
 
 #: dist/converse-no-dependencies.js:84579
 msgid "Optional XMPP address for a new groupchat that replaces this one"
-msgstr ""
+msgstr "이 그룹 채팅을 대체하는 새 그룹 채팅의 XMPP 주소(선택사항)"
 
 #: dist/converse-no-dependencies.js:84580
 msgid "replacement@example.org"
-msgstr ""
+msgstr "교체@example.org"
 
 #: dist/converse-no-dependencies.js:84768
 msgid ""
 "Couldn't find a participant with that nickname. They might have left the "
 "groupchat."
-msgstr ""
+msgstr "해당 별명을 가진 참가자를 찾을 수 없습니다. 그룹 채팅을 떠났을 수 있습니다."
 
 #. e.g. Your nickname is "coolguy69"
 #: dist/converse-no-dependencies.js:84879
 #, javascript-format
 msgid "Your nickname is \"%1$s\""
-msgstr ""
+msgstr "별명은 \"%1$s\"입니다."
 
 #: dist/converse-no-dependencies.js:84897
 msgid "Error: invalid number of arguments"
-msgstr ""
+msgstr "오류: 잘못된 수의 인수"
 
 #. *
 #. * @typedef {import('../adhoc-commands').default} AdHocCommands
@@ -826,29 +832,30 @@ msgstr ""
 #. harmony default export
 #: dist/converse-no-dependencies.js:84944
 msgid "On which entity do you want to run commands?"
-msgstr ""
+msgstr "어느 엔터티에서 명령을 실행하고 싶습니까?"
 
 #: dist/converse-no-dependencies.js:84945
 msgid ""
 "Certain XMPP services and entities allow privileged users to execute ad-hoc "
 "commands on them."
-msgstr ""
+msgstr "특정 XMPP 서비스 및 엔터티는 권한이 있는 사용자들이 애드혹 명령을 실행할 수 "
+"있습니다."
 
 #: dist/converse-no-dependencies.js:84946
 msgid "Commands found"
-msgstr ""
+msgstr "명령 발견"
 
 #: dist/converse-no-dependencies.js:84947
 msgid "List available commands"
-msgstr ""
+msgstr "사용 가능한 명령 나열"
 
 #: dist/converse-no-dependencies.js:84949
 msgid "No commands found"
-msgstr ""
+msgstr "명령을 찾을 수 없음"
 
 #: dist/converse-no-dependencies.js:85448
 msgid "Sorry, an error occurred while looking for commands on that entity."
-msgstr ""
+msgstr "죄송합니다. 해당 엔터티의 명령을 찾는 동안 오류가 발생했습니다."
 
 #: dist/converse-no-dependencies.js:85458
 msgid "The specified entity doesn't support ad-hoc commands"
@@ -856,7 +863,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:85513
 msgid "An error occurred while trying to fetch the command form"
-msgstr ""
+msgstr "명령 양식 가져오기 시도 중 오류가 발생했습니다."
 
 #: dist/converse-no-dependencies.js:85597
 msgid ""
@@ -1009,7 +1016,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:128429
 #: dist/converse-no-dependencies.js:129747
 msgid "Error"
-msgstr ""
+msgstr "오류"
 
 #: dist/converse-no-dependencies.js:89398
 msgid "Sorry, you're not allowed to retract this message."
@@ -1184,9 +1191,9 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:98280
 #: dist/converse-no-dependencies.js:98282
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed a message"
-msgstr "\"사용자\"가 채팅방을 나갔습니다."
+msgstr "%1$s(이)가 메시지를 삭제했습니다."
 
 #: dist/converse-no-dependencies.js:98282
 #, fuzzy
@@ -1523,15 +1530,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:114337
 msgid "Admin"
-msgstr ""
+msgstr "관리자"
 
 #: dist/converse-no-dependencies.js:114341
 msgid "Member"
-msgstr ""
+msgstr "회원"
 
 #: dist/converse-no-dependencies.js:114345
 msgid "Moderator"
-msgstr ""
+msgstr "조정자"
 
 #: dist/converse-no-dependencies.js:114349
 msgid "Visitor"
@@ -1663,9 +1670,8 @@ msgid "Success"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:115195
-#, fuzzy
 msgid "The user has been invited to join this groupchat"
-msgstr "\"사용자\"가 그룹 채팅방에 참여하였습니다."
+msgstr "사용자가 그룹 채팅방에 초대되었습니다."
 
 #: dist/converse-no-dependencies.js:117242
 msgid "Change user's affiliation to admin"

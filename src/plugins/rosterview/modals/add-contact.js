@@ -81,7 +81,11 @@ export default class AddContactModal extends BaseModal {
         }
 
         if (this.validateSubmission(jid)) {
-            const groups = /** @type {string} */(data.get('groups'))?.split(',').map((g) => g.trim()) || [];
+            const groups =
+                /** @type {string} */ (data.get("groups"))
+                    ?.split(",")
+                    .map((g) => g.trim())
+                    .filter((g) => g) || [];
             this.afterSubmission(form, jid, name, groups);
         }
     }

@@ -64,7 +64,7 @@ export function getJIDsAutoCompleteList(): any[];
 /**
  * @param {string} query
  */
-export function getNamesAutoCompleteList(query: string): Promise<{
+export function getNamesAutoCompleteList(query: string, value_attr?: string): Promise<{
     label: any;
     value: any;
 }[]>;

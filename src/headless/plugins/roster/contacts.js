@@ -1,13 +1,13 @@
+import { Collection, Model } from "@converse/skeletor";
 import RosterContact from './contact.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from "../../log.js";
-import { Collection, Model } from "@converse/skeletor";
 import { initStorage } from '../../utils/storage.js';
 import { rejectPresenceSubscription } from './utils.js';
 
-const { Strophe, $iq, sizzle, u } = converse.env;
+const { Strophe, $iq, sizzle, stx, u, Stanza } = converse.env;
 
 class RosterContacts extends Collection {
     constructor () {
@@ -147,8 +147,14 @@ class RosterContacts extends Collection {
     sendContactAddIQ (attributes) {
         const { jid, groups } = attributes;
         const name = attributes.name ? attributes.name : null;
-        const iq = $iq({ 'type': 'set' }).c('query', { 'xmlns': Strophe.NS.ROSTER }).c('item', { jid, name });
-        groups?.forEach((g) => iq.c('group').t(g).up());
+        const iq = stx`
+            <iq type="set" xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.ROSTER}">
+                    <item jid="${jid}" ${name ? Stanza.unsafeXML(`name="${Strophe.xmlescape(name)}"`) : ""}>
+                        ${groups?.map(/** @param {string} g */(g) => stx`<group>${g}</group>`)}
+                    </item>
+                </query>
+            </iq>`;
         return api.sendIQ(iq);
     }
 

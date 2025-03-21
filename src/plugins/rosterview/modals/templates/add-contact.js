@@ -50,7 +50,7 @@ export default (el) => {
                     <label class="form-label clearfix" for="name">${i18n_nickname}:</label>
                     ${api.settings.get('autocomplete_add_contact') && typeof api.settings.get('xhr_user_search_url') === 'string' ?
                         html`<converse-autocomplete
-                            .getAutoCompleteList=${getNamesAutoCompleteList}
+                            .getAutoCompleteList=${(query) => getNamesAutoCompleteList(query, 'fullname')}
                             filter=${FILTER_STARTSWITH}
                             value="${el.model.get('nickname') || ''}"
                             name="name"></converse-autocomplete>` :

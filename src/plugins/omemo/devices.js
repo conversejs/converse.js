@@ -1,9 +1,8 @@
-import { Collection } from '@converse/skeletor';
-import Device from './device.js';
+import { Collection } from "@converse/skeletor";
+import Device from "./device.js";
 
 class Devices extends Collection {
-
-    constructor () {
+    constructor() {
         super();
         this.model = Device;
     }

@@ -55,5 +55,5 @@ declare class OMEMOStore extends Model {
     fetchSession(): Promise<any>;
     _setup_promise: Promise<any>;
 }
-import { Model } from '@converse/skeletor';
+import { Model } from "@converse/skeletor";
 //# sourceMappingURL=store.d.ts.map

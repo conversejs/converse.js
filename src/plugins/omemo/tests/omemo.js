@@ -493,62 +493,83 @@ describe("The OMEMO module", function() {
 
         // Wait until own devices are fetched
         let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, _converse.bare_jid));
-        expect(iq_stanza).toEqualStanza(
-            stx`<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="romeo@montague.lit" type="get" xmlns="jabber:client">
+        expect(iq_stanza).toEqualStanza(stx`
+            <iq from="romeo@montague.lit"
+                    id="${iq_stanza.getAttribute("id")}"
+                    to="romeo@montague.lit"
+                    type="get"
+                    xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <items node="eu.siacs.conversations.axolotl.devicelist"/>
                 </pubsub>
             </iq>`);
 
-        let stanza = $iq({
-            'from': _converse.bare_jid,
-            'id': iq_stanza.getAttribute('id'),
-            'to': _converse.bare_jid,
-            'type': 'result',
-        }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
-            .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
-                .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
-                    .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
-                        .c('device', {'id': '555'});
+        let stanza = stx`
+            <iq from="${_converse.bare_jid}"
+                id="${iq_stanza.getAttribute('id')}"
+                to="${_converse.bare_jid}"
+                type="result"
+                xmlns="jabber:client">
+            <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                <items node="eu.siacs.conversations.axolotl.devicelist">
+                    <item xmlns="http://jabber.org/protocol/pubsub"> <!-- TODO: must have an id attribute -->
+                        <list xmlns="eu.siacs.conversations.axolotl">
+                            <device id="555"/>
+                        </list>
+                    </item>
+                </items>
+            </pubsub>
+        </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.state.omemo_store);
+
         expect(_converse.chatboxes.length).toBe(1);
         expect(_converse.state.devicelists.length).toBe(1);
+
         const devicelist = _converse.state.devicelists.get(_converse.bare_jid);
         expect(devicelist.devices.length).toBe(2);
         expect(devicelist.devices.at(0).get('id')).toBe('555');
         expect(devicelist.devices.at(1).get('id')).toBe('123456789');
         iq_stanza = await u.waitUntil(() => mock.ownDeviceHasBeenPublished(_converse));
-        stanza = $iq({
-            'from': _converse.bare_jid,
-            'id': iq_stanza.getAttribute('id'),
-            'to': _converse.bare_jid,
-            'type': 'result'});
+
+        stanza = stx`
+            <iq xmlns="jabber:client"
+                from="${_converse.bare_jid}"
+                id="${iq_stanza.getAttribute('id')}"
+                to="${_converse.bare_jid}"
+                type="result"/>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+
         iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
 
-        stanza = $iq({
-            'from': _converse.bare_jid,
-            'id': iq_stanza.getAttribute('id'),
-            'to': _converse.bare_jid,
-            'type': 'result'});
+        stanza = stx`
+            <iq xmlns="jabber:client"
+                from="${_converse.bare_jid}"
+                id="${iq_stanza.getAttribute('id')}"
+                to="${_converse.bare_jid}"
+                type="result"/>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await _converse.api.waitUntil('OMEMOInitialized');
 
 
         // A PEP message is received with a device list.
-        _converse.api.connection.get()._dataRecv(mock.createRequest($msg({
-            'from': contact_jid,
-            'to': _converse.bare_jid,
-            'type': 'headline',
-            'id': 'update_01',
-        }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
-            .c('items', {'node': 'eu.siacs.conversations.axolotl.devicelist'})
-                .c('item')
-                    .c('list', {'xmlns': 'eu.siacs.conversations.axolotl'})
-                        .c('device', {'id': '1234'}).up()
-                        .c('device', {'id': '4223'})
-        ));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <message xmlns="jabber:client"
+                    from="${contact_jid}"
+                    to="${_converse.bare_jid}"
+                    type="headline"
+                    id="update_01">
+                <event xmlns="http://jabber.org/protocol/pubsub#event">
+                    <items node="eu.siacs.conversations.axolotl.devicelist">
+                        <item id="current">
+                            <list xmlns="eu.siacs.conversations.axolotl">
+                                <device id="1234"/>
+                                <device id="4223"/>
+                            </list>
+                        </item>
+                    </items>
+                </event>
+            </message>`));
 
         // Since we haven't yet fetched any devices for this user, the
         // devicelist model for them isn't yet initialized.
@@ -679,7 +700,6 @@ describe("The OMEMO module", function() {
         expect(devices.get('777').get('active')).toBe(false);
     }));
 
-
     it("updates device bundles based on PEP messages",
             mock.initConverse([], {}, async function (_converse) {
 
@@ -693,24 +713,33 @@ describe("The OMEMO module", function() {
 
         const contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, _converse.bare_jid));
-        expect(Strophe.serialize(iq_stanza)).toBe(
-            `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
-                `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
-                    `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
-                `</pubsub>`+
-            `</iq>`);
+        expect(iq_stanza).toEqualStanza(stx`
+            <iq from="romeo@montague.lit"
+                    id="${iq_stanza.getAttribute("id")}"
+                    to="romeo@montague.lit"
+                    type="get"
+                    xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <items node="eu.siacs.conversations.axolotl.devicelist"/>
+                </pubsub>
+            </iq>`);
 
-        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
-            'from': contact_jid,
-            'id': iq_stanza.getAttribute('id'),
-            'to': _converse.bare_jid,
-            'type': 'result',
-        }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
-            .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
-                .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
-                    .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
-                        .c('device', {'id': '555'})
-        ));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <iq from="${contact_jid}"
+                id="${iq_stanza.getAttribute('id')}"
+                to="${_converse.bare_jid}"
+                xmlns="jabber:client"
+                type="result">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <items node="eu.siacs.conversations.axolotl.devicelist">
+                        <item xmlns="http://jabber.org/protocol/pubsub"> <!-- TODO: must have an id attribute -->
+                            <list xmlns="eu.siacs.conversations.axolotl">
+                                <device id="555"/>
+                            </list>
+                        </item>
+                    </items>
+                </pubsub>
+            </iq>`));
 
         await await u.waitUntil(() => _converse.state.omemo_store);
         expect(_converse.state.devicelists.length).toBe(1);
@@ -734,23 +763,29 @@ describe("The OMEMO module", function() {
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await _converse.api.waitUntil('OMEMOInitialized');
 
-        _converse.api.connection.get()._dataRecv(mock.createRequest($msg({
-            'from': contact_jid,
-            'to': _converse.bare_jid,
-            'type': 'headline',
-            'id': 'update_01',
-        }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
-            .c('items', {'node': 'eu.siacs.conversations.axolotl.bundles:1234'})
-                .c('item')
-                    .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
-                        .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t('1111').up()
-                        .c('signedPreKeySignature').t('2222').up()
-                        .c('identityKey').t('3333').up()
-                        .c('prekeys')
-                            .c('preKeyPublic', {'preKeyId': '1001'}).up()
-                            .c('preKeyPublic', {'preKeyId': '1002'}).up()
-                            .c('preKeyPublic', {'preKeyId': '1003'})
-        ));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <message from="${contact_jid}"
+                    to="${_converse.bare_jid}"
+                    type="headline"
+                    id="update_01"
+                    xmlns="jabber:client">
+                <event xmlns="http://jabber.org/protocol/pubsub#event">
+                    <items node="eu.siacs.conversations.axolotl.bundles:1234">
+                        <item>
+                            <bundle xmlns="eu.siacs.conversations.axolotl">
+                                <signedPreKeyPublic signedPreKeyId="4223">1111</signedPreKeyPublic>
+                                <signedPreKeySignature>2222</signedPreKeySignature>
+                                <identityKey>3333</identityKey>
+                                <prekeys>
+                                    <preKeyPublic preKeyId="1001"/>
+                                    <preKeyPublic preKeyId="1002"/>
+                                    <preKeyPublic preKeyId="1003"/>
+                                </prekeys>
+                            </bundle>
+                        </item>
+                    </items>
+                </event>
+            </message>`));
 
         // Since we haven't yet fetched any devices for this user, the
         // devicelist model for them isn't yet initialized.

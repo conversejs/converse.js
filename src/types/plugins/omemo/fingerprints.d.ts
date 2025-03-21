@@ -10,5 +10,5 @@ export class Fingerprints extends CustomElement {
     render(): import("lit").TemplateResult<1> | "";
     toggleDeviceTrust(ev: any): void;
 }
-import { CustomElement } from 'shared/components/element.js';
+import { CustomElement } from "shared/components/element.js";
 //# sourceMappingURL=fingerprints.d.ts.map

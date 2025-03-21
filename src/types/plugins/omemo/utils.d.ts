@@ -87,6 +87,9 @@ export function generateDeviceID(): Promise<any>;
  * @param {import('./device.js').default} device
  */
 export function getSession(device: import("./device.js").default): Promise<any>;
+/**
+ * Register a pubsub handler for devices pushed from other connected clients
+ */
 export function registerPEPPushHandler(): void;
 export function restoreOMEMOSession(): Promise<void>;
 /**
@@ -120,9 +123,9 @@ export type MessageAttributes = import("@converse/headless/shared/types").Messag
 export type MUCMessageAttributes = import("@converse/headless/plugins/muc/types").MUCMessageAttributes;
 export type ChatBox = import("@converse/headless").ChatBox;
 export type BaseMessage = import("@converse/headless").BaseMessage<any>;
-import { IQError } from 'shared/errors.js';
-import { UserFacingError } from 'shared/errors.js';
-import { MUC } from '@converse/headless';
+import { IQError } from "shared/errors.js";
+import { UserFacingError } from "shared/errors.js";
+import { MUC } from "@converse/headless";
 /**
  * @param {import('./types').EncryptedMessage} obj
  * @returns {Promise<string>}

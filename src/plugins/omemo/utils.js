@@ -750,10 +750,7 @@ export function registerPEPPushHandler() {
                 if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
                     await api.waitUntil("OMEMOInitialized");
                     await updateDevicesFromStanza(message);
-                    await updateBundleFromStanza(message);
-                }
-            } catch (e) {
-                log.error(e.message);
+                    await updateBundleFromStanza(message); } } catch (e) { log.error(e.message);
             }
             return true;
         },

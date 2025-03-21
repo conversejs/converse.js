@@ -296,16 +296,15 @@ class OMEMOStore extends Model {
         if (this._setup_promise === undefined) {
             this._setup_promise = new Promise((resolve, reject) => {
                 this.fetch({
-                    "success": () => {
+                    success: () => {
                         if (!this.get("device_id")) {
                             this.generateBundle().then(resolve).catch(reject);
                         } else {
                             resolve();
                         }
                     },
-                    "error": (model, resp) => {
-                        log.warn("Could not fetch OMEMO session from cache, we'll generate a new one.");
-                        log.warn(resp);
+                    error: (_model, resp) => {
+                        log.warn(`Could restore OMEMO session, we'll generate a new one: ${resp}`);
                         this.generateBundle().then(resolve).catch(reject);
                     },
                 });

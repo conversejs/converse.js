@@ -9,7 +9,7 @@ declare namespace _default {
         }
         namespace devicelists {
             /**
-             * Returns the {@link _converse.DeviceList} for a particular JID.
+             * Returns the {@link DeviceList} for a particular JID.
              * The device list will be created if it doesn't exist already.
              * @method _converse.api.omemo.devicelists.get
              * @param {String} jid - The Jabber ID for which the device list will be returned.

@@ -10,5 +10,5 @@ export class Profile extends CustomElement {
     removeSelectedFingerprints(ev: any): Promise<void>;
     generateOMEMODeviceBundle(ev: any): Promise<void>;
 }
-import { CustomElement } from 'shared/components/element.js';
+import { CustomElement } from "shared/components/element.js";
 //# sourceMappingURL=profile.d.ts.map

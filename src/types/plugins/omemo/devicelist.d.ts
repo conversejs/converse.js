@@ -4,7 +4,10 @@ declare class DeviceList extends Model {
     initialized: any;
     initDevices(): Promise<any>;
     devices: any;
-    onDevicesFound(collection: any): Promise<void>;
+    /**
+     * @param {import('./devices').default} collection
+     */
+    onDevicesFound(collection: import("./devices").default): Promise<void>;
     fetchDevices(): Promise<any>;
     _devices_promise: Promise<any>;
     /**
@@ -30,5 +33,5 @@ declare class DeviceList extends Model {
      */
     removeOwnDevices(device_ids: string[]): Promise<any>;
 }
-import { Model } from '@converse/skeletor';
+import { Model } from "@converse/skeletor";
 //# sourceMappingURL=devicelist.d.ts.map

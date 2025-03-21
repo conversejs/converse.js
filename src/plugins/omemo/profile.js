@@ -1,71 +1,73 @@
-import tplProfile from './templates/profile.js';
+import tplProfile from "./templates/profile.js";
 import tplSpinner from "templates/spinner.js";
-import { CustomElement } from 'shared/components/element.js';
-import { __ } from 'i18n';
+import { CustomElement } from "shared/components/element.js";
+import { __ } from "i18n";
 import { _converse, api, converse, log } from "@converse/headless";
 
 const { Strophe, sizzle, u } = converse.env;
 
-
 export class Profile extends CustomElement {
-
-    async initialize () {
-        const bare_jid = _converse.session.get('bare_jid');
+    async initialize() {
+        const bare_jid = _converse.session.get("bare_jid");
         this.devicelist = await api.omemo.devicelists.get(bare_jid, true);
         await this.setAttributes();
-        this.listenTo(this.devicelist.devices, 'change:bundle', () => this.requestUpdate());
-        this.listenTo(this.devicelist.devices, 'reset', () => this.requestUpdate());
-        this.listenTo(this.devicelist.devices, 'reset', () => this.requestUpdate());
-        this.listenTo(this.devicelist.devices, 'remove', () => this.requestUpdate());
-        this.listenTo(this.devicelist.devices, 'add', () => this.requestUpdate());
+        this.listenTo(this.devicelist.devices, "change:bundle", () => this.requestUpdate());
+        this.listenTo(this.devicelist.devices, "reset", () => this.requestUpdate());
+        this.listenTo(this.devicelist.devices, "reset", () => this.requestUpdate());
+        this.listenTo(this.devicelist.devices, "remove", () => this.requestUpdate());
+        this.listenTo(this.devicelist.devices, "add", () => this.requestUpdate());
         this.requestUpdate();
     }
 
-    async setAttributes () {
+    async setAttributes() {
         this.device_id = await api.omemo.getDeviceID();
         this.current_device = this.devicelist.devices.get(this.device_id);
-        this.other_devices = this.devicelist.devices.filter(d => d.get('id') !== this.device_id);
+        this.other_devices = this.devicelist.devices.filter((d) => d.get("id") !== this.device_id);
     }
 
-    render () {
+    render() {
         return this.devicelist ? tplProfile(this) : tplSpinner();
     }
 
-    selectAll (ev) {  // eslint-disable-line class-methods-use-this
-        let sibling = u.ancestor(ev.target, 'li');
+    selectAll(ev) {
+        // eslint-disable-line class-methods-use-this
+        let sibling = u.ancestor(ev.target, "li");
         while (sibling) {
             sibling.querySelector('input[type="checkbox"]').checked = ev.target.checked;
             sibling = sibling.nextElementSibling;
         }
     }
 
-    async removeSelectedFingerprints (ev) {
+    async removeSelectedFingerprints(ev) {
         ev.preventDefault();
         ev.stopPropagation();
-        ev.target.querySelector('.select-all').checked = false;
+        ev.target.querySelector(".select-all").checked = false;
         const device_ids = sizzle('.fingerprint-removal-item input[type="checkbox"]:checked', ev.target).map(
-            c => c.value
+            (c) => c.value
         );
 
         try {
             await this.devicelist.removeOwnDevices(device_ids);
         } catch (err) {
             log.error(err);
-            _converse.api.alert(Strophe.LogLevel.ERROR, __('Error'), [
-                __('Sorry, an error occurred while trying to remove the devices.')
+            _converse.api.alert(Strophe.LogLevel.ERROR, __("Error"), [
+                __("Sorry, an error occurred while trying to remove the devices."),
             ]);
         }
         await this.setAttributes();
         this.requestUpdate();
     }
 
-    async generateOMEMODeviceBundle (ev) {
+    async generateOMEMODeviceBundle(ev) {
         ev.preventDefault();
 
-        const result = await api.confirm(__(
-            'Are you sure you want to generate new OMEMO keys? ' +
-            'This will remove your old keys and all previously ' +
-            'encrypted messages will no longer be decryptable on this device.'));
+        const result = await api.confirm(
+            __(
+                "Are you sure you want to generate new OMEMO keys? " +
+                    "This will remove your old keys and all previously " +
+                    "encrypted messages will no longer be decryptable on this device."
+            )
+        );
 
         if (result) {
             await api.omemo.bundle.generate();
@@ -75,4 +77,4 @@ export class Profile extends CustomElement {
     }
 }
 
-api.elements.define('converse-omemo-profile', Profile);
+api.elements.define("converse-omemo-profile", Profile);

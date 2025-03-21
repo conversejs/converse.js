@@ -180,7 +180,10 @@ export default function ModelWithMessages(BaseModel) {
                     is_error: false,
                 });
             } else {
-                return { is_archived: attrs.is_archived };
+                return {
+                    is_archived: attrs.is_archived,
+                    time: attrs.time ? attrs.time : message.get("time"),
+                };
             }
         }
 
@@ -656,15 +659,18 @@ export default function ModelWithMessages(BaseModel) {
                 this.getOriginIdQueryAttrs(attrs),
                 this.getMessageBodyQueryAttrs(attrs),
             ].filter((s) => s);
-            const msgs = this.messages.models;
-            return msgs.find((m) => queries.reduce((out, q) => out || isMatch(m.attributes, q), false));
+
+            return this.messages.models.find(
+                /** @param {BaseMessage} m */
+                (m) => queries.find((q) => Object.keys(q).every((k) => m.get(k) === q[k]))
+            );
         }
 
         /**
          * @param {object} attrs - Attributes representing a received
          */
         getOriginIdQueryAttrs(attrs) {
-            return attrs.origin_id && { 'origin_id': attrs.origin_id, 'from': attrs.from };
+            return attrs.origin_id && { origin_id: attrs.origin_id, from: attrs.from };
         }
 
         /**
@@ -686,8 +692,8 @@ export default function ModelWithMessages(BaseModel) {
         getMessageBodyQueryAttrs(attrs) {
             if (attrs.msgid) {
                 const query = {
-                    'from': attrs.from,
-                    'msgid': attrs.msgid,
+                    from: attrs.from,
+                    msgid: attrs.msgid,
                 };
                 // XXX: Need to take XEP-428 <fallback> into consideration
                 if (!attrs.is_encrypted && attrs.body) {

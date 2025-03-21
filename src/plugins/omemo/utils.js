@@ -728,14 +728,29 @@ async function updateDevicesFromStanza(stanza) {
             if (device) {
                 device.save("active", true);
             } else {
-                devices.create({ "id": device_id, "jid": jid });
+                devices.create({ id: device_id, jid });
             }
         }
     );
-    if (u.isSameBareJID(jid, jid)) {
+    if (u.isSameBareJID(bare_jid, jid)) {
         // Make sure our own device is on the list
         // (i.e. if it was removed, add it again).
         devicelist.publishCurrentDevice(device_ids);
+    }
+}
+
+/**
+ * @param {Element} message
+ */
+async function handlePEPPush(message) {
+    try {
+        if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
+            await api.waitUntil("OMEMOInitialized");
+            await updateDevicesFromStanza(message);
+            await updateBundleFromStanza(message);
+        }
+    } catch (e) {
+        log.error(e);
     }
 }
 
@@ -745,13 +760,8 @@ async function updateDevicesFromStanza(stanza) {
 export function registerPEPPushHandler() {
     api.connection.get().addHandler(
         /** @param {Element} message */
-        async (message) => {
-            try {
-                if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
-                    await api.waitUntil("OMEMOInitialized");
-                    await updateDevicesFromStanza(message);
-                    await updateBundleFromStanza(message); } } catch (e) { log.error(e.message);
-            }
+        (message) => {
+            handlePEPPush(message);
             return true;
         },
         null,

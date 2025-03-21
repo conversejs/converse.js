@@ -300,7 +300,7 @@ export function getJIDsAutoCompleteList() {
 /**
  * @param {string} query
  */
-export async function getNamesAutoCompleteList(query) {
+export async function getNamesAutoCompleteList(query, value_attr='jid') {
     const options = {
         'mode': /** @type {RequestMode} */ ('cors'),
         'headers': {
@@ -322,5 +322,8 @@ export async function getNamesAutoCompleteList(query) {
         log.error(`Invalid JSON returned"`);
         return [];
     }
-    return json.map((i) => ({ 'label': i.fullname || i.jid, 'value': i.jid }));
+    return json.map((i) => ({
+        label: i.fullname || i.jid,
+        value: i[value_attr]
+    }));
 }

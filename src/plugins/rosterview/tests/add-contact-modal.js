@@ -39,7 +39,8 @@ describe("The 'Add Contact' widget", function () {
         modal.querySelector('button[type="submit"]').click();
 
         const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-        const sent_stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`)).pop());
+        const sent_stanza = await u.waitUntil(() => sent_IQs.filter(
+            iq => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`, iq).length).pop());
         expect(sent_stanza).toEqualStanza(stx`
             <iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <query xmlns="jabber:iq:roster">
@@ -72,11 +73,10 @@ describe("The 'Add Contact' widget", function () {
         const sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`, s).length).pop()
         );
-        expect(Strophe.serialize(sent_stanza)).toEqual(
-            `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-                `<query xmlns="jabber:iq:roster"><item jid="someone@montague.lit"><group></group></item></query>`+
-            `</iq>`
-        );
+        expect(sent_stanza).toEqualStanza(stx`
+            <iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster"><item jid="someone@montague.lit"/></query>
+            </iq>`);
     }));
 
     it("integrates with xhr_user_search_url to search for contacts",
@@ -99,7 +99,6 @@ describe("The 'Add Contact' widget", function () {
         const modal = _converse.api.modal.get('converse-add-contact-modal');
         await u.waitUntil(() => u.isVisible(modal), 1000);
 
-        // TODO: We only have autocomplete for the name input
 
         const input_el = modal.querySelector('input[name="name"]');
         input_el.value = 'marty';
@@ -108,12 +107,14 @@ describe("The 'Add Contact' widget", function () {
         expect(modal.querySelectorAll('.suggestion-box li').length).toBe(1);
         const suggestion = modal.querySelector('.suggestion-box li');
         expect(suggestion.textContent).toBe('Marty McFly');
-                return;
 
-        // Mock selection
-        modal.name_auto_complete.select(suggestion);
+        const el = u.ancestor(suggestion, 'converse-autocomplete');
+        el.auto_complete.select(suggestion);
 
-        expect(input_el.value).toBe('Marty McFly');
+        expect(input_el.value.trim()).toBe('Marty McFly');
+        // TODO: We only have autocomplete for the name input
+        return;
+
         expect(modal.querySelector('input[name="jid"]').value).toBe('marty@mcfly.net');
         modal.querySelector('button[type="submit"]').click();
 
@@ -183,10 +184,11 @@ describe("The 'Add Contact' widget", function () {
         modal.querySelector('button[type="submit"]').click();
 
         const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-        const sent_stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`)).pop());
-        expect(Strophe.serialize(sent_stanza)).toEqual(
-        `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-            `<query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"><group></group></item></query>`+
-        `</iq>`);
+        const sent_stanza = await u.waitUntil(() => sent_IQs.filter(
+            iq => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`, iq).length).pop());
+        expect(sent_stanza).toEqualStanza(stx`
+            <iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"></item></query>
+            </iq>`);
     }));
 });

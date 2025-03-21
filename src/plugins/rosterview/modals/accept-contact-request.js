@@ -5,7 +5,6 @@ import tplAcceptContactRequest from "./templates/accept-contact-request.js";
 import { __ } from "i18n";
 
 export default class AcceptContactRequest extends BaseModal {
-
     /**
      * @param {Object} options
      */
@@ -42,7 +41,11 @@ export default class AcceptContactRequest extends BaseModal {
         const form = /** @type {HTMLFormElement} */ (ev.target);
         const data = new FormData(form);
         const name = /** @type {string} */ (data.get("name") || "").trim();
-        const groups = /** @type {string} */(data.get('groups'))?.split(',').map((g) => g.trim()) || [];
+        const groups =
+            /** @type {string} */ (data.get("groups"))
+                ?.split(",")
+                .map((g) => g.trim())
+                .filter((g) => g) || [];
         try {
             await _converse.state.roster.sendContactAddIQ({
                 jid: this.contact.get("jid"),

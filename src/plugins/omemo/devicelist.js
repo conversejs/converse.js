@@ -1,6 +1,6 @@
 import { Model } from "@converse/skeletor";
 import { getOpenPromise } from "@converse/openpromise";
-import { _converse, api, converse, log, u } from "@converse/headless";
+import { _converse, api, converse, errors, log, parsers, u } from "@converse/headless";
 
 const { Strophe, stx, sizzle } = converse.env;
 
@@ -34,12 +34,15 @@ class DeviceList extends Model {
                 ids = await this.fetchDevicesFromServer();
             } catch (e) {
                 if (e === null) {
-                    log.error(`Timeout error while fetching devices for ${this.get("jid")}`);
+                    log.error(`Timeout error while fetching OMEMO devices for ${this.get("jid")}`);
+                    this.destroy();
+                } else if (u.isElement(e) && (await parsers.parseErrorStanza(e)) instanceof errors.ItemNotFoundError) {
+                    log.debug(`No OMEMO devices found for ${this.get("jid")}`);
                 } else {
-                    log.error(`Could not fetch devices for ${this.get("jid")}`);
+                    log.error(`Could not fetch OMEMO devices for ${this.get("jid")}`);
                     log.error(e);
+                    this.destroy();
                 }
-                this.destroy();
             }
             const bare_jid = _converse.session.get("bare_jid");
             if (this.get("jid") === bare_jid) {

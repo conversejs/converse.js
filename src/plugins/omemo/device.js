@@ -1,37 +1,43 @@
-import { IQError } from 'shared/errors.js';
 import { Model } from '@converse/skeletor';
-import { UNDECIDED } from './consts.js';
 import { _converse, api, converse, log, u } from '@converse/headless';
+import { IQError } from 'shared/errors.js';
+import { UNDECIDED } from './consts.js';
 import { parseBundle } from './utils.js';
 
-const { Strophe, sizzle, $iq } = converse.env;
+const { Strophe, sizzle, stx } = converse.env;
 
-/**
- * @namespace _converse.Device
- * @memberOf _converse
- */
 class Device extends Model {
-    defaults () { // eslint-disable-line class-methods-use-this
+    defaults () {
         return {
-            'trusted': UNDECIDED,
-            'active': true
+            trusted: UNDECIDED,
+            active: true
         }
     }
 
+    /**
+     * @returns {import('./types').PreKey}
+     */
     getRandomPreKey () {
         // XXX: assumes that the bundle has already been fetched
         const bundle = this.get('bundle');
         return bundle.prekeys[u.getRandomInt(bundle.prekeys.length)];
     }
 
+    /**
+     * Fetch the device's OMEMO bundle from the server.
+     * A bundle is a collection of publicly accessible data that can
+     * be used to build a session with a device, namely its public IdentityKey,
+     * a signed PreKey with corresponding signature, and a list of (single use) PreKeys.
+     * @returns {Promise<import('./types').Bundle>}
+     */
     async fetchBundleFromServer () {
         const bare_jid = _converse.session.get('bare_jid');
-        const stanza = $iq({
-            'type': 'get',
-            'from': bare_jid,
-            'to': this.get('jid')
-        }).c('pubsub', { 'xmlns': Strophe.NS.PUBSUB })
-          .c('items', { 'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}` });
+        const stanza = stx`
+            <iq type="get" from="${bare_jid}" to="${this.get('jid')}" xmlns="jabber:client">
+                <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <items node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"/>
+                </pubsub>
+            </iq>`;
 
         let iq;
         try {
@@ -54,7 +60,7 @@ class Device extends Model {
     /**
      * Fetch and save the bundle information associated with
      * this device, if the information is not cached already.
-     * @method _converse.Device#getBundle
+     * @returns {Promise<import('./types').Bundle>}
      */
     getBundle () {
         if (this.get('bundle')) {

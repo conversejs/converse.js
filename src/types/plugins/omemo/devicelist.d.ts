@@ -1,8 +1,4 @@
 export default DeviceList;
-/**
- * @namespace _converse.DeviceList
- * @memberOf _converse
- */
 declare class DeviceList extends Model {
     initialize(): Promise<void>;
     initialized: any;
@@ -11,16 +7,28 @@ declare class DeviceList extends Model {
     onDevicesFound(collection: any): Promise<void>;
     fetchDevices(): Promise<any>;
     _devices_promise: Promise<any>;
-    getOwnDeviceId(): Promise<any>;
-    publishCurrentDevice(device_ids: any): Promise<any>;
-    fetchDevicesFromServer(): Promise<any[]>;
     /**
-     * Send an IQ stanza to the current user's "devices" PEP node to
+     * @returns {Promise<string>}
+     */
+    getOwnDeviceId(): Promise<string>;
+    /**
+     * @param {string[]} device_ids
+     */
+    publishCurrentDevice(device_ids: string[]): Promise<any>;
+    /**
+     * @returns {Promise<import('./device').default[]>}
+     */
+    fetchDevicesFromServer(): Promise<import("./device").default[]>;
+    /**
+     * Sends an IQ stanza to the current user's "devices" PEP node to
      * ensure that all devices are published for potential chat partners to see.
-     * See: https://xmpp.org/extensions/xep-0384.html#usecases-announcing
+     * See: https://xmpp.org/extensions/attic/xep-0384-0.3.0.html#usecases-announcing
      */
     publishDevices(): any;
-    removeOwnDevices(device_ids: any): Promise<any>;
+    /**
+     * @param {string[]} device_ids
+     */
+    removeOwnDevices(device_ids: string[]): Promise<any>;
 }
 import { Model } from '@converse/skeletor';
 //# sourceMappingURL=devicelist.d.ts.map

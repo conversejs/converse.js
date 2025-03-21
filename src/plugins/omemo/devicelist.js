@@ -1,13 +1,9 @@
 import { Model } from '@converse/skeletor';
-import { _converse, api, converse, log, u } from '@converse/headless';
 import { getOpenPromise } from '@converse/openpromise';
+import { _converse, api, converse, log, u } from '@converse/headless';
 
-const { Strophe, $build, $iq, sizzle } = converse.env;
+const { Strophe, stx, sizzle } = converse.env;
 
-/**
- * @namespace _converse.DeviceList
- * @memberOf _converse
- */
 class DeviceList extends Model {
     get idAttribute () {
         return 'jid';
@@ -53,8 +49,8 @@ class DeviceList extends Model {
         if (this._devices_promise === undefined) {
             this._devices_promise = new Promise(resolve => {
                 this.devices.fetch({
-                    'success': c => resolve(this.onDevicesFound(c)),
-                    'error': (_, e) => {
+                    success: c => resolve(this.onDevicesFound(c)),
+                    error: (_, e) => {
                         log.error(e);
                         resolve();
                     }
@@ -64,6 +60,9 @@ class DeviceList extends Model {
         return this._devices_promise;
     }
 
+    /**
+     * @returns {Promise<string>}
+     */
     async getOwnDeviceId () {
         const { omemo_store } = _converse.state;
         let device_id = omemo_store.get('device_id');
@@ -75,6 +74,9 @@ class DeviceList extends Model {
         return device_id;
     }
 
+    /**
+     * @param {string[]} device_ids
+     */
     async publishCurrentDevice (device_ids) {
         const bare_jid = _converse.session.get('bare_jid');
         if (this.get('jid') !== bare_jid) {
@@ -85,7 +87,7 @@ class DeviceList extends Model {
         if (!_converse.state.omemo_store) {
             // Happens during tests. The connection gets torn down
             // before publishCurrentDevice has time to finish.
-            log.warn('publishCurrentDevice: omemo_store is not defined, likely a timing issue');
+            log.debug('publishCurrentDevice: omemo_store is not defined, likely a timing issue');
             return;
         }
         if (!device_ids.includes(await this.getOwnDeviceId())) {
@@ -93,34 +95,44 @@ class DeviceList extends Model {
         }
     }
 
+    /**
+     * @returns {Promise<import('./device').default[]>}
+     */
     async fetchDevicesFromServer () {
         const bare_jid = _converse.session.get('bare_jid');
-        const stanza = $iq({
-            'type': 'get',
-            'from': bare_jid,
-            'to': this.get('jid')
-        }).c('pubsub', { 'xmlns': Strophe.NS.PUBSUB })
-          .c('items', { 'node': Strophe.NS.OMEMO_DEVICELIST });
+        const stanza = stx`
+            <iq type='get' from='${bare_jid}' to='${this.get('jid')}'>
+                <pubsub xmlns='${Strophe.NS.PUBSUB}'>
+                    <items node='${Strophe.NS.OMEMO_DEVICELIST}'/>
+                </pubsub>
+            </iq>`;
 
         const iq = await api.sendIQ(stanza);
         const selector = `list[xmlns="${Strophe.NS.OMEMO}"] device`;
         const device_ids = sizzle(selector, iq).map(d => d.getAttribute('id'));
         const jid = this.get('jid');
-        return Promise.all(device_ids.map(id => this.devices.create({ id, jid }, { 'promise': true })));
+        return Promise.all(device_ids.map((id) => this.devices.create({ id, jid }, { promise: true })));
     }
 
     /**
-     * Send an IQ stanza to the current user's "devices" PEP node to
+     * Sends an IQ stanza to the current user's "devices" PEP node to
      * ensure that all devices are published for potential chat partners to see.
-     * See: https://xmpp.org/extensions/xep-0384.html#usecases-announcing
+     * See: https://xmpp.org/extensions/attic/xep-0384-0.3.0.html#usecases-announcing
      */
     publishDevices () {
-        const item = $build('item', { 'id': 'current' }).c('list', { 'xmlns': Strophe.NS.OMEMO });
-        this.devices.filter(d => d.get('active')).forEach(d => item.c('device', { 'id': d.get('id') }).up());
+        const item = stx`
+            <item id='current'>
+                <list xmlns='${Strophe.NS.OMEMO}'>
+                    ${this.devices.filter((d) => d.get('active')).map((d) => stx`<device id='${d.get('id')}'/>`)}
+                </list>
+            </item>`;
         const options = { access_model: 'open' };
         return api.pubsub.publish(null, Strophe.NS.OMEMO_DEVICELIST, item, options, false);
     }
 
+    /**
+     * @param {string[]} device_ids
+     */
     async removeOwnDevices (device_ids) {
         const bare_jid = _converse.session.get('bare_jid');
         if (this.get('jid') !== bare_jid) {
@@ -128,8 +140,8 @@ class DeviceList extends Model {
         }
         await Promise.all(device_ids.map(id => this.devices.get(id)).map(d =>
             new Promise(resolve => d.destroy({
-                'success': resolve,
-                'error': (_, e) => { log.error(e); resolve(); }
+                success: resolve,
+                error: (_, e) => { log.error(e); resolve(); }
             }))
         ));
         return this.publishDevices();

@@ -1,29 +1,27 @@
 export default Device;
-/**
- * @namespace _converse.Device
- * @memberOf _converse
- */
 declare class Device extends Model {
     defaults(): {
         trusted: number;
         active: boolean;
     };
-    getRandomPreKey(): any;
-    fetchBundleFromServer(): Promise<{
-        identity_key: any;
-        signed_prekey: {
-            id: number;
-            public_key: any;
-            signature: any;
-        };
-        prekeys: any;
-    }>;
+    /**
+     * @returns {import('./types').PreKey}
+     */
+    getRandomPreKey(): import("./types").PreKey;
+    /**
+     * Fetch the device's OMEMO bundle from the server.
+     * A bundle is a collection of publicly accessible data that can
+     * be used to build a session with a device, namely its public IdentityKey,
+     * a signed PreKey with corresponding signature, and a list of (single use) PreKeys.
+     * @returns {Promise<import('./types').Bundle>}
+     */
+    fetchBundleFromServer(): Promise<import("./types").Bundle>;
     /**
      * Fetch and save the bundle information associated with
      * this device, if the information is not cached already.
-     * @method _converse.Device#getBundle
+     * @returns {Promise<import('./types').Bundle>}
      */
-    getBundle(): Promise<any>;
+    getBundle(): Promise<import("./types").Bundle>;
 }
 import { Model } from '@converse/skeletor';
 //# sourceMappingURL=device.d.ts.map

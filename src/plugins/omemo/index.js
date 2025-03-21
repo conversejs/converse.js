@@ -1,7 +1,6 @@
 /**
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
- *
  * @module plugins-omemo-index
  * @typedef {Window & globalThis & {libsignal: any} } WindowWithLibsignal
  */
@@ -58,7 +57,7 @@ converse.plugins.add('converse-omemo', {
     dependencies: ['converse-chatview', 'converse-pubsub', 'converse-profile'],
 
     initialize () {
-        api.settings.extend({ 'omemo_default': false });
+        api.settings.extend({ omemo_default: false });
         api.promises.add(['OMEMOInitialized']);
 
         Object.assign(_converse.api, omemo_api);

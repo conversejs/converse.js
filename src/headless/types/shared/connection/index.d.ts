@@ -98,7 +98,6 @@ export class Connection extends Connection_base {
 }
 /**
  * The MockConnection class is used during testing, to mock an XMPP connection.
- * @class
  */
 export class MockConnection extends Connection {
     /**
@@ -110,6 +109,7 @@ export class MockConnection extends Connection {
     IQ_stanzas: any[];
     IQ_ids: any[];
     mock: boolean;
+    get _sasl_mechanism(): import("strophe.js/src/types/sasl-sha256.js").default;
     _processRequest(): void;
     sendIQ(iq: any, callback: any, errback: any): string;
     send(stanza: any): void;

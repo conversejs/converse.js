@@ -3,6 +3,7 @@
  * @typedef {import('@converse/headless/shared/types').MessageAttributes} MessageAttributes
  * @typedef {import('@converse/headless/plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
  * @typedef {import('@converse/headless').ChatBox} ChatBox
+ * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
  */
 import { html } from 'lit';
 import { __ } from 'i18n';
@@ -35,6 +36,9 @@ const {
     stringToArrayBuffer,
 } = u;
 
+/**
+ * @param {string} fp
+ */
 export function formatFingerprint (fp) {
     fp = fp.replace(/^05/, '');
     for (let i=1; i<8; i++) {
@@ -44,6 +48,9 @@ export function formatFingerprint (fp) {
     return fp;
 }
 
+/**
+ * @param {string} fp
+ */
 export function formatFingerprintForQRCode (fp) {
     const sid = _converse.state.omemo_store.get('device_id');
     const jid = _converse.session.get('bare_jid');
@@ -86,26 +93,38 @@ export function handleMessageSendError (e, chat) {
     throw e;
 }
 
+/**
+ * @param {string} jid
+ */
 export async function contactHasOMEMOSupport (jid) {
     /* Checks whether the contact advertises any OMEMO-compatible devices. */
     const devices = await getDevicesForContact(jid);
     return devices.length > 0;
 }
 
+/**
+ * @param {ChatBox|MUC} chat
+ * @param {MessageAttributes} attrs
+ * @return {MessageAttributes}
+ */
 export function getOutgoingMessageAttributes (chat, attrs) {
     if (chat.get('omemo_active') && attrs.body) {
-        attrs['is_encrypted'] = true;
-        attrs['plaintext'] = attrs.body;
-        attrs['body'] = __(
-            'This is an OMEMO encrypted message which your client doesn’t seem to support. ' +
-            'Find more information on https://conversations.im/omemo'
-        );
+        return {
+            ...attrs,
+            is_encrypted: true,
+            plaintext: attrs.body,
+            body: __(
+                'This is an OMEMO encrypted message which your client doesn’t seem to support. ' +
+                'Find more information on https://conversations.im/omemo'
+            )
+        }
     }
     return attrs;
 }
 
 /**
  * @param {string} plaintext
+ * @returns {Promise<import('./types').EncryptedMessage>}
  */
 async function encryptMessage (plaintext) {
     // The client MUST use fresh, randomly generated key/IV pairs
@@ -120,10 +139,10 @@ async function encryptMessage (plaintext) {
     // https://crypto.stackexchange.com/questions/26783/ciphertext-and-tag-size-and-iv-transmission-with-aes-in-gcm-mode
     const iv = crypto.getRandomValues(new window.Uint8Array(12));
     const key = await crypto.subtle.generateKey(KEY_ALGO, true, ['encrypt', 'decrypt']);
-    const algo = {
-            'name': 'AES-GCM',
-            'iv': iv,
-            'tagLength': TAG_LENGTH
+    const algo = /** @type {AesGcmParams} */{
+            iv,
+            name: 'AES-GCM',
+            tagLength: TAG_LENGTH
         };
     const encrypted = await crypto.subtle.encrypt(algo, key, stringToArrayBuffer(plaintext));
     const length = encrypted.byteLength - ((128 + 7) >> 3);
@@ -131,21 +150,25 @@ async function encryptMessage (plaintext) {
     const tag = encrypted.slice(length);
     const exported_key = await crypto.subtle.exportKey('raw', key);
     return {
-        'key': exported_key,
-        'tag': tag,
-        'key_and_tag': appendArrayBuffer(exported_key, tag),
-        'payload': arrayBufferToBase64(ciphertext),
-        'iv': arrayBufferToBase64(iv)
+        tag,
+        key: exported_key,
+        key_and_tag: appendArrayBuffer(exported_key, tag),
+        payload: arrayBufferToBase64(ciphertext),
+        iv: arrayBufferToBase64(iv)
     };
 }
 
+/**
+ * @param {import('./types').EncryptedMessage} obj
+ * @returns {Promise<string>}
+ */
 async function decryptMessage (obj) {
     const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt', 'decrypt']);
     const cipher = appendArrayBuffer(base64ToArrayBuffer(obj.payload), obj.tag);
-    const algo = {
-        'name': 'AES-GCM',
-        'iv': base64ToArrayBuffer(obj.iv),
-        'tagLength': TAG_LENGTH
+    const algo = /** @type {AesGcmParams} */{
+        name: 'AES-GCM',
+        iv: base64ToArrayBuffer(obj.iv),
+        tagLength: TAG_LENGTH
     };
     return arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
 }
@@ -165,24 +188,36 @@ export async function encryptFile (file) {
     return encrypted_file;
 }
 
+/**
+ * @param {import('@converse/headless/types/shared/message').default} message
+ * @param {import('@converse/headless/shared/types').FileUploadMessageAttributes} attrs
+ */
 export function setEncryptedFileURL (message, attrs) {
     const url = attrs.oob_url.replace(/^https?:/, 'aesgcm:') + '#' + message.file.xep454_ivkey;
     return Object.assign(attrs, {
-        'oob_url': null, // Since only the body gets encrypted, we don't set the oob_url
-        'message': url,
-        'body': url
+        oob_url: null, // Since only the body gets encrypted, we don't set the oob_url
+        message: url,
+        body: url
     });
 }
 
+/**
+ * @param {string} iv
+ * @param {string} key
+ * @param {ArrayBuffer} cipher
+ */
 async function decryptFile (iv, key, cipher) {
     const key_obj = await crypto.subtle.importKey('raw', hexToArrayBuffer(key), 'AES-GCM', false, ['decrypt']);
-    const algo = {
-        'name': 'AES-GCM',
-        'iv': hexToArrayBuffer(iv),
+    const algo = /** @type {AesGcmParams} */{
+        name: 'AES-GCM',
+        iv: hexToArrayBuffer(iv),
     };
     return crypto.subtle.decrypt(algo, key_obj, cipher);
 }
 
+/**
+ * @param {string} url
+ */
 async function downloadFile(url) {
     let response;
     try {
@@ -238,9 +273,9 @@ function getTemplateForObjectURL (uri, obj_url, richtext) {
     const file_url = uri.toString();
     if (isImageURL(file_url)) {
         return tplImage({
-            'src': obj_url,
-            'onClick': richtext.onImgClick,
-            'onLoad': richtext.onImgLoad
+            src: obj_url,
+            onClick: richtext.onImgClick,
+            onLoad: richtext.onImgLoad
         });
     } else if (isAudioURL(file_url)) {
         return tplAudio(obj_url);
@@ -252,12 +287,22 @@ function getTemplateForObjectURL (uri, obj_url, richtext) {
 
 }
 
+/**
+ * @param {string} text
+ * @param {number} offset
+ * @param {import('shared/texture/texture.js').Texture} richtext
+ */
 function addEncryptedFiles(text, offset, richtext) {
     const objs = [];
     try {
         const parse_options = { 'start': /\b(aesgcm:\/\/)/gi };
         URI.withinString(
             text,
+            /**
+             * @param {string} url
+             * @param {number} start
+             * @param {number} end
+             */
             (url, start, end) => {
                 objs.push({ url, start, end });
                 return url;
@@ -278,20 +323,29 @@ function addEncryptedFiles(text, offset, richtext) {
     });
 }
 
+/**
+ * @param {import('shared/texture/texture.js').Texture} richtext
+ */
 export function handleEncryptedFiles (richtext) {
     if (!_converse.state.config.get('trusted')) {
         return;
     }
-    richtext.addAnnotations((text, offset) => addEncryptedFiles(text, offset, richtext));
+    richtext.addAnnotations(
+        /**
+         * @param {string} text
+         * @param {number} offset
+         */
+        (text, offset) => addEncryptedFiles(text, offset, richtext));
 }
 
 /**
- * Hook handler for { @link parseMessage } and { @link parseMUCMessage }, which
+ * Hook handler for {@link parseMessage} and {@link parseMUCMessage}, which
  * parses the passed in `message` stanza for OMEMO attributes and then sets
  * them on the attrs object.
- * @param { Element } stanza - The message stanza
- * @param { (MUCMessageAttributes|MessageAttributes) } attrs
- * @returns (MUCMessageAttributes|MessageAttributes)
+ * @param {Element} stanza - The message stanza
+ * @param {MUCMessageAttributes|MessageAttributes} attrs
+ * @returns {Promise<MUCMessageAttributes| MessageAttributes|
+        import('./types').MUCMessageAttrsWithEncryption|import('./types').MessageAttrsWithEncryption>}
  */
 export async function parseEncryptedMessage (stanza, attrs) {
     if (api.settings.get('clear_cache_on_logout') ||
@@ -307,18 +361,18 @@ export async function parseEncryptedMessage (stanza, attrs) {
     const key = device_id && sizzle(`key[rid="${device_id}"]`, encrypted_el).pop();
     if (key) {
         Object.assign(attrs.encrypted, {
-            'iv': header.querySelector('iv').textContent,
-            'key': key.textContent,
-            'payload': encrypted_el.querySelector('payload')?.textContent || null,
-            'prekey': ['true', '1'].includes(key.getAttribute('prekey'))
+            iv: header.querySelector('iv').textContent,
+            key: key.textContent,
+            payload: encrypted_el.querySelector('payload')?.textContent || null,
+            prekey: ['true', '1'].includes(key.getAttribute('prekey'))
         });
     } else {
         return Object.assign(attrs, {
-            'error_condition': 'not-encrypted-for-this-device',
-            'error_type': 'Decryption',
-            'is_ephemeral': true,
-            'is_error': true,
-            'type': 'error'
+            error_condition: 'not-encrypted-for-this-device',
+            error_type: 'Decryption',
+            is_ephemeral: true,
+            is_error: true,
+            type: 'error'
         });
     }
     // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
@@ -330,7 +384,7 @@ export async function parseEncryptedMessage (stanza, attrs) {
 }
 
 export function onChatBoxesInitialized () {
-    _converse.state.chatboxes.on('add', chatbox => {
+    _converse.state.chatboxes.on('add', (chatbox) => {
         checkOMEMOSupported(chatbox);
         if (chatbox.get('type') === CHATROOMS_TYPE) {
             chatbox.occupants.on('add', o => onOccupantAdded(chatbox, o));
@@ -340,7 +394,7 @@ export function onChatBoxesInitialized () {
 }
 
 export function onChatInitialized (el) {
-    el.listenTo(el.model.messages, 'add', message => {
+    el.listenTo(el.model.messages, 'add', (message) => {
         if (message.get('is_encrypted') && !message.get('is_error')) {
             el.model.save('omemo_supported', true);
         }
@@ -359,22 +413,29 @@ export function onChatInitialized (el) {
     });
 }
 
+/**
+ * @param {string} jid
+ * @param {number} id
+ */
 export function getSessionCipher (jid, id) {
     const { libsignal } = /** @type WindowWithLibsignal */(window);
     const address = new libsignal.SignalProtocolAddress(jid, id);
     return new libsignal.SessionCipher(_converse.state.omemo_store, address);
 }
 
+/**
+ * @param {MUCMessageAttributes|MessageAttributes} attrs
+ */
 function getJIDForDecryption (attrs) {
-    const from_jid = attrs.from_muc ? attrs.from_real_jid : attrs.from;
+    const from_jid = "from_muc" in attrs ? attrs.from_real_jid : attrs.from;
     if (!from_jid) {
         Object.assign(attrs, {
-            'error_text': __("Sorry, could not decrypt a received OMEMO "+
+            error_text: __("Sorry, could not decrypt a received OMEMO "+
                 "message because we don't have the XMPP address for that user."),
-            'error_type': 'Decryption',
-            'is_ephemeral': true,
-            'is_error': true,
-            'type': 'error'
+            error_type: 'Decryption',
+            is_ephemeral: true,
+            is_error: true,
+            type: 'error'
         });
         throw new Error("Could not find JID to decrypt OMEMO message for");
     }
@@ -392,7 +453,7 @@ async function handleDecryptedWhisperMessage (attrs, key_and_tag) {
     if (encrypted.payload) {
         const key = key_and_tag.slice(0, 16);
         const tag = key_and_tag.slice(16);
-        const result = await omemo.decryptMessage(Object.assign(encrypted, { 'key': key, 'tag': tag }));
+        const result = await omemo.decryptMessage(Object.assign(encrypted, { key, tag }));
         device.save('active', true);
         return result;
     }
@@ -411,6 +472,9 @@ function getDecryptionErrorAttributes (e) {
     };
 }
 
+/**
+ * @param {MUCMessageAttributes|MessageAttributes} attrs
+ */
 async function decryptPrekeyWhisperMessage (attrs) {
     const from_jid = getJIDForDecryption(attrs);
     const session_cipher = getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
@@ -460,6 +524,9 @@ async function decryptPrekeyWhisperMessage (attrs) {
     }
 }
 
+/**
+ * @param {MUCMessageAttributes|MessageAttributes} attrs
+ */
 async function decryptWhisperMessage (attrs) {
     const from_jid = getJIDForDecryption(attrs);
     const session_cipher = getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
@@ -477,30 +544,38 @@ async function decryptWhisperMessage (attrs) {
 /**
  * Given an XML element representing a user's OMEMO bundle, parse it
  * and return a map.
+ * @param {Element} bundle_el
+ * @returns {import('./types').Bundle}
  */
 export function parseBundle (bundle_el) {
     const signed_prekey_public_el = bundle_el.querySelector('signedPreKeyPublic');
     const signed_prekey_signature_el = bundle_el.querySelector('signedPreKeySignature');
-    const prekeys = sizzle(`prekeys > preKeyPublic`, bundle_el).map(el => ({
-        'id': parseInt(el.getAttribute('preKeyId'), 10),
-        'key': el.textContent
+    const prekeys = sizzle(`prekeys > preKeyPublic`, bundle_el).map(/** @param {Element} el */(el) => ({
+        id: parseInt(el.getAttribute('preKeyId'), 10),
+        key: el.textContent
     }));
     return {
-        'identity_key': bundle_el.querySelector('identityKey').textContent.trim(),
-        'signed_prekey': {
-            'id': parseInt(signed_prekey_public_el.getAttribute('signedPreKeyId'), 10),
-            'public_key': signed_prekey_public_el.textContent,
-            'signature': signed_prekey_signature_el.textContent
+        identity_key: bundle_el.querySelector('identityKey').textContent.trim(),
+        signed_prekey: {
+            id: parseInt(signed_prekey_public_el.getAttribute('signedPreKeyId'), 10),
+            public_key: signed_prekey_public_el.textContent,
+            signature: signed_prekey_signature_el.textContent
         },
-        'prekeys': prekeys
+        prekeys
     };
 }
 
+/**
+ * @param {string} jid
+ */
 export async function generateFingerprints (jid) {
     const devices = await getDevicesForContact(jid);
     return Promise.all(devices.map(d => generateFingerprint(d)));
 }
 
+/**
+ * @param {import('./device.js').default} device
+ */
 export async function generateFingerprint (device) {
     if (device.get('bundle')?.fingerprint) {
         return;
@@ -511,6 +586,10 @@ export async function generateFingerprint (device) {
     device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
 }
 
+/**
+ * @param {string} jid
+ * @returns {Promise<import('./devices.js').default>}
+ */
 export async function getDevicesForContact (jid) {
     await api.waitUntil('OMEMOInitialized');
     const devicelist = await api.omemo.devicelists.get(jid, true);
@@ -518,8 +597,14 @@ export async function getDevicesForContact (jid) {
     return devicelist.devices;
 }
 
-export function getDeviceForContact (jid, device_id) {
-    return getDevicesForContact(jid).then(devices => devices.get(device_id));
+/**
+ * @param {string} jid
+ * @param {string} device_id
+ * @returns {Promise<import('./device.js').default[]>}
+ */
+export async function getDeviceForContact (jid, device_id) {
+    const devices = await getDevicesForContact(jid);
+    return devices.get(device_id);
 }
 
 export async function generateDeviceID () {
@@ -544,34 +629,38 @@ export async function generateDeviceID () {
     return device_id.toString();
 }
 
+/**
+ * @param {import('./device.js').default} device
+ */
 async function buildSession (device) {
     const { libsignal } = /** @type WindowWithLibsignal */(window);
     const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
     const sessionBuilder = new libsignal.SessionBuilder(_converse.state.omemo_store, address);
     const prekey = device.getRandomPreKey();
     const bundle = await device.getBundle();
-
     return sessionBuilder.processPreKey({
-        'registrationId': parseInt(device.get('id'), 10),
-        'identityKey': base64ToArrayBuffer(bundle.identity_key),
-        'signedPreKey': {
-            'keyId': bundle.signed_prekey.id, // <Number>
-            'publicKey': base64ToArrayBuffer(bundle.signed_prekey.public_key),
-            'signature': base64ToArrayBuffer(bundle.signed_prekey.signature)
+        registrationId: parseInt(device.get('id'), 10),
+        identityKey: base64ToArrayBuffer(bundle.identity_key),
+        signedPreKey: {
+            keyId: bundle.signed_prekey.id, // <Number>
+            publicKey: base64ToArrayBuffer(bundle.signed_prekey.public_key),
+            signature: base64ToArrayBuffer(bundle.signed_prekey.signature)
         },
-        'preKey': {
-            'keyId': prekey.id, // <Number>
-            'publicKey': base64ToArrayBuffer(prekey.key)
+        preKey: {
+            keyId: prekey.id, // <Number>
+            publicKey: base64ToArrayBuffer(prekey.key)
         }
     });
 }
 
+/**
+ * @param {import('./device.js').default} device
+ */
 export async function getSession (device) {
     if (!device.get('bundle')) {
         log.error(`Could not build an OMEMO session for device ${device.get('id')} because we don't have its bundle`);
         return null;
     }
-
     const { libsignal } = /** @type WindowWithLibsignal */(window);
     const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
     const session = await _converse.state.omemo_store.loadSession(address.toString());
@@ -579,8 +668,7 @@ export async function getSession (device) {
         return session;
     } else {
         try {
-            const session = await buildSession(device);
-            return session;
+            return await buildSession(device);
         } catch (e) {
             log.error(`Could not build an OMEMO session for device ${device.get('id')}`);
             log.error(e);
@@ -589,6 +677,9 @@ export async function getSession (device) {
     }
 }
 
+/**
+ * @param {Element} stanza
+ */
 async function updateBundleFromStanza (stanza) {
     const items_el = sizzle(`items`, stanza).pop();
     if (!items_el || !items_el.getAttribute('node').startsWith(Strophe.NS.OMEMO_BUNDLES)) {
@@ -602,6 +693,9 @@ async function updateBundleFromStanza (stanza) {
     device.save({ 'bundle': parseBundle(bundle_el) });
 }
 
+/**
+ * @param {Element} stanza
+ */
 async function updateDevicesFromStanza (stanza) {
     const items_el = sizzle(`items[node="${Strophe.NS.OMEMO_DEVICELIST}"]`, stanza).pop();
     if (!items_el) {
@@ -622,7 +716,7 @@ async function updateDevicesFromStanza (stanza) {
         }
         devices.get(id).save('active', false);
     });
-    device_ids.forEach(device_id => {
+    device_ids.forEach(/** @param {string} device_id */(device_id) => {
         const device = devices.get(device_id);
         if (device) {
             device.save('active', true);
@@ -640,6 +734,7 @@ async function updateDevicesFromStanza (stanza) {
 export function registerPEPPushHandler () {
     // Add a handler for devices pushed from other connected clients
     api.connection.get().addHandler(
+        /** @param {Element} message */
         async (message) => {
             try {
                 if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
@@ -669,8 +764,8 @@ async function fetchDeviceLists () {
     initStorage(_converse.state.devicelists, id);
     await new Promise(resolve => {
         _converse.state.devicelists.fetch({
-            'success': resolve,
-            'error': (_m, e) => { log.error(e); resolve(); }
+            success: resolve,
+            error: (_m, e) => { log.error(e); resolve(); }
         })
     });
     // Call API method to wait for our own device list to be fetched from the
@@ -679,6 +774,9 @@ async function fetchDeviceLists () {
     await api.omemo.devicelists.get(bare_jid, true);
 }
 
+/**
+ * @param {boolean} reconnecting
+ */
 export async function initOMEMO (reconnecting) {
     if (reconnecting) {
         return;
@@ -704,6 +802,10 @@ export async function initOMEMO (reconnecting) {
     api.trigger('OMEMOInitialized');
 }
 
+/**
+ * @param {MUC} chatroom
+ * @param {import('@converse/headless/types/plugins/muc/occupant').default} occupant
+ */
 async function onOccupantAdded (chatroom, occupant) {
     if (occupant.isSelf() || !chatroom.features.get('nonanonymous') || !chatroom.features.get('membersonly')) {
         return;
@@ -738,6 +840,9 @@ async function checkOMEMOSupported (chatbox) {
     }
 }
 
+/**
+ * @param {MouseEvent} ev
+ */
 function toggleOMEMO (ev) {
     ev.stopPropagation();
     ev.preventDefault();
@@ -764,6 +869,10 @@ function toggleOMEMO (ev) {
     toolbar_el.model.save({ 'omemo_active': !toolbar_el.model.get('omemo_active') });
 }
 
+/**
+ * @param {import('shared/chat/toolbar').ChatToolbar} toolbar_el
+ * @param {Array<import('lit').TemplateResult>} buttons
+ */
 export function getOMEMOToolbarButton (toolbar_el, buttons) {
     const model = toolbar_el.model;
     const is_muc = model.get('type') === CHATROOMS_TYPE;
@@ -811,13 +920,17 @@ export function getOMEMOToolbarButton (toolbar_el, buttons) {
 
 /**
  * @param {MUC|ChatBox} chatbox
+ * @returns {Promise<import('./device.js').default[]>}
  */
 async function getBundlesAndBuildSessions (chatbox) {
     const no_devices_err = __('Sorry, no devices found to which we can send an OMEMO encrypted message.');
     let devices;
     if (chatbox instanceof MUC) {
-        const collections = await Promise.all(chatbox.occupants.map(o => getDevicesForContact(o.get('jid'))));
+        const collections = await Promise.all(chatbox.occupants.map(
+            /** @param {import('@converse/headless/types/plugins/muc/occupant').default} o */
+            (o) => getDevicesForContact(o.get('jid'))));
         devices = collections.reduce((a, b) => a.concat(b.models), []);
+
     } else if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
         const their_devices = await getDevicesForContact(chatbox.get('jid'));
         if (their_devices.length === 0) {
@@ -830,9 +943,11 @@ async function getBundlesAndBuildSessions (chatbox) {
     }
     // Filter out our own device
     const id = _converse.state.omemo_store.get('device_id');
-    devices = devices.filter(d => d.get('id') !== id);
+    devices = devices.filter(
+        /** @param {import('./device.js').default} d */(d) => d.get('id') !== id);
+
     // Fetch bundles if necessary
-    await Promise.all(devices.map(d => d.getBundle()));
+    await Promise.all(devices.map((d) => d.getBundle()));
 
     const sessions = devices.filter(d => d).map(d => getSession(d));
     await Promise.all(sessions);
@@ -846,12 +961,21 @@ async function getBundlesAndBuildSessions (chatbox) {
     return devices;
 }
 
+/**
+ * @param {ArrayBuffer} key_and_tag
+ * @param {import('./device.js').default} device
+ */
 function encryptKey (key_and_tag, device) {
     return getSessionCipher(device.get('jid'), device.get('id'))
         .encrypt(key_and_tag)
-        .then(payload => ({ 'payload': payload, 'device': device }));
+        .then((payload) => ({ payload, device }));
 }
 
+/**
+ * @param {MUC|ChatBox} chat
+ * @param {{ message: BaseMessage, stanza: import('strophe.js').Builder }} data
+ * @return {Promise<{ message: BaseMessage, stanza: import('strophe.js').Builder }>}
+ */
 export async function createOMEMOMessageStanza (chat, data) {
     let { stanza } = data;
     const { message } = data;

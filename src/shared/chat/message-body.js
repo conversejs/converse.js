@@ -35,26 +35,26 @@ export default class MessageBody extends CustomElement {
         this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
     }
 
-    onImgClick (ev) { // eslint-disable-line class-methods-use-this
+    onImgClick (ev) {
         ev.preventDefault();
-        api.modal.show('converse-image-modal', {'src': ev.target.src}, ev);
+        api.modal.show('converse-image-modal', { src: ev.target.src }, ev);
     }
 
     onImgLoad () {
-        this.dispatchEvent(new CustomEvent('imageLoaded', { detail: this, 'bubbles': true }));
+        this.dispatchEvent(new CustomEvent('imageLoaded', { detail: this, bubbles: true }));
     }
 
     render () {
         const callback = () => this.model.collection?.trigger('rendered', this.model);
         const offset = 0;
         const options = {
-            'media_urls': this.model.get('media_urls'),
-            'mentions': this.model.get('references'),
-            'nick': this.model.chatbox.get('nick'),
-            'onImgClick': (ev) => this.onImgClick(ev),
-            'onImgLoad': () => this.onImgLoad(),
-            'render_styling': !this.model.get('is_unstyled') && api.settings.get('allow_message_styling'),
-            'show_me_message': true,
+            media_urls: this.model.get('media_urls'),
+            mentions: this.model.get('references'),
+            nick: this.model.chatbox.get('nick'),
+            onImgClick: (ev) => this.onImgClick(ev),
+            onImgLoad: () => this.onImgLoad(),
+            render_styling: !this.model.get('is_unstyled') && api.settings.get('allow_message_styling'),
+            show_me_message: true,
         }
         if (this.hide_url_previews === "false") {
             options.embed_audio = true;

@@ -112,6 +112,11 @@ export default class Message extends ObservableElement {
             ['chat', 'groupchat', 'normal'].includes(this.model.get('type'));
     }
 
+    onImgClick (ev) {
+        ev.preventDefault();
+        api.modal.show('converse-image-modal', { src: ev.target.src }, ev);
+    }
+
     onUnfurlAnimationEnd () {
         if (this.model.get('url_preview_transition') === 'fade-out') {
             this.model.save({

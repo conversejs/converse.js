@@ -1,6 +1,6 @@
 import { getOpenPromise } from '@converse/openpromise';
 import { Collection } from '@converse/skeletor';
-import log from '../../log.js';
+import log from "@converse/log";
 import _converse from '../../shared/_converse.js';
 import { initStorage } from '../../utils/storage.js';
 import api from '../../shared/api/index.js';

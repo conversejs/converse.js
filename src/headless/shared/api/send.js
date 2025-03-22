@@ -1,5 +1,5 @@
 import _converse from '../_converse.js';
-import log from '../../log.js';
+import log from "@converse/log";
 import { Strophe } from 'strophe.js';
 import { TimeoutError } from '../errors.js';
 

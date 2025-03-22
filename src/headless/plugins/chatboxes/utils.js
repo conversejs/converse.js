@@ -2,7 +2,7 @@
  * @typedef {import('../chat/model.js').default} ChatBox
  */
 import _converse from '../../shared/_converse.js';
-import log from "../../log";
+import log from "@converse/log";
 import { Strophe } from 'strophe.js';
 
 

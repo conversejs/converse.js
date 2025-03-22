@@ -8,7 +8,7 @@ import { Strophe, $iq } from "strophe.js";
 import _converse from "../../shared/_converse.js";
 import api from "../../shared/api/index.js";
 import converse from "../../shared/api/public.js";
-import log from "../../log.js";
+import log from "@converse/log";
 import { parseMUCMessage } from "../../plugins/muc/parsers.js";
 import { parseMessage } from "../../plugins/chat/parsers.js";
 import { CHATROOMS_TYPE } from "../../shared/constants.js";

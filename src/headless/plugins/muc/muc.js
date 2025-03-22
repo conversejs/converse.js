@@ -6,7 +6,7 @@ import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
 import { getOpenPromise } from '@converse/openpromise';
 import { Model } from '@converse/skeletor';
-import log from '../../log';
+import log from "@converse/log";
 import p from '../../utils/parse-helpers';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';

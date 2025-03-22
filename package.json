@@ -7,7 +7,8 @@
   "browser": "dist/converse.js",
   "module": "src/index.js",
   "workspaces": [
-    "src/headless"
+    "src/headless",
+    "src/log"
   ],
   "files": [
     "CHANGES.md",
@@ -119,6 +120,7 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
+    "@converse/log": "file:src/log",
     "bootstrap": "^5.3.3",
     "client-compress": "^2.2.2",
     "dayjs": "^1.11.8",

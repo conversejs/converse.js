@@ -5,7 +5,7 @@ import sizzle from 'sizzle';
 import _converse from './_converse.js';
 import api from './api/index.js';
 import dayjs from 'dayjs';
-import log from '../log.js';
+import log from "@converse/log";
 import { Strophe } from 'strophe.js';
 import { decodeHTMLEntities } from '../utils/html.js';
 import { getAttributes } from '../utils/stanza.js';

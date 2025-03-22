@@ -4,7 +4,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { parseErrorStanza } from '../../shared/parsers.js';
-import log from '../../log.js';
+import log from "@converse/log";
 import sizzle from 'sizzle';
 import { createStore } from '../../utils/storage.js';
 

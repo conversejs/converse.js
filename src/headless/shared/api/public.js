@@ -13,7 +13,7 @@ import { html } from 'lit';
 import api from './index.js';
 import _converse from '../_converse.js';
 import i18n from '../i18n';
-import log from '../../log.js';
+import log from "@converse/log";
 import ConnectionFeedback from './../connection/feedback.js';
 import u, { setLogLevelFromRoute } from '../../utils/index.js';
 import { ANONYMOUS, CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';

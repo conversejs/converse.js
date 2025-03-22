@@ -12,7 +12,7 @@ export default class MUCOccupant extends CustomElement {
     initialize(): Promise<void>;
     muc: any;
     model: any;
-    render(): import("lit").TemplateResult<1> | "";
+    render(): "" | import("lit").TemplateResult<1>;
     /**
      * @param {string} jid
      */

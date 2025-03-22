@@ -1,5 +1,5 @@
 import _converse from '../../_converse.js';
-import log from '../../../log.js';
+import log from "@converse/log";
 import { Model } from '@converse/skeletor';
 import { initStorage } from '../../../utils/storage.js';
 

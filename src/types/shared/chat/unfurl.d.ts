@@ -22,7 +22,7 @@ export default class MessageUnfurl extends CustomElement {
     image: any;
     description: any;
     initialize(): void;
-    render(): import("lit").TemplateResult<1> | "";
+    render(): "" | import("lit").TemplateResult<1>;
     onImageLoad(): void;
 }
 import { CustomElement } from 'shared/components/element.js';

@@ -6,7 +6,7 @@
  */
 import MUCOccupant from './occupant.js';
 import _converse from '../../shared/_converse.js';
-import log from '../../log';
+import log from "@converse/log";
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { Collection, Model } from '@converse/skeletor';

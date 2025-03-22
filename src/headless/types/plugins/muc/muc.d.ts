@@ -124,7 +124,7 @@ declare const MUC_base: {
         sendMarkerForMessage(msg: import("../../shared/message.js").default<any>, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         handleUnreadMessage(message: import("../../shared/message.js").default<any>): void;
         getErrorAttributesForMessage(message: import("../../shared/message.js").default<any>, attrs: import("../../shared/types").MessageAttributes): Promise<any>;
-        handleErrorMessageStanza(stanza: Element): Promise<any>;
+        handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../../shared/message.js").default<any>): void;
         clearUnreadMsgCounter(): void;
         handleRetraction(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;
@@ -394,7 +394,7 @@ declare class MUC extends MUC_base {
     /**
      * @param {Element} stanza
      */
-    handleErrorMessageStanza(stanza: Element): Promise<any>;
+    handleErrorMessageStanza(stanza: Element): Promise<void>;
     /**
      * Handles incoming message stanzas from the service that hosts this MUC
      * @param {Element} stanza
@@ -835,7 +835,7 @@ declare class MUC extends MUC_base {
      * should be called.
      * @param {MUCMessageAttributes|StanzaParseError} attrs_or_error - A promise which resolves to the message attributes.
      */
-    onMessage(attrs_or_error: import("./types").MUCMessageAttributes | import("../../shared/errors.js").StanzaParseError): Promise<any>;
+    onMessage(attrs_or_error: import("./types").MUCMessageAttributes | import("../../shared/errors.js").StanzaParseError): Promise<void>;
     /**
      * @param {Element} pres
      */

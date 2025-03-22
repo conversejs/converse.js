@@ -5,7 +5,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import dayjs from 'dayjs';
-import log from '../../log.js';
+import log from "@converse/log";
 import u from '../../utils/index.js';
 import { rejectMessage } from '../../shared/actions.js';
 import { StanzaParseError } from '../../shared/errors.js';

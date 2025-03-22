@@ -5,7 +5,7 @@
 import converse from '../../shared/api/public.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import log from '../../log.js';
+import log from "@converse/log";
 import { parseErrorStanza } from '../../shared/parsers.js';
 import { parseStanzaForPubSubConfig } from './parsers.js';
 

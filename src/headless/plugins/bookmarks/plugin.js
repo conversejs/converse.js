@@ -9,7 +9,7 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { initBookmarks, getNicknameFromBookmark, handleBookmarksPush } from './utils.js';
 import '../../plugins/muc/index.js';
-import log from '../../log';
+import log from "@converse/log";
 import bookmarks_api from './api.js';
 
 const { Strophe } = converse.env;

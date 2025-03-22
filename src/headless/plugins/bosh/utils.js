@@ -1,7 +1,7 @@
 /**
  * @typedef {module:shared.api.user} LoginHookPayload
  */
-import log from "../../log.js";
+import log from "@converse/log";
 import api from '../../shared/api/index.js';
 import _converse from "../../shared/_converse.js";
 import { Strophe } from "strophe.js";

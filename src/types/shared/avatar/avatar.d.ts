@@ -24,7 +24,7 @@ export default class Avatar extends CustomElement {
     width: number;
     height: number;
     name: string;
-    render(): import("lit").TemplateResult<1> | "";
+    render(): "" | import("lit").TemplateResult<1>;
     /**
      * @param {string} name
      * @returns {string}

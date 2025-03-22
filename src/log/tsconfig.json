@@ -1,16 +1,14 @@
 {
   "include": [
-      "src/**/*"
+      "**/*"
   ],
   "exclude": [
-      "src/types/*",
-      "src/**/tests/*",
-      "src/headless/",
-      "src/log/",
-      "src/website.js"
+      "**/tests/*",
+      "dist/",
+      "types/"
   ],
   "compilerOptions": {
-    "target": "es2022",
+    "target": "es2016",
     "module": "esnext",
 
     "types": [
@@ -30,13 +28,9 @@
     "emitDeclarationOnly": true,
     "declarationMap": true,
 
-    "rootDir": "./src",
-    "outDir": "./src/types/",
-    "baseUrl": "./src/",
-    "paths": {
-      "@converse/log": ["log/types/index.d.ts"],
-      "@converse/headless": ["headless/types/index.d.ts"]
-    },
+    "rootDir": "./",
+    "outDir": "./types/",
+    "baseUrl": "./",
 
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

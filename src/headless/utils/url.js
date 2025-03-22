@@ -1,5 +1,5 @@
 import URI from 'urijs';
-import log from '../log.js';
+import log from "@converse/log";
 import { settings_api } from '../shared/settings/api.js';
 import { URL_PARSE_OPTIONS } from '../shared/constants.js';
 

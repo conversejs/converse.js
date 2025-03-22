@@ -15,12 +15,12 @@ export default class Message extends ObservableElement {
     };
     model_with_messages: any;
     initialize(): Promise<void>;
-    render(): import("lit").TemplateResult<1> | "";
+    render(): "" | import("lit").TemplateResult<1>;
     renderRetraction(): import("lit").TemplateResult<1>;
     renderMessageText(): import("lit").TemplateResult<1>;
     renderMEPMessage(): import("lit").TemplateResult<1>;
     renderInfoMessage(): import("lit").TemplateResult<1>;
-    renderFileProgress(): import("lit").TemplateResult<1> | "";
+    renderFileProgress(): "" | import("lit").TemplateResult<1>;
     renderChatMessage(): import("lit").TemplateResult<1>;
     shouldShowAvatar(): boolean;
     onImgClick(ev: any): void;

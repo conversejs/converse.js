@@ -1,6 +1,6 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import log from '../../log.js';
+import log from "@converse/log";
 import Bookmarks from './collection.js';
 
 export async function initBookmarks() {

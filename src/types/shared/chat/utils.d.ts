@@ -19,7 +19,7 @@ export function getStandaloneButtons(promise: Promise<Array<HeadingButtonAttribu
 /**
  * @param {Promise<Array<object>>} promise
  */
-export function getDropdownButtons(promise: Promise<Array<object>>): Promise<import("lit").TemplateResult<1> | "">;
+export function getDropdownButtons(promise: Promise<Array<object>>): Promise<"" | import("lit").TemplateResult<1>>;
 export function onScrolledDown(model: any): void;
 /**
  * Given a message object, returns a TemplateResult indicating a new day if

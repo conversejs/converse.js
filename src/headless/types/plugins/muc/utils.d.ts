@@ -18,7 +18,7 @@ export function onWindowStateChanged(): Promise<void>;
 /**
  * @param {Event} [event]
  */
-export function routeToRoom(event?: Event): Promise<any>;
+export function routeToRoom(event?: Event): Promise<void>;
 /**
  * Opens a groupchat, making sure that certain attributes
  * are correct, for example that the "type" is set to

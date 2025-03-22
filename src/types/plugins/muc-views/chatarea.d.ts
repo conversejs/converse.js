@@ -15,7 +15,7 @@ export default class MUCChatArea extends CustomElement {
     split: any;
     initialize(): Promise<void>;
     model: any;
-    render(): import("lit").TemplateResult<1> | "";
+    render(): "" | import("lit").TemplateResult<1>;
     shouldShowSidebar(): boolean;
     getHelpMessages(): string[];
 }

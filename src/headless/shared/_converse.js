@@ -6,7 +6,7 @@
  * @typedef {import('../plugins/status/status').default} XMPPStatus
  * @typedef {import('../plugins/vcard/vcard').default} VCards
  */
-import log from '../log.js';
+import log from "@converse/log";
 import i18n from './i18n.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import { EventEmitter, Model } from '@converse/skeletor';

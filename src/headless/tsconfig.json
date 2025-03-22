@@ -31,6 +31,9 @@
     "rootDir": "./",
     "outDir": "./types/",
     "baseUrl": "./",
+    "paths": {
+      "@converse/log": ["../log/types/index.d.ts"]
+    },
 
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

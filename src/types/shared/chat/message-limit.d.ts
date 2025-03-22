@@ -6,7 +6,7 @@ export default class MessageLimitIndicator extends CustomElement {
     };
     model: any;
     connectedCallback(): void;
-    render(): import("lit").TemplateResult<1> | "";
+    render(): "" | import("lit").TemplateResult<1>;
 }
 import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=message-limit.d.ts.map

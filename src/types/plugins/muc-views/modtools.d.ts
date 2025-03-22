@@ -50,7 +50,7 @@ export default class ModeratorTools extends CustomElement {
     initialize(): Promise<void>;
     initialized: any;
     muc: any;
-    render(): import("lit").TemplateResult<1> | "";
+    render(): "" | import("lit").TemplateResult<1>;
     switchTab(ev: any): void;
     onSearchAffiliationChange(): Promise<void>;
     loading_users_with_affiliation: boolean;

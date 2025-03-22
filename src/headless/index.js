@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
-import log from '@converse/log';
+import log from "@converse/log";
 
 dayjs.extend(advancedFormat);
 

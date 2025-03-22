@@ -2,7 +2,7 @@ import { getOpenPromise } from '@converse/openpromise';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import log from '../../log.js';
+import log from "@converse/log";
 
 const { Strophe, $iq } = converse.env;
 

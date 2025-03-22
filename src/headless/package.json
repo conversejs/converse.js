@@ -32,6 +32,7 @@
     "url": "https://github.com/conversejs/converse.js/issues"
   },
   "dependencies": {
+    "@converse/log": "file:../log",
     "@converse/openpromise": "^0.0.1",
     "@converse/skeletor": "conversejs/skeletor#7e1cbeba0161bfe91d709a22deaa70e4daa0cd39",
     "dayjs": "^1.11.8",

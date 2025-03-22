@@ -39,7 +39,7 @@ export class ChatToolbar extends CustomElement {
     /**
      * @param {boolean} is_supported
      */
-    getHTTPUploadButton(is_supported: boolean): import("lit").TemplateResult<1> | "";
+    getHTTPUploadButton(is_supported: boolean): "" | import("lit").TemplateResult<1>;
     getSpoilerButton(): import("lit").TemplateResult<1>;
     /** @param {MouseEvent} ev */
     toggleFileUpload(ev: MouseEvent): void;

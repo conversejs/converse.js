@@ -1,5 +1,5 @@
 import { Model } from "@converse/skeletor";
-import log from "../../log";
+import log from "@converse/log";
 import api from "../../shared/api/index.js";
 import _converse from "../../shared/_converse.js";
 import converse from "../../shared/api/public.js";

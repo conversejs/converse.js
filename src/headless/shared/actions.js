@@ -1,4 +1,4 @@
-import log from '../log';
+import log from "@converse/log";
 import { Strophe, $msg } from 'strophe.js';
 import api from './api/index.js';
 import converse from './api/public.js';

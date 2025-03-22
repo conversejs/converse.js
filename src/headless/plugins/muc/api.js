@@ -3,7 +3,7 @@
  */
 import _converse from '../../shared/_converse.js';
 import chatboxes from '../../plugins/chatboxes/api.js';
-import log from '../../log';
+import log from "@converse/log";
 import promise_api from '../../shared/api/promise.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
 import { Strophe } from 'strophe.js';

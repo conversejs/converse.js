@@ -1,4 +1,4 @@
-import log from '../log.js';
+import log from "@converse/log";
 import { getOpenPromise } from '@converse/openpromise';
 
 export { getOpenPromise };

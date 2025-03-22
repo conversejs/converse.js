@@ -1,7 +1,7 @@
 /**
  * @typedef {import('@converse/skeletor').Model} Model
  */
-import log from "../../log.js";
+import log from "@converse/log";
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from "../../shared/api/public.js";

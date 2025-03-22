@@ -1,0 +1,25 @@
+{
+  "name": "@converse/log",
+  "version": "0.0.1",
+  "description": "Logging utilities for Converse.js",
+  "author": "JC Brand <jc@opkode.com>",
+  "license": "MIT",
+  "main": "index.js",
+  "types": "types/index.d.ts",
+  "module": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no tests yet\" && exit 1",
+    "types": "tsc"
+  },
+  "keywords": [
+    "converse.js",
+    "logging"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/conversejs/converse.js.git"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}

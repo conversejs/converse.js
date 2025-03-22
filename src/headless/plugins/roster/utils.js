@@ -4,7 +4,7 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import log from "../../log.js";
+import log from "@converse/log";
 import { Model } from '@converse/skeletor';
 import { RosterFilter } from '../../plugins/roster/filter.js';
 import { PRIVATE_CHAT_TYPE } from "../../shared/constants";

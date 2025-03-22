@@ -3,7 +3,7 @@ import api from './api/index.js';
 import { isUniView } from '../utils/session.js';
 import _converse from './_converse.js';
 import converse from './api/public.js';
-import log from '../log.js';
+import log from "@converse/log";
 import ModelWithMessages from './model-with-messages.js';
 
 const { u } = converse.env;

@@ -5,7 +5,7 @@ import Storage from "@converse/skeletor/src/storage.js";
 import _converse from "../shared/_converse";
 import debounce from "lodash-es/debounce";
 import localDriver from "localforage-webextensionstorage-driver/local";
-import log from "../log.js";
+import log from "@converse/log";
 import syncDriver from "localforage-webextensionstorage-driver/sync";
 import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN } from "../shared/constants.js";
 import { Model } from "@converse/skeletor";

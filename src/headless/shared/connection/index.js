@@ -1,5 +1,5 @@
 import debounce from 'lodash-es/debounce';
-import log from "../../log.js";
+import log from "@converse/log";
 import sizzle from 'sizzle';
 import _converse from '../_converse.js';
 import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';

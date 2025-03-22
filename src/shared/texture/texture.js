@@ -3,7 +3,7 @@ import { until } from 'lit/directives/until.js';
 import { Directive, directive } from 'lit/directive.js';
 import { api, u } from '@converse/headless';
 import tplAudio from 'templates/audio.js';
-import tplGif from 'templates/gif.js';
+import tplGif from './templates/gif.js';
 import tplImage from 'templates/image.js';
 import tplVideo from 'templates/video.js';
 import tplSpotify from 'templates/spotify.js';

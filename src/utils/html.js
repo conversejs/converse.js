@@ -147,29 +147,6 @@ export function getFileName (url) {
 }
 
 /**
- * Returns the markup for a URL that points to a downloadable asset
- * (such as a video, image or audio file).
- * @method u#getOOBURLMarkup
- * @param {string} url
- * @returns {TemplateResult|string}
- */
-export function getOOBURLMarkup (url) {
-    const uri = getURI(url);
-    if (uri === null) {
-        return url;
-    }
-    if (isVideoURL(uri)) {
-        return tplVideo(url);
-    } else if (isAudioURL(uri)) {
-        return tplAudio(url);
-    } else if (isImageURL(uri)) {
-        return tplFile(uri.toString(), getFileName(uri));
-    } else {
-        return tplFile(uri.toString(), getFileName(uri));
-    }
-}
-
-/**
  * Return the height of the passed in DOM element,
  * based on the heights of its children.
  * @method u#calculateElementHeight
@@ -560,7 +537,6 @@ Object.assign(u, {
     escapeHTML,
     getElementFromTemplateResult,
     getNextElement,
-    getOOBURLMarkup,
     getOuterWidth,
     getRootElement,
     hasClass,

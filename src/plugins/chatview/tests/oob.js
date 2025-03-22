@@ -1,5 +1,4 @@
 /*global mock, converse */
-
 const { Strophe, Promise, u } = converse.env;
 
 describe("A Chat Message", function () {
@@ -97,6 +96,9 @@ describe("A Chat Message", function () {
             msg = view.querySelector('converse-chat-message .chat-msg__text');
             expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('Have you seen this funny video?');
             expect(view.querySelector('converse-chat-message:last-child .chat-msg__media')).toBe(null);
+            expect(media.firstElementChild.nodeName).toBe('CONVERSE-TEXTURE');
+            await u.waitUntil(() => media.firstElementChild.querySelector('video'));
+            expect(media.firstElementChild.querySelector('video').getAttribute('src')).toBe(url);
         }));
 
         it("will render download links for files from oob URLs",
@@ -109,12 +111,13 @@ describe("A Chat Message", function () {
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
+            const url = 'https://montague.lit/funny.pdf';
             const stanza = u.toStanza(`
                 <message from="${contact_jid}"
                          type="chat"
                          to="romeo@montague.lit/orchard">
                     <body>Have you downloaded this funny file?</body>
-                    <x xmlns="jabber:x:oob"><url>https://montague.lit/funny.pdf</url></x>
+                    <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`);
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
@@ -123,8 +126,9 @@ describe("A Chat Message", function () {
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you downloaded this funny file?');
             const media = view.querySelector('.chat-msg .chat-msg__media');
-            expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "").replace(/<!-.*?->/g, '')).toEqual(
-                `<a target="_blank" rel="noopener" href="https://montague.lit/funny.pdf">Download file "funny.pdf"</a>`);
+            expect(media.firstElementChild.nodeName).toBe('CONVERSE-TEXTURE');
+            await u.waitUntil(() => media.firstElementChild.querySelector('a'));
+            expect(media.firstElementChild.querySelector('a').getAttribute('href')).toBe(url);
         }));
 
         it("will render images from oob URLs",
@@ -141,9 +145,10 @@ describe("A Chat Message", function () {
             const url = base_url+"/logo/conversejs-filled.svg";
 
             const stanza = u.toStanza(`
-                <message from="${contact_jid}"
-                         type="chat"
-                         to="romeo@montague.lit/orchard">
+                <message xmlns="jabber:client"
+                        from="${contact_jid}"
+                        type="chat"
+                        to="romeo@montague.lit/orchard">
                     <body>Have you seen this funny image?</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`);
@@ -155,9 +160,9 @@ describe("A Chat Message", function () {
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you seen this funny image?');
             const media = view.querySelector('.chat-msg .chat-msg__media');
-            expect(media.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                `Download file "conversejs-filled.svg"</a>`);
+            expect(media.firstElementChild.nodeName).toBe('CONVERSE-TEXTURE');
+            await u.waitUntil(() => media.firstElementChild.querySelector('img'));
+            expect(media.firstElementChild.querySelector('img').getAttribute('src')).toBe(url);
         }));
     });
 });

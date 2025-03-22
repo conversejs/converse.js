@@ -1,5 +1,5 @@
 import { html } from 'lit';
-import 'shared/components/gif.js';
+import 'shared/gif/component.js';
 
 /**
  * @param {string} url

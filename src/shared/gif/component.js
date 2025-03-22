@@ -4,7 +4,7 @@ import { api } from '@converse/headless';
 import { getHyperlinkTemplate } from 'utils/html.js';
 import { html } from 'lit';
 
-import './styles/gif.scss';
+import './styles.scss';
 
 export default class ConverseGIFElement extends CustomElement {
     static get properties () {

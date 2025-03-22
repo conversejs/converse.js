@@ -1,21 +1,20 @@
 export default class ConverseGif {
     /**
      * Creates a new ConverseGif instance
-     * @param { import('lit').LitElement } el
-     * @param { Object } [options]
-     * @param { Number } [options.width] - The width, in pixels, of the canvas
-     * @param { Number } [options.height] - The height, in pixels, of the canvas
-     * @param { Boolean } [options.loop=true] - Setting this to `true` will enable looping of the gif
-     * @param { Boolean } [options.autoplay=true] - Same as the rel:autoplay attribute above, this arg overrides the img tag info.
-     * @param { Number } [options.max_width] - Scale images over max_width down to max_width. Helpful with mobile.
-     * @param { Function } [options.onIterationEnd] - Add a callback for when the gif reaches the end of a single loop (one iteration). The first argument passed will be the gif HTMLElement.
-     * @param { Boolean } [options.show_progress_bar=true]
-     * @param { String } [options.progress_bg_color='rgba(0,0,0,0.4)']
-     * @param { String } [options.progress_color='rgba(255,0,22,.8)']
-     * @param { Number } [options.progress_bar_height=5]
+     * @param {import('lit').LitElement} el
+     * @param {import("./types").ConverseGifOptions} opts
      */
-    constructor(el: import("lit").LitElement, opts: any);
-    options: any;
+    constructor(el: import("lit").LitElement, opts: import("./types").ConverseGifOptions);
+    options: {
+        width: any;
+        height: any;
+        autoplay: boolean;
+        loop: boolean;
+        show_progress_bar: boolean;
+        progress_bg_color: string;
+        progress_color: string;
+        progress_bar_height: number;
+    } & import("./types").ConverseGifOptions;
     el: import("lit").LitElement;
     gif_el: HTMLImageElement;
     canvas: HTMLCanvasElement;
@@ -25,7 +24,7 @@ export default class ConverseGif {
     ctx_scaled: boolean;
     frames: any[];
     load_error: boolean;
-    playing: any;
+    playing: boolean;
     frame_idx: number;
     iteration_count: number;
     start: any;
@@ -41,7 +40,7 @@ export default class ConverseGif {
     getNextFrameNo(): number;
     /**
      * Called once we've looped through all frames in the GIF
-     * @returns { Boolean } - Returns `true` if the GIF is now paused (i.e. further iterations are not desired)
+     * @returns {Boolean} - Returns `true` if the GIF is now paused (i.e. further iterations are not desired)
      */
     onIterationEnd(): boolean;
     /**
@@ -61,11 +60,11 @@ export default class ConverseGif {
      * `renderImage(0)` needs to be called *before* this method, otherwise the
      * animation will incorrectly start from frame #1 (this is done in `initPlayer`).
      *
-     * @param { DOMHighResTimeStamp } timestamp - The timestamp as returned by `requestAnimationFrame`
-     * @param { DOMHighResTimeStamp } previous_timestamp - The timestamp from the previous iteration of this method.
+     * @param {DOMHighResTimeStamp} timestamp - The timestamp as returned by `requestAnimationFrame`
+     * @param {DOMHighResTimeStamp} previous_timestamp - The timestamp from the previous iteration of this method.
      * We need this in order to calculate whether we have waited long enough to
      * show the next frame.
-     * @param { Number } frame_delay - The delay (in 1/100th of a second)
+     * @param {Number} frame_delay - The delay (in 1/100th of a second)
      * before the currently being shown frame should be replaced by a new one.
      */
     onAnimationFrame(timestamp: DOMHighResTimeStamp, previous_timestamp: DOMHighResTimeStamp, frame_delay: number): void;
@@ -118,8 +117,8 @@ export default class ConverseGif {
     getCanvasScale(): number;
     /**
      * Makes an HTTP request to fetch a GIF
-     * @param { String } url
-     * @returns { Promise<ArrayBuffer> } Returns a promise which resolves with the response data.
+     * @param {string} url
+     * @returns {Promise<ArrayBuffer>} Returns a promise which resolves with the response data.
      */
     fetchGIF(url: string): Promise<ArrayBuffer>;
 }

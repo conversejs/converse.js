@@ -1,24 +1,14 @@
-import { log } from '@converse/headless';
-import { getOpenPromise } from '@converse/openpromise';
-import { parseGIF, decompressFrames } from 'gifuct-js';
+import { log } from "@converse/headless";
+import { getOpenPromise } from "@converse/openpromise";
+import { parseGIF, decompressFrames } from "gifuct-js";
 
 export default class ConverseGif {
     /**
      * Creates a new ConverseGif instance
-     * @param { import('lit').LitElement } el
-     * @param { Object } [options]
-     * @param { Number } [options.width] - The width, in pixels, of the canvas
-     * @param { Number } [options.height] - The height, in pixels, of the canvas
-     * @param { Boolean } [options.loop=true] - Setting this to `true` will enable looping of the gif
-     * @param { Boolean } [options.autoplay=true] - Same as the rel:autoplay attribute above, this arg overrides the img tag info.
-     * @param { Number } [options.max_width] - Scale images over max_width down to max_width. Helpful with mobile.
-     * @param { Function } [options.onIterationEnd] - Add a callback for when the gif reaches the end of a single loop (one iteration). The first argument passed will be the gif HTMLElement.
-     * @param { Boolean } [options.show_progress_bar=true]
-     * @param { String } [options.progress_bg_color='rgba(0,0,0,0.4)']
-     * @param { String } [options.progress_color='rgba(255,0,22,.8)']
-     * @param { Number } [options.progress_bar_height=5]
+     * @param {import('lit').LitElement} el
+     * @param {import("./types").ConverseGifOptions} opts
      */
-    constructor (el, opts) {
+    constructor(el, opts) {
         this.options = Object.assign(
             {
                 width: null,
@@ -26,22 +16,22 @@ export default class ConverseGif {
                 autoplay: true,
                 loop: true,
                 show_progress_bar: true,
-                progress_bg_color: 'rgba(0,0,0,0.4)',
-                progress_color: 'rgba(255,0,22,.8)',
+                progress_bg_color: "rgba(0,0,0,0.4)",
+                progress_color: "rgba(255,0,22,.8)",
                 progress_bar_height: 5,
             },
             opts
         );
 
         this.el = el;
-        this.gif_el = el.querySelector('img');
-        this.canvas = el.querySelector('canvas');
-        this.ctx = this.canvas.getContext('2d');
+        this.gif_el = el.querySelector("img");
+        this.canvas = el.querySelector("canvas");
+        this.ctx = this.canvas.getContext("2d");
 
         // Offscreen canvas with full gif
-        this.offscreenCanvas = document.createElement('canvas');
+        this.offscreenCanvas = document.createElement("canvas");
         // Offscreen canvas for patches
-        this.patchCanvas = document.createElement('canvas');
+        this.patchCanvas = document.createElement("canvas");
 
         this.ctx_scaled = false;
         this.frames = [];
@@ -58,7 +48,7 @@ export default class ConverseGif {
         this.initialize();
     }
 
-    async initialize () {
+    async initialize() {
         if (this.options.width && this.options.height) {
             this.setSizes(this.options.width, this.options.height);
         }
@@ -66,7 +56,7 @@ export default class ConverseGif {
         requestAnimationFrame(() => this.handleGIFResponse(data));
     }
 
-    initPlayer () {
+    initPlayer() {
         if (this.load_error) return;
 
         if (!(this.options.width && this.options.height)) {
@@ -87,7 +77,7 @@ export default class ConverseGif {
      * Gets the index of the frame "up next"
      * @returns {number}
      */
-    getNextFrameNo () {
+    getNextFrameNo() {
         if (this.frames.length === 0) {
             return 0;
         }
@@ -96,11 +86,11 @@ export default class ConverseGif {
 
     /**
      * Called once we've looped through all frames in the GIF
-     * @returns { Boolean } - Returns `true` if the GIF is now paused (i.e. further iterations are not desired)
+     * @returns {Boolean} - Returns `true` if the GIF is now paused (i.e. further iterations are not desired)
      */
-    onIterationEnd () {
+    onIterationEnd() {
         this.iteration_count++;
-        this.options.onIterationEnd?.(this);
+        this.options.onIterationEnd?.(this.el);
         if (!this.options.loop) {
             this.pause();
             return true;
@@ -125,14 +115,14 @@ export default class ConverseGif {
      * `renderImage(0)` needs to be called *before* this method, otherwise the
      * animation will incorrectly start from frame #1 (this is done in `initPlayer`).
      *
-     * @param { DOMHighResTimeStamp } timestamp - The timestamp as returned by `requestAnimationFrame`
-     * @param { DOMHighResTimeStamp } previous_timestamp - The timestamp from the previous iteration of this method.
+     * @param {DOMHighResTimeStamp} timestamp - The timestamp as returned by `requestAnimationFrame`
+     * @param {DOMHighResTimeStamp} previous_timestamp - The timestamp from the previous iteration of this method.
      * We need this in order to calculate whether we have waited long enough to
      * show the next frame.
-     * @param { Number } frame_delay - The delay (in 1/100th of a second)
+     * @param {Number} frame_delay - The delay (in 1/100th of a second)
      * before the currently being shown frame should be replaced by a new one.
      */
-    onAnimationFrame (timestamp, previous_timestamp, frame_delay) {
+    onAnimationFrame(timestamp, previous_timestamp, frame_delay) {
         if (!this.playing) {
             return;
         }
@@ -152,18 +142,18 @@ export default class ConverseGif {
         requestAnimationFrame((ts) => this.onAnimationFrame(ts, timestamp, delay));
     }
 
-    setSizes (w, h) {
+    setSizes(w, h) {
         this.canvas.width = w * this.getCanvasScale();
         this.canvas.height = h * this.getCanvasScale();
 
         this.offscreenCanvas.width = w;
         this.offscreenCanvas.height = h;
-        this.offscreenCanvas.style.width = w + 'px';
-        this.offscreenCanvas.style.height = h + 'px';
-        this.offscreenCanvas.getContext('2d').setTransform(1, 0, 0, 1, 0, 0);
+        this.offscreenCanvas.style.width = w + "px";
+        this.offscreenCanvas.style.height = h + "px";
+        this.offscreenCanvas.getContext("2d").setTransform(1, 0, 0, 1, 0, 0);
     }
 
-    doShowProgress (pos, length, draw) {
+    doShowProgress(pos, length, draw) {
         if (draw && this.options.show_progress_bar) {
             let height = this.options.progress_bar_height;
             const top = (this.canvas.height - height) / (this.ctx_scaled ? this.getCanvasScale() : 1);
@@ -184,7 +174,7 @@ export default class ConverseGif {
      * a map of handler functions.
      * @param {ArrayBuffer} data - The GIF file data, as returned by the server
      */
-    handleGIFResponse (data) {
+    handleGIFResponse(data) {
         try {
             const gif = parseGIF(data);
             this.hdr = gif.header;
@@ -198,10 +188,10 @@ export default class ConverseGif {
         !this.options.autoplay && this.drawPlayIcon();
     }
 
-    drawError () {
-        this.ctx.fillStyle = 'black';
+    drawError() {
+        this.ctx.fillStyle = "black";
         this.ctx.fillRect(0, 0, this.options.width, this.options.height);
-        this.ctx.strokeStyle = 'red';
+        this.ctx.strokeStyle = "red";
         this.ctx.lineWidth = 3;
         this.ctx.moveTo(0, 0);
         this.ctx.lineTo(this.options.width, this.options.height);
@@ -210,7 +200,7 @@ export default class ConverseGif {
         this.ctx.stroke();
     }
 
-    showError () {
+    showError() {
         this.load_error = true;
         this.hdr = {
             width: this.gif_el.width,
@@ -221,10 +211,10 @@ export default class ConverseGif {
         this.el.requestUpdate();
     }
 
-    manageDisposal (i) {
+    manageDisposal(i) {
         if (i <= 0) return;
 
-        const offscreenContext = this.offscreenCanvas.getContext('2d');
+        const offscreenContext = this.offscreenCanvas.getContext("2d");
         const disposal = this.frames[i - 1].disposalType;
         /*
          *  Disposal method indicates the way in which the graphic is to
@@ -271,7 +261,7 @@ export default class ConverseGif {
      * Draws a gif frame at a specific index inside the canvas.
      * @param {boolean} show_pause_on_hover - The frame index
      */
-    renderImage (show_pause_on_hover = true) {
+    renderImage(show_pause_on_hover = true) {
         if (!this.frames.length) return;
 
         let i = this.frame_idx;
@@ -283,8 +273,8 @@ export default class ConverseGif {
         this.manageDisposal(i);
 
         const frame = this.frames[i];
-        const patchContext = this.patchCanvas.getContext('2d');
-        const offscreenContext = this.offscreenCanvas.getContext('2d');
+        const patchContext = this.patchCanvas.getContext("2d");
+        const offscreenContext = this.offscreenCanvas.getContext("2d");
         const dims = frame.dims;
         if (
             !this.frameImageData ||
@@ -317,7 +307,7 @@ export default class ConverseGif {
     /**
      * Start playing the gif
      */
-    play () {
+    play() {
         this.playing = true;
         requestAnimationFrame((ts) => this.onAnimationFrame(ts, 0, 0));
     }
@@ -325,19 +315,19 @@ export default class ConverseGif {
     /**
      * Pause the gif
      */
-    pause () {
+    pause() {
         this.playing = false;
         requestAnimationFrame(() => this.drawPlayIcon());
     }
 
-    drawPauseIcon () {
+    drawPauseIcon() {
         if (!this.playing) return;
 
         // Clear the potential play button by re-rendering the current frame
         this.renderImage(false);
 
         // Draw dark overlay
-        this.ctx.fillStyle = 'rgb(0, 0, 0, 0.25)';
+        this.ctx.fillStyle = "rgb(0, 0, 0, 0.25)";
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         const icon_size = this.canvas.height * 0.1;
@@ -346,30 +336,30 @@ export default class ConverseGif {
         this.ctx.beginPath();
         this.ctx.moveTo(this.canvas.width / 2 - icon_size / 2, this.canvas.height / 2 - icon_size);
         this.ctx.lineTo(this.canvas.width / 2 - icon_size / 2, this.canvas.height / 2 + icon_size);
-        this.ctx.fillStyle = 'rgb(200, 200, 200, 0.75)';
+        this.ctx.fillStyle = "rgb(200, 200, 200, 0.75)";
         this.ctx.stroke();
 
         this.ctx.beginPath();
         this.ctx.moveTo(this.canvas.width / 2 + icon_size / 2, this.canvas.height / 2 - icon_size);
         this.ctx.lineTo(this.canvas.width / 2 + icon_size / 2, this.canvas.height / 2 + icon_size);
-        this.ctx.fillStyle = 'rgb(200, 200, 200, 0.75)';
+        this.ctx.fillStyle = "rgb(200, 200, 200, 0.75)";
         this.ctx.stroke();
 
         // Draw circle
         this.ctx.lineWidth = this.canvas.height * 0.02;
-        this.ctx.strokeStyle = 'rgb(200, 200, 200, 0.75)';
+        this.ctx.strokeStyle = "rgb(200, 200, 200, 0.75)";
         this.ctx.beginPath();
         this.ctx.arc(this.canvas.width / 2, this.canvas.height / 2, icon_size * 1.5, 0, 2 * Math.PI);
         this.ctx.stroke();
     }
 
-    drawPlayIcon () {
+    drawPlayIcon() {
         if (this.playing) return;
 
         // Clear the potential pause button by re-rendering the current frame
         this.renderImage(false);
         // Draw dark overlay
-        this.ctx.fillStyle = 'rgb(0, 0, 0, 0.25)';
+        this.ctx.fillStyle = "rgb(0, 0, 0, 0.25)";
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Draw triangle
@@ -379,19 +369,19 @@ export default class ConverseGif {
         region.lineTo(this.canvas.width / 2 - triangle_size / 2, this.canvas.height / 2 + triangle_size);
         region.lineTo(this.canvas.width / 2 - triangle_size / 2, this.canvas.height / 2 - triangle_size);
         region.closePath();
-        this.ctx.fillStyle = 'rgb(200, 200, 200, 0.75)';
+        this.ctx.fillStyle = "rgb(200, 200, 200, 0.75)";
         this.ctx.fill(region);
 
         // Draw circle
         const circle_size = triangle_size * 1.5;
         this.ctx.lineWidth = this.canvas.height * 0.02;
-        this.ctx.strokeStyle = 'rgb(200, 200, 200, 0.75)';
+        this.ctx.strokeStyle = "rgb(200, 200, 200, 0.75)";
         this.ctx.beginPath();
         this.ctx.arc(this.canvas.width / 2, this.canvas.height / 2, circle_size, 0, 2 * Math.PI);
         this.ctx.stroke();
     }
 
-    getCanvasScale () {
+    getCanvasScale() {
         let scale;
         if (this.options.max_width && this.hdr && this.lsd.width > this.options.max_width) {
             scale = this.options.max_width / this.lsd.width;
@@ -403,16 +393,16 @@ export default class ConverseGif {
 
     /**
      * Makes an HTTP request to fetch a GIF
-     * @param { String } url
-     * @returns { Promise<ArrayBuffer> } Returns a promise which resolves with the response data.
+     * @param {string} url
+     * @returns {Promise<ArrayBuffer>} Returns a promise which resolves with the response data.
      */
-    fetchGIF (url) {
+    fetchGIF(url) {
         const promise = getOpenPromise();
         const h = new XMLHttpRequest();
-        h.open('GET', url, true);
-        h.responseType = 'arraybuffer';
+        h.open("GET", url, true);
+        h.responseType = "arraybuffer";
 
-        h?.overrideMimeType('text/plain; charset=x-user-defined');
+        h?.overrideMimeType("text/plain; charset=x-user-defined");
         h.onload = () => {
             if (h.status != 200) {
                 this.showError();

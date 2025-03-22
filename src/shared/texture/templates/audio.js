@@ -1,6 +1,6 @@
 import { html } from 'lit';
 
-import './styles/audio.scss';
+import '../styles/audio.scss';
 
 /**
  * @param {string} url

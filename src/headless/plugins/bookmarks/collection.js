@@ -129,7 +129,7 @@ class Bookmarks extends Collection {
                 /** @param {MUC} model */ (model) => {
                     const extensions = model.get('extensions') ?? [];
                     return stx`<item id="${model.get('jid')}">
-                    <conference xmlns="${Strophe.NS.BOOKMARKS2}"
+                        <conference xmlns="${Strophe.NS.BOOKMARKS2}"
                                 name="${model.get('name')}"
                                 autojoin="${model.get('autojoin')}">
                             ${model.get('nick') ? stx`<nick>${model.get('nick')}</nick>` : ''}

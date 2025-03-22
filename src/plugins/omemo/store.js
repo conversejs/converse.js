@@ -1,12 +1,11 @@
 /**
  * @typedef {module:plugins-omemo-index.WindowWithLibsignal} WindowWithLibsignal
  */
-import range from "lodash-es/range";
 import { Model } from "@converse/skeletor";
 import { generateDeviceID } from "./utils.js";
 import { _converse, api, converse, log } from "@converse/headless";
 
-const { Strophe, $build, u } = converse.env;
+const { Strophe, stx, u } = converse.env;
 
 class OMEMOStore extends Model {
     get Direction() {
@@ -166,22 +165,18 @@ class OMEMOStore extends Model {
     publishBundle() {
         const signed_prekey = this.get("signed_prekey");
         const node = `${Strophe.NS.OMEMO_BUNDLES}:${this.get("device_id")}`;
-        const item = $build("item")
-            .c("bundle", { "xmlns": Strophe.NS.OMEMO })
-            .c("signedPreKeyPublic", { "signedPreKeyId": signed_prekey.id })
-            .t(signed_prekey.pubKey)
-            .up()
-            .c("signedPreKeySignature")
-            .t(signed_prekey.signature)
-            .up()
-            .c("identityKey")
-            .t(this.get("identity_keypair").pubKey)
-            .up()
-            .c("prekeys");
-
-        Object.values(this.get("prekeys")).forEach((prekey, id) =>
-            item.c("preKeyPublic", { "preKeyId": id }).t(prekey.pubKey).up()
-        );
+        const item = stx`
+            <item>
+                <bundle xmlns="${Strophe.NS.OMEMO}">
+                    <signedPreKeyPublic signedPreKeyId="${signed_prekey.id}">${signed_prekey.pubKey}</signedPreKeyPublic>
+                    <signedPreKeySignature>${signed_prekey.signature}</signedPreKeySignature>
+                    <identityKey>${this.get("identity_keypair").pubKey}</identityKey>
+                    <prekeys>${Object.values(this.get("prekeys")).map(
+                        (prekey, id) => stx`<preKeyPublic preKeyId="${id}">${prekey.pubKey}</preKeyPublic>`
+                    )}
+                    </prekeys>
+                </bundle>
+            </item>`;
         const options = { access_model: "open" };
         return api.pubsub.publish(null, node, item, options, false);
     }
@@ -191,9 +186,9 @@ class OMEMOStore extends Model {
         const { KeyHelper } = libsignal;
 
         const prekeyIds = Object.keys(this.getPreKeys());
-        const missing_keys = range(0, _converse.NUM_PREKEYS)
-            .map((id) => id.toString())
-            .filter((id) => !prekeyIds.includes(id));
+        const missing_keys = Array.from({ length: _converse.NUM_PREKEYS }, (_, id) => id.toString()).filter(
+            (id) => !prekeyIds.includes(id)
+        );
 
         if (missing_keys.length < 1) {
             log.debug("No missing prekeys to generate for our own device");
@@ -230,13 +225,13 @@ class OMEMOStore extends Model {
         const amount = _converse.NUM_PREKEYS;
         const { libsignal } = /** @type WindowWithLibsignal */ (window);
         const { KeyHelper } = libsignal;
-        const keys = await Promise.all(range(0, amount).map((id) => KeyHelper.generatePreKey(id)));
+        const keys = await Promise.all([...Array(amount).keys()].map((id) => KeyHelper.generatePreKey(id)));
 
         keys.forEach((k) => this.storePreKey(k.keyId, k.keyPair));
 
         return keys.map((k) => ({
-            "id": k.keyId,
-            "key": u.arrayBufferToBase64(k.keyPair.pubKey),
+            id: k.keyId,
+            key: u.arrayBufferToBase64(k.keyPair.pubKey),
         }));
     }
 
@@ -263,12 +258,12 @@ class OMEMOStore extends Model {
         const device_id = await generateDeviceID();
 
         this.save({
-            "device_id": device_id,
-            "identity_keypair": {
-                "privKey": u.arrayBufferToBase64(identity_keypair.privKey),
-                "pubKey": identity_key,
+            device_id,
+            identity_key,
+            identity_keypair: {
+                privKey: u.arrayBufferToBase64(identity_keypair.privKey),
+                pubKey: identity_key,
             },
-            "identity_key": identity_key,
         });
 
         const signed_prekey = await libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0);
@@ -278,17 +273,14 @@ class OMEMOStore extends Model {
 
         const bundle = { identity_key, device_id, prekeys };
         bundle["signed_prekey"] = {
-            "id": signed_prekey.keyId,
-            "public_key": u.arrayBufferToBase64(signed_prekey.keyPair.pubKey),
-            "signature": u.arrayBufferToBase64(signed_prekey.signature),
+            id: signed_prekey.keyId,
+            public_key: u.arrayBufferToBase64(signed_prekey.keyPair.pubKey),
+            signature: u.arrayBufferToBase64(signed_prekey.signature),
         };
 
         const bare_jid = _converse.session.get("bare_jid");
         const devicelist = await api.omemo.devicelists.get(bare_jid);
-        const device = await devicelist.devices.create(
-            { "id": bundle.device_id, "jid": bare_jid },
-            { "promise": true }
-        );
+        const device = await devicelist.devices.create({ id: bundle.device_id, "jid": bare_jid }, { promise: true });
         device.save("bundle", bundle);
     }
 

@@ -7,8 +7,6 @@
 import { render } from 'lit';
 import { Builder, Stanza } from 'strophe.js';
 import { api, converse, log, u } from '@converse/headless';
-import tplAudio from 'templates/audio.js';
-import tplFile from 'templates/file.js';
 import tplDateInput from 'templates/form_date.js';
 import tplFormCaptcha from '../templates/form_captcha.js';
 import tplFormCheckbox from '../templates/form_checkbox.js';
@@ -19,10 +17,9 @@ import tplFormTextarea from '../templates/form_textarea.js';
 import tplFormUrl from '../templates/form_url.js';
 import tplFormUsername from '../templates/form_username.js';
 import tplHyperlink from 'templates/hyperlink.js';
-import tplVideo from 'templates/video.js';
 
 const { sizzle, Strophe, dayjs } = converse.env;
-const { getURI, isAudioURL, isImageURL, isVideoURL, isValidURL } = u;
+const { getURI, isValidURL } = u;
 
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
 
@@ -143,29 +140,6 @@ export function getFileName (url) {
     } catch (error) {
         log.debug(error);
         return uri.filename();
-    }
-}
-
-/**
- * Returns the markup for a URL that points to a downloadable asset
- * (such as a video, image or audio file).
- * @method u#getOOBURLMarkup
- * @param {string} url
- * @returns {TemplateResult|string}
- */
-export function getOOBURLMarkup (url) {
-    const uri = getURI(url);
-    if (uri === null) {
-        return url;
-    }
-    if (isVideoURL(uri)) {
-        return tplVideo(url);
-    } else if (isAudioURL(uri)) {
-        return tplAudio(url);
-    } else if (isImageURL(uri)) {
-        return tplFile(uri.toString(), getFileName(uri));
-    } else {
-        return tplFile(uri.toString(), getFileName(uri));
     }
 }
 
@@ -560,7 +534,6 @@ Object.assign(u, {
     escapeHTML,
     getElementFromTemplateResult,
     getNextElement,
-    getOOBURLMarkup,
     getOuterWidth,
     getRootElement,
     hasClass,

@@ -8,14 +8,6 @@ export function getNameAndValue(field: HTMLInputElement | HTMLSelectElement): {
 } | null;
 export function getFileName(url: any): any;
 /**
- * Returns the markup for a URL that points to a downloadable asset
- * (such as a video, image or audio file).
- * @method u#getOOBURLMarkup
- * @param {string} url
- * @returns {TemplateResult|string}
- */
-export function getOOBURLMarkup(url: string): TemplateResult | string;
-/**
  * Has an element a class?
  * @method u#hasClass
  * @param { string } className

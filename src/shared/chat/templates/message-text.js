@@ -1,12 +1,12 @@
+import { api } from "@converse/headless";
 import { __ } from 'i18n/index.js';
-import { getOOBURLMarkup } from 'utils/html.js';
 import { html } from 'lit';
 
 /**
  * @param {import('../message').default} el
  */
 function tplEditedIcon(el) {
-    const i18n_edited = __('This message has been edited');
+    const i18n_edited = __('el message has been edited');
     return html`<converse-icon
         title="${i18n_edited}"
         class="fa fa-edit chat-msg__edit-modal"
@@ -52,6 +52,7 @@ export default (el) => {
         : '';
     const text = el.model.getMessageText();
     const show_oob = el.model.get('oob_url') && text !== el.model.get('oob_url');
+    const render_media = api.settings.get('render_media');
 
     return html`
         ${el.model.get('is_spoiler') ? tplSpoilerHint : ''}
@@ -69,7 +70,15 @@ export default (el) => {
             ${el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message ? tplCheckmark() : ''}
             ${el.model.get('edited') ? tplEditedIcon(el) : ''}
         </span>
-        ${show_oob ? html`<div class="chat-msg__media">${getOOBURLMarkup(el.model.get('oob_url'))}</div>` : ''}
+        ${show_oob ? html`<div class="chat-msg__media">
+            <converse-texture
+                text="${el.model.get('oob_url')}"
+                .onImgClick="${(ev) => el.onImgClick(ev)}"
+                ?embed_audio="${render_media}"
+                ?embed_videos="${render_media}"
+                ?show_images="${render_media}"
+                />
+            </div>` : ''}
         ${error_text ? html`<div class="chat-msg__error">${i18n_error}</div>` : ''}
     `;
 };

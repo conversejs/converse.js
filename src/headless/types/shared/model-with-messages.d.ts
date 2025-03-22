@@ -282,7 +282,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         _listeningTo: {};
         _listenId: any;
         off(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context?: any): any;
-        stopListening(obj?: any, name?: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor" /** @param {...any} args */).Collection, options: Record<string, any>) => any): any;
+        stopListening(obj?: any, name?: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
         once(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
         listenToOnce(obj: any, name: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
         trigger(name: string, ...args: any[]): any;

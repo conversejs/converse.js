@@ -23,6 +23,7 @@ export default class Message extends ObservableElement {
     renderFileProgress(): import("lit").TemplateResult<1> | "";
     renderChatMessage(): import("lit").TemplateResult<1>;
     shouldShowAvatar(): boolean;
+    onImgClick(ev: any): void;
     onUnfurlAnimationEnd(): void;
     onRetryClicked(): Promise<void>;
     show_spinner: boolean;

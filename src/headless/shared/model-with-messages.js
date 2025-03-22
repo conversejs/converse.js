@@ -1,7 +1,6 @@
 import { filesize } from 'filesize';
 import pick from 'lodash-es/pick';
 import debounce from 'lodash-es/debounce.js';
-import isMatch from 'lodash-es/isMatch';
 import { getOpenPromise } from '@converse/openpromise';
 import { Model } from '@converse/skeletor';
 import log from '../log.js';

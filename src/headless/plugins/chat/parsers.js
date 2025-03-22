@@ -114,7 +114,7 @@ export async function parseMessage (stanza) {
             is_server_message,
             'body': stanza.querySelector('body')?.textContent?.trim(),
             'chat_state': getChatState(stanza),
-            'from': Strophe.getBareJidFromJid(stanza.getAttribute('from')),
+            'from': stanza.getAttribute('from'),
             'is_carbon': isCarbon(original_stanza),
             'is_delayed': !!delay,
             'is_markable': !!sizzle(`markable[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length,

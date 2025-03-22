@@ -425,10 +425,21 @@ export function getSessionCipher(jid, id) {
 }
 
 /**
+ * We use the bare, real (i.e. non-MUC) JID as encrypted session identifier.
  * @param {MUCMessageAttributes|MessageAttributes} attrs
  */
 function getJIDForDecryption(attrs) {
-    const from_jid = "from_muc" in attrs ? attrs.from_real_jid : attrs.from;
+    let from_jid;
+    if (attrs.sender === 'me') {
+        from_jid = _converse.session.get('bare_jid');
+    } else if (attrs.contact_jid) {
+        from_jid = attrs.contact_jid;
+    } else if ('from_real_jid' in attrs) {
+        from_jid = attrs.from_real_jid;
+    } else {
+        from_jid = attrs.from;
+    }
+
     if (!from_jid) {
         Object.assign(attrs, {
             error_text: __(

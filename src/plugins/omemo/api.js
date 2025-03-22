@@ -56,9 +56,7 @@ export default {
         },
 
         /**
-         * The "bundle" namespace groups methods relevant to the user's
-         * OMEMO bundle.
-         *
+         * The "bundle" namespace groups methods relevant to the user's OMEMO bundle.
          * @namespace _converse.api.omemo.bundle
          * @memberOf _converse.api.omemo
          */

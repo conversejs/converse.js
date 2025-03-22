@@ -266,7 +266,8 @@ describe("The OMEMO module", function() {
         const my_devicelist = _converse.state.devicelists.get({'jid': _converse.bare_jid});
         expect(my_devicelist.devices.length).toBe(2);
 
-        const stanza = stx`<iq from="${contact_jid}"
+        const stanza = stx`
+            <iq from="${contact_jid}"
                 id="${iq_stanza.getAttribute('id')}"
                 to="${_converse.api.connection.get().jid}"
                 xmlns="jabber:server"
@@ -292,7 +293,8 @@ describe("The OMEMO module", function() {
 
         // Test reception of an encrypted carbon message
         const obj = await omemo.encryptMessage('This is an encrypted carbon message from another device of mine')
-        const carbon = stx`<message xmlns="jabber:client" to="romeo@montague.lit/orchard" from="romeo@montague.lit" type="chat">
+        const carbon = stx`
+            <message xmlns="jabber:client" to="romeo@montague.lit/orchard" from="romeo@montague.lit" type="chat">
                 <sent xmlns="urn:xmpp:carbons:2">
                     <forwarded xmlns="urn:xmpp:forward:0">
                     <message xmlns="jabber:client"
@@ -334,11 +336,12 @@ describe("The OMEMO module", function() {
         // The message received is a prekey message, so missing prekeys are
         // generated and a new bundle published.
         iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
-        const result_iq = $iq({
-            'from': _converse.bare_jid,
-            'id': iq_stanza.getAttribute('id'),
-            'to': _converse.bare_jid,
-            'type': 'result'});
+        const result_iq = stx`
+            <iq xmlns="jabber:client"
+                from="${_converse.bare_jid}"
+                id="${iq_stanza.getAttribute('id')}"
+                to="${_converse.bare_jid}"
+                type="result"/>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(result_iq));
 
         await new Promise(resolve => view.model.messages.once('rendered', resolve));

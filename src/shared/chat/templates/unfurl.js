@@ -1,7 +1,7 @@
 import { u } from '@converse/headless';
-import 'shared/components/image.js';
 import { isDomainAllowed } from 'utils/url.js';
 import { html } from 'lit';
+import 'shared/components/image.js';
 
 const { getURI, isGIFURL } = u;
 

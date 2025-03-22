@@ -1,6 +1,6 @@
 import { api, u } from "@converse/headless";
 import tplGif from 'shared/texture/templates/gif.js';
-import tplImage from 'templates/image.js';
+import tplImage from 'shared/texture/templates/image.js';
 import { CustomElement } from './element.js';
 import { shouldRenderMediaFromURL } from 'utils/url.js';
 

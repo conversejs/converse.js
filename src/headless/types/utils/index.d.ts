@@ -25,7 +25,6 @@ declare const _default: {
     isValidURL(text: string): boolean;
     getURI(url: string | promise.getOpenPromise): any;
     checkFileTypes(types: string[], url: string): boolean;
-    filterQueryParamsFromURL(url: any): any;
     isURLWithImageExtension(url: any): boolean;
     isGIFURL(url: any): boolean;
     isAudioURL(url: any): boolean;

@@ -13,6 +13,7 @@ import { shouldRenderMediaFromURL } from "utils/url.js";
 import {
     collapseLineBreaks,
     containsDirectives,
+    filterQueryParamsFromURL,
     getDirectiveAndLength,
     getHeaders,
     isQuoteDirective,
@@ -25,7 +26,6 @@ import { styling_map } from "./constants.js";
 
 const {
     convertASCII2Emoji,
-    filterQueryParamsFromURL,
     getCodePointReferences,
     getMediaURLs,
     getMediaURLsMetadata,

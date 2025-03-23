@@ -18,7 +18,6 @@ export function getURI(url: string | URI): any;
  *  checkFileTypes(['.gif'], 'https://conversejs.org/cat.gif?foo=bar');
  */
 export function checkFileTypes(types: string[], url: string): boolean;
-export function filterQueryParamsFromURL(url: any): any;
 export function isURLWithImageExtension(url: any): boolean;
 export function isGIFURL(url: any): boolean;
 export function isAudioURL(url: any): boolean;

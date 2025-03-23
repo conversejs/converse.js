@@ -48,13 +48,6 @@ export function checkFileTypes (types, url) {
     return !!types.filter(ext => filename.endsWith(ext)).length;
 }
 
-export function filterQueryParamsFromURL (url) {
-    const paramsArray = settings.get('filter_url_query_params');
-    if (!paramsArray) return url;
-    const parsed_uri = getURI(url);
-    return parsed_uri.removeQuery(paramsArray).toString();
-}
-
 export function isURLWithImageExtension (url) {
     return checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'], url);
 }

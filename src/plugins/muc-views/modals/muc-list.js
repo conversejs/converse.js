@@ -111,7 +111,7 @@ export default class MUCListModal extends BaseModal {
     }
 
     onDomainChange () {
-        this.querySelector('form-control').value = this.model.get('muc_domain');
+        this.querySelector('.form-control').value = this.model.get('muc_domain');
         this.items = [];
         this.model.save('feedback_text', '');
         api.settings.get('auto_list_rooms') && this.updateRoomsList();

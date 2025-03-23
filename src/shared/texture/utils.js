@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { api } from "@converse/headless";
+import { u } from "@converse/headless";
 import { bracketing_directives, dont_escape, styling_directives, styling_map } from "./constants";
 
 /**
@@ -16,7 +16,7 @@ export function isString(s) {
  */
 export function isSpotifyTrack(url) {
     try {
-        const { hostname, pathname } = new URL(url);
+        const { hostname, pathname } = u.getURL(url);
         return hostname === "open.spotify.com" && pathname.startsWith("/track/");
     } catch (e) {
         console.debug(`Could not create URL object from ${url}`);
@@ -193,19 +193,3 @@ export function containsDirectives(text) {
     return false;
 }
 
-/**
- * Takes the `filter_url_query_params` array from the settings and
- * removes any query strings from the URL that matches those values.
- * @param {string} url
- * @return {string}
- */
-export function filterQueryParamsFromURL(url) {
-    const setting = api.settings.get("filter_url_query_params");
-    if (!setting) return url;
-
-    const to_remove = Array.isArray(setting) ? setting : [setting];
-    const url_obj = new URL(url);
-    to_remove.forEach(/** @param {string} p */(p) => url_obj.searchParams.delete(p));
-
-    return url_obj.toString();
-}

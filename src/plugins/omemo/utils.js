@@ -18,7 +18,7 @@ import { MIMETYPES_MAP } from "utils/file.js";
 import { IQError, UserFacingError } from "shared/errors.js";
 import DeviceLists from "./devicelists.js";
 
-const { Strophe, URI, sizzle, stx } = converse.env;
+const { Strophe, sizzle, stx } = converse.env;
 const { CHATROOMS_TYPE, PRIVATE_CHAT_TYPE } = constants;
 const {
     appendArrayBuffer,
@@ -26,7 +26,7 @@ const {
     arrayBufferToHex,
     arrayBufferToString,
     base64ToArrayBuffer,
-    getURI,
+    getURL,
     hexToArrayBuffer,
     initStorage,
     isAudioURL,
@@ -286,6 +286,7 @@ function getTemplateForObjectURL(uri, obj_url, richtext) {
     }
 }
 
+
 /**
  * @param {string} text
  * @param {number} offset
@@ -293,27 +294,23 @@ function getTemplateForObjectURL(uri, obj_url, richtext) {
  */
 function addEncryptedFiles(text, offset, richtext) {
     const objs = [];
-    try {
-        const parse_options = { "start": /\b(aesgcm:\/\/)/gi };
-        URI.withinString(
-            text,
-            /**
-             * @param {string} url
-             * @param {number} start
-             * @param {number} end
-             */
-            (url, start, end) => {
-                objs.push({ url, start, end });
-                return url;
-            },
-            parse_options
-        );
-    } catch (error) {
-        log.debug(error);
-        return;
+    const regex = /\b(aesgcm:\/\/[^\s\r\n]+)/gi;
+    const trailing_punctuation = /[`!()\[\]{};:'".,<>?«»“”„‘’]+$/;
+    const balanced_parens = /(\([^\)]*\)|\[[^\]]*\]|\{[^}]*\}|<[^>]*>)/g;
+
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+        const url = match[0].replace(trailing_punctuation, "");
+        const start = match.index;
+        const end = start + url.length;
+        // Check for balanced parentheses
+        if (balanced_parens.test(url)) {
+            objs.push({ url, start, end });
+        }
     }
+
     objs.forEach((o) => {
-        const uri = getURI(text.slice(o.start, o.end));
+        const uri = getURL(o.url);
         const promise = getAndDecryptFile(uri).then((obj_url) => getTemplateForObjectURL(uri, obj_url, richtext));
 
         const template = html`${until(promise, "")}`;

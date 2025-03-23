@@ -3,22 +3,12 @@ import { isDomainAllowed } from 'utils/url.js';
 import { html } from 'lit';
 import 'shared/texture/components/image.js';
 
-const { getURI, isGIFURL } = u;
-
-/**
- * @param {string} url
- */
-function isValidURL (url) {
-    // We don't consider relative URLs as valid
-    return !!getURI(url).host();
-}
-
 function isValidImage (image) {
-    return image && isDomainAllowed(image, 'allowed_image_domains') && isValidURL(image);
+    return image && isDomainAllowed(image, 'allowed_image_domains') && u.isValidURL(image);
 }
 
 const tplUrlWrapper = (o, wrapped_template) =>
-    o.url && isValidURL(o.url) && !isGIFURL(o.image)
+    o.url && u.isValidURL(o.url) && !u.isGIFURL(o.image)
         ? html`<a href="${o.url}" target="_blank" rel="noopener">${wrapped_template(o)}</a>`
         : wrapped_template(o);
 
@@ -41,7 +31,7 @@ export default (o) => {
                           : ''}
                       ${o.url
                           ? html`<p class="card-text">
-                                <a href="${o.url}" target="_blank" rel="noopener">${getURI(o.url).domain()}</a>
+                                <a href="${o.url}" target="_blank" rel="noopener">${new URL(o.url).hostname}</a>
                             </p>`
                           : ''}
                   </div>`

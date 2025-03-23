@@ -23,18 +23,19 @@ declare const _default: {
     shouldCreateMessage: typeof shouldCreateMessage;
     triggerEvent: typeof triggerEvent;
     isValidURL(text: string): boolean;
-    getURI(url: string | promise.getOpenPromise): any;
-    checkFileTypes(types: string[], url: string): boolean;
-    isURLWithImageExtension(url: any): boolean;
-    isGIFURL(url: any): boolean;
-    isAudioURL(url: any): boolean;
-    isVideoURL(url: any): boolean;
-    isImageURL(url: any): any;
-    isEncryptedFileURL(url: any): any;
+    getURL(url: string | URL): URL;
+    checkFileTypes(types: string[], url: string | URL): boolean;
+    isURLWithImageExtension(url: string | URL): boolean;
+    isGIFURL(url: string | URL): boolean;
+    isAudioURL(url: string | URL): boolean;
+    isVideoURL(url: string | URL): boolean;
+    isImageURL(url: string | URL): boolean;
+    isEncryptedFileURL(url: string | URL): boolean;
     getMediaURLsMetadata(text: string, offset?: number): {
         media_urls?: import("./types.js").MediaURLMetadata[];
     };
-    getMediaURLs(arr: Array<import("./types.js").MediaURLMetadata>, text: string, offset?: number): import("./types.js").MediaURLData[];
+    getMediaURLs(arr: Array<import("./types.js").MediaURLMetadata>, text: string): import("./types.js").MediaURLMetadata[];
+    addMediaURLsOffset(arr: Array<import("./types.js").MediaURLMetadata>, text: string, offset?: number): import("./types.js").MediaURLMetadata[];
     firstCharToUpperCase(text: string): string;
     getLongestSubstring(string: string, candidates: string[]): string;
     isString(s: any): boolean;

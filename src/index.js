@@ -10,6 +10,7 @@ import "shared/registry.js";
 import { CustomElement } from 'shared/components/element';
 import { VIEW_PLUGINS } from './shared/constants.js';
 import { _converse, converse } from "@converse/headless";
+import "./utils/index.js";
 
 /* START: Removable plugins
  * ------------------------

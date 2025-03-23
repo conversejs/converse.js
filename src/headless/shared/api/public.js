@@ -4,7 +4,6 @@
 import { sprintf } from 'sprintf-js';
 import dayjs from 'dayjs';
 import sizzle from 'sizzle';
-import URI from 'urijs';
 import { Stanza, Strophe, $build, $iq, $msg, $pres, stx } from 'strophe.js';
 import { Collection, Model } from "@converse/skeletor";
 import { filesize } from 'filesize';
@@ -194,7 +193,6 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).conv
         Stanza,
         Strophe,
         TimeoutError,
-        URI,
         VERSION_NAME,
         dayjs,
         errors,

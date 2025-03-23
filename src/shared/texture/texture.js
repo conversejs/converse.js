@@ -9,11 +9,10 @@ import tplVideo from "./templates/video.js";
 import tplSpotify from "./templates/spotify.js";
 import { getEmojiMarkup } from "../chat/utils.js";
 import { getHyperlinkTemplate } from "../../utils/html.js";
-import { shouldRenderMediaFromURL } from "utils/url.js";
+import { shouldRenderMediaFromURL, filterQueryParamsFromURL } from "utils/url.js";
 import {
     collapseLineBreaks,
     containsDirectives,
-    filterQueryParamsFromURL,
     getDirectiveAndLength,
     getHeaders,
     isQuoteDirective,
@@ -25,9 +24,9 @@ import {
 import { styling_map } from "./constants.js";
 
 const {
+    addMediaURLsOffset,
     convertASCII2Emoji,
     getCodePointReferences,
-    getMediaURLs,
     getMediaURLsMetadata,
     getShortnameReferences,
     isAudioURL,
@@ -130,7 +129,7 @@ export class Texture extends String {
      * @returns {Promise<string|import('lit').TemplateResult>}
      */
     async addHyperlinkTemplate(url_obj) {
-        const url_text = url_obj.url;
+        const { url_text } = url_obj;
         const filtered_url = filterQueryParamsFromURL(url_text);
         let template;
         if (isGIFURL(url_text) && this.shouldRenderMedia(url_text, "image")) {
@@ -169,9 +168,11 @@ export class Texture extends String {
      *  offset from the start of the original message stanza's body text).
      */
     async addHyperlinks(text, local_offset) {
-        const full_offset = local_offset + this.offset;
-        const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
-        const media_urls = getMediaURLs(urls_meta, text, full_offset);
+        const media_urls = addMediaURLsOffset(
+            getMediaURLsMetadata(text, local_offset).media_urls || [],
+            text,
+            local_offset
+        );
         await Promise.all(
             media_urls
                 .filter((o) => !o.is_encrypted)
@@ -332,6 +333,7 @@ export class Texture extends String {
         await api.trigger("beforeMessageBodyTransformed", this, { synchronous: true });
 
         this.render_styling && this.addStyling();
+
         await this.addAnnotations(this.addMentions);
         await this.addAnnotations(this.addHyperlinks);
         await this.addAnnotations(this.addMapURLs);

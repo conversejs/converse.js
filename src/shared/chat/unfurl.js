@@ -1,6 +1,6 @@
-import tplUnfurl from './templates/unfurl.js';
-import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless";
+import { CustomElement } from 'shared/components/element.js';
+import tplUnfurl from './templates/unfurl.js';
 
 import './styles/unfurl.scss';
 

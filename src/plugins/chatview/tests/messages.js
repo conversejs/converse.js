@@ -544,7 +544,7 @@ describe("A Chat Message", function () {
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
         expect(msg.textContent).toEqual(message);
         await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '') ===
-        'This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
+        'This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com/">www.opkode.com</a>');
     }));
 
     it("will remove url query parameters from hyperlinks as set",

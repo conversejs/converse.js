@@ -2,7 +2,7 @@ import { api } from "@converse/headless";
 import 'shared/registry.js';
 import 'shared/modals/image.js';
 import { CustomElement } from 'shared/components/element.js';
-import renderTexture from 'shared/texture/directive.js';
+import renderTexture from 'shared/texture/directives/texture.js';
 
 import './styles/message-body.scss';
 

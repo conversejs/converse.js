@@ -4,7 +4,7 @@ import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless";
 import { getStandaloneButtons, getDropdownButtons } from 'shared/chat/utils.js';
 import 'shared/components/dropdown.js';
-import 'shared/texture/component.js';
+import 'shared/texture/components/texture.js';
 
 /** @param {import('../heading').default} el} */
 export default (el) => {

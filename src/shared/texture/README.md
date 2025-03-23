@@ -1,3 +1,7 @@
 # Texture
 
-Converse's library for showing rich, multi-media messages based on text
+Converse's library for turning text into rich multimedia content.
+
+Includes various web components for rendering media.
+
+

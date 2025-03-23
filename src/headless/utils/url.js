@@ -74,27 +74,9 @@ export function isEncryptedFileURL (url) {
 }
 
 /**
- * @typedef {Object} MediaURLMetadata
- * An object representing the metadata of a URL found in a chat message
- * The actual URL is not saved, it can be extracted via the `start` and `end` indexes.
- * @property {boolean} [is_audio]
- * @property {boolean} [is_image]
- * @property {boolean} [is_video]
- * @property {boolean} [is_encrypted]
- * @property {number} [end]
- * @property {number} [start]
- */
-
-/**
- * An object representing a URL found in a chat message
- * @typedef {MediaURLMetadata} MediaURLData
- * @property {string} url
- */
-
-/**
  * @param {string} text
  * @param {number} offset
- * @returns {{media_urls?: MediaURLMetadata[]}}
+ * @returns {{media_urls?: import("./types").MediaURLMetadata[]}}
  */
 export function getMediaURLsMetadata (text, offset=0) {
     const objs = [];
@@ -138,9 +120,9 @@ export function getMediaURLsMetadata (text, offset=0) {
 /**
  * Given an array of {@link MediaURLMetadata} objects and text, return an
  * array of {@link MediaURL} objects.
- * @param {Array<MediaURLMetadata>} arr
+ * @param {Array<import("./types").MediaURLMetadata>} arr
  * @param {string} text
- * @returns {MediaURLData[]}
+ * @returns {import("./types").MediaURLData[]}
  */
 export function getMediaURLs (arr, text, offset=0) {
     return arr.map(o => {

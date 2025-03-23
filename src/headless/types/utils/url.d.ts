@@ -25,51 +25,19 @@ export function isVideoURL(url: any): boolean;
 export function isImageURL(url: any): any;
 export function isEncryptedFileURL(url: any): any;
 /**
- * @typedef {Object} MediaURLMetadata
- * An object representing the metadata of a URL found in a chat message
- * The actual URL is not saved, it can be extracted via the `start` and `end` indexes.
- * @property {boolean} [is_audio]
- * @property {boolean} [is_image]
- * @property {boolean} [is_video]
- * @property {boolean} [is_encrypted]
- * @property {number} [end]
- * @property {number} [start]
- */
-/**
- * An object representing a URL found in a chat message
- * @typedef {MediaURLMetadata} MediaURLData
- * @property {string} url
- */
-/**
  * @param {string} text
  * @param {number} offset
- * @returns {{media_urls?: MediaURLMetadata[]}}
+ * @returns {{media_urls?: import("./types").MediaURLMetadata[]}}
  */
 export function getMediaURLsMetadata(text: string, offset?: number): {
-    media_urls?: MediaURLMetadata[];
+    media_urls?: import("./types").MediaURLMetadata[];
 };
 /**
  * Given an array of {@link MediaURLMetadata} objects and text, return an
  * array of {@link MediaURL} objects.
- * @param {Array<MediaURLMetadata>} arr
+ * @param {Array<import("./types").MediaURLMetadata>} arr
  * @param {string} text
- * @returns {MediaURLData[]}
+ * @returns {import("./types").MediaURLData[]}
  */
-export function getMediaURLs(arr: Array<MediaURLMetadata>, text: string, offset?: number): MediaURLData[];
-/**
- * An object representing the metadata of a URL found in a chat message
- * The actual URL is not saved, it can be extracted via the `start` and `end` indexes.
- */
-export type MediaURLMetadata = {
-    is_audio?: boolean;
-    is_image?: boolean;
-    is_video?: boolean;
-    is_encrypted?: boolean;
-    end?: number;
-    start?: number;
-};
-/**
- * An object representing a URL found in a chat message
- */
-export type MediaURLData = MediaURLMetadata;
+export function getMediaURLs(arr: Array<import("./types").MediaURLMetadata>, text: string, offset?: number): import("./types").MediaURLData[];
 //# sourceMappingURL=url.d.ts.map

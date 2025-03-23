@@ -83,5 +83,10 @@ export type MUCPresenceAttributes = MUCPresenceItemAttributes & {
     status?: string;
     type: string;
 };
+export type OccupantData = {
+    jid?: string;
+    nick?: string;
+    occupant_id?: string;
+};
 export {};
 //# sourceMappingURL=types.d.ts.map

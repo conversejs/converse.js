@@ -32,9 +32,9 @@ declare const _default: {
     isImageURL(url: any): any;
     isEncryptedFileURL(url: any): any;
     getMediaURLsMetadata(text: string, offset?: number): {
-        media_urls?: MediaURLMetadata[];
+        media_urls?: import("./types.js").MediaURLMetadata[];
     };
-    getMediaURLs(arr: Array<MediaURLMetadata>, text: string, offset?: number): MediaURLData[];
+    getMediaURLs(arr: Array<import("./types.js").MediaURLMetadata>, text: string, offset?: number): import("./types.js").MediaURLData[];
     firstCharToUpperCase(text: string): string;
     getLongestSubstring(string: string, candidates: string[]): string;
     isString(s: any): boolean;
@@ -122,7 +122,6 @@ declare function shouldCreateMessage(attrs: any): any;
  * @param {boolean} [cancelable]
  */
 declare function triggerEvent(el: Element, name: string, type?: string, bubbles?: boolean, cancelable?: boolean): void;
-import * as url from './url.js';
 import * as session from './session.js';
 import { Model } from '@converse/skeletor';
 import * as init from './init.js';

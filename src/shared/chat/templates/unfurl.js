@@ -1,7 +1,7 @@
 import { u } from '@converse/headless';
 import { isDomainAllowed } from 'utils/url.js';
 import { html } from 'lit';
-import 'shared/components/image.js';
+import 'shared/texture/components/image.js';
 
 const { getURI, isGIFURL } = u;
 
@@ -22,10 +22,10 @@ const tplUrlWrapper = (o, wrapped_template) =>
         ? html`<a href="${o.url}" target="_blank" rel="noopener">${wrapped_template(o)}</a>`
         : wrapped_template(o);
 
-const tplImage = o =>
+const tplImage = (o) =>
     html`<converse-image class="card-img-top hor_centered" href="${o.url}" src="${o.image}" .onImgLoad=${o.onload}></converse-image>`;
 
-export default o => {
+export default (o) => {
     const show_image = isValidImage(o.image);
     const has_body_info = o.title || o.description || o.url;
     if (show_image || has_body_info) {

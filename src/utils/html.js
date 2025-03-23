@@ -169,7 +169,6 @@ function getNextElement (el, selector = '*') {
 
 /**
  * Has an element a class?
- * @method u#hasClass
  * @param { string } className
  * @param { Element } el
  */
@@ -179,7 +178,6 @@ export function hasClass (className, el) {
 
 /**
  * Add a class to an element.
- * @method u#addClass
  * @param { string } className
  * @param { Element } el
  */
@@ -190,7 +188,6 @@ export function addClass (className, el) {
 
 /**
  * Remove a class from an element.
- * @method u#removeClass
  * @param { string } className
  * @param { Element } el
  */
@@ -201,7 +198,6 @@ export function removeClass (className, el) {
 
 /**
  * Remove an element from its parent
- * @method u#removeElement
  * @param { Element } el
  */
 export function removeElement (el) {
@@ -248,7 +244,6 @@ export function ancestor (el, selector) {
 
 /**
  * Return the element's siblings until one matches the selector.
- * @method u#nextUntil
  * @param {HTMLElement} el
  * @param {String} selector
  */
@@ -265,7 +260,6 @@ function nextUntil (el, selector) {
 /**
  * Helper method that replace HTML-escaped symbols with equivalent characters
  * (e.g. transform occurrences of '&amp;' to '&')
- * @method u#unescapeHTML
  * @param {String} string - a String containing the HTML-escaped symbols.
  */
 function unescapeHTML (string) {
@@ -275,7 +269,6 @@ function unescapeHTML (string) {
 }
 
 /**
- * @method u#escapeHTML
  * @param {string} string
  */
 function escapeHTML (string) {
@@ -305,7 +298,6 @@ export function getHyperlinkTemplate (url) {
 
 /**
  * Shows/expands an element by sliding it out of itself
- * @method slideOut
  * @param {HTMLElement} el - The HTML string
  * @param {Number} duration - The duration amount in milliseconds
  */

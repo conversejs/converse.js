@@ -1,7 +1,7 @@
 import { LitElement } from "lit";
-import renderTexture from "./directive.js";
+import renderTexture from "../directives/texture.js";
 
-import "./texture.scss";
+import "../styles/texture.scss";
 
 /**
  * The Texture custom element allows you to parse transform text into rich DOM elements.

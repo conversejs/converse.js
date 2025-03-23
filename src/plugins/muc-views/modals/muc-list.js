@@ -86,7 +86,7 @@ export default class MUCListModal extends BaseModal {
                 'server_placeholder': this.model.get('muc_domain') || __('conference.example.org'),
                 'items': this.items,
                 'loading_items': this.loading_items,
-                'openRoom': ev => this.openRoom(ev),
+                'openItem': ev => this.openItem(ev),
                 'setDomainFromEvent': ev => this.setDomainFromEvent(ev),
                 'submitForm': ev => this.showRooms(ev),
                 'toggleRoomInfo': ev => this.toggleRoomInfo(ev)
@@ -97,12 +97,31 @@ export default class MUCListModal extends BaseModal {
         return __('Query for Groupchats');
     }
 
-    openRoom (ev) {
+    openRoom (jid, name) {
+        this.modal.hide();
+        api.rooms.open(jid, {'name': name}, true);
+    }
+
+    onInfoReceived (iq, jid, name) {
+        const identity = sizzle('query identity', iq).pop();
+        if (identity.getAttribute('category') === 'conference') {
+            this.openRoom(jid, name);
+        } else {
+            this.model.setDomain(jid);
+        }
+    }
+
+    openItem (ev) {
         ev.preventDefault();
         const jid = ev.target.getAttribute('data-room-jid');
         const name = ev.target.getAttribute('data-room-name');
-        this.modal.hide();
-        api.rooms.open(jid, {'name': name}, true);
+        const iq = $iq({
+            'to': this.model.get('muc_domain'),
+            'from': api.connection.get().jid,
+            'type': "get"
+        }).c("query", {xmlns: Strophe.NS.DISCO_INFO});
+        api.sendIQ(iq)
+            .then(iq => this.onInfoReceived(iq, jid, name))
     }
 
     toggleRoomInfo (ev) {

@@ -116,3 +116,10 @@ export type MUCPresenceAttributes = MUCPresenceItemAttributes & {
     status?: string;
     type: string; // The type of presence
 };
+
+
+export type OccupantData = {
+    jid?: string;
+    nick?: string;
+    occupant_id?: string; // The XEP-0421 unique occupant id
+};

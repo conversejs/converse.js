@@ -19,9 +19,9 @@ import tplFormUsername from '../templates/form_username.js';
 import tplHyperlink from 'templates/hyperlink.js';
 
 const { sizzle, Strophe, dayjs } = converse.env;
-const { getURI, isValidURL } = u;
+const { isValidURL } = u;
 
-const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
+const APPROVED_URL_PROTOCOLS = ['http:', 'https:', 'xmpp:', 'mailto:'];
 
 const EMPTY_TEXT_REGEX = /\s*\n\s*/;
 
@@ -133,13 +133,16 @@ function slideOutWrapup (el) {
     el.style.height = '';
 }
 
+/**
+ * @param {string} url
+ */
 export function getFileName (url) {
-    const uri = getURI(url);
     try {
-        return decodeURI(uri.filename());
+        const uri = u.getURL(url);
+        return decodeURI(uri.pathname.split('/').pop());
     } catch (error) {
         log.debug(error);
-        return uri.filename();
+        return url;
     }
 }
 
@@ -159,6 +162,10 @@ function calculateElementHeight (el) {
     }, 0);
 }
 
+/**
+ * @param {HTMLElement} el
+ * @param {string} selector
+ */
 function getNextElement (el, selector = '*') {
     let next_el = el.nextElementSibling;
     while (next_el !== null && !sizzle.matchesSelector(next_el, selector)) {
@@ -169,8 +176,8 @@ function getNextElement (el, selector = '*') {
 
 /**
  * Has an element a class?
- * @param { string } className
- * @param { Element } el
+ * @param {string} className
+ * @param {Element} el
  */
 export function hasClass (className, el) {
     return el instanceof Element && el.classList.contains(className);
@@ -178,8 +185,8 @@ export function hasClass (className, el) {
 
 /**
  * Add a class to an element.
- * @param { string } className
- * @param { Element } el
+ * @param {string} className
+ * @param {Element} el
  */
 export function addClass (className, el) {
     el instanceof Element && el.classList.add(className);
@@ -188,8 +195,8 @@ export function addClass (className, el) {
 
 /**
  * Remove a class from an element.
- * @param { string } className
- * @param { Element } el
+ * @param {string} className
+ * @param {Element} el
  */
 export function removeClass (className, el) {
     el instanceof Element && el.classList.remove(className);
@@ -198,7 +205,7 @@ export function removeClass (className, el) {
 
 /**
  * Remove an element from its parent
- * @param { Element } el
+ * @param {Element} el
  */
 export function removeElement (el) {
     el instanceof Element && el.parentNode && el.parentNode.removeChild(el);
@@ -279,6 +286,9 @@ function escapeHTML (string) {
         .replace(/"/g, '&quot;');
 }
 
+/**
+ * @param {string} protocol
+ */
 function isProtocolApproved (protocol, safeProtocolsList = APPROVED_URL_PROTOCOLS) {
     return !!safeProtocolsList.includes(protocol);
 }
@@ -289,11 +299,15 @@ function isProtocolApproved (protocol, safeProtocolsList = APPROVED_URL_PROTOCOL
  */
 export function getHyperlinkTemplate (url) {
     const http_url = RegExp('^w{3}.', 'ig').test(url) ? `http://${url}` : url;
-    const uri = getURI(url);
-    if (uri !== null && isValidURL(http_url) && (isProtocolApproved(uri._parts.protocol) || !uri._parts.protocol)) {
-        return tplHyperlink(uri, url);
-    }
+    try {
+        const uri = u.getURL(http_url);
+        if (isProtocolApproved(uri.protocol)) {
+            return tplHyperlink(uri, url);
+        }
     return url;
+    } catch (error) {
+        log.debug(error);
+    }
 }
 
 /**

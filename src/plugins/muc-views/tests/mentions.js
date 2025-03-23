@@ -382,7 +382,6 @@ describe("A sent groupchat message", function () {
         it("can get corrected and given new references",
                 mock.initConverse([], {}, async function (_converse) {
 
-            const nick = 'tom';
             const muc_jid = 'lounge@montague.lit';
             const { api } = _converse;
             const { jid: own_jid } = api.connection.get();

@@ -133,8 +133,6 @@ export const CORE_PLUGINS = [
     'converse-vcard',
 ];
 
-export const URL_PARSE_OPTIONS = { 'start': /(\b|_)(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
-
 export const CHAT_STATES = ['active', 'composing', 'gone', 'inactive', 'paused'];
 
 export const KEYCODES = {

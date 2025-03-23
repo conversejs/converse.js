@@ -1,5 +1,13 @@
-export function isDomainWhitelisted(whitelist: any, url: any): any;
-export function isDomainAllowed(url: any, setting: any): any;
+/**
+ * @param {string[]} whitelist
+ * @param {string|URL} url
+ */
+export function isDomainWhitelisted(whitelist: string[], url: string | URL): boolean;
+/**
+ * @param {string|URL} url
+ * @param {string} setting
+ */
+export function isDomainAllowed(url: string | URL, setting: string): boolean;
 /**
  * Accepts a {@link MediaURLData} object and then checks whether its domain is
  * allowed for rendering in the chat.
@@ -12,5 +20,12 @@ export function isMediaURLDomainAllowed(o: MediaURLData): boolean;
  * @param {"audio"|"image"|"video"} type
  */
 export function shouldRenderMediaFromURL(url_text: string, type: "audio" | "image" | "video"): any;
+/**
+ * Takes the `filter_url_query_params` array from the settings and
+ * removes any query strings from the URL that matches those values.
+ * @param {string} url
+ * @return {string}
+ */
+export function filterQueryParamsFromURL(url: string): string;
 export type MediaURLData = any;
 //# sourceMappingURL=url.d.ts.map

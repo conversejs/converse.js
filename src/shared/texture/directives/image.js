@@ -1,10 +1,9 @@
-import { html } from 'lit';
-import { AsyncDirective } from 'lit/async-directive.js';
-import { directive } from 'lit/directive.js';
-import { converse, u } from '@converse/headless';
-import { getHyperlinkTemplate } from 'utils/html.js';
+import { html } from "lit";
+import { AsyncDirective } from "lit/async-directive.js";
+import { directive } from "lit/directive.js";
+import { u } from "@converse/headless";
+import { getHyperlinkTemplate } from "utils/html.js";
 
-const { URI } = converse.env;
 const { isURLWithImageExtension } = u;
 
 class ImageDirective extends AsyncDirective {
@@ -50,13 +49,17 @@ class ImageDirective extends AsyncDirective {
         if (isURLWithImageExtension(src)) {
             href && this.setValue(getHyperlinkTemplate(href));
         } else {
-            // Before giving up and falling back to just rendering a hyperlink,
-            // we attach `.png` and try one more time.
-            // This works with some Imgur URLs
-            const uri = new URI(src);
-            const filename = uri.filename();
-            uri.filename(`${filename}.png`);
-            this.setValue(renderImage(uri.toString(), href, onLoad, onClick));
+            try {
+                const url = new URL(src);
+                const filename = url.pathname.split("/").pop();
+                if (filename) {
+                    const new_filename = `${filename}.png`;
+                    url.pathname = url.pathname.replace(filename, new_filename);
+                    this.setValue(renderImage(url.toString(), href, onLoad, onClick));
+                }
+            } catch (error) {
+                console.error("Invalid URL:", src);
+            }
         }
     }
 }

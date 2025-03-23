@@ -5,25 +5,46 @@
  */
 export function isValidURL(text: string): boolean;
 /**
- * @param {string|URI} url
+ * @param {string|URL} url
+ * @returns {URL}
  */
-export function getURI(url: string | URI): any;
+export function getURL(url: string | URL): URL;
 /**
  * Given the an array of file extensions, check whether a URL points to a file
  * ending in one of them.
  * @param {string[]} types - An array of file extensions
- * @param {string} url
+ * @param {string|URL} url
  * @returns {boolean}
  * @example
  *  checkFileTypes(['.gif'], 'https://conversejs.org/cat.gif?foo=bar');
  */
-export function checkFileTypes(types: string[], url: string): boolean;
-export function isURLWithImageExtension(url: any): boolean;
-export function isGIFURL(url: any): boolean;
-export function isAudioURL(url: any): boolean;
-export function isVideoURL(url: any): boolean;
-export function isImageURL(url: any): any;
-export function isEncryptedFileURL(url: any): any;
+export function checkFileTypes(types: string[], url: string | URL): boolean;
+/**
+ * @param {string|URL} url
+ * @returns {boolean}
+ */
+export function isURLWithImageExtension(url: string | URL): boolean;
+/**
+ * @param {string|URL} url
+ */
+export function isGIFURL(url: string | URL): boolean;
+/**
+ * @param {string|URL} url
+ */
+export function isAudioURL(url: string | URL): boolean;
+/**
+ * @param {string|URL} url
+ */
+export function isVideoURL(url: string | URL): boolean;
+/**
+ * @param {string|URL} url
+ * @returns {boolean}
+ */
+export function isImageURL(url: string | URL): boolean;
+/**
+ * @param {string|URL} url
+ */
+export function isEncryptedFileURL(url: string | URL): boolean;
 /**
  * @param {string} text
  * @param {number} offset
@@ -33,11 +54,15 @@ export function getMediaURLsMetadata(text: string, offset?: number): {
     media_urls?: import("./types").MediaURLMetadata[];
 };
 /**
- * Given an array of {@link MediaURLMetadata} objects and text, return an
- * array of {@link MediaURL} objects.
  * @param {Array<import("./types").MediaURLMetadata>} arr
  * @param {string} text
- * @returns {import("./types").MediaURLData[]}
+ * @returns {import("./types").MediaURLMetadata[]}
  */
-export function getMediaURLs(arr: Array<import("./types").MediaURLMetadata>, text: string, offset?: number): import("./types").MediaURLData[];
+export function getMediaURLs(arr: Array<import("./types").MediaURLMetadata>, text: string): import("./types").MediaURLMetadata[];
+/**
+ * @param {Array<import("./types").MediaURLMetadata>} arr
+ * @param {string} text
+ * @returns {import("./types").MediaURLMetadata[]}
+ */
+export function addMediaURLsOffset(arr: Array<import("./types").MediaURLMetadata>, text: string, offset?: number): import("./types").MediaURLMetadata[];
 //# sourceMappingURL=url.d.ts.map

@@ -1,22 +1,22 @@
-import { api } from  "@converse/headless";
+import { api } from "@converse/headless";
 import { html } from "lit";
 
-function onClickXMPPURI (ev) {
+/**
+ * @param {MouseEvent} ev
+ */
+function onClickXMPPURI(ev) {
     ev.preventDefault();
-    api.rooms.open(ev.target.href);
+    api.rooms.open(/** @type {HTMLAnchorElement} */ (ev.target).href);
 }
 
-export default (uri, url_text) => {
-    let href_text = uri.normalizePath().toString();
-    if (!uri._parts.protocol && !url_text.startsWith('http://') && !url_text.startsWith('https://')) {
-        href_text = 'http://' + href_text;
+/**
+ * @param {URL} url - The url object containing the link information.
+ * @param {string} url_text - The text to display for the link.
+ * @returns {import("lit").TemplateResult} The HTML template for the link.
+ */
+export default (url, url_text) => {
+    if (url.protocol === "xmpp:" && url.searchParams.get("join") != null) { // eslint-disable-line no-eq-null
+        return html` <a target="_blank" rel="noopener" @click="${onClickXMPPURI}" href="${url.href}">${url_text}</a>`;
     }
-    if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
-        return html`
-            <a target="_blank"
-               rel="noopener"
-               @click=${onClickXMPPURI}
-               href="${href_text}">${url_text}</a>`;
-    }
-    return html`<a target="_blank" rel="noopener" href="${href_text}">${url_text}</a>`;
-}
+    return html`<a target="_blank" rel="noopener" href="${url.href}">${url_text}</a>`;
+};

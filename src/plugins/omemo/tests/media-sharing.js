@@ -1,9 +1,9 @@
 /*global mock, converse */
-
-const { $iq, Strophe, u } = converse.env;
-
+const { $iq, Strophe, u, stx } = converse.env;
 
 describe("The OMEMO module", function() {
+
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
     it("implements XEP-0454 to encrypt uploaded files",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
@@ -23,20 +23,25 @@ describe("The OMEMO module", function() {
         const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
         await u.waitUntil(() => mock.initializedOMEMO(_converse));
-
         await mock.openChatBoxFor(_converse, contact_jid);
 
         let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
-        let stanza = $iq({
-                'from': contact_jid,
-                'id': iq_stanza.getAttribute('id'),
-                'to': _converse.api.connection.get().jid,
-                'type': 'result',
-            }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
-                .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
-                    .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
-                        .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
-                            .c('device', {'id': '555'});
+        let stanza = stx`
+            <iq from="${contact_jid}"
+                id="${iq_stanza.getAttribute('id')}"
+                to="${_converse.api.connection.get().jid}"
+                type="result"
+                xmlns="jabber:client">
+            <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                <items node="eu.siacs.conversations.axolotl.devicelist">
+                    <item xmlns="http://jabber.org/protocol/pubsub"> // TODO: must have an id attribute
+                        <list xmlns="eu.siacs.conversations.axolotl">
+                            <device id="555"/>
+                        </list>
+                    </item>
+                </items>
+            </pubsub>
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.state.omemo_store);
         const devicelist = _converse.state.devicelists.get({'jid': contact_jid});
@@ -45,16 +50,17 @@ describe("The OMEMO module", function() {
         const view = _converse.chatboxviews.get(contact_jid);
         const file = new File(['secret'], 'secret.txt', { type: 'text/plain' })
         view.model.set('omemo_active', true);
-        view.model.sendFiles([file]);
+        await view.model.sendFiles([file]);
 
         await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
         const iq = IQ_stanzas.pop();
         const url = base_url+"/secret.txt";
-        stanza = u.toStanza(`
+        stanza = stx`
             <iq from="upload.montague.tld"
                 id="${iq.getAttribute("id")}"
                 to="romeo@montague.lit/orchard"
-                type="result">
+                type="result"
+                xmlns="jabber:client">
             <slot xmlns="urn:xmpp:http:upload:0">
                 <put url="https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/secret.txt">
                     <header name="Authorization">Basic Base64String==</header>
@@ -62,16 +68,16 @@ describe("The OMEMO module", function() {
                 </put>
                 <get url="${url}" />
             </slot>
-            </iq>`);
+            </iq>`;
 
         spyOn(XMLHttpRequest.prototype, 'send').and.callFake(async function () {
             const message = view.model.messages.at(0);
             message.set('progress', 1);
             await u.waitUntil(() => view.querySelector('.chat-content progress')?.getAttribute('value') === '1')
             message.save({
-                'upload': _converse.SUCCESS,
-                'oob_url': message.get('get'),
-                'body': message.get('get')
+                upload: _converse.SUCCESS,
+                oob_url: message.get('get'),
+                body: message.get('get')
             });
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         });
@@ -79,42 +85,54 @@ describe("The OMEMO module", function() {
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '555'));
-        stanza = $iq({
-            'from': contact_jid,
-            'id': iq_stanza.getAttribute('id'),
-            'to': _converse.bare_jid,
-            'type': 'result',
-        }).c('pubsub', {
-            'xmlns': 'http://jabber.org/protocol/pubsub'
-            }).c('items', {'node': "eu.siacs.conversations.axolotl.bundles:555"})
-                .c('item')
-                    .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
-                        .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t(btoa('1111')).up()
-                        .c('signedPreKeySignature').t(btoa('2222')).up()
-                        .c('identityKey').t(btoa('3333')).up()
-                        .c('prekeys')
-                            .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1001')).up()
-                            .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
-                            .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
+        stanza = stx`
+            <iq from="${contact_jid}"
+                id="${iq_stanza.getAttribute('id')}"
+                to="${_converse.bare_jid}"
+                type="result"
+                xmlns="jabber:client">
+            <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                <items node="eu.siacs.conversations.axolotl.bundles:555">
+                    <item>
+                        <bundle xmlns="eu.siacs.conversations.axolotl">
+                            <signedPreKeyPublic signedPreKeyId="4223">${btoa('1111')}</signedPreKeyPublic>
+                            <signedPreKeySignature>${btoa('2222')}</signedPreKeySignature>
+                            <identityKey>${btoa('3333')}</identityKey>
+                            <prekeys>
+                                <preKeyPublic preKeyId="1">${btoa('1001')}</preKeyPublic>
+                                <preKeyPublic preKeyId="2">${btoa('1002')}</preKeyPublic>
+                                <preKeyPublic preKeyId="3">${btoa('1003')}</preKeyPublic>
+                            </prekeys>
+                        </bundle>
+                    </item>
+                </items>
+            </pubsub>
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
-        stanza = $iq({
-            'from': _converse.bare_jid,
-            'id': iq_stanza.getAttribute('id'),
-            'to': _converse.bare_jid,
-            'type': 'result',
-        }).c('pubsub', {
-            'xmlns': 'http://jabber.org/protocol/pubsub'
-            }).c('items', {'node': "eu.siacs.conversations.axolotl.bundles:482886413b977930064a5888b92134fe"})
-                .c('item')
-                    .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
-                        .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t(btoa('100000')).up()
-                        .c('signedPreKeySignature').t(btoa('200000')).up()
-                        .c('identityKey').t(btoa('300000')).up()
-                        .c('prekeys')
-                            .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1991')).up()
-                            .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1992')).up()
-                            .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1993'));
+        stanza = stx`
+            <iq from="${_converse.bare_jid}"
+                id="${iq_stanza.getAttribute('id')}"
+                to="${_converse.bare_jid}"
+                type="result"
+                xmlns="jabber:client">
+            <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                <items node="eu.siacs.conversations.axolotl.bundles:482886413b977930064a5888b92134fe">
+                    <item>
+                        <bundle xmlns="eu.siacs.conversations.axolotl">
+                            <signedPreKeyPublic signedPreKeyId="4223">${btoa('100000')}</signedPreKeyPublic>
+                            <signedPreKeySignature>${btoa('200000')}</signedPreKeySignature>
+                            <identityKey>${btoa('300000')}</identityKey>
+                            <prekeys>
+                                <preKeyPublic preKeyId="1">${btoa('1991')}</preKeyPublic>
+                                <preKeyPublic preKeyId="2">${btoa('1992')}</preKeyPublic>
+                                <preKeyPublic preKeyId="3">${btoa('1993')}</preKeyPublic>
+                            </prekeys>
+                        </bundle>
+                    </item>
+                </items>
+            </pubsub>
+            </iq>`;
 
         spyOn(_converse.api.connection.get(), 'send').and.callFake(stanza => (sent_stanza = stanza));
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
@@ -122,27 +140,27 @@ describe("The OMEMO module", function() {
         await u.waitUntil(() => sent_stanza);
 
         const fallback = 'This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo';
-        expect(Strophe.serialize(sent_stanza)).toBe(
-            `<message from="romeo@montague.lit/orchard" `+
-                `id="${sent_stanza.getAttribute("id")}" `+
-                `to="lady.montague@montague.lit" `+
-                `type="chat" `+
-                `xmlns="jabber:client">`+
-                    `<body>${fallback}</body>`+
-                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                    `<request xmlns="urn:xmpp:receipts"/>`+
-                    `<origin-id id="${sent_stanza.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>`+
-                    `<encrypted xmlns="eu.siacs.conversations.axolotl">`+
-                    `<header sid="123456789">`+
-                        `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+
-                        `<key rid="555">YzFwaDNSNzNYNw==</key>`+
-                        `<iv>${sent_stanza.querySelector('header iv').textContent}</iv>`+
-                    `</header>`+
-                `<payload>${sent_stanza.querySelector('payload').textContent}</payload>`+
-                `</encrypted>`+
-                `<store xmlns="urn:xmpp:hints"/>`+
-                `<encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>`+
-            `</message>`);
+        expect(sent_stanza).toEqualStanza(stx`
+            <message from="romeo@montague.lit/orchard"
+                id="${sent_stanza.getAttribute("id")}"
+                to="lady.montague@montague.lit"
+                type="chat"
+                xmlns="jabber:client">
+                    <body>${fallback}</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    <request xmlns="urn:xmpp:receipts"/>
+                    <origin-id id="${sent_stanza.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>
+                    <encrypted xmlns="eu.siacs.conversations.axolotl">
+                    <header sid="123456789">
+                        <key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>
+                        <key rid="555">YzFwaDNSNzNYNw==</key>
+                        <iv>${sent_stanza.querySelector('header iv').textContent}</iv>
+                    </header>
+                <payload>${sent_stanza.querySelector('payload').textContent}</payload>
+                </encrypted>
+                <store xmlns="urn:xmpp:hints"/>
+                <encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>
+            </message>`);
 
         const link_el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(link_el.textContent.trim()).toBe(url);

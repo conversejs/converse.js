@@ -30,9 +30,6 @@ export const HEADLINES_TYPE: "headline";
 export const CONTROLBOX_TYPE: "controlbox";
 export const CONNECTION_STATUS: typeof CONNECTION_STATUS;
 export const CORE_PLUGINS: string[];
-export namespace URL_PARSE_OPTIONS {
-    let start: RegExp;
-}
 export const CHAT_STATES: string[];
 export namespace KEYCODES {
     let TAB: number;

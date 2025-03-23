@@ -43,12 +43,5 @@ export function isQuoteDirective(d: string): boolean;
  * @returns {boolean}
  */
 export function containsDirectives(text: import("./texture").Texture): boolean;
-/**
- * Takes the `filter_url_query_params` array from the settings and
- * removes any query strings from the URL that matches those values.
- * @param {string} url
- * @return {string}
- */
-export function filterQueryParamsFromURL(url: string): string;
 export function tplMentionWithNick(o: any): import("lit").TemplateResult<1>;
 //# sourceMappingURL=utils.d.ts.map

@@ -6,28 +6,31 @@
 export function getNameAndValue(field: HTMLInputElement | HTMLSelectElement): {
     [key: string]: string | number | string[];
 } | null;
-export function getFileName(url: any): any;
+/**
+ * @param {string} url
+ */
+export function getFileName(url: string): string;
 /**
  * Has an element a class?
- * @param { string } className
- * @param { Element } el
+ * @param {string} className
+ * @param {Element} el
  */
 export function hasClass(className: string, el: Element): boolean;
 /**
  * Add a class to an element.
- * @param { string } className
- * @param { Element } el
+ * @param {string} className
+ * @param {Element} el
  */
 export function addClass(className: string, el: Element): Element;
 /**
  * Remove a class from an element.
- * @param { string } className
- * @param { Element } el
+ * @param {string} className
+ * @param {Element} el
  */
 export function removeClass(className: string, el: Element): Element;
 /**
  * Remove an element from its parent
- * @param { Element } el
+ * @param {Element} el
  */
 export function removeElement(el: Element): Element;
 /**

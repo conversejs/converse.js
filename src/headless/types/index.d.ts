@@ -8,7 +8,7 @@ import { api } from './shared/index.js';
 import converse from './shared/api/public.js';
 import { _converse } from './shared/index.js';
 import { i18n } from './shared/index.js';
-import log from './log.js';
+import log from '@converse/log';
 import u from './utils/index.js';
 export const constants: typeof shared_constants & typeof muc_constants;
 import { parsers } from './shared/index.js';

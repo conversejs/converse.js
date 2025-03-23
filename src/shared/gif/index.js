@@ -1,4 +1,4 @@
-import { log } from "@converse/headless";
+import log from "@converse/log";
 import { getOpenPromise } from "@converse/openpromise";
 import { parseGIF, decompressFrames } from "gifuct-js";
 

@@ -63,5 +63,5 @@ export default class Texture extends LitElement {
         };
     }>;
 }
-import { LitElement } from 'lit';
+import { LitElement } from "lit";
 //# sourceMappingURL=component.d.ts.map

@@ -124,7 +124,7 @@ declare const ChatBox_base: {
         sendMarkerForMessage(msg: import("../../index.js").BaseMessage<any>, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         handleUnreadMessage(message: import("../../index.js").BaseMessage<any>): void;
         getErrorAttributesForMessage(message: import("../../index.js").BaseMessage<any>, attrs: import("../../shared/types").MessageAttributes): Promise<any>;
-        handleErrorMessageStanza(stanza: Element): Promise<void>;
+        handleErrorMessageStanza(stanza: Element): Promise<any>;
         incrementUnreadMsgsCounter(message: import("../../index.js").BaseMessage<any>): void;
         clearUnreadMsgCounter(): void;
         handleRetraction(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;
@@ -360,7 +360,7 @@ declare class ChatBox extends ChatBox_base {
     /**
      * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    onMessage(attrs_or_error: import("../../shared/types").MessageAttributes | import("../../shared/errors").StanzaParseError): Promise<void>;
+    onMessage(attrs_or_error: import("../../shared/types").MessageAttributes | import("../../shared/errors").StanzaParseError): Promise<any>;
     /**
      * @param {import('../roster/presence').default} item
      */

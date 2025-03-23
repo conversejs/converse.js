@@ -1,15 +1,15 @@
-import { html } from 'lit';
-import { until } from 'lit/directives/until.js';
-import { Directive, directive } from 'lit/directive.js';
-import { api, u } from '@converse/headless';
-import tplAudio from './templates/audio.js';
-import tplGif from './templates/gif.js';
-import tplImage from './templates/image.js';
-import tplVideo from './templates/video.js';
-import tplSpotify from './templates/spotify.js';
-import { getEmojiMarkup } from '../chat/utils.js';
-import { getHyperlinkTemplate } from '../../utils/html.js';
-import { shouldRenderMediaFromURL } from 'utils/url.js';
+import { html } from "lit";
+import { until } from "lit/directives/until.js";
+import { Directive, directive } from "lit/directive.js";
+import { api, u } from "@converse/headless";
+import tplAudio from "./templates/audio.js";
+import tplGif from "./templates/gif.js";
+import tplImage from "./templates/image.js";
+import tplVideo from "./templates/video.js";
+import tplSpotify from "./templates/spotify.js";
+import { getEmojiMarkup } from "../chat/utils.js";
+import { getHyperlinkTemplate } from "../../utils/html.js";
+import { shouldRenderMediaFromURL } from "utils/url.js";
 import {
     collapseLineBreaks,
     containsDirectives,
@@ -20,8 +20,8 @@ import {
     isString,
     tplMention,
     tplMentionWithNick,
-} from './utils.js';
-import { styling_map } from './constants.js';
+} from "./utils.js";
+import { styling_map } from "./constants.js";
 
 const {
     convertASCII2Emoji,
@@ -111,14 +111,14 @@ export class Texture extends String {
      */
     shouldRenderMedia(url, type) {
         let override;
-        if (type === 'image') {
+        if (type === "image") {
             override = this.show_images;
-        } else if (type === 'audio') {
+        } else if (type === "audio") {
             override = this.embed_audio;
-        } else if (type === 'video') {
+        } else if (type === "video") {
             override = this.embed_videos;
         }
-        if (typeof override === 'boolean') {
+        if (typeof override === "boolean") {
             return override;
         }
         return shouldRenderMediaFromURL(url, type);
@@ -133,9 +133,9 @@ export class Texture extends String {
         const url_text = url_obj.url;
         const filtered_url = filterQueryParamsFromURL(url_text);
         let template;
-        if (isGIFURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
+        if (isGIFURL(url_text) && this.shouldRenderMedia(url_text, "image")) {
             template = tplGif(filtered_url, this.hide_media_urls);
-        } else if (isImageURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
+        } else if (isImageURL(url_text) && this.shouldRenderMedia(url_text, "image")) {
             template = tplImage({
                 src: filtered_url,
                 // XXX: bit of an abuse of `hide_media_urls`, might want a dedicated option here
@@ -143,18 +143,18 @@ export class Texture extends String {
                 onClick: this.onImgClick,
                 onLoad: this.onImgLoad,
             });
-        } else if (isVideoURL(url_text) && this.shouldRenderMedia(url_text, 'video')) {
+        } else if (isVideoURL(url_text) && this.shouldRenderMedia(url_text, "video")) {
             template = tplVideo(filtered_url, this.hide_media_urls);
-        } else if (isAudioURL(url_text) && this.shouldRenderMedia(url_text, 'audio')) {
+        } else if (isAudioURL(url_text) && this.shouldRenderMedia(url_text, "audio")) {
             template = tplAudio(filtered_url, this.hide_media_urls);
-        } else if (api.settings.get('embed_3rd_party_media_players') && isSpotifyTrack(url_text)) {
-            const song_id = url_text.split('/track/')[1];
+        } else if (api.settings.get("embed_3rd_party_media_players") && isSpotifyTrack(url_text)) {
+            const song_id = url_text.split("/track/")[1];
             template = tplSpotify(song_id, url_text, this.hide_media_urls);
         } else {
-            if (this.shouldRenderMedia(url_text, 'audio') && api.settings.get('fetch_url_headers')) {
+            if (this.shouldRenderMedia(url_text, "audio") && api.settings.get("fetch_url_headers")) {
                 const headers = await getHeaders(url_text);
-                if (headers?.get('content-type')?.startsWith('audio')) {
-                    template = tplAudio(filtered_url, this.hide_media_urls, headers.get('Icy-Name'));
+                if (headers?.get("content-type")?.startsWith("audio")) {
+                    template = tplAudio(filtered_url, this.hide_media_urls, headers.get("Icy-Name"));
                 }
             }
         }
@@ -195,7 +195,7 @@ export class Texture extends String {
             this.addTemplateResult(
                 m.index + offset,
                 m.index + m[0].length + offset,
-                getHyperlinkTemplate(m[0].replace(regex, api.settings.get('geouri_replacement')))
+                getHyperlinkTemplate(m[0].replace(regex, api.settings.get("geouri_replacement")))
             );
         }
     }
@@ -252,7 +252,7 @@ export class Texture extends String {
 
         const references = [];
         const mention_ranges = this.mentions.map((m) =>
-            Array.from({ 'length': Number(m.end) }, (_, i) => Number(m.begin) + i)
+            Array.from({ "length": Number(m.end) }, (_, i) => Number(m.begin) + i)
         );
         let i = 0;
         while (i < this.length) {
@@ -268,8 +268,8 @@ export class Texture extends String {
                 const is_quote = isQuoteDirective(d);
                 const end = i + length;
                 const slice_end = is_quote ? end : end - d.length;
-                let slice_begin = d === '```' ? i + d.length + 1 : i + d.length;
-                if (is_quote && this[slice_begin] === ' ') {
+                let slice_begin = d === "```" ? i + d.length + 1 : i + d.length;
+                if (is_quote && this[slice_begin] === " ") {
                     // Trim leading space inside codeblock
                     slice_begin += 1;
                 }
@@ -329,7 +329,7 @@ export class Texture extends String {
          *  add TemplateResult objects meant to render rich parts of the message.
          * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });
          */
-        await api.trigger('beforeMessageBodyTransformed', this, { synchronous: true });
+        await api.trigger("beforeMessageBodyTransformed", this, { synchronous: true });
 
         this.render_styling && this.addStyling();
         await this.addAnnotations(this.addMentions);
@@ -348,7 +348,7 @@ export class Texture extends String {
          *  add TemplateResult objects meant to render rich parts of the message.
          * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
          */
-        await api.trigger('afterMessageBodyTransformed', this, { synchronous: true });
+        await api.trigger("afterMessageBodyTransformed", this, { synchronous: true });
 
         this.payload = this.marshall();
         this.options.show_me_message && this.trimMeMessage();
@@ -378,7 +378,7 @@ export class Texture extends String {
         if (!text) {
             return false;
         }
-        return text.startsWith('/me ');
+        return text.startsWith("/me ");
     }
 
     /**
@@ -424,7 +424,7 @@ class StylingDirective extends Directive {
         const t = new Texture(
             txt,
             offset,
-            Object.assign(options, { 'show_images': false, 'embed_videos': false, 'embed_audio': false })
+            Object.assign(options, { "show_images": false, "embed_videos": false, "embed_audio": false })
         );
         return html`${until(StylingDirective.transform(t), html`${t}`)}`;
     }
@@ -459,9 +459,9 @@ export function getDirectiveTemplate(d, text, offset, options) {
             // This big [] corresponds to \s without newlines, to avoid issues when the > is the last character of the line
             .replace(
                 /\n\u200B*>[ \f\r\t\v\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?/g,
-                (m) => `\n${'\u200B'.repeat(m.length - 1)}`
+                (m) => `\n${"\u200B".repeat(m.length - 1)}`
             )
-            .replace(/\n$/, ''); // Trim line-break at the end
+            .replace(/\n$/, ""); // Trim line-break at the end
         return template(newtext, offset, options);
     } else {
         return template(text, offset, options);

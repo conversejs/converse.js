@@ -1,12 +1,12 @@
-import { html } from 'lit';
-import { bracketing_directives, dont_escape, styling_directives, styling_map } from './constants';
+import { html } from "lit";
+import { bracketing_directives, dont_escape, styling_directives, styling_map } from "./constants";
 
 /**
  * @param {any} s
  * @returns {boolean} - Returns true if the input is a string, otherwise false.
  */
 export function isString(s) {
-    return typeof s === 'string';
+    return typeof s === "string";
 }
 
 /**
@@ -16,7 +16,7 @@ export function isString(s) {
 export function isSpotifyTrack(url) {
     try {
         const { hostname, pathname } = new URL(url);
-        return hostname === 'open.spotify.com' && pathname.startsWith('/track/');
+        return hostname === "open.spotify.com" && pathname.startsWith("/track/");
     } catch (e) {
         console.debug(`Could not create URL object from ${url}`);
         return false;
@@ -29,14 +29,13 @@ export function isSpotifyTrack(url) {
  */
 export async function getHeaders(url) {
     try {
-        const response = await fetch(url, { method: 'HEAD' });
+        const response = await fetch(url, { method: "HEAD" });
         return response.headers;
     } catch (e) {
         console.debug(`Error calling HEAD on url ${url}: ${e}`);
         return null;
     }
 }
-
 
 /**
  * We don't render more than two line-breaks, replace extra line-breaks with
@@ -47,7 +46,7 @@ export async function getHeaders(url) {
  * @param {string} text
  */
 export function collapseLineBreaks(text) {
-    return text.replace(/\n(\u200B*\n)+/g, (m) => `\n${'\u200B'.repeat(m.length - 2)}\n`);
+    return text.replace(/\n(\u200B*\n)+/g, (m) => `\n${"\u200B".repeat(m.length - 2)}\n`);
 }
 
 export const tplMentionWithNick = (o) =>
@@ -69,12 +68,12 @@ function isValidDirective(d, text, i, opening) {
     // Ignore directives that are parts of words
     // More info on the Regexes used here: https://javascript.info/regexp-unicode#unicode-properties-p
     if (opening) {
-        const regex = RegExp(dont_escape.includes(d) ? `^(\\p{L}|\\p{N})${d}` : `^(\\p{L}|\\p{N})\\${d}`, 'u');
+        const regex = RegExp(dont_escape.includes(d) ? `^(\\p{L}|\\p{N})${d}` : `^(\\p{L}|\\p{N})\\${d}`, "u");
         if (i > 1 && regex.test(text.slice(i - 1))) {
             return false;
         }
         const is_quote = isQuoteDirective(d);
-        if (is_quote && i > 0 && text[i - 1] !== '\n') {
+        if (is_quote && i > 0 && text[i - 1] !== "\n") {
             // Quote directives must be on newlines
             return false;
         } else if (bracketing_directives.includes(d) && text[i + 1] === d) {
@@ -82,7 +81,7 @@ function isValidDirective(d, text, i, opening) {
             return false;
         }
     } else {
-        const regex = RegExp(dont_escape.includes(d) ? `^${d}(\\p{L}|\\p{N})` : `^\\${d}(\\p{L}|\\p{N})`, 'u');
+        const regex = RegExp(dont_escape.includes(d) ? `^${d}(\\p{L}|\\p{N})` : `^\\${d}(\\p{L}|\\p{N})`, "u");
         if (i < text.length - 1 && regex.test(text.slice(i))) {
             return false;
         }
@@ -106,7 +105,7 @@ function getDirective(text, i, opening = true) {
 
     if (
         /(^```[\s,\u200B]*\n)|(^```[\s,\u200B]*$)/.test(text.slice(i)) &&
-        (i === 0 || text[i - 1] === '>' || /\n\u200B{0,2}$/.test(text.slice(0, i)))
+        (i === 0 || text[i - 1] === ">" || /\n\u200B{0,2}$/.test(text.slice(0, i)))
     ) {
         d = text.slice(i, i + 3);
     } else if (styling_directives.includes(text.slice(i, i + 1))) {
@@ -147,8 +146,8 @@ function getDirectiveLength(d, text, i) {
             .split(/\n\u200B*[^>\u200B]/)
             .shift().length;
         return i - begin;
-    } else if (styling_map[d].type === 'span') {
-        const line = text.slice(i).split('\n').shift();
+    } else if (styling_map[d].type === "span") {
+        const line = text.slice(i).split("\n").shift();
         let j = 0;
         let idx = line.indexOf(d);
         while (idx !== -1) {
@@ -177,7 +176,7 @@ function getDirectiveLength(d, text, i) {
  * @param {string} d
  */
 export function isQuoteDirective(d) {
-    return ['>', '&gt;'].includes(d);
+    return [">", "&gt;"].includes(d);
 }
 
 /**

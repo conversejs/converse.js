@@ -1,4 +1,4 @@
-export function routeToChat(event: any): void;
+export function routeToChat(event: any): any;
 export function onClearSession(): Promise<void>;
 /**
  * Given a stanza, determine whether it's a new
@@ -12,7 +12,7 @@ export function registerMessageHandlers(): void;
  * Handler method for all incoming single-user chat "message" stanzas.
  * @param {Element|Builder} stanza
  */
-export function handleMessageStanza(stanza: Element | Builder): Promise<true | void>;
+export function handleMessageStanza(stanza: Element | Builder): Promise<any>;
 /**
  * Ask the XMPP server to enable Message Carbons
  * See [XEP-0280](https://xmpp.org/extensions/xep-0280.html#enabling)

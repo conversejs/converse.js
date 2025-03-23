@@ -124,7 +124,7 @@ declare const MUCOccupant_base: {
         sendMarkerForMessage(msg: import("../..").BaseMessage<any>, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         handleUnreadMessage(message: import("../..").BaseMessage<any>): void;
         getErrorAttributesForMessage(message: import("../..").BaseMessage<any>, attrs: import("../../shared/types").MessageAttributes): Promise<any>;
-        handleErrorMessageStanza(stanza: Element): Promise<void>;
+        handleErrorMessageStanza(stanza: Element): Promise<any>;
         incrementUnreadMsgsCounter(message: import("../..").BaseMessage<any>): void;
         clearUnreadMsgCounter(): void;
         handleRetraction(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;
@@ -290,7 +290,7 @@ declare class MUCOccupant extends MUCOccupant_base {
      * This method houldn't be called directly, instead {@link MUC#queueMessage} should be called.
      * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    onMessage(attrs_or_error: import("../../shared/types").MessageAttributes | import("../../shared/errors").StanzaParseError): Promise<void>;
+    onMessage(attrs_or_error: import("../../shared/types").MessageAttributes | import("../../shared/errors").StanzaParseError): Promise<any>;
     /**
      * Return roles which may be assigned to this occupant
      * @returns {typeof ROLES} - An array of assignable roles

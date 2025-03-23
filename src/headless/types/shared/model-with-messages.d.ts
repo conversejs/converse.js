@@ -195,7 +195,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         /**
          * @param {Element} stanza
          */
-        handleErrorMessageStanza(stanza: Element): Promise<void>;
+        handleErrorMessageStanza(stanza: Element): Promise<any>;
         /**
          * @param {BaseMessage} message
          */

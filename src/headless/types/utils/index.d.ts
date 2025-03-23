@@ -23,7 +23,7 @@ declare const _default: {
     shouldCreateMessage: typeof shouldCreateMessage;
     triggerEvent: typeof triggerEvent;
     isValidURL(text: string): boolean;
-    getURI(url: string | promise.getOpenPromise): any;
+    getURI(url: string | log): any;
     checkFileTypes(types: string[], url: string): boolean;
     filterQueryParamsFromURL(url: any): any;
     isURLWithImageExtension(url: any): boolean;

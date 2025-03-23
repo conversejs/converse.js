@@ -11,7 +11,7 @@ export class Connection extends Connection_base {
     /** @param {Element} body */
     xmlInput(body: Element): void;
     bind(): Promise<void>;
-    onDomainDiscovered(response: any): Promise<void>;
+    onDomainDiscovered(response: any): Promise<any>;
     /**
      * Adds support for XEP-0156 by quering the XMPP server for alternate
      * connection methods. This allows users to use the websocket or BOSH

@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import log from '@converse/log';
 
 dayjs.extend(advancedFormat);
 
 import { _converse, api, constants as shared_constants, i18n, parsers } from './shared/index.js';
 import u from './utils/index.js';
 import converse from './shared/api/public.js';
-import log from './log.js';
 
 import BaseMessage from './shared/message.js';
 export { BaseMessage };

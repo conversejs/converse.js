@@ -9,5 +9,5 @@ declare class TextureDirective extends Directive {
      */
     render(text: string, offset: number, options: object, callback?: Function): import("lit").TemplateResult<1>;
 }
-import { Directive } from 'lit/directive.js';
+import { Directive } from "lit/directive.js";
 //# sourceMappingURL=directive.d.ts.map

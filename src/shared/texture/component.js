@@ -1,7 +1,7 @@
-import { LitElement } from 'lit';
-import renderTexture from './directive.js';
+import { LitElement } from "lit";
+import renderTexture from "./directive.js";
 
-import './texture.scss';
+import "./texture.scss";
 
 /**
  * The Texture custom element allows you to parse transform text into rich DOM elements.
@@ -28,7 +28,7 @@ export default class Texture extends LitElement {
         };
     }
 
-    createRenderRoot () {
+    createRenderRoot() {
         // Render without the shadow DOM
         return this;
     }
@@ -67,4 +67,4 @@ export default class Texture extends LitElement {
     }
 }
 
-customElements.define('converse-texture', Texture);
+customElements.define("converse-texture", Texture);

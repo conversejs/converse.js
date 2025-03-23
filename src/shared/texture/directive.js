@@ -1,7 +1,7 @@
-import { html } from 'lit';
-import { until } from 'lit/directives/until.js';
-import { Directive, directive } from 'lit/directive.js';
-import { Texture } from './texture.js';
+import { html } from "lit";
+import { until } from "lit/directives/until.js";
+import { Directive, directive } from "lit/directive.js";
+import { Texture } from "./texture.js";
 
 class TextureRenderer {
     /**

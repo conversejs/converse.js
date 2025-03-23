@@ -15,7 +15,7 @@ declare class Bookmarks extends Collection {
     /**
      * @param {import('./types').BookmarkAttrs} attrs
      */
-    setBookmark(attrs: import("./types").BookmarkAttrs, create?: boolean): void;
+    setBookmark(attrs: import("./types").BookmarkAttrs, create?: boolean): any;
     /**
      * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
      * @returns {Stanza|Stanza[]}

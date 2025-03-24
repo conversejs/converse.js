@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2024-12-05 10:13+0000\n"
+"PO-Revision-Date: 2025-03-24 19:57+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.11-dev\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -199,9 +199,8 @@ msgstr ""
 "teenwoordig nie."
 
 #: dist/converse-no-dependencies.js:41016
-#, fuzzy
 msgid "A timeout happened while trying to retract your message."
-msgstr "Die tyd is verstreke tydens die herroeping van u boodskap."
+msgstr "Die tyd het verstryk tydens die herroeping van u boodskap."
 
 #: dist/converse-no-dependencies.js:41770
 msgid "Sorry, an error happened while running the command."
@@ -533,7 +532,6 @@ msgstr ""
 "Jy is vanuit die groepgesprek verwyder a.g.v 'n verandering van affiliasie"
 
 #: dist/converse-no-dependencies.js:49980
-#, fuzzy
 msgid ""
 "You have been removed from this groupchat because it has changed to members-"
 "only and you're not a member"
@@ -566,9 +564,8 @@ msgstr ""
 "U kan hierdie webbladd herlaai om opnuut te probeer."
 
 #: dist/converse-no-dependencies.js:54299
-#, fuzzy
 msgid "You are blocked from sending messages."
-msgstr "U word nie toegelaat om 'n boodskap te stuur nie."
+msgstr "U word nie toegelaat om boodskappe te stuur nie."
 
 #: dist/converse-no-dependencies.js:56320
 msgid "A timeout occurred"
@@ -1006,15 +1003,16 @@ msgid "What should your nickname for this groupchat be?"
 msgstr "Wat sal u bynaam vir hierdie groepgesprek wees?"
 
 #: dist/converse-no-dependencies.js:86842
-#, fuzzy
 msgid "Password (for a protected groupchat)"
-msgstr "Beveilig met 'n wagwoord"
+msgstr "Wagwoord (vir 'n geslote groepgesprek)"
 
 #: dist/converse-no-dependencies.js:86843
 msgid ""
 "If the groupchat requires a password to enter, you can save it here. Note "
 "this is not intended to be a secure storage."
 msgstr ""
+"Indien die groepgesprek 'n wagwoord benodig, kan u dit hier stoor. Let wel, "
+"hierdie nie 'n private stoorplek nie."
 
 #: dist/converse-no-dependencies.js:86844
 msgid "Update"
@@ -1161,24 +1159,25 @@ msgid "Are you sure you want to remove this contact?"
 msgstr "Is u seker u wil hierdie kontak verwyder?"
 
 #: dist/converse-no-dependencies.js:95529
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
 msgstr ""
-"Jammer, 'n fout het voorgekom tydens die toevoeging van %1$s as 'n kontak."
+"Jammer, 'n fout het voorgekom tydens die toevoeging van %1$s as 'n kontak"
 
 #: dist/converse-no-dependencies.js:95565
 msgid "Do you want to block this contact, so they cannot send you messages?"
 msgstr ""
+"Wil u hierdie kontak blokkeer, sodat hy u nie enige boodskappe kan stuur nie?"
 
 #: dist/converse-no-dependencies.js:95603
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
-msgstr ""
-"Jammer, 'n fout het voorgekom tydens die toevoeging van %1$s as 'n kontak."
+msgstr "Jammer, 'n fout het voorgekom tydens die blokkering van %1$s"
 
 #: dist/converse-no-dependencies.js:95635
 msgid "Do you want to unblock this contact, so they can send you messages?"
 msgstr ""
+"Wil u hierdie kontak onblokkeer, sodat u weer boodskappe van hom kan ontvang?"
 
 #: dist/converse-no-dependencies.js:95655
 #, fuzzy, javascript-format

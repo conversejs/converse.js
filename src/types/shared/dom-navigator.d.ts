@@ -1,79 +1,46 @@
 export default DOMNavigator;
 /**
  * Adds the ability to navigate the DOM with the arrow keys
- * @class DOMNavigator
  */
 declare class DOMNavigator {
     /**
-     * Directions.
-     * @returns {import('./types').DOMNavigatorDirection}
+     * @typedef {import('./types').DOMNavigatorOptions} DOMNavigatorOptions
+     * @typedef {import('./types').DOMNavigatorDirection} DOMNavigatorDirection
+     */
+    /**
+     * @returns {DOMNavigatorDirection}
      */
     static get DIRECTION(): import("./types").DOMNavigatorDirection;
     /**
-     * The default options for the DOM navigator.
-     * @returns {{
-     *     home: string[],
-     *     end: string[],
-     *     down: number[],
-     *     getSelector: null,
-     *     jump_to_picked: null,
-     *     jump_to_picked_direction: null,
-     *     jump_to_picked_selector: string,
-     *     left: number[],
-     *     onSelected: null,
-     *     right: number[],
-     *     selected: string,
-     *     selector: string,
-     *     up: number[]
-     * }}
+     * @returns {DOMNavigatorOptions}
      */
-    static get DEFAULTS(): {
-        home: string[];
-        end: string[];
-        down: number[];
-        getSelector: null;
-        jump_to_picked: null;
-        jump_to_picked_direction: null;
-        jump_to_picked_selector: string;
-        left: number[];
-        onSelected: null;
-        right: number[];
-        selected: string;
-        selector: string;
-        up: number[];
-    };
-    static getClosestElement(els: any, getDistance: any): any;
+    static get DEFAULTS(): import("./types").DOMNavigatorOptions;
+    /**
+     * Gets the closest element based on the provided distance function.
+     * @param {HTMLElement[]} els - The elements to evaluate.
+     * @param {function(HTMLElement): number} getDistance - The function to calculate distance.
+     * @returns {HTMLElement} The closest element.
+     */
+    static getClosestElement(els: HTMLElement[], getDistance: (arg0: HTMLElement) => number): HTMLElement;
     /**
      * Create a new DOM Navigator.
      * @param {HTMLElement} container The container of the element to navigate.
-     * @param {import('./types').DOMNavigatorOptions} options The options to configure the DOM navigator.
+     * @param {DOMNavigatorOptions} options The options to configure the DOM navigator.
      */
     constructor(container: HTMLElement, options: import("./types").DOMNavigatorOptions);
     doc: Document;
     container: HTMLElement;
     scroll_container: HTMLElement;
-    /** @type {import('./types').DOMNavigatorOptions} */
+    /** @type {DOMNavigatorOptions} */
     options: import("./types").DOMNavigatorOptions;
-    /**
-     * Initialize the navigator.
-     */
     init(): void;
     selected: any;
-    keydownHandler: (event: any) => void;
+    keydownHandler: (ev: KeyboardEvent) => void;
     elements: {};
     keys: {};
-    /**
-     * Enable this navigator.
-     */
     enable(): void;
     enabled: boolean;
-    /**
-     * Disable this navigator.
-     */
     disable(): void;
-    /**
-     * Destroy this navigator removing any event registered and any other data.
-     */
     destroy(): void;
     /**
      * @param {'down'|'right'|'left'|'up'} direction
@@ -104,23 +71,25 @@ declare class DOMNavigator {
      */
     inScrollContainerViewport(el: HTMLElement): boolean;
     /**
-     * Find and store the navigable elements
+     * Finds and stores the navigable elements.
+     * @param {string} [direction] - The navigation direction.
+     * @returns {HTMLElement[]} The navigable elements.
      */
-    getElements(direction: any): any;
+    getElements(direction?: string): HTMLElement[];
     /**
-     * Return an array of navigable elements after an offset.
-     * @param {number} left The left offset.
-     * @param {number} top The top offset.
-     * @return {Array} An array of elements.
+     * Gets navigable elements after a specified offset.
+     * @param {number} left - The left offset.
+     * @param {number} top - The top offset.
+     * @returns {HTMLElement[]} An array of elements.
      */
-    elementsAfter(left: number, top: number): any[];
+    elementsAfter(left: number, top: number): HTMLElement[];
     /**
-     * Return an array of navigable elements before an offset.
-     * @param {number} left The left offset.
-     * @param {number} top The top offset.
-     * @return {Array} An array of elements.
+     * Gets navigable elements before a specified offset.
+     * @param {number} left - The left offset.
+     * @param {number} top - The top offset.
+     * @returns {HTMLElement[]} An array of elements.
      */
-    elementsBefore(left: number, top: number): any[];
+    elementsBefore(left: number, top: number): HTMLElement[];
     /**
      * Handle the key down event.
      * @param {KeyboardEvent} ev - The event object.

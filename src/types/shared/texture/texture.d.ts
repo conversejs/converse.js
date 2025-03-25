@@ -24,6 +24,9 @@ export function getDirectiveTemplate(d: string, text: string, offset: number, op
  */
 export class Texture extends String {
     /**
+     * @typedef {import('@converse/headless/types/utils/types').MediaURLMetadata} MediaURLMetadata
+     */
+    /**
      * Create a new {@link Texture} instance.
      * @param {string} text - The text to be annotated
      * @param {number} offset - The offset of this particular piece of text
@@ -53,8 +56,6 @@ export class Texture extends String {
      * @param {Function} [options.onImgClick] - Callback for when an inline rendered image has been clicked
      * @param {Function} [options.onImgLoad] - Callback for when an inline rendered image has been loaded
      * @param {boolean} [options.hide_media_urls] - Callback for when an inline rendered image has been loaded
-     *
-     * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLMetadata
      */
     constructor(text: string, offset?: number, options?: {
         nick?: string;
@@ -62,7 +63,7 @@ export class Texture extends String {
         embed_audio?: boolean;
         embed_videos?: boolean;
         mentions?: any[];
-        media_urls?: any[];
+        media_urls?: import("@converse/headless/types/utils/types").MediaURLMetadata[];
         show_images?: boolean;
         show_me_message?: boolean;
         onImgClick?: Function;
@@ -72,7 +73,7 @@ export class Texture extends String {
     embed_audio: boolean;
     embed_videos: boolean;
     mentions: any[];
-    media_urls: any[];
+    media_urls: import("@converse/headless/types/utils/types").MediaURLMetadata[];
     nick: string;
     offset: number;
     onImgClick: Function;
@@ -83,7 +84,7 @@ export class Texture extends String {
         embed_audio?: boolean;
         embed_videos?: boolean;
         mentions?: any[];
-        media_urls?: any[];
+        media_urls?: import("@converse/headless/types/utils/types").MediaURLMetadata[];
         show_images?: boolean;
         show_me_message?: boolean;
         onImgClick?: Function;
@@ -102,10 +103,10 @@ export class Texture extends String {
     shouldRenderMedia(url: string, type: "audio" | "image" | "video"): any;
     /**
      * Look for `http` URIs and return templates that render them as URL links
-     * @param {import('utils/url').MediaURLData} url_obj
+     * @param {MediaURLMetadata} url_obj
      * @returns {Promise<string|import('lit').TemplateResult>}
      */
-    addHyperlinkTemplate(url_obj: import("utils/url").MediaURLData): Promise<string | import("lit").TemplateResult>;
+    addHyperlinkTemplate(url_obj: import("@converse/headless/types/utils/types").MediaURLMetadata): Promise<string | import("lit").TemplateResult>;
     /**
      * Look for `http` URIs and return templates that render them as URL links
      * @param {string} text

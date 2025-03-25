@@ -1,6 +1,3 @@
-/**
- * @typedef {module:headless-shared-chat-utils.MediaURLData} MediaURLData
- */
 import { api, log, u } from "@converse/headless";
 
 /**
@@ -36,7 +33,7 @@ export function isDomainAllowed(url, setting) {
 /**
  * Accepts a {@link MediaURLData} object and then checks whether its domain is
  * allowed for rendering in the chat.
- * @param {MediaURLData} o
+ * @param {import('@converse/headless/types/utils/types').MediaURLMetadata} o
  * @returns {boolean}
  */
 export function isMediaURLDomainAllowed(o) {

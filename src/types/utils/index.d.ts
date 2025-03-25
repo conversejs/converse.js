@@ -86,7 +86,7 @@ declare const _default: {
 } & import("headless/types/utils/index.js").CommonUtils & import("headless/types/utils/index.js").PluginUtils & {
     isDomainWhitelisted(whitelist: string[], url: string | URL): boolean;
     isDomainAllowed(url: string | URL, setting: string): boolean;
-    isMediaURLDomainAllowed(o: MediaURLData): boolean;
+    isMediaURLDomainAllowed(o: import("headless/types/utils/types.js").MediaURLMetadata): boolean;
     shouldRenderMediaFromURL(url_text: string, type: "audio" | "image" | "video"): any;
     filterQueryParamsFromURL(url: string): string;
     getNameAndValue(field: HTMLInputElement | HTMLSelectElement): {
@@ -274,7 +274,6 @@ declare const _default: {
     getAuthorStyle(occupant: any): string | TemplateResult;
 };
 export default _default;
-import * as url from "./url.js";
 import * as html from "./html.js";
 import * as file from "./file.js";
 import * as color from "./color.js";

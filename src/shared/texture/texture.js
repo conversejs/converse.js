@@ -54,6 +54,10 @@ const {
  */
 export class Texture extends String {
     /**
+     * @typedef {import('@converse/headless/types/utils/types').MediaURLMetadata} MediaURLMetadata
+     */
+
+    /**
      * Create a new {@link Texture} instance.
      * @param {string} text - The text to be annotated
      * @param {number} offset - The offset of this particular piece of text
@@ -83,8 +87,6 @@ export class Texture extends String {
      * @param {Function} [options.onImgClick] - Callback for when an inline rendered image has been clicked
      * @param {Function} [options.onImgLoad] - Callback for when an inline rendered image has been loaded
      * @param {boolean} [options.hide_media_urls] - Callback for when an inline rendered image has been loaded
-     *
-     * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLMetadata
      */
     constructor(text, offset = 0, options = {}) {
         super(text);
@@ -125,16 +127,16 @@ export class Texture extends String {
 
     /**
      * Look for `http` URIs and return templates that render them as URL links
-     * @param {import('utils/url').MediaURLData} url_obj
+     * @param {MediaURLMetadata} url_obj
      * @returns {Promise<string|import('lit').TemplateResult>}
      */
     async addHyperlinkTemplate(url_obj) {
-        const { url_text } = url_obj;
-        const filtered_url = filterQueryParamsFromURL(url_text);
+        const { url } = url_obj;
+        const filtered_url = filterQueryParamsFromURL(url);
         let template;
-        if (isGIFURL(url_text) && this.shouldRenderMedia(url_text, "image")) {
+        if (isGIFURL(url) && this.shouldRenderMedia(url, "image")) {
             template = tplGif(filtered_url, this.hide_media_urls);
-        } else if (isImageURL(url_text) && this.shouldRenderMedia(url_text, "image")) {
+        } else if (isImageURL(url) && this.shouldRenderMedia(url, "image")) {
             template = tplImage({
                 src: filtered_url,
                 // XXX: bit of an abuse of `hide_media_urls`, might want a dedicated option here
@@ -142,16 +144,16 @@ export class Texture extends String {
                 onClick: this.onImgClick,
                 onLoad: this.onImgLoad,
             });
-        } else if (isVideoURL(url_text) && this.shouldRenderMedia(url_text, "video")) {
+        } else if (isVideoURL(url) && this.shouldRenderMedia(url, "video")) {
             template = tplVideo(filtered_url, this.hide_media_urls);
-        } else if (isAudioURL(url_text) && this.shouldRenderMedia(url_text, "audio")) {
+        } else if (isAudioURL(url) && this.shouldRenderMedia(url, "audio")) {
             template = tplAudio(filtered_url, this.hide_media_urls);
-        } else if (api.settings.get("embed_3rd_party_media_players") && isSpotifyTrack(url_text)) {
-            const song_id = url_text.split("/track/")[1];
-            template = tplSpotify(song_id, url_text, this.hide_media_urls);
+        } else if (api.settings.get("embed_3rd_party_media_players") && isSpotifyTrack(url)) {
+            const song_id = url.split("/track/")[1];
+            template = tplSpotify(song_id, url, this.hide_media_urls);
         } else {
-            if (this.shouldRenderMedia(url_text, "audio") && api.settings.get("fetch_url_headers")) {
-                const headers = await getHeaders(url_text);
+            if (this.shouldRenderMedia(url, "audio") && api.settings.get("fetch_url_headers")) {
+                const headers = await getHeaders(url);
                 if (headers?.get("content-type")?.startsWith("audio")) {
                     template = tplAudio(filtered_url, this.hide_media_urls, headers.get("Icy-Name"));
                 }

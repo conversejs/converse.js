@@ -1,6 +1,3 @@
-/**
- * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLData
- */
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 import { api, log, _converse, u, constants } from '@converse/headless';
@@ -24,6 +21,10 @@ const { CHATROOMS_TYPE } = constants;
  */
 
 class MessageActions extends CustomElement {
+    /**
+     * @typedef {import('@converse/headless/types/utils/types').MediaURLMetadata} MediaURLMetadata
+     */
+
     static get properties () {
         return {
             is_retracted: { type: Boolean },
@@ -255,7 +256,7 @@ class MessageActions extends CustomElement {
             .filter(o => isMediaURLDomainAllowed(o));
 
         const url_strings = getMediaURLs(this.model.get('media_urls') || [], this.model.get('body'));
-        const media_urls = /** @type {MediaURLData[]} */(url_strings.filter(o => isMediaURLDomainAllowed(o)));
+        const media_urls = /** @type {MediaURLMetadata[]} */(url_strings.filter(o => isMediaURLDomainAllowed(o)));
         return [...new Set([...media_urls.map(o => o.url), ...unfurls_to_show.map(o => o.url)])];
     }
 

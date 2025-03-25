@@ -188,26 +188,25 @@ export function getMediaURLsMetadata(text, offset = 0) {
         withinString(
             text,
             /**
-             * @param {string} url_text
+             * @param {string} url
              * @param {number} start
              * @param {number} end
              * @returns {string|undefined}
              */
-            (url_text, start, end) => {
-                if (url_text.startsWith("_")) {
-                    url_text = url_text.slice(1);
+            (url, start, end) => {
+                if (url.startsWith("_")) {
+                    url = url.slice(1);
                     start += 1;
                 }
-                if (url_text.endsWith("_")) {
-                    url_text = url_text.slice(0, url_text.length - 1);
+                if (url.endsWith("_")) {
+                    url = url.slice(0, url.length - 1);
                     end -= 1;
                 }
 
-                const url = getURL(url_text);
-                if (url) {
-                    objs.push({ url_text, url, start: start + offset, end: end + offset });
+                if (isValidURL(url)) {
+                    objs.push({ url, start: start + offset, end: end + offset });
                 }
-                return url_text;
+                return url;
             }
         );
     } catch (error) {
@@ -219,7 +218,7 @@ export function getMediaURLsMetadata(text, offset = 0) {
         is_audio: isAudioURL(o.url),
         is_image: isImageURL(o.url),
         is_video: isVideoURL(o.url),
-        is_encrypted: isEncryptedFileURL(o.url_text),
+        is_encrypted: isEncryptedFileURL(o.url),
     }));
     return media_urls.length ? { media_urls } : {};
 }
@@ -235,16 +234,9 @@ export function getMediaURLs(arr, text) {
             if (o.start < 0 || o.start >= text.length) {
                 return null;
             }
-            const url_text = text.substring(o.start, o.end);
-            let url = null;
-            try {
-                url = getURL(url_text);
-            } catch (e) {
-                log.error(e);
-            }
+            const url = text.substring(o.start, o.end);
             return {
                 ...o,
-                url_text,
                 url,
             };
         })

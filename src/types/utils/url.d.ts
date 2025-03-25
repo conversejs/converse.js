@@ -11,10 +11,10 @@ export function isDomainAllowed(url: string | URL, setting: string): boolean;
 /**
  * Accepts a {@link MediaURLData} object and then checks whether its domain is
  * allowed for rendering in the chat.
- * @param {MediaURLData} o
+ * @param {import('@converse/headless/types/utils/types').MediaURLMetadata} o
  * @returns {boolean}
  */
-export function isMediaURLDomainAllowed(o: MediaURLData): boolean;
+export function isMediaURLDomainAllowed(o: import("@converse/headless/types/utils/types").MediaURLMetadata): boolean;
 /**
  * @param {string} url_text
  * @param {"audio"|"image"|"video"} type
@@ -27,5 +27,4 @@ export function shouldRenderMediaFromURL(url_text: string, type: "audio" | "imag
  * @return {string}
  */
 export function filterQueryParamsFromURL(url: string): string;
-export type MediaURLData = any;
 //# sourceMappingURL=url.d.ts.map

@@ -17,7 +17,6 @@ export type MediaURLMetadata = {
     is_encrypted?: boolean;
     end?: number;
     start?: number;
-    url: URL;
-    url_text: string;
+    url: string;
 };
 //# sourceMappingURL=types.d.ts.map

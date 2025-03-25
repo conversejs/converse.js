@@ -1,38 +1,36 @@
 /**
  * @typedef {module:dom-navigator.DOMNavigatorOptions} DOMNavigatorOptions
  */
-import { html } from 'lit';
-import { until } from 'lit/directives/until.js';
+import { html } from "lit";
+import { until } from "lit/directives/until.js";
 import { api, constants, u } from "@converse/headless";
 import DOMNavigator from "shared/dom-navigator.js";
-import DropdownBase from 'shared/components/dropdownbase.js';
-import 'shared/components/icons.js';
-import { __ } from 'i18n';
+import DropdownBase from "shared/components/dropdownbase.js";
+import "shared/components/icons.js";
+import { __ } from "i18n";
 
-import './styles/dropdown.scss';
+import "./styles/dropdown.scss";
 
 const { KEYCODES } = constants;
 
-
 export default class Dropdown extends DropdownBase {
-
-    static get properties () {
+    static get properties() {
         return {
             icon_classes: { type: String },
-            items: { type: Array }
-        }
+            items: { type: Array },
+        };
     }
 
-    constructor () {
+    constructor() {
         super();
-        this.icon_classes = 'fa fa-bars';
+        this.icon_classes = "fa fa-bars";
         this.items = [];
         this.id = u.getUniqueId();
-        this.addEventListener('hidden.bs.dropdown', () => this.onHidden());
-        this.addEventListener('keyup', (ev) => this.handleKeyUp(ev));
+        this.addEventListener("hidden.bs.dropdown", () => this.onHidden());
+        this.addEventListener("keyup", (ev) => this.handleKeyUp(ev));
     }
 
-    render () {
+    render() {
         return html`
             <button class="btn btn--transparent btn--standalone dropdown-toggle dropdown-toggle--no-caret"
                     id="${this.id}"
@@ -40,51 +38,51 @@ export default class Dropdown extends DropdownBase {
                     data-bs-toggle="dropdown"
                     aria-haspopup="true"
                     aria-expanded="false"
-                    aria-label=${ __('Menu') }>
-                <converse-icon aria-hidden="true" size="1em" class="${ this.icon_classes }">
+                    aria-label=${__("Menu")}>
+                <converse-icon aria-hidden="true" size="1em" class="${this.icon_classes}">
             </button>
             <ul class="dropdown-menu" aria-labelledby="${this.id}">
-                ${ this.items.map(b => html`<li>${until(b, '')}</li>`) }
+                ${this.items.map((b) => html`<li>${until(b, "")}</li>`)}
             </ul>
         `;
     }
 
-    firstUpdated () {
+    firstUpdated() {
         super.firstUpdated();
         this.initArrowNavigation();
     }
 
-    onHidden () {
+    onHidden() {
         this.navigator?.disable();
     }
 
-    initArrowNavigation () {
+    initArrowNavigation() {
         if (!this.navigator) {
-            const options = /** @type DOMNavigatorOptions */({
-                'selector': '.dropdown-item',
-                'onSelected': (el) => el.focus()
+            const options = /** @type DOMNavigatorOptions */ ({
+                "selector": ".dropdown-item",
+                "onSelected": (el) => el.focus(),
             });
-            this.navigator = new DOMNavigator(/** @type HTMLElement */(this.menu), options);
+            this.navigator = new DOMNavigator(/** @type HTMLElement */ (this.menu), options);
         }
     }
 
-    enableArrowNavigation (ev) {
+    enableArrowNavigation(ev) {
         if (ev) {
             ev.preventDefault();
             ev.stopPropagation();
         }
         this.navigator.enable();
-        this.navigator.select(/** @type HTMLElement */(this.menu.firstElementChild));
+        this.navigator.select(/** @type HTMLElement */ (this.menu.firstElementChild));
     }
 
     /**
      * @param {KeyboardEvent} ev
      */
-    handleKeyUp (ev) {
+    handleKeyUp(ev) {
         if (ev.key === KEYCODES.DOWN_ARROW && !this.navigator.enabled) {
             this.enableArrowNavigation(ev);
         }
     }
 }
 
-api.elements.define('converse-dropdown', Dropdown);
+api.elements.define("converse-dropdown", Dropdown);

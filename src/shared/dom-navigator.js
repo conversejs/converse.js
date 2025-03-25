@@ -4,11 +4,10 @@
  * This module started as a fork of Rubens Mariuzzo's dom-navigator.
  * @copyright Rubens Mariuzzo, JC Brand
  */
-import u from '../utils/html';
-import { converse } from  "@converse/headless";
+import u from "../utils/html";
+import { converse } from "@converse/headless";
 
 const { keycodes } = converse;
-
 
 /**
  * Indicates if a given element is fully visible in the viewport.
@@ -17,12 +16,7 @@ const { keycodes } = converse;
  */
 function inViewport(el) {
     const rect = el.getBoundingClientRect();
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= window.innerHeight &&
-        rect.right <= window.innerWidth
-    );
+    return rect.top >= 0 && rect.left >= 0 && rect.bottom <= window.innerHeight && rect.right <= window.innerWidth;
 }
 
 /**
@@ -36,7 +30,7 @@ function absoluteOffsetTop(el) {
         if (!isNaN(el.offsetTop)) {
             offsetTop += el.offsetTop;
         }
-    } while ((el = /** @type {HTMLElement} */(el.offsetParent)));
+    } while ((el = /** @type {HTMLElement} */ (el.offsetParent)));
     return offsetTop;
 }
 
@@ -51,7 +45,7 @@ function absoluteOffsetLeft(el) {
         if (!isNaN(el.offsetLeft)) {
             offsetLeft += el.offsetLeft;
         }
-    } while ((el = /** @type {HTMLElement} */(el.offsetParent)));
+    } while ((el = /** @type {HTMLElement} */ (el.offsetParent)));
     return offsetLeft;
 }
 
@@ -64,15 +58,15 @@ class DOMNavigator {
      * Directions.
      * @returns {import('./types').DOMNavigatorDirection}
      */
-    static get DIRECTION () {
-        return ({
-            down: 'down',
-            end: 'end',
-            home: 'home',
-            left: 'left',
-            right: 'right',
-            up: 'up'
-        });
+    static get DIRECTION() {
+        return {
+            down: "down",
+            end: "end",
+            home: "home",
+            left: "left",
+            right: "right",
+            up: "up",
+        };
     }
 
     /**
@@ -93,7 +87,7 @@ class DOMNavigator {
      *     up: number[]
      * }}
      */
-    static get DEFAULTS () {
+    static get DEFAULTS() {
         return {
             home: [`${keycodes.SHIFT}${keycodes.UP_ARROW}`],
             end: [`${keycodes.SHIFT}${keycodes.DOWN_ARROW}`],
@@ -104,26 +98,29 @@ class DOMNavigator {
             getSelector: null,
             jump_to_picked: null,
             jump_to_picked_direction: null,
-            jump_to_picked_selector: 'picked',
+            jump_to_picked_selector: "picked",
             onSelected: null,
-            selected: 'selected',
-            selector: 'li',
+            selected: "selected",
+            selector: "li",
         };
     }
 
-    static getClosestElement (els, getDistance) {
-        const next = els.reduce((prev, curr) => {
-            const current_distance = getDistance(curr);
-            if (current_distance < prev.distance) {
-                return {
-                    distance: current_distance,
-                    element: curr
-                };
+    static getClosestElement(els, getDistance) {
+        const next = els.reduce(
+            (prev, curr) => {
+                const current_distance = getDistance(curr);
+                if (current_distance < prev.distance) {
+                    return {
+                        distance: current_distance,
+                        element: curr,
+                    };
+                }
+                return prev;
+            },
+            {
+                distance: Infinity,
             }
-            return prev;
-        }, {
-            distance: Infinity
-        });
+        );
         return next.element;
     }
 
@@ -132,7 +129,7 @@ class DOMNavigator {
      * @param {HTMLElement} container The container of the element to navigate.
      * @param {import('./types').DOMNavigatorOptions} options The options to configure the DOM navigator.
      */
-    constructor (container, options) {
+    constructor(container, options) {
         this.doc = window.document;
         this.container = container;
         this.scroll_container = options.scroll_container || container;
@@ -146,36 +143,36 @@ class DOMNavigator {
     /**
      * Initialize the navigator.
      */
-    init () {
+    init() {
         this.selected = null;
         this.keydownHandler = null;
         this.elements = {};
         // Create hotkeys map.
         this.keys = {};
-        this.options.down.forEach(key => (this.keys[key] = DOMNavigator.DIRECTION.down));
-        this.options.end.forEach(key => (this.keys[key] = DOMNavigator.DIRECTION.end));
-        this.options.home.forEach(key => (this.keys[key] = DOMNavigator.DIRECTION.home));
-        this.options.left.forEach(key => (this.keys[key] = DOMNavigator.DIRECTION.left));
-        this.options.right.forEach(key => (this.keys[key] = DOMNavigator.DIRECTION.right));
-        this.options.up.forEach(key => (this.keys[key] = DOMNavigator.DIRECTION.up));
+        this.options.down.forEach((key) => (this.keys[key] = DOMNavigator.DIRECTION.down));
+        this.options.end.forEach((key) => (this.keys[key] = DOMNavigator.DIRECTION.end));
+        this.options.home.forEach((key) => (this.keys[key] = DOMNavigator.DIRECTION.home));
+        this.options.left.forEach((key) => (this.keys[key] = DOMNavigator.DIRECTION.left));
+        this.options.right.forEach((key) => (this.keys[key] = DOMNavigator.DIRECTION.right));
+        this.options.up.forEach((key) => (this.keys[key] = DOMNavigator.DIRECTION.up));
     }
 
     /**
      * Enable this navigator.
      */
-    enable () {
+    enable() {
         this.getElements();
-        this.keydownHandler = event => this.handleKeydown(event);
-        this.doc.addEventListener('keydown', this.keydownHandler);
+        this.keydownHandler = (event) => this.handleKeydown(event);
+        this.doc.addEventListener("keydown", this.keydownHandler);
         this.enabled = true;
     }
 
     /**
      * Disable this navigator.
      */
-    disable () {
+    disable() {
         if (this.keydownHandler) {
-            this.doc.removeEventListener('keydown', this.keydownHandler);
+            this.doc.removeEventListener("keydown", this.keydownHandler);
         }
         this.unselect();
         this.elements = {};
@@ -185,7 +182,7 @@ class DOMNavigator {
     /**
      * Destroy this navigator removing any event registered and any other data.
      */
-    destroy () {
+    destroy() {
         this.disable();
     }
 
@@ -193,11 +190,11 @@ class DOMNavigator {
      * @param {'down'|'right'|'left'|'up'} direction
      * @returns {HTMLElement}
      */
-    getNextElement (direction) {
+    getNextElement(direction) {
         let el;
         if (direction === DOMNavigator.DIRECTION.home) {
             el = this.getElements(direction)[0];
-        } else if (direction  === DOMNavigator.DIRECTION.end) {
+        } else if (direction === DOMNavigator.DIRECTION.end) {
             el = Array.from(this.getElements(direction)).pop();
         } else if (this.selected) {
             if (direction === DOMNavigator.DIRECTION.right) {
@@ -210,13 +207,13 @@ class DOMNavigator {
                 const left = this.selected.offsetLeft;
                 const top = this.selected.offsetTop + this.selected.offsetHeight;
                 const els = this.elementsAfter(0, top);
-                const getDistance = el => Math.abs(el.offsetLeft - left) + Math.abs(el.offsetTop - top);
+                const getDistance = (el) => Math.abs(el.offsetLeft - left) + Math.abs(el.offsetTop - top);
                 el = DOMNavigator.getClosestElement(els, getDistance);
             } else if (direction == DOMNavigator.DIRECTION.up) {
                 const left = this.selected.offsetLeft;
                 const top = this.selected.offsetTop - 1;
                 const els = this.elementsBefore(Infinity, top);
-                const getDistance = el => Math.abs(left - el.offsetLeft) + Math.abs(top - el.offsetTop);
+                const getDistance = (el) => Math.abs(left - el.offsetLeft) + Math.abs(top - el.offsetTop);
                 el = DOMNavigator.getClosestElement(els, getDistance);
             } else {
                 throw new Error("getNextElement: invalid direction value");
@@ -227,11 +224,14 @@ class DOMNavigator {
                 // selected, so we return the next.
                 el = this.getElements(direction)[1];
             } else {
-                el = this.getElements(direction)[0]
+                el = this.getElements(direction)[0];
             }
         }
 
-        if (this.options.jump_to_picked && el && el.matches(this.options.jump_to_picked) &&
+        if (
+            this.options.jump_to_picked &&
+            el &&
+            el.matches(this.options.jump_to_picked) &&
             direction === this.options.jump_to_picked_direction
         ) {
             el = this.container.querySelector(this.options.jump_to_picked_selector) || el;
@@ -244,13 +244,13 @@ class DOMNavigator {
      * @param {HTMLElement} el The DOM element to select.
      * @param {string} [direction] The direction.
      */
-    select (el, direction) {
+    select(el, direction) {
         if (!el || el === this.selected) {
             return;
         }
         this.unselect();
         direction && this.scrollTo(el, direction);
-        if (el.matches('input')) {
+        if (el.matches("input")) {
             el.focus();
         } else {
             u.addClass(this.options.selected, el);
@@ -262,7 +262,7 @@ class DOMNavigator {
     /**
      * Remove the current selection
      */
-    unselect () {
+    unselect() {
         if (this.selected) {
             u.removeClass(this.options.selected, this.selected);
             delete this.selected;
@@ -275,7 +275,7 @@ class DOMNavigator {
      * @param {String} direction The direction of the current navigation.
      * @return void.
      */
-    scrollTo (el, direction) {
+    scrollTo(el, direction) {
         if (!this.inScrollContainerViewport(el)) {
             const container = this.scroll_container;
             if (!container.contains(el)) {
@@ -340,11 +340,11 @@ class DOMNavigator {
             return false;
         }
         // Check on right side.
-        if ((el.offsetLeft + el.offsetWidth - container.scrollLeft) > (container.offsetLeft + container.offsetWidth)) {
+        if (el.offsetLeft + el.offsetWidth - container.scrollLeft > container.offsetLeft + container.offsetWidth) {
             return false;
         }
         // Check on down side.
-        if ((el.offsetTop + el.offsetHeight - container.scrollTop) > (container.offsetTop + container.offsetHeight)) {
+        if (el.offsetTop + el.offsetHeight - container.scrollTop > container.offsetTop + container.offsetHeight) {
             return false;
         }
         return true;
@@ -353,7 +353,7 @@ class DOMNavigator {
     /**
      * Find and store the navigable elements
      */
-    getElements (direction) {
+    getElements(direction) {
         const selector = this.options.getSelector ? this.options.getSelector(direction) : this.options.selector;
         if (!this.elements[selector]) {
             this.elements[selector] = Array.from(this.container.querySelectorAll(selector));
@@ -367,8 +367,10 @@ class DOMNavigator {
      * @param {number} top The top offset.
      * @return {Array} An array of elements.
      */
-    elementsAfter (left, top) {
-        return this.getElements(DOMNavigator.DIRECTION.down).filter(el => el.offsetLeft >= left && el.offsetTop >= top);
+    elementsAfter(left, top) {
+        return this.getElements(DOMNavigator.DIRECTION.down).filter(
+            (el) => el.offsetLeft >= left && el.offsetTop >= top
+        );
     }
 
     /**
@@ -377,15 +379,15 @@ class DOMNavigator {
      * @param {number} top The top offset.
      * @return {Array} An array of elements.
      */
-    elementsBefore (left, top) {
-        return this.getElements(DOMNavigator.DIRECTION.up).filter(el => el.offsetLeft <= left && el.offsetTop <= top);
+    elementsBefore(left, top) {
+        return this.getElements(DOMNavigator.DIRECTION.up).filter((el) => el.offsetLeft <= left && el.offsetTop <= top);
     }
 
     /**
      * Handle the key down event.
      * @param {KeyboardEvent} ev - The event object.
      */
-    handleKeydown (ev) {
+    handleKeydown(ev) {
         const keys = keycodes;
         const direction = ev.shiftKey ? this.keys[`${keys.SHIFT}+${ev.which}`] : this.keys[ev.which];
         if (direction) {

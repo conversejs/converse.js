@@ -84,6 +84,6 @@ export default class EmojiPicker extends CustomElement {
 }
 export type DOMNavigatorOptions = any;
 export type DOMNavigatorDirection = any;
-import { CustomElement } from 'shared/components/element.js';
+import { CustomElement } from "shared/components/element.js";
 import DOMNavigator from "shared/dom-navigator";
 //# sourceMappingURL=emoji-picker.d.ts.map

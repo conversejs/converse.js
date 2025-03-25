@@ -200,7 +200,7 @@ export class AutoComplete extends EventEmitter(Object) {
             this.insertValue(suggestion);
             this.close({'reason': 'select'});
             this.auto_completing = false;
-            this.trigger("suggestion-box-selectcomplete", {'text': suggestion});
+            this.trigger("suggestion-box-selectcomplete", { text: suggestion });
         }
     }
 

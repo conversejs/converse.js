@@ -146,14 +146,6 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
     }
 
     /**
-     * @param {string} jid1
-     * @param {string} jid2
-     */
-    isSameUser (jid1, jid2) {
-        return u.isSameBareJID(jid1, jid2);
-    }
-
-    /**
      * @param {MessageAttributes} attrs
      */
     handleChatMarker (attrs) {

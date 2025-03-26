@@ -1862,39 +1862,6 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         }
     }
 
-    /**
-     * Given two JIDs, which can be either user JIDs or MUC occupant JIDs,
-     * determine whether they belong to the same user.
-     * @param {String} jid1
-     * @param {String} jid2
-     * @returns {Boolean}
-     */
-    isSameUser (jid1, jid2) {
-        const bare_jid1 = Strophe.getBareJidFromJid(jid1);
-        const bare_jid2 = Strophe.getBareJidFromJid(jid2);
-        const resource1 = Strophe.getResourceFromJid(jid1);
-        const resource2 = Strophe.getResourceFromJid(jid2);
-        if (u.isSameBareJID(jid1, jid2)) {
-            if (bare_jid1 === this.get('jid')) {
-                // MUC JIDs
-                return resource1 === resource2;
-            } else {
-                return true;
-            }
-        } else {
-            const occupant1 =
-                bare_jid1 === this.get('jid')
-                    ? this.occupants.findOccupant({ 'nick': resource1 })
-                    : this.occupants.findOccupant({ 'jid': bare_jid1 });
-
-            const occupant2 =
-                bare_jid2 === this.get('jid')
-                    ? this.occupants.findOccupant({ 'nick': resource2 })
-                    : this.occupants.findOccupant({ 'jid': bare_jid2 });
-            return occupant1 === occupant2;
-        }
-    }
-
     async isSubjectHidden () {
         const jids = await api.user.settings.get('mucs_with_hidden_subject', []);
         return jids.includes(this.get('jid'));

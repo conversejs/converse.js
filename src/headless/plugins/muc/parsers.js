@@ -387,7 +387,7 @@ function parsePresenceUserItem(stanza, nick) {
         return {
             affiliation: /** @type {MUCAffiliation} */ (item.getAttribute('affiliation')),
             role: /** @type {MUCRole} */ (item.getAttribute('role')),
-            jid: item.getAttribute('jid'),
+            real_jid: item.getAttribute('jid'),
             nick: item.getAttribute('nick') || nick,
             ...(actor
                 ? {
@@ -421,6 +421,7 @@ export async function parseMUCPresence(stanza, chatbox) {
         from,
         nick,
         type,
+        jid: from,
         muc_jid: Strophe.getBareJidFromJid(from),
         occupant_id: getOccupantID(stanza, chatbox),
         status: stanza.querySelector(':scope > status')?.textContent ?? undefined,

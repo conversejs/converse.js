@@ -35,6 +35,8 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
 
     defaults() {
         return {
+            jid: null, // Must be the user's MUC JID (i.e. room@muc-service/nick)
+            real_jid: null, // The user's real JID, might not be known inside an anonymous chat
             hats: [],
             show: "offline",
             states: [],

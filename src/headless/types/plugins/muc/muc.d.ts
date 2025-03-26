@@ -706,14 +706,6 @@ declare class MUC extends MUC_base {
      * @param {MUCMessageAttributes} attrs
      */
     fetchFeaturesIfConfigurationChanged(attrs: import("./types").MUCMessageAttributes): void;
-    /**
-     * Given two JIDs, which can be either user JIDs or MUC occupant JIDs,
-     * determine whether they belong to the same user.
-     * @param {String} jid1
-     * @param {String} jid2
-     * @returns {Boolean}
-     */
-    isSameUser(jid1: string, jid2: string): boolean;
     isSubjectHidden(): Promise<any>;
     toggleSubjectHiddenState(): Promise<void>;
     /**

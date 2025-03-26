@@ -123,22 +123,22 @@ class MUCOccupants extends Collection {
     }
 
     /**
-     * Try to find an existing occupant based on the provided {@link OccupantData} object.
+     * Try to find an existing occupant based on the provided {@link OccupantSearchData} object.
      * Fetching the user by `occupant_id` is the quickest, O(1),
      * since it's a dictionary lookup.
      * Fetching by jid or nick is O(n), since it requires traversing an array.
      * Lookup by occupant_id is done first, then jid, and then nick.
      *
-     * @param {import('./types').OccupantData} data
+     * @param {import('./types').OccupantSearchData} data
      */
     findOccupant (data) {
         if (data.occupant_id) {
             return this.get(data.occupant_id);
         }
 
-        const jid = data.jid && Strophe.getBareJidFromJid(data.jid);
-        return jid && this.findWhere({ jid }) ||
-            data.nick && this.findWhere({ 'nick': data.nick });
+        const real_jid = data.real_jid && Strophe.getBareJidFromJid(data.real_jid);
+        return real_jid && this.findWhere({ real_jid }) ||
+            data.nick && this.findWhere({ nick: data.nick });
     }
 
     /**
@@ -149,7 +149,7 @@ class MUCOccupants extends Collection {
      */
     getOwnOccupant () {
         return this.findOccupant({
-            jid: _converse.session.get('bare_jid'),
+            real_jid: _converse.session.get('bare_jid'),
             occupant_id: this.chatroom.get('occupant_id')
         });
     }

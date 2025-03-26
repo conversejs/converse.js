@@ -96,7 +96,7 @@ export type MUCPresenceItemAttributes = {
         jid?: string;
     };
     affiliation?: MUCAffiliation;
-    jid?: string;
+    real_jid?: string;
     nick: string;
     reason?: string;
     role?: MUCRole;
@@ -108,6 +108,7 @@ export type MUCPresenceAttributes = MUCPresenceItemAttributes & {
     hats: Array<MUCHat>; // An array of XEP-0317 hats
     image_hash?: string;
     is_self: boolean;
+    jid: string;
     muc_jid: string; // The JID of the MUC in which the presence was received
     nick: string; // The nickname of the sender
     occupant_id: string; // The XEP-0421 occupant ID
@@ -118,8 +119,8 @@ export type MUCPresenceAttributes = MUCPresenceItemAttributes & {
 };
 
 
-export type OccupantData = {
-    jid?: string;
+export type OccupantSearchData = {
     nick?: string;
     occupant_id?: string; // The XEP-0421 unique occupant id
+    real_jid?: string;
 };

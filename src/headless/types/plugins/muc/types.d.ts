@@ -64,7 +64,7 @@ export type MUCPresenceItemAttributes = {
         jid?: string;
     };
     affiliation?: MUCAffiliation;
-    jid?: string;
+    real_jid?: string;
     nick: string;
     reason?: string;
     role?: MUCRole;
@@ -75,6 +75,7 @@ export type MUCPresenceAttributes = MUCPresenceItemAttributes & {
     hats: Array<MUCHat>;
     image_hash?: string;
     is_self: boolean;
+    jid: string;
     muc_jid: string;
     nick: string;
     occupant_id: string;
@@ -83,10 +84,10 @@ export type MUCPresenceAttributes = MUCPresenceItemAttributes & {
     status?: string;
     type: string;
 };
-export type OccupantData = {
-    jid?: string;
+export type OccupantSearchData = {
     nick?: string;
     occupant_id?: string;
+    real_jid?: string;
 };
 export {};
 //# sourceMappingURL=types.d.ts.map

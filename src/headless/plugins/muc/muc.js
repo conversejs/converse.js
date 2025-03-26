@@ -466,12 +466,10 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
         const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
         if (item) {
-            const from = stanza.getAttribute('from');
             const jid = item.getAttribute('jid');
             const data = {
-                from,
                 states: [],
-                jid: Strophe.getBareJidFromJid(jid),
+                real_jid: Strophe.getBareJidFromJid(jid),
                 resource: Strophe.getResourceFromJid(jid)
             };
 
@@ -485,7 +483,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 data.role = role;
             }
 
-            const occupant = this.occupants.findOccupant({ jid: data.jid });
+            const occupant = this.occupants.findOccupant({ real_jid: data.real_jid });
             if (occupant) {
                 occupant.save(data);
             } else {
@@ -1819,11 +1817,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             return;
         }
 
-        const jid = attrs.jid || '';
+        const real_jid = attrs.real_jid || '';
         const occupant_attrs = {
             ...attrs,
-            jid: Strophe.getBareJidFromJid(jid) || occupant?.attributes?.jid,
-            resource: Strophe.getResourceFromJid(jid) || occupant?.attributes?.resource,
+            real_jid: Strophe.getBareJidFromJid(real_jid) || occupant?.attributes?.real_jid,
+            resource: Strophe.getResourceFromJid(real_jid) || occupant?.attributes?.resource,
         };
 
         if (attrs.is_self) {

@@ -103,23 +103,22 @@ class MUCMessage extends BaseMessage {
             this.occupant = nick || occupant_id ? this.occupants.findOccupant({ nick, occupant_id }) : null;
 
             if (!this.occupant) {
-                const jid = this.get('from_real_jid');
-                if (!nick && !occupant_id && !jid) {
+                const real_jid = this.get('from_real_jid');
+                if (!nick && !occupant_id && !real_jid) {
                     // Tombstones of retracted messages might have no occupant info
                     return;
                 }
 
-                this.occupant = this.occupants.create({ nick, occupant_id, jid });
+                this.occupant = this.occupants.create({ nick, occupant_id, real_jid });
 
                 if (api.settings.get('muc_send_probes')) {
-                    const jid = `${this.chatbox.get('jid')}/${nick}`;
-                    api.user.presence.send('probe', jid);
+                    api.user.presence.send('probe', `${this.chatbox.get('jid')}/${nick}`);
                 }
             }
         }
 
-        if (this.get('from_real_jid') !== this.occupant.get('jid')) {
-            this.save('from_real_jid', this.occupant.get('jid'));
+        if (this.get('from_real_jid') !== this.occupant.get('real_jid')) {
+            this.save('from_real_jid', this.occupant.get('real_jid'));
         }
 
         this.trigger('occupant:add');

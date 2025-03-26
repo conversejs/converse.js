@@ -35,6 +35,8 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
 
     defaults() {
         return {
+            jid: undefined, // This is the user's real JID, if known
+            nick: undefined, // We use the nick to determine the occupant MUC JID
             hats: [],
             show: "offline",
             states: [],

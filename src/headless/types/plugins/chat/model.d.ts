@@ -371,11 +371,6 @@ declare class ChatBox extends ChatBox_base {
      */
     getDisplayName(): string | null;
     /**
-     * @param {string} jid1
-     * @param {string} jid2
-     */
-    isSameUser(jid1: string, jid2: string): any;
-    /**
      * @param {MessageAttributes} attrs
      */
     handleChatMarker(attrs: import("../../shared/types").MessageAttributes): boolean;

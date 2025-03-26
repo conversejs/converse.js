@@ -47,7 +47,7 @@ describe("A Groupchat Message", function () {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
         const copyActions = view.querySelectorAll('.chat-msg__action-copy');

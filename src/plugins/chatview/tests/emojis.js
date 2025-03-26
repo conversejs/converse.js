@@ -67,7 +67,7 @@ describe("Emojis", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13 // Enter
+                key: "Enter",
             });
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
@@ -76,7 +76,7 @@ describe("Emojis", function () {
             expect(textarea.value).toBe('');
             message_form.onKeyDown({
                 target: textarea,
-                keyCode: 38 // Up arrow
+                key: "ArrowUp",
             });
             expect(textarea.value).toBe('💩 😇');
             expect(view.model.messages.at(2).get('correcting')).toBe(true);
@@ -87,7 +87,7 @@ describe("Emojis", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13 // Enter
+                key: "Enter",
             });
             await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
                 .filter(el => el.textContent === edited_text).length);
@@ -99,7 +99,7 @@ describe("Emojis", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13 // Enter
+                key: "Enter",
             });
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 4);
 
@@ -107,7 +107,7 @@ describe("Emojis", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13 // Enter
+                key: "Enter",
             });
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 5);
 
@@ -148,7 +148,7 @@ describe("Emojis", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13 // Enter
+                key: "Enter",
             });
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             message = view.querySelector(last_msg_sel);
@@ -199,7 +199,7 @@ describe("Emojis", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13 // Enter
+                key: "Enter",
             });
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             const body = view.querySelector('converse-chat-message-body');

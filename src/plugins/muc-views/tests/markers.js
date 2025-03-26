@@ -18,7 +18,7 @@ describe("A XEP-0333 Chat Marker", function () {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);

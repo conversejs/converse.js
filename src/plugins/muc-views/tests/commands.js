@@ -14,7 +14,7 @@ describe("Groupchats", function () {
             await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
+            const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, key: "Enter" };
             textarea.value = '/help';
             const message_form = view.querySelector('converse-muc-message-form');
             message_form.onKeyDown(enter);
@@ -110,7 +110,7 @@ describe("Groupchats", function () {
             await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            const enter = { 'target': textarea, 'preventDefault': function () {}, 'keyCode': 13 };
+            const enter = { 'target': textarea, 'preventDefault': function () {}, key: "Enter" };
             spyOn(window, 'confirm').and.callFake(() => true);
             textarea.value = '/clear';
             const message_form = view.querySelector('converse-muc-message-form');
@@ -178,7 +178,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
             expect(_converse.api.connection.get().send).not.toHaveBeenCalled();
             await u.waitUntil(() => view.querySelectorAll('.chat-error').length);
@@ -190,7 +190,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
 
             await u.waitUntil(() => sent_stanza?.querySelector('item[affiliation="member"]'));
@@ -295,7 +295,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
             const { sent_stanzas } = _converse.api.connection.get();
             await u.waitUntil(() => sent_stanzas.filter(s => s.textContent.trim() === 'This is the groupchat subject'));
@@ -305,7 +305,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
 
             let sent_stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.textContent.trim() === 'This is a new subject').pop());
@@ -319,7 +319,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
             sent_stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.textContent.trim() === 'This is yet another subject').pop());
             expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
@@ -335,7 +335,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
             sent_stanza = await u.waitUntil(() => sent_stanzas.pop());
             expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
@@ -354,7 +354,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
             await u.waitUntil(() => _converse.api.confirm.calls.count() === 1);
             expect(_converse.api.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
@@ -389,7 +389,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
             await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
             const err_msg = await u.waitUntil(() => view.querySelector('.chat-error'));
@@ -475,7 +475,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
             await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
             await u.waitUntil(() => view.querySelector('.message:last-child')?.textContent?.trim() ===
@@ -571,7 +571,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
             await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
             await u.waitUntil(() => view.querySelector('.message:last-child')?.textContent?.trim() ===
@@ -653,7 +653,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
 
             await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
@@ -778,7 +778,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
 
             await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());

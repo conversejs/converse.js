@@ -15,7 +15,10 @@ export default class Dropdown extends DropdownBase {
     initArrowNavigation(): void;
     navigator: DOMNavigator;
     enableArrowNavigation(ev: any): void;
-    handleKeyUp(ev: any): void;
+    /**
+     * @param {KeyboardEvent} ev
+     */
+    handleKeyUp(ev: KeyboardEvent): void;
 }
 export type DOMNavigatorOptions = any;
 import DropdownBase from 'shared/components/dropdownbase.js';

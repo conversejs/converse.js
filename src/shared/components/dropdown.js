@@ -77,8 +77,11 @@ export default class Dropdown extends DropdownBase {
         this.navigator.select(/** @type HTMLElement */(this.menu.firstElementChild));
     }
 
+    /**
+     * @param {KeyboardEvent} ev
+     */
     handleKeyUp (ev) {
-        if (ev.keyCode === KEYCODES.DOWN_ARROW && !this.navigator.enabled) {
+        if (ev.key === KEYCODES.DOWN_ARROW && !this.navigator.enabled) {
             this.enableArrowNavigation(ev);
         }
     }

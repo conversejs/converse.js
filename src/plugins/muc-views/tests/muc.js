@@ -1657,7 +1657,7 @@ describe("Groupchats", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 

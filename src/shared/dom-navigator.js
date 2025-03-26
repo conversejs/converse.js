@@ -95,14 +95,11 @@ class DOMNavigator {
      */
     static get DEFAULTS () {
         return {
-            home: [`${keycodes.SHIFT}+${keycodes.UP_ARROW}`],
-            end: [`${keycodes.SHIFT}+${keycodes.DOWN_ARROW}`],
+            home: [`${keycodes.SHIFT}${keycodes.UP_ARROW}`],
+            end: [`${keycodes.SHIFT}${keycodes.DOWN_ARROW}`],
             up: [keycodes.UP_ARROW],
             down: [keycodes.DOWN_ARROW],
-            left: [
-                keycodes.LEFT_ARROW,
-                `${keycodes.SHIFT}+${keycodes.TAB}`
-            ],
+            left: [keycodes.LEFT_ARROW, `${keycodes.SHIFT}${keycodes.TAB}`],
             right: [keycodes.RIGHT_ARROW, keycodes.TAB],
             getSelector: null,
             jump_to_picked: null,

@@ -5,7 +5,7 @@ const { stx, sizzle, Strophe, u } = converse.env;
 async function openModtools (_converse, view) {
     const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
     textarea.value = '/modtools';
-    const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
+    const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, key: "Enter" };
     const message_form = view.querySelector('converse-muc-message-form');
     message_form.onKeyDown(enter);
     const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
@@ -240,7 +240,7 @@ describe("The groupchat moderator tool", function () {
 
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = '/modtools';
-        const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
+        const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, key: "Enter" };
         const message_form = view.querySelector('converse-muc-message-form');
         message_form.onKeyDown(enter);
 
@@ -442,7 +442,7 @@ describe("The groupchat moderator tool", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = '/modtools';
-        const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
+        const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, key: "Enter" };
         const message_form = view.querySelector('converse-muc-message-form');
         message_form.onKeyDown(enter);
 

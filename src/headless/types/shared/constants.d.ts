@@ -32,20 +32,19 @@ export const CONNECTION_STATUS: typeof CONNECTION_STATUS;
 export const CORE_PLUGINS: string[];
 export const CHAT_STATES: string[];
 export namespace KEYCODES {
-    let TAB: number;
-    let ENTER: number;
-    let SHIFT: number;
-    let CTRL: number;
-    let ALT: number;
-    let ESCAPE: number;
-    let LEFT_ARROW: number;
-    let UP_ARROW: number;
-    let RIGHT_ARROW: number;
-    let DOWN_ARROW: number;
-    let FORWARD_SLASH: number;
-    let AT: number;
-    let META: number;
-    let META_RIGHT: number;
+    let TAB: string;
+    let ENTER: string;
+    let SHIFT: string;
+    let CTRL: string;
+    let ALT: string;
+    let ESCAPE: string;
+    let LEFT_ARROW: string;
+    let UP_ARROW: string;
+    let RIGHT_ARROW: string;
+    let DOWN_ARROW: string;
+    let FORWARD_SLASH: string;
+    let AT: string;
+    let META: string;
 }
 export const XFORM_TYPE_MAP: {
     'text-private': string;

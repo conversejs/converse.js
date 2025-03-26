@@ -108,7 +108,7 @@ describe("An incoming groupchat message", function () {
             'target': textarea,
             'preventDefault': function preventDefault () {},
             'stopPropagation': function stopPropagation () {},
-            'keyCode': 13 // Enter
+            key: "Enter",
         }
         const message_form = view.querySelector('converse-muc-message-form');
         message_form.onKeyDown(enter_event);
@@ -361,7 +361,7 @@ describe("A sent groupchat message", function () {
                 'target': textarea,
                 'preventDefault': function preventDefault () {},
                 'stopPropagation': function stopPropagation () {},
-                'keyCode': 13 // Enter
+                key: "Enter",
             }
             const message_form = view.querySelector('converse-muc-message-form');
             message_form.onKeyDown(enter_event);
@@ -421,7 +421,7 @@ describe("A sent groupchat message", function () {
                 'target': textarea,
                 'preventDefault': function preventDefault () {},
                 'stopPropagation': function stopPropagation () {},
-                'keyCode': 13 // Enter
+                key: "Enter",
             }
             const message_form = view.querySelector('converse-muc-message-form');
             message_form.onKeyDown(enter_event);
@@ -508,7 +508,7 @@ describe("A sent groupchat message", function () {
                 'target': textarea,
                 'preventDefault': function preventDefault () {},
                 'stopPropagation': function stopPropagation () {},
-                'keyCode': 13 // Enter
+                key: "Enter",
             }
             const message_form = view.querySelector('converse-muc-message-form');
             message_form.onKeyDown(enter_event);
@@ -544,7 +544,7 @@ describe("A sent groupchat message", function () {
             'target': textarea,
             'preventDefault': function preventDefault () {},
             'stopPropagation': function stopPropagation () {},
-            'keyCode': 13 // Enter
+            key: "Enter",
         }
         const message_form = view.querySelector('converse-muc-message-form');
         message_form.onKeyDown(enter_event);

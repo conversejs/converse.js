@@ -37,7 +37,7 @@ describe("An OMEMO encrypted message", function() {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '555'));
         stanza = $iq({
@@ -87,7 +87,7 @@ describe("An OMEMO encrypted message", function() {
 
         message_form.onKeyDown({
             target: textarea,
-            keyCode: 38 // Up arrow
+            key: "ArrowUp",
         });
         expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
@@ -99,7 +99,7 @@ describe("An OMEMO encrypted message", function() {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === newer_text);
 
@@ -139,7 +139,7 @@ describe("An OMEMO encrypted message", function() {
 
         message_form.onKeyDown({
             target: textarea,
-            keyCode: 38 // Up arrow
+            key: "ArrowUp",
         });
         expect(textarea.value).toBe('But soft, what light through yonder door breaks?');
 
@@ -148,7 +148,7 @@ describe("An OMEMO encrypted message", function() {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === newest_text);
 
@@ -293,7 +293,7 @@ describe("An OMEMO encrypted MUC message", function() {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
 
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'), 1000);
@@ -367,7 +367,7 @@ describe("An OMEMO encrypted MUC message", function() {
 
         message_form.onKeyDown({
             target: textarea,
-            keyCode: 38 // Up arrow
+            key: "ArrowUp",
         });
         expect(textarea.value).toBe(original_text);
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
@@ -377,7 +377,7 @@ describe("An OMEMO encrypted MUC message", function() {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === new_text);
 

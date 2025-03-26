@@ -56,7 +56,10 @@ export class AutoComplete extends AutoComplete_base {
     auto_completing: boolean;
     onMouseOver(ev: any): void;
     onMouseDown(ev: any): void;
-    onKeyDown(ev: any): boolean;
+    /**
+     * @param {KeyboardEvent} [ev]
+     */
+    onKeyDown(ev?: KeyboardEvent): boolean;
     /**
      * @param {KeyboardEvent} [ev]
      */

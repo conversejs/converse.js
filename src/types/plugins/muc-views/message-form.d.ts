@@ -8,9 +8,9 @@ export default class MUCMessageForm extends MessageForm {
     auto_completing: boolean;
     getAutoCompleteList(): any;
     /**
-     * @param {Event} ev
+     * @param {KeyboardEvent} ev
      */
-    onKeyDown(ev: Event): void;
+    onKeyDown(ev: KeyboardEvent): void;
     /**
      * @param {KeyboardEvent} ev
      */

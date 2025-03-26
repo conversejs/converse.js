@@ -147,11 +147,9 @@ export default class EmojiPicker extends CustomElement {
     #onGlobalKeyDown (ev) {
         if (!this.navigator) return;
 
-        if (ev.keyCode === KEYCODES.ENTER && u.isVisible(this)) {
+        if (ev.key === KEYCODES.ENTER && u.isVisible(this)) {
             this.onEnterPressed(ev);
-        } else if (ev.keyCode === KEYCODES.DOWN_ARROW &&
-                !this.navigator.enabled &&
-                u.isVisible(this)) {
+        } else if (ev.key === KEYCODES.DOWN_ARROW && !this.navigator.enabled && u.isVisible(this)) {
             this.enableArrowNavigation(ev);
         }
     }
@@ -220,9 +218,9 @@ export default class EmojiPicker extends CustomElement {
     /**
      * @param {KeyboardEvent} ev
      */
-    onSearchInputKeyDown (ev) {
-        const target = /** @type {HTMLInputElement} */(ev.target);
-        if (ev.keyCode === KEYCODES.TAB) {
+    onSearchInputKeyDown(ev) {
+        const target = /** @type {HTMLInputElement} */ (ev.target);
+        if (ev.key === KEYCODES.TAB) {
             if (target.value) {
                 ev.preventDefault();
                 const match = converse.emojis.shortnames.find(sn => FILTER_CONTAINS(sn, target.value));
@@ -230,12 +228,9 @@ export default class EmojiPicker extends CustomElement {
             } else if (!this.navigator.enabled) {
                 this.enableArrowNavigation(ev);
             }
-        } else if (ev.keyCode === KEYCODES.DOWN_ARROW && !this.navigator.enabled) {
+        } else if (ev.key === KEYCODES.DOWN_ARROW && !this.navigator.enabled) {
             this.enableArrowNavigation(ev);
-        } else if (
-            ev.keyCode !== KEYCODES.ENTER &&
-            ev.keyCode !== KEYCODES.DOWN_ARROW
-        ) {
+        } else if (ev.key !== KEYCODES.ENTER && ev.key !== KEYCODES.DOWN_ARROW) {
             this.debouncedFilter(target);
         }
     }

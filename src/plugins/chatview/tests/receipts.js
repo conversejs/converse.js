@@ -132,7 +132,7 @@ describe("A delivery receipt", function () {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         const chatbox = _converse.chatboxes.get(contact_jid);
         expect(chatbox).toBeDefined();
@@ -153,7 +153,7 @@ describe("A delivery receipt", function () {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
 

@@ -23,7 +23,6 @@ describe("Emojis", function () {
                 'target': textarea,
                 'preventDefault': function preventDefault () {},
                 'stopPropagation': function stopPropagation () {},
-                'keyCode': 9,
                 'key': 'Tab'
             }
             const message_form = view.querySelector('converse-muc-message-form');
@@ -46,7 +45,7 @@ describe("Emojis", function () {
             expect(input.value).toBe(':grimacing:');
 
             // Check that ENTER now inserts the match
-            const enter_event = Object.assign({}, tab_event, {'keyCode': 13, 'key': 'Enter', 'target': input, 'bubbles': true});
+            const enter_event = Object.assign({}, tab_event, { 'key': 'Enter', 'target': input, 'bubbles': true});
             input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
 
             await u.waitUntil(() => input.value === '');
@@ -88,7 +87,6 @@ describe("Emojis", function () {
                 'target': textarea,
                 'preventDefault': function preventDefault () {},
                 'stopPropagation': function stopPropagation () {},
-                'keyCode': 9,
                 'key': 'Tab'
             }
             const message_form = view.querySelector('converse-muc-message-form');
@@ -138,7 +136,6 @@ describe("Emojis", function () {
                 'target': textarea,
                 'preventDefault': function preventDefault () {},
                 'stopPropagation': function stopPropagation () {},
-                'keyCode': 9,
                 'key': 'Tab'
             }
             textarea.value = ':';
@@ -149,7 +146,7 @@ describe("Emojis", function () {
             const input = picker.querySelector('.emoji-search');
             input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
             await u.waitUntil(() => input.value === ':100:');
-            const enter_event = Object.assign({}, tab_event, {'keyCode': 13, 'key': 'Enter', 'target': input, 'bubbles': true});
+            const enter_event = Object.assign({}, tab_event, { 'key': 'Enter', 'target': input, 'bubbles': true});
             input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
             expect(textarea.value).toBe(':100: ');
 
@@ -194,7 +191,7 @@ describe("Emojis", function () {
             expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':smiley_cat:');
 
             // Check that pressing enter without an unambiguous match does nothing
-            const enter_event = Object.assign({}, event, {'keyCode': 13, 'bubbles': true});
+            const enter_event = Object.assign({}, event, { key: "Enter", 'bubbles': true});
             input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
             expect(input.value).toBe('smiley');
 
@@ -208,7 +205,7 @@ describe("Emojis", function () {
             await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden)', view).length === 2, 1000);
 
             // Test that TAB autocompletes the to first match
-            const tab_event = Object.assign({}, event, {'keyCode': 9, 'key': 'Tab'});
+            const tab_event = Object.assign({}, event, { 'key': 'Tab'});
             input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
 
             await u.waitUntil(() => input.value === ':smiley:');

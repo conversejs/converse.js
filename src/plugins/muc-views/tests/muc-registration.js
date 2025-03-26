@@ -19,7 +19,7 @@ describe("Chatrooms", function () {
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
-                keyCode: 13
+                key: "Enter",
             });
             let stanza = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => sizzle(`iq[to="${muc_jid}"][type="get"] query[xmlns="jabber:iq:register"]`, iq).length

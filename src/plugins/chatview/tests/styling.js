@@ -556,7 +556,7 @@ describe("An XEP-0393 styled message ", function () {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
@@ -570,14 +570,14 @@ describe("An XEP-0393 styled message ", function () {
         expect(textarea.value).toBe('');
         message_form.onKeyDown({
             target: textarea,
-            keyCode: 38 // Up arrow
+            key: "ArrowUp",
         });
 
         textarea.value = `A\nhttps://conversejs.org\n\nhttps://opkode.com`;
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
 

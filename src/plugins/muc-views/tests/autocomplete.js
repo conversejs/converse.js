@@ -41,7 +41,6 @@ describe("The nickname autocomplete feature", function () {
             'target': textarea,
             'preventDefault': function preventDefault () {},
             'stopPropagation': function stopPropagation () {},
-            'keyCode': 50,
             'key': '@'
         };
         const message_form = view.querySelector('converse-muc-message-form');
@@ -105,7 +104,6 @@ describe("The nickname autocomplete feature", function () {
             'target': textarea,
             'preventDefault': function preventDefault () {},
             'stopPropagation': function stopPropagation () {},
-            'keyCode': 50,
             'key': '@'
         };
         const message_form = view.querySelector('converse-muc-message-form');
@@ -172,7 +170,6 @@ describe("The nickname autocomplete feature", function () {
             'target': textarea,
             'preventDefault': function preventDefault () {},
             'stopPropagation': function stopPropagation () {},
-            'keyCode': 50,
             'key': '@'
         };
         textarea.value = '('
@@ -225,7 +222,6 @@ describe("The nickname autocomplete feature", function () {
             'target': textarea,
             'preventDefault': function preventDefault() { },
             'stopPropagation': function stopPropagation() { },
-            'keyCode': 50,
             'key': '@'
         };
 
@@ -289,8 +285,7 @@ describe("The nickname autocomplete feature", function () {
             'target': textarea,
             'preventDefault': function preventDefault () {},
             'stopPropagation': function stopPropagation () {},
-            'keyCode': 9,
-            'key': 'Tab'
+            key: 'Tab'
         }
         const message_form = view.querySelector('converse-muc-message-form');
         message_form.onKeyDown(tab_event);
@@ -304,7 +299,7 @@ describe("The nickname autocomplete feature", function () {
         const backspace_event = {
             'target': textarea,
             'preventDefault': function preventDefault () {},
-            'keyCode': 8
+            key: "Backspace",
         }
         for (let i=0; i<3; i++) {
             // Press backspace 3 times to remove "som"
@@ -335,7 +330,7 @@ describe("The nickname autocomplete feature", function () {
             'target': textarea,
             'preventDefault': () => (up_arrow_event.defaultPrevented = true),
             'stopPropagation': function stopPropagation () {},
-            'keyCode': 38
+            key: "ArrowUp",
         }
         message_form.onKeyDown(up_arrow_event);
         message_form.onKeyUp(up_arrow_event);
@@ -348,7 +343,7 @@ describe("The nickname autocomplete feature", function () {
             'target': textarea,
             'preventDefault': function preventDefault () {},
             'stopPropagation': function stopPropagation () {},
-            'keyCode': 13 // Enter
+            key: "Enter",
         });
         expect(textarea.value).toBe('hello s @some2 ');
 
@@ -400,8 +395,7 @@ describe("The nickname autocomplete feature", function () {
             'target': textarea,
             'preventDefault': function preventDefault () {},
             'stopPropagation': function stopPropagation () {},
-            'keyCode': 8,
-            'key': 'Backspace'
+            key: 'Backspace'
         }
         const message_form = view.querySelector('converse-muc-message-form');
         message_form.onKeyDown(backspace_event);

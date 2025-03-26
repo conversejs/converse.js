@@ -1213,7 +1213,7 @@ describe("A Chat Message", function () {
                     'target': textarea,
                     'preventDefault': function preventDefault () {},
                     'stopPropagation': function stopPropagation () {},
-                    'keyCode': 13 // Enter
+                    key: "Enter",
                 }
                 const message_form = view.querySelector('converse-message-form');
                 message_form.onKeyDown(enter_event);
@@ -1258,7 +1258,7 @@ describe("A Chat Message", function () {
                     'target': textarea,
                     'preventDefault': function preventDefault () {},
                     'stopPropagation': function stopPropagation () {},
-                    'keyCode': 13 // Enter
+                    key: "Enter",
                 }
                 const message_form = view.querySelector('converse-message-form');
                 message_form.onKeyDown(enter_event);

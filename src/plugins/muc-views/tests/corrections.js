@@ -186,7 +186,7 @@ describe("A Groupchat Message", function () {
         const message_form = view.querySelector('converse-muc-message-form');
         message_form.onKeyDown({
             target: textarea,
-            keyCode: 38 // Up arrow
+            key: "ArrowUp",
         });
         expect(textarea.value).toBe('');
 
@@ -194,7 +194,7 @@ describe("A Groupchat Message", function () {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
         expect(view.querySelector('.chat-msg__text').textContent)
@@ -204,7 +204,7 @@ describe("A Groupchat Message", function () {
         expect(textarea.value).toBe('');
         message_form.onKeyDown({
             target: textarea,
-            keyCode: 38 // Up arrow
+            key: "ArrowUp",
         });
         expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
@@ -217,7 +217,7 @@ describe("A Groupchat Message", function () {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
             .filter(m => m.textContent.replace(/<!-.*?->/g, '') === new_text).length);
@@ -263,7 +263,7 @@ describe("A Groupchat Message", function () {
         expect(textarea.value).toBe('');
         message_form.onKeyDown({
             target: textarea,
-            keyCode: 38 // Up arrow
+            key: "ArrowUp",
         });
         expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
@@ -272,7 +272,7 @@ describe("A Groupchat Message", function () {
         expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
         message_form.onKeyDown({
             target: textarea,
-            keyCode: 40 // Down arrow
+            key: "ArrowDown",
         });
         expect(textarea.value).toBe('');
         expect(view.model.messages.at(0).get('correcting')).toBe(false);

@@ -135,37 +135,42 @@ export default class MessageForm extends CustomElement {
         this.model.set({'draft': ev.target.value});
     }
 
+    /**
+     * @param {KeyboardEvent} [ev]
+     */
     onKeyDown (ev) {
         if (ev.ctrlKey) {
             // When ctrl is pressed, no chars are entered into the textarea.
             return;
         }
         if (!ev.shiftKey && !ev.altKey && !ev.metaKey) {
-            if (ev.keyCode === converse.keycodes.TAB) {
-                const value = u.getCurrentWord(ev.target, null, /(:.*?:)/g);
+            const target = /** @type {HTMLInputElement|HTMLTextAreaElement} */(ev.target);
+
+            if (ev.key === converse.keycodes.TAB) {
+                const value = u.getCurrentWord(target, null, /(:.*?:)/g);
                 if (value.startsWith(':')) {
                     ev.preventDefault();
                     ev.stopPropagation();
                     this.model.trigger(
                         'emoji-picker-autocomplete',
-                        { target: ev.target, value },
+                        { target, value },
                     );
                 }
-            } else if (ev.keyCode === converse.keycodes.FORWARD_SLASH) {
+            } else if (ev.key === converse.keycodes.FORWARD_SLASH) {
                 // Forward slash is used to run commands. Nothing to do here.
                 return;
-            } else if (ev.keyCode === converse.keycodes.ESCAPE) {
+            } else if (ev.key === converse.keycodes.ESCAPE) {
                 return this.onEscapePressed(ev);
-            } else if (ev.keyCode === converse.keycodes.ENTER) {
+            } else if (ev.key === converse.keycodes.ENTER) {
                 return this.onFormSubmitted(ev);
-            } else if (ev.keyCode === converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
+            } else if (ev.key === converse.keycodes.UP_ARROW && !target.selectionEnd) {
                 const textarea = /** @type {HTMLTextAreaElement} */(this.querySelector('.chat-textarea'));
                 if (!textarea.value || u.hasClass('correcting', textarea)) {
                     return this.model.editEarlierMessage();
                 }
             } else if (
-                ev.keyCode === converse.keycodes.DOWN_ARROW &&
-                ev.target.selectionEnd === ev.target.value.length &&
+                ev.key === converse.keycodes.DOWN_ARROW &&
+                target.selectionEnd === target.value.length &&
                 u.hasClass('correcting', this.querySelector('.chat-textarea'))
             ) {
                 return this.model.editLaterMessage();
@@ -175,15 +180,14 @@ export default class MessageForm extends CustomElement {
             [
                 converse.keycodes.SHIFT,
                 converse.keycodes.META,
-                converse.keycodes.META_RIGHT,
                 converse.keycodes.ESCAPE,
                 converse.keycodes.ALT
-            ].includes(ev.keyCode)
+            ].includes(ev.key)
         ) {
             return;
         }
         if (this.model.get('chat_state') !== COMPOSING) {
-            // Set chat state to composing if keyCode is not a forward-slash
+            // Set chat state to composing if key is not a forward-slash
             // (which would imply an internal command and not a message).
             this.model.setChatState(COMPOSING);
         }

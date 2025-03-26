@@ -53,7 +53,7 @@ describe("The OMEMO module", function() {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '555'));
         stanza = stx`<iq from="${contact_jid}"
@@ -365,7 +365,7 @@ describe("The OMEMO module", function() {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, _converse.bare_jid, '988349631'));
         expect(iq_stanza).toEqualStanza(
@@ -1128,7 +1128,7 @@ describe("The OMEMO module", function() {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13
+            key: "Enter",
         });
 
         view.model.save({'omemo_supported': false});

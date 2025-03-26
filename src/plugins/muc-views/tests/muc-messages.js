@@ -22,7 +22,7 @@ describe("A Groupchat Message", function () {
                 'target': textarea,
                 'preventDefault': function preventDefault () {},
                 'stopPropagation': function stopPropagation () {},
-                'keyCode': 13 // Enter
+                key: "Enter",
             }
             const message_form = view.querySelector('converse-muc-message-form');
             message_form.onKeyDown(enter_event);
@@ -305,7 +305,7 @@ describe("A Groupchat Message", function () {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.querySelectorAll('.chat-msg__body.chat-msg__body--received').length).toBe(0);
@@ -348,7 +348,7 @@ describe("A Groupchat Message", function () {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);

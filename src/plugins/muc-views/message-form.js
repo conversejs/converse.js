@@ -50,11 +50,11 @@ export default class MUCMessageForm extends MessageForm {
     }
 
     getAutoCompleteList () {
-        return this.model.getAllKnownNicknames().map(nick => ({ 'label': nick, 'value': `@${nick}` }));
+        return this.model.getAllKnownNicknames().map((nick) => ({ label: nick, value: `@${nick}` }));
     }
 
     /**
-     * @param {Event} ev
+     * @param {KeyboardEvent} ev
      */
     onKeyDown (ev) {
         if (this.shouldAutoComplete() && this.mention_auto_complete.onKeyDown(ev)) {

@@ -24,7 +24,10 @@ export default class MessageForm extends CustomElement {
     onPaste(ev: any): void;
     onDrop(evt: any): void;
     onKeyUp(ev: any): void;
-    onKeyDown(ev: any): any;
+    /**
+     * @param {KeyboardEvent} [ev]
+     */
+    onKeyDown(ev?: KeyboardEvent): any;
     onFormSubmitted(ev: any): Promise<void>;
 }
 export type EmojiDropdown = import("shared/chat/emoji-dropdown.js").default;

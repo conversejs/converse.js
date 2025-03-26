@@ -96,7 +96,7 @@ describe("A spoiler message", function () {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13
+            key: "Enter",
         });
         await new Promise(resolve => api.listen.on('sendMessage', resolve));
 
@@ -159,7 +159,7 @@ describe("A spoiler message", function () {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13
+            key: "Enter",
         });
         await new Promise(resolve => api.listen.on('sendMessage', resolve));
 

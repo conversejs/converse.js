@@ -89,7 +89,7 @@ describe("The OMEMO module", function() {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'), 1000);
         stanza = $iq({
@@ -227,7 +227,7 @@ describe("The OMEMO module", function() {
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
-            keyCode: 13 // Enter
+            key: "Enter",
         });
         let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         expect(Strophe.serialize(iq_stanza)).toBe(

@@ -546,7 +546,7 @@ async function sendMessage (view, message) {
     message_form.onKeyDown({
         target: view.querySelector('textarea.chat-textarea'),
         preventDefault: () => {},
-        keyCode: 13
+        key: "Enter",
     });
     return promise;
 }

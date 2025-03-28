@@ -798,13 +798,31 @@ async function _initConverse (settings) {
 }
 
 
-async function deviceListFetched (_converse, jid) {
+async function deviceListFetched (_converse, jid, device_ids) {
     const selector = `iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`;
-    const stanza = await u.waitUntil(
+    const iq_stanza = await u.waitUntil(
         () => Array.from(_converse.api.connection.get().IQ_stanzas).filter(iq => iq.querySelector(selector)).pop()
     );
     await u.waitUntil(() => _converse.state.devicelists.get(jid));
-    return stanza;
+    if (Array.isArray(device_ids)) {
+        const stanza = stx`<iq from="${jid}"
+                            xmlns="jabber:server"
+                            id="${iq_stanza.getAttribute('id')}"
+                            to="${_converse.api.connection.get().jid}"
+                            type="result">
+            <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                <items node="eu.siacs.conversations.axolotl.devicelist">
+                    <item xmlns="http://jabber.org/protocol/pubsub">
+                        <list xmlns="eu.siacs.conversations.axolotl">
+                            ${device_ids.map((id) => stx`<device id="${id}"/>`)}
+                        </list>
+                    </item>
+                </items>
+            </pubsub>
+        </iq>`;
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+    }
+    return iq_stanza;
 }
 
 function ownDeviceHasBeenPublished (_converse) {
@@ -818,10 +836,46 @@ function bundleHasBeenPublished (_converse) {
     return Array.from(_converse.api.connection.get().IQ_stanzas).filter(iq => iq.querySelector(selector)).pop();
 }
 
-function bundleFetched (_converse, jid, device_id) {
+function bundleIQRequestSent(_converse, jid, device_id) {
     return Array.from(_converse.api.connection.get().IQ_stanzas).filter(
         iq => iq.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.bundles:${device_id}"]`)
     ).pop();
+}
+
+async function bundleFetched(
+    _converse,
+    {
+        jid,
+        device_id,
+        identity_key,
+        signed_prekey_id,
+        signed_prekey_public,
+        signed_prekey_sig,
+        prekeys,
+    }
+) {
+    const iq_stanza = await u.waitUntil(() => bundleIQRequestSent(_converse, jid, device_id));
+    const stanza = stx`<iq from="${jid}"
+            id="${iq_stanza.getAttribute("id")}"
+            to="${_converse.bare_jid}"
+            xmlns="jabber:server"
+            type="result">
+        <pubsub xmlns="http://jabber.org/protocol/pubsub">
+            <items node="eu.siacs.conversations.axolotl.bundles:${device_id}">
+                <item>
+                    <bundle xmlns="eu.siacs.conversations.axolotl">
+                        <signedPreKeyPublic signedPreKeyId="${signed_prekey_id}">${btoa(signed_prekey_public)}</signedPreKeyPublic>
+                        <signedPreKeySignature>${btoa(signed_prekey_sig)}</signedPreKeySignature>
+                        <identityKey>${btoa(identity_key)}</identityKey>
+                        <prekeys>
+                            ${prekeys.map((k, i) => stx`<preKeyPublic preKeyId="${i}">${btoa(k)}</preKeyPublic>`)}
+                        </prekeys>
+                    </bundle>
+                </item>
+            </items>
+        </pubsub>
+    </iq>`;
+    _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 }
 
 async function initializedOMEMO(
@@ -830,23 +884,10 @@ async function initializedOMEMO(
     features = ['http://jabber.org/protocol/pubsub#publish-options']
 ) {
     await waitUntilDiscoConfirmed(_converse, _converse.bare_jid, identities, features);
-    let iq_stanza = await deviceListFetched(_converse, _converse.bare_jid);
+    await deviceListFetched(_converse, _converse.bare_jid, ['482886413b977930064a5888b92134fe']);
+    let iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse));
+
     let stanza = $iq({
-        'from': _converse.bare_jid,
-        'id': iq_stanza.getAttribute('id'),
-        'to': _converse.bare_jid,
-        'type': 'result',
-    })
-        .c('pubsub', { 'xmlns': 'http://jabber.org/protocol/pubsub' })
-        .c('items', { 'node': 'eu.siacs.conversations.axolotl.devicelist' })
-        .c('item', { 'xmlns': 'http://jabber.org/protocol/pubsub' }) // TODO: must have an id attribute
-        .c('list', { 'xmlns': 'eu.siacs.conversations.axolotl' })
-        .c('device', { 'id': '482886413b977930064a5888b92134fe' });
-    _converse.api.connection.get()._dataRecv(createRequest(stanza));
-
-    iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse));
-
-    stanza = $iq({
         'from': _converse.bare_jid,
         'id': iq_stanza.getAttribute('id'),
         'to': _converse.bare_jid,
@@ -867,6 +908,7 @@ async function initializedOMEMO(
 }
 
 Object.assign(mock, {
+    bundleIQRequestSent,
     bundleFetched,
     bundleHasBeenPublished,
     chatroom_names,

@@ -31,6 +31,7 @@ declare const _default: {
     isVideoURL(url: string | URL): boolean;
     isImageURL(url: string | URL): boolean;
     isEncryptedFileURL(url: string | URL): boolean;
+    withinString(string: string, callback: Function, options?: import("./types.js").ProcessStringOptions): string;
     getMediaURLsMetadata(text: string, offset?: number): {
         media_urls?: import("./types.js").MediaURLMetadata[];
     };

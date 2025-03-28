@@ -123,6 +123,9 @@
                 margin: 0;
                 padding: 0.25em;
             }
+            .error {
+                color: var(--error-color);
+            }
         }
         .new-msgs-indicator {
             position: relative;

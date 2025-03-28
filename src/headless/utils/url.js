@@ -118,7 +118,7 @@ export function isEncryptedFileURL(url) {
  * @param {import("./types").ProcessStringOptions} [options]
  * @returns {string} The modified string after processing all matches.
  */
-function withinString(string, callback, options) {
+export function withinString(string, callback, options) {
     options = options || {};
     const _start = options.start || URL_REGEXES.start;
     const _end = options.end || URL_REGEXES.end;

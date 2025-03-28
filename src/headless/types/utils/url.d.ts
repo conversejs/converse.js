@@ -46,6 +46,19 @@ export function isImageURL(url: string | URL): boolean;
  */
 export function isEncryptedFileURL(url: string | URL): boolean;
 /**
+ * Processes a string to find and manipulate substrings based on a callback function.
+ * This function searches for patterns defined by the provided start and end regular expressions,
+ * and applies the callback to each matched substring, allowing for modifications
+ * @copyright Copyright (c) 2011 Rodney Rehm
+ *
+ * @param {string} string - The input string to be processed.
+ * @param {function} callback - A function that takes the matched substring and its start and end indices,
+ *                              and returns a modified substring or undefined to skip modification.
+ * @param {import("./types").ProcessStringOptions} [options]
+ * @returns {string} The modified string after processing all matches.
+ */
+export function withinString(string: string, callback: Function, options?: import("./types").ProcessStringOptions): string;
+/**
  * @param {string} text
  * @param {number} offset
  * @returns {{media_urls?: import("./types").MediaURLMetadata[]}}

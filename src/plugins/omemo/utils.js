@@ -17,6 +17,8 @@ import { KEY_ALGO, UNTRUSTED, TAG_LENGTH } from "./consts.js";
 import { MIMETYPES_MAP } from "utils/file.js";
 import { IQError, UserFacingError } from "shared/errors.js";
 import DeviceLists from "./devicelists.js";
+import {getFileName} from "utils/html.js";
+import {Texture} from "shared/texture/texture.js";
 
 const { Strophe, sizzle, stx } = converse.env;
 const { CHATROOMS_TYPE, PRIVATE_CHAT_TYPE } = constants;
@@ -26,7 +28,6 @@ const {
     arrayBufferToHex,
     arrayBufferToString,
     base64ToArrayBuffer,
-    getURL,
     hexToArrayBuffer,
     initStorage,
     isAudioURL,
@@ -217,6 +218,7 @@ async function decryptFile(iv, key, cipher) {
 
 /**
  * @param {string} url
+ * @returns {Promise<ArrayBuffer|null>}
  */
 async function downloadFile(url) {
     let response;
@@ -233,44 +235,54 @@ async function downloadFile(url) {
     }
 }
 
-async function getAndDecryptFile(uri) {
-    const protocol = window.location.hostname === "localhost" && uri.domain() === "localhost" ? "http" : "https";
-    const http_url = uri.toString().replace(/^aesgcm/, protocol);
+/**
+ * @param {string} url_text
+ * @returns {Promise<string|Error|null>}
+ */
+async function getAndDecryptFile(url_text) {
+    const url = new URL(url_text);
+    const protocol = window.location.hostname === "localhost" && url.hostname === "localhost" ? "http" : "https";
+    const http_url = url.toString().replace(/^aesgcm/, protocol);
     const cipher = await downloadFile(http_url);
     if (cipher === null) {
-        log.error(`Could not decrypt a received encrypted file ${uri.toString()} since it could not be downloaded`);
+        log.error(`Could not decrypt a received encrypted file ${url.toString()} since it could not be downloaded`);
         return new Error(__("Error: could not decrypt a received encrypted file, because it could not be downloaded"));
     }
 
-    const hash = uri.hash().slice(1);
+    const hash = url.hash.slice(1);
     const key = hash.substring(hash.length - 64);
     const iv = hash.replace(key, "");
     let content;
     try {
         content = await decryptFile(iv, key, cipher);
     } catch (e) {
-        log.error(`Could not decrypt file ${uri.toString()}`);
+        log.error(`Could not decrypt file ${url.toString()}`);
         log.error(e);
         return null;
     }
-    const [filename, extension] = uri.filename().split(".");
+    const [filename, extension] = url.pathname.split("/").pop().split(".");
     const mimetype = MIMETYPES_MAP[extension];
     try {
         const file = new File([content], filename, { "type": mimetype });
         return URL.createObjectURL(file);
     } catch (e) {
-        log.error(`Could not decrypt file ${uri.toString()}`);
+        log.error(`Could not decrypt file ${url.toString()}`);
         log.error(e);
         return null;
     }
 }
 
-function getTemplateForObjectURL(uri, obj_url, richtext) {
+/**
+ * @param {string} file_url
+ * @param {string|Error} obj_url
+ * @param {Texture} richtext
+ * @returns {import("lit").TemplateResult}
+ */
+function getTemplateForObjectURL(file_url, obj_url, richtext) {
     if (isError(obj_url)) {
-        return html`<p class="error">${obj_url.message}</p>`;
+        return html`<p class="error">${/** @type {Error} */(obj_url).message}</p>`;
     }
 
-    const file_url = uri.toString();
     if (isImageURL(file_url)) {
         return tplImage({
             src: obj_url,
@@ -278,14 +290,13 @@ function getTemplateForObjectURL(uri, obj_url, richtext) {
             onLoad: richtext.onImgLoad,
         });
     } else if (isAudioURL(file_url)) {
-        return tplAudio(obj_url);
+        return tplAudio(/** @type {string} */(obj_url));
     } else if (isVideoURL(file_url)) {
-        return tplVideo(obj_url);
+        return tplVideo(/** @type {string} */(obj_url));
     } else {
-        return tplFile(obj_url, uri.filename());
+        return tplFile(obj_url, getFileName(file_url));
     }
 }
-
 
 /**
  * @param {string} text
@@ -294,24 +305,27 @@ function getTemplateForObjectURL(uri, obj_url, richtext) {
  */
 function addEncryptedFiles(text, offset, richtext) {
     const objs = [];
-    const regex = /\b(aesgcm:\/\/[^\s\r\n]+)/gi;
-    const trailing_punctuation = /[`!()\[\]{};:'".,<>?«»“”„‘’]+$/;
-    const balanced_parens = /(\([^\)]*\)|\[[^\]]*\]|\{[^}]*\}|<[^>]*>)/g;
-
-    let match;
-    while ((match = regex.exec(text)) !== null) {
-        const url = match[0].replace(trailing_punctuation, "");
-        const start = match.index;
-        const end = start + url.length;
-        // Check for balanced parentheses
-        if (balanced_parens.test(url)) {
-            objs.push({ url, start, end });
-        }
+    try {
+        const parse_options = { start: /\b(aesgcm:\/\/)/gi };
+        u.withinString(
+            text,
+            /**
+             * @param {string} url
+             * @param {number} start
+             * @param {number} end
+             */
+            (url, start, end) => {
+                objs.push({ url, start, end });
+                return url;
+            },
+            parse_options
+        );
+    } catch (error) {
+        log.debug(error);
+        return;
     }
-
     objs.forEach((o) => {
-        const uri = getURL(o.url);
-        const promise = getAndDecryptFile(uri).then((obj_url) => getTemplateForObjectURL(uri, obj_url, richtext));
+        const promise = getAndDecryptFile(o.url).then((obj_url) => getTemplateForObjectURL(o.url, obj_url, richtext));
 
         const template = html`${until(promise, "")}`;
         richtext.addTemplateResult(o.start + offset, o.end + offset, template);

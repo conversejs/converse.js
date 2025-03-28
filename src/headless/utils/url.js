@@ -259,6 +259,7 @@ export function addMediaURLsOffset(arr, text, offset = 0) {
             return Object.assign({}, o, {
                 start,
                 end,
+                url: text.substring(o.start-offset, o.end-offset), // BBB
             });
         })
         .filter((o) => o);

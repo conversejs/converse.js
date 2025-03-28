@@ -170,11 +170,9 @@ export class Texture extends String {
      *  offset from the start of the original message stanza's body text).
      */
     async addHyperlinks(text, local_offset) {
-        const media_urls = addMediaURLsOffset(
-            getMediaURLsMetadata(text, local_offset).media_urls || [],
-            text,
-            local_offset
-        );
+        const full_offset = local_offset + this.offset;
+        const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
+        const media_urls = addMediaURLsOffset(urls_meta, text, full_offset);
         await Promise.all(
             media_urls
                 .filter((o) => !o.is_encrypted)

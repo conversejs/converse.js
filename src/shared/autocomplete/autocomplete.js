@@ -237,7 +237,6 @@ export class AutoComplete extends EventEmitter(Object) {
                 this.close({'reason': 'esc'});
                 return true;
             } else if ([converse.keycodes.UP_ARROW, converse.keycodes.DOWN_ARROW].includes(ev.key)) {
-                debugger;
                 ev.preventDefault();
                 ev.stopPropagation();
                 this[ev.key === converse.keycodes.UP_ARROW ? "previous" : "next"]();

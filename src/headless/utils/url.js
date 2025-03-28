@@ -78,8 +78,12 @@ export function isGIFURL(url) {
 
 /**
  * @param {string|URL} url
+ * @param {Headers} [headers]
  */
-export function isAudioURL(url) {
+export function isAudioURL(url, headers) {
+    if (headers?.get("content-type")?.startsWith("audio")) {
+        return true;
+    }
     return checkFileTypes([".ogg", ".mp3", ".m4a"], url);
 }
 
@@ -175,11 +179,26 @@ export function withinString(string, callback, options) {
 }
 
 /**
+ * @param {string} url
+ * @returns {Promise<Headers>}
+ */
+export async function getHeaders(url) {
+    try {
+        const response = await fetch(url, { method: "HEAD" });
+        return response.headers;
+    } catch (e) {
+        console.debug(`Error calling HEAD on url ${url}: ${e}`);
+        return null;
+    }
+}
+
+
+/**
  * @param {string} text
  * @param {number} offset
- * @returns {{media_urls?: import("./types").MediaURLMetadata[]}}
+ * @returns {Promise<{media_urls?: import("./types").MediaURLMetadata[]}>}
  */
-export function getMediaURLsMetadata(text, offset = 0) {
+export async function getMediaURLsMetadata(text, offset = 0, fetch_headers = false) {
     const objs = [];
     if (!text) {
         return {};
@@ -213,12 +232,17 @@ export function getMediaURLsMetadata(text, offset = 0) {
         log.debug(error);
     }
 
-    const media_urls = objs.map((o) => ({
-        ...o,
-        is_audio: isAudioURL(o.url),
-        is_image: isImageURL(o.url),
-        is_video: isVideoURL(o.url),
-        is_encrypted: isEncryptedFileURL(o.url),
+    const media_urls = await Promise.all(objs.map(async (o) => {
+
+        const headers = fetch_headers ? await getHeaders(o.url) : null;
+        return {
+            ...o,
+            is_gif: isGIFURL(o.url),
+            is_audio: isAudioURL(o.url, headers),
+            is_image: isImageURL(o.url),
+            is_video: isVideoURL(o.url),
+            is_encrypted: isEncryptedFileURL(o.url),
+        }
     }));
     return media_urls.length ? { media_urls } : {};
 }

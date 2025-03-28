@@ -25,20 +25,6 @@ export function isSpotifyTrack(url) {
 }
 
 /**
- * @param {string} url
- * @returns {Promise<Headers>}
- */
-export async function getHeaders(url) {
-    try {
-        const response = await fetch(url, { method: "HEAD" });
-        return response.headers;
-    } catch (e) {
-        console.debug(`Error calling HEAD on url ${url}: ${e}`);
-        return null;
-    }
-}
-
-/**
  * We don't render more than two line-breaks, replace extra line-breaks with
  * the zero-width whitespace character
  * This takes into account other characters that may have been removed by

@@ -11,14 +11,15 @@ declare const _default: {
     checkFileTypes(types: string[], url: string | URL): boolean;
     isURLWithImageExtension(url: string | URL): boolean;
     isGIFURL(url: string | URL): boolean;
-    isAudioURL(url: string | URL): boolean;
+    isAudioURL(url: string | URL, headers?: Headers): boolean;
     isVideoURL(url: string | URL): boolean;
     isImageURL(url: string | URL): boolean;
     isEncryptedFileURL(url: string | URL): boolean;
     withinString(string: string, callback: Function, options?: import("headless/types/utils/types.js").ProcessStringOptions): string;
-    getMediaURLsMetadata(text: string, offset?: number): {
+    getHeaders(url: string): Promise<Headers>;
+    getMediaURLsMetadata(text: string, offset?: number, fetch_headers?: boolean): Promise<{
         media_urls?: import("headless/types/utils/types.js").MediaURLMetadata[];
-    };
+    }>;
     getMediaURLs(arr: Array<import("headless/types/utils/types.js").MediaURLMetadata>, text: string): import("headless/types/utils/types.js").MediaURLMetadata[];
     addMediaURLsOffset(arr: Array<import("headless/types/utils/types.js").MediaURLMetadata>, text: string, offset?: number): import("headless/types/utils/types.js").MediaURLMetadata[];
     firstCharToUpperCase(text: string): string;
@@ -118,14 +119,15 @@ declare const _default: {
         checkFileTypes(types: string[], url: string | URL): boolean;
         isURLWithImageExtension(url: string | URL): boolean;
         isGIFURL(url: string | URL): boolean;
-        isAudioURL(url: string | URL): boolean;
+        isAudioURL(url: string | URL, headers?: Headers): boolean;
         isVideoURL(url: string | URL): boolean;
         isImageURL(url: string | URL): boolean;
         isEncryptedFileURL(url: string | URL): boolean;
         withinString(string: string, callback: Function, options?: import("headless/types/utils/types.js").ProcessStringOptions): string;
-        getMediaURLsMetadata(text: string, offset?: number): {
+        getHeaders(url: string): Promise<Headers>;
+        getMediaURLsMetadata(text: string, offset?: number, fetch_headers?: boolean): Promise<{
             media_urls?: import("headless/types/utils/types.js").MediaURLMetadata[];
-        };
+        }>;
         getMediaURLs(arr: Array<import("headless/types/utils/types.js").MediaURLMetadata>, text: string): import("headless/types/utils/types.js").MediaURLMetadata[];
         addMediaURLsOffset(arr: Array<import("headless/types/utils/types.js").MediaURLMetadata>, text: string, offset?: number): import("headless/types/utils/types.js").MediaURLMetadata[];
         firstCharToUpperCase(text: string): string;

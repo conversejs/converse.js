@@ -282,7 +282,6 @@ function getTemplateForObjectURL(file_url, obj_url, richtext) {
     if (isError(obj_url)) {
         return html`<p class="error">${/** @type {Error} */(obj_url).message}</p>`;
     }
-
     if (isImageURL(file_url)) {
         return tplImage({
             src: obj_url,

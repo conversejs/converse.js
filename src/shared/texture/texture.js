@@ -14,7 +14,6 @@ import {
     collapseLineBreaks,
     containsDirectives,
     getDirectiveAndLength,
-    getHeaders,
     isQuoteDirective,
     isSpotifyTrack,
     isString,
@@ -29,10 +28,6 @@ const {
     getCodePointReferences,
     getMediaURLsMetadata,
     getShortnameReferences,
-    isAudioURL,
-    isGIFURL,
-    isImageURL,
-    isVideoURL,
 } = u;
 
 /**
@@ -134,9 +129,9 @@ export class Texture extends String {
         const { url } = url_obj;
         const filtered_url = filterQueryParamsFromURL(url);
         let template;
-        if (isGIFURL(url) && this.shouldRenderMedia(url, "image")) {
+        if (url_obj.is_gif && this.shouldRenderMedia(url, "image")) {
             template = tplGif(filtered_url, this.hide_media_urls);
-        } else if (isImageURL(url) && this.shouldRenderMedia(url, "image")) {
+        } else if (url_obj.is_image && this.shouldRenderMedia(url, "image")) {
             template = tplImage({
                 src: filtered_url,
                 // XXX: bit of an abuse of `hide_media_urls`, might want a dedicated option here
@@ -144,20 +139,13 @@ export class Texture extends String {
                 onClick: this.onImgClick,
                 onLoad: this.onImgLoad,
             });
-        } else if (isVideoURL(url) && this.shouldRenderMedia(url, "video")) {
+        } else if (url_obj.is_video && this.shouldRenderMedia(url, "video")) {
             template = tplVideo(filtered_url, this.hide_media_urls);
-        } else if (isAudioURL(url) && this.shouldRenderMedia(url, "audio")) {
+        } else if (url_obj.is_audio && this.shouldRenderMedia(url, "audio")) {
             template = tplAudio(filtered_url, this.hide_media_urls);
         } else if (api.settings.get("embed_3rd_party_media_players") && isSpotifyTrack(url)) {
             const song_id = url.split("/track/")[1];
             template = tplSpotify(song_id, url, this.hide_media_urls);
-        } else {
-            if (this.shouldRenderMedia(url, "audio") && api.settings.get("fetch_url_headers")) {
-                const headers = await getHeaders(url);
-                if (headers?.get("content-type")?.startsWith("audio")) {
-                    template = tplAudio(filtered_url, this.hide_media_urls, headers.get("Icy-Name"));
-                }
-            }
         }
         return template || getHyperlinkTemplate(filtered_url);
     }
@@ -171,7 +159,7 @@ export class Texture extends String {
      */
     async addHyperlinks(text, local_offset) {
         const media_urls = addMediaURLsOffset(
-            getMediaURLsMetadata(text, local_offset).media_urls || [],
+            (await getMediaURLsMetadata(text, local_offset)).media_urls || [],
             text,
             local_offset
         );

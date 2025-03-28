@@ -14,9 +14,11 @@ export type ProcessStringOptions = {
 
 export type MediaURLMetadata = {
     is_audio?: boolean;
+    is_encrypted?: boolean;
+    is_gif?: boolean;
     is_image?: boolean;
     is_video?: boolean;
-    is_encrypted?: boolean;
+    content_type?: string;
     end?: number;
     start?: number;
     url: string;

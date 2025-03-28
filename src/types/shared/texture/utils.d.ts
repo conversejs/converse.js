@@ -9,11 +9,6 @@ export function isString(s: any): boolean;
  */
 export function isSpotifyTrack(url: string): boolean;
 /**
- * @param {string} url
- * @returns {Promise<Headers>}
- */
-export function getHeaders(url: string): Promise<Headers>;
-/**
  * We don't render more than two line-breaks, replace extra line-breaks with
  * the zero-width whitespace character
  * This takes into account other characters that may have been removed by

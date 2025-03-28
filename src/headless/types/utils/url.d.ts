@@ -30,8 +30,9 @@ export function isURLWithImageExtension(url: string | URL): boolean;
 export function isGIFURL(url: string | URL): boolean;
 /**
  * @param {string|URL} url
+ * @param {Headers} [headers]
  */
-export function isAudioURL(url: string | URL): boolean;
+export function isAudioURL(url: string | URL, headers?: Headers): boolean;
 /**
  * @param {string|URL} url
  */
@@ -59,13 +60,18 @@ export function isEncryptedFileURL(url: string | URL): boolean;
  */
 export function withinString(string: string, callback: Function, options?: import("./types").ProcessStringOptions): string;
 /**
+ * @param {string} url
+ * @returns {Promise<Headers>}
+ */
+export function getHeaders(url: string): Promise<Headers>;
+/**
  * @param {string} text
  * @param {number} offset
- * @returns {{media_urls?: import("./types").MediaURLMetadata[]}}
+ * @returns {Promise<{media_urls?: import("./types").MediaURLMetadata[]}>}
  */
-export function getMediaURLsMetadata(text: string, offset?: number): {
+export function getMediaURLsMetadata(text: string, offset?: number, fetch_headers?: boolean): Promise<{
     media_urls?: import("./types").MediaURLMetadata[];
-};
+}>;
 /**
  * @param {Array<import("./types").MediaURLMetadata>} arr
  * @param {string} text

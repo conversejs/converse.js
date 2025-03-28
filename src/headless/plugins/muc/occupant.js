@@ -185,7 +185,7 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
                 to: this.get("from") ?? `${muc.get("jid")}/${this.get("nick")}`,
                 type: "chat",
             },
-            u.getMediaURLsMetadata(text)
+            await u.getMediaURLsMetadata(text)
         );
 
         /**

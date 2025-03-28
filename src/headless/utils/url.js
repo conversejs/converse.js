@@ -78,23 +78,35 @@ export function isGIFURL(url) {
 
 /**
  * @param {string|URL} url
+ * @param {Headers} [headers]
  */
-export function isAudioURL(url) {
+export function isAudioURL(url, headers) {
+    if (headers?.get("content-type")?.startsWith("audio")) {
+        return true;
+    }
     return checkFileTypes([".ogg", ".mp3", ".m4a"], url);
 }
 
 /**
  * @param {string|URL} url
+ * @param {Headers} [headers]
  */
-export function isVideoURL(url) {
+export function isVideoURL(url, headers) {
+    if (headers?.get("content-type")?.startsWith("video")) {
+        return true;
+    }
     return checkFileTypes([".mp4", ".webm"], url);
 }
 
 /**
  * @param {string|URL} url
+ * @param {Headers} [headers]
  * @returns {boolean}
  */
-export function isImageURL(url) {
+export function isImageURL(url, headers) {
+    if (headers?.get("content-type")?.startsWith("video")) {
+        return true;
+    }
     const regex = settings.get("image_urls_regex");
     return regex?.test(url) || isURLWithImageExtension(url);
 }
@@ -175,16 +187,32 @@ export function withinString(string, callback, options) {
 }
 
 /**
- * @param {import("./types").MediaURLIndexes} o
- * @returns {import("./types").MediaURLMetadata}
+ * @param {string} url
+ * @returns {Promise<Headers>}
  */
-export function getMetadataForURL(o) {
+export async function getHeaders(url) {
+    try {
+        const response = await fetch(url, { method: "HEAD" });
+        return response.headers;
+    } catch (e) {
+        console.debug(`Error calling HEAD on url ${url}: ${e}`);
+        return null;
+    }
+}
+
+/**
+ * @param {import("./types").MediaURLIndexes} o
+ * @returns {Promise<import("./types").MediaURLMetadata>}
+ */
+export async function getMetadataForURL(o) {
+    const fetch_headers = settings_api.get("fetch_url_headers");
+    const headers = fetch_headers ? await getHeaders(o.url) : null;
     return {
         ...o,
         is_gif: isGIFURL(o.url),
-        is_audio: isAudioURL(o.url),
-        is_image: isImageURL(o.url),
-        is_video: isVideoURL(o.url),
+        is_audio: isAudioURL(o.url, headers),
+        is_image: isImageURL(o.url, headers),
+        is_video: isVideoURL(o.url, headers),
         is_encrypted: isEncryptedFileURL(o.url),
     };
 }
@@ -192,9 +220,9 @@ export function getMetadataForURL(o) {
 /**
  * @param {string} text
  * @param {number} offset
- * @returns {{media_urls?: import("./types").MediaURLMetadata[]}}
+ * @returns {Promise<{media_urls?: import("./types").MediaURLMetadata[]}>}
  */
-export function getMediaURLsMetadata(text, offset = 0) {
+export async function getMediaURLsMetadata(text, offset = 0) {
     const objs = [];
     if (!text) {
         return {};
@@ -228,7 +256,7 @@ export function getMediaURLsMetadata(text, offset = 0) {
         log.debug(error);
     }
 
-    const media_urls = objs.map((o) => getMetadataForURL(o));
+    const media_urls = await Promise.all(objs.map(getMetadataForURL));
     return media_urls.length ? { media_urls } : {};
 }
 

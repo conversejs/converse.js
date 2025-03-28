@@ -175,6 +175,21 @@ export function withinString(string, callback, options) {
 }
 
 /**
+ * @param {import("./types").MediaURLIndexes} o
+ * @returns {import("./types").MediaURLMetadata}
+ */
+export function getMetadataForURL(o) {
+    return {
+        ...o,
+        is_gif: isGIFURL(o.url),
+        is_audio: isAudioURL(o.url),
+        is_image: isImageURL(o.url),
+        is_video: isVideoURL(o.url),
+        is_encrypted: isEncryptedFileURL(o.url),
+    };
+}
+
+/**
  * @param {string} text
  * @param {number} offset
  * @returns {{media_urls?: import("./types").MediaURLMetadata[]}}
@@ -213,13 +228,7 @@ export function getMediaURLsMetadata(text, offset = 0) {
         log.debug(error);
     }
 
-    const media_urls = objs.map((o) => ({
-        ...o,
-        is_audio: isAudioURL(o.url),
-        is_image: isImageURL(o.url),
-        is_video: isVideoURL(o.url),
-        is_encrypted: isEncryptedFileURL(o.url),
-    }));
+    const media_urls = objs.map((o) => getMetadataForURL(o));
     return media_urls.length ? { media_urls } : {};
 }
 

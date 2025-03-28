@@ -16,6 +16,7 @@ declare const _default: {
     isImageURL(url: string | URL): boolean;
     isEncryptedFileURL(url: string | URL): boolean;
     withinString(string: string, callback: Function, options?: import("headless/types/utils/types.js").ProcessStringOptions): string;
+    getMetadataForURL(o: import("headless/types/utils/types.js").MediaURLIndexes): import("headless/types/utils/types.js").MediaURLMetadata;
     getMediaURLsMetadata(text: string, offset?: number): {
         media_urls?: import("headless/types/utils/types.js").MediaURLMetadata[];
     };
@@ -123,6 +124,7 @@ declare const _default: {
         isImageURL(url: string | URL): boolean;
         isEncryptedFileURL(url: string | URL): boolean;
         withinString(string: string, callback: Function, options?: import("headless/types/utils/types.js").ProcessStringOptions): string;
+        getMetadataForURL(o: import("headless/types/utils/types.js").MediaURLIndexes): import("headless/types/utils/types.js").MediaURLMetadata;
         getMediaURLsMetadata(text: string, offset?: number): {
             media_urls?: import("headless/types/utils/types.js").MediaURLMetadata[];
         };

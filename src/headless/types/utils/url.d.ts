@@ -30,17 +30,20 @@ export function isURLWithImageExtension(url: string | URL): boolean;
 export function isGIFURL(url: string | URL): boolean;
 /**
  * @param {string|URL} url
+ * @param {Headers} [headers]
  */
-export function isAudioURL(url: string | URL): boolean;
+export function isAudioURL(url: string | URL, headers?: Headers): boolean;
 /**
  * @param {string|URL} url
+ * @param {Headers} [headers]
  */
-export function isVideoURL(url: string | URL): boolean;
+export function isVideoURL(url: string | URL, headers?: Headers): boolean;
 /**
  * @param {string|URL} url
+ * @param {Headers} [headers]
  * @returns {boolean}
  */
-export function isImageURL(url: string | URL): boolean;
+export function isImageURL(url: string | URL, headers?: Headers): boolean;
 /**
  * @param {string|URL} url
  */
@@ -59,18 +62,23 @@ export function isEncryptedFileURL(url: string | URL): boolean;
  */
 export function withinString(string: string, callback: Function, options?: import("./types").ProcessStringOptions): string;
 /**
- * @param {import("./types").MediaURLIndexes} o
- * @returns {import("./types").MediaURLMetadata}
+ * @param {string} url
+ * @returns {Promise<Headers>}
  */
-export function getMetadataForURL(o: import("./types").MediaURLIndexes): import("./types").MediaURLMetadata;
+export function getHeaders(url: string): Promise<Headers>;
+/**
+ * @param {import("./types").MediaURLIndexes} o
+ * @returns {Promise<import("./types").MediaURLMetadata>}
+ */
+export function getMetadataForURL(o: import("./types").MediaURLIndexes): Promise<import("./types").MediaURLMetadata>;
 /**
  * @param {string} text
  * @param {number} offset
- * @returns {{media_urls?: import("./types").MediaURLMetadata[]}}
+ * @returns {Promise<{media_urls?: import("./types").MediaURLMetadata[]}>}
  */
-export function getMediaURLsMetadata(text: string, offset?: number): {
+export function getMediaURLsMetadata(text: string, offset?: number): Promise<{
     media_urls?: import("./types").MediaURLMetadata[];
-};
+}>;
 /**
  * @param {Array<import("./types").MediaURLMetadata>} arr
  * @param {string} text

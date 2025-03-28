@@ -21,6 +21,5 @@ export type MediaURLMetadata = MediaURLIndexes & {
     is_gif?: boolean;
     is_image?: boolean;
     is_video?: boolean;
-    content_type?: string;
 };
 //# sourceMappingURL=types.d.ts.map

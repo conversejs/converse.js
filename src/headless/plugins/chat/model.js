@@ -204,7 +204,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
             sender: 'me',
             time: (new Date()).toISOString(),
             type: this.get('message_type'),
-        }, u.getMediaURLsMetadata(text));
+        }, await u.getMediaURLsMetadata(text));
 
         /**
          * *Hook* which allows plugins to update the attributes of an outgoing message.

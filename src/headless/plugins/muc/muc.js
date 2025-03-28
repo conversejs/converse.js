@@ -1117,7 +1117,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             sender: 'me',
             type: 'groupchat',
             original_text: text,
-        }, u.getMediaURLsMetadata(text));
+        }, await u.getMediaURLsMetadata(text));
 
         /**
          * *Hook* which allows plugins to update the attributes of an outgoing

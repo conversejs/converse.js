@@ -14,7 +14,6 @@ import {
     collapseLineBreaks,
     containsDirectives,
     getDirectiveAndLength,
-    getHeaders,
     isQuoteDirective,
     isSpotifyTrack,
     isString,
@@ -23,13 +22,8 @@ import {
 } from "./utils.js";
 import { styling_map } from "./constants.js";
 
-const {
-    addMediaURLsOffset,
-    convertASCII2Emoji,
-    getCodePointReferences,
-    getMediaURLsMetadata,
-    getShortnameReferences,
-} = u;
+const { addMediaURLsOffset, convertASCII2Emoji, getCodePointReferences, getMediaURLsMetadata, getShortnameReferences } =
+    u;
 
 /**
  * @class Texture
@@ -147,13 +141,6 @@ export class Texture extends String {
         } else if (api.settings.get("embed_3rd_party_media_players") && isSpotifyTrack(url)) {
             const song_id = url.split("/track/")[1];
             template = tplSpotify(song_id, url, this.hide_media_urls);
-        } else {
-            if (this.shouldRenderMedia(url, "audio") && api.settings.get("fetch_url_headers")) {
-                const headers = await getHeaders(url);
-                if (headers?.get("content-type")?.startsWith("audio")) {
-                    template = tplAudio(filtered_url, this.hide_media_urls, headers.get("Icy-Name"));
-                }
-            }
         }
         return template || getHyperlinkTemplate(filtered_url);
     }
@@ -167,7 +154,10 @@ export class Texture extends String {
      */
     async addHyperlinks(text, local_offset) {
         const full_offset = local_offset + this.offset;
-        const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
+        const urls_meta =
+            this.media_urls ||
+            (await getMediaURLsMetadata(text, local_offset)).media_urls ||
+            [];
         const media_urls = addMediaURLsOffset(urls_meta, text, full_offset);
         await Promise.all(
             media_urls

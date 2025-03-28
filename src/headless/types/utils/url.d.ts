@@ -59,6 +59,11 @@ export function isEncryptedFileURL(url: string | URL): boolean;
  */
 export function withinString(string: string, callback: Function, options?: import("./types").ProcessStringOptions): string;
 /**
+ * @param {import("./types").MediaURLIndexes} o
+ * @returns {import("./types").MediaURLMetadata}
+ */
+export function getMetadataForURL(o: import("./types").MediaURLIndexes): import("./types").MediaURLMetadata;
+/**
  * @param {string} text
  * @param {number} offset
  * @returns {{media_urls?: import("./types").MediaURLMetadata[]}}

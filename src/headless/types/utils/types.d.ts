@@ -10,13 +10,17 @@ export type ProcessStringOptions = {
     ignoreHtml?: boolean;
     ignore?: RegExp;
 };
-export type MediaURLMetadata = {
+export type MediaURLIndexes = {
+    url: string;
+    end: number;
+    start: number;
+};
+export type MediaURLMetadata = MediaURLIndexes & {
     is_audio?: boolean;
+    is_encrypted?: boolean;
+    is_gif?: boolean;
     is_image?: boolean;
     is_video?: boolean;
-    is_encrypted?: boolean;
-    end?: number;
-    start?: number;
-    url: string;
+    content_type?: string;
 };
 //# sourceMappingURL=types.d.ts.map

@@ -4,6 +4,6 @@ export default class DropdownBase extends CustomElement {
     button: HTMLButtonElement;
     dropdown: BootstrapDropdown;
 }
-import { CustomElement } from './element.js';
-import { Dropdown as BootstrapDropdown } from 'bootstrap';
+import { CustomElement } from "./element.js";
+import { default as BootstrapDropdown } from "bootstrap/js/src/dropdown.js";
 //# sourceMappingURL=dropdownbase.d.ts.map

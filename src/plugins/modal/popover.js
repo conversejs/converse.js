@@ -1,6 +1,6 @@
 import '@popperjs/core';
 import { html } from "lit";
-import { Popover as BootstrapPopover } from "bootstrap";
+import { default as BootstrapPopover } from "bootstrap/js/src/popover.js";
 import { api } from "@converse/headless";
 import { CustomElement } from "shared/components/element.js";
 

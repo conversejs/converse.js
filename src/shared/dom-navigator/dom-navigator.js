@@ -4,47 +4,11 @@
  * This module started as a fork of Rubens Mariuzzo's dom-navigator.
  * @copyright Rubens Mariuzzo, JC Brand
  */
-import u from "../utils/html";
+import u from "utils/html";
 import { converse } from "@converse/headless";
+import {absoluteOffsetLeft, absoluteOffsetTop, inViewport} from "./utils";
 
 const { keycodes } = converse;
-
-/**
- * @param {Element} el
- * @returns {boolean}
- */
-function inViewport(el) {
-    const rect = el.getBoundingClientRect();
-    return rect.top >= 0 && rect.left >= 0 && rect.bottom <= window.innerHeight && rect.right <= window.innerWidth;
-}
-
-/**
- * @param {HTMLElement} el
- * @returns {number}
- */
-function absoluteOffsetTop(el) {
-    let offsetTop = 0;
-    do {
-        if (!isNaN(el.offsetTop)) {
-            offsetTop += el.offsetTop;
-        }
-    } while ((el = /** @type {HTMLElement} */ (el.offsetParent)));
-    return offsetTop;
-}
-
-/**
- * @param {HTMLElement} el
- * @returns {number}
- */
-function absoluteOffsetLeft(el) {
-    let offsetLeft = 0;
-    do {
-        if (!isNaN(el.offsetLeft)) {
-            offsetLeft += el.offsetLeft;
-        }
-    } while ((el = /** @type {HTMLElement} */ (el.offsetParent)));
-    return offsetLeft;
-}
 
 /**
  * Adds the ability to navigate the DOM with the arrow keys
@@ -122,7 +86,6 @@ class DOMNavigator {
      * @param {DOMNavigatorOptions} options The options to configure the DOM navigator.
      */
     constructor(container, options) {
-        this.doc = window.document;
         this.container = container;
         this.scroll_container = options.scroll_container || container;
 
@@ -148,14 +111,16 @@ class DOMNavigator {
 
     enable() {
         this.getElements();
-        this.keydownHandler = /** @param {KeyboardEvent} ev */(ev) => this.handleKeydown(ev);
-        this.doc.addEventListener("keydown", this.keydownHandler);
+        this.keydownHandler = /** @param {KeyboardEvent} ev */ (ev) => this.handleKeydown(ev);
+        const root = u.getRootElement();
+        root.addEventListener("keydown", this.keydownHandler);
         this.enabled = true;
     }
 
     disable() {
         if (this.keydownHandler) {
-            this.doc.removeEventListener("keydown", this.keydownHandler);
+            const root = u.getRootElement();
+            root.removeEventListener("keydown", this.keydownHandler);
         }
         this.unselect();
         this.elements = {};
@@ -371,7 +336,7 @@ class DOMNavigator {
      */
     handleKeydown(ev) {
         const keys = keycodes;
-        const direction = ev.shiftKey ? this.keys[`${keys.SHIFT}+${ev.key}`] : this.keys[ev.key];
+        const direction = ev.shiftKey ? this.keys[`${keys.SHIFT}${ev.key}`] : this.keys[ev.key];
         if (direction) {
             ev.preventDefault();
             ev.stopPropagation();

@@ -1,4 +1,4 @@
-import { Popover } from 'bootstrap';
+import Popover from 'bootstrap/js/src/popover.js';
 import { _converse, api, converse, constants } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { updateSettingsWithFormData, validateJID } from './utils.js';

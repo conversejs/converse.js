@@ -27,6 +27,9 @@
             background: var(--background-color);
             margin-top: -0.2em !important;
             box-shadow: var(--raised-el-shadow);
+            .selected {
+                background: var(--highlight-color-hover);
+            }
         }
 
         .dropdown-item {

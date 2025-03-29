@@ -5,7 +5,7 @@
  */
 import debounce from "lodash-es/debounce";
 import { api, converse, u, constants } from "@converse/headless";
-import DOMNavigator from "shared/dom-navigator";
+import { DOMNavigator } from "shared/dom-navigator";
 import { CustomElement } from "shared/components/element.js";
 import { FILTER_CONTAINS } from "shared/autocomplete/utils.js";
 import { getTonedEmojis } from "./utils.js";
@@ -123,8 +123,7 @@ export default class EmojiPicker extends CustomElement {
     registerEvents() {
         this.onGlobalKeyDown = (ev) => this.#onGlobalKeyDown(ev);
         this.dropdown.addEventListener("hide.bs.dropdown", () => this.onDropdownHide());
-        const body = document.querySelector("body");
-        body.addEventListener("keydown", this.onGlobalKeyDown);
+        this.addEventListener("keydown", this.onGlobalKeyDown);
     }
 
     connectedCallback() {
@@ -133,8 +132,7 @@ export default class EmojiPicker extends CustomElement {
     }
 
     disconnectedCallback() {
-        const body = document.querySelector("body");
-        body.removeEventListener("keydown", this.onGlobalKeyDown);
+        this.removeEventListener("keydown", this.onGlobalKeyDown);
         this.disableArrowNavigation();
         super.disconnectedCallback();
     }
@@ -143,11 +141,11 @@ export default class EmojiPicker extends CustomElement {
      * @param {KeyboardEvent} ev
      */
     #onGlobalKeyDown(ev) {
-        if (!this.navigator) return;
+        if (!this.navigator || !u.isVisible(this)) return;
 
-        if (ev.key === KEYCODES.ENTER && u.isVisible(this)) {
+        if (ev.key === KEYCODES.ENTER) {
             this.onEnterPressed(ev);
-        } else if (ev.key === KEYCODES.DOWN_ARROW && !this.navigator.enabled && u.isVisible(this)) {
+        } else if (ev.key === KEYCODES.DOWN_ARROW && !this.navigator.enabled) {
             this.enableArrowNavigation(ev);
         }
     }

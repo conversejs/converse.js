@@ -1,7 +1,7 @@
 import { html } from 'lit';
+import Modal from "bootstrap/js/src/modal.js";
 import { getOpenPromise } from '@converse/openpromise';
 import { Model} from '@converse/skeletor';
-import { Modal } from "bootstrap";
 import { CustomElement } from 'shared/components/element.js';
 import { u } from '@converse/headless';
 import { modal_close_button } from "./templates/buttons.js";

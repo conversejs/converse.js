@@ -528,7 +528,7 @@ let root;
 
 export function getRootElement() {
     if (!root) {
-        root = document.createElement("converse-root");
+        root = document.querySelector('converse-root') || document.createElement("converse-root");
     }
     return root;
 }

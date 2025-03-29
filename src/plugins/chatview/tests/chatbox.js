@@ -13,7 +13,8 @@ describe("Chatboxes", function () {
 
     describe("A Chatbox", function () {
 
-        it("has a /help command to show the available commands", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        it("has a /help command to show the available commands", mock.initConverse(['chatBoxesFetched'],
+                {view_mode: 'fullscreen'}, async function (_converse) {
 
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);

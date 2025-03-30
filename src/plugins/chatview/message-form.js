@@ -23,12 +23,19 @@ export default class MessageForm extends CustomElement {
 
     async initialize() {
         await this.model.initialized;
-        this.listenTo(this.model.messages, "change:correcting", this.onMessageCorrecting);
         this.listenTo(this.model, "change:composing_spoiler", () => this.requestUpdate());
+        this.listenTo(this.model, "change:draft", () => this.requestUpdate());
+        this.listenTo(this.model, "change:hidden", () => {
+            if (this.model.get("hidden")) {
+                const draft_hint = /** @type {HTMLInputElement} */ (this.querySelector(".spoiler-hint"))?.value;
+                const draft_message = /** @type {HTMLTextAreaElement} */ (this.querySelector(".chat-textarea"))?.value;
+                u.safeSave(this.model, { draft: draft_message, draft_hint });
+            }
+        });
 
         this.handleEmojiSelection = (/** @type { CustomEvent } */ { detail }) => {
             if (this.model.get("jid") === detail.jid) {
-                this.insertIntoTextArea(detail.value, detail.autocompleting, false, detail.ac_position);
+                this.insertIntoTextArea(detail.value, detail.autocompleting, detail.ac_position);
             }
         };
         document.addEventListener("emojiSelected", this.handleEmojiSelection);
@@ -54,13 +61,8 @@ export default class MessageForm extends CustomElement {
      * @param {number} [position] - The end index of the string to be
      *  replaced with the new value.
      */
-    insertIntoTextArea(value, replace = false, correcting = false, position, separator = " ") {
+    insertIntoTextArea(value, replace = false, position, separator = " ") {
         const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector(".chat-textarea"));
-        if (correcting) {
-            u.addClass("correcting", textarea);
-        } else {
-            u.removeClass("correcting", textarea);
-        }
         if (replace) {
             if (position && typeof replace == "string") {
                 textarea.value = textarea.value.replace(new RegExp(replace, "g"), (match, offset) =>
@@ -82,22 +84,6 @@ export default class MessageForm extends CustomElement {
     }
 
     /**
-     * @param {import('@converse/headless').BaseMessage} message
-     */
-    onMessageCorrecting(message) {
-        if (message.get("correcting")) {
-            this.insertIntoTextArea(u.prefixMentions(message), true, true);
-        } else {
-            const currently_correcting = this.model.messages.findWhere("correcting");
-            if (currently_correcting && currently_correcting !== message) {
-                this.insertIntoTextArea(u.prefixMentions(message), true, true);
-            } else {
-                this.insertIntoTextArea("", true, false);
-            }
-        }
-    }
-
-    /**
      * Handles the escape key press event to stop correcting a message.
      * @param {KeyboardEvent} ev
      */
@@ -107,7 +93,6 @@ export default class MessageForm extends CustomElement {
         if (message) {
             ev.preventDefault();
             message.save("correcting", false);
-            this.insertIntoTextArea("", true, false);
         }
     }
 
@@ -122,7 +107,7 @@ export default class MessageForm extends CustomElement {
             this.model.sendFiles(Array.from(ev.clipboardData.files));
             return;
         }
-        this.model.set({ draft: ev.clipboardData.getData("text/plain") });
+        this.model.save({ draft: ev.clipboardData.getData("text/plain") });
     }
 
     /**
@@ -141,7 +126,8 @@ export default class MessageForm extends CustomElement {
      * @param {KeyboardEvent} ev
      */
     onKeyUp(ev) {
-        this.model.set({ draft: /** @type {HTMLTextAreaElement} */ (ev.target).value });
+        // Trigger an event, for `<converse-message-limit-indicator/>`
+        this.model.trigger('event:keyup', { ev });
     }
 
     /**
@@ -171,13 +157,13 @@ export default class MessageForm extends CustomElement {
                 return this.onFormSubmitted(ev);
             } else if (ev.key === converse.keycodes.UP_ARROW && !target.selectionEnd) {
                 const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector(".chat-textarea"));
-                if (!textarea.value || u.hasClass("correcting", textarea)) {
+                if (!textarea.value || this.model.get('correcting')) {
                     return this.model.editEarlierMessage();
                 }
             } else if (
                 ev.key === converse.keycodes.DOWN_ARROW &&
                 target.selectionEnd === target.value.length &&
-                u.hasClass("correcting", this.querySelector(".chat-textarea"))
+                this.model.get('correcting')
             ) {
                 return this.model.editLaterMessage();
             }
@@ -231,7 +217,6 @@ export default class MessageForm extends CustomElement {
         if (is_command || message) {
             hint_el.value = "";
             textarea.value = "";
-            u.removeClass("correcting", textarea);
             textarea.style.height = "auto";
             this.model.set({ "draft": "" });
         }

@@ -1,5 +1,5 @@
 import { __ } from "i18n";
-import { api } from "@converse/headless";
+import { api, u } from "@converse/headless";
 import { html } from "lit";
 import { resetElementHeight } from "plugins/chatview/utils.js";
 
@@ -16,12 +16,10 @@ export default (el) => {
     const show_send_button = api.settings.get("show_send_button");
     const show_spoiler_button = api.settings.get("visible_toolbar_buttons").spoiler;
     const show_toolbar = api.settings.get("show_toolbar");
-    const hint_value = /** @type {HTMLInputElement} */ (el.querySelector(".spoiler-hint"))?.value;
-    const message_value = /** @type {HTMLInputElement} */ (el.querySelector(".chat-textarea"))?.value;
     return html` <form class="setNicknameButtonForm hidden">
             <input type="submit" class="btn btn-primary" name="join" value="Join" />
         </form>
-        <form class="chat-message-form" @submit=${(ev) => el.onFormSubmitted(ev)}>
+        <form class="chat-message-form" @submit="${/** @param {SubmitEvent} ev */ (ev) => el.onFormSubmitted(ev)}">
             ${show_toolbar
                 ? html` <converse-chat-toolbar
                       class="btn-toolbar chat-toolbar no-text-select"
@@ -40,7 +38,11 @@ export default (el) => {
             <input
                 type="text"
                 placeholder="${label_spoiler_hint || ""}"
-                value="${hint_value || ""}"
+                .value="${el.model.get("draft_hint") ?? ""}"
+                @change="${
+                    /** @param {Event} ev */ (ev) =>
+                        u.safeSave(el.model, { draft_hint: /** @type {HTMLInputElement} */ (ev.target).value })
+                }"
                 class="${composing_spoiler ? "" : "hidden"} spoiler-hint"
             />
             <div class="suggestion-box">
@@ -48,19 +50,22 @@ export default (el) => {
                 <textarea
                     autofocus
                     type="text"
-                    @drop=${(ev) => el.onDrop(ev)}
+                    .value="${el.model.get("draft") ?? ""}"
+                    @drop="${/** @param {DragEvent} ev */ (ev) => el.onDrop(ev)}"
                     @input=${resetElementHeight}
                     @keydown="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyDown(ev)}"
                     @keyup="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyUp(ev)}"
                     @paste="${/** @param {ClipboardEvent} ev */ (ev) => el.onPaste(ev)}"
-                    @change=${(ev) => el.model.set({ "draft": ev.target.value })}
+                    @change="${
+                        /** @param {Event} ev */ (ev) =>
+                            u.safeSave(el.model, { draft: /** @type {HTMLTextAreaElement} */ (ev.target).value })
+                    }"
                     class="chat-textarea suggestion-box__input
+                        ${el.model.get("correcting") ? "correcting" : ""}
                         ${show_send_button ? "chat-textarea-send-button" : ""}
                         ${composing_spoiler ? "spoiler" : ""}"
                     placeholder="${label_message}"
-                >
-${message_value || ""}</textarea
-                >
+                ></textarea>
                 <span
                     class="suggestion-box__additions visually-hidden"
                     role="status"

@@ -255,8 +255,8 @@ describe("Chatboxes", function () {
                 const toolbar = view.querySelector('.chat-toolbar');
                 const counter = toolbar.querySelector('.message-limit');
                 expect(counter.textContent).toBe('200');
-                view.getMessageForm().insertIntoTextArea('hello world');
-                await u.waitUntil(() => counter.textContent === '188');
+                view.model.set({ draft: 'hello world' });
+                await u.waitUntil(() => counter.textContent === '189');
 
                 toolbar.querySelector('.toggle-emojis').click();
                 const picker = await u.waitUntil(() => view.querySelector('.emoji-picker__lists'));

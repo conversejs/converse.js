@@ -1,9 +1,9 @@
-import AutoComplete from "shared/autocomplete/autocomplete.js";
-import MessageForm from "plugins/chatview/message-form.js";
-import tplMUCMessageForm from "./templates/message-form.js";
 import { FILTER_CONTAINS, FILTER_STARTSWITH } from "shared/autocomplete/utils.js";
 import { MUCOccupant, api, converse, log } from "@converse/headless";
+import AutoComplete from "shared/autocomplete/autocomplete.js";
+import MessageForm from "plugins/chatview/message-form.js";
 import { getAutoCompleteListItem } from "./utils.js";
+import tplMUCMessageForm from "./templates/message-form.js";
 
 export default class MUCMessageForm extends MessageForm {
     async initialize() {

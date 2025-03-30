@@ -18,11 +18,7 @@ export default class MessageForm extends CustomElement {
      * @param {number} [position] - The end index of the string to be
      *  replaced with the new value.
      */
-    insertIntoTextArea(value: string, replace?: (boolean | string), correcting?: boolean, position?: number, separator?: string): void;
-    /**
-     * @param {import('@converse/headless').BaseMessage} message
-     */
-    onMessageCorrecting(message: import("@converse/headless").BaseMessage<any>): void;
+    insertIntoTextArea(value: string, replace?: (boolean | string), position?: number, separator?: string): void;
     /**
      * Handles the escape key press event to stop correcting a message.
      * @param {KeyboardEvent} ev

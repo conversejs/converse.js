@@ -117,6 +117,7 @@ export default function ModelWithMessages(BaseModel) {
 
             this.listenTo(this.messages, "add", (m) => this.onMessageAdded(m));
             this.listenTo(this.messages, "change:upload", (m) => this.onMessageUploadChanged(m));
+            this.listenTo(this.messages, "change:correcting", (m) => this.onMessageCorrecting(m));
         }
 
         fetchMessages() {
@@ -497,6 +498,17 @@ export default function ModelWithMessages(BaseModel) {
             }
         }
 
+        /**
+         * @param {BaseMessage} message
+         */
+        onMessageCorrecting(message) {
+            if (message.get('correcting')) {
+                this.save({ correcting: message.get('id'), draft: u.prefixMentions(message) });
+            } else {
+                this.save({ correcting: undefined, draft: undefined });
+            }
+        }
+
         onScrolledChanged() {
             if (!this.ui.get("scrolled")) {
                 this.clearUnreadMsgCounter();
@@ -562,12 +574,11 @@ export default function ModelWithMessages(BaseModel) {
             message =
                 message ||
                 this.messages
-                    .filter({ "sender": "me" })
+                    .filter({ sender: "me" })
                     .reverse()
                     .find((m) => m.get("editable"));
-            if (message) {
-                message.save("correcting", true);
-            }
+
+            message?.save("correcting", true);
         }
 
         editLaterMessage() {

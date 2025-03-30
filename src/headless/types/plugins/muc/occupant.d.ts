@@ -101,6 +101,7 @@ declare const MUCOccupant_base: {
         chat_state_timeout: NodeJS.Timeout;
         onMessageAdded(message: import("../../index.js").BaseMessage<any>): void;
         onMessageUploadChanged(message: import("../../index.js").BaseMessage<any>): Promise<void>;
+        onMessageCorrecting(message: import("../../index.js").BaseMessage<any>): void;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
         shouldShowErrorMessage(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;

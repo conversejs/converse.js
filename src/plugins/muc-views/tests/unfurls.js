@@ -474,7 +474,7 @@ describe("A Groupchat Message", function () {
             target: textarea,
             key: "ArrowUp",
         });
-        expect(textarea.value).toBe(unfurl_url);
+        await u.waitUntil(() => textarea.value === unfurl_url);
         textarea.value = "never mind";
         message_form.onKeyDown(enter_event);
 

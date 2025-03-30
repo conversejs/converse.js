@@ -1,6 +1,5 @@
 /*global mock, converse */
-
-const { Promise, $msg, Strophe, sizzle, u } = converse.env;
+const { Promise, Strophe, sizzle, u } = converse.env;
 
 describe("A Chat Message", function () {
 
@@ -41,7 +40,7 @@ describe("A Chat Message", function () {
             target: textarea,
             key: "ArrowUp",
         });
-        expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
+        await u.waitUntil(() => textarea.value === 'But soft, what light through yonder airlock breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
@@ -87,7 +86,7 @@ describe("A Chat Message", function () {
             target: textarea,
             key: "ArrowUp",
         });
-        expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
+        await u.waitUntil(() => textarea.value === 'But soft, what light through yonder window breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
@@ -96,7 +95,7 @@ describe("A Chat Message", function () {
             target: textarea,
             key: "ArrowDown",
         });
-        expect(textarea.value).toBe('');
+        await u.waitUntil(() => textarea.value === '');
         expect(view.model.messages.at(0).get('correcting')).toBe(false);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => (u.hasClass('correcting', view.querySelector('.chat-msg')) === false), 500);
@@ -124,7 +123,7 @@ describe("A Chat Message", function () {
             target: textarea,
             key: "ArrowUp",
         });
-        expect(textarea.value).toBe('Arise, fair sun, and kill the envious moon');
+        await u.waitUntil(() => textarea.value === 'Arise, fair sun, and kill the envious moon');
         await u.waitUntil(() => view.model.messages.at(2).get('correcting') === true);
         expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
         expect(view.model.messages.at(1).get('correcting')).toBeFalsy();
@@ -136,7 +135,7 @@ describe("A Chat Message", function () {
             target: textarea,
             key: "ArrowUp",
         });
-        expect(textarea.value).toBe('It is the east, and Juliet is the one.');
+        await u.waitUntil(() => textarea.value === 'It is the east, and Juliet is the one.');
         expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
         expect(view.model.messages.at(1).get('correcting')).toBe(true);
         expect(view.model.messages.at(2).get('correcting')).toBeFalsy();
@@ -200,7 +199,7 @@ describe("A Chat Message", function () {
         action.style.opacity = 1;
         action.click();
 
-        expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
+        await u.waitUntil(() => textarea.value === 'But soft, what light through yonder airlock breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')));
@@ -217,16 +216,16 @@ describe("A Chat Message", function () {
         expect(api.connection.get().send).toHaveBeenCalled();
 
         const msg = api.connection.get().send.calls.all()[0].args[0];
-        expect(Strophe.serialize(msg))
-        .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
-                `to="mercutio@montague.lit" type="chat" `+
-                `xmlns="jabber:client">`+
-                    `<body>But soft, what light through yonder window breaks?</body>`+
-                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                    `<request xmlns="urn:xmpp:receipts"/>`+
-                    `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
-                    `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
-            `</message>`);
+        expect(msg).toEqualStanza(stx`
+              <message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}"
+                to="mercutio@montague.lit" type="chat"
+                xmlns="jabber:client">
+                    <body>But soft, what light through yonder window breaks?</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    <request xmlns="urn:xmpp:receipts"/>
+                    <replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>
+                    <origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>
+            </message>`);
         expect(view.model.messages.models.length).toBe(1);
         const corrected_message = view.model.messages.at(0);
         expect(corrected_message.get('msgid')).toBe(first_msg.get('msgid'));
@@ -245,7 +244,7 @@ describe("A Chat Message", function () {
         action.style.opacity = 1;
         action.click();
 
-        expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
+        await u.waitUntil(() => textarea.value === 'But soft, what light through yonder window breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')) === true);
@@ -255,18 +254,19 @@ describe("A Chat Message", function () {
         action.click();
         expect(view.model.messages.at(0).get('correcting')).toBe(false);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(textarea.value).toBe('');
+        await u.waitUntil(() => textarea.value === '');
         await u.waitUntil(() => (u.hasClass('correcting', view.querySelector('.chat-msg')) === false), 500);
 
         // Test that messages from other users don't have the pencil icon
         _converse.handleMessageStanza(
-            $msg({
-                'from': contact_jid,
-                'to': api.connection.get().jid,
-                'type': 'chat',
-                'id': u.getUniqueId()
-            }).c('body').t('Hello').up()
-            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
+            stx`<message from="${contact_jid}"
+                    to="${api.connection.get().jid}"
+                    type="chat"
+                    id="${u.getUniqueId()}"
+                    xmlns="jabber:client">
+                <body>Hello</body>
+                <active xmlns="http://jabber.org/protocol/chatstates"/>
+            </message>`
         );
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.querySelector('.chat-msg .chat-msg__action .chat-msg__action-edit')).toBeNull()
@@ -282,7 +282,7 @@ describe("A Chat Message", function () {
         expect(_converse.api.confirm).toHaveBeenCalledWith(
             'You have an unsent message which will be lost if you continue. Are you sure?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
-        expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
+        await u.waitUntil(() => textarea.value === 'But soft, what light through yonder window breaks?');
 
         textarea.value = 'But soft, what light through yonder airlock breaks?'
         action.click();
@@ -307,24 +307,28 @@ describe("A Chat Message", function () {
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msg_id = u.getUniqueId();
             const view = await mock.openChatBoxFor(_converse, sender_jid);
-            _converse.handleMessageStanza($msg({
-                    'from': sender_jid,
-                    'to': api.connection.get().jid,
-                    'type': 'chat',
-                    'id': msg_id,
-                }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
+            _converse.handleMessageStanza(stx`
+                <message from="${sender_jid}"
+                        xmlns="jabber:client"
+                        to="${api.connection.get().jid}"
+                        type="chat"
+                        id="${msg_id}">
+                    <body>But soft, what light through yonder airlock breaks?</body>
+                </message>`);
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.querySelector('.chat-msg__text').textContent)
                 .toBe('But soft, what light through yonder airlock breaks?');
 
-            _converse.handleMessageStanza($msg({
-                    'from': sender_jid,
-                    'to': api.connection.get().jid,
-                    'type': 'chat',
-                    'id': u.getUniqueId(),
-                }).c('body').t('But soft, what light through yonder chimney breaks?').up()
-                .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+            _converse.handleMessageStanza(stx`
+                <message from="${sender_jid}"
+                        xmlns="jabber:client"
+                        to="${api.connection.get().jid}"
+                        type="chat"
+                        id="${u.getUniqueId()}">
+                    <body>But soft, what light through yonder chimney breaks?</body>
+                    <replace id="${msg_id}" xmlns="urn:xmpp:message-correct:0"/>
+                </message>`);
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             expect(view.querySelector('.chat-msg__text').textContent)
@@ -333,13 +337,15 @@ describe("A Chat Message", function () {
             expect(view.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
             expect(view.model.messages.models.length).toBe(1);
 
-            _converse.handleMessageStanza($msg({
-                    'from': sender_jid,
-                    'to': api.connection.get().jid,
-                    'type': 'chat',
-                    'id': u.getUniqueId(),
-                }).c('body').t('But soft, what light through yonder window breaks?').up()
-                .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+            _converse.handleMessageStanza(stx`
+                <message from="${sender_jid}"
+                        xmlns="jabber:client"
+                        to="${api.connection.get().jid}"
+                        type="chat"
+                        id="${u.getUniqueId()}">
+                    <body>But soft, what light through yonder window breaks?</body>
+                    <replace id="${msg_id}" xmlns="urn:xmpp:message-correct:0"/>
+                </message>`);
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             expect(view.querySelector('.chat-msg__text').textContent)

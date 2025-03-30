@@ -3,8 +3,12 @@ export default class MessageLimitIndicator extends CustomElement {
         model: {
             type: ObjectConstructor;
         };
+        _draft_length: {
+            state: boolean;
+        };
     };
     model: any;
+    _draft_length: number;
     connectedCallback(): void;
     render(): "" | import("lit").TemplateResult<1>;
 }

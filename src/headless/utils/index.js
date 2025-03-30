@@ -63,6 +63,7 @@ export function isEmptyMessage (attrs) {
 /**
  * Given a message object, return its text with @ chars
  * inserted before the mentioned nicknames.
+ * @param {import('../shared/message').default} message
  */
 export function prefixMentions (message) {
     let text = message.getMessageText();

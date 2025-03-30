@@ -329,7 +329,7 @@ declare class MUC extends MUC_base {
      * @param {string} password
      * @param {boolean} is_new
      */
-    constructJoinPresence(password: string, is_new: boolean): Promise<import("strophe.js").Builder>;
+    constructJoinPresence(password: string, is_new: boolean): Promise<any>;
     clearOccupantsCache(): void;
     /**
      * Given the passed in MUC message, send a XEP-0333 chat marker.
@@ -572,11 +572,11 @@ declare class MUC extends MUC_base {
     fetchRoomConfiguration(): Promise<Element>;
     /**
      * Sends an IQ stanza with the groupchat configuration.
-     * @param {Array} config - The groupchat configuration
+     * @param {Element[]} config - The groupchat configuration
      * @returns {Promise<Element>} - A promise which resolves with
      *  the `result` stanza received from the XMPP server.
      */
-    sendConfiguration(config?: any[]): Promise<Element>;
+    sendConfiguration(config?: Element[]): Promise<Element>;
     onCommandError(err: any): void;
     getNickOrJIDFromCommandArgs(args: any): any;
     validateRoleOrAffiliationChangeArgs(command: any, args: any): boolean;
@@ -924,8 +924,8 @@ declare class MUC extends MUC_base {
     incrementUnreadMsgsCounter(message: import("../../shared/message.js").default<any>): void;
     clearUnreadMsgCounter(): Promise<void>;
 }
-import { Model } from '@converse/skeletor';
-import ChatBoxBase from '../../shared/chatbox';
-import MUCSession from './session';
-import { TimeoutError } from '../../shared/errors.js';
+import { Model } from "@converse/skeletor";
+import ChatBoxBase from "../../shared/chatbox";
+import MUCSession from "./session";
+import { TimeoutError } from "../../shared/errors.js";
 //# sourceMappingURL=muc.d.ts.map

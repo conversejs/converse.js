@@ -295,5 +295,5 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         propertyIsEnumerable(v: PropertyKey): boolean;
     };
 } & T;
-import { Model } from '@converse/skeletor';
+import { Model } from "@converse/skeletor";
 //# sourceMappingURL=model-with-messages.d.ts.map

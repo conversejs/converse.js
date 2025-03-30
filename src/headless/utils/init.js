@@ -140,7 +140,7 @@ export function initPersistentStorage(_converse, store_name, key="persistent") {
  * @param {string} jid
  */
 function saveJIDtoSession(_converse, jid) {
-    const { api } = _converse;
+    const { api, session } = _converse;
 
     if (api.settings.get("authentication") !== ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + generateResource();
@@ -153,7 +153,7 @@ function saveJIDtoSession(_converse, jid) {
     // TODO: Storing directly on _converse is deprecated
     Object.assign(_converse, { jid, bare_jid, resource, domain });
 
-    _converse.session.save({
+    session.save({
         jid,
         bare_jid,
         resource,
@@ -206,7 +206,7 @@ export async function initSession(_converse, jid) {
 
         _converse.session.set({ id });
         initStorage(_converse.session, id, is_shared_session ? "persistent" : "session");
-        await new Promise((r) => _converse.session.fetch({ "success": r, "error": r }));
+        await new Promise((r) => _converse.session.fetch({ success: r, error: r }));
 
         if (!is_shared_session && _converse.session.get("active")) {
             // If the `active` flag is set, it means this tab was cloned from

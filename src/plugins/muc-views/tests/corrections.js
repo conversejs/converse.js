@@ -206,7 +206,7 @@ describe("A Groupchat Message", function () {
             target: textarea,
             key: "ArrowUp",
         });
-        expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
+        await u.waitUntil(() => textarea.value === 'But soft, what light through yonder airlock breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')));
@@ -265,7 +265,7 @@ describe("A Groupchat Message", function () {
             target: textarea,
             key: "ArrowUp",
         });
-        expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
+        await u.waitUntil(() => textarea.value === 'But soft, what light through yonder window breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
         expect(view.querySelectorAll('.chat-msg').length).toBe(2);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
@@ -274,7 +274,7 @@ describe("A Groupchat Message", function () {
             target: textarea,
             key: "ArrowDown",
         });
-        expect(textarea.value).toBe('');
+        await u.waitUntil(() => textarea.value === '');
         expect(view.model.messages.at(0).get('correcting')).toBe(false);
         expect(view.querySelectorAll('.chat-msg').length).toBe(2);
         await u.waitUntil(() => !u.hasClass('correcting', view.querySelector('.chat-msg')), 500);

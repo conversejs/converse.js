@@ -79,14 +79,20 @@ describe("A Chat Message", function () {
         let firstAction = view.querySelector('.chat-msg__action-quote');
         expect(firstAction).not.toBeNull();
         firstAction.click();
-        expect(textarea.value).toBe('> ' + firstMessageText + '\n');
+        await u.waitUntil(() => textarea.value === `> ${firstMessageText}`);
+
+
         // Quote with already-present text
         textarea.value = 'Hi!';
+        textarea.dispatchEvent(new Event('change'));
+
         firstAction.click();
-        expect(textarea.value).toBe('Hi!\n> ' + firstMessageText + '\n');
+        await u.waitUntil(() => textarea.value === `Hi!\n> ${firstMessageText}\n`);
 
         // Test messages from other users
         textarea.value = '';
+        textarea.dispatchEvent(new Event('change'));
+
         const secondMessageText = 'Hello';
         _converse.handleMessageStanza(
             $msg({
@@ -98,12 +104,13 @@ describe("A Chat Message", function () {
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
         );
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
+
         const quoteActions = view.querySelectorAll('.chat-msg__action-quote');
         expect(quoteActions.length).toBe(2);
         let secondAction = quoteActions[quoteActions.length - 1];
         expect(secondAction).not.toBeNull();
         secondAction.click();
-        expect(textarea.value).toBe('> ' + secondMessageText + '\n');
+        await u.waitUntil(() => textarea.value === `> ${secondMessageText}`);
     }));
 
 });

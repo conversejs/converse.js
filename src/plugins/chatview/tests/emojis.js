@@ -78,7 +78,7 @@ describe("Emojis", function () {
                 target: textarea,
                 key: "ArrowUp",
             });
-            expect(textarea.value).toBe('💩 😇');
+            await u.waitUntil(() => textarea.value === '💩 😇');
             expect(view.model.messages.at(2).get('correcting')).toBe(true);
             sel = 'converse-chat-message:last-child .chat-msg'
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector(sel)), 500);

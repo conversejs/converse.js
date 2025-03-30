@@ -61,7 +61,7 @@ describe("An OMEMO encrypted message", function() {
             target: textarea,
             key: "ArrowUp",
         });
-        expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
+        await u.waitUntil(() => textarea.value === 'But soft, what light through yonder airlock breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
@@ -113,7 +113,7 @@ describe("An OMEMO encrypted message", function() {
             target: textarea,
             key: "ArrowUp",
         });
-        expect(textarea.value).toBe('But soft, what light through yonder door breaks?');
+        await u.waitUntil(() => textarea.value === 'But soft, what light through yonder door breaks?');
 
         const newest_text = 'But soft, what light through yonder window breaks?';
         textarea.value = newest_text;
@@ -329,7 +329,7 @@ describe("An OMEMO encrypted MUC message", function() {
             target: textarea,
             key: "ArrowUp",
         });
-        expect(textarea.value).toBe(original_text);
+        await u.waitUntil(() => textarea.value === original_text);
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
 
         const new_text = 'This is an edit of the encrypted message';

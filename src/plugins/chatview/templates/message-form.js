@@ -1,5 +1,5 @@
 import { __ } from "i18n";
-import { api } from "@converse/headless";
+import { api, u } from "@converse/headless";
 import { html } from "lit";
 import { resetElementHeight } from "../utils.js";
 
@@ -16,10 +16,11 @@ export default (el) => {
     const show_send_button = api.settings.get("show_send_button");
     const show_spoiler_button = api.settings.get("visible_toolbar_buttons").spoiler;
     const show_toolbar = api.settings.get("show_toolbar");
-    const hint_value = /** @type {HTMLInputElement} */ (el.querySelector(".spoiler-hint"))?.value;
-    const message_value = /** @type {HTMLTextAreaElement} */ (el.querySelector(".chat-textarea"))?.value;
 
-    return html` <form class="chat-message-form" @submit="${/** @param {SubmitEvent} ev */ (ev) => el.onFormSubmitted(ev)}">
+    return html` <form
+        class="chat-message-form"
+        @submit="${/** @param {SubmitEvent} ev */ (ev) => el.onFormSubmitted(ev)}"
+    >
         ${show_toolbar
             ? html` <converse-chat-toolbar
                   class="btn-toolbar chat-toolbar no-text-select"
@@ -38,14 +39,18 @@ export default (el) => {
             type="text"
             enterkeyhint="send"
             placeholder="${label_spoiler_hint || ""}"
-            value="${hint_value || ""}"
+            .value="${el.model.get("draft_hint") ?? ""}"
+            @change="${
+                /** @param {Event} ev */ (ev) =>
+                    u.safeSave(el.model, { draft_hint: /** @type {HTMLInputElement} */ (ev.target).value })
+            }"
             class="${composing_spoiler ? "" : "hidden"} spoiler-hint"
         />
         <textarea
             autofocus
             type="text"
             enterkeyhint="send"
-            .value="${message_value || ""}"
+            .value="${el.model.get("draft") ?? ""}"
             @drop="${/** @param {DragEvent} ev */ (ev) => el.onDrop(ev)}"
             @input="${resetElementHeight}"
             @keydown="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyDown(ev)}"
@@ -53,9 +58,10 @@ export default (el) => {
             @paste="${/** @param {ClipboardEvent} ev */ (ev) => el.onPaste(ev)}"
             @change="${
                 /** @param {Event} ev */ (ev) =>
-                    el.model.set({ draft: /** @type {HTMLTextAreaElement} */ (ev.target).value })
+                    u.safeSave(el.model, { draft: /** @type {HTMLTextAreaElement} */ (ev.target).value })
             }"
             class="chat-textarea
+                        ${el.model.get("correcting") ? "correcting" : ""}
                         ${show_send_button ? "chat-textarea-send-button" : ""}
                         ${composing_spoiler ? "spoiler" : ""}"
             placeholder="${label_message}"

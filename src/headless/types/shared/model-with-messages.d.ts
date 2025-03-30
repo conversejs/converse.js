@@ -119,6 +119,10 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @param {BaseMessage} message
          */
         onMessageUploadChanged(message: import("./message").default<any>): Promise<void>;
+        /**
+         * @param {BaseMessage} message
+         */
+        onMessageCorrecting(message: import("./message").default<any>): void;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
         /**

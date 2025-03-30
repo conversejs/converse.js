@@ -6,8 +6,9 @@ export function isEmptyMessage(attrs: any): boolean;
 /**
  * Given a message object, return its text with @ chars
  * inserted before the mentioned nicknames.
+ * @param {import('../shared/message').default} message
  */
-export function prefixMentions(message: any): any;
+export function prefixMentions(message: import("../shared/message").default<any>): any;
 export function getRandomInt(max: any): number;
 /**
  * @param {string} [suffix]

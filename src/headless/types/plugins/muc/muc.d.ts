@@ -101,6 +101,7 @@ declare const MUC_base: {
         chat_state_timeout: NodeJS.Timeout;
         onMessageAdded(message: import("../../shared/message.js").default<any>): void;
         onMessageUploadChanged(message: import("../../shared/message.js").default<any>): Promise<void>;
+        onMessageCorrecting(message: import("../../shared/message.js").default<any>): void;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
         shouldShowErrorMessage(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;

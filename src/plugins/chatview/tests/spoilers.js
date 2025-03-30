@@ -201,4 +201,45 @@ describe("A spoiler message", function () {
         spoiler_toggle.click();
         await u.waitUntil(() => Array.from(spoiler_msg_el.classList).includes('hidden'));
     }));
+
+    it("can be saved as an unsent draft",
+            mock.initConverse(['chatBoxesFetched'], { ...settings, view_mode: 'fullscreen' }, async (_converse) => {
+
+        const { api } = _converse;
+        await mock.waitForRoster(_converse, 'current', 2);
+        mock.openControlBox(_converse);
+        const contact1_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        const contact2_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+
+        // XXX: We need to send a presence from the contact, so that we
+        // have a resource, that resource is then queried to see
+        // whether Strophe.NS.SPOILER is supported, in which case
+        // the spoiler button will appear.
+        const presence = stx`<presence xmlns="jabber:client" from="${contact1_jid}/phone" to="romeo@montague.lit"/>`;
+        api.connection.get()._dataRecv(mock.createRequest(presence));
+
+        await mock.openChatBoxFor(_converse, contact1_jid);
+        await mock.waitUntilDiscoConfirmed(_converse, contact1_jid+'/phone', [], [Strophe.NS.SPOILER]);
+        const view = _converse.chatboxviews.get(contact1_jid);
+        spyOn(api.connection.get(), 'send');
+
+        await u.waitUntil(() => view.querySelector('.toggle-compose-spoiler'));
+        let spoiler_toggle = view.querySelector('.toggle-compose-spoiler');
+        spoiler_toggle.click();
+
+        let hint_input = view.querySelector('.spoiler-hint');
+        hint_input.value = 'This is the hint';
+
+        let textarea = view.querySelector('.chat-textarea');
+        textarea.value = 'This is the spoiler';
+
+        await mock.openChatBoxFor(_converse, contact2_jid);
+        await mock.openChatBoxFor(_converse, contact1_jid);
+
+        hint_input = view.querySelector('.spoiler-hint');
+        expect(hint_input.value).toBe('This is the hint');
+
+        textarea = view.querySelector('.chat-textarea');
+        expect(textarea.value).toBe('This is the spoiler');
+    }));
 });

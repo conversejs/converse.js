@@ -31,6 +31,7 @@ declare const ChatBoxBase_base: {
         chat_state_timeout: NodeJS.Timeout;
         onMessageAdded(message: import("./message.js").default<any>): void;
         onMessageUploadChanged(message: import("./message.js").default<any>): Promise<void>;
+        onMessageCorrecting(message: import("./message.js").default<any>): void;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
         shouldShowErrorMessage(attrs: import("./types.js").MessageAttributes): Promise<boolean>;

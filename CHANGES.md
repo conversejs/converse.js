@@ -38,6 +38,7 @@
 - #3305: New config option [muc_search_service](https://conversejs.org/docs/html/configuration.html#muc-search-service)
 - #3307: Fix inconsistency between browsers on textarea outlines
 - #3337: Correctly display multiline nested quotes
+- #3340: Save draft messages when switching channels 
 - #3362: Don't create empty nick element in bookmarks
 - #3386: Registration form is not fetched
 - #3464: Missing localization: the online status is not localized

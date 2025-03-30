@@ -18,5 +18,4 @@ export function sendCSI(stat: string): void;
  */
 export function registerIntervalHandler(): void;
 export function tearDown(): void;
-export function addStatusToMUCJoinPresence(_: any, stanza: any): any;
 //# sourceMappingURL=utils.d.ts.map

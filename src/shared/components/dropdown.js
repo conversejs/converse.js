@@ -56,15 +56,15 @@ export default class Dropdown extends DropdownBase {
     }
 
     disconnectedCallback() {
-        this.removeEventListener("keydown", this.onGlobalKeyDown);
+        this.removeEventListener("keydown", this.onKeyDown);
         this.disableArrowNavigation();
         super.disconnectedCallback();
     }
 
     registerEvents() {
-        this.onGlobalKeyDown = (ev) => this.#onGlobalKeyDown(ev);
+        this.onKeyDown = (ev) => this.#onKeyDown(ev);
         this.addEventListener("hide.bs.dropdown", () => this.onDropdownHide());
-        this.addEventListener("keydown", this.onGlobalKeyDown);
+        this.addEventListener("keydown", this.onKeyDown);
     }
 
     onDropdownHide() {
@@ -109,7 +109,7 @@ export default class Dropdown extends DropdownBase {
     /**
      * @param {KeyboardEvent} ev
      */
-    #onGlobalKeyDown(ev) {
+    #onKeyDown(ev) {
         if (!this.navigator || !u.isVisible(this)) return;
 
         if (ev.key === KEYCODES.ENTER) {

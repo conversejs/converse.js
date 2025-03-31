@@ -13,7 +13,7 @@ export default class Dropdown extends DropdownBase {
     firstUpdated(): void;
     connectedCallback(): void;
     registerEvents(): void;
-    onGlobalKeyDown: (ev: any) => void;
+    onKeyDown: (ev: any) => void;
     onDropdownHide(): void;
     initArrowNavigation(): void;
     navigator: DOMNavigator;

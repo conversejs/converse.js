@@ -26,9 +26,13 @@ export default class MUCHeading extends CustomElement {
         this.listenTo(this.user_settings, 'change:mucs_with_hidden_subject', () => this.requestUpdate());
 
         await this.model.initialized;
-        this.model.occupants.forEach(o => this.onOccupantAdded(o));
-        this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
-        this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
+        const own_occupant = this.model.occupants.findOccupant({ jid: _converse.session.get('bare_jid') });
+        if (own_occupant) this.updateIfOwnOccupant(own_occupant);
+
+        this.listenTo(this.model.occupants, "add", this.updateIfOwnOccupant);
+        this.listenTo(this.model.occupants, "change:affiliation", this.updateIfOwnOccupant);
+        this.listenTo(this.model.occupants, "change:role", this.updateIfOwnOccupant);
+        this.listenTo(this.model.session, "change:connection_status", () => this.requestUpdate());
         this.requestUpdate();
     }
 
@@ -39,17 +43,7 @@ export default class MUCHeading extends CustomElement {
     /**
      * @param {MUCOccupant} occupant
      */
-    onOccupantAdded (occupant) {
-        const bare_jid = _converse.session.get('bare_jid');
-        if (occupant.get('jid') === bare_jid) {
-            this.requestUpdate();
-        }
-    }
-
-    /**
-     * @param {MUCOccupant} occupant
-     */
-    onOccupantAffiliationChanged (occupant) {
+    updateIfOwnOccupant (occupant) {
         const bare_jid = _converse.session.get('bare_jid');
         if (occupant.get('jid') === bare_jid) {
             this.requestUpdate();
@@ -190,7 +184,7 @@ export default class MUCHeading extends CustomElement {
                 buttons.push({
                     'i18n_text': __('Destroy'),
                     'i18n_title': __('Remove this groupchat'),
-                    'handler': ev => this.destroy(ev),
+                    'handler': (ev) => this.destroy(ev),
                     'a_class': 'destroy-chatroom-button',
                     'icon_class': 'fa-trash',
                     'name': 'destroy'
@@ -202,7 +196,7 @@ export default class MUCHeading extends CustomElement {
             buttons.push({
                 'i18n_text': __('Leave'),
                 'i18n_title': __('Leave and close this groupchat'),
-                'handler': async ev => {
+                'handler': async (ev) => {
                     ev.stopPropagation();
                     const messages = [__('Are you sure you want to leave this groupchat?')];
                     const result = await api.confirm(__('Confirm'), messages);

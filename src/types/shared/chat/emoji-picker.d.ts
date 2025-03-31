@@ -42,7 +42,7 @@ export default class EmojiPicker extends CustomElement {
     preserve_scroll: boolean;
     updateSearchResults(changed: any): any[];
     registerEvents(): void;
-    onGlobalKeyDown: (ev: any) => void;
+    onKeyDown: (ev: any) => void;
     connectedCallback(): void;
     onDropdownHide(): void;
     /**

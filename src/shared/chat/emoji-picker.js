@@ -121,9 +121,9 @@ export default class EmojiPicker extends CustomElement {
     }
 
     registerEvents() {
-        this.onGlobalKeyDown = (ev) => this.#onGlobalKeyDown(ev);
+        this.onKeyDown = (ev) => this.#onKeyDown(ev);
         this.dropdown.addEventListener("hide.bs.dropdown", () => this.onDropdownHide());
-        this.addEventListener("keydown", this.onGlobalKeyDown);
+        this.addEventListener("keydown", this.onKeyDown);
     }
 
     connectedCallback() {
@@ -132,7 +132,7 @@ export default class EmojiPicker extends CustomElement {
     }
 
     disconnectedCallback() {
-        this.removeEventListener("keydown", this.onGlobalKeyDown);
+        this.removeEventListener("keydown", this.onKeyDown);
         this.disableArrowNavigation();
         super.disconnectedCallback();
     }
@@ -140,7 +140,7 @@ export default class EmojiPicker extends CustomElement {
     /**
      * @param {KeyboardEvent} ev
      */
-    #onGlobalKeyDown(ev) {
+    #onKeyDown(ev) {
         if (!this.navigator || !u.isVisible(this)) return;
 
         if (ev.key === KEYCODES.ENTER) {

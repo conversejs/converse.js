@@ -300,11 +300,11 @@ export function getJIDsAutoCompleteList() {
 /**
  * @param {string} query
  */
-export async function getNamesAutoCompleteList(query, value_attr='jid') {
+export async function getNamesAutoCompleteList(query) {
     const options = {
-        'mode': /** @type {RequestMode} */ ('cors'),
-        'headers': {
-            'Accept': 'text/json',
+        mode: /** @type {RequestMode} */ ('cors'),
+        headers: {
+            Accept: 'text/json',
         },
     };
     const url = `${api.settings.get('xhr_user_search_url')}q=${encodeURIComponent(query)}`;
@@ -323,7 +323,7 @@ export async function getNamesAutoCompleteList(query, value_attr='jid') {
         return [];
     }
     return json.map((i) => ({
-        label: i.fullname || i.jid,
-        value: i[value_attr]
+        label: `${i.fullname} <${i.jid}>`,
+        value: `${i.fullname} <${i.jid}>`
     }));
 }

@@ -17,5 +17,5 @@ export default class AddContactModal extends BaseModal {
      */
     addContactFromForm(ev: Event): Promise<void>;
 }
-import BaseModal from 'plugins/modal/modal.js';
+import BaseModal from "plugins/modal/modal.js";
 //# sourceMappingURL=add-contact.d.ts.map

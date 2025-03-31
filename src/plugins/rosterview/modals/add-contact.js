@@ -1,43 +1,42 @@
-import { Strophe } from 'strophe.js';
-import { _converse, api, log } from '@converse/headless';
-import 'shared/autocomplete/index.js';
-import BaseModal from 'plugins/modal/modal.js';
-import tplAddContactModal from './templates/add-contact.js';
-import { __ } from 'i18n';
-import { getNamesAutoCompleteList } from '../utils.js';
+import { Strophe } from "strophe.js";
+import { _converse, api, log, u } from "@converse/headless";
+import "shared/autocomplete/index.js";
+import BaseModal from "plugins/modal/modal.js";
+import tplAddContactModal from "./templates/add-contact.js";
+import { __ } from "i18n";
 
 export default class AddContactModal extends BaseModal {
-    initialize () {
+    initialize() {
         super.initialize();
-        this.listenTo(this.model, 'change', () => this.requestUpdate());
+        this.listenTo(this.model, "change", () => this.requestUpdate());
         this.requestUpdate();
         this.addEventListener(
-            'shown.bs.modal',
+            "shown.bs.modal",
             () => /** @type {HTMLInputElement} */ (this.querySelector('input[name="jid"]'))?.focus(),
             false
         );
     }
 
-    renderModal () {
+    renderModal() {
         return tplAddContactModal(this);
     }
 
-    getModalTitle () {
-        return __('Add a Contact');
+    getModalTitle() {
+        return __("Add a Contact");
     }
 
     /**
      * @param {string} jid
      */
-    validateSubmission (jid) {
-        if (!jid || jid.split('@').filter((s) => !!s).length < 2) {
-            this.model.set('error', __('Please enter a valid XMPP address'));
+    validateSubmission(jid) {
+        if (!jid || jid.split("@").filter((s) => !!s).length < 2) {
+            this.model.set("error", __("Please enter a valid XMPP address"));
             return false;
         } else if (_converse.state.roster.get(Strophe.getBareJidFromJid(jid))) {
-            this.model.set('error', __('This contact has already been added'));
+            this.model.set("error", __("This contact has already been added"));
             return false;
         }
-        this.model.set('error', null);
+        this.model.set("error", null);
         return true;
     }
 
@@ -47,12 +46,12 @@ export default class AddContactModal extends BaseModal {
      * @param {string} name
      * @param {string[]} groups
      */
-    async afterSubmission (_form, jid, name, groups) {
+    async afterSubmission(_form, jid, name, groups) {
         try {
             await api.contacts.add({ jid, name, groups });
         } catch (e) {
             log.error(e);
-            this.model.set('error', __('Sorry, something went wrong'));
+            this.model.set("error", __("Sorry, something went wrong"));
             return;
         }
         this.model.clear();
@@ -62,22 +61,33 @@ export default class AddContactModal extends BaseModal {
     /**
      * @param {Event} ev
      */
-    async addContactFromForm (ev) {
+    async addContactFromForm(ev) {
         ev.preventDefault();
-        const form = /** @type {HTMLFormElement} */(ev.target);
+        const form = /** @type {HTMLFormElement} */ (ev.target);
         const data = new FormData(form);
-        let name = /** @type {string} */ (data.get('name') || '').trim();
-        let jid = /** @type {string} */ (data.get('jid') || '').trim();
+        let jid = /** @type {string} */ (data.get("jid") || "").trim();
 
-        if (!jid && typeof api.settings.get('xhr_user_search_url') === 'string') {
-            const list = await getNamesAutoCompleteList(name);
-            if (list.length !== 1) {
-                this.model.set('error', __('Sorry, could not find a contact with that name'));
-                this.requestUpdate();
+        let name;
+        if (api.settings.get("xhr_user_search_url")) {
+            // In this case, the value of `jid` is something like `John Doe <john@chat.com>`
+            // So we want to get `name` which is `John Doe` and reset `jid` to
+            // what's inside the arrow brackets, so in this case
+            // `john@chat.com`.
+            const match = jid.match(/^(.*) <(.*)>$/);
+            if (match) {
+                name = match[1].trim();
+                jid = match[2].trim();
+            } else {
+                this.model.set(
+                    "error",
+                    __(
+                        'Invalid value for the name and XMPP address. Please use the format "Name <username@example.org>".'
+                    )
+                );
                 return;
             }
-            jid = list[0].value;
-            name = list[0].label;
+        } else {
+            name = /** @type {string} */ (data.get("name") || "").trim();
         }
 
         if (this.validateSubmission(jid)) {
@@ -91,4 +101,4 @@ export default class AddContactModal extends BaseModal {
     }
 }
 
-api.elements.define('converse-add-contact-modal', AddContactModal);
+api.elements.define("converse-add-contact-modal", AddContactModal);

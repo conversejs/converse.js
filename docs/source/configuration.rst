@@ -321,13 +321,6 @@ You will be able to query for even older messages by scrolling upwards in the ch
 (the so-called infinite scrolling pattern).
 
 
-autocomplete_add_contact
-------------------------
-
-* Default: ``true``
-
-Determines whether search suggestions are shown in the "Add Contact" modal.
-
 auto_fill_history_gaps
 ----------------------
 

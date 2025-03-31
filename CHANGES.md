@@ -89,6 +89,7 @@
 - The `allow_non_roster_messaging` setting now defaults to `true`.
 
 ### Breaking changes:
+- Removed the `autocomplete_add_contact` config setting. Auto-complete is now always enabled.
 - Remove the old `_converse.BootstrapModal` in favor of `_converse.BaseModal` which is a web component.
 - The connection is no longer available on the `_converse` object. Instead, use `api.connection.get()`.
 - Add a new `exports` attribute on the `_converse` object which is meant for

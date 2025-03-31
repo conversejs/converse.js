@@ -21,7 +21,6 @@ converse.plugins.add('converse-rosterview', {
 
     initialize () {
         api.settings.extend({
-            'autocomplete_add_contact': true,
             'allow_contact_removal': true,
             'hide_offline_users': false,
             'roster_groups': true,

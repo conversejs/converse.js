@@ -9,11 +9,7 @@ export default class MUCHeading extends CustomElement {
     /**
      * @param {MUCOccupant} occupant
      */
-    onOccupantAdded(occupant: import("@converse/headless").MUCOccupant): void;
-    /**
-     * @param {MUCOccupant} occupant
-     */
-    onOccupantAffiliationChanged(occupant: import("@converse/headless").MUCOccupant): void;
+    updateIfOwnOccupant(occupant: import("@converse/headless").MUCOccupant): void;
     /**
      * @param {Event} ev
      */

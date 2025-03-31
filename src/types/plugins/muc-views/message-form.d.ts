@@ -12,6 +12,6 @@ export default class MUCMessageForm extends MessageForm {
      */
     onKeyDown(ev: KeyboardEvent): void;
 }
-import MessageForm from 'plugins/chatview/message-form.js';
-import AutoComplete from 'shared/autocomplete/autocomplete.js';
+import MessageForm from "plugins/chatview/message-form.js";
+import AutoComplete from "shared/autocomplete/autocomplete.js";
 //# sourceMappingURL=message-form.d.ts.map

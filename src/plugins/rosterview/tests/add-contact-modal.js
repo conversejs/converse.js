@@ -33,7 +33,7 @@ describe("The 'Add Contact' widget", function () {
 
         const evt = new Event('input');
         input_jid.dispatchEvent(evt);
-        expect(modal.querySelector('.suggestion-box li').textContent).toBe('someone@montague.lit');
+        await u.waitUntil(() => modal.querySelector('.suggestion-box li')?.textContent === 'someone@montague.lit');
         input_jid.value = 'someone@montague.lit';
         input_name.value = 'Someone';
         modal.querySelector('button[type="submit"]').click();

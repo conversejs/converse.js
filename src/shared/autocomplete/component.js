@@ -1,8 +1,8 @@
-import AutoComplete from './autocomplete.js';
-import { CustomElement } from 'shared/components/element.js';
-import { FILTER_CONTAINS, FILTER_STARTSWITH } from './utils.js';
-import { api } from '@converse/headless';
-import { html } from 'lit';
+import AutoComplete from "./autocomplete.js";
+import { CustomElement } from "shared/components/element.js";
+import { FILTER_CONTAINS, FILTER_STARTSWITH } from "./utils.js";
+import { api, u } from "@converse/headless";
+import { html } from "lit";
 
 /**
  * A custom element that can be used to add auto-completion suggestions to a form input.
@@ -46,7 +46,7 @@ import { html } from 'lit';
  *     </converse-autocomplete>
  */
 export default class AutoCompleteComponent extends CustomElement {
-    static get properties () {
+    static get properties() {
         return {
             auto_evaluate: { type: Boolean },
             auto_first: { type: Boolean },
@@ -68,29 +68,37 @@ export default class AutoCompleteComponent extends CustomElement {
         };
     }
 
-    constructor () {
+    constructor() {
         super();
         this.auto_evaluate = true;
         this.auto_first = false;
         this.data = (a) => a;
-        this.error_message = '';
-        this.filter = 'contains';
+        this.error_message = "";
+        this.filter = "contains";
         this.getAutoCompleteList = null;
-        this.include_triggers = '';
+        this.include_triggers = "";
         this.list = null;
         this.match_current_word = false; // Match only the current word, otherwise all input is matched
         this.max_items = 10;
         this.min_chars = 1;
-        this.name = '';
-        this.placeholder = '';
-        this.position = 'above';
+        this.name = "";
+        this.placeholder = "";
+        this.position = "above";
         this.required = false;
-        this.triggers = '';
+        this.triggers = "";
         this.validate = null;
-        this.value = '';
+        this.value = "";
+
+        this.evaluate = u.debounce(
+            /** @param {KeyboardEvent} ev */
+            (ev) => {
+                this.auto_evaluate && this.auto_complete.evaluate(ev);
+            },
+            250
+        );
     }
 
-    render () {
+    render() {
         const position_class = `suggestion-box__results--${this.position}`;
         return html`
             <div class="suggestion-box suggestion-box__name">
@@ -101,9 +109,9 @@ export default class AutoCompleteComponent extends CustomElement {
                     ?required=${this.required}
                     @change=${this.onChange}
                     @keydown=${this.onKeyDown}
-                    @keyup=${this.onKeyUp}
+                    @input=${this.evaluate}
                     autocomplete="off"
-                    class="form-control suggestion-box__input ${this.error_message ? 'is-invalid error' : ''}"
+                    class="form-control suggestion-box__input ${this.error_message ? "is-invalid error" : ""}"
                     name="${this.name}"
                     placeholder="${this.placeholder}"
                     type="text"
@@ -116,42 +124,36 @@ export default class AutoCompleteComponent extends CustomElement {
                     aria-relevant="additions"
                 ></span>
             </div>
-            ${this.error_message ? html`<div class="invalid-feedback">${this.error_message}</div>` : ''}
+            ${this.error_message ? html`<div class="invalid-feedback">${this.error_message}</div>` : ""}
         `;
     }
 
-    firstUpdated () {
-        this.auto_complete = new AutoComplete(/** @type HTMLElement */(this.firstElementChild), {
-            'ac_triggers': this.triggers.split(' '),
-            'auto_evaluate': this.auto_evaluate,
-            'auto_first': this.auto_first,
-            'filter': this.filter == 'contains' ? FILTER_CONTAINS : FILTER_STARTSWITH,
-            'include_triggers': [],
-            'list': this.list ?? ((q) => this.getAutoCompleteList(q)),
-            'data': this.data,
-            'match_current_word': true,
-            'max_items': this.max_items,
-            'min_chars': this.min_chars,
+    firstUpdated() {
+        this.auto_complete = new AutoComplete(/** @type HTMLElement */ (this.firstElementChild), {
+            "ac_triggers": this.triggers.split(" "),
+            "auto_first": this.auto_first,
+            "filter": this.filter == "contains" ? FILTER_CONTAINS : FILTER_STARTSWITH,
+            "include_triggers": [],
+            "list": this.list ?? ((q) => this.getAutoCompleteList(q)),
+            "data": this.data,
+            "match_current_word": true,
+            "max_items": this.max_items,
+            "min_chars": this.min_chars,
         });
-        this.auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
+        this.auto_complete.on("suggestion-box-selectcomplete", () => (this.auto_completing = false));
     }
 
     /** @param {KeyboardEvent} ev */
-    onKeyDown (ev) {
+    onKeyDown(ev) {
         this.auto_complete.onKeyDown(ev);
     }
 
-    /** @param {KeyboardEvent} ev */
-    onKeyUp (ev) {
-        this.auto_complete.evaluate(ev);
-    }
-
     async onChange() {
-        const input = this.querySelector('input');
+        const input = this.querySelector("input");
         this.error_message = await this.validate?.(input.value);
         if (this.error_message) this.requestUpdate();
         return this;
     }
 }
 
-api.elements.define('converse-autocomplete', AutoCompleteComponent);
+api.elements.define("converse-autocomplete", AutoCompleteComponent);

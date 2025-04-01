@@ -23,7 +23,6 @@ export class AutoComplete extends EventEmitter(Object) {
 
         this.suggestions = [];
         this.is_opened = false;
-        this.auto_evaluate = true; // evaluate automatically without any particular key as trigger
         this.match_current_word = false; // Match only the current word, otherwise all input is matched
         this.sort = config.sort === false ? null : SORT_BY_QUERY_POSITION;
         this.filter = FILTER_CONTAINS;
@@ -61,19 +60,14 @@ export class AutoComplete extends EventEmitter(Object) {
     }
 
     bindEvents () {
-        const input = {
-            "blur": () => this.close({'reason': 'blur'})
-        }
-        if (this.auto_evaluate) {
-            input["input"] = (e) => this.evaluate(e);
-        }
-
         this._events = {
-            'input': input,
-            'form': {
+            input: {
+                "blur": () => this.close({'reason': 'blur'})
+            },
+            form: {
                 "submit": () => this.close({'reason': 'submit'})
             },
-            'ul': {
+            ul: {
                 "mousedown": (ev) => this.onMouseDown(ev),
                 "mouseover": (ev) => this.onMouseOver(ev)
             }
@@ -283,10 +277,7 @@ export class AutoComplete extends EventEmitter(Object) {
             ev.key === converse.keycodes.UP_ARROW ||
             ev.key === converse.keycodes.DOWN_ARROW
         );
-
-        if (!this.auto_evaluate && !this.auto_completing || selecting) {
-            return;
-        }
+        if (selecting) return;
 
         let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
 

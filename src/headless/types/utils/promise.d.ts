@@ -1,4 +1,11 @@
 /**
+ * Debounces a function by waiting for the timeout period before calling it.
+ * If the function gets called again, the timeout period resets.
+ * @param {Function} func
+ * @param {number} timeout
+ */
+export function debounce(func: Function, timeout: number): (...args: any[]) => void;
+/**
  * Creates a {@link Promise} that resolves if the passed in function returns a truthy value.
  * Rejects if it throws or does not return truthy within the given max_wait.
  * @param { Function } func - The function called every check_delay,

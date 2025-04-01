@@ -111,16 +111,15 @@ export default class AutoCompleteComponent extends CustomElement {
     triggers: string;
     validate: any;
     value: string;
+    evaluate: (...args: any[]) => void;
     render(): import("lit").TemplateResult<1>;
     firstUpdated(): void;
     auto_complete: AutoComplete;
     auto_completing: boolean;
     /** @param {KeyboardEvent} ev */
     onKeyDown(ev: KeyboardEvent): void;
-    /** @param {KeyboardEvent} ev */
-    onKeyUp(ev: KeyboardEvent): void;
     onChange(): Promise<this>;
 }
-import { CustomElement } from 'shared/components/element.js';
-import AutoComplete from './autocomplete.js';
+import { CustomElement } from "shared/components/element.js";
+import AutoComplete from "./autocomplete.js";
 //# sourceMappingURL=component.d.ts.map

@@ -19,7 +19,6 @@ export class AutoComplete extends AutoComplete_base {
     constructor(el: HTMLElement, config?: any);
     suggestions: any[];
     is_opened: boolean;
-    auto_evaluate: boolean;
     match_current_word: boolean;
     sort: (a: any, b: any) => number;
     filter: (text: any, input: any) => boolean;

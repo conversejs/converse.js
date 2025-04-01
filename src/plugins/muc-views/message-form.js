@@ -34,7 +34,6 @@ export default class MUCMessageForm extends MessageForm {
     initMentionAutoComplete () {
         this.mention_auto_complete = new AutoComplete(this, {
             auto_first: true,
-            auto_evaluate: false,
             min_chars: api.settings.get('muc_mention_autocomplete_min_chars'),
             match_current_word: true,
             list: () => this.getAutoCompleteList(),

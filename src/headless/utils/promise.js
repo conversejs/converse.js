@@ -1,7 +1,23 @@
 import log from "@converse/log";
-import { getOpenPromise } from '@converse/openpromise';
+import { getOpenPromise } from "@converse/openpromise";
 
 export { getOpenPromise };
+
+/**
+ * Debounces a function by waiting for the timeout period before calling it.
+ * If the function gets called again, the timeout period resets.
+ * @param {Function} func
+ * @param {number} timeout
+ */
+export function debounce(func, timeout) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            func.apply(this, args);
+        }, timeout);
+    };
+}
 
 /**
  * Clears the specified timeout and interval.
@@ -28,7 +44,7 @@ function clearTimers(timeout, interval) {
  * @copyright Simen Bekkhus 2016
  * @license MIT
  */
-export function waitUntil (func, max_wait=300, check_delay=3) {
+export function waitUntil(func, max_wait = 300, check_delay = 3) {
     // Run the function once without setting up any listeners in case it's already true
     try {
         const result = func();
@@ -42,7 +58,7 @@ export function waitUntil (func, max_wait=300, check_delay=3) {
     const promise = getOpenPromise();
     const timeout_err = new Error();
 
-    function checker () {
+    function checker() {
         try {
             const result = func();
             if (result) {
@@ -57,7 +73,7 @@ export function waitUntil (func, max_wait=300, check_delay=3) {
 
     const interval = setInterval(checker, check_delay);
 
-    function handler () {
+    function handler() {
         clearTimers(max_wait_timeout, interval);
         const err_msg = `Wait until promise timed out: \n\n${timeout_err.stack}`;
         console.trace();

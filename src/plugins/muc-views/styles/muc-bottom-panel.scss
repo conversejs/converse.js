@@ -8,10 +8,13 @@
             text-align: center;
             font-size: var(--font-size-small);
             background-color: var(--background-color);
-            color: white;
+            color: var(--foreground-color);
 
             &.muc-bottom-panel--muted {
-                height: 4em;
+                border-top: 0.25em solid var(--muc-color) !important;
+                display: block;
+                height: 6em;
+                padding-top: 2em;
                 width: 100%;
             }
 

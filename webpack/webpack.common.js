@@ -73,6 +73,7 @@ module.exports = {
                     loader: 'sass-loader',
                     options: {
                         sassOptions: {
+                            silenceDeprecations: ['color-functions', 'global-builtin', 'import', 'mixed-decls'],
                             includePaths: [
                                 path.resolve(__dirname, '../node_modules/'),
                                 path.resolve(__dirname, '../src/')

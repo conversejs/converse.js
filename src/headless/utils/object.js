@@ -53,5 +53,5 @@ export function isErrorObject(o) {
  * @returns {boolean}
  */
 export function isPersistableModel(model) {
-    return model.collection && model.collection.browserStorage;
+    return model.browserStorage || model.collection?.browserStorage;
 }

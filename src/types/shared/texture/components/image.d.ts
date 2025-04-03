@@ -14,7 +14,7 @@ export default class Image extends CustomElement {
     href: any;
     onImgClick: any;
     onImgLoad: any;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
 }
 import { CustomElement } from "shared/components/element";
 //# sourceMappingURL=image.d.ts.map

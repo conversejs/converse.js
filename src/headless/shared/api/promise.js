@@ -50,6 +50,7 @@ export default {
         add (promises, replace=true) {
             promises = Array.isArray(promises) ? promises : [promises];
             promises.forEach(name => {
+                /** @type {import('../types').ReplaceableOpenPromise} */
                 const promise = getOpenPromise();
                 promise.replace = replace;
                 _converse.promises[name] = promise;

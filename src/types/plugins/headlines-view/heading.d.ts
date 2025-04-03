@@ -7,7 +7,7 @@ export default class HeadlinesHeading extends CustomElement {
     jid: any;
     initialize(): Promise<void>;
     model: any;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * Returns a list of objects which represent buttons for the headlines header.
      * @async

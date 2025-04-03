@@ -1,6 +1,6 @@
 export default class AcceptContactRequest extends BaseModal {
     contact: any;
-    renderModal(): import("lit").TemplateResult<1>;
+    renderModal(): import("lit-html").TemplateResult<1>;
     getModalTitle(): any;
     /**
      * @param {Event} ev

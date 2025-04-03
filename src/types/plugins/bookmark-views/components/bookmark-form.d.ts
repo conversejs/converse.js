@@ -13,7 +13,7 @@ declare class MUCBookmarkForm extends CustomElement {
     willUpdate(changed_properties: Map<PropertyKey, any>): void;
     model: any;
     bookmark: any;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {Event} ev
      */

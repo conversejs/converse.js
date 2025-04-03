@@ -10,8 +10,20 @@ export default DiscoEntity;
  */
 declare class DiscoEntity extends Model {
     initialize(_: any, options: any): void;
-    waitUntilFeaturesDiscovered: any;
-    waitUntilItemsFetched: any;
+    waitUntilFeaturesDiscovered: Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
+    waitUntilItemsFetched: Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
     dataforms: Collection;
     features: Collection;
     fields: Collection;

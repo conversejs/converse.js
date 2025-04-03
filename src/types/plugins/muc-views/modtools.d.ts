@@ -48,9 +48,15 @@ export default class ModeratorTools extends CustomElement {
     roles_filter: string;
     updated(changed: any): void;
     initialize(): Promise<void>;
-    initialized: any;
+    initialized: Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
     muc: any;
-    render(): "" | import("lit").TemplateResult<1>;
+    render(): "" | import("lit-html").TemplateResult<1>;
     switchTab(ev: any): void;
     onSearchAffiliationChange(): Promise<void>;
     loading_users_with_affiliation: boolean;

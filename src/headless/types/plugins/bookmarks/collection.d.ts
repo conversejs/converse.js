@@ -11,7 +11,13 @@ declare class Bookmarks extends Collection {
      * @param {Bookmark} bookmark
      */
     openBookmarkedRoom(bookmark: Bookmark): Promise<Bookmark>;
-    fetchBookmarks(): any;
+    fetchBookmarks(): Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
     /**
      * @param {import('./types').BookmarkAttrs} attrs
      */

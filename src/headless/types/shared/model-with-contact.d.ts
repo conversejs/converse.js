@@ -9,7 +9,13 @@ export default function ModelWithContact<T extends import("./types").ModelExtend
          * @typedef {import('./_converse.js').XMPPStatus} XMPPStatus
          */
         initialize(): void;
-        rosterContactAdded: any;
+        rosterContactAdded: Promise<any> & {
+            isResolved: boolean;
+            isPending: boolean;
+            isRejected: boolean;
+            resolve: (value: any) => void;
+            reject: (reason?: any) => void;
+        };
         /**
          * @public
          * @type {RosterContact|XMPPStatus}

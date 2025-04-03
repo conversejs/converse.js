@@ -5,6 +5,7 @@ declare class RoomsListModel extends Model {
         toggle_state: "opened";
         collapsed_domains: any[];
     };
+    initialize(): void;
     /**
      * @param {string} jid
      */

@@ -4,7 +4,7 @@ export default class MUCConfigModal extends BaseModal {
      */
     constructor(options: any);
     addListeners(): void;
-    renderModal(): import("lit").TemplateResult<1>;
+    renderModal(): import("lit-html").TemplateResult<1>;
     /**
      * @param {Map<string, any>} changed
      */

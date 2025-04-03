@@ -9,7 +9,13 @@ declare class Blocklist extends Collection {
      * @param {BlockedEntity} item
      */
     rejectContactRequest(item: BlockedEntity): Promise<void>;
-    fetchBlocklist(): any;
+    fetchBlocklist(): Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
     /**
      * @param {Object} deferred
      */

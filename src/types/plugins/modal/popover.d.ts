@@ -10,7 +10,7 @@ declare class Popover extends CustomElement {
     };
     title: any;
     text: any;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
 }
 import { CustomElement } from "shared/components/element.js";
 //# sourceMappingURL=popover.d.ts.map

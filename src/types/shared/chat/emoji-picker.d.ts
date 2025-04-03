@@ -33,7 +33,7 @@ export default class EmojiPicker extends CustomElement {
     firstUpdated(changed: any): void;
     set search_results(value: any[]);
     get search_results(): any[];
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     updated(changed: any): void;
     onModelChanged(changed: any): void;
     current_category: any;

@@ -1,5 +1,5 @@
 export default class ProfileModal extends BaseModal {
-    renderModal(): import("lit").TemplateResult<1>;
+    renderModal(): import("lit-html").TemplateResult<1>;
     getModalTitle(): any;
     /**
      * @param {VCardData} data

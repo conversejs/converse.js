@@ -1,7 +1,7 @@
 export class RoomsList extends CustomElement {
     initialize(): void;
     model: RoomsListModel;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     /** @param {Model} model */
     renderIfChatRoom(model: Model): void;
     /** @param {Model} model */

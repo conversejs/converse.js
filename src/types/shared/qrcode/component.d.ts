@@ -17,7 +17,7 @@ declare class QRCodeComponent extends CustomElement {
     colorDark: string;
     colorLight: string;
     correctLevel: number;
-    render(): import("lit").TemplateResult<2>;
+    render(): import("lit-html").TemplateResult<2>;
     #private;
 }
 import { CustomElement } from "shared/components/element.js";

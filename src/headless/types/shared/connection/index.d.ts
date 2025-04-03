@@ -93,8 +93,20 @@ export class Connection extends Connection_base {
      */
     isType(type: string): boolean;
     hasResumed(): boolean;
-    restoreWorkerSession(): any;
-    worker_attach_promise: any;
+    restoreWorkerSession(): Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
+    worker_attach_promise: Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
 }
 /**
  * The MockConnection class is used during testing, to mock an XMPP connection.

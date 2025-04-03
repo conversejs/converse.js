@@ -8,7 +8,7 @@ export default class MUCOccupants extends CustomElement {
     initialize(): void;
     filter: RosterFilter;
     model: any;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {MouseEvent} ev
      */

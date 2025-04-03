@@ -55,11 +55,11 @@ export default class Texture extends LitElement {
     show_image_urls: boolean;
     show_images: boolean;
     show_me_message: boolean;
-    render(): import("lit/directive.js").DirectiveResult<{
-        new (_partInfo: import("lit/directive.js").PartInfo): {
-            render(text: string, offset: number, options: object, callback?: Function): import("lit").TemplateResult<1>;
+    render(): import("lit-html/directive.js").DirectiveResult<{
+        new (_partInfo: import("lit-html/directive.js").PartInfo): {
+            render(text: string, offset: number, options: object, callback?: Function): import("lit-html").TemplateResult<1>;
             readonly _$isConnected: boolean;
-            update(_part: import("lit").Part, props: Array<unknown>): unknown;
+            update(_part: import("lit-html").Part, props: Array<unknown>): unknown;
         };
     }>;
 }

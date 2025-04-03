@@ -84,7 +84,7 @@ declare const RosterContact_base: {
         readonly idAttribute: string;
         readonly cidPrefix: string;
         preinitialize(): void;
-        initialize(): void;
+        initialize(attrs?: import("@converse/skeletor/src/types/model.js").Attributes, options?: import("@converse/skeletor/src/types/model.js").ModelOptions): void;
         validate(attrs: object, options?: object): string;
         toJSON(): any;
         sync(method: "create" | "update" | "patch" | "delete" | "read", model: Model, options: import("@converse/skeletor/src/types/model.js").Options): any;
@@ -144,7 +144,13 @@ declare class RosterContact extends RosterContact_base {
         num_unread: number;
     };
     initialize(attrs: any): Promise<void>;
-    initialized: any;
+    initialized: Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
     setPresence(): void;
     presence: any;
     getStatus(): any;

@@ -43,7 +43,7 @@ declare const _default: {
     clearSession(_converse: ConversePrivateGlobal): any;
     debounce(func: Function, timeout: number): (...args: any[]) => void;
     waitUntil(func: Function, max_wait?: number, check_delay?: number): Promise<any>;
-    getOpenPromise: any;
+    getOpenPromise: typeof import("@converse/openpromise").getOpenPromise;
     merge(dst: any, src: any): void;
     isError(obj: unknown): boolean;
     isFunction(val: unknown): boolean;
@@ -153,7 +153,7 @@ declare const _default: {
         clearSession(_converse: ConversePrivateGlobal): any;
         debounce(func: Function, timeout: number): (...args: any[]) => void;
         waitUntil(func: Function, max_wait?: number, check_delay?: number): Promise<any>;
-        getOpenPromise: any;
+        getOpenPromise: typeof import("@converse/openpromise").getOpenPromise;
         merge(dst: any, src: any): void;
         isError(obj: unknown): boolean;
         isFunction(val: unknown): boolean;

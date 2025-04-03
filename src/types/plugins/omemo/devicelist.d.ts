@@ -1,7 +1,13 @@
 export default DeviceList;
 declare class DeviceList extends Model {
     initialize(): Promise<void>;
-    initialized: any;
+    initialized: Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
     initDevices(): Promise<any>;
     devices: any;
     /**

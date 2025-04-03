@@ -27,7 +27,7 @@ export default class AdHocCommands extends CustomElement {
     fetching: boolean;
     showform: string;
     commands: import("./types").AdHocCommandUIProps[];
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {SubmitEvent} ev
      */

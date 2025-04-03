@@ -1,4 +1,8 @@
 import { Collection, Model } from "@converse/skeletor";
+import { getOpenPromise } from "@converse/openpromise";
+export type ReplaceableOpenPromise = ReturnType<typeof getOpenPromise> & {
+    replace?: boolean;
+};
 export type ModelAttributes = Record<string, any>;
 export interface ModelOptions {
     collection?: Collection;

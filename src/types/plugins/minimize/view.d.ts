@@ -1,7 +1,7 @@
 export default class MinimizedChats extends CustomElement {
     initialize(): Promise<void>;
     model: any;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     initToggle(): Promise<void>;
     minchats: MinimizedChatsToggle;
     /**

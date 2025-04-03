@@ -1,5 +1,5 @@
 export default class ChatStatusModal extends BaseModal {
-    renderModal(): import("lit").TemplateResult<1>;
+    renderModal(): import("lit-html").TemplateResult<1>;
     getModalTitle(): any;
     clearStatusMessage(ev: any): void;
     onFormSubmitted(ev: any): void;

@@ -9,7 +9,13 @@ export default Message;
 declare class Message extends BaseMessage<any> {
     constructor(models?: import("@converse/skeletor").Model[], options?: object);
     initialize(): Promise<void>;
-    initialized: any;
+    initialized: Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
     setContact(): Promise<void>;
     getDisplayName(): any;
 }

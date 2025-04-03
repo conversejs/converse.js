@@ -7,7 +7,7 @@ export default class ChatHeading extends CustomElement {
     jid: any;
     initialize(): void;
     model: any;
-    render(): import("lit").TemplateResult<1 | 2>;
+    render(): import("lit-html").TemplateResult<1 | 2 | 3>;
     /**
      * @param {Event} ev
      */

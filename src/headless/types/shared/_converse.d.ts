@@ -33,7 +33,13 @@ declare class ConversePrivateGlobal extends ConversePrivateGlobal_base {
     templates: {};
     storage: {};
     promises: {
-        initialized: any;
+        initialized: Promise<any> & {
+            isResolved: boolean;
+            isPending: boolean;
+            isRejected: boolean;
+            resolve: (value: any) => void;
+            reject: (reason?: any) => void;
+        };
     };
     NUM_PREKEYS: number;
     TIMEOUTS: {

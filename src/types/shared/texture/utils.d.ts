@@ -22,7 +22,7 @@ export function getHeaders(url: string): Promise<Headers>;
  * @param {string} text
  */
 export function collapseLineBreaks(text: string): string;
-export function tplMention(o: any): import("lit").TemplateResult<1>;
+export function tplMention(o: any): import("lit-html").TemplateResult<1>;
 /**
  * @param {import('./texture').Texture} text
  * @param {number} i
@@ -43,5 +43,5 @@ export function isQuoteDirective(d: string): boolean;
  * @returns {boolean}
  */
 export function containsDirectives(text: import("./texture").Texture): boolean;
-export function tplMentionWithNick(o: any): import("lit").TemplateResult<1>;
+export function tplMentionWithNick(o: any): import("lit-html").TemplateResult<1>;
 //# sourceMappingURL=utils.d.ts.map

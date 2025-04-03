@@ -6,7 +6,7 @@
 export default class RosterView extends CustomElement {
     initialize(): Promise<void>;
     model: Model;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     /** @param {MouseEvent} ev */
     showAddContactModal(ev: MouseEvent): void;
     /** @param {MouseEvent} ev */

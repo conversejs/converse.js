@@ -60,7 +60,7 @@ declare const _default: {
     clearSession(_converse: ConversePrivateGlobal): any;
     debounce(func: Function, timeout: number): (...args: any[]) => void;
     waitUntil(func: Function, max_wait?: number, check_delay?: number): Promise<any>;
-    getOpenPromise: any;
+    getOpenPromise: typeof promise.getOpenPromise;
     merge(dst: any, src: any): void;
     isError(obj: unknown): boolean;
     isFunction(val: unknown): boolean;
@@ -129,6 +129,7 @@ declare function shouldCreateMessage(attrs: any): any;
  */
 declare function triggerEvent(el: Element, name: string, type?: string, bubbles?: boolean, cancelable?: boolean): void;
 import * as session from './session.js';
+import * as promise from './promise.js';
 import { Model } from '@converse/skeletor';
 import * as init from './init.js';
 //# sourceMappingURL=index.d.ts.map

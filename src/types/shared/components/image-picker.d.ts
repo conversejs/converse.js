@@ -15,7 +15,7 @@ export default class ImagePicker extends CustomElement {
     height: any;
     data: Model;
     nonce: string;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {Event} ev
      */

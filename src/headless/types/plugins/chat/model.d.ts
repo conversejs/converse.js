@@ -200,7 +200,13 @@ declare const ChatBox_base: {
 } & {
     new (...args: any[]): {
         initialize(): void;
-        rosterContactAdded: any;
+        rosterContactAdded: Promise<any> & {
+            isResolved: boolean;
+            isPending: boolean;
+            isRejected: boolean;
+            resolve: (value: any) => void;
+            reject: (reason?: any) => void;
+        };
         contact: import("../roster/contact.js").default | import("../status/status.js").default;
         setModelContact(jid: string): Promise<void>;
         cid: any;
@@ -281,7 +287,7 @@ declare const ChatBox_base: {
         readonly idAttribute: string;
         readonly cidPrefix: string;
         preinitialize(): void;
-        initialize(): void;
+        initialize(attrs?: import("@converse/skeletor/src/types/model.js").Attributes, options?: import("@converse/skeletor/src/types/model.js").ModelOptions): void;
         validate(attrs: object, options?: object): string;
         toJSON(): any;
         sync(method: "create" | "update" | "patch" | "delete" | "read", model: import("@converse/skeletor").Model, options: import("@converse/skeletor/src/types/model.js").Options): any;
@@ -356,7 +362,13 @@ declare class ChatBox extends ChatBox_base {
         type: string;
     };
     initialize(): Promise<void>;
-    initialized: any;
+    initialized: Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
     presence: any;
     /**
      * @param {MessageAttributes|StanzaParseError} attrs_or_error

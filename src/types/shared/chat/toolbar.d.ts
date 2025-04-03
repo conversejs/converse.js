@@ -33,14 +33,14 @@ export class ChatToolbar extends CustomElement {
     show_call_button: boolean;
     show_emoji_button: boolean;
     connectedCallback(): void;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     firstUpdated(): void;
     getButtons(): any;
     /**
      * @param {boolean} is_supported
      */
-    getHTTPUploadButton(is_supported: boolean): "" | import("lit").TemplateResult<1>;
-    getSpoilerButton(): import("lit").TemplateResult<1>;
+    getHTTPUploadButton(is_supported: boolean): "" | import("lit-html").TemplateResult<1>;
+    getSpoilerButton(): import("lit-html").TemplateResult<1>;
     /** @param {MouseEvent} ev */
     toggleFileUpload(ev: MouseEvent): void;
     /** @param {InputEvent} ev */

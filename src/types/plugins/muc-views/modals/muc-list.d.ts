@@ -2,7 +2,7 @@ export default class MUCListModal extends BaseModal {
     constructor(options: any);
     items: any[];
     loading_items: boolean;
-    renderModal(): import("lit").TemplateResult<1>;
+    renderModal(): import("lit-html").TemplateResult<1>;
     getModalTitle(): any;
     openRoom(ev: any): void;
     toggleRoomInfo(ev: any): void;

@@ -5,7 +5,7 @@ export class MessageVersions extends CustomElement {
         };
     };
     model: any;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
 }
 import { CustomElement } from './element.js';
 //# sourceMappingURL=message-versions.d.ts.map

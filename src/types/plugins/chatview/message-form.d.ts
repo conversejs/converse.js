@@ -7,7 +7,7 @@ export default class MessageForm extends CustomElement {
     model: any;
     initialize(): Promise<void>;
     handleEmojiSelection: ({ detail }: CustomEvent) => void;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * Insert a particular string value into the textarea of this chat box.
      * @param {string} value - The value to be inserted.

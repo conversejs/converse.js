@@ -83,7 +83,7 @@ declare const XMPPStatus_base: {
         readonly idAttribute: string;
         readonly cidPrefix: string;
         preinitialize(): void;
-        initialize(): void;
+        initialize(attrs?: import("@converse/skeletor/src/types/model.js").Attributes, options?: import("@converse/skeletor/src/types/model.js").ModelOptions): void;
         validate(attrs: object, options?: object): string;
         toJSON(): any;
         sync(method: "create" | "update" | "patch" | "delete" | "read", model: Model, options: import("@converse/skeletor/src/types/model.js").Options): any;

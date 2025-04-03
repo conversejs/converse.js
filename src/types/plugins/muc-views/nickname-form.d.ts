@@ -11,7 +11,7 @@ declare class MUCNicknameForm extends CustomElement {
      * @param {Map<string, any>} changed
      */
     shouldUpdate(changed: Map<string, any>): boolean;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {Event} ev
      */

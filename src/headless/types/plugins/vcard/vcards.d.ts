@@ -3,7 +3,13 @@ declare class VCards extends Collection {
     constructor();
     model: typeof VCard;
     initialize(): Promise<void>;
-    fetchVCards(): any;
+    fetchVCards(): Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
 }
 import { Collection } from "@converse/skeletor";
 import VCard from "./vcard";

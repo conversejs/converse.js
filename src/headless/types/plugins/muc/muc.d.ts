@@ -213,7 +213,7 @@ declare const MUC_base: {
         readonly idAttribute: string;
         readonly cidPrefix: string;
         preinitialize(): void;
-        initialize(): void;
+        initialize(attrs?: import("@converse/skeletor/src/types/model").Attributes, options?: import("@converse/skeletor/src/types/model").ModelOptions): void;
         validate(attrs: object, options?: object): string;
         toJSON(): any;
         sync(method: "create" | "update" | "patch" | "delete" | "read", model: Model, options: import("@converse/skeletor/src/types/model").Options): any;
@@ -300,7 +300,13 @@ declare class MUC extends MUC_base {
         type: string;
     };
     initialize(): Promise<void>;
-    initialized: any;
+    initialized: Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
     debouncedRejoin: import("lodash").DebouncedFunc<() => Promise<void>>;
     isEntered(): boolean;
     /**

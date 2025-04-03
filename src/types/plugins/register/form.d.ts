@@ -28,7 +28,7 @@ declare class RegistrationForm extends CustomElement {
     setFeedbackMessage: (m: string) => void;
     initialize(): void;
     status: number;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {string} message
      * @param {'info'|'danger'} type
@@ -79,7 +79,7 @@ declare class RegistrationForm extends CustomElement {
      * @param {string} message
      */
     onConnectStatusChanged(status_code: number, message: string): void;
-    getLegacyFormFields(): import("lit").TemplateResult<1>[];
+    getLegacyFormFields(): import("lit-html").TemplateResult<1>[];
     /**
      * @param {Element} stanza
      */

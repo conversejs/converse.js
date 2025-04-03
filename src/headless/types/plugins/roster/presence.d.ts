@@ -3,6 +3,7 @@ declare class Presence extends Model {
     defaults(): {
         show: string;
     };
+    initialize(): void;
     resources: Resources;
     onResourcesChanged(): void;
     /**

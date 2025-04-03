@@ -13,22 +13,28 @@ declare class BaseModal extends CustomElement {
      */
     constructor(options: any);
     model: any;
-    initialized: any;
+    initialized: Promise<any> & {
+        isResolved: boolean;
+        isPending: boolean;
+        isRejected: boolean;
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    };
     get modal(): Modal;
     initialize(): void;
     /**
      * @returns {TemplateResult|string}
      */
-    renderModal(): import("lit").TemplateResult<1 | 2> | string;
+    renderModal(): import("lit-html").TemplateResult<1 | 2 | 3> | string;
     /**
      * @returns {TemplateResult|string}
      */
-    renderModalFooter(): import("lit").TemplateResult<1 | 2> | string;
-    render(): import("lit").TemplateResult<1>;
+    renderModalFooter(): import("lit-html").TemplateResult<1 | 2 | 3> | string;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * @returns {string|TemplateResult}
      */
-    getModalTitle(): string | import("lit").TemplateResult<1 | 2>;
+    getModalTitle(): string | import("lit-html").TemplateResult<1 | 2 | 3>;
     /**
      * @param {Event} [ev]
      */

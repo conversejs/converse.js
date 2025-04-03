@@ -100,7 +100,7 @@ export function initOMEMO(reconnecting: boolean): Promise<void>;
  * @param {import('shared/chat/toolbar').ChatToolbar} toolbar_el
  * @param {Array<import('lit').TemplateResult>} buttons
  */
-export function getOMEMOToolbarButton(toolbar_el: import("shared/chat/toolbar").ChatToolbar, buttons: Array<import("lit").TemplateResult>): import("lit").TemplateResult<1 | 2>[];
+export function getOMEMOToolbarButton(toolbar_el: import("shared/chat/toolbar").ChatToolbar, buttons: Array<import("lit").TemplateResult>): import("lit-html").TemplateResult<1 | 2 | 3>[];
 /**
  * @param {MUC|ChatBox} chat
  * @param {{ message: BaseMessage, stanza: import('strophe.js').Builder }} data

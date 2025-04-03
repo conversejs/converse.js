@@ -7,7 +7,7 @@
 export default class ChatView extends BaseChatView {
     length: number;
     initialize(): Promise<void>;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     getHelpMessages(): string[];
     afterShown(): void;
 }

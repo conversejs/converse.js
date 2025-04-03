@@ -7,7 +7,7 @@
  * @param { Function } onLoad - A callback function to be called once the image has loaded.
  * @param { Function } onClick - A callback function to be called once the image has been clicked.
  */
-export const renderImage: (src: string, href?: string, onLoad?: Function, onClick?: Function) => import("lit/async-directive.js").DirectiveResult<typeof ImageDirective>;
+export const renderImage: (src: string, href?: string, onLoad?: Function, onClick?: Function) => import("lit-html/directive").DirectiveResult<typeof ImageDirective>;
 declare class ImageDirective extends AsyncDirective {
     /**
      * @param {string} src - The source URL of the image.

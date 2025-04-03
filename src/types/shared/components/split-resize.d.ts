@@ -28,7 +28,7 @@ export default class SplitResize extends CustomElement {
          */
         move: (this: Window, ev: Event) => any;
     };
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {Map<string, any>} changed
      */

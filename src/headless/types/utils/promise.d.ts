@@ -19,4 +19,5 @@ export function debounce(func: Function, timeout: number): (...args: any[]) => v
  */
 export function waitUntil(func: Function, max_wait?: number, check_delay?: number): Promise<any>;
 export { getOpenPromise };
+import { getOpenPromise } from "@converse/openpromise";
 //# sourceMappingURL=promise.d.ts.map

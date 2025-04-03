@@ -17,7 +17,7 @@ export default class MinimizedChat extends CustomElement {
     num_unread: any;
     type: any;
     title: any;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {MouseEvent} ev
      */

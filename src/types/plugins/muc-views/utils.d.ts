@@ -19,11 +19,11 @@ export function destroyMUC(model: MUC): Promise<any>;
 /**
  * @param {MUC} model
  */
-export function getNicknameRequiredTemplate(model: MUC): import("lit").TemplateResult<1>;
+export function getNicknameRequiredTemplate(model: MUC): import("lit-html").TemplateResult<1>;
 /**
  * @param {MUC} model
  */
-export function getChatRoomBodyTemplate(model: MUC): import("lit").TemplateResult<1>;
+export function getChatRoomBodyTemplate(model: MUC): import("lit-html").TemplateResult<1>;
 /**
  * @param {MUC} muc
  * @param {Suggestion} text

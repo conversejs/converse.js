@@ -5,7 +5,7 @@ export default class MUCHeading extends CustomElement {
     initialize(): Promise<void>;
     model: any;
     user_settings: any;
-    render(): "" | import("lit").TemplateResult<1>;
+    render(): "" | import("lit-html").TemplateResult<1>;
     /**
      * @param {MUCOccupant} occupant
      */

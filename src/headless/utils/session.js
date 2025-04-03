@@ -45,6 +45,7 @@ export function replacePromise (_converse, name) {
         throw new Error(`Tried to replace non-existing promise: ${name}`);
     }
     if (existing_promise.replace) {
+        /** @type {import('../shared/types').ReplaceableOpenPromise} */
         const promise = getOpenPromise();
         promise.replace = existing_promise.replace;
         _converse.promises[name] = promise;

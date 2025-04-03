@@ -1,7 +1,7 @@
 export default class MUCInviteModal extends BaseModal {
     constructor(options: any);
     muc: any;
-    renderModal(): import("lit").TemplateResult<1>;
+    renderModal(): import("lit-html").TemplateResult<1>;
     getModalTitle(): any;
     getAutoCompleteList(): any;
     /**

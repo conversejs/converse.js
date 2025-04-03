@@ -3,6 +3,8 @@
 const { Strophe, stx, u }  = converse.env;
 
 describe("Groupchats", function () {
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     describe("A XEP-0085 Chat Status Notification", function () {
 
         it("is is not sent out to a MUC if the user is a visitor in a moderated room",
@@ -30,12 +32,12 @@ describe("Groupchats", function () {
 
             expect(view.model.sendChatState).toHaveBeenCalled();
             const last_stanza = _converse.api.connection.get().sent_stanzas.pop();
-            expect(Strophe.serialize(last_stanza)).toBe(
-                `<message to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">`+
-                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                    `<no-store xmlns="urn:xmpp:hints"/>`+
-                    `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
-                `</message>`);
+            expect(last_stanza).toEqualStanza(stx`
+                <message to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    <no-store xmlns="urn:xmpp:hints"/>
+                    <no-permanent-store xmlns="urn:xmpp:hints"/>
+                </message>`);
 
             // Romeo loses his voice
             _converse.api.connection.get()._dataRecv(

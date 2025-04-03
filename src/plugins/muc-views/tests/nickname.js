@@ -254,7 +254,7 @@ describe("A MUC", function () {
                 ).pop());
 
             expect(iq).toEqualStanza(stx`
-                <iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+                <iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
                     <query node="x-roomuser-item" xmlns="http://jabber.org/protocol/disco#info"/>
                 </iq>`);
 

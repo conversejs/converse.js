@@ -21,8 +21,8 @@ import {
     NEW_NICK_CODES,
     DISCONNECT_CODES,
 } from './constants.js';
-import { CHATROOMS_TYPE, GONE, INACTIVE, METADATA_ATTRIBUTES } from '../../shared/constants.js';
-import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js';
+import { ACTIVE, CHATROOMS_TYPE, COMPOSING, GONE, INACTIVE, METADATA_ATTRIBUTES, PAUSED } from '../../shared/constants.js';
+import { Strophe, Stanza, $build } from 'strophe.js';
 import { TimeoutError, ItemNotFoundError, StanzaError } from '../../shared/errors.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList } from './affiliations/utils.js';
 import { initStorage, createStore } from '../../utils/storage.js';
@@ -207,26 +207,29 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         const maxstanzas = (is_new || this.features.get('mam_enabled'))
             ? 0
             : api.settings.get('muc_history_max_stanzas');
-
-        let stanza = $pres({
-            'id': getUniqueId(),
-            'from': api.connection.get().jid,
-            'to': this.getRoomJIDAndNick()
-        }).c('x', { 'xmlns': Strophe.NS.MUC })
-          .c('history', { maxstanzas }).up();
-
         password = password || this.get('password');
-        if (password) {
-            stanza.cnode(Strophe.xmlElement('password', [], password));
-        }
-        stanza.up(); // Go one level up, out of the `x` element.
+
+        const { xmppstatus } = _converse.state;
+        const status = xmppstatus.get('status');
+        const status_message = xmppstatus.get('status_message');
+        const stanza = stx`
+            <presence xmlns="jabber:client"
+                      id="${getUniqueId()}"
+                      from="${api.connection.get().jid}"
+                      to="${this.getRoomJIDAndNick()}">
+                <x xmlns="${Strophe.NS.MUC}">
+                    <history maxstanzas="${maxstanzas}"/>
+                    ${password ? stx`<password>${password}</password>` : '' }
+                </x>
+                ${ ['away', 'chat', 'dnd', 'xa'].includes(status) ? stx`<show>${status}</show>` : '' }
+                ${ status_message ? stx`<status>${status_message}</status>` : '' }
+            </presence>`;
         /**
          * *Hook* which allows plugins to update an outgoing MUC join presence stanza
          * @event _converse#constructedMUCPresence
          * @type {Element} The stanza which will be sent out
          */
-        stanza = await api.hook('constructedMUCPresence', this, stanza);
-        return stanza;
+        return await api.hook('constructedMUCPresence', this, stanza);
     }
 
     clearOccupantsCache () {
@@ -919,19 +922,14 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @param {string} [new_jid] - The JID of the new groupchat which replaces this one.
      */
     sendDestroyIQ (reason, new_jid) {
-        const destroy = $build('destroy');
-        if (new_jid) {
-            destroy.attrs({ 'jid': new_jid });
-        }
-        const iq = $iq({
-            'to': this.get('jid'),
-            'type': 'set',
-        })
-            .c('query', { 'xmlns': Strophe.NS.MUC_OWNER })
-            .cnode(destroy.node);
-        if (reason && reason.length > 0) {
-            iq.c('reason', reason);
-        }
+        const iq = stx`
+            <iq to="${this.get('jid')}" type="set" xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.MUC_OWNER}">
+                    <destroy ${new_jid ? Stanza.unsafeXML(`jid="${Strophe.xmlescape(new_jid)}"`) : ''}>
+                        ${reason ? stx`<reason>${reason}</reason>` : ''}
+                    </destroy>
+                </query>
+            </iq>`;
         return api.sendIQ(iq);
     }
 
@@ -1157,15 +1155,17 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             return;
         }
         const chat_state = this.get('chat_state');
-        if (chat_state === GONE) {
-            // <gone/> is not applicable within MUC context
-            return;
-        }
-        api.send(
-            $msg({ 'to': this.get('jid'), 'type': 'groupchat' })
-                .c(chat_state, { 'xmlns': Strophe.NS.CHATSTATES }).up()
-                .c('no-store', { 'xmlns': Strophe.NS.HINTS }).up()
-                .c('no-permanent-store', { 'xmlns': Strophe.NS.HINTS })
+        if (chat_state === GONE) return; // <gone/> is not applicable within MUC context
+
+        api.send(stx`
+            <message to="${this.get('jid')}" type="groupchat" xmlns="jabber:client">
+                ${ chat_state === INACTIVE ? stx`<inactive xmlns="${Strophe.NS.CHATSTATES}"/>` : '' }
+                ${ chat_state === ACTIVE ? stx`<active xmlns="${Strophe.NS.CHATSTATES}"/>` : '' }
+                ${ chat_state === COMPOSING ? stx`<composing xmlns="${Strophe.NS.CHATSTATES}"/>` : '' }
+                ${ chat_state === PAUSED ? stx`<paused xmlns="${Strophe.NS.CHATSTATES}"/>` : '' }
+                <no-store xmlns="${Strophe.NS.HINTS}"/>
+                <no-permanent-store xmlns="${Strophe.NS.HINTS}"/>
+            </message>`
         );
     }
 
@@ -1179,23 +1179,15 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             // When inviting to a members-only groupchat, we first add
             // the person to the member list by giving them an
             // affiliation of 'member' otherwise they won't be able to join.
-            this.updateMemberLists([{ 'jid': recipient, 'affiliation': 'member', 'reason': reason }]);
+            this.updateMemberLists([{ jid: recipient, affiliation: 'member', reason }]);
         }
-        const attrs = {
-            'xmlns': 'jabber:x:conference',
-            'jid': this.get('jid'),
-        };
-        if (reason !== null) {
-            attrs.reason = reason;
-        }
-        if (this.get('password')) {
-            attrs.password = this.get('password');
-        }
-        const invitation = $msg({
-            'from': api.connection.get().jid,
-            'to': recipient,
-            'id': getUniqueId(),
-        }).c('x', attrs);
+        const invitation = stx`
+            <message xmlns="jabber:client" to="${recipient}" id="${getUniqueId()}">
+                <x xmlns="jabber:x:conference"
+                    jid="${this.get('jid')}"
+                    ${ this.get('password') ? Stanza.unsafeXML(`password="${Strophe.xmlescape(this.get('password'))}"`) : '' }
+                    ${ reason ? Stanza.unsafeXML(`reason="${Strophe.xmlescape(reason)}"`) : '' } />
+            </message>`;
         api.send(invitation);
         /**
          * After the user has sent out a direct invitation (as per XEP-0249),
@@ -1208,9 +1200,9 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
          * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
          */
         api.trigger('roomInviteSent', {
-            'room': this,
-            'recipient': recipient,
-            'reason': reason,
+            room: this,
+            recipient,
+            reason,
         });
     }
 
@@ -1349,20 +1341,27 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @returns {Promise<Element>}
      */
     fetchRoomConfiguration () {
-        return api.sendIQ($iq({ 'to': this.get('jid'), 'type': 'get' }).c('query', { xmlns: Strophe.NS.MUC_OWNER }));
+        return api.sendIQ(stx`
+            <iq to="${this.get('jid')}" type="get" xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.MUC_OWNER}"/>
+            </iq>`);
     }
 
     /**
      * Sends an IQ stanza with the groupchat configuration.
-     * @param {Array} config - The groupchat configuration
+     * @param {Element[]} config - The groupchat configuration
      * @returns {Promise<Element>} - A promise which resolves with
      *  the `result` stanza received from the XMPP server.
      */
     sendConfiguration (config = []) {
-        const iq = $iq({ to: this.get('jid'), type: 'set' })
-            .c('query', { xmlns: Strophe.NS.MUC_OWNER })
-            .c('x', { xmlns: Strophe.NS.XFORM, type: 'submit' });
-        config.forEach(node => iq.cnode(node).up());
+        const iq = stx`
+            <iq to="${this.get('jid')}" type="set" xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.MUC_OWNER}">
+                    <x xmlns="${Strophe.NS.XFORM}" type="submit">
+                        ${ config.map((el) => Strophe.Builder.fromString(el.outerHTML)) }
+                    </x>
+                </query>
+            </iq>`;
         return api.sendIQ(iq);
     }
 
@@ -1538,19 +1537,14 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @param {function} onError - callback for an error response
      */
     setRole(occupant, role, reason, onSuccess, onError) {
-        const item = $build('item', {
-            'nick': occupant.get('nick'),
-            role,
-        });
-        const iq = $iq({
-            'to': this.get('jid'),
-            'type': 'set',
-        })
-            .c('query', { xmlns: Strophe.NS.MUC_ADMIN })
-            .cnode(item.node);
-        if (reason !== null) {
-            iq.c('reason', reason);
-        }
+        const iq = stx`
+            <iq to="${this.get('jid')}" type="set" xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.MUC_ADMIN}">
+                    <item nick="${occupant.get('nick')}" role="${role}">
+                        ${ reason !== null ? stx`<reason>${reason}</reason>` : '' }
+                    </item>
+                </query>
+            </iq>`;
         return api
             .sendIQ(iq)
             .then(onSuccess)
@@ -1691,14 +1685,10 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @returns {Promise<string>} A promise which resolves with the reserved nick or null
      */
     async getReservedNick () {
-        const stanza = $iq({
-            'to': this.get('jid'),
-            'from': api.connection.get().jid,
-            'type': 'get',
-        }).c('query', {
-            'xmlns': Strophe.NS.DISCO_INFO,
-            'node': 'x-roomuser-item',
-        });
+        const stanza = stx`
+            <iq to="${this.get('jid')}" type="get" xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.DISCO_INFO}" node="x-roomuser-item"/>
+            </iq>`;
         const result = await api.sendIQ(stanza, null, false);
         if (u.isErrorObject(result)) {
             throw result;
@@ -1790,9 +1780,12 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * registered) by other users.
      */
     sendUnregistrationIQ () {
-        const iq = $iq({ 'to': this.get('jid'), 'type': 'set' })
-            .c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
-            .c('remove');
+        const iq = stx`
+            <iq to="${this.get('jid')}" type="set" xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.MUC_REGISTER}">
+                    <remove/>
+                </query>
+            </iq>`;
         return api.sendIQ(iq).catch((e) => log.error(e));
     }
 
@@ -1953,15 +1946,10 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @param {String} value
      */
     setSubject (value = '') {
-        api.send(
-            $msg({
-                to: this.get('jid'),
-                from: api.connection.get().jid,
-                type: 'groupchat',
-            })
-                .c('subject', { xmlns: 'jabber:client' })
-                .t(value)
-                .tree()
+        api.send(stx`
+            <message to="${this.get('jid')}" type="groupchat" xmlns="jabber:client">
+                <subject>${value}</subject>
+            </message>`
         );
     }
 

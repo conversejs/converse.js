@@ -162,17 +162,3 @@ export function tearDown () {
         everySecondTrigger = null;
     }
 }
-
-export function addStatusToMUCJoinPresence (_, stanza) {
-    const { xmppstatus } = _converse.state;
-
-    const status = xmppstatus.get('status');
-    if (['away', 'chat', 'dnd', 'xa'].includes(status)) {
-        stanza.c('show').t(status).up();
-    }
-    const status_message = xmppstatus.get('status_message');
-    if (status_message) {
-        stanza.c('status').t(status_message).up();
-    }
-    return stanza;
-}

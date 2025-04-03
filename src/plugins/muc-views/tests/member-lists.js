@@ -3,6 +3,8 @@ const { $iq, Strophe, u, stx }  = converse.env;
 
 describe("A Groupchat", function () {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     describe("upon being entered", function () {
 
         it("will fetch the member list if muc_fetch_members is true",
@@ -157,6 +159,8 @@ describe("A Groupchat", function () {
 
 describe("Someone being invited to a groupchat", function () {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("will first be added to the member list if the groupchat is members only",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
@@ -288,10 +292,10 @@ describe("Someone being invited to a groupchat", function () {
         await u.waitUntil(() => view.model.occupants.fetchMembers.calls.count());
 
         // Finally check that the user gets invited.
-        expect(Strophe.serialize(sent_stanza)).toBe( // Strophe adds the xmlns attr (although not in spec)
-            `<message from="romeo@montague.lit/orchard" id="${sent_id}" to="${invitee_jid}" xmlns="jabber:client">`+
-                `<x jid="coven@chat.shakespeare.lit" reason="Please join this groupchat" xmlns="jabber:x:conference"/>`+
-            `</message>`
-        );
+        expect(sent_stanza).toEqualStanza(stx`
+            <message id="${sent_id}" to="${invitee_jid}" xmlns="jabber:client">
+                <x jid="coven@chat.shakespeare.lit" reason="Please join this groupchat" xmlns="jabber:x:conference"/>
+            </message>
+        `);
     }));
 });

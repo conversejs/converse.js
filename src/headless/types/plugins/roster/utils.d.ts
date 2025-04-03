@@ -25,8 +25,8 @@ export function onRosterContactsFetched(): void;
  * Reject or cancel another user's subscription to our presence updates.
  * @function rejectPresenceSubscription
  * @param {String} jid - The Jabber ID of the user whose subscription is being canceled
- * @param {String} message - An optional message to the user
+ * @param {String} [message] - An optional message to the user
  */
-export function rejectPresenceSubscription(jid: string, message: string): void;
+export function rejectPresenceSubscription(jid: string, message?: string): void;
 export type RosterContacts = import("./contacts").default;
 //# sourceMappingURL=utils.d.ts.map

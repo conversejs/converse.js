@@ -324,7 +324,7 @@ class RosterContacts extends Collection {
          * See also the `cachedRoster` event further up, which gets called instead of
          * `roster` if its already in `sessionStorage`.
          * @event _converse#roster
-         * @type { Element }
+         * @type {Element}
          * @example _converse.api.listen.on('roster', iq => { ... });
          * @example _converse.api.waitUntil('roster').then(iq => { ... });
          */

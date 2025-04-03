@@ -309,10 +309,10 @@ describe("Groupchats", function () {
             });
 
             let sent_stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.textContent.trim() === 'This is a new subject').pop());
-            expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
-                '<message from="romeo@montague.lit/orchard" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">'+
-                    '<subject xmlns="jabber:client">This is a new subject</subject>'+
-                '</message>');
+            expect(sent_stanza).toEqualStanza(stx`
+                <message to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">
+                    <subject>This is a new subject</subject>
+                </message>`);
 
             // Check case insensitivity
             textarea.value = '/Subject This is yet another subject';
@@ -322,10 +322,10 @@ describe("Groupchats", function () {
                 key: "Enter",
             });
             sent_stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.textContent.trim() === 'This is yet another subject').pop());
-            expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
-                '<message from="romeo@montague.lit/orchard" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">'+
-                    '<subject xmlns="jabber:client">This is yet another subject</subject>'+
-                '</message>');
+            expect(sent_stanza).toEqualStanza(stx`
+                <message to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">
+                    <subject>This is yet another subject</subject>
+                </message>`);
 
             while (sent_stanzas.length) {
                 sent_stanzas.pop();
@@ -338,10 +338,10 @@ describe("Groupchats", function () {
                 key: "Enter",
             });
             sent_stanza = await u.waitUntil(() => sent_stanzas.pop());
-            expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
-                '<message from="romeo@montague.lit/orchard" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">'+
-                    '<subject xmlns="jabber:client"></subject>'+
-                '</message>');
+            expect(sent_stanza).toEqualStanza(stx`
+                <message to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">
+                    <subject></subject>
+                </message>`);
         }));
 
         it("takes /clear to clear messages", mock.initConverse([], {}, async function (_converse) {
@@ -679,16 +679,6 @@ describe("Groupchats", function () {
                     `</query>`+
                 `</iq>`);
 
-            /* <presence
-             *     from='coven@chat.shakespeare.lit/thirdwitch'
-             *     to='crone1@shakespeare.lit/desktop'>
-             * <x xmlns='http://jabber.org/protocol/muc#user'>
-             *     <item affiliation='member'
-             *         jid='hag66@shakespeare.lit/pda'
-             *         role='moderator'/>
-             * </x>
-             * </presence>
-             */
             _converse.api.connection.get()._dataRecv(mock.createRequest(
                 stx`<presence
                         from="lounge@montague.lit/trustworthyguy"
@@ -712,14 +702,14 @@ describe("Groupchats", function () {
 
             await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 3);
             expect(view.model.setRole).toHaveBeenCalled();
-            expect(Strophe.serialize(sent_IQ)).toBe(
-                `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                        `<item nick="trustworthyguy" role="participant">`+
-                            `<reason>Perhaps not</reason>`+
-                        `</item>`+
-                    `</query>`+
-                `</iq>`);
+            expect(sent_IQ).toEqualStanza(stx`
+                <iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#admin">
+                        <item nick="trustworthyguy" role="participant">
+                            <reason>Perhaps not</reason>
+                        </item>
+                    </query>
+                </iq>`);
 
             _converse.api.connection.get()._dataRecv(mock.createRequest(
                 stx`<presence
@@ -750,15 +740,6 @@ describe("Groupchats", function () {
             spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
             // New user enters the groupchat
-            /* <presence
-             *     from='coven@chat.shakespeare.lit/thirdwitch'
-             *     id='27C55F89-1C6A-459A-9EB5-77690145D624'
-             *     to='crone1@shakespeare.lit/desktop'>
-             * <x xmlns='http://jabber.org/protocol/muc#user'>
-             *     <item affiliation='member' role='participant'/>
-             * </x>
-             * </presence>
-             */
             _converse.api.connection.get()._dataRecv(mock.createRequest(
                     stx`<presence
                             from="lounge@montague.lit/annoyingGuy"
@@ -794,14 +775,14 @@ describe("Groupchats", function () {
 
             await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2)
             expect(view.model.setRole).toHaveBeenCalled();
-            expect(Strophe.serialize(sent_IQ)).toBe(
-                `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                        `<item nick="annoyingGuy" role="visitor">`+
-                            `<reason>You&apos;re annoying</reason>`+
-                        `</item>`+
-                    `</query>`+
-                `</iq>`);
+            expect(sent_IQ).toEqualStanza(stx`
+                <iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#admin">
+                        <item nick="annoyingGuy" role="visitor">
+                            <reason>You&apos;re annoying</reason>
+                        </item>
+                    </query>
+                </iq>`);
 
             /* <presence
              *     from='coven@chat.shakespeare.lit/thirdwitch'
@@ -832,14 +813,14 @@ describe("Groupchats", function () {
 
             await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 3);
             expect(view.model.setRole).toHaveBeenCalled();
-            expect(Strophe.serialize(sent_IQ)).toBe(
-                `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                        `<item nick="annoyingGuy" role="participant">`+
-                            `<reason>Now you can talk again</reason>`+
-                        `</item>`+
-                    `</query>`+
-                `</iq>`);
+            expect(sent_IQ).toEqualStanza(stx`
+                <iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#admin">
+                        <item nick="annoyingGuy" role="participant">
+                            <reason>Now you can talk again</reason>
+                        </item>
+                    </query>
+                </iq>`);
 
             _converse.api.connection.get()._dataRecv(mock.createRequest(
                 stx`<presence
@@ -884,16 +865,14 @@ describe("Groupchats", function () {
 
             let sent_IQs = _converse.api.connection.get().IQ_stanzas;
             let sent_IQ = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('destroy')).pop());
-            expect(Strophe.serialize(sent_IQ)).toBe(
-                `<iq id="${sent_IQ.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#owner">`+
-                        `<destroy jid="${new_muc_jid}">`+
-                            `<reason>`+
-                                `Moved to a new location`+
-                            `</reason>`+
-                        `</destroy>`+
-                    `</query>`+
-                `</iq>`);
+            expect(sent_IQ).toEqualStanza(stx`
+                <iq id="${sent_IQ.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#owner">
+                        <destroy jid="${new_muc_jid}">
+                            <reason>Moved to a new location</reason>
+                        </destroy>
+                    </query>
+                </iq>`);
 
             let result_stanza = stx`<iq type="result"
                 id="${sent_IQ.getAttribute('id')}"
@@ -925,12 +904,12 @@ describe("Groupchats", function () {
             submit.click();
 
             sent_IQ = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('destroy')).pop());
-            expect(Strophe.serialize(sent_IQ)).toBe(
-                `<iq id="${sent_IQ.getAttribute('id')}" to="${new_muc_jid}" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#owner">`+
-                        `<destroy/>`+
-                    `</query>`+
-                `</iq>`);
+            expect(sent_IQ).toEqualStanza(stx`
+                <iq id="${sent_IQ.getAttribute('id')}" to="${new_muc_jid}" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#owner">
+                        <destroy/>
+                    </query>
+                </iq>`);
 
             result_stanza = stx`<iq type="result"
                 id="${sent_IQ.getAttribute('id')}"

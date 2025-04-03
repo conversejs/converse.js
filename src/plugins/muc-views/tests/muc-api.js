@@ -189,7 +189,7 @@ describe("Groupchats", function () {
                 </presence>`));
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-            const iq = await u.waitUntil(() => IQ_stanzas.filter(s => s.querySelector(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`)).pop());
+            const iq = await u.waitUntil(() => IQ_stanzas.filter((s) => sizzle(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`, s).length).pop());
             expect(Strophe.serialize(iq)).toBe(
                 `<iq id="${iq.getAttribute('id')}" to="room@conference.example.org" type="get" xmlns="jabber:client">`+
                 `<query xmlns="http://jabber.org/protocol/muc#owner"/></iq>`);

@@ -5,7 +5,6 @@ import converse from '../../shared/api/public.js';
 import status_api from './api.js';
 import { shouldClearCache } from '../../utils/session.js';
 import {
-    addStatusToMUCJoinPresence,
     initStatus,
     onEverySecond,
     onUserActivity,
@@ -56,6 +55,5 @@ converse.plugins.add('converse-status', {
 
         api.listen.on('connected', () => initStatus(false));
         api.listen.on('reconnected', () => initStatus(true));
-        api.listen.on('constructedMUCPresence', addStatusToMUCJoinPresence);
     }
 });

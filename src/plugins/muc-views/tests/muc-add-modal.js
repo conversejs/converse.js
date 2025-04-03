@@ -160,7 +160,7 @@ describe('The "Groupchats" Add modal', function () {
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-            const iq = await u.waitUntil(() => IQ_stanzas.filter(s => s.querySelector(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`)).pop());
+            const iq = await u.waitUntil(() => IQ_stanzas.filter((s) => sizzle(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`, s).length).pop());
 
             spyOn(muc, 'sendConfiguration').and.callThrough();
 

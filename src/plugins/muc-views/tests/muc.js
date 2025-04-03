@@ -66,18 +66,15 @@ describe("Groupchats", function () {
             expect(csntext.trim()).toEqual("nicky has entered the groupchat");
 
             // An instant room is created by saving the default configuratoin.
-            //
-            /* <iq to="myroom@conference.chat.example.org" type="set" xmlns="jabber:client" id="5025e055-036c-4bc5-a227-706e7e352053:sendIQ">
-             *   <query xmlns="http://jabber.org/protocol/muc#owner"><x xmlns="jabber:x:data" type="submit"/></query>
-             * </iq>
-             */
             const selector = `query[xmlns="${Strophe.NS.MUC_OWNER}"]`;
             IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-            const iq = await u.waitUntil(() => IQ_stanzas.filter(s => s.querySelector(selector)).pop());
-            expect(Strophe.serialize(iq)).toBe(
-                `<iq id="${iq.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#owner"><x type="submit" xmlns="jabber:x:data"/>`+
-                `</query></iq>`);
+            const iq = await u.waitUntil(() => IQ_stanzas.filter((s) => sizzle(selector, s).length).pop());
+            expect(iq).toEqualStanza(stx`
+                <iq id="${iq.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#owner">
+                        <x type="submit" xmlns="jabber:x:data"/>
+                    </query>
+                </iq>`);
         }));
     });
 
@@ -240,7 +237,7 @@ describe("Groupchats", function () {
             const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
             await mock.returnMemberLists(_converse, muc_jid, [], all_affiliations);
 
-            iq_get = await u.waitUntil(() => sent_IQs.filter(iq => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop());
+            iq_get = await u.waitUntil(() => sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop());
             expect(iq_get).toEqualStanza(stx`
                 <iq id="${iq_get.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">
                     <query queryid="${iq_get.querySelector('query').getAttribute('queryid')}" xmlns="${Strophe.NS.MAM}">
@@ -1101,10 +1098,10 @@ describe("Groupchats", function () {
              * configuration form.
              * See: // https://xmpp.org/extensions/xep-0045.html#example-163
              */
-            expect(Strophe.serialize(iq)).toBe(
-                `<iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#owner"/>`+
-                `</iq>`);
+            expect(iq).toEqualStanza(stx`
+                <iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#owner"/>
+                </iq>`);
 
             /* Server responds with the configuration form.
              * See: // https://xmpp.org/extensions/xep-0045.html#example-165
@@ -1230,30 +1227,28 @@ describe("Groupchats", function () {
 
             modal.querySelector('.chatroom-form input[type="submit"]').click();
 
-            console.log(Strophe.serialize(sent_IQ));
-
-            expect(Strophe.serialize(sent_IQ)).toBe(
-            `<iq id="${IQ_id}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
-                `<query xmlns="http://jabber.org/protocol/muc#owner">`+
-                `<x type="submit" xmlns="jabber:x:data">`+
-                    `<field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#roomconfig</value></field>`+
-                    `<field var="muc#roomconfig_roomname"><value>A Dark Cave</value></field>`+
-                    `<field var="muc#roomconfig_roomdesc"><value>The place for all good witches!</value></field>`+
-                    `<field var="muc#roomconfig_enablelogging"><value>0</value></field>`+
-                    `<field var="muc#roomconfig_changesubject"><value>0</value></field>`+
-                    `<field var="muc#roomconfig_allowinvites"><value>0</value></field>`+
-                    `<field var="muc#roomconfig_allowpm"><value>moderators</value></field>`+
-                    `<field var="muc#roomconfig_presencebroadcast"><value>moderator</value></field>`+
-                    `<field var="muc#roomconfig_getmemberlist"><value>moderator</value>,<value>participant</value>,<value>visitor</value></field>`+
-                    `<field var="muc#roomconfig_publicroom"><value>0</value></field>`+
-                    `<field var="muc#roomconfig_persistentroom"><value>0</value></field>`+
-                    `<field var="muc#roomconfig_moderatedroom"><value>1</value></field>`+
-                    `<field var="muc#roomconfig_membersonly"><value>1</value></field>`+
-                    `<field var="muc#roomconfig_passwordprotectedroom"><value>1</value></field>`+
-                    `<field var="muc#roomconfig_roomsecret"><value>cauldronburn</value></field>`+
-                `</x>`+
-                `</query>`+
-            `</iq>`);
+            expect(sent_IQ).toEqualStanza(stx`
+                <iq id="${IQ_id}" to="${muc_jid}" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#owner">
+                    <x type="submit" xmlns="jabber:x:data">
+                        <field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#roomconfig</value></field>
+                        <field var="muc#roomconfig_roomname"><value>A Dark Cave</value></field>
+                        <field var="muc#roomconfig_roomdesc"><value>The place for all good witches!</value></field>
+                        <field var="muc#roomconfig_enablelogging"><value>0</value></field>
+                        <field var="muc#roomconfig_changesubject"><value>0</value></field>
+                        <field var="muc#roomconfig_allowinvites"><value>0</value></field>
+                        <field var="muc#roomconfig_allowpm"><value>moderators</value></field>
+                        <field var="muc#roomconfig_presencebroadcast"><value>moderator</value></field>
+                        <field var="muc#roomconfig_getmemberlist"><value>moderator</value>,<value>participant</value>,<value>visitor</value></field>
+                        <field var="muc#roomconfig_publicroom"><value>0</value></field>
+                        <field var="muc#roomconfig_persistentroom"><value>0</value></field>
+                        <field var="muc#roomconfig_moderatedroom"><value>1</value></field>
+                        <field var="muc#roomconfig_membersonly"><value>1</value></field>
+                        <field var="muc#roomconfig_passwordprotectedroom"><value>1</value></field>
+                        <field var="muc#roomconfig_roomsecret"><value>cauldronburn</value></field>
+                    </x>
+                    </query>
+                </iq>`);
         }));
 
         it("can be configured if your its owner",
@@ -1307,10 +1302,10 @@ describe("Groupchats", function () {
             /* Check that an IQ is sent out, asking for the
              * configuration form.
              */
-            expect(Strophe.serialize(iq)).toBe(
-                `<iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#owner"/>`+
-                `</iq>`);
+            expect(iq).toEqualStanza(stx`
+                <iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#owner"/>
+                </iq>`);
 
             /* Server responds with the configuration form.
              * See: // https://xmpp.org/extensions/xep-0045.html#example-165
@@ -1451,28 +1446,28 @@ describe("Groupchats", function () {
 
             modal.querySelector('.chatroom-form input[type="submit"]').click();
 
-            expect(Strophe.serialize(sent_IQ)).toBe(
-                `<iq id="${IQ_id}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#owner">`+
-                        `<x type="submit" xmlns="jabber:x:data">`+
-                            `<field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#roomconfig</value></field>`+
-                            `<field var="muc#roomconfig_roomname"><value>A Dark Cave</value></field>`+
-                            `<field var="muc#roomconfig_roomdesc"><value>The place for all good witches!</value></field>`+
-                            `<field var="muc#roomconfig_enablelogging"><value>0</value></field>`+
-                            `<field var="muc#roomconfig_changesubject"><value>0</value></field>`+
-                            `<field var="muc#roomconfig_allowinvites"><value>0</value></field>`+
-                            `<field var="muc#roomconfig_allowpm"><value>moderators</value></field>`+
-                            `<field var="muc#roomconfig_presencebroadcast"><value>moderator</value></field>`+
-                            `<field var="muc#roomconfig_getmemberlist"><value>moderator</value>,<value>participant</value>,<value>visitor</value></field>`+
-                            `<field var="muc#roomconfig_publicroom"><value>0</value></field>`+
-                            `<field var="muc#roomconfig_persistentroom"><value>0</value></field>`+
-                            `<field var="muc#roomconfig_moderatedroom"><value>1</value></field>`+
-                            `<field var="muc#roomconfig_membersonly"><value>1</value></field>`+
-                            `<field var="muc#roomconfig_passwordprotectedroom"><value>1</value></field>`+
-                            `<field var="muc#roomconfig_roomsecret"><value>cauldronburn</value></field>`+
-                        `</x>`+
-                    `</query>`+
-                `</iq>`);
+            expect(sent_IQ).toEqualStanza(stx`
+                <iq id="${IQ_id}" to="${muc_jid}" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#owner">
+                        <x type="submit" xmlns="jabber:x:data">
+                            <field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#roomconfig</value></field>
+                            <field var="muc#roomconfig_roomname"><value>A Dark Cave</value></field>
+                            <field var="muc#roomconfig_roomdesc"><value>The place for all good witches!</value></field>
+                            <field var="muc#roomconfig_enablelogging"><value>0</value></field>
+                            <field var="muc#roomconfig_changesubject"><value>0</value></field>
+                            <field var="muc#roomconfig_allowinvites"><value>0</value></field>
+                            <field var="muc#roomconfig_allowpm"><value>moderators</value></field>
+                            <field var="muc#roomconfig_presencebroadcast"><value>moderator</value></field>
+                            <field var="muc#roomconfig_getmemberlist"><value>moderator</value>,<value>participant</value>,<value>visitor</value></field>
+                            <field var="muc#roomconfig_publicroom"><value>0</value></field>
+                            <field var="muc#roomconfig_persistentroom"><value>0</value></field>
+                            <field var="muc#roomconfig_moderatedroom"><value>1</value></field>
+                            <field var="muc#roomconfig_membersonly"><value>1</value></field>
+                            <field var="muc#roomconfig_passwordprotectedroom"><value>1</value></field>
+                            <field var="muc#roomconfig_roomsecret"><value>cauldronburn</value></field>
+                        </x>
+                    </query>
+                </iq>`);
         }));
 
         it("properly handles notification that a room has been destroyed",
@@ -1572,13 +1567,12 @@ describe("Groupchats", function () {
             modal.querySelector('input[type="submit"]').click();
 
             expect(view.model.directInvite).toHaveBeenCalled();
-           expect(Strophe.serialize(sent_stanza)).toBe(
-                `<message from="romeo@montague.lit/orchard" `+
-                        `id="${sent_stanza.getAttribute("id")}" `+
-                        `to="balthasar@montague.lit" `+
-                        `xmlns="jabber:client">`+
-                    `<x jid="lounge@montague.lit" reason="Please join!" xmlns="jabber:x:conference"/>`+
-                `</message>`
+            expect(sent_stanza).toEqualStanza(stx`
+                <message id="${sent_stanza.getAttribute("id")}"
+                        to="balthasar@montague.lit"
+                        xmlns="jabber:client">
+                    <x jid="lounge@montague.lit" reason="Please join!" xmlns="jabber:x:conference"/>
+                </message>`
             );
         }));
 
@@ -1771,10 +1765,14 @@ describe("Groupchats", function () {
                 )).pop());
 
             // Check that the groupchat queried for the feautures.
-            expect(Strophe.serialize(stanza)).toBe(
-                `<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute("id")}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
-                `</iq>`);
+            expect(stanza).toEqualStanza(stx`
+                <iq from="romeo@montague.lit/orchard"
+                        id="${stanza.getAttribute("id")}"
+                        to="${muc_jid}"
+                        type="get"
+                        xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/disco#info"/>
+                </iq>`);
 
             const features_stanza =
                 stx`<iq from="${muc_jid}"
@@ -1860,7 +1858,7 @@ describe("Groupchats", function () {
 
             const IQs = _converse.api.connection.get().IQ_stanzas;
             const s = `iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_OWNER}"]`;
-            let iq = await u.waitUntil(() => IQs.filter(iq => iq.querySelector(s)).pop());
+            let iq = await u.waitUntil(() => IQs.filter((iq) => sizzle(s, iq).length).pop());
 
             const response_el = stx`<iq xmlns="jabber:client"
                      type="result"
@@ -2117,7 +2115,6 @@ describe("Groupchats", function () {
         it("can be saved to, and retrieved from, browserStorage",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
-            const { api } = _converse;
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 

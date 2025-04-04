@@ -83,7 +83,7 @@
     "@types/sizzle": "^2.3.8",
     "@types/webappsec-credential-management": "^0.6.8",
     "@typescript-eslint/eslint-plugin": "^7.12.0",
-    "@typescript-eslint/parser": "^7.12.0",
+    "@typescript-eslint/parser": "^8.29.0",
     "autoprefixer": "^10.4.5",
     "babel-loader": "^9.1.0",
     "circular-dependency-plugin": "^5.2.2",

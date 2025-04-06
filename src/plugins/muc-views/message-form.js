@@ -30,7 +30,7 @@ export default class MUCMessageForm extends MessageForm {
     }
 
     initMentionAutoComplete() {
-        this.mention_auto_complete = new AutoComplete(this, {
+        this.auto_complete = new AutoComplete(this, {
             auto_first: true,
             min_chars: api.settings.get("muc_mention_autocomplete_min_chars"),
             match_current_word: true,
@@ -41,7 +41,7 @@ export default class MUCMessageForm extends MessageForm {
             include_triggers: [],
             item: (text, input) => getAutoCompleteListItem(this.model, text, input),
         });
-        this.mention_auto_complete.on("suggestion-box-selectcomplete", () => (this.auto_completing = false));
+        this.auto_complete.on("suggestion-box-selectcomplete", () => (this.auto_completing = false));
     }
 
     getAutoCompleteList() {
@@ -52,7 +52,7 @@ export default class MUCMessageForm extends MessageForm {
      * @param {KeyboardEvent} ev
      */
     onKeyDown(ev) {
-        if (this.shouldAutoComplete() && this.mention_auto_complete.onKeyDown(ev)) {
+        if (this.shouldAutoComplete() && this.auto_complete.onKeyDown(ev)) {
             return;
         }
         super.onKeyDown(ev);
@@ -62,7 +62,9 @@ export default class MUCMessageForm extends MessageForm {
      * @param {KeyboardEvent} ev
      */
     onKeyUp(ev) {
-        if (this.shouldAutoComplete()) this.mention_auto_complete.evaluate(ev);
+        if (this.shouldAutoComplete() && this.auto_complete.auto_completing) {
+            this.auto_complete.evaluate(ev);
+        }
         super.onKeyUp(ev);
     }
 }

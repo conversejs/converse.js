@@ -228,7 +228,7 @@ export class AutoComplete extends EventEmitter(Object) {
                 this.select();
                 return true;
             } else if (ev.key === converse.keycodes.ESCAPE) {
-                this.close({'reason': 'esc'});
+                this.close({ reason: 'esc' });
                 return true;
             } else if ([converse.keycodes.UP_ARROW, converse.keycodes.DOWN_ARROW].includes(ev.key)) {
                 ev.preventDefault();

@@ -189,7 +189,7 @@ export function hasClass (className, el) {
  * @param {Element} el
  */
 export function addClass (className, el) {
-    el instanceof Element && el.classList.add(className);
+    if (el instanceof Element) el.classList.add(className);
     return el;
 }
 
@@ -199,7 +199,7 @@ export function addClass (className, el) {
  * @param {Element} el
  */
 export function removeClass (className, el) {
-    el instanceof Element && el.classList.remove(className);
+    if (el instanceof Element) el.classList.remove(className);
     return el;
 }
 
@@ -208,7 +208,7 @@ export function removeClass (className, el) {
  * @param {Element} el
  */
 export function removeElement (el) {
-    el instanceof Element && el.parentNode && el.parentNode.removeChild(el);
+    if (el instanceof Element && el.parentNode) el.parentNode.removeChild(el);
     return el;
 }
 
@@ -233,7 +233,7 @@ function showElement (el) {
  * @param {Element} el
  */
 function hideElement (el) {
-    el instanceof Element && el.classList.add('hidden');
+    if (el instanceof Element) el.classList.add('hidden');
     return el;
 }
 

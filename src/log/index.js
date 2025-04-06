@@ -9,7 +9,6 @@ export const LEVELS = {
     fatal: 4,
 };
 
-/* eslint-disable @typescript-eslint/no-empty-function */
 const logger = Object.assign(
     {
         debug: console?.log ? console.log.bind(console) : function noop() {},
@@ -19,7 +18,6 @@ const logger = Object.assign(
     },
     console
 );
-/* eslint-enable @typescript-eslint/no-empty-function */
 
 /**
  * Logs messages to the console.

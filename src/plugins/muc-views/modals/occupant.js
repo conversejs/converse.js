@@ -28,6 +28,19 @@ export default class OccupantModal extends BaseModal {
         api.trigger('occupantModalInitialized', { 'model': this.model, 'message': this.message });
     }
 
+    renderModal () {
+        return tplOccupantModal(this);
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    openChat (ev) {
+        ev.preventDefault();
+        api.chats.open(this.model.get('jid'), {}, true);
+        this.close();
+    }
+
     getVcard () {
         const model = this.model ?? this.message;
         if (model.vcard) {
@@ -35,10 +48,6 @@ export default class OccupantModal extends BaseModal {
         }
         const jid = model?.get('jid') || model?.get('from');
         return jid ? _converse.state.vcards.get(jid) : null;
-    }
-
-    renderModal () {
-        return tplOccupantModal(this);
     }
 
     getModalTitle () {

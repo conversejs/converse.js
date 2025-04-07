@@ -28,8 +28,13 @@
     --warning-color: var(--orange);
     --info-color: var(--light-blue);
 
-    --converse-highlight-color: var(--dark-red);
+    --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
+    --converse-highlight-color: var(--dark-red);
+    .popover {
+        --converse-popover-header-color: var(--background-color) !important;
+        --converse-popover-header-bg: var(--info-color) !important;
+    }
     .modal {
         --converse-modal-color: var(--foreground-color) !important;
     }

@@ -18,7 +18,7 @@ import {
     stringToArrayBuffer
 } from '@converse/headless/utils/arraybuffer.js';
 
-const { Strophe, sizzle, u } = converse.env;
+const { Strophe, URI, sizzle, u } = converse.env;
 
 export function formatFingerprint (fp) {
     fp = fp.replace(/^05/, '');
@@ -208,13 +208,14 @@ export function processEncryptedFiles (text) {
                     uri,
                     start,
                     end,
-                    obj_url: getAndDecryptFile(uri); // this is a promise
+                    obj_url: getAndDecryptFile(uri), // this is a promise
                 });
                 return url;
             },
             parse_options
         );
     } catch (error) {
+        console.log('WHOOPSIES', error);
         log.debug(error);
         return;
     }

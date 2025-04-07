@@ -15,7 +15,6 @@ import {
     createOMEMOMessageStanza,
     encryptFile,
     getOutgoingMessageAttributes,
-    handleEncryptedFiles,
     handleMessageSendError,
     initOMEMO,
     omemo,

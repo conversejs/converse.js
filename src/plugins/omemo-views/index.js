@@ -9,6 +9,7 @@ import log from '@converse/headless/log';
 import { _converse, api, converse } from '@converse/headless/core';
 import {
     getOMEMOToolbarButton,
+    handleEncryptedFiles,
     onChatInitialized,
 } from './utils.js';
 

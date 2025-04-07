@@ -1,7 +1,9 @@
-import tplAffiliationForm from './templates/affiliation-form.js';
-import { CustomElement } from 'shared/components/element';
-import { __ } from 'i18n';
 import { api, converse, log, u } from '@converse/headless';
+import { __ } from 'i18n';
+import { CustomElement } from 'shared/components/element';
+import tplAffiliationForm from './templates/affiliation-form.js';
+
+import './styles/affiliation-form.scss';
 
 const { Strophe, sizzle } = converse.env;
 
@@ -20,6 +22,7 @@ class AffiliationForm extends CustomElement {
         super();
         this.jid = null;
         this.muc = null;
+        this.affiliation = null;
     }
 
     render () {
@@ -71,3 +74,5 @@ class AffiliationForm extends CustomElement {
 }
 
 api.elements.define('converse-muc-affiliation-form', AffiliationForm);
+
+export default AffiliationForm;

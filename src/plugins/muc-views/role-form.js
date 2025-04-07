@@ -1,7 +1,9 @@
-import tplRoleForm from './templates/role-form.js';
-import { CustomElement } from 'shared/components/element.js';
-import { __ } from 'i18n';
 import { api, converse, log, u } from '@converse/headless';
+import { __ } from 'i18n';
+import { CustomElement } from 'shared/components/element.js';
+import tplRoleForm from './templates/role-form.js';
+
+import './styles/role-form.scss';
 
 const { Strophe, sizzle } = converse.env;
 
@@ -20,6 +22,8 @@ class RoleForm extends CustomElement {
     constructor () {
         super();
         this.muc = null;
+        this.nick = null;
+        this.jid = null;
     }
 
     render () {
@@ -70,3 +74,5 @@ class RoleForm extends CustomElement {
 }
 
 api.elements.define('converse-muc-role-form', RoleForm);
+
+export default RoleForm;

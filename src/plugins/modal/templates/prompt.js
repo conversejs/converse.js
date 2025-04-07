@@ -10,17 +10,19 @@ function tplField(f) {
               <input name="${f.name}" class="form-check-input" type="checkbox" value="" id="${f.name}" />
               <label class="form-check-label" for="${f.name}">${f.label}</label>
           </div>`
-        : html`<div>
-              <label class="form-label">
+        : html`<div class="mb-3">
+              <label class="form-label" for="${f.name}">
                   ${f.label || ''}
-                  <input
-                      type="text"
-                      name="${f.name}"
-                      class="${f.challenge_failed ? 'error' : ''} form-control form-control--labeled"
-                      ?required="${f.required}"
-                      placeholder="${f.placeholder}"
-                  />
               </label>
+              <input
+                  type="text"
+                  name="${f.name}"
+                  class="${f.challenge_failed ? 'is-invalid' : ''} form-control"
+                  ?required="${f.required}"
+                  placeholder="${f.placeholder}"
+                  id="${f.name}"
+              />
+              ${f.challenge_failed ? html`<div class="invalid-feedback">Please provide a valid input.</div>` : ''}
           </div>`;
 }
 
@@ -33,10 +35,10 @@ export default (el) => {
         action="#"
         @submit=${(ev) => el.onConfimation(ev)}
     >
-        <div>${el.model.get('messages')?.map(/** @param {string} msg */ (msg) => html`<p>${msg}</p>`)}</div>
+        <div class="mb-3">${el.model.get('messages')?.map(/** @param {string} msg */ (msg) => html`<p>${msg}</p>`)}</div>
         ${el.model.get('fields')?.map(/** @param {import('../types').Field} f */ (f) => tplField(f))}
-        <div>
-            <button type="submit" class="btn btn-primary">${__('Confirm')}</button>
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary me-2">${__('Confirm')}</button>
             <input type="button" class="btn btn-secondary" data-bs-dismiss="modal" value="${__('Cancel')}" />
         </div>
     </form>`;

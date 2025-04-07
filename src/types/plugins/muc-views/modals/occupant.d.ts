@@ -1,8 +1,12 @@
 export default class OccupantModal extends BaseModal {
     constructor(options: any);
     message: any;
-    getVcard(): any;
     renderModal(): import("lit-html").TemplateResult<1>;
+    /**
+     * @param {MouseEvent} ev
+     */
+    openChat(ev: MouseEvent): void;
+    getVcard(): any;
     getModalTitle(): any;
     addToContacts(): void;
     toggleForm(ev: any): void;

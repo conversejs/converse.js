@@ -859,7 +859,7 @@ describe("Groupchats", function () {
             submit.click();
 
             expect(u.isVisible(modal)).toBeTruthy();
-            await u.waitUntil(() => u.hasClass('error', challenge_el));
+            await u.waitUntil(() => u.hasClass('is-invalid', challenge_el));
             challenge_el.value = muc_jid;
             submit.click();
 

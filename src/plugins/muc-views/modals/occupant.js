@@ -64,7 +64,6 @@ export default class OccupantModal extends BaseModal {
     toggleForm (ev) {
         const toggle = u.ancestor(ev.target, '.toggle-form');
         const form = toggle.getAttribute('data-form');
-
         if (form === 'row-form') {
             this.show_role_form = !this.show_role_form;
         } else {

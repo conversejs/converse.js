@@ -33,10 +33,6 @@ class LoginForm extends CustomElement {
         return tplLoginPanel(this);
     }
 
-    firstUpdated () {
-        this.initPopovers();
-    }
-
     /**
      * @param {SubmitEvent} ev
      */
@@ -83,10 +79,6 @@ class LoginForm extends CustomElement {
         const domain = Strophe.getDomainFromJid(jid);
         api.connection.init(jid);
         return api.connection.get().discoverConnectionMethods(domain);
-    }
-
-    initPopovers () {
-        Array.from(this.querySelectorAll('[data-toggle="popover"]')).forEach(el => new Popover(el));
     }
 
     /**

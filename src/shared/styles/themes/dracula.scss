@@ -30,6 +30,10 @@
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--yellow) !important;
+    .popover {
+        --converse-popover-header-color: var(--background-color) !important;
+        --converse-popover-header-bg: var(--info-color) !important;
+    }
     .modal {
         --converse-modal-color: var(--foreground-color) !important;
     }

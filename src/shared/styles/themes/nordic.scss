@@ -38,8 +38,13 @@
     --success-color: var(--green-3);
     --danger-color: var(--red);
     --warning-color: var(--orange);
+
     --info-color: var(--purple);
     --converse-highlight-color: var(--red);
+    --converse-body-color: var(--foreground-color) !important;
+    .modal {
+        --converse-modal-color: var(--foreground-color) !important;
+    }
 
     // Online status indicators
     --chat-status-away: var(--orange);

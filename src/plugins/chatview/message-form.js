@@ -218,7 +218,7 @@ export default class MessageForm extends CustomElement {
             hint_el.value = "";
             textarea.value = "";
             textarea.style.height = "auto";
-            this.model.set({ "draft": "" });
+            this.model.save({ "draft": "" });
         }
         if (api.settings.get("view_mode") === "overlayed") {
             // XXX: Chrome flexbug workaround. The .chat-content area

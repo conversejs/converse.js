@@ -18,11 +18,10 @@ export default (el) => {
     const hats = el.model?.get('hats')?.length ? el.model.get('hats') : null;
     const muc = el.model.collection.chatroom;
 
-    const allowed_commands = muc.getAllowedCommands();
-    const may_moderate = allowed_commands.includes('modtools');
-
     const i18n_add_to_contacts = __('Add to Contacts');
 
+    const allowed_commands = muc.getAllowedCommands();
+    const may_moderate = allowed_commands.includes('modtools');
     const can_see_real_jids = muc.features.get('nonanonymous') || muc.getOwnRole() === 'moderator';
 
     const bare_jid = _converse.session.get('bare_jid');
@@ -31,8 +30,8 @@ export default (el) => {
     const add_to_contacts = api.settings.get('singleton')
         ? '' // in singleton mode, there is no roster, so adding to contact makes no sense.
         : api.contacts.get(jid)
-            .then(contact => !contact && not_me && can_see_real_jids)
-            .then(add => add ? html`<li><button class="btn btn-primary" type="button" @click=${() => el.addToContacts()}>${i18n_add_to_contacts}</button></li>` : '');
+            .then((contact) => !contact && not_me && can_see_real_jids)
+            .then((add) => add ? html`<li><button class="btn btn-primary" type="button" @click=${() => el.addToContacts()}>${i18n_add_to_contacts}</button></li>` : '');
 
     return html`
         <div class="row">

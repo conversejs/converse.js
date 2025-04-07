@@ -30,6 +30,7 @@ export const CORE_PLUGINS = [
     'converse-headlines',
     'converse-mam',
     'converse-muc',
+    'converse-omemo',
     'converse-ping',
     'converse-pubsub',
     'converse-roster',

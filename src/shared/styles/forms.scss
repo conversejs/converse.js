@@ -5,6 +5,11 @@
     }
 
     form {
+        .form-check {
+            .form-check-input {
+                margin-top: 0.05em;
+            }
+        }
 
         .invalid-feedback {
             display: block;

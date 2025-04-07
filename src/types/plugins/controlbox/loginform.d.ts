@@ -4,7 +4,6 @@ declare class LoginForm extends CustomElement {
     handler: () => void;
     connectedCallback(): void;
     render(): import("lit-html").TemplateResult<1>;
-    firstUpdated(): void;
     /**
      * @param {SubmitEvent} ev
      */
@@ -13,7 +12,6 @@ declare class LoginForm extends CustomElement {
      * @param {HTMLFormElement} form
      */
     discoverConnectionMethods(form: HTMLFormElement): any;
-    initPopovers(): void;
     /**
      * @param {string} [jid]
      */

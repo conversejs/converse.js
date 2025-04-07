@@ -69,7 +69,7 @@ export default (el) => {
                             }
                         </div>
                         ${el.show_affiliation_form ?
-                            html`<div class="row"><converse-muc-affiliation-form jid=${jid} .muc=${muc} affiliation=${affiliation}></converse-muc-affiliation-form></div>` : ''}
+                            html`<div class="row mt-2"><converse-muc-affiliation-form jid=${jid} .muc=${muc} affiliation=${affiliation}></converse-muc-affiliation-form></div>` : ''}
                     </li>
                     <li class="row mb-2">
                         <div class="col text-start"><strong>${__('Role')}:</strong></div>
@@ -82,7 +82,7 @@ export default (el) => {
                                 </a>` : ''
                             }
                         </div>
-                        ${el.show_role_form ? html`<div class="row"><converse-muc-role-form jid=${jid} .muc=${muc} role=${role}></converse-muc-role-form></div>` : ''}
+                        ${el.show_role_form ? html`<div class="row mt-2"><converse-muc-role-form jid=${jid} .muc=${muc} role=${role}></converse-muc-role-form></div>` : ''}
                     </li>
                     <li class="row mb-2">
                         <div class="col text-start"><strong>${__('Hats')}:</strong></div>

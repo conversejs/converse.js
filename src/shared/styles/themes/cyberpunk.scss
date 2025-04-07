@@ -31,7 +31,13 @@
     --danger-color: var(--red);
     --warning-color: var(--orange);
     --info-color: var(--yellow);
+
     --converse-highlight-color: var(--yellow);
+    --converse-body-color: var(--foreground-color) !important;
+
+    .modal {
+        --converse-modal-color: var(--foreground-color) !important;
+    }
     .list-group-item {
         --converse-list-group-color: var(--foreground-color);
         &.active {

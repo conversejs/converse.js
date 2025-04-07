@@ -28,7 +28,11 @@
     --info-color: var(--yellow);
 
     --converse-body-bg: var(--background-color);
+    --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--yellow) !important;
+    .modal {
+        --converse-modal-color: var(--foreground-color) !important;
+    }
     .list-group-item {
         --converse-list-group-color: var(--foreground-color);
         &.active {

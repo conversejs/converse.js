@@ -1,8 +1,8 @@
+import { Model } from '@converse/skeletor';
+import { _converse, api, converse } from "@converse/headless";
+import { __ } from 'i18n';
 import BaseModal from "plugins/modal/modal.js";
 import tplOccupantModal from "./templates/occupant.js";
-import { Model } from '@converse/skeletor';
-import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless";
 
 const { u } = converse.env;
 

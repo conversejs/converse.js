@@ -7,12 +7,9 @@ declare namespace _default {
      * @param {Element|Builder} stanza
      * @returns {void}
      * @example
-     * const msg = converse.env.$msg({
-     *     'from': 'juliet@example.com/balcony',
-     *     'to': 'romeo@example.net',
-     *     'type':'chat'
-     * });
-     * _converse.api.send(msg);
+     *     const { stx } = _converse.env;
+     *     const msg = stx`<message from="juliet@example.com/balcony" to="romeo@example.net" type="chat"/>`;
+     *     _converse.api.send(msg);
      */
     function send(stanza: Element | import("strophe.js").Builder): void;
     /**

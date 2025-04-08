@@ -156,5 +156,7 @@ export type FileUploadMessageAttributes = {
     oob_url: string;
     upload: 'success' | 'failure';
 };
+export type MessageMarkerType = "displayed" | "received" | "acknowledged";
+export type ChatStateType = "active" | "composing" | "paused" | "inactive" | "gone";
 export {};
 //# sourceMappingURL=types.d.ts.map

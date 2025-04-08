@@ -31,6 +31,7 @@ export const CONTROLBOX_TYPE: "controlbox";
 export const CONNECTION_STATUS: typeof CONNECTION_STATUS;
 export const CORE_PLUGINS: string[];
 export const CHAT_STATES: string[];
+export const MARKER_TYPES: string[];
 export namespace KEYCODES {
     let TAB: string;
     let ENTER: string;

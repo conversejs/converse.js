@@ -134,6 +134,7 @@ export const CORE_PLUGINS = [
 ];
 
 export const CHAT_STATES = ['active', 'composing', 'gone', 'inactive', 'paused'];
+export const MARKER_TYPES = ['displayed', 'received', 'acknowledged'];
 
 export const KEYCODES = {
     TAB: "Tab",

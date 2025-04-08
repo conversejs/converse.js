@@ -1,9 +1,10 @@
 import log from "@converse/log";
-import { Strophe, $msg } from 'strophe.js';
-import api from './api/index.js';
-import converse from './api/public.js';
+import { Strophe } from "strophe.js";
+import api from "./api/index.js";
+import converse from "./api/public.js";
+import {CHAT_STATES, MARKER_TYPES} from "./constants.js";
 
-const { u, stx } = converse.env;
+const { u, stx, Stanza } = converse.env;
 
 /**
  * Reject an incoming message by replying with an error message of type "cancel".
@@ -13,14 +14,15 @@ const { u, stx } = converse.env;
  */
 export function rejectMessage(stanza, text) {
     api.send(
-        $msg({
-            'to': stanza.getAttribute('from'),
-            'type': 'error',
-            'id': stanza.getAttribute('id'),
-        })
-            .c('error', { 'type': 'cancel' })
-            .c('not-allowed', { xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas' }).up()
-            .c('text', { xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas' }).t(text)
+        stx`<message to="${stanza.getAttribute("from")}"
+                    type="error"
+                    id="${stanza.getAttribute("id")}"
+                    xmlns="jabber:client">
+                <error type="cancel">
+                    <not-allowed xmlns="${Strophe.NS.STANZAS}"/>
+                    <text xmlns="${Strophe.NS.STANZAS}">${text}</text>
+                </error>
+            </message>`
     );
     log.warn(`Rejecting message stanza with the following reason: ${text}`);
     log.warn(stanza);
@@ -30,17 +32,23 @@ export function rejectMessage(stanza, text) {
  * Send out a XEP-0333 chat marker
  * @param {string} to_jid
  * @param {string} id - The id of the message being marked
- * @param {string} type - The marker type
+ * @param {import("./types").MessageMarkerType} type - The marker type
  * @param {string} [msg_type]
  * @return void
  */
 export function sendMarker(to_jid, id, type, msg_type) {
-    const stanza = $msg({
-        'from': api.connection.get().jid,
-        'id': u.getUniqueId(),
-        'to': to_jid,
-        'type': msg_type ? msg_type : 'chat',
-    }).c(type, { 'xmlns': Strophe.NS.MARKERS, 'id': id });
+    if (!MARKER_TYPES.includes(type)) {
+        log.error(`Invalid marker type: ${type}`);
+        return;
+    }
+    const stanza = stx`
+        <message from="${api.connection.get().jid}"
+                id="${u.getUniqueId()}"
+                to="${to_jid}"
+                type="${msg_type ? msg_type : "chat"}"
+                xmlns="jabber:client">
+            <${Stanza.unsafeXML(type)} xmlns="${Strophe.NS.MARKERS}" id="${id}"/>
+        </message>`;
     api.send(stanza);
 }
 
@@ -50,37 +58,39 @@ export function sendMarker(to_jid, id, type, msg_type) {
  * @return void
  */
 export function sendReceiptStanza(to_jid, id) {
-    const receipt_stanza = $msg({
-        'from': api.connection.get().jid,
-        'id': u.getUniqueId(),
-        'to': to_jid,
-        'type': 'chat',
-    })
-        .c('received', { 'xmlns': Strophe.NS.RECEIPTS, 'id': id }).up()
-        .c('store', { 'xmlns': Strophe.NS.HINTS }).up();
+    const receipt_stanza = stx`
+        <message from="${api.connection.get().jid}"
+                id="${u.getUniqueId()}"
+                to="${to_jid}"
+                type="chat"
+                xmlns="jabber:client">
+            <received xmlns="${Strophe.NS.RECEIPTS}" id="${id}"/>
+            <store xmlns="${Strophe.NS.HINTS}"/>
+        </message>`;
     api.send(receipt_stanza);
 }
 
 /**
  * Sends a message with the given XEP-0085 chat state.
  * @param {string} jid
- * @param {string} chat_state
+ * @param {import("./types").ChatStateType} chat_state
  */
 export function sendChatState(jid, chat_state) {
-    if (api.settings.get('send_chat_state_notifications') && chat_state) {
-        const allowed = api.settings.get('send_chat_state_notifications');
+    if (api.settings.get("send_chat_state_notifications") && chat_state) {
+        const allowed = api.settings.get("send_chat_state_notifications");
         if (Array.isArray(allowed) && !allowed.includes(chat_state)) {
             return;
         }
+        if (!CHAT_STATES.includes(chat_state)) {
+            log.error(`Invalid chat state: ${chat_state}`);
+            return;
+        }
         api.send(
-            $msg({
-                'id': u.getUniqueId(),
-                'to': jid,
-                'type': 'chat',
-            })
-                .c(chat_state, { 'xmlns': Strophe.NS.CHATSTATES }).up()
-                .c('no-store', { 'xmlns': Strophe.NS.HINTS }).up()
-                .c('no-permanent-store', { 'xmlns': Strophe.NS.HINTS })
+            stx`<message id="${u.getUniqueId()}" to="${jid}" type="chat" xmlns="jabber:client">
+                <${Stanza.unsafeXML(chat_state)} xmlns="${Strophe.NS.CHATSTATES}"/>
+                <no-store xmlns="${Strophe.NS.HINTS}"/>
+                <no-permanent-store xmlns="${Strophe.NS.HINTS}"/>
+            </message>`
         );
     }
 }
@@ -92,7 +102,7 @@ export function sendChatState(jid, chat_state) {
  * @param {string} retraction_id - Unique ID for the retraction message
  */
 export function sendRetractionMessage(jid, message, retraction_id) {
-    const origin_id = message.get('origin_id');
+    const origin_id = message.get("origin_id");
     if (!origin_id) {
         throw new Error("Can't retract message without a XEP-0359 Origin ID");
     }

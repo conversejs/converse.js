@@ -90,7 +90,7 @@
     "babel-loader": "^9.1.0",
     "circular-dependency-plugin": "^5.2.2",
     "clean-css-cli": "^5.6.2",
-    "copy-webpack-plugin": "^12.0.2",
+    "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^7.1.2",
     "eslint": "^9.24.0",
     "fast-text-encoding": "^1.0.3",

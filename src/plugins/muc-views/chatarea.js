@@ -1,4 +1,4 @@
-import { api, converse } from '@converse/headless';
+import { api, converse, u } from '@converse/headless';
 import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import tplMUCChatarea from './templates/muc-chatarea.js';
@@ -27,6 +27,8 @@ export default class MUCChatArea extends CustomElement {
         this.listenTo(this.model, 'change:hidden_occupants', () => this.requestUpdate());
         this.listenTo(this.model.session, 'change:connection_status', () => this.requestUpdate());
 
+        this.#hideSidebarIfSmallViewport();
+        this.hideSidebarIfSmallViewport = u.debounce(this.#hideSidebarIfSmallViewport.bind(this), 100);
         this.requestUpdate();
     }
 
@@ -34,6 +36,21 @@ export default class MUCChatArea extends CustomElement {
         return this.model ? tplMUCChatarea(this) : '';
     }
 
+    #hideSidebarIfSmallViewport () {
+        if (this.model?.get('hidden_occupants')) return;
+        const is_small = window.matchMedia("(max-width: 576px)").matches;
+        if (is_small) this.model?.save('hidden_occupants', true);
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        window.addEventListener('resize', this.hideSidebarIfSmallViewport, true);
+    }
+
+    disconnectedCallback () {
+        super.disconnectedCallback();
+        window.addEventListener('resize', this.hideSidebarIfSmallViewport, true);
+    }
 
     shouldShowSidebar () {
         return (

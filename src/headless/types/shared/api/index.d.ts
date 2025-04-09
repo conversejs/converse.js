@@ -24,6 +24,7 @@ export type _converse = {
     labels: Record<string, string | Record<string, string>>;
     exports: Record<string, any>;
     constants: Record<string, any>;
+    env: import("./types.js").ConverseEnv;
     state: any;
     initSession(): void;
     session: import("@converse/skeletor").Model;

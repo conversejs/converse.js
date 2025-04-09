@@ -31,6 +31,31 @@ import {
     registerGlobalEventHandlers,
 } from '../../utils/init.js';
 
+const env = /** @type {import('./types').ConverseEnv} */ {
+    $build,
+    $iq,
+    $msg,
+    $pres,
+    utils: u,
+    Collection,
+    Model,
+    Stanza,
+    Strophe,
+    TimeoutError,
+    VERSION_NAME,
+    dayjs,
+    errors,
+    filesize,
+    html,
+    css,
+    render,
+    log,
+    sizzle,
+    sprintf,
+    stx,
+    u,
+}
+
 /**
  * @typedef {Window & {converse: ConversePrivateGlobal} } window
  *
@@ -94,6 +119,7 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).conv
         const connfeedback = new ConnectionFeedback();
         Object.assign(_converse, { connfeedback }); // XXX: DEPRECATED
         Object.assign(_converse.state, { connfeedback });
+        _converse.env = env;
 
         await initSessionStorage(_converse);
         await initClientConfig(_converse);
@@ -163,30 +189,7 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).conv
         }
 
     },
-    env: /** @type {import('./types').ConverseEnv} */({
-        $build,
-        $iq,
-        $msg,
-        $pres,
-        utils: u,
-        Collection,
-        Model,
-        Stanza,
-        Strophe,
-        TimeoutError,
-        VERSION_NAME,
-        dayjs,
-        errors,
-        filesize,
-        html,
-        css,
-        render,
-        log,
-        sizzle,
-        sprintf,
-        stx,
-        u,
-    })
+    env,
 });
 
 export default converse;

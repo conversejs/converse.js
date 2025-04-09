@@ -128,6 +128,11 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
         this.constants = /** @type {Record<string, string|Object>} */({});
 
         /**
+         * Utility methods and globals from bundled 3rd party libraries.
+         */
+        this.env = /** @type {import("./api/types.js").ConverseEnv} */ ({});
+
+        /**
          * Namespace for storing the state, as represented by instances of
          * Models and Collections.
          *

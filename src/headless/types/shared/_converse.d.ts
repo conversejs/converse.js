@@ -15,7 +15,7 @@ declare const ConversePrivateGlobal_base: (new (...args: any[]) => {
     off(name: string, callback: (event: any, model: import("@converse/skeletor/src/types/model.js").Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any, context?: any): any;
     stopListening(obj?: any, name?: string, callback?: (event: any, model: import("@converse/skeletor/src/types/model.js").Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any): any;
     once(name: string, callback: (event: any, model: import("@converse/skeletor/src/types/model.js").Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any, context: any): any;
-    listenToOnce(obj: any, name: string, callback?: (event: any, model: import("@converse/skeletor/src/types/model.js").Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any): any;
+    listenToOnce(obj: any, name: string, callback?: (event: any, model: import("@converse/skeletor/src/types/model.js").Model, collection: import("@converse/skeletor").Collection, options? /** @type {ConverseState} */: Record<string, any>) => any): any;
     trigger(name: string, ...args: any[]): any;
 }) & ObjectConstructor;
 /**
@@ -66,6 +66,10 @@ declare class ConversePrivateGlobal extends ConversePrivateGlobal_base {
      * Converse.
      */
     constants: Record<string, any>;
+    /**
+     * Utility methods and globals from bundled 3rd party libraries.
+     */
+    env: import("./api/types.js").ConverseEnv;
     /**
      * Namespace for storing the state, as represented by instances of
      * Models and Collections.

@@ -1,5 +1,5 @@
 /*global mock, converse */
-const { Strophe, Promise, u } = converse.env;
+const { Strophe, u } = converse.env;
 
 describe("A Chat Message", function () {
     describe("which contains an OOB URL", function () {

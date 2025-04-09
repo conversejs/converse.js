@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Strophe, Promise, sizzle, u, stx } = converse.env;
+const { Strophe, sizzle, u, stx } = converse.env;
 
 describe('The "Groupchats" List modal', function () {
 

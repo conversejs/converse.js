@@ -1,5 +1,5 @@
 /*global mock, converse */
-const {  Promise, sizzle, u } = converse.env;
+const { sizzle, u } = converse.env;
 
 describe('The "Groupchats" Add modal', function () {
 

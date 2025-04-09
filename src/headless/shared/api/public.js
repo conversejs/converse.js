@@ -7,7 +7,7 @@ import sizzle from 'sizzle';
 import { Stanza, Strophe, $build, $iq, $msg, $pres, stx } from 'strophe.js';
 import { Collection, Model } from "@converse/skeletor";
 import { filesize } from 'filesize';
-import { html } from 'lit';
+import { css, html, render } from 'lit';
 
 import api from './index.js';
 import _converse from '../_converse.js';
@@ -163,33 +163,14 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).conv
         }
 
     },
-    /**
-     * Utility methods and globals from bundled 3rd party libraries.
-     * @typedef ConverseEnv
-     * @property {Error} converse.env.TimeoutError
-     * @property {function} converse.env.$build    - Creates a Strophe.Builder, for creating stanza objects.
-     * @property {function} converse.env.$iq       - Creates a Strophe.Builder with an <iq/> element as the root.
-     * @property {function} converse.env.$msg      - Creates a Strophe.Builder with an <message/> element as the root.
-     * @property {function} converse.env.$pres     - Creates a Strophe.Builder with an <presence/> element as the root.
-     * @property {function} converse.env.Promise   - The Promise implementation used by Converse.
-     * @property {function} converse.env.Strophe   - The [Strophe](http://strophe.im/strophejs) XMPP library used by Converse.
-     * @property {function} converse.env.f         - And instance of Lodash with its methods wrapped to produce immutable auto-curried iteratee-first data-last methods.
-     * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
-     * @property {function} converse.env.sprintf
-     * @property {object} converse.env._           - The instance of [lodash-es](http://lodash.com) used by Converse.
-     * @property {object} converse.env.dayjs       - [DayJS](https://github.com/iamkun/dayjs) date manipulation library.
-     * @property {Array<Error>} converse.env.errors
-     * @memberOf converse
-     */
-    'env': {
+    env: /** @type {import('./types').ConverseEnv} */({
         $build,
         $iq,
         $msg,
         $pres,
-        'utils': u,
+        utils: u,
         Collection,
         Model,
-        Promise,
         Stanza,
         Strophe,
         TimeoutError,
@@ -198,12 +179,14 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).conv
         errors,
         filesize,
         html,
+        css,
+        render,
         log,
         sizzle,
         sprintf,
         stx,
         u,
-    }
+    })
 });
 
 export default converse;

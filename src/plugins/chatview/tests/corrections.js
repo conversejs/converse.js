@@ -1,5 +1,5 @@
 /*global mock, converse */
-const { Promise, Strophe, sizzle, u } = converse.env;
+const { Strophe, sizzle, u } = converse.env;
 
 describe("A Chat Message", function () {
 

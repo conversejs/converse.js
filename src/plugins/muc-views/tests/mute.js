@@ -1,6 +1,5 @@
 /*global mock, converse */
-
-const { Strophe, Promise, stx, u }  = converse.env;
+const { Strophe, stx, u }  = converse.env;
 
 describe("Groupchats", function () {
     describe("A muted user", function () {

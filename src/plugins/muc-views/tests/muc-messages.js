@@ -1,6 +1,5 @@
 /*global mock, converse */
-
-const { Promise, Strophe, sizzle, u, stx } = converse.env;
+const { Strophe, sizzle, u, stx } = converse.env;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe("A Groupchat Message", function () {

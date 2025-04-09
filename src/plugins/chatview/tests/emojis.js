@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Promise, $msg } = converse.env;
+const { $msg } = converse.env;
 const u = converse.env.utils;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 

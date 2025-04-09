@@ -49,8 +49,8 @@ develop-eggs
 pyvenv.cfg
 
 converse-logs/*.html
+community-plugins
 
-Backbone.Overview
 tags
 transpile
 

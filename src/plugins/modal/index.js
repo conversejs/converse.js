@@ -7,8 +7,6 @@ import Popover from "./popover.js";
 import modal_api from "./api.js";
 import { _converse, api, converse } from "@converse/headless";
 
-Object.assign(converse.env, { BaseModal, Popover });
-
 converse.plugins.add("converse-modal", {
     initialize() {
         api.listen.on("disconnect", () => {
@@ -20,6 +18,7 @@ converse.plugins.add("converse-modal", {
 
         api.listen.on("clearSession", () => api.modal.removeAll());
 
+        Object.assign(_converse.exports, { BaseModal, Popover });
         Object.assign(_converse.api, modal_api);
     },
 });

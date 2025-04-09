@@ -1,8 +1,8 @@
-import 'shared/components/image-picker.js';
-import tplSpinner from 'templates/spinner.js';
-import { __ } from 'i18n';
 import { api, converse, parsers } from '@converse/headless';
 import { html } from 'lit';
+import tplSpinner from 'templates/spinner.js';
+import { __ } from 'i18n';
+import 'shared/components/image-picker.js';
 import '../styles/config.scss';
 
 const u = converse.env.utils;

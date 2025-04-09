@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2025-03-15 21:30+0000\n"
+"PO-Revision-Date: 2025-04-09 09:52+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -231,12 +231,12 @@ msgstr "不允许您在此群聊中注册，因为此群聊是仅成员。"
 #: dist/converse-no-dependencies.js:42548
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr "%1$s 设置了话题"
+msgstr "%1$s 设置了主题"
 
 #: dist/converse-no-dependencies.js:42548
 #, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr "%1$s 清除了话题"
+msgstr "%1$s 清除了主题"
 
 #: dist/converse-no-dependencies.js:42952
 #, javascript-format
@@ -1737,11 +1737,11 @@ msgstr "撤销用户当前从属关系"
 
 #: dist/converse-no-dependencies.js:117242
 msgid "Set groupchat subject"
-msgstr "设置群聊话题"
+msgstr "设置群聊主题"
 
 #: dist/converse-no-dependencies.js:117242
 msgid "Set groupchat subject (alias for /subject)"
-msgstr "设置群聊话题（即 /subject 命令）"
+msgstr "设置群聊主题（即 /subject 命令）"
 
 #: dist/converse-no-dependencies.js:117242
 msgid "Allow muted user to post messages"
@@ -1800,11 +1800,11 @@ msgstr "您可以查看浏览器的开发者控制台是否有任何错误输出
 
 #: dist/converse-no-dependencies.js:119350
 msgid "Topic"
-msgstr "话题"
+msgstr "主题"
 
 #: dist/converse-no-dependencies.js:119351
 msgid "Topic author"
-msgstr "话题作者"
+msgstr "主题作者"
 
 #: dist/converse-no-dependencies.js:119365
 msgid "XMPP address"
@@ -1939,7 +1939,7 @@ msgstr "群聊信息"
 
 #: dist/converse-no-dependencies.js:119921
 msgid "Hide the groupchat topic"
-msgstr "隐藏群聊话题"
+msgstr "隐藏群聊主题"
 
 #: dist/converse-no-dependencies.js:119924
 #: dist/converse-no-dependencies.js:135537
@@ -1964,19 +1964,19 @@ msgstr "更改您在此群聊中使用的昵称"
 
 #: dist/converse-no-dependencies.js:120581
 msgid "Show topic"
-msgstr "显示话题"
+msgstr "显示主题"
 
 #: dist/converse-no-dependencies.js:120581
 msgid "Hide topic"
-msgstr "隐藏话题"
+msgstr "隐藏主题"
 
 #: dist/converse-no-dependencies.js:120582
 msgid "Show the topic message in the heading"
-msgstr "在顶部显示话题消息"
+msgstr "在顶部显示主题消息"
 
 #: dist/converse-no-dependencies.js:120582
 msgid "Hide the topic in the heading"
-msgstr "在顶部隐藏话题"
+msgstr "在顶部隐藏主题"
 
 #: dist/converse-no-dependencies.js:120592
 msgid "Show participants"

@@ -23,10 +23,11 @@ export default class Confirm extends BaseModal {
         );
 
         this.onKeyDown = /** @param {KeyboardEvent} ev */ (ev) => {
-            if (ev.key === constants.KEYCODES.ESCAPE) {
+            if (ev.key === constants.KEYCODES.ENTER) {
                 ev.preventDefault();
                 ev.stopPropagation();
-                /** @type {HTMLFormElement} */(this.querySelector('form.confirm')).submit();
+                const button = /** @type {HTMLFormElement} */(this.querySelector('form.confirm button[type=submit]'));
+                button.click();
             }
         };
     }

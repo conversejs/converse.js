@@ -244,7 +244,7 @@ describe("An incoming chat Message", function () {
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
-            '```ignored\n (println "Hello, world!")\n ```\n\n'+
+            '```ignored\n (println "Hello, world!")\n ```\n\u200B'+
             ' This should not show up as monospace, '+
             '<span class="styling-directive">*</span><b>preformatted</b><span class="styling-directive">*</span> text ^');
     }));
@@ -323,7 +323,7 @@ describe("An incoming chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 9);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe(
-            '<blockquote>```\n\u200B\u200B(println "Hello, world!")</blockquote>\n\n'+
+            '<blockquote>```\n\u200B\u200B(println "Hello, world!")</blockquote>\n\u200B'+
             'The entire blockquote is a preformatted text block, but this line is plaintext!');
 
         msg_text = '> Also, icons.js is loaded from /dist, instead of dist.\nhttps://conversejs.org/docs/html/configuration.html#assets-path'
@@ -525,7 +525,7 @@ describe("An XEP-0393 styled message ", function () {
 
         expect(view.querySelectorAll('.chat-msg__text').length).toBe(1);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
-            'A\n<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n\n'+
+            'A\n<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n\u200B'+
             '<a target="_blank" rel="noopener" href="https://opkode.com/">https://opkode.com</a>'
         );
     }));
@@ -583,7 +583,7 @@ describe("An XEP-0393 styled message ", function () {
 
         expect(view.querySelectorAll('.chat-msg__text').length).toBe(1);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
-            'A\n<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n\n'+
+            'A\n<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n\u200B'+
             '<a target="_blank" rel="noopener" href="https://opkode.com/">https://opkode.com</a>'
         );
     }));

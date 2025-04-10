@@ -47,7 +47,15 @@ export async function getHeaders(url) {
  * @param {string} text
  */
 export function collapseLineBreaks(text) {
-    return text.replace(/\n(\u200B*\n)+/g, (m) => `\n${"\u200B".repeat(m.length - 2)}\n`);
+    return text.replace(/\n(\u200B*\n)+/g, (m) => {
+        if (m.length > 2) {
+            return `\n${"\u200B".repeat(m.length - 2)}\n`;
+        } else if (m.length === 2) {
+            return '\n\u200B';
+        } else if (m.length === 1) {
+            return '\u200B';
+        }
+    });
 }
 
 export const tplMentionWithNick = (o) =>

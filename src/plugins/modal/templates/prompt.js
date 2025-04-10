@@ -30,7 +30,7 @@ function tplField(f) {
  * @param {import('../confirm').default} el
  */
 export default (el) => {
-    return html` <form
+    return html`<form
         class="converse-form converse-form--modal confirm"
         action="#"
         @submit=${(ev) => el.onConfimation(ev)}

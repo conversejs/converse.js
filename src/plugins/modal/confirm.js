@@ -1,5 +1,5 @@
 import { getOpenPromise } from '@converse/openpromise';
-import { api } from '@converse/headless';
+import { api, constants } from '@converse/headless';
 import BaseModal from 'plugins/modal/modal.js';
 import tplPrompt from './templates/prompt.js';
 
@@ -21,6 +21,24 @@ export default class Confirm extends BaseModal {
             },
             false
         );
+
+        this.onKeyDown = /** @param {KeyboardEvent} ev */ (ev) => {
+            if (ev.key === constants.KEYCODES.ESCAPE) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                /** @type {HTMLFormElement} */(this.querySelector('form.confirm')).submit();
+            }
+        };
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        this.addEventListener('keydown', this.onKeyDown);
+    }
+
+    disconnectedCallback() {
+        this.removeEventListener('keydown', this.onKeyDown);
+        super.disconnectedCallback();
     }
 
     renderModal() {
@@ -31,13 +49,21 @@ export default class Confirm extends BaseModal {
         return this.model.get('title');
     }
 
+    renderModalFooter() {
+        return '';
+    }
+
+    /**
+     * @param {SubmitEvent} ev
+     */
     onConfimation(ev) {
         ev.preventDefault();
-        const form_data = new FormData(ev.target);
+        const form = /** @type {HTMLFormElement} */ (ev.target);
+        const form_data = new FormData(form);
         const fields = (this.model.get('fields') || []).map(
             /** @param {import('./types.js').Field} field */ (field) => {
                 const value = form_data.get(field.name);
-                field.value = /** @type {string} */(value);
+                field.value = /** @type {string} */ (value);
                 if (field.challenge) {
                     field.challenge_failed = value !== field.challenge;
                 }
@@ -53,10 +79,6 @@ export default class Confirm extends BaseModal {
         }
         this.confirmation.resolve(fields);
         this.modal.hide();
-    }
-
-    renderModalFooter() {
-        return '';
     }
 }
 

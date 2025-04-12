@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2025-04-09 09:52+0000\n"
+"PO-Revision-Date: 2025-04-13 07:01+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -570,7 +570,7 @@ msgstr "待处理的联系人"
 
 #: dist/converse-no-dependencies.js:65767
 msgid "Contact requests"
-msgstr "联系请求"
+msgstr "联系人请求"
 
 #: dist/converse-no-dependencies.js:65768
 msgid "Ungrouped"
@@ -689,12 +689,12 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:83175
 msgid "The default role, implies that you can read and write messages."
-msgstr "默认角色意味着您可以收发消息。"
+msgstr "默认角色意味着您可以读写消息。"
 
 #: dist/converse-no-dependencies.js:83177
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
-msgstr "不允许参观者在有审核的群聊中发消息。"
+msgstr "不允许参观者在有审核的群聊中写消息。"
 
 #: dist/converse-no-dependencies.js:83182
 msgid ""
@@ -1867,7 +1867,7 @@ msgstr "非匿名"
 
 #: dist/converse-no-dependencies.js:119380
 msgid "All other groupchat participants can see your XMPP address"
-msgstr "所有其他群聊参与者都可以看到您的 XMPP 地址"
+msgstr "所有其他群聊参与者都可以查看您的 XMPP 地址"
 
 #: dist/converse-no-dependencies.js:119381
 msgid "Not moderated"
@@ -1922,7 +1922,7 @@ msgstr "半匿名"
 
 #: dist/converse-no-dependencies.js:119393
 msgid "Only moderators can see your XMPP address"
-msgstr "只有主持人才能看到您的 XMPP 地址"
+msgstr "只有主持人可以查看您的 XMPP 地址"
 
 #: dist/converse-no-dependencies.js:119394
 #: dist/converse-no-dependencies.js:135514
@@ -2607,12 +2607,12 @@ msgstr "是否确定要离开群聊 %1$s？"
 #: dist/converse-no-dependencies.js:137297
 #, javascript-format
 msgid "Click to accept the contact request from %1$s (XMPP address: %2$s)"
-msgstr "点击即可接受来自 %1$s 的联系请求（XMPP 地址：%2$s）"
+msgstr "点击即可接受来自 %1$s 的联系人请求（XMPP 地址：%2$s）"
 
 #: dist/converse-no-dependencies.js:137298
 #, javascript-format
 msgid "Click to decline the contact request from %1$s (XMPP address: %2$s)"
-msgstr "点击即可拒绝来自 %1$s 的联系请求（XMPP 地址：%2$s）"
+msgstr "点击即可拒绝来自 %1$s 的联系人请求（XMPP 地址：%2$s）"
 
 #: dist/converse-no-dependencies.js:137299
 #: dist/converse-no-dependencies.js:137362
@@ -2665,11 +2665,11 @@ msgstr "点击即可将 %1$s 添加到您的联系人列表"
 
 #: dist/converse-no-dependencies.js:137979
 msgid "Decline contact request"
-msgstr "拒绝联系请求"
+msgstr "拒绝联系人请求"
 
 #: dist/converse-no-dependencies.js:137979
 msgid "Are you sure you want to decline this contact request?"
-msgstr "是否确定要拒绝此联系请求？"
+msgstr "是否确定要拒绝此联系人请求？"
 
 #: dist/converse-no-dependencies.js:137980
 msgid "Block this user from sending you further messages"

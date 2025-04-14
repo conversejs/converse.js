@@ -7,7 +7,6 @@ HTTPSERVE_PORT		?= 8008
 HTTPS_SERVE_PORT	?= 8443
 INKSCAPE			?= inkscape
 INSTALL				?= install
-JSDOC				?= ./node_modules/.bin/jsdoc
 OXIPNG				?= oxipng
 PAPER		 		=
 RJS					?= ./node_modules/.bin/r.js
@@ -275,10 +274,5 @@ sphinx: node_modules docsdev
 .PHONY: doc
 doc:
 	make sphinx
-	make apidoc
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
-
-PHONY: apidoc
-apidoc:
-	find ./src -type d -name node_modules -prune -false -o -name "*.js" | xargs $(JSDOC) --private --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api

@@ -1,5 +1,5 @@
 {
-    "plugins": ["plugins/markdown"],
+    "plugins": ["plugins/markdown", "jsdoc-plugin-typescript"],
     "templates": {
         "default": {
             "layoutFile": "_templates/jsdoc_layout.tmpl"

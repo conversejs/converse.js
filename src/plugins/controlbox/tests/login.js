@@ -28,12 +28,12 @@ describe("The Login Form", function () {
 
         expect(_converse.config.get('trusted')).toBe(true);
         expect(u.getDefaultStore()).toBe('persistent');
-        cbview.querySelector('input[type="submit"]').click();
+        cbview.querySelector('button[type="submit"]').click();
         expect(_converse.config.get('trusted')).toBe(true);
         expect(u.getDefaultStore()).toBe('persistent');
 
         checkbox.click();
-        cbview.querySelector('input[type="submit"]').click();
+        cbview.querySelector('button[type="submit"]').click();
         expect(_converse.config.get('trusted')).toBe(false);
         expect(u.getDefaultStore()).toBe('session');
     }));
@@ -61,12 +61,12 @@ describe("The Login Form", function () {
         cbview.querySelector('input[name="jid"]').value = 'romeo@montague.lit';
         cbview.querySelector('input[name="password"]').value = 'secret';
 
-        cbview.querySelector('input[type="submit"]').click();
+        cbview.querySelector('button[type="submit"]').click();
         expect(_converse.config.get('trusted')).toBe(false);
         expect(u.getDefaultStore()).toBe('session');
 
         checkbox.click();
-        cbview.querySelector('input[type="submit"]').click();
+        cbview.querySelector('button[type="submit"]').click();
         expect(_converse.config.get('trusted')).toBe(true);
         expect(u.getDefaultStore()).toBe('persistent');
     }));

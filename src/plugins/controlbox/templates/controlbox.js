@@ -1,6 +1,6 @@
-import tplSpinner from 'templates/spinner.js';
 import { _converse, api, converse, constants } from '@converse/headless';
 import { html } from 'lit';
+import tplSpinner from 'templates/spinner.js';
 
 const { Strophe } = converse.env;
 const { ANONYMOUS } = constants;
@@ -26,6 +26,7 @@ function whenNotConnected(el) {
  * @param {import('../controlbox').default} el
  */
 export default (el) => {
+    const is_fullscreen = api.settings.get('view_mode') === 'fullscreen';
     return html` <div class="flyout box-flyout">
         <converse-dragresize></converse-dragresize>
         ${
@@ -33,6 +34,7 @@ export default (el) => {
                 html`<converse-user-profile></converse-user-profile>` :
                 html`<converse-controlbox-buttons class="controlbox-padded"></converse-controlbox-buttons>`
         }
+        ${ is_fullscreen ? html`<converse-controlbox-navbar></converse-controlbox-navbar>` : '' }
         <div class="controlbox-pane">
             ${el.model.get('connected')
                 ? html`<converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>

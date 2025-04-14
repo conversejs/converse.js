@@ -1,16 +1,14 @@
-import './brand-byline.js';
-import './brand-logo.js';
-import { CustomElement } from './element.js';
-import { api } from '@converse/headless';
 import { html } from 'lit/html.js';
+import { api } from '@converse/headless';
+import { CustomElement } from './element.js';
+import './brand-logo.js';
 
 
 export class ConverseBrandHeading extends CustomElement {
 
-    render () { // eslint-disable-line class-methods-use-this
+    render () {
         return html`
             <converse-brand-logo></converse-brand-logo>
-            <converse-brand-byline></converse-brand-byline>
         `;
     }
 }

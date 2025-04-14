@@ -1,7 +1,7 @@
-import tplSwitchForm from './switch_form.js';
-import { __ } from 'i18n';
-import { api } from '@converse/headless';
 import { html } from 'lit';
+import { api } from '@converse/headless';
+import { __ } from 'i18n';
+import tplSwitchForm from './switch_form.js';
 
 export default (el) => {
     const i18n_choose_provider = __('Choose a different provider');

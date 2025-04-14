@@ -1,6 +1,7 @@
 import { _converse, api, constants, u } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import tplControlbox from './templates/controlbox.js';
+import './navbar.js';
 
 const { LOGOUT } = constants;
 

@@ -1,6 +1,6 @@
 import { _converse, api, converse } from '@converse/headless';
-import tplAddMuc from './templates/add-muc.js';
 import BaseModal from 'plugins/modal/modal.js';
+import tplAddMuc from './templates/add-muc.js';
 import { __ } from 'i18n';
 
 import '../styles/add-muc-modal.scss';

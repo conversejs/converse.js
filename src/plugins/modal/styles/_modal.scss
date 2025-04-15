@@ -4,6 +4,28 @@ $prefix: 'converse-';
 @import "bootstrap/scss/mixins";
 
 .conversejs {
+    &.fullscreen {
+        .modal {
+            @include media-breakpoint-up(sm) {
+                --converse-modal-width: 75vw;
+            }
+            @include media-breakpoint-up(lg) {
+                --converse-modal-width: 50vw;
+            }
+            @include media-breakpoint-up(xl) {
+                --converse-modal-width: 30vw;
+            }
+        }
+        .modal-dialog {
+            @include media-breakpoint-up(sm) {
+                margin-top: 5vh;
+            }
+            @include media-breakpoint-up(xl) {
+                margin-top: 10vh;
+            }
+        }
+    }
+
     .modal-header {
         background-color: var(--primary-color);
         border-bottom: none;

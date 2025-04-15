@@ -211,7 +211,7 @@ describe("A XEP-0316 MEP notification", function () {
         const action = view.querySelector('converse-message-actions converse-dropdown .chat-msg__action');
         expect(action.textContent.trim()).toBe('Retract');
         action.click();
-        await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
+        await u.waitUntil(() => u.isVisible(document.querySelector('converse-confirm-modal.modal')));
         const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
         submit_button.click();
 

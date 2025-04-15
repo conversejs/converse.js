@@ -21,7 +21,7 @@ async function sendAndThenRetractMessage (_converse, view) {
 
     const retract_button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-retract'));
     retract_button.click();
-    await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
+    await u.waitUntil(() => u.isVisible(document.querySelector('converse-confirm-modal.modal')));
     const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
     submit_button.click();
     const sent_stanzas = _converse.api.connection.get().sent_stanzas;
@@ -275,7 +275,7 @@ describe("Message Retractions", function () {
             const retract_button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-retract'));
             retract_button.click();
 
-            await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
+            await u.waitUntil(() => u.isVisible(document.querySelector('converse-confirm-modal.modal')));
 
             const reason_input = document.querySelector('#converse-modals .modal input[name="reason"]');
             reason_input.value = 'This content is inappropriate for this forum!';
@@ -389,7 +389,7 @@ describe("Message Retractions", function () {
 
             const retract_button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-retract'));
             retract_button.click();
-            await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
+            await u.waitUntil(() => u.isVisible(document.querySelector('converse-confirm-modal.modal')));
 
             const reason_input = document.querySelector('#converse-modals .modal input[name="reason"]');
             const reason = "This content is inappropriate for this forum!"
@@ -746,7 +746,7 @@ describe("Message Retractions", function () {
 
             const retract_button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-retract'));
             retract_button.click();
-            await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
+            await u.waitUntil(() => u.isVisible(document.querySelector('converse-confirm-modal.modal')));
             const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
             submit_button.click();
 

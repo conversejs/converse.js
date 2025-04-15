@@ -23,7 +23,7 @@ describe('A sent chat message', function () {
                 view.querySelector('.chat-msg__content .chat-msg__action-retract')
             );
             retract_button.click();
-            await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
+            await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals converse-confirm-modal')));
             const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
             submit_button.click();
 

@@ -25,8 +25,8 @@
     --foreground-color: var(--white);
 
     // Bootstrap variables
-    --primary-color: var(--purple) !important;
-    --secondary-color: var(--pink) !important;
+    --primary-color: var(--pink) !important;
+    --secondary-color: var(--purple) !important;
     --success-color: var(--green);
     --danger-color: var(--red);
     --warning-color: var(--orange);
@@ -35,6 +35,10 @@
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--yellow);
+    .navbar-nav {
+        --converse-nav-link-color: var(--link-color) !important;
+        --converse-nav-link-hover-color: var(--link-color-hover) !important;
+    }
     .popover {
         --converse-popover-header-color: var(--background-color) !important;
         --converse-popover-header-bg: var(--info-color) !important;

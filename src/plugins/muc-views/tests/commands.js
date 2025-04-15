@@ -845,7 +845,7 @@ describe("Groupchats", function () {
             textarea.value = '/destroy';
             let message_form = view.querySelector('converse-muc-message-form');
             message_form.onFormSubmitted(new Event('submit'));
-            let modal = await u.waitUntil(() => document.querySelector('.modal-dialog'));
+            let modal = await u.waitUntil(() => document.querySelector('converse-confirm-modal .modal-dialog'));
             await u.waitUntil(() => u.isVisible(modal));
 
             let challenge_el = modal.querySelector('[name="challenge"]');
@@ -894,7 +894,7 @@ describe("Groupchats", function () {
             textarea.value = '/destroy';
             message_form = view.querySelector('converse-muc-message-form');
             message_form.onFormSubmitted(new Event('submit'));
-            modal = await u.waitUntil(() => document.querySelector('.modal-dialog'));
+            modal = await u.waitUntil(() => document.querySelector('converse-confirm-modal .modal-dialog'));
             await u.waitUntil(() => u.isVisible(modal));
 
             challenge_el = modal.querySelector('[name="challenge"]');

@@ -254,9 +254,13 @@
                 }
 
                 converse-brand-logo {
+                    margin-top: 2em;
+                    margin-bottom: 0;
                     @include make-col(12);
-                    margin-top: 5em;
-                    margin-bottom: 1em;
+                    @include media-breakpoint-up(xl) {
+                        margin-top: 5em;
+                        margin-bottom: 1em;
+                    }
                     .brand-heading {
                         width: 100%;
                         font-size: 500%;

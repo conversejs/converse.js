@@ -51,14 +51,14 @@ function tplDomainInput(el) {
 function tplFetchFormButtons() {
     const i18n_register = __('Fetch registration form');
     const i18n_existing_account = __('Already have a chat account?');
-    const i18n_login = __('Log in here');
+    const i18n_login = __('Go back to login');
     return html`
         <fieldset class="form-group buttons">
             <input class="btn btn-primary" type="submit" value="${i18n_register}" />
         </fieldset>
         <div class="switch-form">
-            <p>${i18n_existing_account}</p>
-            <p><a class="login-here toggle-register-login" href="#converse/login">${i18n_login}</a></p>
+            <p class="mb-1">${i18n_existing_account}</p>
+            <a class="login-here toggle-register-login" href="#converse/login">${i18n_login}</a>
         </div>
     `;
 };

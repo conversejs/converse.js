@@ -25,7 +25,6 @@ to fix a bug or to add new functionality.
 
    setup_dev_environment
    plugin_development
-   api/index
    testing
    other_frameworks
    builds

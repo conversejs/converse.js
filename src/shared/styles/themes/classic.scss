@@ -31,6 +31,9 @@
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--dark-red);
+    .navbar-nav {
+        --converse-nav-link-color: var(--link-color) !important;
+    }
     .popover {
         --converse-popover-header-color: var(--background-color) !important;
         --converse-popover-header-bg: var(--info-color) !important;

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 9.1.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2025-04-18 21:03+0000\n"
+"PO-Revision-Date: 2025-04-19 23:05+0000\n"
 "Last-Translator: Abduqadir Abliz <sahranbay@gmail.com>\n"
 "Language-Team: Uyghur <https://hosted.weblate.org/projects/conversejs/"
 "translations/ug/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:20630
 #: dist/converse-no-dependencies.js:20684
 msgid "An error occurred while connecting to the chat server."
-msgstr "بۇ پاراڭ مۇلازىمىتىرغا ئۇلاۋاتقاندا بىر خاتالىق كۆرۈلدى."
+msgstr "پاراڭ مۇلازىمېتىرىغا ئۇلاۋاتقاندا خاتالىق كۆرۈلدى."
 
 #: dist/converse-no-dependencies.js:20691
 msgid "Your XMPP address and/or password is incorrect. Please try again."
@@ -66,7 +66,7 @@ msgstr "ھايۋاناتلار ۋە تەبىئەت"
 
 #: dist/converse-no-dependencies.js:29602
 msgid "Food and drink"
-msgstr "يىمەك-ئىچمەك"
+msgstr "يېمەك-ئىچمەك"
 
 #: dist/converse-no-dependencies.js:29603
 msgid "Symbols"
@@ -78,7 +78,7 @@ msgstr "بايراقلار"
 
 #: dist/converse-no-dependencies.js:29605
 msgid "Stickers"
-msgstr "چاپلىغۇچ قەغەز"
+msgstr "چاپلاق"
 
 #: dist/converse-no-dependencies.js:31902
 msgid "Undecryptable OMEMO message"
@@ -98,8 +98,8 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
 "\"%1$s\""
 msgstr ""
-"كەچۈرۈڭ ھۆججىتىڭىزنى مۇۋاپپىقىيەتلىك چىقىرالمىدۇق. مۇلازىمىتىرىڭىزنىڭ "
-"جاۋابى: \"%1$s\""
+"كەچۈرۈڭ ھۆججىتىڭىزنى مۇۋەپپەقىيەتلىك يۈكلىيەلمىدى. مۇلازىمىتىرىڭىزنىڭ جاۋابى:"
+" «%1$s»"
 
 #: dist/converse-no-dependencies.js:32073
 msgid "Sorry, could not succesfully upload your file."
@@ -2258,8 +2258,7 @@ msgstr "بۇيرۇقلار"
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
-"سىزگە %2$s نىڭ Opkode %3$s تەرىپىدىن تەمىنلەنگەن %1$s ئۇچۇق-مەنبەلىك XMPP "
-"پاراڭ خېرىدارى"
+"%2$s نىڭ Opkode %3$s تەمىنلىگەن %1$s ئوچۇق كودلۇق %2$sXMPP پاراڭ خېرىدارى"
 
 #: dist/converse-no-dependencies.js:125350
 #, javascript-format
@@ -2763,12 +2762,11 @@ msgstr "(ئۆزەم)"
 #: dist/converse-no-dependencies.js:137388
 #, javascript-format
 msgid "Click to add %1$s to your roster"
-msgstr "چېكىلسە  %1$s نى ئالاقە تىزىمىڭىزغا قوشىدۇ"
+msgstr "چېكىلسە %1$s نى ئالاقە تىزىمىڭىزغا قوشىدۇ"
 
 #: dist/converse-no-dependencies.js:137979
-#, fuzzy
 msgid "Decline contact request"
-msgstr "ئالاقىداشلىق تەلىپى"
+msgstr "ئالاقىلىشىش ئىلتىماسىنى رەت قىلىدۇ"
 
 #: dist/converse-no-dependencies.js:137979
 msgid "Are you sure you want to decline this contact request?"
@@ -2776,7 +2774,7 @@ msgstr "سىز بۇ ئالاقىداشلىق تەلىپىنى رەت قىلىش�
 
 #: dist/converse-no-dependencies.js:137980
 msgid "Block this user from sending you further messages"
-msgstr ""
+msgstr "بۇ ئىشلەتكۈچىنىڭ سىزگە يەنە ئۇچۇر يوللىشىنى توسىدۇ"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2800,9 +2798,8 @@ msgstr "بۇ ئالاقىداش ئاللىبۇرۇن قېتىلدى"
 
 #: dist/converse-no-dependencies.js:138568
 #: dist/converse-no-dependencies.js:139154
-#, fuzzy
 msgid "Sorry, something went wrong"
-msgstr "كەچۈرۈڭ، يېڭىلىماقچى بۇلىۋاتقاندا بىر خاتالىق كۆرۈلدى"
+msgstr "كەچۈرۈڭ، مەسىلە كۆرۈلدى"
 
 #: dist/converse-no-dependencies.js:138612
 msgid "Sorry, could not find a contact with that name"
@@ -2813,15 +2810,13 @@ msgstr "كەچۈرۈڭ، بۇ ئىسىم بىلەن بىرەر ئالاقىدا�
 #.
 #. harmony default export
 #: dist/converse-no-dependencies.js:138653
-#, fuzzy
 msgid "Start Chat"
-msgstr "بىر تېلىفۇن ئۇرۇش"
+msgstr "سۆزلىشىشنى باشلا"
 
 #: dist/converse-no-dependencies.js:139114
 #: dist/converse-no-dependencies.js:139365
-#, fuzzy
 msgid "Start a new chat"
-msgstr "بىر تېلىفۇن ئۇرۇش"
+msgstr "يېڭى بىر سۆزلىشىشنى باشلايدۇ"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:139258
@@ -2861,9 +2856,8 @@ msgid "Add a contact"
 msgstr "بىر ئالاقىداش قۇشۇڭ"
 
 #: dist/converse-no-dependencies.js:139396
-#, fuzzy
 msgid "Re-sync contacts"
-msgstr "ئالاقىداشلىرىڭىزنى قايتىدىن ماس-قەدەملەڭ"
+msgstr "ئالاقەداشنى قايتا قەدەمداشلايدۇ"
 
 #~ msgid "Error: couldn't register new nickname in members only room"
 #~ msgstr "خاتالىق: تەخەللۇسىڭىزنى ئەزالارغا خاس ئۆيىدە تىزىملىيالمىدۇق"

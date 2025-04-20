@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2025-02-14 05:32+0000\n"
+"PO-Revision-Date: 2025-04-21 11:07+0000\n"
 "Last-Translator: fran secs <fransecs@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/conversejs/"
 "translations/ca/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10-rc\n"
+"X-Generator: Weblate 5.11.1-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: ca\n"
 "Language-Code: ca\n"
@@ -815,7 +815,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:84566
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr "De veritat voleu eliminar aquest grup?"
+msgstr "Confirmeu que voleu eliminar aquest grup?"
 
 #: dist/converse-no-dependencies.js:84569
 msgid "Please enter the XMPP address of this groupchat to confirm"
@@ -937,7 +937,7 @@ msgstr "Error: resultat inesperat"
 #: dist/converse-no-dependencies.js:86096
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "De veritat voleu eliminar el marcador «%1$s»?"
+msgstr "Confirmeu l'eliminació del marcador «%1$s»?"
 
 #: dist/converse-no-dependencies.js:86139
 msgid "Unbookmark this groupchat"
@@ -1028,9 +1028,7 @@ msgstr "Afegir als marcadors"
 #: dist/converse-no-dependencies.js:89312
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
-msgstr ""
-"Teniu un missatge no enviat que es perdrà si continueu. De veritat ho voleu "
-"fer?"
+msgstr "Teniu un missatge no enviat que es perdrà si continueu. Confirmeu?"
 
 #: dist/converse-no-dependencies.js:89352
 #: dist/converse-no-dependencies.js:89422
@@ -1046,7 +1044,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:89427
 #: dist/converse-no-dependencies.js:89455
 msgid "Are you sure you want to retract this message?"
-msgstr "De veritat voleu retractar-vos d'aquest missatge?"
+msgstr "Comfirmeu que voleu retractar-vos d'aquest missatge?"
 
 #: dist/converse-no-dependencies.js:89394
 msgid "A timeout occurred while trying to retract the message"
@@ -1153,7 +1151,7 @@ msgstr "Versions del missatge"
 
 #: dist/converse-no-dependencies.js:95505
 msgid "Are you sure you want to remove this contact?"
-msgstr "De veritat voleu eliminar aquest contacte?"
+msgstr "Confirmeu l'eliminació d'aquest contacte?"
 
 #: dist/converse-no-dependencies.js:95529
 #, javascript-format
@@ -1304,7 +1302,7 @@ msgstr "Desblocar usuari/a"
 
 #: dist/converse-no-dependencies.js:101940
 msgid "Are you sure you want to unblock this user?"
-msgstr "De veritat voleu desblocar aquest compte?"
+msgstr "Confirmeu que voleu desblocar aquest compte?"
 
 #: dist/converse-no-dependencies.js:101957
 msgid "Unblock this user"
@@ -1320,7 +1318,7 @@ msgstr "Blocar compte"
 
 #: dist/converse-no-dependencies.js:101974
 msgid "Are you sure you want to block this user?"
-msgstr "De veritat voleu blocar aquest compte?"
+msgstr "Confirmeu que voleu blocar aquest compte?"
 
 #: dist/converse-no-dependencies.js:101994
 msgid "Block this user"
@@ -1351,7 +1349,7 @@ msgstr "Teniu missatges sense llegir"
 
 #: dist/converse-no-dependencies.js:102421
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr "De veritat voleu esborrar els missatges d'aquest a conversa?"
+msgstr "Confirmeu la supressió dels missatges d'aquest a conversa?"
 
 #: dist/converse-no-dependencies.js:102553
 #: dist/converse-no-dependencies.js:112155
@@ -1392,7 +1390,7 @@ msgstr "Mostrar aquest menú"
 
 #: dist/converse-no-dependencies.js:105528
 msgid "Are you sure you want to log out?"
-msgstr "De veritat voleu desconnectar-vos?"
+msgstr "Confirmeu la desconnexió?"
 
 #: dist/converse-no-dependencies.js:105589
 #: dist/converse-no-dependencies.js:113506
@@ -2086,7 +2084,7 @@ msgstr "Sortir i tancar aquest grup"
 
 #: dist/converse-no-dependencies.js:120638
 msgid "Are you sure you want to leave this groupchat?"
-msgstr "De veritat voleu sortir d'aquest grup?"
+msgstr "Confirmeu la sortida d'aquest grup?"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:120686
@@ -2480,7 +2478,7 @@ msgid ""
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
-"De veritat voleu generar claus OMEMO noves? Això esborrara les vostres claus "
+"Confirmeu la creació de noves claus OMEMO? Això esborrara les vostres claus "
 "antigues i tots els missatges xifrats i ja no es podran desxifrar en aquest "
 "dispositiu."
 
@@ -2701,7 +2699,7 @@ msgstr "Afegir grup"
 #: dist/converse-no-dependencies.js:136628
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
-msgstr "De veritat voleu sortir del grup %1$s?"
+msgstr "Confirmeu la sortida del grup %1$s?"
 
 #: dist/converse-no-dependencies.js:137297
 #, javascript-format
@@ -2772,7 +2770,7 @@ msgstr "Refusa sol·licitud de contacte"
 
 #: dist/converse-no-dependencies.js:137979
 msgid "Are you sure you want to decline this contact request?"
-msgstr "De veritat voleu refusar aquesta sol·licitud de contacte?"
+msgstr "Confirmeu refusar aquesta sol·licitud de contacte?"
 
 #: dist/converse-no-dependencies.js:137980
 msgid "Block this user from sending you further messages"

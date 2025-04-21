@@ -8,9 +8,35 @@
   ],
   "homepage": "https://conversejs.org",
   "license": "MPL-2.0",
-  "main": "index.js",
-  "types": "types/index.d.ts",
-  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./types/index.d.ts",
+        "default": "./index.js"
+      },
+      "require": {
+        "types": "./types/index.d.ts",
+        "default": "./dist/headless.js"
+      }
+    }
+  },
+  "main": "./index.js",
+  "types": "./types/index.d.ts",
+  "module": "./index.js",
+  "files": [
+    "README.md",
+    "dist/",
+    "./**/*.html",
+    "./**/*.js",
+    "./**/*.ts",
+    "./**/*.ts.map",
+    "./**/*.json",
+    "./**/*.md",
+    "./**/*.po",
+    "./**/*.pot",
+    "./**/*.scss",
+    "./**/*.svg"
+  ],
   "keywords": [
     "converse.js",
     "XMPP",

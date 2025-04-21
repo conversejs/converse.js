@@ -317,7 +317,7 @@ export async function getNamesAutoCompleteList(query) {
         return [];
     }
 
-    const json = response.json;
+    const json = response.json();
     if (!Array.isArray(json)) {
         log.error(`Invalid JSON returned"`);
         return [];

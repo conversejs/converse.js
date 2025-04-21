@@ -1,7 +1,7 @@
-import ConverseRoot from './root.js';
-import ConverseBackground from './background.js';
 import { api, converse } from '@converse/headless';
+import ConverseRoot from './root.js';
 import { ensureElement } from './utils.js';
+import './background.js';
 
 
 converse.plugins.add('converse-rootview', {
@@ -14,7 +14,8 @@ converse.plugins.add('converse-rootview', {
         api.settings.extend({
             auto_insert: true,
             dark_theme: 'dracula',
-            rtl_langs: ["ar", "fa", "he", "ur"],
+            // Languages for which the UI is right-to-left
+            rtl_langs: ["ar", "fa", "he", "ug"],
             show_background: false,
             theme: 'classic',
         });

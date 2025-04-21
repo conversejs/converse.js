@@ -1960,7 +1960,7 @@ If set to ``true``, Converse will show any roster groups you might have configur
 rtl_langs
 ---------
 
-* Default: ``["ar", "fa", "he", "ur"]``
+* Default: ``["ar", "fa", "he", "ug"]``
 
 A list of languages which are written right-to-left and for which the UI should also be shown right-to-left.
 

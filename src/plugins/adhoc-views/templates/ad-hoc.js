@@ -2,7 +2,6 @@
  * @typedef {import('../adhoc-commands').default} AdHocCommands
  */
 import tplCommand from './ad-hoc-command.js';
-import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { getAutoCompleteList } from 'plugins/muc-views/utils.js';
 import { html } from 'lit';
@@ -39,7 +38,7 @@ export default (el) => {
             </fieldset>
             <fieldset>
                 ${el.fetching
-                    ? tplSpinner()
+                    ? html`<converse-spinner></converse-spinner>`
                     : html`<input type="submit" class="btn btn-primary" value="${i18n_fetch_commands}" />`}
             </fieldset>
             ${el.view === 'list-commands'

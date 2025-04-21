@@ -5,8 +5,9 @@
  */
 import 'shared/styles/index.scss';
 
-import "./i18n/index.js";
+import "i18n/index.js";
 import "shared/registry.js";
+import 'shared/components/index.js';
 import { CustomElement } from 'shared/components/element';
 import { VIEW_PLUGINS } from './shared/constants.js';
 import { _converse, converse } from "@converse/headless";

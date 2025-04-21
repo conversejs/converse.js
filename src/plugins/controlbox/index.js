@@ -3,21 +3,20 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { _converse, api, converse, log, constants } from '@converse/headless';
-import "shared/components/brand-heading.js";
-import "../chatview/index.js";
-import './loginform.js';
-import './navback.js';
-import './buttons.js';
+import LoginForm from './loginform.js';
 import ControlBox from './model.js';
 import ControlBoxToggle from './toggle.js';
 import ControlBoxView from './controlbox.js';
 import controlbox_api from './api.js';
 import { addControlBox, clearSession, disconnect, onChatBoxesFetched } from './utils.js';
+import 'shared/components/brand-heading.js';
+import '../chatview/index.js';
+import './navback.js';
+import './buttons.js';
 
 import './styles/_controlbox.scss';
 
 const { CONTROLBOX_TYPE } = constants;
-
 
 converse.plugins.add('converse-controlbox', {
     /* Plugin dependencies are other plugins which might be
@@ -30,11 +29,11 @@ converse.plugins.add('converse-controlbox', {
      */
     dependencies: ['converse-modal', 'converse-chatboxes', 'converse-chat', 'converse-rosterview', 'converse-chatview'],
 
-    enabled (_converse) {
+    enabled(_converse) {
         return !_converse.api.settings.get('singleton');
     },
 
-    initialize () {
+    initialize() {
         api.settings.extend({
             allow_logout: true,
             allow_user_trust_override: true,
@@ -42,13 +41,13 @@ converse.plugins.add('converse-controlbox', {
             locked_domain: undefined,
             show_connection_url_input: false,
             show_controlbox_by_default: false,
-            sticky_controlbox: false
+            sticky_controlbox: false,
         });
 
         api.promises.add('controlBoxInitialized', false);
         Object.assign(api, controlbox_api);
 
-        const exports = { ControlBox, ControlBoxView, ControlBoxToggle };
+        const exports = { ControlBox, ControlBoxView, ControlBoxToggle, LoginForm };
         Object.assign(_converse, exports); // DEPRECATED
         Object.assign(_converse.exports, exports);
 
@@ -60,6 +59,6 @@ converse.plugins.add('converse-controlbox', {
 
         api.waitUntil('chatBoxViewsInitialized')
             .then(addControlBox)
-            .catch(e => log.fatal(e));
-    }
+            .catch((e) => log.fatal(e));
+    },
 });

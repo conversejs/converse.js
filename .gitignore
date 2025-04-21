@@ -24,7 +24,7 @@ media
 .sass-cache
 pip-selfcheck.json
 
-3rdparty/libsignal-protocol-javascript/
+3rdparty/
 *.map
 
 locale.zip

@@ -147,20 +147,15 @@ export default (el) => {
     const connection_status = connfeedback.get('connection_status');
     const feedback_class = CONNECTION_STATUS_CSS_CLASS?.[connection_status] ?? 'none';
     const conn_feedback_message = connfeedback.get('message');
-    const is_fullscreen = api.settings.get('view_mode') === 'fullscreen';
-    return html` <div class="login-form-container">
-        <converse-brand-logo></converse-brand-logo>
-        <form id="converse-login" class="converse-form" method="post" @submit=${el.onLoginFormSubmitted}>
-            <div
-                class="alert ${`alert-${feedback_class}`} conn-feedback mb-3 ${!conn_feedback_message ? 'd-none' : ''}"
-                role="alert"
-            >
-                <span class="feedback-message">${conn_feedback_message}</span>
-            </div>
-            ${CONNECTION_STATUS[connection_status] === 'CONNECTING'
-                ? html`<div class="text-center my-3">${tplSpinner()}</div>`
-                : tplFormFields()}
-        </form>
-        ${is_fullscreen ? html`<converse-footer></converse-footer>` : ''}
-    </div>`;
+    return html`<form id="converse-login" class="converse-form" method="post" @submit=${el.onLoginFormSubmitted}>
+        <div
+            class="alert ${`alert-${feedback_class}`} conn-feedback mb-3 ${!conn_feedback_message ? 'd-none' : ''}"
+            role="alert"
+        >
+            <span class="feedback-message">${conn_feedback_message}</span>
+        </div>
+        ${CONNECTION_STATUS[connection_status] === 'CONNECTING'
+            ? html`<div class="text-center my-3">${tplSpinner()}</div>`
+            : tplFormFields()}
+    </form>`;
 };

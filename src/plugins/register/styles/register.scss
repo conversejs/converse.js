@@ -1,6 +1,7 @@
 @import "shared/styles/_mixins.scss";
 
 converse-registration-form {
+    height: 100%;
     padding-top: 0;
     padding-bottom: 0;
 
@@ -11,7 +12,6 @@ converse-registration-form {
 
     #converse-register {
         @include fade-in;
-
         padding-top: 0;
         background-color: var(--background-color);
 

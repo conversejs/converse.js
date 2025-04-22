@@ -4,10 +4,14 @@
 
 .conversejs {
     #controlbox {
-        #converse-login-panel {
-            padding-top: 0;
-            padding-bottom: 0;
+        converse-login-form {
+            .btn {
+                color: var(--button-text-color);
+            }
             flex-direction: row;
+            height: 100%;
+            padding-bottom: 0;
+            padding-top: 0;
         }
 
         .toggle-register-login {
@@ -19,12 +23,6 @@
                 color: var(--subdued-color);
                 text-align: center;
                 padding: 2em 0;
-            }
-
-            .login-form-container {
-                display: flex;
-                flex-direction: column;
-                height: 100%;
             }
         }
     }
@@ -48,10 +46,6 @@
                     white-space: nowrap;
                     font-size: 90%;
                     margin: 1em 0;
-                }
-
-                #converse-login-panel {
-                    height: 100%;
                 }
 
                 #converse-login-trusted {
@@ -101,11 +95,8 @@
                     font-size: 90%;
                 }
 
-                #converse-login-panel {
+                converse-login-form {
                     display: block;
-                    @include media-breakpoint-up(sm) {
-                        padding-top: 5vh;
-                    }
                 }
 
                 #converse-register,

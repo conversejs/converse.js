@@ -320,7 +320,7 @@ class RegistrationForm extends CustomElement {
     getFormFields (stanza) {
         if (this.form_type === 'xform') {
             const { fields } = parsers.parseXForm(stanza);
-            return fields?.map((f) => u.xFormField2TemplateResult(f, {'domain': this.domain})) ?? [];
+            return fields?.map((f) => u.xFormField2TemplateResult(f, { domain: this.domain})) ?? [];
         } else {
             return this.getLegacyFormFields();
         }

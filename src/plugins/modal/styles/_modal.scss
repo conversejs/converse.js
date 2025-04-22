@@ -36,6 +36,9 @@ $prefix: 'converse-';
         }
         .modal-title {
             color: var(--background-color);
+            a {
+                color: var(--background-color);
+            }
         }
         .btn-close {
             margin: 0;

@@ -1,21 +1,32 @@
 (function () {
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        new bootstrap.Carousel('#screenshotCarousel', {
+            interval: 3000,
+            ride: 'carousel',
+            wrap: true,
+        });
 
         window.addEventListener('scroll', function () {
-            var navbar = document.querySelector(".navbar");
-            var rect = navbar.getBoundingClientRect();
-            if (rect.top + window.scrollY > 50) {
-                navbar.classList.add("top-nav-collapse");
+            const navbarBrand = document.querySelector('.navbar-brand');
+            const navbar = document.querySelector('.navbar');
+            const rect = navbar.getBoundingClientRect();
+            if (rect.top + window.scrollY > 100) {
+                navbar.classList.add('top-nav-collapse');
+                navbarBrand.style.display = 'inline-block';
             } else {
-                navbar.classList.remove("top-nav-collapse");
+                navbar.classList.remove('top-nav-collapse');
+                navbarBrand.style.display = 'none';
             }
         });
 
-        var getDocumentHeight = function () {
+        const getDocumentHeight = function () {
             return Math.max(
-                document.body.scrollHeight, document.documentElement.scrollHeight,
-                document.body.offsetHeight, document.documentElement.offsetHeight,
-                document.body.clientHeight, document.documentElement.clientHeight
+                document.body.clientHeight,
+                document.body.offsetHeight,
+                document.body.scrollHeight,
+                document.documentElement.clientHeight,
+                document.documentElement.offsetHeight,
+                document.documentElement.scrollHeight
             );
         };
 
@@ -27,25 +38,29 @@
                 });
                 this.parentElement.classList.add('active');
 
-                var hash = this.getAttribute("href");
-                var endLocation = document.querySelector(hash).offsetTop;
-                var startLocation = window.pageYOffset;
-                var distance = endLocation - startLocation;
-                var start, percentage, position;
-                var timeLapsed = 0;
+                let hash = this.getAttribute('href');
+                let endLocation = document.querySelector(hash).offsetTop;
+                let startLocation = window.pageYOffset;
+                let distance = endLocation - startLocation;
+                let start, percentage, position;
+                let timeLapsed = 0;
 
                 function scrollAnimation(timestamp) {
-                    if (!start) { start = timestamp; }
+                    if (!start) {
+                        start = timestamp;
+                    }
                     timeLapsed += timestamp - start;
-                    percentage = (timeLapsed / parseInt(500, 10));
-                    percentage = (percentage > 1) ? 1 : percentage;
-                    position = startLocation + (distance * percentage * percentage);
+                    percentage = timeLapsed / parseInt(500, 10);
+                    percentage = percentage > 1 ? 1 : percentage;
+                    position = startLocation + distance * percentage * percentage;
                     window.scrollTo(0, Math.floor(position));
 
-                    var currentLocation = window.pageYOffset;
-                    if (position == endLocation ||
-                            currentLocation == endLocation ||
-                            ((startLocation < endLocation && window.innerHeight + currentLocation) >= getDocumentHeight())) {
+                    let currentLocation = window.pageYOffset;
+                    if (
+                        position == endLocation ||
+                        currentLocation == endLocation ||
+                        (startLocation < endLocation && window.innerHeight + currentLocation) >= getDocumentHeight()
+                    ) {
                         window.location.hash = hash;
                         return;
                     }

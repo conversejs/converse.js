@@ -6,8 +6,8 @@ import { __ } from 'i18n';
  */
 function tplField(f) {
     return f.type === 'checkbox'
-        ? html` <div class="form-check">
-              <input name="${f.name}" class="form-check-input" type="checkbox" value="" id="${f.name}" />
+        ? html`<div class="form-check">
+              <input name="${f.name}" class="form-check-input" type="checkbox" id="${f.name}" />
               <label class="form-check-label" for="${f.name}">${f.label}</label>
           </div>`
         : html`<div class="mb-3">

@@ -35,6 +35,7 @@ $prefix: 'converse-';
             background-color: var(--error-color);
         }
         .modal-title {
+            line-break: anywhere;
             color: var(--background-color);
             a {
                 color: var(--background-color);

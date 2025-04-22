@@ -12,6 +12,12 @@
             height: 100%;
             padding-bottom: 0;
             padding-top: 0;
+
+            .login-trusted {
+                .form-check-input {
+                    margin-top: 0.35em;
+                }
+            }
         }
 
         .toggle-register-login {

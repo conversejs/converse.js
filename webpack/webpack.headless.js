@@ -5,8 +5,8 @@ const { merge } = require("webpack-merge");
 
 module.exports = merge(common, {
     entry: {
-        "converse-headless": "@converse/headless/index.js",
-        "converse-headless.min": "@converse/headless/index.js",
+        "converse-headless": "@converse/headless",
+        "converse-headless.min": "@converse/headless",
     },
     output: {
         path: path.resolve(__dirname, '../src/headless/dist'), // Output path for generated bundles

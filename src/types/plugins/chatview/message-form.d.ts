@@ -48,5 +48,5 @@ export default class MessageForm extends CustomElement {
     onFormSubmitted(ev: SubmitEvent | KeyboardEvent): Promise<void>;
 }
 export type EmojiDropdown = import("shared/chat/emoji-dropdown.js").default;
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=message-form.d.ts.map

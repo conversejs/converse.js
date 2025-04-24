@@ -1,11 +1,12 @@
 /**
  * @typedef {import('shared/chat/emoji-dropdown.js').default} EmojiDropdown
  */
-import { _converse, api, converse, constants, u } from "@converse/headless";
-import { __ } from "i18n";
-import { CustomElement } from "shared/components/element.js";
-import tplMessageForm from "./templates/message-form.js";
-import { parseMessageForCommands } from "./utils.js";
+import { _converse, api, converse, constants, u } from '@converse/headless';
+import log from '@converse/log';
+import { __ } from 'i18n';
+import { CustomElement } from 'shared/components/element.js';
+import tplMessageForm from './templates/message-form.js';
+import { parseMessageForCommands } from './utils.js';
 
 const { ACTIVE, COMPOSING } = constants;
 
@@ -23,28 +24,28 @@ export default class MessageForm extends CustomElement {
 
     async initialize() {
         await this.model.initialized;
-        this.listenTo(this.model, "change:composing_spoiler", () => this.requestUpdate());
-        this.listenTo(this.model, "change:draft", () => this.requestUpdate());
-        this.listenTo(this.model, "change:hidden", () => {
-            if (this.model.get("hidden")) {
-                const draft_hint = /** @type {HTMLInputElement} */ (this.querySelector(".spoiler-hint"))?.value;
-                const draft_message = /** @type {HTMLTextAreaElement} */ (this.querySelector(".chat-textarea"))?.value;
+        this.listenTo(this.model, 'change:composing_spoiler', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:draft', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:hidden', () => {
+            if (this.model.get('hidden')) {
+                const draft_hint = /** @type {HTMLInputElement} */ (this.querySelector('.spoiler-hint'))?.value;
+                const draft_message = /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea'))?.value;
                 u.safeSave(this.model, { draft: draft_message, draft_hint });
             }
         });
 
         this.handleEmojiSelection = (/** @type { CustomEvent } */ { detail }) => {
-            if (this.model.get("jid") === detail.jid) {
+            if (this.model.get('jid') === detail.jid) {
                 this.insertIntoTextArea(detail.value, detail.autocompleting, detail.ac_position);
             }
         };
-        document.addEventListener("emojiSelected", this.handleEmojiSelection);
+        document.addEventListener('emojiSelected', this.handleEmojiSelection);
         this.requestUpdate();
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
-        document.removeEventListener("emojiSelected", this.handleEmojiSelection);
+        document.removeEventListener('emojiSelected', this.handleEmojiSelection);
     }
 
     render() {
@@ -61,11 +62,11 @@ export default class MessageForm extends CustomElement {
      * @param {number} [position] - The end index of the string to be
      *  replaced with the new value.
      */
-    insertIntoTextArea(value, replace = false, position, separator = " ") {
-        const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector(".chat-textarea"));
+    insertIntoTextArea(value, replace = false, position, separator = ' ') {
+        const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea'));
         if (replace) {
-            if (position && typeof replace == "string") {
-                textarea.value = textarea.value.replace(new RegExp(replace, "g"), (match, offset) =>
+            if (position && typeof replace == 'string') {
+                textarea.value = textarea.value.replace(new RegExp(replace, 'g'), (match, offset) =>
                     offset == position - replace.length ? value + separator : match
                 );
             } else {
@@ -78,7 +79,7 @@ export default class MessageForm extends CustomElement {
             }
             textarea.value = existing + value + separator;
         }
-        const ev = new Event("change", { bubbles: false, cancelable: true });
+        const ev = new Event('change', { bubbles: false, cancelable: true });
         textarea.dispatchEvent(ev);
         u.placeCaretAtEnd(textarea);
     }
@@ -88,11 +89,11 @@ export default class MessageForm extends CustomElement {
      * @param {KeyboardEvent} ev
      */
     onEscapePressed(ev) {
-        const idx = this.model.messages.findLastIndex("correcting");
+        const idx = this.model.messages.findLastIndex('correcting');
         const message = idx >= 0 ? this.model.messages.at(idx) : null;
         if (message) {
             ev.preventDefault();
-            message.save("correcting", false);
+            message.save('correcting', false);
         }
     }
 
@@ -101,13 +102,36 @@ export default class MessageForm extends CustomElement {
      * @param {ClipboardEvent} ev
      */
     onPaste(ev) {
-        ev.stopPropagation();
         if (ev.clipboardData.files.length !== 0) {
+            ev.stopPropagation();
             ev.preventDefault();
             this.model.sendFiles(Array.from(ev.clipboardData.files));
             return;
         }
-        this.model.save({ draft: ev.clipboardData.getData("text/plain") });
+
+        const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea'));
+        if (!textarea) {
+            log.error("onPaste: could not find textarea to paste in to!");
+            return;
+        }
+
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        const draft = textarea.value ?? '';
+        const pasted_text = ev.clipboardData.getData('text/plain');
+        const cursor_pos = textarea.selectionStart;
+
+        // Insert text at cursor position
+        const before = draft.substring(0, cursor_pos);
+        const after = draft.substring(textarea.selectionEnd);
+        const separator = before.endsWith(' ') || before.length === 0 ? '' : ' ';
+        const end_separator = after.startsWith(' ') || after.length === 0 ? '' : ' ';
+        this.model.save({ draft: `${before}${separator}${pasted_text}${end_separator}${after}` });
+
+        // Set cursor position after the pasted text
+        const new_pos = before.length + separator.length + pasted_text.length + end_separator.length;
+        setTimeout(() => textarea.setSelectionRange(new_pos, new_pos), 0);
     }
 
     /**
@@ -143,10 +167,10 @@ export default class MessageForm extends CustomElement {
 
             if (ev.key === converse.keycodes.TAB) {
                 const value = u.getCurrentWord(target, null, /(:.*?:)/g);
-                if (value.startsWith(":")) {
+                if (value.startsWith(':')) {
                     ev.preventDefault();
                     ev.stopPropagation();
-                    this.model.trigger("emoji-picker-autocomplete", { target, value });
+                    this.model.trigger('emoji-picker-autocomplete', { target, value });
                 }
             } else if (ev.key === converse.keycodes.FORWARD_SLASH) {
                 // Forward slash is used to run commands. Nothing to do here.
@@ -156,7 +180,7 @@ export default class MessageForm extends CustomElement {
             } else if (ev.key === converse.keycodes.ENTER) {
                 return this.onFormSubmitted(ev);
             } else if (ev.key === converse.keycodes.UP_ARROW && !target.selectionEnd) {
-                const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector(".chat-textarea"));
+                const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea'));
                 if (!textarea.value || this.model.get('correcting')) {
                     return this.model.editEarlierMessage();
                 }
@@ -175,7 +199,7 @@ export default class MessageForm extends CustomElement {
         ) {
             return;
         }
-        if (this.model.get("chat_state") !== COMPOSING) {
+        if (this.model.get('chat_state') !== COMPOSING) {
             // Set chat state to composing if key is not a forward-slash
             // (which would imply an internal command and not a message).
             this.model.setChatState(COMPOSING);
@@ -188,59 +212,59 @@ export default class MessageForm extends CustomElement {
     async onFormSubmitted(ev) {
         ev?.preventDefault?.();
         const { chatboxviews } = _converse.state;
-        const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector(".chat-textarea"));
+        const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea'));
         const message_text = textarea.value.trim();
         if (
-            (api.settings.get("message_limit") && message_text.length > api.settings.get("message_limit")) ||
-            !message_text.replace(/\s/g, "").length
+            (api.settings.get('message_limit') && message_text.length > api.settings.get('message_limit')) ||
+            !message_text.replace(/\s/g, '').length
         ) {
             return;
         }
         if (!api.connection.get().authenticated) {
-            const err_msg = __("Sorry, the connection has been lost, and your message could not be sent");
-            api.alert("error", __("Error"), err_msg);
+            const err_msg = __('Sorry, the connection has been lost, and your message could not be sent');
+            api.alert('error', __('Error'), err_msg);
             api.connection.reconnect();
             return;
         }
         let spoiler_hint,
             hint_el = {};
-        if (this.model.get("composing_spoiler")) {
-            hint_el = /** @type {HTMLInputElement} */ (this.querySelector("form.chat-message-form input.spoiler-hint"));
+        if (this.model.get('composing_spoiler')) {
+            hint_el = /** @type {HTMLInputElement} */ (this.querySelector('form.chat-message-form input.spoiler-hint'));
             spoiler_hint = hint_el.value;
         }
-        u.addClass("disabled", textarea);
-        textarea.setAttribute("disabled", "disabled");
-        /** @type {EmojiDropdown} */ (this.querySelector("converse-emoji-dropdown"))?.dropdown.hide();
+        u.addClass('disabled', textarea);
+        textarea.setAttribute('disabled', 'disabled');
+        /** @type {EmojiDropdown} */ (this.querySelector('converse-emoji-dropdown'))?.dropdown.hide();
 
         const is_command = await parseMessageForCommands(this.model, message_text);
-        const message = is_command ? null : await this.model.sendMessage({ "body": message_text, spoiler_hint });
+        const message = is_command ? null : await this.model.sendMessage({ 'body': message_text, spoiler_hint });
         if (is_command || message) {
-            hint_el.value = "";
-            textarea.value = "";
-            textarea.style.height = "auto";
-            this.model.save({ "draft": "" });
+            hint_el.value = '';
+            textarea.value = '';
+            textarea.style.height = 'auto';
+            this.model.save({ 'draft': '' });
         }
-        if (api.settings.get("view_mode") === "overlayed") {
+        if (api.settings.get('view_mode') === 'overlayed') {
             // XXX: Chrome flexbug workaround. The .chat-content area
             // doesn't resize when the textarea is resized to its original size.
-            const chatview = chatboxviews.get(this.model.get("jid"));
-            const msgs_container = chatview.querySelector(".chat-content__messages");
-            msgs_container.parentElement.style.display = "none";
+            const chatview = chatboxviews.get(this.model.get('jid'));
+            const msgs_container = chatview.querySelector('.chat-content__messages');
+            msgs_container.parentElement.style.display = 'none';
         }
-        textarea.removeAttribute("disabled");
-        u.removeClass("disabled", textarea);
+        textarea.removeAttribute('disabled');
+        u.removeClass('disabled', textarea);
 
-        if (api.settings.get("view_mode") === "overlayed") {
+        if (api.settings.get('view_mode') === 'overlayed') {
             // XXX: Chrome flexbug workaround.
-            const chatview = chatboxviews.get(this.model.get("jid"));
-            const msgs_container = chatview.querySelector(".chat-content__messages");
-            msgs_container.parentElement.style.display = "";
+            const chatview = chatboxviews.get(this.model.get('jid'));
+            const msgs_container = chatview.querySelector('.chat-content__messages');
+            msgs_container.parentElement.style.display = '';
         }
         // Suppress events, otherwise superfluous CSN gets set
         // immediately after the message, causing rate-limiting issues.
-        this.model.setChatState(ACTIVE, { "silent": true });
+        this.model.setChatState(ACTIVE, { 'silent': true });
         textarea.focus();
     }
 }
 
-api.elements.define("converse-message-form", MessageForm);
+api.elements.define('converse-message-form', MessageForm);

@@ -1,5 +1,4 @@
 /*global mock, converse */
-
 const { sizzle, u } = converse.env;
 
 describe("A Chat Message", function () {

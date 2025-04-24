@@ -60,6 +60,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/chatview/tests/me-messages.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/message-audio.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/message-avatar.js", type: 'module' },
+      { pattern: "src/plugins/chatview/tests/message-form.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/message-gifs.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/message-images.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/message-videos.js", type: 'module' },

@@ -43,11 +43,21 @@ export const helpers = {
     }
 };
 
-export const FILTER_CONTAINS = function (text, input) {
+/**
+ * @param {string} text
+ * @param {string} input
+ * @returns {boolean}
+ */
+export function FILTER_CONTAINS (text, input) {
     return RegExp(helpers.regExpEscape(input.trim()), 'i').test(text);
 };
 
-export const FILTER_STARTSWITH = function (text, input) {
+/**
+ * @param {string} text
+ * @param {string} input
+ * @returns {boolean}
+ */
+export function FILTER_STARTSWITH (text, input) {
     return RegExp('^' + helpers.regExpEscape(input.trim()), 'i').test(text);
 };
 

@@ -60,10 +60,10 @@ export class AutoComplete extends EventEmitter(Object) {
     bindEvents() {
         this._events = {
             input: {
-                'blur': () => this.close({ 'reason': 'blur' }),
+                'blur': () => this.close({ reason: 'blur' }),
             },
             form: {
-                'submit': () => this.close({ 'reason': 'submit' }),
+                'submit': () => this.close({ reason: 'submit' }),
             },
             ul: {
                 'mousedown': (ev) => this.onMouseDown(ev),
@@ -111,6 +111,9 @@ export class AutoComplete extends EventEmitter(Object) {
         return this.is_opened;
     }
 
+    /**
+     * @param {import('./types').closeParam} o
+     */
     close(o) {
         if (!this.opened) {
             return;
@@ -121,6 +124,9 @@ export class AutoComplete extends EventEmitter(Object) {
         this.trigger('suggestion-box-close', o || {});
     }
 
+    /**
+     * @param {Suggestion} suggestion
+     */
     insertValue(suggestion) {
         if (this.match_current_word) {
             u.replaceCurrentWord(this.input, suggestion.value);
@@ -193,12 +199,15 @@ export class AutoComplete extends EventEmitter(Object) {
         if (selected) {
             const suggestion = this.suggestions[this.index];
             this.insertValue(suggestion);
-            this.close({ 'reason': 'select' });
+            this.close({ reason: 'select' });
             this.auto_completing = false;
             this.trigger('suggestion-box-selectcomplete', { text: suggestion });
         }
     }
 
+    /**
+     * @param {Event} ev
+     */
     onMouseOver(ev) {
         const li = u.ancestor(ev.target, 'li');
         if (li) {
@@ -207,6 +216,9 @@ export class AutoComplete extends EventEmitter(Object) {
         }
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     onMouseDown(ev) {
         if (ev.button !== 0) {
             return; // Only select on left click
@@ -291,7 +303,7 @@ export class AutoComplete extends EventEmitter(Object) {
 
             const list = typeof this._list === 'function' ? await this._list(value) : this._list;
             if (list.length === 0 || !this.auto_completing) {
-                this.close({ 'reason': 'nomatches' });
+                this.close({ reason: 'nomatches' });
                 return;
             }
 
@@ -299,8 +311,11 @@ export class AutoComplete extends EventEmitter(Object) {
             this.ul.innerHTML = '';
 
             this.suggestions = list
-                .map((item) => new Suggestion(this.data(item, value), value))
-                .filter((item) => this.filter(item, value));
+                .map(
+                    /** @param {import('./types').XHRResultItem} item */ (item) =>
+                        new Suggestion(this.data(item, value), value)
+                )
+                .filter(/** @param {Suggestion} item */ ({ value: text }) => this.filter(text, value));
 
             if (this.sort) {
                 this.suggestions = this.suggestions.sort(this.sort);
@@ -309,12 +324,12 @@ export class AutoComplete extends EventEmitter(Object) {
             this.suggestions.forEach((text) => this.ul.appendChild(this.item(text, value)));
 
             if (this.ul.children.length === 0) {
-                this.close({ 'reason': 'nomatches' });
+                this.close({ reason: 'nomatches' });
             } else {
                 this.open();
             }
         } else {
-            this.close({ 'reason': 'nomatches' });
+            this.close({ reason: 'nomatches' });
             if (!contains_trigger) {
                 this.auto_completing = false;
             }

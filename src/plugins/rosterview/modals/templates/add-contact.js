@@ -3,7 +3,7 @@ import { api } from "@converse/headless";
 import { __ } from "i18n";
 import { getGroupsAutoCompleteList, getJIDsAutoCompleteList, getNamesAutoCompleteList } from "../../utils.js";
 import "shared/autocomplete/index.js";
-import { FILTER_STARTSWITH, FILTER_CONTAINS } from "shared/autocomplete/utils";
+import { FILTER_STARTSWITH, FILTER_CONTAINS } from "shared/autocomplete/utils.js";
 
 /**
  * @param {import('../add-contact.js').default} el

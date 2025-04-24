@@ -21,7 +21,7 @@ export class AutoComplete extends AutoComplete_base {
     is_opened: boolean;
     match_current_word: boolean;
     sort: (a: any, b: any) => number;
-    filter: (text: any, input: any) => boolean;
+    filter: typeof FILTER_CONTAINS;
     ac_triggers: any[];
     include_triggers: any[];
     min_chars: number;
@@ -40,8 +40,14 @@ export class AutoComplete extends AutoComplete_base {
     _list: any;
     get selected(): boolean;
     get opened(): boolean;
-    close(o: any): void;
-    insertValue(suggestion: any): void;
+    /**
+     * @param {import('./types').closeParam} o
+     */
+    close(o: import("./types").closeParam): void;
+    /**
+     * @param {Suggestion} suggestion
+     */
+    insertValue(suggestion: Suggestion): void;
     open(): void;
     destroy(): void;
     next(): void;
@@ -53,8 +59,14 @@ export class AutoComplete extends AutoComplete_base {
     goto(i: number, scroll?: boolean): void;
     select(selected: any): void;
     auto_completing: boolean;
-    onMouseOver(ev: any): void;
-    onMouseDown(ev: any): void;
+    /**
+     * @param {Event} ev
+     */
+    onMouseOver(ev: Event): void;
+    /**
+     * @param {MouseEvent} ev
+     */
+    onMouseDown(ev: MouseEvent): void;
     /**
      * @param {KeyboardEvent} [ev]
      */
@@ -65,4 +77,6 @@ export class AutoComplete extends AutoComplete_base {
     evaluate(ev?: KeyboardEvent): Promise<void>;
 }
 export default AutoComplete;
+import { FILTER_CONTAINS } from './utils.js';
+import Suggestion from './suggestion.js';
 //# sourceMappingURL=autocomplete.d.ts.map

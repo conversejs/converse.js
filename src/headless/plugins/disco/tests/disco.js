@@ -41,40 +41,13 @@ describe("Service Discovery", function () {
                 </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-            await u.waitUntil(function () {
+            await u.waitUntil(() => {
                 // Converse.js sees that the entity has a disco#items feature,
                 // so it will make a query for it.
                 return IQ_stanzas.filter(iq => iq.querySelector('query[xmlns="http://jabber.org/protocol/disco#items"]')).length > 0;
             });
 
-            /* <iq type='result'
-             *     from='catalog.shakespeare.lit'
-             *     to='romeo@montague.net/orchard'
-             *     id='items2'>
-             * <query xmlns='http://jabber.org/protocol/disco#items'>
-             *     <item jid='people.shakespeare.lit'
-             *         name='Directory of Characters'/>
-             *     <item jid='plays.shakespeare.lit'
-             *         name='Play-Specific Chatrooms'/>
-             *     <item jid='mim.shakespeare.lit'
-             *         name='Gateway to Marlowe IM'/>
-             *     <item jid='words.shakespeare.lit'
-             *         name='Shakespearean Lexicon'/>
-             *
-             *     <item jid='catalog.shakespeare.lit'
-             *         node='books'
-             *         name='Books by and about Shakespeare'/>
-             *     <item jid='catalog.shakespeare.lit'
-             *         node='clothing'
-             *         name='Wear your literary taste with pride'/>
-             *     <item jid='catalog.shakespeare.lit'
-             *         node='music'
-             *         name='Music from the time of Shakespeare'/>
-             * </query>
-             * </iq>
-             */
             stanza = IQ_stanzas.find(iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]'));
-
             const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 
             _converse.api.connection.get()._dataRecv(mock.createRequest(stx`

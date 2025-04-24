@@ -27,6 +27,7 @@ declare class DiscoEntity extends Model {
     dataforms: Collection;
     features: Collection;
     fields: Collection;
+    items: Collection;
     identities: Collection;
     /**
      * Returns a Promise which resolves with a map indicating

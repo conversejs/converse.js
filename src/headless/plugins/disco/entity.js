@@ -43,9 +43,14 @@ class DiscoEntity extends Model {
         this.fields.browserStorage = createStore(id, 'session');
         this.listenTo(this.fields, 'add', this.onFieldAdded);
 
+        this.items = new Collection();
+        id = `converse.items-${this.get('jid')}`;
+        this.items.browserStorage = createStore(id, 'session');
+
         this.identities = new Collection();
         id = `converse.identities-${this.get('jid')}`;
         this.identities.browserStorage = createStore(id, 'session');
+
         this.fetchFeatures(options);
     }
 
@@ -102,21 +107,42 @@ class DiscoEntity extends Model {
 
     async fetchFeatures(options) {
         if (options.ignore_cache) {
-            this.queryInfo();
+            await this.queryInfo();
         } else {
             const store_id = this.features.browserStorage.name;
+
+            // Checking only whether features have been cached, even though
+            // there are other things that should be cached as well. We assume
+            // that if features have been cached, everything else has been also.
             const result = await this.features.browserStorage.store.getItem(store_id);
             if ((result && result.length === 0) || result === null) {
-                this.queryInfo();
+                await this.queryInfo();
             } else {
-                this.features.fetch({
-                    add: true,
-                    success: () => {
-                        this.waitUntilFeaturesDiscovered.resolve(this);
-                        this.trigger('featuresDiscovered');
-                    },
-                });
-                this.identities.fetch({ add: true });
+                await new Promise((resolve) => this.fetch({ success: resolve, error: resolve }));
+
+                await new Promise((resolve) =>
+                    this.features.fetch({
+                        add: true,
+                        success: () => {
+                            this.waitUntilFeaturesDiscovered.resolve(this);
+                            this.trigger('featuresDiscovered');
+                            resolve();
+                        },
+                        error: resolve,
+                    })
+                );
+
+                await new Promise((resolve) => this.identities.fetch({ add: true, success: resolve, error: resolve }));
+
+                const items = this.get('items');
+                if (Array.isArray(items)) {
+                    await Promise.all(
+                        items.map(/** @param {string} jid */ async (jid) => await api.disco.entities.get(jid, true))
+                    );
+                } else {
+                    await this.queryForItems();
+                }
+                this.waitUntilItemsFetched.resolve();
             }
         }
     }
@@ -137,25 +163,29 @@ class DiscoEntity extends Model {
      * @param {Element} stanza
      */
     onDiscoItems(stanza) {
-        sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"] item`, stanza).forEach((item) => {
+        const item_els = sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"] item`, stanza);
+        const item_jids = [];
+        item_els.forEach((item) => {
             if (item.getAttribute('node')) {
                 // XXX: Ignore nodes for now.
                 // See: https://xmpp.org/extensions/xep-0030.html#items-nodes
                 return;
             }
             const jid = item.getAttribute('jid');
-            const entity = _converse.state.disco_entities.get(jid);
+            let entity = _converse.state.disco_entities.get(jid);
             if (entity) {
                 const parent_jids = entity.get('parent_jids');
                 entity.set({ parent_jids: [...parent_jids, this.get('jid')] });
             } else {
-                api.disco.entities.create({
+                entity = api.disco.entities.create({
                     jid,
                     parent_jids: [this.get('jid')],
                     name: item.getAttribute('name'),
                 });
             }
+            item_jids.push(entity.get('jid'));
         });
+        this.save({ items: item_jids });
     }
 
     async queryForItems() {

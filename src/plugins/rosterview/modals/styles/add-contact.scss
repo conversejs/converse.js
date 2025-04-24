@@ -1,0 +1,8 @@
+.conversejs {
+    converse-add-contact-modal {
+        .modal-body {
+            // Necessary for the auto-complete dropdown to show and to not cause a scrollbar in the modal.
+            overflow-y: visible !important;
+        }
+    }
+}

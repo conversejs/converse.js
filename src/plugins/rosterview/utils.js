@@ -17,7 +17,7 @@ const { STATUS_WEIGHTS } = constants;
 export async function removeContact(contact, unauthorize = false) {
     if (!api.settings.get('allow_contact_removal')) return;
 
-    const result = await api.confirm(__('Are you sure you want to remove this contact?'));
+    const result = await api.confirm(__('Confirm'), __('Are you sure you want to remove this contact?'));
     if (!result) return false;
 
     const chat = await api.chats.get(contact.get('jid'));
@@ -317,7 +317,7 @@ export async function getNamesAutoCompleteList(query) {
         return [];
     }
 
-    const json = response.json();
+    const json = await response.json();
     if (!Array.isArray(json)) {
         log.error(`Invalid JSON returned"`);
         return [];

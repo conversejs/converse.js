@@ -130,15 +130,15 @@ export default class AutoCompleteComponent extends CustomElement {
 
     firstUpdated() {
         this.auto_complete = new AutoComplete(/** @type HTMLElement */ (this.firstElementChild), {
-            "ac_triggers": this.triggers.split(" "),
-            "auto_first": this.auto_first,
-            "filter": this.filter == "contains" ? FILTER_CONTAINS : FILTER_STARTSWITH,
-            "include_triggers": [],
-            "list": this.list ?? ((q) => this.getAutoCompleteList(q)),
-            "data": this.data,
-            "match_current_word": true,
-            "max_items": this.max_items,
-            "min_chars": this.min_chars,
+            ac_triggers: this.triggers.split(" "),
+            auto_first: this.auto_first,
+            filter: this.filter == "contains" ? FILTER_CONTAINS : FILTER_STARTSWITH,
+            include_triggers: [],
+            list: this.list ?? (/** @param {string} q */(q) => this.getAutoCompleteList(q)),
+            data: this.data,
+            match_current_word: true,
+            max_items: this.max_items,
+            min_chars: this.min_chars,
         });
         this.auto_complete.on("suggestion-box-selectcomplete", () => (this.auto_completing = false));
     }

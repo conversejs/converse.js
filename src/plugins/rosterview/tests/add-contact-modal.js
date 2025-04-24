@@ -63,7 +63,7 @@ describe("The 'Add Contact' widget", function () {
                 {"jid": "marty@mcfly.net", "fullname": "Marty McFly"},
                 {"jid": "doc@brown.com", "fullname": "Doc Brown"}
             ];
-            return { json };
+            return Promise.resolve({ json });
         });
 
         await mock.openControlBox(_converse);

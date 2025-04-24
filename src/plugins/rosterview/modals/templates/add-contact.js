@@ -1,7 +1,8 @@
-import { __ } from "i18n";
-import { api } from "@converse/headless";
-import { getGroupsAutoCompleteList, getJIDsAutoCompleteList, getNamesAutoCompleteList } from "../../utils.js";
 import { html } from "lit";
+import { api } from "@converse/headless";
+import { __ } from "i18n";
+import { getGroupsAutoCompleteList, getJIDsAutoCompleteList, getNamesAutoCompleteList } from "../../utils.js";
+import "shared/autocomplete/index.js";
 import { FILTER_STARTSWITH, FILTER_CONTAINS } from "shared/autocomplete/utils";
 
 /**
@@ -26,18 +27,20 @@ export default (el) => {
                     ? html`<converse-autocomplete
                           .getAutoCompleteList=${getNamesAutoCompleteList}
                           position="below"
-                          filter=${FILTER_CONTAINS}
+                          min_chars="2"
+                          filter="${FILTER_CONTAINS}"
                           ?required=${true}
                           value="${el.model.get("jid") || ""}"
                           placeholder="${i18n_contact_placeholder}"
                           name="jid"
                       ></converse-autocomplete>`
                     : html`<converse-autocomplete
-                          .list=${getJIDsAutoCompleteList()}
-                          .data=${(text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`}
+                          .list="${getJIDsAutoCompleteList()}"
+                          .data="${(text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`}"
                           position="below"
-                          filter=${FILTER_STARTSWITH}
-                          ?required=${!api.settings.get("xhr_user_search_url")}
+                          min_chars="2"
+                          filter="${FILTER_STARTSWITH}"
+                          ?required="${!api.settings.get("xhr_user_search_url")}"
                           value="${el.model.get("jid") || ""}"
                           placeholder="${i18n_contact_placeholder}"
                           name="jid"

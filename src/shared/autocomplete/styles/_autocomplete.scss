@@ -62,7 +62,7 @@
                 padding: 1em;
                 position: relative;
                 text-overflow: ellipsis;
-
+                white-space: pre;
                 &:hover {
                     mark {
                         background-color: unset;

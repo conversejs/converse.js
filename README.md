@@ -65,7 +65,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 -   Chat statuses (online, busy, away, offline)
 -   Anonymous logins, see the [anonymous login demo](https://conversejs.org/demo/anonymous.html)
 -   URL Previews (requires server support, for example [mod_ogp](https://modules.prosody.im/mod_ogp.html)
--   Translated into over 30 languages
+-   Translated into over 40 languages
 
 ### Supported XMPP Extensions
 

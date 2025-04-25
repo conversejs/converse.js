@@ -74,13 +74,12 @@ For custom builds and development:
 2. Run ``npm install`` to install dependencies
 3. Run ``npm run build`` to build distribution files to the ``./dist`` folder
 4. Run ``npm run serve -- -p 8008`` to start a local server at port ``8008``.
-
-You can then access Converse at http://localhost:8008 in your browser.
+5. You can now access Converse at http://localhost:8008/dev.html in your browser.
 
 See the :ref:`creating_builds` section for detailed build instructions and customization options.
 
 .. tip::
-    If you have GNU Make installed, you can just run ``make watch``, to do all the above steps automatically.
+    If you have GNU Make installed, you can run ``make watch``, to do all the above steps automatically.
 
 
 Initializing Converse

@@ -2,7 +2,7 @@
 const { sizzle, u } = converse.env;
 
 describe('A message form', function () {
-    fit(
+    it(
         'can have text pasted into it with automatic space handling',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);

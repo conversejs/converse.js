@@ -12,6 +12,7 @@ export default class MessageUnfurl extends CustomElement {
             jid: { type: String },
             title: { type: String },
             url: { type: String },
+            site_name: { type: String },
         };
     }
 
@@ -22,6 +23,7 @@ export default class MessageUnfurl extends CustomElement {
         this.title = null;
         this.image = null;
         this.description = null;
+        this.site_name = null;
     }
 
     initialize() {
@@ -31,23 +33,11 @@ export default class MessageUnfurl extends CustomElement {
     }
 
     render() {
-        return tplUnfurl(
-            Object.assign(
-                {
-                    'onload': () => this.onImageLoad(),
-                },
-                {
-                    description: this.description || '',
-                    image: this.image || '',
-                    title: this.title || '',
-                    url: this.url || '',
-                }
-            )
-        );
+        return tplUnfurl(this);
     }
 
     onImageLoad() {
-        this.dispatchEvent(new CustomEvent('imageLoaded', { detail: this, 'bubbles': true }));
+        this.dispatchEvent(new CustomEvent('imageLoaded', { detail: this, bubbles: true }));
     }
 }
 

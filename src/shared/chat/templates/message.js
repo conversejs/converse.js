@@ -39,7 +39,7 @@ export default (el) => {
     // Note: it can happen that the contact has not the vcard attribute but the message has.
     const avatar_model = contact?.vcard ? contact : el.model;
 
-    return html` ${is_first_unread
+    return html`${is_first_unread
             ? html`<div class="message separator">
                   <hr class="separator" />
                   <span class="separator-text">${i18n_new_messages}</span>
@@ -120,6 +120,7 @@ export default (el) => {
                         description="${m['og:description'] || ''}"
                         title="${m['og:title'] || ''}"
                         image="${m['og:image'] || ''}"
+                        site_name="${m['og:site_name'] || ''}"
                         url="${m['og:url'] || ''}"
                     ></converse-message-unfurl>`;
                 })}

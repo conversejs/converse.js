@@ -239,8 +239,13 @@ export function getOpenGraphMetadata (stanza) {
                 }
                 return acc;
             }, {
-                'ogp_for_id': applies_to_id,
+                ogp_for_id: applies_to_id,
             });
+
+            const url = data['og:url'];
+            if (url?.startsWith('/') && data['og:site_name']?.toLowerCase() === 'github') {
+                data['og:url'] = `https://github.com${url}`;
+            }
 
             if ("og:description" in data || "og:title" in data || "og:image" in data) {
                 return data;

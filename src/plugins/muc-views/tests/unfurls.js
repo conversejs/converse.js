@@ -51,6 +51,41 @@ describe("A Groupchat Message", function () {
         expect(unfurl.querySelector('.card-img-top').getAttribute('href')).toBe(unfurl_url);
     }));
 
+    it("will fix GitHub URLs which are relative", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        const nick = 'romeo';
+        const muc_jid = 'lounge@montague.lit';
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
+        const view = _converse.chatboxviews.get(muc_jid);
+
+        const unfurl_url = 'https://github.com/conversejs/converse.js/commit/b7b14601773e63ede3f93c47550fdc317553a04a';
+
+        const message_stanza = stx`
+            <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
+                <body>${unfurl_url}</body>
+                <active xmlns="http://jabber.org/protocol/chatstates"/>
+                <origin-id xmlns="urn:xmpp:sid:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04"/>
+                <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
+                <markable xmlns="urn:xmpp:chat-markers:0"/>
+            </message>`;
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+        const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
+        expect(el.textContent).toBe(unfurl_url);
+
+        const metadata_stanza = stx`
+            <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
+                <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="GitHub" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:url" content="https://github.com/conversejs/converse.js/commit/b7b14601773e63ede3f93c47550fdc317553a04a" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:title" content="Fix pasting in the message form · conversejs/converse.js@b7b1460" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image" content="https://opengraph.githubassets.com/992a5f409ed015bcb824abb748e04f8feb7bbb92eef7e3da48e08d1e2cf7b053/conversejs/converse.js/commit/b7b14601773e63ede3f93c47550fdc317553a04a" />
+                </apply-to>
+            </message>`;
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+
+        const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
+        expect(unfurl.querySelector('.card-img-top').getAttribute('href')).toBe(unfurl_url);
+    }));
+
     it("will render an unfurl with limited OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         /* Some sites don't include ogp data such as title, description and
          * url. This test is to check that we fall back gracefully */
@@ -218,7 +253,7 @@ describe("A Groupchat Message", function () {
 
     it("will not render an unfurl based on OGP data if render_media is false",
             mock.initConverse(['chatBoxesFetched'],
-            { 'render_media': false },
+            { render_media: false },
             async function (_converse) {
 
         const { api } = _converse;

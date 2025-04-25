@@ -68,7 +68,7 @@ export class ConverseFooter extends CustomElement {
                                                       href="https://www.keycdn.com?utm_source=conversejs"
                                                       target="_blank"
                                                       rel="noopener"
-                                                      ><img style="height: 3em" src="/logo/keycdn.svg" alt="KeyCDN"
+                                                      ><img style="height: 3em" src="/logo/keycdn.png" alt="KeyCDN"
                                                   /></a>
                                               </div>
                                           </div>

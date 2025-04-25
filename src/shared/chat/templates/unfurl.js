@@ -1,37 +1,73 @@
+import { html } from 'lit';
+import log from '@converse/log';
 import { u } from '@converse/headless';
 import { isDomainAllowed } from 'utils/url.js';
-import { html } from 'lit';
 import 'shared/texture/components/image.js';
 
-function isValidImage (image) {
+/**
+ * @param {string} image
+ * @returns {boolean}
+ */
+function isValidImage(image) {
     return image && isDomainAllowed(image, 'allowed_image_domains') && u.isValidURL(image);
 }
 
-const tplUrlWrapper = (o, wrapped_template) =>
-    o.url && u.isValidURL(o.url) && !u.isGIFURL(o.image)
-        ? html`<a href="${o.url}" target="_blank" rel="noopener">${wrapped_template(o)}</a>`
-        : wrapped_template(o);
+/**
+ * @param {import('../unfurl').default} el
+ * @param {(title: string) => import('lit').TemplateResult} wrapped_template
+ */
+function tplUrlWrapper(el, wrapped_template) {
+    const image = el.image || '';
+    const url = el.url || '';
+    const title = el.title || '';
+    return url && u.isValidURL(url) && !u.isGIFURL(image)
+        ? html`<a href="${url}" target="_blank" rel="noopener">${wrapped_template(title)}</a>`
+        : wrapped_template(title ?? '');
+}
 
-const tplImage = (o) =>
-    html`<converse-image class="card-img-top hor_centered" href="${o.url}" src="${o.image}" .onImgLoad=${o.onload}></converse-image>`;
+/**
+ * @param {import('../unfurl').default} el
+ */
+function tplImage(el) {
+    const image = el.image || '';
+    const url = el.url || '';
+    return html`<converse-image
+        class="card-img-top hor_centered"
+        href="${url}"
+        src="${image}"
+        .onImgLoad=${() => el.onImageLoad()}
+    ></converse-image>`;
+}
+/**
+ * @param {import('../unfurl').default} el
+ */
+export default (el) => {
+    const description = el.description || '';
+    const image = el.image || '';
+    const title = el.title || '';
+    const url = el.url || '';
+    const show_image = isValidImage(image);
+    const has_body_info = title || description || url;
 
-export default (o) => {
-    const show_image = isValidImage(o.image);
-    const has_body_info = o.title || o.description || o.url;
-    if (show_image || has_body_info) {
+    if ((show_image || has_body_info)) {
         return html`<div class="card card--unfurl">
-            ${show_image ? tplImage(o) : ''}
+            ${show_image ? tplImage(el) : ''}
             ${has_body_info
                 ? html` <div class="card-body">
-                      ${o.title ? tplUrlWrapper(o, o => html`<h5 class="card-title">${o.title}</h5>`) : ''}
-                      ${o.description
+                      ${title
+                          ? tplUrlWrapper(
+                                el,
+                                /** @param {string} title */ (title) => html`<h5 class="card-title">${title}</h5>`
+                            )
+                          : ''}
+                      ${description
                           ? html`<p class="card-text">
-                                <converse-texture text=${o.description}></converse-texture>
+                                <converse-texture text=${description}></converse-texture>
                             </p>`
                           : ''}
-                      ${o.url
+                      ${url && u.isValidURL(url)
                           ? html`<p class="card-text">
-                                <a href="${o.url}" target="_blank" rel="noopener">${new URL(o.url).hostname}</a>
+                                <a href="${url}" target="_blank" rel="noopener">${new URL(url).hostname}</a>
                             </p>`
                           : ''}
                   </div>`

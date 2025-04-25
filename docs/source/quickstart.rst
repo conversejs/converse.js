@@ -6,163 +6,122 @@
 Quickstart
 ==========
 
-Getting a demo up and running
-=============================
+You can use the latest version of Converse at `conversejs.org <https://conversejs.org/fullscreen.html>`_.
 
-You can try out the latest version of Converse at `conversejs.org <https://conversejs.org>`_
-for the overlayed version and `conversejs.org/fullscreen.html <https://conversejs.org/fullscreen.html>`_
-for the full page version.
+There are several ways to run Converse yourself or to add it to your website or web app:
 
-If you want to host and serve Converse yourself, there are a few options available.
+Option 1: Host it via your XMPP Server
+======================================
 
-Let your XMPP server serve Converse for you
--------------------------------------------
+If you run your own XMPP server, check if it has a plugin for hosting Converse.
 
-If you run your own XMPP server, you might first want to check whether it has
-a plugin or module for hosting Converse.
+For example, the following XMPP servers have plugins available:
 
-*  `Openfire <http://www.igniterealtime.org/projects/openfire/>`_ has the `inverse <https://www.igniterealtime.org/projects/openfire/plugin-archive.jsp?plugin=inverse>`_ plugin.
-*  `Prosody <https://prosody.im/>`_ has `mod_conversejs <https://modules.prosody.im/mod_conversejs.html>`_.
-*  `ejabberd <http://www.ejabberd.im/>`_ has `mod_conversejs <https://docs.ejabberd.im/admin/configuration/modules/#mod-conversejs>`_.
+* **Openfire**: `inverse plugin <https://www.igniterealtime.org/projects/openfire/plugin-archive.jsp?plugin=inverse>`_
+* **Prosody**: `mod_conversejs <https://modules.prosody.im/mod_conversejs.html>`_
+* **ejabberd**: `mod_conversejs <https://docs.ejabberd.im/admin/configuration/modules/#mod-conversejs>`_
 
+Option 2: Self-hosting
+======================
 
-Serving Converse yourself
--------------------------
+Getting the necessary files
+---------------------------
 
-Alternative you can serve only Converse without requiring any particular XMPP server.
+You can host Converse on your own server without requiring any XMPP server.
+There are three ways to get the necessary files:
 
-To do so, you'll need to get the right files to host, for which you have four options.
+A. Using the CDN (Recommended)
+******************************
 
-.. note::
+Converse provides a CDN (via `KeyCDN <https://www.keycdn.com/>`_) for easy integration.
 
-    Pro-tip, if you just want to quickly test things locally, you can run ``make serve`` inside a checkout of the Converse repo.
-    Converse is then hosted at http://localhost:8000
-
-
-Option 1: Use the content delivery network
-******************************************
-
-Converse has a `CDN <https://en.wikipedia.org/wiki/Content_delivery_network>`_, provided by `KeyCDN <http://keycdn.com/>`_,
-which hosts its JavaScript and CSS files.
-
-The latest versions of these files are available at these URLs:
-
-* https://cdn.conversejs.org/dist/converse.min.js
-* https://cdn.conversejs.org/dist/converse.min.css
-
-If you are integrating Converse into an existing website or app, then we recommend
-that you load a specific version of Converse. Otherwise your website or app
-might break when a new backwards-incompatible version of Converse is released.
-
-To load a specific version of Converse you can put the version in the URL:
-
-* https://cdn.conversejs.org/10.1.5/dist/converse.min.js
-* https://cdn.conversejs.org/10.1.5/dist/converse.min.css
-
-You can include these two URLs inside the *<head>* element of your website
-via the *script* and *link* tags:
+To use it, add these lines to your HTML page's ``<head>`` section:
 
 .. code-block:: html
 
-    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/10.1.5/dist/converse.min.css">
+    <!-- Replace 10.1.5 with your desired version -->
+    <link rel="stylesheet" href="https://cdn.conversejs.org/10.1.5/dist/converse.min.css">
     <script src="https://cdn.conversejs.org/10.1.5/dist/converse.min.js" charset="utf-8"></script>
 
-
-Option 2: Download the builds from Github
-*****************************************
-
-The `Converse releases page on Github <https://github.com/conversejs/converse.js/releases>`_
-has the release notes for every release as well as links to downloadable zip files
-containing all the files you need to host Converse yourself.
-
-Extract the ``.zip`` (or ``.tar.gz``) file and include the ``converse.min.js`` and ``converse.min.css``
-files (found in ``package/dist``) in the ``<head>`` element of your page, similar to what's shown in
-option 1 above.
-
-The other files in ``dist`` should also be hosted by your server and available.
-During operation Converse will make HTTP calls to dynamically fetch more files
-from the ``dist`` folder. The exceptions here are the ``.map`` files and the
-unminified ``converse.js`` and ``converse.css`` files.
-
-If you want to host these files at a different path than ``/dist/``, you can
-specify it with the :ref:`assets_path` configuration setting.
+.. warning::
+    Always specify a version number in production to avoid breaking changes.
 
 
-Option 3: Building the files yourself
-*************************************
+B. Download Pre-built Files
+***************************
 
-Instead of using the CDN, you can also create your own builds and host them yourself.
+1. Download the latest release from the `Converse GitHub releases page <https://github.com/conversejs/converse.js/releases>`_
+2. Extract the archive file
+3. Include the minified files in your HTML:
 
-Have a look at the :ref:`creating_builds` section on how to create your own builds.
+.. code-block:: html
 
-In short, you should be able to do it by running ``make dist`` inside a
-checkout of the `Converse repo <http://github.com/conversejs/converse.js/>`_.
+    <link rel="stylesheet" href="path/to/converse.min.css">
+    <script src="path/to/converse.min.js" charset="utf-8"></script>
 
-To build the files and also start an HTTP server, you can run ``make serve``.
+.. important::
+    * All the files from the ``dist`` directory need to be available and hosted on your server
+    * Converse will dynamically load additional files from this directory
+    * To use a different path, change the :ref:`assets_path` setting
 
-The distribution files will be added to the ``./dist`` folder inside the repo.
+
+C. Build from Source
+********************
+
+For custom builds and development:
+
+1. Clone the `Converse repository <https://github.com/conversejs/converse.js/>`_ by running ``git clone git@github.com:conversejs/converse.js.git``
+2. Run ``npm install`` to install dependencies
+3. Run ``npm run build`` to build distribution files to the ``./dist`` folder
+4. Run ``npm run serve -- -p 8008`` to start a local server at port ``8008``.
+
+You can then access Converse at http://localhost:8008 in your browser.
+
+See the :ref:`creating_builds` section for detailed build instructions and customization options.
+
+.. tip::
+    If you have GNU Make installed, you can just run ``make watch``, to do all the above steps automatically.
 
 
 Initializing Converse
-=====================
+---------------------
 
-You'll need to initialize Converse with configuration settings relevant to your requirements.
-Take a look at the :ref:`configuration-settings` section for info on all the available settings.
+After building and including the necessary files, you need to initialize Converse:
 
-To quickly get started, you can put the following JavaScript code at the
-bottom of your page (after the closing *</body>* element)::
+.. code-block:: html
 
     <script>
-        converse.initialize({
-            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-            show_controlbox_by_default: true
-        });
+        converse.initialize();
     </script>
 
-The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the
-Converse repository serves as a nice, usable example.
+See the :ref:`configuration-settings` section for all available initialization options and the
+`index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file in the repository for a complete example.
 
-Fullscreen version
-------------------
+Display Modes
+*************
 
-Converse also comes in a fullscreen version.
-A hosted version is available online at `conversejs.org/fullscreen <https://conversejs.org/fullscreen.html>`_.
+Converse supports different display modes:
 
-Originally this version was available as a separate build file, but
-as of version 4.0.0 and higher, the difference between the "overlay" and the
-"fullscreen" versions of converse.js is simply a matter of configuring the
-:ref:`view_mode`.
+* **Full page mode** (default): Chat takes up the entire page
+* **Overlay mode**: Chat appears in a corner of your page
+* **Embedded mode**: Chat appears embedded inside a container element in your page
 
-For example::
+To use fullscreen mode, simply set the ``view_mode`` parameter:
 
-    <script>
-        converse.initialize({
-            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-            view_mode: 'fullscreen'
-        });
-    </script>
+.. code-block:: javascript
 
-Where to go from here?
-======================
+    converse.initialize({
+        view_mode: 'fullscreen' // other options are `overlay` and `embedded`
+    });
 
-Have a look at the various :ref:`features <features>` that Converse provides, for some of
-them you might have to do more setup work, like configuring an XMPP server or
-webserver.
+Further reading
+===============
 
-You might want to implement some kind of persistent single-session solution for
-your website, where users authenticate once in your website and are then
-automatically logged in to the XMPP server as well. For more info on how this
-can be achieved, read: :ref:`session-support`.
+Now that you have Converse running, you might want to:
 
-For end-to-end encryption via OMEMO, you'll need to load `libsignal-protocol.js
-<https://github.com/signalapp/libsignal-protocol-javascript>`_ separately in
-your page. Take a look at the section on :ref:`libsignal <dependency-libsignal>` and the
-:ref:`security considerations around OMEMO <feature-omemo>`.
-
-Perhaps you want to create your own custom build of Converse? Then head over
-to the :doc:`builds` section, or more generally the :doc:`development <development>`
-documentation.
-
-Do you want to know how to theme Converse? Then read the :doc:`theming <theming>`
-documentation.
-
+* Explore available :ref:`features <features>` (some require additional setup)
+* Implement :ref:`session-support` for single sign-on between your site and XMPP
+* Enable :ref:`OMEMO encryption <feature-omemo>` (requires loading `libsignal-protocol.js <https://github.com/signalapp/libsignal-protocol-javascript>`_)
+* Create :doc:`custom builds <builds>` with specific features
+* Customize the appearance with :doc:`theming <theming>`
+* Dive into :doc:`development <development>` to contribute or extend Converse

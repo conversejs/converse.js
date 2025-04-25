@@ -24,15 +24,7 @@
 
 <body id="page-top" data-spy="scroll" class="converse-website">
 <section class="section-wrapper">
-    <nav class="navbar sticky-top navbar-expand-lg" role="navigation">
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-            <span class="page-scroll">
-                <a class="navbar-brand" href="/"><span class="converse-brand-heading">Home</span></a>
-            </span>
-        </div>
-    </nav>
-
-    <section id="intro" class="intro" class="container">
+    <section id="intro" class="intro text-center" class="container">
         <div class="row">
             <div class="col-md-12 col-md-offset-2">
                 <h1 class="brand-heading fade-in">
@@ -41,7 +33,7 @@
                         xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink"
                         viewBox="0 0 364 364">
-                    <title>Home</title>
+                    <title>Converse</title>
                     <g class="cls-1" id="g904">
                         <g data-name="Layer 2">
                             <g data-name="Layer 7">
@@ -61,9 +53,10 @@
                 </span>
                 </h1>
 
-                <p class="intro-text">Demos:</p>
+                <h3 class="mt-5">Demos</h3>
+
                 <p class="intro-text">
-                    <ul style="list-style: none; font-size: 22px;">
+                    <ul class="list-group" style="list-style: none">
                         <li><a href="/fullscreen.html">As a fullscreen application</a></li>
                         <li><a href="/demo/anonymous.html">Anonymous login</a></li>
                         <li><a href="/demo/embedded.html">Single MUC chatroom embedded into the page</a></li>
@@ -72,42 +65,6 @@
             </div>
         </div>
     </section>
-    </section>
 </section>
 </body>
-
-<script>
-    /*
-    @licstart
-    This is free and unencumbered software released into the public domain.
-
-    Anyone is free to copy, modify, publish, use, compile, sell, or
-    distribute this software, either in source code form or as a compiled
-    binary, for any purpose, commercial or non-commercial, and by any
-    means.
-
-    In jurisdictions that recognize copyright laws, the author or authors
-    of this software dedicate any and all copyright interest in the
-    software to the public domain. We make this dedication for the benefit
-    of the public at large and to the detriment of our heirs and
-    successors. We intend this dedication to be an overt act of
-    relinquishment in perpetuity of all present and future rights to this
-    software under copyright law.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-    IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-    OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-    OTHER DEALINGS IN THE SOFTWARE.
-
-    For more information, please refer to <https://unlicense.org/>
-    @licend
-    */
-    converse.initialize({
-        // Please use this connection manager only for testing purposes
-        bosh_service_url: 'https://conversejs.org/http-bind/'
-    });
-</script>
 </html>

@@ -32,17 +32,17 @@ To set up a Converse development environment, you now run the following:
 
 ::
 
-    make serve_bg
-    make watch
-
-Alternatively, if you're using Windows, or don't have GNU Make installed, you can run the
-following:
-
-::
-
     npm install
     npm run serve &
     npm run watch
+
+
+Alternatively, if you have GNU Make installed, you can run:
+
+::
+
+    make serve_bg
+    make watch
 
 
 Then go to http://localhost:8000/dev.html to load Converse.

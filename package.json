@@ -45,7 +45,9 @@
     "3rdparty/*.js"
   ],
   "scripts": {
-    "build": "webpack --config webpack/webpack.build.js",
+    "build": "npm run build:website-min-css && webpack --config webpack/webpack.build.js",
+    "build:website-css": "sass --quiet --load-path=node_modules src/shared/styles/website.scss dist/website.css",
+    "build:website-min-css": "npm run build:website-css && npx clean-css-cli dist/website.css > dist/website.min.css",
     "lint": "eslint src/**/*.js",
     "test": "karma start karma.conf",
     "cdn": "ASSET_PATH=https://cdn.conversejs.org/dist/ npm run build",

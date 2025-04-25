@@ -68,18 +68,18 @@ B. Download Pre-built Files
 C. Build from Source
 ********************
 
-For custom builds and development:
+For custom builds and development, run the following commands:
 
-1. Clone the `Converse repository <https://github.com/conversejs/converse.js/>`_ by running ``git clone git@github.com:conversejs/converse.js.git``
-2. Run ``npm install`` to install dependencies
-3. Run ``npm run build`` to build distribution files to the ``./dist`` folder
-4. Run ``npm run serve -- -p 8008`` to start a local server at port ``8008``.
-5. You can now access Converse at http://localhost:8008/dev.html in your browser.
+1. ``git clone git@github.com:conversejs/converse.js.git`` to clone the repo.
+2. ``cd converse.js && npm install`` to install dependencies
+3. ``npm run build`` to build distribution files to the ``./dist`` folder
+4. ``npm run serve`` to start a local server at port ``8080``.
+5. You can now access Converse at http://localhost:8080/dev.html in your browser.
 
 See the :ref:`creating_builds` section for detailed build instructions and customization options.
 
 .. tip::
-    If you have GNU Make installed, you can run ``make watch``, to do all the above steps automatically.
+    You can run ``npm run watch`` to automatically rebuild the dist files whenever a source file changes.
 
 
 Initializing Converse

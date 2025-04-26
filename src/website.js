@@ -1,7 +1,7 @@
 (function () {
     document.addEventListener('DOMContentLoaded', function () {
         new bootstrap.Carousel('#screenshotCarousel', {
-            interval: 3000,
+            interval: 4000,
             ride: 'carousel',
             wrap: true,
         });

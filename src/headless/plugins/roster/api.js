@@ -44,16 +44,16 @@ export default {
          *     // ...
          * });
          */
-        async get (jids) {
+        async get(jids) {
             await api.waitUntil('rosterContactsFetched');
             const { roster } = _converse.state;
-            const _getter = /** @param {string} jid */(jid) => roster.get(Strophe.getBareJidFromJid(jid));
+            const _getter = /** @param {string} jid */ (jid) => roster.get(Strophe.getBareJidFromJid(jid));
             if (jids === undefined) {
                 jids = roster.pluck('jid');
             } else if (typeof jids === 'string') {
                 return _getter(jids);
             }
-            return /** @type {string[]} */(jids).map(_getter);
+            return /** @type {string[]} */ (jids).map(_getter);
         },
 
         /**
@@ -62,7 +62,7 @@ export default {
          * @param {boolean} [unsubscribe] - Whether we should unsubscribe
          * from the contact's presence updates.
          */
-        async remove (jid, unsubscribe) {
+        async remove(jid, unsubscribe) {
             await api.waitUntil('rosterContactsFetched');
             const contact = await api.contacts.get(jid);
             contact.remove(unsubscribe);
@@ -80,12 +80,12 @@ export default {
          * @example
          *      api.contacts.add({ jid: 'buddy@example.com', groups: ['Buddies'] })
          */
-        async add (attributes, persist=true, subscribe=true, message='') {
+        async add(attributes, persist = true, subscribe = true, message = '') {
             if (!isValidJID(attributes?.jid)) throw new Error('api.contacts.add: Valid JID required');
 
             await api.waitUntil('rosterContactsFetched');
             const { roster } = _converse.state;
             return roster.addContact(attributes, persist, subscribe, message);
-        }
-    }
-}
+        },
+    },
+};

@@ -61,7 +61,12 @@ export function FILTER_STARTSWITH (text, input) {
     return RegExp('^' + helpers.regExpEscape(input.trim()), 'i').test(text);
 };
 
-const SORT_BY_LENGTH = function (a, b) {
+/**
+ * @param {string} a
+ * @param {string} b
+ * @returns {number}
+ */
+export function SORT_BY_LENGTH (a, b) {
     if (a.length !== b.length) {
         return a.length - b.length;
     }

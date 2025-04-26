@@ -10,6 +10,12 @@ export function FILTER_CONTAINS(text: string, input: string): boolean;
  * @returns {boolean}
  */
 export function FILTER_STARTSWITH(text: string, input: string): boolean;
+/**
+ * @param {string} a
+ * @param {string} b
+ * @returns {number}
+ */
+export function SORT_BY_LENGTH(a: string, b: string): number;
 export namespace helpers {
     function getElement(expr: any, el: any): any;
     function bind(element: any, o: any): void;

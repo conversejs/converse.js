@@ -3,7 +3,6 @@ import { api } from "@converse/headless";
 import { __ } from "i18n";
 import { getGroupsAutoCompleteList, getJIDsAutoCompleteList, getNamesAutoCompleteList } from "../../utils.js";
 import "shared/autocomplete/index.js";
-import { FILTER_STARTSWITH, FILTER_CONTAINS } from "shared/autocomplete/utils.js";
 
 /**
  * @param {import('../add-contact.js').default} el
@@ -28,8 +27,8 @@ export default (el) => {
                           .getAutoCompleteList=${getNamesAutoCompleteList}
                           position="below"
                           min_chars="2"
-                          filter="${FILTER_CONTAINS}"
-                          ?required=${true}
+                          filter="contains"
+                          ?required="${true}"
                           value="${el.model.get("jid") || ""}"
                           placeholder="${i18n_contact_placeholder}"
                           name="jid"
@@ -39,7 +38,7 @@ export default (el) => {
                           .data="${(text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`}"
                           position="below"
                           min_chars="2"
-                          filter="${FILTER_STARTSWITH}"
+                          filter="startswith"
                           ?required="${!api.settings.get("xhr_user_search_url")}"
                           value="${el.model.get("jid") || ""}"
                           placeholder="${i18n_contact_placeholder}"

@@ -13,7 +13,7 @@ export default (el) => {
                 <label class="form-label clearfix" for="invitee_jids">${i18n_invite_label}:</label>
                 ${ el.model.get('invalid_invite_jid') ? html`<div class="error error-feedback">${i18n_error_message}</div>` : '' }
                 <converse-autocomplete
-                    .getAutoCompleteList=${() => el.getAutoCompleteList()}
+                    .getAutoCompleteList="${() => el.getAutoCompleteList()}"
                     ?autofocus=${true}
                     min_chars="1"
                     position="below"

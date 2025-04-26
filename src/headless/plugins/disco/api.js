@@ -393,12 +393,15 @@ export default {
                 if (!entity.waitUntilFeaturesDiscovered.isPending) {
                     entity.waitUntilFeaturesDiscovered = getOpenPromise();
                 }
+                if (!entity.waitUntilItemsFetched.isPending) {
+                    entity.waitUntilItemsFetched = getOpenPromise();
+                }
                 entity.queryInfo();
             } else {
                 // Create it if it doesn't exist
                 entity = await api.disco.entities.create({ jid }, { ignore_cache: true });
             }
-            return entity.waitUntilFeaturesDiscovered;
+            return entity.waitUntilItemsFetched;
         },
 
         /**

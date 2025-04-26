@@ -215,6 +215,10 @@ async function openChatBoxFor (_converse, jid) {
     return u.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
 }
 
+/**
+ * Returns an item-not-found disco info result, simulating that this was a
+ * new MUC being entered.
+ */
 async function waitForNewMUCDiscoInfo(_converse, muc_jid) {
     const { api } = _converse;
     const connection = api.connection.get();
@@ -370,22 +374,24 @@ async function receiveOwnMUCPresence (_converse, muc_jid, nick, affiliation='own
     const sent_stanzas = _converse.api.connection.get().sent_stanzas;
     await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
 
-    const presence = $pres({
-            to: _converse.api.connection.get().jid,
-            from: `${muc_jid}/${nick}`,
-            id: u.getUniqueId()
-    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-        .c('item').attrs({ affiliation, role, 'jid': _converse.bare_jid }).up()
-        .c('status').attrs({code:'110'}).up().up()
-
-    if (features.includes(Strophe.NS.OCCUPANTID)) {
-        presence.c('occupant-id', {'xmlns': Strophe.NS.OCCUPANTID, 'id': u.getUniqueId() });
-    }
-
-    if (_converse.xmppstatus.get('status')) {
-       presence.c('show').t(_converse.xmppstatus.get('status'));
-    }
-    _converse.api.connection.get()._dataRecv(createRequest(presence));
+    _converse.api.connection.get()._dataRecv(createRequest(stx`
+        <presence xmlns="jabber:client"
+                to="${_converse.api.connection.get().jid}"
+                from="${muc_jid}/${nick}"
+                id="${u.getUniqueId()}">
+            <x xmlns="http://jabber.org/protocol/muc#user">
+                <item affiliation="${affiliation}" role="${role}" jid="${_converse.bare_jid}"/>
+                <status code="110"/>
+            </x>
+            ${ (features.includes(Strophe.NS.OCCUPANTID))
+                ? stx`<occupant-id xmlns="${Strophe.NS.OCCUPANTID}" id="${u.getUniqueId()}"/>`
+                : ''
+            }
+            ${ _converse.xmppstatus.get('status')
+                ? stx`<show>${_converse.xmppstatus.get('status')}</show>`
+                : ''
+            }
+        </presence>`));
 }
 
 async function openAddMUCModal (_converse) {

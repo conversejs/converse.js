@@ -1244,13 +1244,15 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * https://xmpp.org/extensions/xep-0045.html#disco-roominfo
      * @returns {Promise}
      */
-    getDiscoInfo() {
-        return api.disco
-            .getIdentity("conference", "text", this.get("jid"))
-            .then((identity) => this.save({ name: identity?.get("name") }))
-            .then(() => this.getDiscoInfoFields())
-            .then(() => this.getDiscoInfoFeatures())
-            .catch((e) => log.error(e));
+    async getDiscoInfo() {
+        const identity = await api.disco.getIdentity("conference", "text", this.get("jid"));
+        if (identity?.get('name')) {
+            this.save({ name: identity.get("name") });
+        } else {
+            log.error(`No identity or name found for ${this.get("jid")}`);
+        }
+        await this.getDiscoInfoFields();
+        await this.getDiscoInfoFeatures();
     }
 
     /**

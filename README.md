@@ -31,6 +31,21 @@ You can then open http://localhost:8008/dev.html in your browser to access Conve
 
 See our [quickstart guide](https://conversejs.org/docs/html/quickstart.html) for more details.
 
+## Screenshots
+
+<details>
+<summary>Click to view screenshots</summary>
+
+### Overlay Mode
+![Screenshot of Converse in overlay mode](https://conversejs.org/media/screenshots/converse-overlayed.png)
+
+### Fullpage Mode
+![Screenshot of Converse in full-page mode](https://conversejs.org/media/screenshots/converse-enter-muc.png)
+
+### Embedded Mode
+![Screenshot of Converse in embedded mode](https://conversejs.org/media/screenshots/converse-prosody.png)
+</details>
+
 ## Live Demos
 
 - **[Main App](https://conversejs.org/fullscreen.html)**: Try the full application
@@ -67,22 +82,6 @@ Converse adapts to your needs with multiple display options:
 | **Fullpage** (default) | Functions as a single-page application covering the entire viewport |
 | **Overlay** | Chat boxes appear on top of your website |
 | **Embedded** | Integrates into specific elements in your page's DOM |
-
-<details>
-<summary>View Screenshots</summary>
-
-### Overlay Mode
-![Screenshot of Converse in overlay mode](https://conversejs.org/screenshots/Converse-overlayed.png)
-
-### Fullpage Mode
-![Screenshot of Converse in fullpage mode](https://conversejs.org/screenshots/Converse-fullscreen.png)
-
-### Dark Mode
-![Screenshot of Converse with a dark theme](https://conversejs.org/screenshots/Converse-Dracula-Theme.png)
-
-### Embedded Mode
-![Screenshot of Converse in embedded mode](https://conversejs.org/screenshots/Converse-embedded.png)
-</details>
 
 ## XMPP Protocol Support
 

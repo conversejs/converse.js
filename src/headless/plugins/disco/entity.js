@@ -62,11 +62,8 @@ class DiscoEntity extends Model {
      * @param {String} type - The identity type
      */
     async getIdentity(category, type) {
-        await this.waitUntilFeaturesDiscovered;
-        return this.identities.findWhere({
-            'category': category,
-            'type': type,
-        });
+        await this.waitUntilItemsFetched;
+        return this.identities.findWhere({ category, type });
     }
 
     /**
@@ -152,8 +149,22 @@ class DiscoEntity extends Model {
         try {
             stanza = await api.disco.info(this.get('jid'), null);
         } catch (iq) {
-            iq === null ? log.error(`Timeout for disco#info query for ${this.get('jid')}`) : log.error(iq);
-            this.waitUntilFeaturesDiscovered.resolve(u.isElement(iq) ? await parseErrorStanza(iq) : iq);
+            if (u.isElement(iq)) {
+                const e = await parseErrorStanza(iq);
+                if (e.message !== 'item-not-found') {
+                    log.error(`Error querying disco#info for ${this.get('jid')}: ${e.message}`);
+                }
+                this.waitUntilFeaturesDiscovered.resolve(e);
+                this.waitUntilItemsFetched.resolve(e);
+            } else {
+                if (iq === null) {
+                    log.error(`Timeout for disco#info query for ${this.get('jid')}`);
+                } else {
+                    log.error(`Error querying disco#info for ${this.get('jid')}: ${iq}`);
+                }
+                this.waitUntilFeaturesDiscovered.resolve(iq);
+                this.waitUntilItemsFetched.resolve(iq);
+            }
             return;
         }
         this.onInfo(stanza);
@@ -204,9 +215,9 @@ class DiscoEntity extends Model {
     async onInfo(stanza) {
         Array.from(stanza.querySelectorAll('identity')).forEach((identity) => {
             this.identities.create({
-                'category': identity.getAttribute('category'),
-                'type': identity.getAttribute('type'),
-                'name': identity.getAttribute('name'),
+                category: identity.getAttribute('category'),
+                type: identity.getAttribute('type'),
+                name: identity.getAttribute('name'),
             });
         });
 

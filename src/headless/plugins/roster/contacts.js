@@ -195,7 +195,7 @@ class RosterContacts extends Collection {
                 },
                 ...attributes,
             },
-            { 'sort': false }
+            { sort: false }
         );
 
         if (subscribe) contact.subscribe(message);
@@ -234,7 +234,7 @@ class RosterContacts extends Collection {
     /**
      * Handle roster updates from the XMPP server.
      * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-     * @param { Element } iq - The IQ stanza received from the XMPP server.
+     * @param {Element} iq - The IQ stanza received from the XMPP server.
      */
     onRosterPush (iq) {
         const id = iq.getAttribute('id');

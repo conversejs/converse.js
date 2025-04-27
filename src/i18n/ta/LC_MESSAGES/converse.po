@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 10.1.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-12 16:25+0200\n"
-"PO-Revision-Date: 2024-12-16 13:44+0000\n"
+"PO-Revision-Date: 2025-04-27 19:42+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/conversejs/"
 "translations/ta/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9-rc\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: dist/converse-no-dependencies.js:20630
 #: dist/converse-no-dependencies.js:20684
@@ -105,12 +105,12 @@ msgstr "மன்னிக்கவும், உங்கள் கோப்ப
 #: dist/converse-no-dependencies.js:34364
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr "பிழை: MUC %2S க்கு %1S பட்டியலைப் பெறும்போது நேரம் முடிந்தது"
+msgstr "பிழை: MUC %2s க்கு %1s பட்டியலைப் பெறும்போது நேரம் முடிந்தது"
 
 #: dist/converse-no-dependencies.js:34373
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr "பிழை: MUC %2S க்கு %1S பட்டியலைப் பெற அனுமதிக்கப்படவில்லை"
+msgstr "பிழை: MUC %2s க்கு %1s பட்டியலைப் பெற அனுமதிக்கப்படவில்லை"
 
 #: dist/converse-no-dependencies.js:36482
 #: dist/converse-no-dependencies.js:42946
@@ -1141,27 +1141,30 @@ msgid "Are you sure you want to remove this contact?"
 msgstr "இந்த தொடர்பை அகற்ற விரும்புகிறீர்களா?"
 
 #: dist/converse-no-dependencies.js:95529
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
-msgstr "மன்னிக்கவும், ஒரு தொடர்பாக %1$s ஐ சேர்க்க முயற்சிக்கும்போது பிழை ஏற்பட்டது."
+msgstr ""
+"மன்னிக்கவும், ஒரு தொடர்பாக %1$s ஐ சேர்க்க முயற்சிக்கும்போது பிழை ஏற்பட்டது"
 
 #: dist/converse-no-dependencies.js:95565
 msgid "Do you want to block this contact, so they cannot send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:95603
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
-msgstr "மன்னிக்கவும், ஒரு தொடர்பாக %1$s ஐ சேர்க்க முயற்சிக்கும்போது பிழை ஏற்பட்டது."
+msgstr ""
+"மன்னிக்கவும், ஒரு தொடர்பாக %1$s ஐ சேர்க்க முயற்சிக்கும்போது பிழை ஏற்பட்டது"
 
 #: dist/converse-no-dependencies.js:95635
 msgid "Do you want to unblock this contact, so they can send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:95655
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
-msgstr "மன்னிக்கவும், உங்கள் செய்தியை அனுப்ப முயற்சிக்கும்போது பிழை ஏற்பட்டது."
+msgstr ""
+"மன்னிக்கவும், உங்கள் செய்தியை அனுப்ப முயற்சிக்கும்போது பிழை ஏற்பட்டது %1$s"
 
 #: dist/converse-no-dependencies.js:96340
 msgid "Remove from blocklist"
@@ -1221,9 +1224,8 @@ msgid "Show less"
 msgstr "குறைவாகக் காட்டு"
 
 #: dist/converse-no-dependencies.js:97575
-#, fuzzy
 msgid "Message delivery failed."
-msgstr "செய்தி வழங்கல் தோல்வியடைந்தது: \"%1$s\""
+msgstr "செய்தி வழங்கல் தோல்வியடைந்தது."
 
 #: dist/converse-no-dependencies.js:98279
 msgid "A moderator"
@@ -2685,7 +2687,7 @@ msgstr "குழு அரட்டையைச் சேர்க்கவு�
 #: dist/converse-no-dependencies.js:136628
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
-msgstr "நீங்கள் நிச்சயமாக குழுமம் 1 $ s ஐ விட்டுவிட விரும்புகிறீர்களா?"
+msgstr "நீங்கள் நிச்சயமாகக் குழுமம் %1$s ஐ விட்டுவிட விரும்புகிறீர்களா?"
 
 #: dist/converse-no-dependencies.js:137297
 #, javascript-format

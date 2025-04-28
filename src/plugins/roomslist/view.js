@@ -68,7 +68,10 @@ export class RoomsList extends CustomElement {
         const target = /** @type {HTMLElement} */ (ev.currentTarget);
         const name = target.getAttribute('data-room-name');
         const jid = target.getAttribute('data-room-jid');
-        const result = await api.confirm(__('Are you sure you want to leave the groupchat %1$s?', name));
+        const result = await api.confirm(
+            __('Confirm'),
+            __('Are you sure you want to leave the groupchat %1$s?', name)
+        );
         if (result) {
             const room = await api.rooms.get(jid);
             room.close();

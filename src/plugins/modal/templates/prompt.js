@@ -30,12 +30,16 @@ function tplField(f) {
  * @param {import('../confirm').default} el
  */
 export default (el) => {
+
+    const first_msg = el.model.get('messages')?.[0];
+    const subsequent_msgs = el.model.get('messages')?.slice(1) || [];
     return html`<form
         class="converse-form converse-form--modal confirm"
         action="#"
         @submit=${(ev) => el.onConfimation(ev)}
     >
-        <div class="mb-3">${el.model.get('messages')?.map(/** @param {string} msg */ (msg) => html`<p>${msg}</p>`)}</div>
+        <div class="mb-3"><strong>${first_msg}</strong></div>
+        <div class="mb-3">${subsequent_msgs?.map(/** @param {string} msg */ (msg) => html`<p>${msg}</p>`)}</div>
         ${el.model.get('fields')?.map(/** @param {import('../types').Field} f */ (f) => tplField(f))}
         <div class="d-flex justify-content-end">
             <button type="submit" class="btn btn-primary me-2">${__('Confirm')}</button>

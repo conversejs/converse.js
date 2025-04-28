@@ -939,7 +939,10 @@ describe("Chatboxes", function () {
                 key: "Enter",
             });
             await u.waitUntil(() => _converse.api.confirm.calls.count() === 1);
-            expect(_converse.api.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
+            expect(_converse.api.confirm).toHaveBeenCalledWith(
+                'Confirm',
+                'Are you sure you want to clear the messages from this conversation?'
+            );
             await u.waitUntil(() => view.model.messages.length === 0);
             await u.waitUntil(() => !view.querySelectorAll('.chat-msg__body').length);
         }));

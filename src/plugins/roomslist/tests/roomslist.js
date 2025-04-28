@@ -297,8 +297,9 @@ describe("A groupchat shown in the groupchats list", function () {
         const close_el = rooms_list.querySelector(".close-room");
         close_el.click();
         expect(_converse.api.confirm).toHaveBeenCalledWith(
-            'Are you sure you want to leave the groupchat Lounge?');
-
+            'Confirm',
+            'Are you sure you want to leave the groupchat Lounge?'
+        );
         await u.waitUntil(() => rooms_list.querySelectorAll(".open-room").length === 0);
         expect(_converse.chatboxes.length).toBe(1);
     }));

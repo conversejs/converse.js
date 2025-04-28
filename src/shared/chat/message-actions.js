@@ -105,6 +105,7 @@ class MessageActions extends CustomElement {
         const unsent_text = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea')?.value;
         if (unsent_text && (!currently_correcting || currently_correcting.getMessageText() !== unsent_text)) {
             const result = await api.confirm(
+                __('Confirm'),
                 __('You have an unsent message which will be lost if you continue. Are you sure?')
             );
             if (!result) return;

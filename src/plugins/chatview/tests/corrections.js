@@ -280,7 +280,9 @@ describe("A Chat Message", function () {
 
         await u.waitUntil(() => _converse.api.confirm.calls.count());
         expect(_converse.api.confirm).toHaveBeenCalledWith(
-            'You have an unsent message which will be lost if you continue. Are you sure?');
+            'Confirm',
+            'You have an unsent message which will be lost if you continue. Are you sure?'
+        );
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
         await u.waitUntil(() => textarea.value === 'But soft, what light through yonder window breaks?');
 
@@ -290,9 +292,9 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => _converse.api.confirm.calls.count() === 2);
         expect(view.model.messages.at(0).get('correcting')).toBe(false);
         expect(_converse.api.confirm.calls.argsFor(0)).toEqual(
-            ['You have an unsent message which will be lost if you continue. Are you sure?']);
+            ['Confirm', 'You have an unsent message which will be lost if you continue. Are you sure?']);
         expect(_converse.api.confirm.calls.argsFor(1)).toEqual(
-            ['You have an unsent message which will be lost if you continue. Are you sure?']);
+            ['Confirm', 'You have an unsent message which will be lost if you continue. Are you sure?']);
     }));
 
 

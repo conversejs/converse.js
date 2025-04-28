@@ -356,7 +356,10 @@ describe("Groupchats", function () {
                 key: "Enter",
             });
             await u.waitUntil(() => _converse.api.confirm.calls.count() === 1);
-            expect(_converse.api.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
+            expect(_converse.api.confirm).toHaveBeenCalledWith(
+                'Confirm',
+                'Are you sure you want to clear the messages from this conversation?'
+            );
         }));
 
         it("takes /owner to make a user an owner", mock.initConverse([], {}, async function (_converse) {

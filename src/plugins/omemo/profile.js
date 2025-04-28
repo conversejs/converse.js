@@ -62,6 +62,7 @@ export class Profile extends CustomElement {
         ev.preventDefault();
 
         const result = await api.confirm(
+            __("Confirm"),
             __(
                 "Are you sure you want to generate new OMEMO keys? " +
                     "This will remove your old keys and all previously " +

@@ -8,7 +8,10 @@ export function clearHistory (jid) {
 }
 
 export async function clearMessages (chat) {
-    const result = await api.confirm(__('Are you sure you want to clear the messages from this conversation?'));
+    const result = await api.confirm(
+        __('Confirm'),
+        __('Are you sure you want to clear the messages from this conversation?')
+    );
     if (result) {
         await chat.clearMessages();
     }

@@ -9,7 +9,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { parseErrorStanza } from '../../shared/parsers.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import { initStorage } from '../../utils/storage.js';
 import { parseStanzaForBookmarks } from './parsers.js';
 import '../../plugins/muc/index.js';
@@ -29,7 +29,12 @@ class Bookmarks extends Collection {
         );
         this.on('remove', this.leaveRoom, this);
         this.on('change:autojoin', this.onAutoJoinChanged, this);
-        this.on('remove', this.sendBookmarkStanza, this);
+        this.on(
+            'remove',
+            /** @param {Bookmark} bookmark */
+            (_, bookmark) => this.sendBookmarkStanza(bookmark),
+            this
+        );
 
         const { session } = _converse;
         const cache_key = `converse.room-bookmarks${session.get('bare_jid')}`;
@@ -95,45 +100,44 @@ class Bookmarks extends Collection {
     /**
      * @param {import('./types').BookmarkAttrs} attrs
      */
-    setBookmark(attrs, create=true) {
+    setBookmark(attrs, create = true) {
         if (!attrs.jid) return log.warn('No JID provided for setBookmark');
 
         let send_stanza = false;
 
-        const existing = this.get(attrs.jid);
-        if (existing) {
+        let bookmark = this.get(attrs.jid);
+        if (bookmark) {
             // Check if any attrs changed
             const has_changed = Object.keys(attrs).reduce((result, k) => {
-                return result || (attrs[k] ?? '') !== (existing.attributes[k] ?? '');
+                return result || (attrs[k] ?? '') !== (bookmark.attributes[k] ?? '');
             }, false);
             if (has_changed) {
-                existing.save(attrs);
+                bookmark.save(attrs);
                 send_stanza = true;
             }
         } else if (create) {
-            this.create(attrs);
+            bookmark = this.create(attrs);
             send_stanza = true;
         }
         if (send_stanza) {
-            this.sendBookmarkStanza().catch((iq) => this.onBookmarkError(iq, attrs));
+            this.sendBookmarkStanza(bookmark).catch((iq) => this.onBookmarkError(iq, attrs));
         }
     }
 
     /**
      * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
+     * @param {Bookmark} bookmark
      * @returns {Stanza|Stanza[]}
      */
-    getPublishedItems(node) {
+    getPublishedItems(node, bookmark) {
         if (node === Strophe.NS.BOOKMARKS2) {
-            return this.map(
-                /** @param {MUC} model */ (model) => {
-                    const extensions = model.get('extensions') ?? [];
-                    return stx`<item id="${model.get('jid')}">
+            const extensions = bookmark.get('extensions') ?? [];
+            return stx`<item id="${bookmark.get('jid')}">
                         <conference xmlns="${Strophe.NS.BOOKMARKS2}"
-                                name="${model.get('name')}"
-                                autojoin="${model.get('autojoin')}">
-                            ${model.get('nick') ? stx`<nick>${model.get('nick')}</nick>` : ''}
-                            ${model.get('password') ? stx`<password>${model.get('password')}</password>` : ''}
+                                name="${bookmark.get('name')}"
+                                autojoin="${bookmark.get('autojoin')}">
+                            ${bookmark.get('nick') ? stx`<nick>${bookmark.get('nick')}</nick>` : ''}
+                            ${bookmark.get('password') ? stx`<password>${bookmark.get('password')}</password>` : ''}
                         ${
                             extensions.length
                                 ? stx`<extensions>${extensions.map((e) => Stanza.fromString(e))}</extensions>`
@@ -141,8 +145,6 @@ class Bookmarks extends Collection {
                         }
                         </conference>
                     </item>`;
-                }
-            );
         } else {
             return stx`<item id="current">
                 <storage xmlns="${Strophe.NS.BOOKMARKS}">
@@ -160,14 +162,15 @@ class Bookmarks extends Collection {
     }
 
     /**
+     * @param {Bookmark} bookmark
      * @returns {Promise<void|Element>}
      */
-    async sendBookmarkStanza() {
+    async sendBookmarkStanza(bookmark) {
         const bare_jid = _converse.session.get('bare_jid');
         const node = (await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid))
             ? Strophe.NS.BOOKMARKS2
             : Strophe.NS.BOOKMARKS;
-        return api.pubsub.publish(null, node, this.getPublishedItems(node), {
+        return api.pubsub.publish(null, node, this.getPublishedItems(node, bookmark), {
             persist_items: true,
             max_items: 'max',
             send_last_published_item: 'never',
@@ -274,7 +277,6 @@ class Bookmarks extends Collection {
                 ),
             ]);
             deferred?.reject(new Error('Could not fetch bookmarks'));
-
         } else {
             const { errors } = converse.env;
             const e = await parseErrorStanza(iq);

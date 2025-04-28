@@ -358,9 +358,6 @@ describe("A bookmark", function () {
                                 <nick>romeo</nick>
                             </conference>
                         </item>
-                        <item id="${muc1_jid}">
-                            <conference xmlns="urn:xmpp:bookmarks:1" autojoin="true" name="Hamlet"/>
-                        </item>
                     </publish>
                     <publish-options>
                         <x type="submit" xmlns="jabber:x:data">
@@ -404,11 +401,6 @@ describe("A bookmark", function () {
             <iq xmlns="jabber:client" type="set" from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="urn:xmpp:bookmarks:1">
-                        <item id="${muc2_jid}">
-                            <conference xmlns="urn:xmpp:bookmarks:1" autojoin="true" name="Balcony">
-                                <nick>romeo</nick>
-                            </conference>
-                        </item>
                         <item id="${muc3_jid}">
                             <conference xmlns="urn:xmpp:bookmarks:1" autojoin="false" name="Garden">
                                 <nick>r0meo</nick>
@@ -418,9 +410,6 @@ describe("A bookmark", function () {
                                     <levels xmlns="http://myclient.example/bookmark/levels" amount="9000"/>
                                 </extensions>
                             </conference>
-                        </item>
-                        <item id="${muc1_jid}">
-                            <conference xmlns="urn:xmpp:bookmarks:1" autojoin="true" name="Hamlet"/>
                         </item>
                     </publish>
                     <publish-options>

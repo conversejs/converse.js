@@ -30,7 +30,6 @@ function tplField(f) {
  * @param {import('../confirm').default} el
  */
 export default (el) => {
-
     const first_msg = el.model.get('messages')?.[0];
     const subsequent_msgs = el.model.get('messages')?.slice(1) || [];
     return html`<form

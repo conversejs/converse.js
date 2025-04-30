@@ -63,6 +63,7 @@
             .box-flyout {
                 .controlbox-pane {
                     overflow-y: auto;
+                    padding-top: 0;
                 }
             }
         }
@@ -172,6 +173,9 @@
         &.converse-overlayed {
             display: flex;
             flex-direction: row-reverse;
+            .flyout {
+                border: 0;
+            }
 
             .toggle-controlbox {
                 background-color: var(--controlbox-color);
@@ -199,30 +203,17 @@
             }
 
             .converse-svg-logo {
+                margin-right: 0.1em;
                 height: 1em;
             }
         }
 
         &.converse-embedded,
         &.converse-fullscreen {
-            #controlbox {
-                .flyout {
-                    border-inline-end: 0.2rem solid var(--controlbox-color);
-                }
-            }
             .toggle-controlbox {
                 display: none;
             }
-        }
 
-        &.converse-overlayed {
-            .flyout {
-                border: 0;
-            }
-        }
-
-        &.converse-embedded,
-        &.converse-fullscreen {
             #controlbox {
                 margin: 0;
 
@@ -248,9 +239,15 @@
                 }
 
                 .flyout {
+                    border-inline-end: 0.2rem solid var(--controlbox-color);
                     border-radius: 0;
                     width: 100%;
                     z-index: 1;
+                }
+
+                .converse-svg-logo {
+                    margin-top: 0.1em;
+                    height: 1.8em;
                 }
 
                 converse-brand-logo {

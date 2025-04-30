@@ -42,7 +42,13 @@ $prefix: 'converse-';
             }
         }
         .btn-close {
+            --converse-btn-close-bg: none;
             margin: 0;
+            padding: 0;
+            font-size: 2.5em;
+            svg {
+                fill: var(--background-color);
+            }
         }
         .close {
             color: var(--background-color);

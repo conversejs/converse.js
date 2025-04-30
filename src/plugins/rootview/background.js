@@ -8,6 +8,12 @@ import './styles/background.scss';
 
 class ConverseBackground extends CustomElement {
 
+    static get properties() {
+        return {
+            logo: { type: Boolean },
+        };
+    }
+
     initialize() {
         this.setThemeAttributes();
 
@@ -19,7 +25,7 @@ class ConverseBackground extends CustomElement {
     }
 
     render() {
-        return tplBackground();
+        return tplBackground(this);
     }
 
     setThemeAttributes () {

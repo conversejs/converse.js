@@ -62,7 +62,9 @@
 
         &#converse-register,
         &#converse-login {
-            background: var(--background-color);
+            .converse-fullscreen & {
+                background-color: rgba(var(--background-color-rgb), 0.9);
+            }
             legend {
                 width: 100%;
                 text-align: center;
@@ -75,15 +77,11 @@
                 height: auto;
                 white-space: normal;
             }
-            .save-submit {
-                color: var(--success-color);
-            }
             .form-url {
                 display: block;
                 font-weight: normal;
                 margin: 1em 0;
             }
-
         }
 
         &.converse-form {

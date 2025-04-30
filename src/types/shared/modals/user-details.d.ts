@@ -5,7 +5,7 @@ export default class UserDetailsModal extends BaseModal {
      * @param {Map<string, any>} changed
      */
     shouldUpdate(changed: Map<string, any>): boolean;
-    renderModal(): "" | import("lit-html").TemplateResult<1>;
+    renderModal(): import("lit-html").TemplateResult<1> | "";
     getModalTitle(): any;
     registerContactEventHandlers(): void;
     /**

@@ -61,7 +61,7 @@ function tplRoomItem (el, room) {
                 data-room-jid="${room.get('jid')}"
                 data-room-name="${room.getDisplayName()}"
                 title="${i18n_leave_room}"
-                @click=${ev => el.closeRoom(ev)}>
+                @click=${(ev) => el.closeRoom(ev)}>
                 <converse-icon
                     class="fa fa-sign-out-alt"
                     size="1.2em"

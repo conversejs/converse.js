@@ -9,10 +9,11 @@ declare namespace bookmarks {
      *
      * @method api.bookmarks.set
      * @param {import('./types').BookmarkAttrs} attrs - The room attributes
-     * @param {boolean} create=true - Whether the bookmark should be created if it doesn't exist
+     * @param {boolean} [create=true] - Whether the bookmark should be created if it doesn't exist
+     * @param {object} [options] - Skeletor set/add options
      * @returns {Promise<import('./model').default>}
      */
-    function set(attrs: import("./types").BookmarkAttrs, create?: boolean): Promise<import("./model").default>;
+    function set(attrs: import("./types").BookmarkAttrs, create?: boolean, options?: object): Promise<import("./model").default>;
     /**
      * @method api.bookmarks.get
      * @param {string} jid - The JID of the bookmark to return.

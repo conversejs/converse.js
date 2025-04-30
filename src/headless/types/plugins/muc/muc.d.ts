@@ -468,7 +468,9 @@ declare class MUC extends MUC_base {
      */
     sendDestroyIQ(reason?: string, new_jid?: string): any;
     /**
-     * Leave the groupchat.
+     * Leave the groupchat by sending an unavailable presence stanza, and then
+     * tear down the features and disco collections so that they'll be
+     * recreated if/when we rejoin.
      * @param {string} [exit_msg] - Message to indicate your reason for leaving
      */
     leave(exit_msg?: string): Promise<void>;

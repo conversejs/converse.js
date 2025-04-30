@@ -9,7 +9,7 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { initBookmarks, getNicknameFromBookmark, handleBookmarksPush } from './utils.js';
 import '../../plugins/muc/index.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import bookmarks_api from './api.js';
 
 const { Strophe } = converse.env;
@@ -104,7 +104,15 @@ converse.plugins.add('converse-bookmarks', {
                         jid,
                         autojoin: false,
                     },
-                    false
+                    false,
+                    // Don't trigger a Skeletor `change` event.
+                    // This MUC is being left explicitly by the user,
+                    // so we don't want to trigger the `onAutoJoinChanged`
+                    // listener in ./collection.js to again call `close()`
+                    // on the MUC.
+                    {
+                        silent: true,
+                    }
                 );
             }
         );

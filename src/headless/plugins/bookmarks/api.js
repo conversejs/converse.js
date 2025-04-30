@@ -15,12 +15,13 @@ const bookmarks = {
      *
      * @method api.bookmarks.set
      * @param {import('./types').BookmarkAttrs} attrs - The room attributes
-     * @param {boolean} create=true - Whether the bookmark should be created if it doesn't exist
+     * @param {boolean} [create=true] - Whether the bookmark should be created if it doesn't exist
+     * @param {object} [options] - Skeletor set/add options
      * @returns {Promise<import('./model').default>}
      */
-    async set(attrs, create = true) {
+    async set(attrs, create = true, options = {}) {
         const bookmarks = await waitUntil('bookmarksInitialized');
-        return bookmarks.setBookmark(attrs, create);
+        return bookmarks.setBookmark(attrs, create, options);
     },
 
     /**

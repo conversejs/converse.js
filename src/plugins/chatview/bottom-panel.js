@@ -11,21 +11,19 @@ import './message-form.js';
 
 import './styles/chat-bottom-panel.scss';
 
-
 export default class ChatBottomPanel extends CustomElement {
-
-    constructor () {
+    constructor() {
         super();
         this.model = null;
     }
 
-    static get properties () {
+    static get properties() {
         return {
-            model: { type: Object }
-        }
+            model: { type: Object },
+        };
     }
 
-    async connectedCallback () {
+    async connectedCallback() {
         super.connectedCallback();
         await this.initialize();
         // Don't call in initialize, since the MUCBottomPanel subclasses it
@@ -33,43 +31,42 @@ export default class ChatBottomPanel extends CustomElement {
         this.requestUpdate();
     }
 
-    async initialize () {
+    async initialize() {
         await this.model.initialized;
         this.listenTo(this.model, 'change:num_unread', () => this.requestUpdate());
         this.listenTo(this.model, 'emoji-picker-autocomplete', this.autocompleteInPicker);
 
-        this.addEventListener('click', ev => this.sendButtonClicked(ev));
-        this.addEventListener(
-            'emojipickerblur',
-            () => /** @type {HTMLElement} */(this.querySelector('.chat-textarea')).focus()
+        this.addEventListener('click', (ev) => this.sendButtonClicked(ev));
+        this.addEventListener('emojipickerblur', () =>
+            /** @type {HTMLElement} */ (this.querySelector('.chat-textarea')).focus()
         );
     }
 
-    render () {
+    render() {
         if (!this.model) return '';
         return tplBottomPanel({
             'model': this.model,
-            'viewUnreadMessages': ev => this.viewUnreadMessages(ev)
+            'viewUnreadMessages': (ev) => this.viewUnreadMessages(ev),
         });
     }
 
-    sendButtonClicked (ev) {
+    sendButtonClicked(ev) {
         if (ev.delegateTarget?.dataset.action === 'sendMessage') {
-            const form = /** @type {MessageForm} */(this.querySelector('converse-message-form'));
+            const form = /** @type {MessageForm} */ (this.querySelector('converse-message-form'));
             form?.onFormSubmitted(ev);
         }
     }
 
-    viewUnreadMessages (ev) {
+    viewUnreadMessages(ev) {
         ev?.preventDefault?.();
         this.model.ui.set({ 'scrolled': false });
     }
 
-    onDragOver (ev) {
+    onDragOver(ev) {
         ev.preventDefault();
     }
 
-    clearMessages (ev) {
+    clearMessages(ev) {
         ev?.preventDefault?.();
         clearMessages(this.model);
     }
@@ -80,17 +77,17 @@ export default class ChatBottomPanel extends CustomElement {
      * @property {string} value
      * @param {AutocompleteInPickerEvent} ev
      */
-    async autocompleteInPicker (ev) {
+    async autocompleteInPicker(ev) {
         const { target: input, value } = ev;
         await api.emojis.initialize();
-        const emoji_picker = /** @type {EmojiPicker} */(this.querySelector('converse-emoji-picker'));
+        const emoji_picker = /** @type {EmojiPicker} */ (this.querySelector('converse-emoji-picker'));
         if (emoji_picker) {
             emoji_picker.state.set({
                 ac_position: input.selectionStart,
                 autocompleting: value,
-                query: value
+                query: value,
             });
-            const emoji_dropdown = /** @type {EmojiDropdown} */(this.querySelector('converse-emoji-dropdown'));
+            const emoji_dropdown = /** @type {EmojiDropdown} */ (this.querySelector('converse-emoji-dropdown'));
             emoji_dropdown?.dropdown.show();
         }
     }

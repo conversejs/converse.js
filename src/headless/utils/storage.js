@@ -5,20 +5,20 @@ import { getUnloadEvent } from './session.js';
 
 const settings = settings_api;
 
-export function getDefaultStore () {
+export function getDefaultStore() {
     if (_converse.state.config.get('trusted')) {
         const is_non_persistent = settings.get('persistent_store') === 'sessionStorage';
-        return is_non_persistent ? 'session': 'persistent';
+        return is_non_persistent ? 'session' : 'persistent';
     } else {
         return 'session';
     }
 }
 
-function storeUsesIndexedDB (store) {
+function storeUsesIndexedDB(store) {
     return store === 'persistent' && settings.get('persistent_store') === 'IndexedDB';
 }
 
-export function createStore (id, store) {
+export function createStore(id, store) {
     const name = store || getDefaultStore();
     const s = _converse.storage[name];
     if (typeof s === 'undefined') {
@@ -27,7 +27,7 @@ export function createStore (id, store) {
     return new Storage(id, s, storeUsesIndexedDB(store));
 }
 
-export function initStorage (model, id, type) {
+export function initStorage(model, id, type) {
     const store = type || getDefaultStore();
     model.browserStorage = createStore(id, store);
     if (storeUsesIndexedDB(store)) {

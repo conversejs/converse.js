@@ -154,7 +154,7 @@ export default (el) => {
         >
             <span class="feedback-message">${conn_feedback_message}</span>
         </div>
-        ${CONNECTION_STATUS[connection_status] === 'CONNECTING'
+        ${['CONNECTING', 'AUTHENTICATING', 'RECONNECTING'].includes(CONNECTION_STATUS[connection_status])
             ? html`<div class="text-center my-3">${tplSpinner()}</div>`
             : tplFormFields()}
     </form>`;

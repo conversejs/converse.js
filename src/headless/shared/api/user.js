@@ -26,7 +26,7 @@ const api = {
          * @returns {string} The current user's full JID (Jabber ID)
          * @example _converse.api.user.jid())
          */
-        jid () {
+        jid() {
             return connection_api.get()?.jid;
         },
 
@@ -47,13 +47,13 @@ const api = {
          *  fails to restore a previous auth'd session.
          *  @returns  { Promise<void> }
          */
-        async login (jid, password, automatic=false) {
+        async login(jid, password, automatic = false) {
             const { api } = _converse;
             jid = jid || api.settings.get('jid');
 
             const connection = connection_api.init(jid);
 
-            if (api.settings.get("connection_options")?.worker && (await connection.restoreWorkerSession())) {
+            if (api.settings.get('connection_options')?.worker && (await connection.restoreWorkerSession())) {
                 return;
             }
             if (jid) {
@@ -85,8 +85,8 @@ const api = {
             const { success } = await _converse.api.hook('login', this, { jid, password, automatic });
             if (success) return;
 
-            password = password || api.settings.get("password");
-            const credentials = (jid && password) ? { jid, password } : null;
+            password = password || api.settings.get('password');
+            const credentials = jid && password ? { jid, password } : null;
             await attemptNonPreboundSession(credentials, automatic);
         },
 
@@ -95,13 +95,13 @@ const api = {
          * @method _converse.api.user.logout
          * @example _converse.api.user.logout();
          */
-        async logout () {
+        async logout() {
             const { api } = _converse;
             /**
              * Triggered before the user is logged out
              * @event _converse#beforeLogout
              */
-            await api.trigger('beforeLogout', {'synchronous': true});
+            await api.trigger('beforeLogout', { 'synchronous': true });
 
             const promise = getOpenPromise();
             const complete = () => {
@@ -118,7 +118,7 @@ const api = {
                  */
                 api.trigger('logout');
                 promise.resolve();
-            }
+            };
 
             const connection = connection_api.get();
 
@@ -130,8 +130,8 @@ const api = {
                 complete();
             }
             return promise;
-        }
-    }
-}
+        },
+    },
+};
 
 export default api;

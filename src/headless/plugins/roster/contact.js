@@ -8,7 +8,7 @@ import ColorAwareModel from '../../shared/color.js';
 import ModelWithVCard from '../../shared/model-with-vcard.js';
 import { rejectPresenceSubscription } from './utils.js';
 
-const { Strophe, $iq, $pres, stx } = converse.env;
+const { Strophe, $pres, stx } = converse.env;
 
 class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
     get idAttribute () {

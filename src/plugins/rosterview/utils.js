@@ -207,12 +207,13 @@ export function shouldShowGroup(group, model) {
  */
 export function populateContactsMap(contacts_map, contact) {
     const { labels } = _converse;
-
     const contact_groups = /** @type {string[]} */ (u.unique(contact.get('groups') ?? []));
 
-    if (contact.get('requesting')) {
+    if (u.isOwnJID(contact.get('jid')) && !contact_groups.length) {
+        contact_groups.push(/** @type {string} */ (labels.HEADER_UNGROUPED));
+    } else if (contact.get('requesting')) {
         contact_groups.push(/** @type {string} */ (labels.HEADER_REQUESTING_CONTACTS));
-    } else if (contact.get('subscription') === 'none') {
+    } else if (contact.get('subscription') === undefined) {
         contact_groups.push(/** @type {string} */ (labels.HEADER_UNSAVED_CONTACTS));
     } else if (!api.settings.get('roster_groups')) {
         contact_groups.push(/** @type {string} */ (labels.HEADER_CURRENT_CONTACTS));
@@ -258,16 +259,18 @@ export function contactsComparator(contact1, contact2) {
 export function groupsComparator(a, b) {
     const HEADER_WEIGHTS = {};
     const {
-        HEADER_UNREAD,
-        HEADER_REQUESTING_CONTACTS,
         HEADER_CURRENT_CONTACTS,
+        HEADER_REQUESTING_CONTACTS,
         HEADER_UNGROUPED,
+        HEADER_UNREAD,
+        HEADER_UNSAVED_CONTACTS,
     } = _converse.labels;
 
     HEADER_WEIGHTS[HEADER_UNREAD] = 0;
-    HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 1;
-    HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS] = 2;
-    HEADER_WEIGHTS[HEADER_UNGROUPED] = 3;
+    HEADER_WEIGHTS[HEADER_UNSAVED_CONTACTS] = 1;
+    HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
+    HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS] = 3;
+    HEADER_WEIGHTS[HEADER_UNGROUPED] = 4;
 
     const WEIGHTS = HEADER_WEIGHTS;
     const special_groups = Object.keys(HEADER_WEIGHTS);

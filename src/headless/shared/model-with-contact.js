@@ -38,7 +38,7 @@ export default function ModelWithContact(BaseModel) {
             } else {
                 contact = await api.contacts.get(jid);
                 if (!contact && !(await api.blocklist.get()).get(jid)) {
-                    await api.contacts.add({ jid, subscription: 'none' }, false, false);
+                    contact = await api.contacts.add({ jid }, false, false);
                 }
             }
 

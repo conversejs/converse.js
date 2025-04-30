@@ -7,7 +7,7 @@ import sizzle from 'sizzle';
 import { Stanza, Strophe, $build, $iq, $msg, $pres, stx } from 'strophe.js';
 import { Collection, Model } from "@converse/skeletor";
 import { filesize } from 'filesize';
-import { css, html, render } from 'lit';
+import { css, html, render, nothing } from 'lit';
 
 import api from './index.js';
 import _converse from '../_converse.js';
@@ -36,24 +36,25 @@ const env = /** @type {import('./types').ConverseEnv} */ {
     $iq,
     $msg,
     $pres,
-    utils: u,
     Collection,
     Model,
     Stanza,
     Strophe,
     TimeoutError,
     VERSION_NAME,
+    css,
     dayjs,
     errors,
     filesize,
     html,
-    css,
-    render,
     log,
+    nothing,
+    render,
     sizzle,
     sprintf,
     stx,
     u,
+    utils: u,
 }
 
 /**

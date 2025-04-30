@@ -2,12 +2,13 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "../emoji/index.js";
 import ChatBoxes from './chatboxes.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from "../../shared/api/public.js";
+import { isUniView } from '../../utils/session.js';
 import chatboxes_api from './api.js';
+import "../emoji/index.js";
 
 const { Strophe } = converse.env;
 
@@ -53,5 +54,13 @@ converse.plugins.add('converse-chatboxes', {
 
         api.listen.on('presencesInitialized', (reconnecting) => chatboxes.onConnected(reconnecting));
         api.listen.on('reconnected', () => chatboxes.forEach(m => m.onReconnection()));
+
+        // XXX: Would be nice to keep track of the last open chat and to show that again.
+        api.listen.on('chatBoxClosed', () => {
+            if (isUniView()) {
+                _converse.state.chatboxes.find((c) => c.get('jid'))?.maybeShow();
+            }
+        });
+
     }
 });

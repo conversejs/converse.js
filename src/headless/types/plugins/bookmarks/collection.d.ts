@@ -20,17 +20,21 @@ declare class Bookmarks extends Collection {
     };
     /**
      * @param {import('./types').BookmarkAttrs} attrs
+     * @param {boolean} [create=true]
+     * @param {object} [options]
      */
-    setBookmark(attrs: import("./types").BookmarkAttrs, create?: boolean): void;
+    setBookmark(attrs: import("./types").BookmarkAttrs, create?: boolean, options?: object): void;
     /**
      * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
+     * @param {Bookmark} bookmark
      * @returns {Stanza|Stanza[]}
      */
-    getPublishedItems(node: "urn:xmpp:bookmarks:1" | "storage:bookmarks"): Stanza | Stanza[];
+    getPublishedItems(node: "urn:xmpp:bookmarks:1" | "storage:bookmarks", bookmark: Bookmark): Stanza | Stanza[];
     /**
+     * @param {Bookmark} bookmark
      * @returns {Promise<void|Element>}
      */
-    sendBookmarkStanza(): Promise<void | Element>;
+    sendBookmarkStanza(bookmark: Bookmark): Promise<void | Element>;
     /**
      * @param {Element} iq
      * @param {import('./types').BookmarkAttrs} attrs

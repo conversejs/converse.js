@@ -99,8 +99,10 @@ class Bookmarks extends Collection {
 
     /**
      * @param {import('./types').BookmarkAttrs} attrs
+     * @param {boolean} [create=true]
+     * @param {object} [options]
      */
-    setBookmark(attrs, create = true) {
+    setBookmark(attrs, create = true, options = {}) {
         if (!attrs.jid) return log.warn('No JID provided for setBookmark');
 
         let send_stanza = false;
@@ -112,11 +114,11 @@ class Bookmarks extends Collection {
                 return result || (attrs[k] ?? '') !== (bookmark.attributes[k] ?? '');
             }, false);
             if (has_changed) {
-                bookmark.save(attrs);
+                bookmark.save(attrs, options);
                 send_stanza = true;
             }
         } else if (create) {
-            bookmark = this.create(attrs);
+            bookmark = this.create(attrs, options);
             send_stanza = true;
         }
         if (send_stanza) {

@@ -945,19 +945,15 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
-     * Leave the groupchat.
+     * Leave the groupchat by sending an unavailable presence stanza, and then
+     * tear down the features and disco collections so that they'll be
+     * recreated if/when we rejoin.
      * @param {string} [exit_msg] - Message to indicate your reason for leaving
      */
     async leave(exit_msg) {
-        /**
-         * Triggered when the user leaves a MUC
-         * @event _converse#leaveRoom
-         * @type {MUC}
-         * @example _converse.api.listen.on('leaveRoom', model => { ... });
-         */
-        api.trigger("leaveRoom", this);
+        api.user.presence.send("unavailable", this.getRoomJIDAndNick(), exit_msg);
 
-        api.connection.connected() && api.user.presence.send("unavailable", this.getRoomJIDAndNick(), exit_msg);
+        safeSave(this.session, { connection_status: ROOMSTATUS.DISCONNECTED });
 
         // Delete the features model
         if (this.features) {
@@ -984,7 +980,6 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 })
             );
         }
-        safeSave(this.session, { "connection_status": ROOMSTATUS.DISCONNECTED });
     }
 
     /**
@@ -996,14 +991,25 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         const { ENTERED, CLOSING } = ROOMSTATUS;
         const was_entered = this.session.get("connection_status") === ENTERED;
 
-        safeSave(this.session, { "connection_status": CLOSING });
+        safeSave(this.session, { connection_status: CLOSING });
         was_entered && this.sendMarkerForLastMessage("received", true);
-        await this.unregisterNickname();
         await this.leave();
 
         this.occupants.clearStore();
-        if (ev?.name !== "closeAllChatBoxes" && api.settings.get("muc_clear_messages_on_leave")) {
-            this.clearMessages();
+
+        const is_closed_by_user = ev?.name !== "closeAllChatBoxes";
+        if (is_closed_by_user) {
+            await this.unregisterNickname();
+            if (api.settings.get("muc_clear_messages_on_leave")) {
+                this.clearMessages();
+            }
+            /**
+             * Triggered when the user leaves a MUC
+             * @event _converse#leaveRoom
+             * @type {MUC}
+             * @example _converse.api.listen.on('leaveRoom', model => { ... });
+             */
+            api.trigger("leaveRoom", this);
         }
 
         // Delete the session model

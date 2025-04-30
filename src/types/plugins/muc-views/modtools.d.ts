@@ -56,7 +56,7 @@ export default class ModeratorTools extends CustomElement {
         reject: (reason?: any) => void;
     };
     muc: any;
-    render(): "" | import("lit-html").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1> | "";
     switchTab(ev: any): void;
     onSearchAffiliationChange(): Promise<void>;
     loading_users_with_affiliation: boolean;

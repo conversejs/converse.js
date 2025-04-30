@@ -7,7 +7,7 @@ export default (el) => {
     return html`
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="collapse navbar-collapse">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link" href="#" @click=${el.openAboutDialog}>About</a>

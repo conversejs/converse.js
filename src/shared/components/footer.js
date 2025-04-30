@@ -12,12 +12,12 @@ export class ConverseFooter extends CustomElement {
         return html`
             ${is_fullscreen
                 ? html`
-                      <footer class="footer mt-auto py-3 mb-2">
+                      <footer class="footer mt-auto py-3 pb-3">
                           <div class="container">
                               <div class="row">
                                   <div class="col-12 text-center">
                                       <p class="brand-subtitle mb-2 subdued">Version: ${_converse.VERSION_NAME}</p>
-                                      <p class="brand-subtitle mb-2">
+                                      <p class="brand-subtitle mb-4">
                                           <a
                                               target="_blank"
                                               rel="nofollow"
@@ -25,14 +25,7 @@ export class ConverseFooter extends CustomElement {
                                               >Open Source</a
                                           >
                                           XMPP chat client brought to you by
-                                          <a target="_blank" rel="nofollow" href="https://opkode.com">Opkode</a>.
-                                      </p>
-                                      <p class="brand-subtitle mb-4">
-                                          You can
-                                          <a target="_blank" rel="nofollow" href="https://opkode.com/contact.html"
-                                              >hire me</a
-                                          >
-                                          for customizations, support or to build your next project.
+                                          <a target="_blank" rel="nofollow" href="https://opkode.com/about">Opkode</a>.
                                       </p>
                                       <div class="sponsors text-center">
                                           <p class="byline mb-1">${i18n_sponsors}</p>

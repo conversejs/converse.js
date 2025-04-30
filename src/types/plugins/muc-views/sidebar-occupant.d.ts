@@ -15,7 +15,7 @@ export default class MUCOccupantListItem extends ObservableElement {
     };
     muc: any;
     initialize(): Promise<void>;
-    render(): "" | import("lit-html").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1> | "";
     /**
      * @param {MouseEvent} ev
      * @param {import('@converse/headless/types/plugins/muc/occupant.js').default} occupant

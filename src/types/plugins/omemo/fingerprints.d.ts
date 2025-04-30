@@ -7,7 +7,7 @@ export class Fingerprints extends CustomElement {
     jid: any;
     initialize(): Promise<void>;
     devicelist: any;
-    render(): "" | import("lit-html").TemplateResult<1>;
+    render(): import("lit-html").TemplateResult<1> | "";
     toggleDeviceTrust(ev: any): void;
 }
 import { CustomElement } from "shared/components/element.js";

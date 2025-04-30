@@ -121,7 +121,6 @@ const api = {
             };
 
             const connection = connection_api.get();
-
             if (connection) {
                 connection.setDisconnectionCause(LOGOUT, undefined, true);
                 api.listen.once('disconnected', () => complete());

@@ -11,7 +11,11 @@ function whenNotConnected(el) {
     const is_fullscreen = api.settings.get('view_mode') === 'fullscreen';
     const connection_status = _converse.state.connfeedback.get('connection_status');
     const connecting = [Strophe.Status.RECONNECTING, Strophe.Status.CONNECTING].includes(connection_status);
+    const view_mode = api.settings.get('view_mode');
+    const show_bg = api.settings.get('show_background');
+
     return html`
+        ${show_bg && view_mode === 'fullscreen' ? html`<converse-bg></converse-bg>` : ''}
         <converse-controlbox-buttons class="controlbox-padded"></converse-controlbox-buttons>
         <div class="controlbox-pane d-flex flex-column justify-content-between">
             ${is_fullscreen ? html`<converse-controlbox-navbar></converse-controlbox-navbar>` : ''}
@@ -33,15 +37,14 @@ export default (el) => {
     return html`<div class="flyout box-flyout">
         <converse-dragresize></converse-dragresize>
         ${el.model.get('connected')
-            ? html`
-                <converse-user-profile />
-                <div class="controlbox-pane">
-                  <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
-                  <div id="chatrooms" class="controlbox-section"><converse-rooms-list></converse-rooms-list></div>
-                  ${api.settings.get('authentication') === ANONYMOUS
-                      ? ''
-                      : html`<div id="converse-roster" class="controlbox-section"><converse-roster /></div>`}
-              </div>`
+            ? html`<converse-user-profile></converse-user-profile>
+                  <div class="controlbox-pane">
+                      <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
+                      <div id="chatrooms" class="controlbox-section"><converse-rooms-list></converse-rooms-list></div>
+                      ${api.settings.get('authentication') === ANONYMOUS
+                          ? ''
+                          : html`<div id="converse-roster" class="controlbox-section"><converse-roster /></div>`}
+                  </div>`
             : whenNotConnected(el)}
     </div>`;
 };

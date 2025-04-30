@@ -1,6 +1,7 @@
 /**
  * @typedef {import('../muc/muc.js').default} MUC
  */
+import { nothing } from 'lit';
 import { Stanza } from 'strophe.js';
 import { Collection } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
@@ -136,7 +137,7 @@ class Bookmarks extends Collection {
             const extensions = bookmark.get('extensions') ?? [];
             return stx`<item id="${bookmark.get('jid')}">
                         <conference xmlns="${Strophe.NS.BOOKMARKS2}"
-                                name="${bookmark.get('name')}"
+                                name="${bookmark.get('name') || nothing}"
                                 autojoin="${bookmark.get('autojoin')}">
                             ${bookmark.get('nick') ? stx`<nick>${bookmark.get('nick')}</nick>` : ''}
                             ${bookmark.get('password') ? stx`<password>${bookmark.get('password')}</password>` : ''}

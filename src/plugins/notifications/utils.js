@@ -16,8 +16,14 @@ converse.env.Favico = Favico;
 
 let favicon;
 
-export function isMessageToHiddenChat(attrs) {
-    return isTestEnv() || (_converse.state.chatboxes.get(attrs.from)?.isHidden() ?? false);
+/**
+ * @param {string} from - The JID of the sender
+ * @returns {boolean}
+ */
+export function isMessageToHiddenChat(from) {
+    return isTestEnv() ||
+           (_converse.state.chatboxes.get(from)?.isHidden() ?? false) ||
+           document.hidden;
 }
 
 export function areDesktopNotificationsEnabled() {

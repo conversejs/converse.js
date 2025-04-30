@@ -1,4 +1,8 @@
-export function isMessageToHiddenChat(attrs: any): any;
+/**
+ * @param {string} from - The JID of the sender
+ * @returns {boolean}
+ */
+export function isMessageToHiddenChat(from: string): boolean;
 export function areDesktopNotificationsEnabled(): any;
 /**
  * @typedef {Navigator & {clearAppBadge: Function, setAppBadge: Function} } navigator

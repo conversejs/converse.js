@@ -16,16 +16,16 @@ converse.env.Favico = Favico;
 
 let favicon;
 
-
-export function isMessageToHiddenChat (attrs) {
+export function isMessageToHiddenChat(attrs) {
     return isTestEnv() || (_converse.state.chatboxes.get(attrs.from)?.isHidden() ?? false);
 }
 
-export function areDesktopNotificationsEnabled () {
-    return isTestEnv() || (
-        supports_html5_notification &&
-        api.settings.get('show_desktop_notifications') &&
-        Notification.permission === 'granted'
+export function areDesktopNotificationsEnabled() {
+    return (
+        isTestEnv() ||
+        (supports_html5_notification &&
+            api.settings.get('show_desktop_notifications') &&
+            Notification.permission === 'granted')
     );
 }
 
@@ -33,42 +33,42 @@ export function areDesktopNotificationsEnabled () {
  * @typedef {Navigator & {clearAppBadge: Function, setAppBadge: Function} } navigator
  */
 
-export function clearFavicon () {
+export function clearFavicon() {
     favicon?.badge(0);
     favicon = null;
-    /** @type navigator */(navigator).clearAppBadge?.()
-        .catch(e => log.error("Could not clear unread count in app badge " + e));
+    /** @type navigator */ (navigator)
+        .clearAppBadge?.()
+        .catch((e) => log.error('Could not clear unread count in app badge ' + e));
 }
 
-export function updateUnreadFavicon () {
+export function updateUnreadFavicon() {
     if (api.settings.get('show_tab_notifications')) {
         favicon = favicon ?? new converse.env.Favico({ type: 'circle', animation: 'pop' });
         const chats = _converse.state.chatboxes.models;
         const num_unread = chats.reduce((acc, chat) => acc + (chat.get('num_unread') || 0), 0);
         favicon.badge(num_unread);
-        /** @type navigator */(navigator).setAppBadge?.(num_unread)
-            .catch(e => log.error("Could set unread count in app badge - " + e));
+        /** @type navigator */ (navigator)
+            .setAppBadge?.(num_unread)
+            .catch((e) => log.error('Could set unread count in app badge - ' + e));
     }
 }
-
 
 /**
  * @param {Array<Object>} references - A list of objects representing XEP-0372 references
  * @param {string} muc_jid
  * @param {string} nick
  */
-function isReferenced (references, muc_jid, nick) {
+function isReferenced(references, muc_jid, nick) {
     const bare_jid = _converse.session.get('bare_jid');
     const check = (r) => [bare_jid, `${muc_jid}/${nick}`].includes(r.uri.replace(/^xmpp:/, ''));
-    return references.reduce((acc, r) => (acc || (r.uri && check(r))), false);
+    return references.reduce((acc, r) => acc || (r.uri && check(r)), false);
 }
-
 
 /**
  * Is this a group message for which we should notify the user?
  * @param {MUCMessageAttributes} attrs
  */
-export async function shouldNotifyOfGroupMessage (attrs) {
+export async function shouldNotifyOfGroupMessage(attrs) {
     if (!attrs?.body && !attrs?.message) {
         // attrs.message is used by 'info' messages
         return false;
@@ -109,7 +109,7 @@ export async function shouldNotifyOfGroupMessage (attrs) {
     return false;
 }
 
-async function shouldNotifyOfInfoMessage (attrs) {
+async function shouldNotifyOfInfoMessage(attrs) {
     if (!attrs.from_muc) {
         return false;
     }
@@ -132,7 +132,7 @@ async function shouldNotifyOfInfoMessage (attrs) {
  * @method shouldNotifyOfMessage
  * @param {MessageData|MUCMessageData} data
  */
-function shouldNotifyOfMessage (data) {
+function shouldNotifyOfMessage(data) {
     const { attrs } = data;
     if (!attrs || attrs.is_forwarded) {
         return false;
@@ -155,12 +155,12 @@ function shouldNotifyOfMessage (data) {
     );
 }
 
-export function showFeedbackNotification (data) {
+export function showFeedbackNotification(data) {
     if (data.klass === 'error' || data.klass === 'warn') {
         const n = new Notification(data.subject, {
             body: data.message,
             lang: i18n.getLocale(),
-            icon: api.settings.get('notification_icon')
+            icon: api.settings.get('notification_icon'),
         });
         setTimeout(n.close.bind(n), 5000);
     }
@@ -171,7 +171,7 @@ export function showFeedbackNotification (data) {
  * contact's chat state.
  * @param {RosterContact} contact
  */
-function showChatStateNotification (contact) {
+function showChatStateNotification(contact) {
     if (api.settings.get('chatstate_notification_blacklist')?.includes(contact.get('jid'))) {
         // Don't notify if the user is being ignored.
         return;
@@ -193,17 +193,16 @@ function showChatStateNotification (contact) {
     const n = new Notification(contact.getDisplayName(), {
         body: message,
         lang: i18n.getLocale(),
-        icon: api.settings.get('notification_icon')
+        icon: api.settings.get('notification_icon'),
     });
     setTimeout(() => n.close(), 5000);
 }
-
 
 /**
  * Shows an HTML5 Notification with the passed in message
  * @param {MessageData|MUCMessageData} data
  */
-function showMessageNotification (data) {
+function showMessageNotification(data) {
     const { attrs } = data;
     if (attrs.is_error) {
         return;
@@ -256,10 +255,10 @@ function showMessageNotification (data) {
     }
 
     const n = new Notification(title, {
-        'body': body,
-        'lang': i18n.getLocale(),
-        'icon': api.settings.get('notification_icon'),
-        'requireInteraction': !api.settings.get('notification_delay')
+        body,
+        lang: i18n.getLocale(),
+        icon: api.settings.get('notification_icon'),
+        requireInteraction: !api.settings.get('notification_delay'),
     });
     if (api.settings.get('notification_delay')) {
         setTimeout(() => n.close(), api.settings.get('notification_delay'));
@@ -269,10 +268,10 @@ function showMessageNotification (data) {
         window.focus();
         const chat = _converse.state.chatboxes.get(from_jid);
         chat.maybeShow(true);
-    }
+    };
 }
 
-function playSoundNotification () {
+function playSoundNotification() {
     if (api.settings.get('play_sounds') && window.Audio !== undefined) {
         const audioOgg = new Audio(api.settings.get('sounds_path') + 'msg_received.ogg');
         const canPlayOgg = audioOgg.canPlayType('audio/ogg');
@@ -295,8 +294,8 @@ function playSoundNotification () {
  * Event handler for the on('message') event. Will call methods
  * to play sounds and show HTML5 notifications.
  */
-export async function handleMessageNotification (data) {
-    if (!await shouldNotifyOfMessage(data)) {
+export async function handleMessageNotification(data) {
+    if (!(await shouldNotifyOfMessage(data))) {
         return false;
     }
     /**
@@ -307,7 +306,7 @@ export async function handleMessageNotification (data) {
      * @example _converse.api.listen.on('messageNotification', data => { ... });
      */
     api.trigger('messageNotification', data);
-    try{
+    try {
         playSoundNotification();
     } catch (error) {
         // Likely "play() failed because the user didn't interact with the document first"
@@ -316,7 +315,7 @@ export async function handleMessageNotification (data) {
     showMessageNotification(data);
 }
 
-export function handleFeedback (data) {
+export function handleFeedback(data) {
     if (areDesktopNotificationsEnabled()) {
         showFeedbackNotification(data);
     }
@@ -327,7 +326,7 @@ export function handleFeedback (data) {
  * Will show an HTML5 notification to indicate that the chat status has changed.
  * @param {RosterContact} contact
  */
-export function handleChatStateNotification (contact) {
+export function handleChatStateNotification(contact) {
     if (areDesktopNotificationsEnabled() && api.settings.get('show_chat_state_notifications')) {
         showChatStateNotification(contact);
     }
@@ -336,11 +335,11 @@ export function handleChatStateNotification (contact) {
 /**
  * @param {RosterContact} contact
  */
-function showContactRequestNotification (contact) {
+function showContactRequestNotification(contact) {
     const n = new Notification(contact.getDisplayName(), {
         body: __('wants to be your contact'),
         lang: i18n.getLocale(),
-        icon: api.settings.get('notification_icon')
+        icon: api.settings.get('notification_icon'),
     });
     setTimeout(() => n.close(), 5000);
 }
@@ -348,13 +347,13 @@ function showContactRequestNotification (contact) {
 /**
  * @param {RosterContact} contact
  */
-export function handleContactRequestNotification (contact) {
+export function handleContactRequestNotification(contact) {
     if (areDesktopNotificationsEnabled()) {
         showContactRequestNotification(contact);
     }
 }
 
-export function requestPermission () {
+export function requestPermission() {
     if (supports_html5_notification && !['denied', 'granted'].includes(Notification.permission)) {
         // Ask user to enable HTML5 notifications
         Notification.requestPermission();

@@ -61,7 +61,7 @@ declare class RosterContacts extends Collection {
     /**
      * Handle roster updates from the XMPP server.
      * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-     * @param { Element } iq - The IQ stanza received from the XMPP server.
+     * @param {Element} iq - The IQ stanza received from the XMPP server.
      */
     onRosterPush(iq: Element): void;
     rosterVersioningSupported(): any;

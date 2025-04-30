@@ -24,4 +24,10 @@ export function isSameDomain(jid1: string, jid2: string): boolean;
  * @param {string} jid
  */
 export function getJIDFromURI(jid: string): string;
+/**
+ * @param {string} jid
+ * @param {boolean} [include_resource=false]
+ * @returns {boolean}
+ */
+export function isOwnJID(jid: string, include_resource?: boolean): boolean;
 //# sourceMappingURL=jid.d.ts.map

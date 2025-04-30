@@ -3,17 +3,16 @@ import { PRIVATE_CHAT_TYPE, INACTIVE } from '../../shared/constants.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import { isUniView } from '../../utils/session.js';
 import { sendChatState, sendMarker } from '../../shared/actions.js';
-import ModelWithMessages from "../../shared/model-with-messages.js";
+import ModelWithMessages from '../../shared/model-with-messages.js';
 import ModelWithVCard from '../../shared/model-with-vcard';
 import ModelWithContact from '../../shared/model-with-contact.js';
 import ColorAwareModel from '../../shared/color.js';
 import ChatBoxBase from '../../shared/chatbox.js';
 
 const { Strophe, u } = converse.env;
-
 
 /**
  * Represents a one-on-one chat conversation.
@@ -26,24 +25,24 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
      * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
 
-    defaults () {
+    defaults() {
         return {
             bookmarked: false,
             hidden: isUniView() && !api.settings.get('singleton'),
             message_type: 'chat',
             num_unread: 0,
-            time_opened: this.get('time_opened') || (new Date()).getTime(),
-            time_sent: (new Date(0)).toISOString(),
+            time_opened: this.get('time_opened') || new Date().getTime(),
+            time_sent: new Date(0).toISOString(),
             type: PRIVATE_CHAT_TYPE,
-        }
+        };
     }
 
-    constructor (attrs, options) {
+    constructor(attrs, options) {
         super(attrs, options);
         this.disable_mam = false;
     }
 
-    async initialize () {
+    async initialize() {
         super.initialize();
         this.initialized = getOpenPromise();
 
@@ -54,7 +53,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         this.presence.on('change:show', (item) => this.onPresenceChanged(item));
 
         this.on('change:chat_state', () => sendChatState(this.get('jid'), this.get('chat_state')));
-        this.on('change:hidden', () => (this.get('hidden') && this.setChatState(INACTIVE)));
+        this.on('change:hidden', () => this.get('hidden') && this.setChatState(INACTIVE));
 
         await this.fetchMessages();
         /**
@@ -63,28 +62,28 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
          * @type { ChatBox}
          * @example _converse.api.listen.on('chatBoxInitialized', model => { ... });
          */
-        await api.trigger('chatBoxInitialized', this, {synchronous: true});
+        await api.trigger('chatBoxInitialized', this, { synchronous: true });
         this.initialized.resolve();
     }
-
 
     /**
      * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    async onMessage (attrs_or_error) {
+    async onMessage(attrs_or_error) {
         if (u.isErrorObject(attrs_or_error)) {
-            const { stanza, message } = /** @type {StanzaParseError} */(attrs_or_error);
+            const { stanza, message } = /** @type {StanzaParseError} */ (attrs_or_error);
             if (stanza) log.error(stanza);
             return log.error(message);
         }
 
-        const attrs = /** @type {MessageAttributes} */(attrs_or_error);
+        const attrs = /** @type {MessageAttributes} */ (attrs_or_error);
         const message = this.getDuplicateMessage(attrs);
         if (message) {
             this.updateMessage(message, attrs);
         } else if (
-                !this.handleReceipt(attrs) &&
-                !this.handleChatMarker(attrs) && !(await this.handleRetraction(attrs))
+            !this.handleReceipt(attrs) &&
+            !this.handleChatMarker(attrs) &&
+            !(await this.handleRetraction(attrs))
         ) {
             this.setEditable(attrs, attrs.time);
 
@@ -92,8 +91,8 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
                 this.notifications.set('chat_state', attrs.chat_state);
             }
             if (u.shouldCreateMessage(attrs)) {
-                const msg = await this.handleCorrection(attrs) || await this.createMessage(attrs);
-                this.notifications.set({'chat_state': null});
+                const msg = (await this.handleCorrection(attrs)) || (await this.createMessage(attrs));
+                this.notifications.set({ 'chat_state': null });
                 this.handleUnreadMessage(msg);
             }
         }
@@ -102,7 +101,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
     /**
      * @param {import('../roster/presence').default} item
      */
-    onPresenceChanged (item) {
+    onPresenceChanged(item) {
         const { __ } = _converse;
         const show = item.get('show');
         const fullname = this.getDisplayName();
@@ -119,7 +118,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         text && this.createMessage({ message: text, type: 'info', is_ephemeral: true });
     }
 
-    async close () {
+    async close() {
         if (api.connection.connected()) {
             // Immediately sending the chat state, because the
             // model is going to be destroyed afterwards.
@@ -132,7 +131,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
     /**
      * @returns {string|null}
      */
-    getDisplayName () {
+    getDisplayName() {
         if (this.contact) {
             const display_name = this.contact.getDisplayName(false);
             if (display_name) return display_name;
@@ -149,33 +148,34 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
      * @param {string} jid1
      * @param {string} jid2
      */
-    isSameUser (jid1, jid2) {
+    isSameUser(jid1, jid2) {
         return u.isSameBareJID(jid1, jid2);
     }
 
     /**
      * @param {MessageAttributes} attrs
      */
-    handleChatMarker (attrs) {
+    handleChatMarker(attrs) {
         const to_bare_jid = Strophe.getBareJidFromJid(attrs.to);
         if (to_bare_jid !== _converse.session.get('bare_jid')) {
             return false;
         }
 
         if (attrs.is_markable) {
-            if (this.contact &&
-                    !['none', 'to', undefined].includes(this.contact.get('subscription')) &&
-                    !attrs.is_archived &&
-                    !attrs.is_carbon) {
+            if (
+                this.contact &&
+                !['none', 'to', undefined].includes(this.contact.get('subscription')) &&
+                !attrs.is_archived &&
+                !attrs.is_carbon
+            ) {
                 sendMarker(attrs.from, attrs.msgid, 'received');
             }
             return false;
-
         } else if (attrs.marker_id) {
-            const message = this.messages.findWhere({'msgid': attrs.marker_id});
+            const message = this.messages.findWhere({ 'msgid': attrs.marker_id });
             const field_name = `marker_${attrs.marker}`;
             if (message && !message.get(field_name)) {
-                message.save({field_name: (new Date()).toISOString()});
+                message.save({ field_name: new Date().toISOString() });
             }
             return true;
         }
@@ -185,26 +185,31 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
      * @param {MessageAttributes} [attrs]
      * @return {Promise<MessageAttributes>}
      */
-    async getOutgoingMessageAttributes (attrs) {
+    async getOutgoingMessageAttributes(attrs) {
         const is_spoiler = !!this.get('composing_spoiler');
         const origin_id = u.getUniqueId();
         const text = attrs?.body;
         const body = text ? u.shortnamesToUnicode(text) : undefined;
-        attrs = Object.assign({}, attrs, {
-            body,
-            from: _converse.session.get('jid'),
-            fullname: _converse.state.xmppstatus.get('fullname'),
-            id: origin_id,
-            is_spoiler,
-            jid: this.get('jid'),
-            message: body,
-            msgid: origin_id,
-            nick: this.get('nickname'),
-            origin_id,
-            sender: 'me',
-            time: (new Date()).toISOString(),
-            type: this.get('message_type'),
-        }, await u.getMediaURLsMetadata(text));
+        attrs = Object.assign(
+            {},
+            attrs,
+            {
+                body,
+                from: _converse.session.get('jid'),
+                fullname: _converse.state.xmppstatus.get('fullname'),
+                id: origin_id,
+                is_spoiler,
+                jid: this.get('jid'),
+                message: body,
+                msgid: origin_id,
+                nick: this.get('nickname'),
+                origin_id,
+                sender: 'me',
+                time: new Date().toISOString(),
+                type: this.get('message_type'),
+            },
+            await u.getMediaURLsMetadata(text)
+        );
 
         /**
          * *Hook* which allows plugins to update the attributes of an outgoing message.
@@ -220,7 +225,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         return attrs;
     }
 
-    canPostMessages () {
+    canPostMessages() {
         return true;
     }
 }

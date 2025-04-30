@@ -1,54 +1,52 @@
-
 class ChatBoxViews {
-
-    constructor () {
+    constructor() {
         this.views = {};
         this.el = null;
     }
 
-    add (key, val) {
+    add(key, val) {
         this.views[key] = val;
     }
 
-    get (key) {
+    get(key) {
         return this.views[key];
     }
 
-    xget (id) {
+    xget(id) {
         return this.keys()
-            .filter(k => (k !== id))
+            .filter((k) => k !== id)
             .reduce((acc, k) => {
-                acc[k] = this.views[k]
+                acc[k] = this.views[k];
                 return acc;
             }, {});
     }
 
-    getAll () {
+    getAll() {
         return Object.values(this.views);
     }
 
-    keys () {
+    keys() {
         return Object.keys(this.views);
     }
 
-    remove (key) {
+    remove(key) {
         delete this.views[key];
     }
 
-    map (f) {
+    map(f) {
         return Object.values(this.views).map(f);
     }
 
-    forEach (f) {
+    forEach(f) {
         return Object.values(this.views).forEach(f);
     }
 
-    filter (f) {
+    filter(f) {
         return Object.values(this.views).filter(f);
     }
 
-    closeAllChatBoxes () {
-        return Promise.all(Object.values(this.views).map(v => v.close({ 'name': 'closeAllChatBoxes' })));
+    closeAllChatBoxes() {
+        return Promise.all(Object.values(this.views).map((v) => v.close({ 'name': 'closeAllChatBoxes' })));
     }
 }
 

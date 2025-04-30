@@ -54,8 +54,8 @@ export default class ChatBoxBase extends ModelWithMessages(Model) {
             if (force || other_chats.length === 0) {
                 // We only have one chat visible at any one time.
                 // So before opening a chat, we make sure all other chats are hidden.
-                other_chats.forEach((c) => u.safeSave(c, { 'hidden': true }));
-                u.safeSave(this, { 'hidden': false });
+                other_chats.forEach((c) => u.safeSave(c, { hidden: true }));
+                u.safeSave(this, { hidden: false });
                 this.trigger('show');
             }
             return this;

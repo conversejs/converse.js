@@ -1,4 +1,5 @@
 import { Strophe } from 'strophe.js';
+import _converse from "../shared/_converse";
 
 /**
  * @param {string|null} [jid]
@@ -54,4 +55,16 @@ export function isSameDomain(jid1, jid2) {
  */
 export function getJIDFromURI(jid) {
     return jid.startsWith('xmpp:') && jid.endsWith('?join') ? jid.replace(/^xmpp:/, '').replace(/\?join$/, '') : jid;
+}
+
+/**
+ * @param {string} jid
+ * @param {boolean} [include_resource=false]
+ * @returns {boolean}
+ */
+export function isOwnJID(jid, include_resource = false) {
+    if (include_resource) {
+        return jid === _converse.session.get('full_jid');
+    }
+    return Strophe.getBareJidFromJid(jid) === _converse.session.get('bare_jid');
 }

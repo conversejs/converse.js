@@ -215,7 +215,7 @@ describe("Converse", function() {
             const contacts = await api.contacts.get()
             expect(contacts.length).toBe(1);
             expect(contacts[0].get('jid')).toBe("newcontact@example.org");
-            expect(contacts[0].get('subscription')).toBe("none");
+            expect(contacts[0].get('subscription')).toBe(undefined);
             expect(contacts[0].get('ask')).toBeUndefined();
             expect(contacts[0].get('groups').length).toBe(0);
         }));

@@ -1,10 +1,11 @@
 /*global mock, converse */
 // See: https://xmpp.org/rfcs/rfc3921.html
-
 const { Strophe, u, stx } = converse.env;
 
 
 describe("A XEP-0333 Chat Marker", function () {
+
+    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
     it("is sent when a markable message is received from a roster contact",
             mock.initConverse([], {}, async function (_converse) {
@@ -59,14 +60,22 @@ describe("A XEP-0333 Chat Marker", function () {
             .map(s => s?.nodeTree ?? s)
             .filter(e => e.nodeName === 'message');
 
-        await u.waitUntil(() => sent_messages.length === 1);
-        expect(Strophe.serialize(sent_messages[0])).toBe(
-            `<message id="${sent_messages[0].getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">`+
-                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                `<no-store xmlns="urn:xmpp:hints"/>`+
-                `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
-            `</message>`
+        await u.waitUntil(() => sent_messages.length === 2);
+        expect(sent_messages[0]).toEqualStanza(stx`
+            <message id="${sent_messages[0].getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
+                <active xmlns="http://jabber.org/protocol/chatstates"/>
+                <no-store xmlns="urn:xmpp:hints"/>
+                <no-permanent-store xmlns="urn:xmpp:hints"/>
+            </message>`
         );
+
+        expect(sent_messages[1]).toEqualStanza(stx`
+            <message xmlns="jabber:client"
+                    from="romeo@montague.lit/orchard"
+                    id="${sent_messages[1].getAttribute('id')}"
+                    to="someone@montague.lit" type="chat">
+                <displayed xmlns="urn:xmpp:chat-markers:0" id="${sent_messages[1].querySelector('displayed')?.getAttribute('id')}"/>
+            </message>`);
     }));
 
     it("is ignored if it's a carbon copy of one that I sent from a different client",

@@ -191,7 +191,7 @@ class RosterContacts extends Collection {
                     nickname: name,
                     groups: [],
                     requesting: false,
-                    subscription: subscribe ? 'to' : 'none',
+                    subscription: persist ? 'none' : undefined,
                 },
                 ...attributes,
             },
@@ -265,6 +265,7 @@ class RosterContacts extends Collection {
             log.warn('Received a roster push stanza without an "item" element.');
             return;
         }
+
         this.updateContact(items.pop());
         /**
          * When the roster receives a push event from server (i.e. new entry in your contacts roster).

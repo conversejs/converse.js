@@ -164,7 +164,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
 
         if (attrs.is_markable) {
             if (this.contact &&
-                    !['none', 'to'].includes(this.contact.get('subscription')) &&
+                    !['none', 'to', undefined].includes(this.contact.get('subscription')) &&
                     !attrs.is_archived &&
                     !attrs.is_carbon) {
                 sendMarker(attrs.from, attrs.msgid, 'received');

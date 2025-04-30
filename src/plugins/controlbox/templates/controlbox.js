@@ -12,6 +12,7 @@ function whenNotConnected(el) {
     const connection_status = _converse.state.connfeedback.get('connection_status');
     const connecting = [Strophe.Status.RECONNECTING, Strophe.Status.CONNECTING].includes(connection_status);
     return html`
+        <converse-controlbox-buttons class="controlbox-padded"></converse-controlbox-buttons>
         <div class="controlbox-pane d-flex flex-column justify-content-between">
             ${is_fullscreen ? html`<converse-controlbox-navbar></converse-controlbox-navbar>` : ''}
             <converse-brand-logo></converse-brand-logo>
@@ -32,12 +33,11 @@ export default (el) => {
     return html`<div class="flyout box-flyout">
         <converse-dragresize></converse-dragresize>
         ${el.model.get('connected')
-            ? html`<converse-user-profile />`
-            : html`<converse-controlbox-buttons class="controlbox-padded" />`}
-        ${el.model.get('connected')
-            ? html`<div class="controlbox-pane">
+            ? html`
+                <converse-user-profile />
+                <div class="controlbox-pane">
                   <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
-                  <div id="chatrooms" class="controlbox-section"><converse-rooms-list /></div>
+                  <div id="chatrooms" class="controlbox-section"><converse-rooms-list></converse-rooms-list></div>
                   ${api.settings.get('authentication') === ANONYMOUS
                       ? ''
                       : html`<div id="converse-roster" class="controlbox-section"><converse-roster /></div>`}

@@ -55,6 +55,7 @@ declare const _default: {
     isSameBareJID(jid1: string, jid2: string): boolean;
     isSameDomain(jid1: string, jid2: string): boolean;
     getJIDFromURI(jid: string): string;
+    isOwnJID(jid: string, include_resource?: boolean): boolean;
     initPlugins(_converse: ConversePrivateGlobal): void;
     initClientConfig(_converse: ConversePrivateGlobal): Promise<void>;
     initSessionStorage(_converse: ConversePrivateGlobal): Promise<void>;
@@ -165,6 +166,7 @@ declare const _default: {
         isSameBareJID(jid1: string, jid2: string): boolean;
         isSameDomain(jid1: string, jid2: string): boolean;
         getJIDFromURI(jid: string): string;
+        isOwnJID(jid: string, include_resource?: boolean): boolean;
         initPlugins(_converse: ConversePrivateGlobal): void;
         initClientConfig(_converse: ConversePrivateGlobal): Promise<void>;
         initSessionStorage(_converse: ConversePrivateGlobal): Promise<void>;

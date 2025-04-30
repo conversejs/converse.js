@@ -55,6 +55,7 @@ export default class AddContactModal extends BaseModal {
             this.model.set("error", __("Sorry, something went wrong"));
             return;
         }
+        api.chats.open(jid, {}, true);
         this.model.clear();
         this.modal.hide();
     }

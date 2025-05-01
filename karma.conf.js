@@ -135,6 +135,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/rosterview/tests/presence.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/protocol.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/roster.js", type: 'module' },
+      { pattern: "src/plugins/rosterview/tests/unsaved-contacts.js", type: 'module' },
       { pattern: "src/utils/tests/url.js", type: 'module' },
 
       // For some reason this test causes issues when its run earlier

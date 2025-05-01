@@ -22,18 +22,17 @@ class RosterContacts extends Collection {
         this.state = new Model({ id, 'collapsed_groups': [] });
         initStorage(this.state, id);
         this.state.fetch();
-
         api.listen.on('chatBoxClosed',
             /** @param {import('../../shared/chatbox').default} model */
-            (model) => this.onChatBoxClosed(model));
+            (model) => this.removeUnsavedContact(model));
     }
 
     /**
      * @param {import('../../shared/chatbox').default} model
      */
-    onChatBoxClosed(model) {
+    removeUnsavedContact(model) {
         const contact = this.get(model.get('jid'));
-        if (contact?.get('subscription') === 'none') {
+        if (contact && contact.get('subscription') === undefined) {
             contact.destroy();
         }
     }

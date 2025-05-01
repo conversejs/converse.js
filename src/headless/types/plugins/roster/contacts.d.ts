@@ -7,7 +7,7 @@ declare class RosterContacts extends Collection {
     /**
      * @param {import('../../shared/chatbox').default} model
      */
-    onChatBoxClosed(model: import("../../shared/chatbox").default): void;
+    removeUnsavedContact(model: import("../../shared/chatbox").default): void;
     onConnected(): void;
     /**
      * Register a handler for roster IQ "set" stanzas, which update

@@ -46,7 +46,10 @@ class ControlBoxView extends CustomElement {
     }
 
     render() {
-        return this.model && !this.model.get('closed') ? tplControlbox(this) : '';
+        if (api.settings.get('view_mode') === 'overlayed') {
+            return this.model && !this.model.get('closed') ? tplControlbox(this) : '';
+        }
+        return tplControlbox(this);
     }
 
     close(ev) {

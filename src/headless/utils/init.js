@@ -92,9 +92,9 @@ export async function initClientConfig(_converse) {
 export async function initSessionStorage(_converse) {
     await Storage.sessionStorageInitialized;
     _converse.storage["session"] = Storage.localForage.createInstance({
-        "name": isTestEnv() ? "converse-test-session" : "converse-session",
-        "description": "sessionStorage instance",
-        "driver": ["sessionStorageWrapper"],
+        name: isTestEnv() ? "converse-test-session" : "converse-session",
+        description: "sessionStorage instance",
+        driver: ["sessionStorageWrapper"],
     });
 }
 
@@ -105,15 +105,17 @@ export async function initSessionStorage(_converse) {
  * @param {string} [key="persistent"] - The key for `_converse.storage`.
  */
 export function initPersistentStorage(_converse, store_name, key="persistent") {
-    if (_converse.api.settings.get("persistent_store") === "sessionStorage") {
+    const { api } = _converse;
+    if (api.settings.get("persistent_store") === "sessionStorage") {
+        _converse.storage[key] = _converse.storage["session"];
         return;
-    } else if (_converse.api.settings.get("persistent_store") === "BrowserExtLocal") {
+    } else if (api.settings.get("persistent_store") === "BrowserExtLocal") {
         Storage.localForage
             .defineDriver(localDriver)
             .then(() => Storage.localForage.setDriver("webExtensionLocalStorage"));
         _converse.storage[key] = Storage.localForage;
         return;
-    } else if (_converse.api.settings.get("persistent_store") === "BrowserExtSync") {
+    } else if (api.settings.get("persistent_store") === "BrowserExtSync") {
         Storage.localForage
             .defineDriver(syncDriver)
             .then(() => Storage.localForage.setDriver("webExtensionSyncStorage"));
@@ -122,13 +124,13 @@ export function initPersistentStorage(_converse, store_name, key="persistent") {
     }
 
     const config = {
-        "name": isTestEnv() ? "converse-test-persistent" : "converse-persistent",
-        "storeName": store_name,
+        name: isTestEnv() ? "converse-test-persistent" : "converse-persistent",
+        storeName: store_name,
     };
-    if (_converse.api.settings.get("persistent_store") === "localStorage") {
+    if (api.settings.get("persistent_store") === "localStorage") {
         config["description"] = "localStorage instance";
         config["driver"] = [Storage.localForage.LOCALSTORAGE];
-    } else if (_converse.api.settings.get("persistent_store") === "IndexedDB") {
+    } else if (api.settings.get("persistent_store") === "IndexedDB") {
         config["description"] = "indexedDB instance";
         config["driver"] = [Storage.localForage.INDEXEDDB];
     }
@@ -422,7 +424,12 @@ export async function attemptNonPreboundSession(credentials, automatic) {
  */
 export async function savedLoginInfo(jid) {
     const id = `converse.scram-keys-${Strophe.getBareJidFromJid(jid)}`;
+    if (_converse.state.login_info?.get("id") === id) {
+        return _converse.state.login_info;
+    }
+
     const login_info = new Model({ id });
+    _converse.state.login_info = login_info;
     initStorage(login_info, id, "persistent");
     await new Promise((f) => login_info.fetch({ "success": f, "error": f }));
     return login_info;

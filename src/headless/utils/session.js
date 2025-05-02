@@ -79,7 +79,10 @@ export async function tearDown (_converse) {
  * @param {ConversePrivateGlobal} _converse
  */
 export function clearSession (_converse) {
-    shouldClearCache(_converse) && _converse.api.user.settings.clear();
+    if (shouldClearCache(_converse)) {
+        _converse.api.user.settings.clear();
+        _converse.state.login_info?.destroy();
+    }
     _converse.initSession();
     /**
      * Synchronouse event triggered once the user session has been cleared,

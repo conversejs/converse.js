@@ -17,6 +17,8 @@ export class RoomsList extends CustomElement {
         const bare_jid = _converse.session.get('bare_jid');
         const id = `converse.roomspanel${bare_jid}`;
         this.model = new RoomsListModel({ id });
+        _converse.state.roomslist = this.model;
+
         initStorage(this.model, id);
         this.model.fetch();
 

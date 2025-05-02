@@ -60,30 +60,6 @@
             }
         }
 
-        &#converse-register,
-        &#converse-login {
-            .converse-fullscreen & {
-                background-color: rgba(var(--background-color-rgb), 0.9);
-            }
-            legend {
-                width: 100%;
-                text-align: center;
-                margin: 0 auto 0.5em auto;
-            }
-            fieldset.buttons {
-                text-align: center;
-            }
-            .login-anon {
-                height: auto;
-                white-space: normal;
-            }
-            .form-url {
-                display: block;
-                font-weight: normal;
-                margin: 1em 0;
-            }
-        }
-
         &.converse-form {
             padding: 1.2rem;
 

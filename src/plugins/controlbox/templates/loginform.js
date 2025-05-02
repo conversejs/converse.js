@@ -147,7 +147,7 @@ export default (el) => {
     const connection_status = connfeedback.get('connection_status');
     const feedback_class = CONNECTION_STATUS_CSS_CLASS?.[connection_status] ?? 'none';
     const conn_feedback_message = connfeedback.get('message');
-    return html`<form id="converse-login" class="converse-form rounded" method="post" @submit=${el.onLoginFormSubmitted}>
+    return html`<form id="converse-login" class="converse-form" method="post" @submit=${el.onLoginFormSubmitted}>
         <div
             class="alert ${`alert-${feedback_class}`} conn-feedback mb-3 ${!conn_feedback_message ? 'd-none' : ''}"
             role="alert"

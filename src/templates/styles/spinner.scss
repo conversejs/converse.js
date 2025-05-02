@@ -1,3 +1,10 @@
+converse-spinner {
+    &.vertically-centered {
+        height: 100%;
+        margin-top: 30%;
+    }
+}
+
 .spinner-grow {
     .vertically-centered > & {
         margin-top: 30%;

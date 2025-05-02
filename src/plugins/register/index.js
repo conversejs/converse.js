@@ -5,10 +5,11 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { api, converse, constants } from '@converse/headless';
-import './form.js';
+import { _converse, api, converse, constants } from '@converse/headless';
 import { __ } from 'i18n';
 import { routeToForm } from './utils.js';
+import RegistrationForm from './form.js';
+import RegisterLink from './register_link.js';
 
 // Strophe methods for building stanzas
 const { Strophe } = converse.env;
@@ -39,11 +40,14 @@ converse.plugins.add('converse-register', {
         CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
 
         api.settings.extend({
-            'allow_registration': true,
-            'domain_placeholder': __(' e.g. conversejs.org'), // Placeholder text shown in the domain input on the registration form
-            'providers_link': 'https://compliance.conversations.im/', // Link to XMPP providers shown on registration page
-            'registration_domain': ''
+            allow_registration: true,
+            domain_placeholder: __(' e.g. conversejs.org'), // Placeholder text shown in the domain input on the registration form
+            providers_link: 'https://compliance.conversations.im/', // Link to XMPP providers shown on registration page
+            registration_domain: ''
         });
+
+        const exports = { RegisterLink, RegistrationForm };
+        Object.assign(_converse.exports, exports);
 
         routeToForm();
         addEventListener('hashchange', routeToForm);

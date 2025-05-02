@@ -21,10 +21,10 @@ function whenNotConnected(el) {
             ${is_fullscreen ? html`<converse-controlbox-navbar></converse-controlbox-navbar>` : ''}
             <converse-brand-logo></converse-brand-logo>
             ${connecting
-                ? html`<converse-spinner class="vertically-centered fade-in" />`
+                ? html`<converse-spinner class="vertically-centered fade-in"></converse-spinner>`
                 : el.model.get('active-form') === 'register'
-                  ? html`<converse-registration-form class="fade-in rounded" />`
-                  : html`<converse-login-form class="fade-in rounded" />`}
+                  ? html`<converse-registration-form class="fade-in rounded"></converse-registration-form>`
+                  : html`<converse-login-form class="fade-in rounded"></converse-login-form>`}
             ${is_fullscreen ? html`<converse-footer></converse-footer>` : ''}
         </div>
     `;

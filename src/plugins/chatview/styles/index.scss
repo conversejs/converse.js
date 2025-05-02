@@ -49,9 +49,6 @@
             height: var(--overlayed-chat-height);
             min-height: calc(var(--overlayed-chat-height) / 2);
         }
-        .chat-head {
-            min-height: var(--overlayed-chat-head-height);
-        }
         .minimized-chats-flyout .chat-head {
             cursor: default;
         }

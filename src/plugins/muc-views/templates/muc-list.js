@@ -34,7 +34,7 @@ const tplItem = (o, item) => {
         <li class="room-item list-group-item">
             <div class="available-chatroom d-flex flex-row">
                 <a class="open-room available-room w-100"
-                    @click=${o.openRoom}
+                    @click=${o.openItem}
                     data-room-jid="${item.jid}"
                     data-room-name="${item.name}"
                     title="${i18n_open_title}"

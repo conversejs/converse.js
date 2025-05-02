@@ -44,8 +44,8 @@ export default (el) => {
                 </div>
             </div>
             <div class="chatbox-title__buttons btn-toolbar g-0">
-                ${until(getDropdownButtons(heading_buttons_promise), "")}
                 ${until(getStandaloneButtons(heading_buttons_promise), "")}
+                ${until(getDropdownButtons(heading_buttons_promise), "")}
             </div>
         </div>
         ${status ? html`<p class="chat-head__desc">${status}</p>` : ""}

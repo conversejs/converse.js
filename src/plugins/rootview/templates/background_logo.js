@@ -20,7 +20,7 @@ export default (el) => html`
               </section>`
             : ''
     } ${
-        el.getAttribute('logo')
+        el.hasAttribute('logo')
             ? html`
                   <div class="inner-content converse-brand row">
                       <div class="converse-brand__heading">

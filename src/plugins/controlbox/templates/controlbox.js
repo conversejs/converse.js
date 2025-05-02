@@ -23,8 +23,8 @@ function whenNotConnected(el) {
             ${connecting
                 ? html`<converse-spinner class="vertically-centered fade-in" />`
                 : el.model.get('active-form') === 'register'
-                  ? html`<converse-registration-form class="fade-in" />`
-                  : html`<converse-login-form class="fade-in" />`}
+                  ? html`<converse-registration-form class="fade-in rounded" />`
+                  : html`<converse-login-form class="fade-in rounded" />`}
             ${is_fullscreen ? html`<converse-footer></converse-footer>` : ''}
         </div>
     `;

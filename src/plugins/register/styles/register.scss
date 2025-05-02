@@ -1,24 +1,36 @@
 @import "shared/styles/_mixins.scss";
 
 converse-registration-form {
-    height: 100%;
     padding-top: 0;
     padding-bottom: 0;
 
+    .converse-fullscreen & {
+        background-color: rgba(var(--background-color-rgb), 0.9);
+    }
+    legend {
+        width: 100%;
+        text-align: center;
+        margin: 0 auto 0.5em auto;
+    }
+    fieldset.buttons {
+        text-align: center;
+    }
+    .form-url {
+        display: block;
+        font-weight: normal;
+        margin: 1em 0;
+    }
     .alert {
         margin: auto;
         max-width: 50vw;
     }
-
     #converse-register {
         @include fade-in;
         padding-top: 0;
-        background-color: var(--background-color);
 
         .title {
             font-weight: bold;
         }
-
         .input-group {
             input {
                 height: auto;
@@ -28,17 +40,14 @@ converse-registration-form {
                 background-color: var(--background-color);
             }
         }
-
         .form-errors {
             color: var(--error-color);
             margin: 1em 0;
         }
-
         .form-help .url {
             font-weight: bold;
             color: var(--link-color);
         }
-
         .instructions {
             color: gray;
             font-size: 85%;

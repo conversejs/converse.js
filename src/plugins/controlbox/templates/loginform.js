@@ -72,25 +72,6 @@ function tplPasswordInput() {
     `;
 }
 
-function tplRegisterLink() {
-    const i18n_create_account = __('Create an account');
-    const i18n_hint_no_account = __("Don't have a chat account?");
-    return html`
-        <div class="mt-3 text-center switch-form">
-            <p class="mb-1">${i18n_hint_no_account}</p>
-            <a class="register-account toggle-register-login" href="#converse/register">${i18n_create_account}</a>
-        </div>
-    `;
-}
-
-function tplShowRegisterLink() {
-    return (
-        api.settings.get('allow_registration') &&
-        !api.settings.get('auto_login') &&
-        _converse.pluggable.plugins['converse-register'].enabled(_converse)
-    );
-}
-
 function tplAuthFields() {
     const authentication = api.settings.get('authentication');
     const i18n_login = __('Log in');
@@ -120,7 +101,7 @@ function tplAuthFields() {
         <div class="text-center mb-3">
             <button class="btn btn-primary px-5 mx-auto" type="submit">${i18n_login}</button>
         </div>
-        ${tplShowRegisterLink() ? tplRegisterLink() : ''}
+        <converse-register-link></converse-register-link>
     `;
 }
 

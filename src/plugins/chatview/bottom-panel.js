@@ -36,7 +36,6 @@ export default class ChatBottomPanel extends CustomElement {
         this.listenTo(this.model, 'change:num_unread', () => this.requestUpdate());
         this.listenTo(this.model, 'emoji-picker-autocomplete', this.autocompleteInPicker);
 
-        this.addEventListener('click', (ev) => this.sendButtonClicked(ev));
         this.addEventListener('emojipickerblur', () =>
             /** @type {HTMLElement} */ (this.querySelector('.chat-textarea')).focus()
         );
@@ -48,13 +47,6 @@ export default class ChatBottomPanel extends CustomElement {
             'model': this.model,
             'viewUnreadMessages': (ev) => this.viewUnreadMessages(ev),
         });
-    }
-
-    sendButtonClicked(ev) {
-        if (ev.delegateTarget?.dataset.action === 'sendMessage') {
-            const form = /** @type {MessageForm} */ (this.querySelector('converse-message-form'));
-            form?.onFormSubmitted(ev);
-        }
     }
 
     viewUnreadMessages(ev) {

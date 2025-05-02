@@ -13,8 +13,7 @@ import converse from "../../shared/api/public.js";
 import log from "@converse/log";
 import { isArchived, isHeadline, isMUCPrivateMessage, isServerMessage, } from '../../shared/parsers';
 import { parseMessage } from './parsers.js';
-import { shouldClearCache } from '../../utils/session.js';
-import { CONTROLBOX_TYPE, PRIVATE_CHAT_TYPE } from "../../shared/constants.js";
+import { PRIVATE_CHAT_TYPE } from "../../shared/constants.js";
 
 const { Strophe, u } = converse.env;
 
@@ -28,18 +27,6 @@ export function routeToChat (event) {
         return log.warn(`Invalid JID "${jid}" provided in URL fragment`);
     }
     api.chats.open(jid);
-}
-
-export async function onClearSession () {
-    if (shouldClearCache(_converse)) {
-        const { chatboxes } = _converse.state;
-        await Promise.all(
-            chatboxes.map(/** @param {ChatBox} c */(c) => c.messages?.clearStore({ 'silent': true }))
-        );
-        chatboxes.clearStore(
-            { 'silent': true },
-            /** @param {Model} o */(o) => o.get('type') !== CONTROLBOX_TYPE);
-    }
 }
 
 /**

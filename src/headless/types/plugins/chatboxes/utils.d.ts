@@ -1,3 +1,4 @@
+export function onClearSession(): Promise<void>;
 /**
  * @param {string} jid
  * @param {object} attrs

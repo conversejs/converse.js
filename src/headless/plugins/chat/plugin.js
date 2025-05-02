@@ -11,7 +11,6 @@ import {
     autoJoinChats,
     enableCarbons,
     handleMessageStanza,
-    onClearSession,
     routeToChat,
     registerMessageHandlers,
 } from './utils.js';
@@ -51,7 +50,6 @@ converse.plugins.add('converse-chat', {
 
         api.listen.on('chatBoxesFetched', autoJoinChats);
         api.listen.on('presencesInitialized', registerMessageHandlers);
-        api.listen.on('clearSession', onClearSession);
 
         api.listen.on('connected', () => enableCarbons());
         api.listen.on('reconnected', () => enableCarbons());

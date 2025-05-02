@@ -8,7 +8,6 @@ export default ControlBoxView;
  */
 declare class ControlBoxView extends CustomElement {
     initialize(): void;
-    setModel(): void;
     model: any;
     render(): import("lit-html").TemplateResult<1> | "";
     close(ev: any): this;

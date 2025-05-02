@@ -1,8 +1,8 @@
-import 'shared/modals/user-details.js';
-import tplChatboxHead from './templates/chat-head.js';
+import { _converse, api, converse } from "@converse/headless";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless";
+import tplChatboxHead from './templates/chat-head.js';
+import 'shared/modals/user-details.js';
 
 import './styles/chat-head.scss';
 
@@ -73,7 +73,7 @@ export default class ChatHeading extends CustomElement {
                 i18n_title: __('See more information about this person'),
                 icon_class: 'fa-id-card',
                 name: 'details',
-                standalone: api.settings.get('view_mode') === 'overlayed'
+                standalone: false,
             },
         ];
 

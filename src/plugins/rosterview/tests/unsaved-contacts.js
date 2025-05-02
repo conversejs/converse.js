@@ -1,6 +1,6 @@
 const { stx, u } = converse.env;
 
-fdescribe('An unsaved Contact', function () {
+describe('An unsaved Contact', function () {
     it(
         'is shown upon receiving a message',
         mock.initConverse([], {}, async function (_converse) {

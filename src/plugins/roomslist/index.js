@@ -5,7 +5,7 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { api, converse } from "@converse/headless";
+import { _converse, api, converse, u } from "@converse/headless";
 import './view.js';
 
 
@@ -20,7 +20,13 @@ converse.plugins.add('converse-roomslist', {
 
     initialize () {
         api.settings.extend({
-            'muc_grouped_by_domain': false,
+            muc_grouped_by_domain: false,
+        });
+
+        api.listen.on('clearSession', () => {
+            if (u.shouldClearCache(_converse)) {
+                _converse.state.roomslist?.destroy();
+            }
         });
     }
 });

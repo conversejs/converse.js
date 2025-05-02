@@ -527,7 +527,7 @@ describe("Chatboxes", function () {
 
                     const { api } = _converse;
                     await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
-                    await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
+                    await u.waitUntil(() => _converse.xmppstatus.vcard?.get('fullname'));
                     await mock.waitForRoster(_converse, 'current');
                     // Send a message from a different resource
                     const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -651,7 +651,7 @@ describe("Chatboxes", function () {
 
                     const { api } = _converse;
                     await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
-                    await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
+                    await u.waitUntil(() => _converse.xmppstatus.vcard?.get('fullname'));
                     await mock.waitForRoster(_converse, 'current');
                     // Send a message from a different resource
                     const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';

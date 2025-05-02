@@ -1,5 +1,4 @@
 export function routeToChat(event: any): void;
-export function onClearSession(): Promise<void>;
 /**
  * Given a stanza, determine whether it's a new
  * message, i.e. not a MAM archived one.

@@ -64,7 +64,7 @@ class ControlBoxView extends CustomElement {
         if (api.settings.get('sticky_controlbox') || api.settings.get('view_mode') !== 'overlayed') {
             return;
         }
-        u.safeSave(this.model, { 'closed': true });
+        u.safeSave(this.model, { closed: true });
         api.trigger('controlBoxClosed', this);
         return this;
     }

@@ -39,7 +39,7 @@ export function clearSession() {
     const { chatboxviews } = _converse.state;
     const view = chatboxviews?.get('controlbox');
     if (view) {
-        u.safeSave(view.model, { 'connected': false });
+        u.safeSave(view.model, { connected: false });
         if (view?.controlbox_pane) {
             view.controlbox_pane.remove();
             delete view.controlbox_pane;

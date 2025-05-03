@@ -68,10 +68,11 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
     }
 
     /**
-     * @returns {string|null}
+     * @param {import('./types').ContactDisplayNameOptions} [options]
+     * @returns {string}
      */
-    getDisplayName (jid_fallback=true) {
-        return this.get('nickname') || this.vcard?.getDisplayName() || (jid_fallback ? this.get('jid') : null);
+    getDisplayName (options) {
+        return this.get('nickname') || this.vcard?.getDisplayName() || (options?.no_jid ? null : this.get('jid'));
     }
 
     /**

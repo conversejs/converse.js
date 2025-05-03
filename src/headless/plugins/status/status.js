@@ -9,7 +9,6 @@ import { isIdle, getIdleSeconds } from './utils.js';
 const { Strophe, $pres } = converse.env;
 
 export default class XMPPStatus extends ModelWithVCard(ColorAwareModel(Model)) {
-
     defaults() {
         return { status: api.settings.get('default_state') };
     }
@@ -54,8 +53,13 @@ export default class XMPPStatus extends ModelWithVCard(ColorAwareModel(Model)) {
         });
     }
 
-    getDisplayName() {
-        return this.vcard?.get('fullname') || this.getNickname() || this.get('jid');
+    /**
+     * @param {import('../roster/types.js').ContactDisplayNameOptions} [options]
+     */
+    getDisplayName(options) {
+        const { __ } = _converse;
+        const name = this.vcard?.get('fullname') || this.getNickname() || this.get('jid');
+        return options?.context === 'roster' ? `${name} (${__('me')})` : name;
     }
 
     getNickname() {

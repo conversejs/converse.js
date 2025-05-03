@@ -149,7 +149,10 @@ export default class XMPPStatus extends XMPPStatus_base {
      */
     set(key: string | any, val?: string | any, options?: any): false | this;
     initialize(): void;
-    getDisplayName(): any;
+    /**
+     * @param {import('../roster/types.js').ContactDisplayNameOptions} [options]
+     */
+    getDisplayName(options?: import("../roster/types.js").ContactDisplayNameOptions): any;
     getNickname(): any;
     /** Constructs a presence stanza
      * @param {string} [type]

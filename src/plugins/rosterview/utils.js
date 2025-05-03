@@ -117,7 +117,7 @@ export function toggleGroup(ev, name) {
 function getFilterCriteria(contact) {
     const nick = contact instanceof XMPPStatus ? contact.getNickname() : contact.get('nickname');
     const jid = contact.get('jid');
-    let criteria = contact.getDisplayName();
+    let criteria = contact.getDisplayName({ context: 'roster' });
     criteria = !criteria.includes(jid) ? criteria.concat(`   ${jid}`) : criteria;
     criteria = !criteria.includes(nick) ? criteria.concat(`   ${nick}`) : criteria;
     return criteria.toLowerCase();

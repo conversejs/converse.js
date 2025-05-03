@@ -37,7 +37,7 @@ export default  (el) => {
    const is_self = bare_jid === el.model.get('jid');
    const desc_status = STATUSES[show];
    const num_unread = getUnreadMsgsDisplay(el.model);
-   const display_name = el.model.getDisplayName();
+   const display_name = el.model.getDisplayName({ context: 'roster' });
    const jid = el.model.get('jid');
    const i18n_chat = is_self ?
       __('Click to chat with yourself') :
@@ -63,7 +63,7 @@ export default  (el) => {
             class="${classes} chat-status chat-status--avatar"></converse-icon>
       </span>
       ${ num_unread ? html`<span class="msgs-indicator badge">${ num_unread }</span>` : '' }
-      <span class="contact-name contact-name--${show} ${ num_unread ? 'unread-msgs' : ''}">${display_name + (is_self ? ` ${__('(me)')}` : '')}</span>
+      <span class="contact-name contact-name--${show} ${ num_unread ? 'unread-msgs' : ''}">${display_name}</span>
    </a>
    <span class="contact-actions">
       ${ api.settings.get('allow_contact_removal') && !is_self ? tplRemoveLink(el) : '' }

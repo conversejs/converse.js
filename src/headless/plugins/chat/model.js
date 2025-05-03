@@ -133,7 +133,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
      */
     getDisplayName() {
         if (this.contact) {
-            const display_name = this.contact.getDisplayName(false);
+            const display_name = this.contact.getDisplayName({ no_jid: true });
             if (display_name) return display_name;
         }
 

@@ -11,3 +11,8 @@ export type RosterContactAttributes = {
     groups?: string[]; // Any roster groups the user might belong to
     requesting?: boolean;
 }
+
+export type ContactDisplayNameOptions = {
+    no_jid?: boolean; // If true, null will be returned instead of the JID
+    context?: 'roster'; // The context in which the display name is being requested
+}

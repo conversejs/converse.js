@@ -9,7 +9,7 @@ import { blockContact, removeContact } from './utils.js';
 
 const { Strophe } = converse.env;
 
-export default class RosterContact extends ObservableElement {
+export default class RosterContactView extends ObservableElement {
     /**
      * @typedef {import('shared/components/types').ObservableProperty} ObservableProperty
      */
@@ -36,13 +36,14 @@ export default class RosterContact extends ObservableElement {
     }
 
     render() {
-        if (this.model.get('requesting') === true) {
-            return tplRequestingContact(this);
-        } else if (this.model.get('subscription') === 'none') {
-            return tplUnsavedContact(this);
-        } else {
-            return tplRosterItem(this);
+        if (this.model instanceof _converse.exports.RosterContact) {
+            if (this.model.get('requesting') === true) {
+                return tplRequestingContact(this);
+            } else if (!this.model.get('subscription')) {
+                return tplUnsavedContact(this);
+            }
         }
+        return tplRosterItem(this);
     }
 
     /**
@@ -129,4 +130,4 @@ export default class RosterContact extends ObservableElement {
     }
 }
 
-api.elements.define('converse-roster-contact', RosterContact);
+api.elements.define('converse-roster-contact', RosterContactView);

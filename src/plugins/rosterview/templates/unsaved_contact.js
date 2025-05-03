@@ -12,7 +12,7 @@ export default (el) => {
     const display_name = el.model.getDisplayName();
     const jid = el.model.get('jid');
 
-    const i18n_add_contact = __('Click to add %1$s to your roster', display_name);
+    const i18n_add_contact = __('Click to add %1$s as a contact', display_name);
     const i18n_chat = __('Click to chat with %1$s (XMPP address: %2$s)', display_name, jid);
     return html`
         <a

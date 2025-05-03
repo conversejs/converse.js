@@ -219,3 +219,13 @@ export function rejectPresenceSubscription(jid, message) {
     }
     api.send(pres);
 }
+
+/**
+ * @param {import('./contact.js').default} contact
+ * @return {boolean}
+ */
+export function isUnsavedContact(contact) {
+    const bare_jid = _converse.session.get('bare_jid');
+    const is_self = bare_jid !== contact.get('jid');
+    return !is_self && !contact.get('subscription');
+}

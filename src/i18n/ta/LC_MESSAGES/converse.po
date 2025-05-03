@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 10.1.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-12 16:25+0200\n"
+"POT-Creation-Date: 2025-05-03 23:31+0200\n"
 "PO-Revision-Date: 2025-04-27 19:42+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/conversejs/"
@@ -19,77 +19,45 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.12-dev\n"
 
-#: dist/converse-no-dependencies.js:20630
-#: dist/converse-no-dependencies.js:20684
+#: dist/converse-no-dependencies.js:14511
+msgid "Could not automatically determine a connection URL"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:14821
+#: dist/converse-no-dependencies.js:14875
 msgid "An error occurred while connecting to the chat server."
 msgstr "அரட்டை சேவையகத்துடன் இணைக்கும்போது பிழை ஏற்பட்டது."
 
-#: dist/converse-no-dependencies.js:20691
+#: dist/converse-no-dependencies.js:14882
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr "உங்கள் XMPP முகவரி மற்றும்/அல்லது கடவுச்சொல் தவறானது. மீண்டும் முயற்சிக்கவும்."
 
-#: dist/converse-no-dependencies.js:20700
+#: dist/converse-no-dependencies.js:14891
 #, javascript-format
-msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "மன்னிக்கவும், எக்ச்எம்பிபி ஓச்டுடன் டொமைனுடன் இணைக்க முடியவில்லை: %1$s"
+msgid "We could not connect to %1$s, is your XMPP address correct?"
+msgstr ""
 
-#: dist/converse-no-dependencies.js:20702
+#: dist/converse-no-dependencies.js:14893
+msgid "The XMPP server rejected the connection because of a policy violation"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:14895
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr "எக்ச்எம்பி.பி சேவையகம் ஒரு உதவி அங்கீகார பொறிமுறையை வழங்கவில்லை"
 
-#: dist/converse-no-dependencies.js:29596
-msgid "Smileys and emotions"
-msgstr "ச்மைலிகள் மற்றும் உணர்ச்சிகள்"
-
-#: dist/converse-no-dependencies.js:29597
-msgid "People"
-msgstr "மக்கள்"
-
-#: dist/converse-no-dependencies.js:29598
-msgid "Activities"
-msgstr "நடவடிக்கைகள்"
-
-#: dist/converse-no-dependencies.js:29599
-msgid "Travel"
-msgstr "பயணம்"
-
-#: dist/converse-no-dependencies.js:29600
-msgid "Objects"
-msgstr "பொருள்கள்"
-
-#: dist/converse-no-dependencies.js:29601
-msgid "Animals and nature"
-msgstr "விலங்குகள் மற்றும் இயற்கை"
-
-#: dist/converse-no-dependencies.js:29602
-msgid "Food and drink"
-msgstr "உணவு மற்றும் பானம்"
-
-#: dist/converse-no-dependencies.js:29603
-msgid "Symbols"
-msgstr "குறியிடுகள்"
-
-#: dist/converse-no-dependencies.js:29604
-msgid "Flags"
-msgstr "கொடிகள்"
-
-#: dist/converse-no-dependencies.js:29605
-msgid "Stickers"
-msgstr "ச்டிக்கர்கள்"
-
-#: dist/converse-no-dependencies.js:31902
+#: dist/converse-no-dependencies.js:27485
 msgid "Undecryptable OMEMO message"
 msgstr "சரிபார்க்க முடியாத OMEMO செய்தி"
 
-#: dist/converse-no-dependencies.js:31977
+#: dist/converse-no-dependencies.js:27557
 msgid "Sorry, could not determine upload URL."
 msgstr "மன்னிக்கவும், பதிவேற்ற முகவரி ஐ தீர்மானிக்க முடியவில்லை."
 
-#: dist/converse-no-dependencies.js:31996
+#: dist/converse-no-dependencies.js:27576
 msgid "Sorry, could not determine file upload URL."
 msgstr "மன்னிக்கவும், கோப்பு பதிவேற்ற முகவரி ஐ தீர்மானிக்க முடியவில்லை."
 
-#: dist/converse-no-dependencies.js:32071
+#: dist/converse-no-dependencies.js:27651
 #, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
@@ -98,53 +66,43 @@ msgstr ""
 "மன்னிக்கவும், உங்கள் கோப்பை வெற்றிகரமாக பதிவேற்ற முடியவில்லை. உங்கள் சேவையகத்தின் பதில்: "
 "\"%1$s\""
 
-#: dist/converse-no-dependencies.js:32073
+#: dist/converse-no-dependencies.js:27653
 msgid "Sorry, could not succesfully upload your file."
 msgstr "மன்னிக்கவும், உங்கள் கோப்பை வெற்றிகரமாக பதிவேற்ற முடியவில்லை."
 
-#: dist/converse-no-dependencies.js:34364
-#, javascript-format
-msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr "பிழை: MUC %2s க்கு %1s பட்டியலைப் பெறும்போது நேரம் முடிந்தது"
-
-#: dist/converse-no-dependencies.js:34373
-#, javascript-format
-msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr "பிழை: MUC %2s க்கு %1s பட்டியலைப் பெற அனுமதிக்கப்படவில்லை"
-
-#: dist/converse-no-dependencies.js:36482
-#: dist/converse-no-dependencies.js:42946
+#: dist/converse-no-dependencies.js:29481
+#: dist/converse-no-dependencies.js:40267
 #, javascript-format
 msgid "%1$s is typing"
 msgstr "%1$s தட்டுகிறது"
 
-#: dist/converse-no-dependencies.js:36484
-#: dist/converse-no-dependencies.js:42948
+#: dist/converse-no-dependencies.js:29483
+#: dist/converse-no-dependencies.js:40269
 #, javascript-format
 msgid "%1$s has stopped typing"
 msgstr "%1$s தட்டச்சு செய்வதை நிறுத்திவிட்டன"
 
-#: dist/converse-no-dependencies.js:36486
-#: dist/converse-no-dependencies.js:42950
-#: dist/converse-no-dependencies.js:45931
+#: dist/converse-no-dependencies.js:29485
+#: dist/converse-no-dependencies.js:40271
+#: dist/converse-no-dependencies.js:43258
 #, javascript-format
 msgid "%1$s has gone away"
 msgstr "%1$s போய்விட்டன"
 
-#: dist/converse-no-dependencies.js:36867
-#: dist/converse-no-dependencies.js:36886
+#: dist/converse-no-dependencies.js:29870
+#: dist/converse-no-dependencies.js:29889
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr ""
 "மன்னிக்கவும், கோப்பு பதிவேற்றம் உங்கள் சேவையகத்தால் ஆதரிக்கப்படவில்லை என்று தெரிகிறது."
 
-#: dist/converse-no-dependencies.js:36907
+#: dist/converse-no-dependencies.js:29910
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
 msgstr ""
 "உங்கள் கோப்பின் அளவு, %1$s, உங்கள் சேவையகத்தால் அனுமதிக்கப்பட்ட அதிகபட்சத்தை மீறுகிறது."
 
-#: dist/converse-no-dependencies.js:36907
+#: dist/converse-no-dependencies.js:29910
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
@@ -153,65 +111,105 @@ msgstr ""
 "உங்கள் கோப்பின் அளவு, %1$s, உங்கள் சேவையகத்தால் அனுமதிக்கப்பட்ட அதிகபட்சத்தை மீறுகிறது, "
 "இது %2$s ஆகும்."
 
-#: dist/converse-no-dependencies.js:37411
-#: dist/converse-no-dependencies.js:40661
+#: dist/converse-no-dependencies.js:30433
+#: dist/converse-no-dependencies.js:37980
 msgid "You're not allowed to retract your message."
 msgstr "உங்கள் செய்தியைத் திரும்பப் பெற உங்களுக்கு இசைவு இல்லை."
 
-#: dist/converse-no-dependencies.js:37413
-#: dist/converse-no-dependencies.js:40665
+#: dist/converse-no-dependencies.js:30435
+#: dist/converse-no-dependencies.js:37984
 msgid "Sorry, an error occurred while trying to retract your message."
 msgstr "மன்னிக்கவும், உங்கள் செய்தியைத் திரும்பப் பெற முயற்சிக்கும்போது பிழை ஏற்பட்டது."
 
-#: dist/converse-no-dependencies.js:37418
+#: dist/converse-no-dependencies.js:30440
 msgid "You're not allowed to send a message."
 msgstr "ஒரு செய்தியை அனுப்ப உங்களுக்கு இசைவு இல்லை."
 
-#: dist/converse-no-dependencies.js:37420
-#: dist/converse-no-dependencies.js:40674
+#: dist/converse-no-dependencies.js:30442
+#: dist/converse-no-dependencies.js:37993
 msgid "Sorry, an error occurred while trying to send your message."
 msgstr "மன்னிக்கவும், உங்கள் செய்தியை அனுப்ப முயற்சிக்கும்போது பிழை ஏற்பட்டது."
 
-#: dist/converse-no-dependencies.js:40663
+#: dist/converse-no-dependencies.js:32040
+msgid "Smileys and emotions"
+msgstr "ச்மைலிகள் மற்றும் உணர்ச்சிகள்"
+
+#: dist/converse-no-dependencies.js:32041
+msgid "People"
+msgstr "மக்கள்"
+
+#: dist/converse-no-dependencies.js:32042
+msgid "Activities"
+msgstr "நடவடிக்கைகள்"
+
+#: dist/converse-no-dependencies.js:32043
+msgid "Travel"
+msgstr "பயணம்"
+
+#: dist/converse-no-dependencies.js:32044
+msgid "Objects"
+msgstr "பொருள்கள்"
+
+#: dist/converse-no-dependencies.js:32045
+msgid "Animals and nature"
+msgstr "விலங்குகள் மற்றும் இயற்கை"
+
+#: dist/converse-no-dependencies.js:32046
+msgid "Food and drink"
+msgstr "உணவு மற்றும் பானம்"
+
+#: dist/converse-no-dependencies.js:32047
+msgid "Symbols"
+msgstr "குறியிடுகள்"
+
+#: dist/converse-no-dependencies.js:32048
+msgid "Flags"
+msgstr "கொடிகள்"
+
+#: dist/converse-no-dependencies.js:32049
+msgid "Stickers"
+msgstr "ச்டிக்கர்கள்"
+
+#: dist/converse-no-dependencies.js:37982
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
 msgstr "நீங்கள் குழுசாட்டில் இல்லாததால் உங்கள் பின்வாங்கல் வழங்கப்படவில்லை."
 
-#: dist/converse-no-dependencies.js:40670
+#: dist/converse-no-dependencies.js:37989
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr "உங்கள் செய்தி வழங்கப்படவில்லை, ஏனெனில் அதை அனுப்ப உங்களுக்கு இசைவு இல்லை."
 
-#: dist/converse-no-dependencies.js:40672
+#: dist/converse-no-dependencies.js:37991
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
 msgstr "நீங்கள் குரூப்டில் இல்லாததால் உங்கள் செய்தி வழங்கப்படவில்லை."
 
-#: dist/converse-no-dependencies.js:41016
+#: dist/converse-no-dependencies.js:38335
 #, fuzzy
 msgid "A timeout happened while trying to retract your message."
 msgstr "உங்கள் செய்தியைத் திரும்பப் பெற முயற்சிக்கும் போது நேரம் முடிந்தது."
 
-#: dist/converse-no-dependencies.js:41770
+#: dist/converse-no-dependencies.js:39082
 msgid "Sorry, an error happened while running the command."
 msgstr "மன்னிக்கவும், கட்டளையை இயக்கும் போது பிழை ஏற்பட்டது."
 
-#: dist/converse-no-dependencies.js:41770
-#: dist/converse-no-dependencies.js:119297
+#: dist/converse-no-dependencies.js:39082
+#: dist/converse-no-dependencies.js:118870
 msgid "Check your browser's developer console for details."
 msgstr "விவரங்களுக்கு உங்கள் உலாவியின் உருவாக்குபவர் கன்சோலை சரிபார்க்கவும்."
 
-#: dist/converse-no-dependencies.js:41789
-#: dist/converse-no-dependencies.js:41807
+#: dist/converse-no-dependencies.js:39101
+#: dist/converse-no-dependencies.js:39119
 msgid "Error: couldn't find a groupchat participant based on your arguments"
 msgstr ""
 "பிழை: உங்கள் வாதங்களின் அடிப்படையில் ஒரு குழுசாட் பங்கேற்பாளரைக் கண்டுபிடிக்க முடியவில்லை"
 
-#: dist/converse-no-dependencies.js:41797
+#: dist/converse-no-dependencies.js:39109
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr "பிழை: உங்கள் வாதங்களின் அடிப்படையில் பல குரூப்சாட் பங்கேற்பாளரைக் கண்டறிந்தார்"
 
-#: dist/converse-no-dependencies.js:41821
+#: dist/converse-no-dependencies.js:39133
 #, javascript-format
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
@@ -220,181 +218,181 @@ msgstr ""
 "பிழை: \"%1$s\" கட்டளை இரண்டு வாதங்களை எடுக்கும், பயனரின் புனைப்பெயர் மற்றும் விருப்பமாக "
 "ஒரு காரணம்."
 
-#: dist/converse-no-dependencies.js:41882
+#: dist/converse-no-dependencies.js:39194
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
 msgstr "தடைசெய்யப்பட்டுள்ளது: அதைச் செய்ய உங்களுக்கு தேவையான தொடர்பு இல்லை."
 
-#: dist/converse-no-dependencies.js:41912
+#: dist/converse-no-dependencies.js:39224
 msgid "Forbidden: you do not have the necessary role in order to do that."
 msgstr "தடைசெய்யப்பட்டுள்ளது: அதைச் செய்ய உங்களுக்கு தேவையான பங்கு இல்லை."
 
-#: dist/converse-no-dependencies.js:42249
+#: dist/converse-no-dependencies.js:39579
 msgid "You're not allowed to register yourself in this groupchat."
 msgstr "இந்த குழுவில் உங்களை பதிவு செய்ய உங்களுக்கு இசைவு இல்லை."
 
-#: dist/converse-no-dependencies.js:42251
+#: dist/converse-no-dependencies.js:39581
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
 "இந்த குழுவில் பதிவு செய்ய உங்களுக்கு இசைவு இல்லை, ஏனெனில் அது உறுப்பினர்கள் மட்டுமே."
 
-#: dist/converse-no-dependencies.js:42548
+#: dist/converse-no-dependencies.js:39873
 #, javascript-format
 msgid "Topic set by %1$s"
 msgstr "தலைப்பு %1$s ஆல் அமைக்கப்பட்டுள்ளது"
 
-#: dist/converse-no-dependencies.js:42548
+#: dist/converse-no-dependencies.js:39873
 #, javascript-format
 msgid "Topic cleared by %1$s"
 msgstr "தலைப்பு %1$s ஆல் அழிக்கப்பட்டது"
 
-#: dist/converse-no-dependencies.js:42952
+#: dist/converse-no-dependencies.js:40273
 #, javascript-format
 msgid "%1$s has entered the groupchat"
 msgstr "%1$s குழுமத்திற்குள் நுழைந்தது"
 
-#: dist/converse-no-dependencies.js:42954
+#: dist/converse-no-dependencies.js:40275
 #, javascript-format
 msgid "%1$s has left the groupchat"
 msgstr "%1$s குழுமத்தை விட்டு வெளியேறிவிட்டன"
 
-#: dist/converse-no-dependencies.js:42956
+#: dist/converse-no-dependencies.js:40277
 #, javascript-format
 msgid "%1$s is now a moderator"
 msgstr "%1$s இப்போது ஒரு மதிப்பீட்டாளர்"
 
-#: dist/converse-no-dependencies.js:42958
+#: dist/converse-no-dependencies.js:40279
 #, javascript-format
 msgid "%1$s is no longer a moderator"
 msgstr "%1$s இனி ஒரு மதிப்பீட்டாளர் அல்ல"
 
-#: dist/converse-no-dependencies.js:42960
+#: dist/converse-no-dependencies.js:40281
 #, javascript-format
 msgid "%1$s has been given a voice"
 msgstr "%1$s க்கு குரல் கொடுக்கப்பட்டுள்ளது"
 
-#: dist/converse-no-dependencies.js:42962
+#: dist/converse-no-dependencies.js:40283
 #, javascript-format
 msgid "%1$s has been muted"
 msgstr "%1$s முடக்கப்பட்டுள்ளன"
 
-#: dist/converse-no-dependencies.js:42970
+#: dist/converse-no-dependencies.js:40291
 #, javascript-format
 msgid "%1$s and %2$s"
 msgstr "%1$s மற்றும் %2$s"
 
-#: dist/converse-no-dependencies.js:42973
+#: dist/converse-no-dependencies.js:40294
 #, javascript-format
 msgid "%1$s are typing"
 msgstr "%1$s தட்டச்சு செய்கின்றன"
 
-#: dist/converse-no-dependencies.js:42975
+#: dist/converse-no-dependencies.js:40296
 #, javascript-format
 msgid "%1$s have stopped typing"
 msgstr "%1$s தட்டச்சு செய்வதை நிறுத்திவிட்டன"
 
-#: dist/converse-no-dependencies.js:42977
+#: dist/converse-no-dependencies.js:40298
 #, javascript-format
 msgid "%1$s have gone away"
 msgstr "%1$s போய்விட்டன"
 
-#: dist/converse-no-dependencies.js:42979
+#: dist/converse-no-dependencies.js:40300
 #, javascript-format
 msgid "%1$s have entered the groupchat"
 msgstr "%1$s குழுமத்திற்குள் நுழைந்தன"
 
-#: dist/converse-no-dependencies.js:42981
+#: dist/converse-no-dependencies.js:40302
 #, javascript-format
 msgid "%1$s have left the groupchat"
 msgstr "%1$s குழுமத்தை விட்டு வெளியேறிவிட்டன"
 
-#: dist/converse-no-dependencies.js:42983
+#: dist/converse-no-dependencies.js:40304
 #, javascript-format
 msgid "%1$s are now moderators"
 msgstr "%1$s இப்போது மதிப்பீட்டாளர்கள்"
 
-#: dist/converse-no-dependencies.js:42985
+#: dist/converse-no-dependencies.js:40306
 #, javascript-format
 msgid "%1$s are no longer moderators"
 msgstr "%1$s இனி மதிப்பீட்டாளர்கள் அல்ல"
 
-#: dist/converse-no-dependencies.js:42987
+#: dist/converse-no-dependencies.js:40308
 #, javascript-format
 msgid "%1$s have been given voices"
 msgstr "%1$s க்கு குரல்கள் வழங்கப்பட்டுள்ளன"
 
-#: dist/converse-no-dependencies.js:42989
+#: dist/converse-no-dependencies.js:40310
 #, javascript-format
 msgid "%1$s have been muted"
 msgstr "%1$s முடக்கப்பட்டுள்ளன"
 
-#: dist/converse-no-dependencies.js:43329
+#: dist/converse-no-dependencies.js:40650
 #, javascript-format
 msgid "%1$s has been banned by %2$s"
 msgstr "%1$s %2$s ஆல் தடைசெய்யப்பட்டுள்ளது"
 
-#: dist/converse-no-dependencies.js:43329
+#: dist/converse-no-dependencies.js:40650
 #, javascript-format
 msgid "%1$s has been banned"
 msgstr "%1$s தடை செய்யப்பட்டுள்ளன"
 
-#: dist/converse-no-dependencies.js:43331
+#: dist/converse-no-dependencies.js:40652
 #, javascript-format
 msgid "%1$s's nickname has changed"
 msgstr "%1$s இன் புனைப்பெயர் மாறிவிட்டது"
 
-#: dist/converse-no-dependencies.js:43333
+#: dist/converse-no-dependencies.js:40654
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
 msgstr "%1$s %2$s ஆல் வெளியேற்றப்பட்டுள்ளது"
 
-#: dist/converse-no-dependencies.js:43333
+#: dist/converse-no-dependencies.js:40654
 #, javascript-format
 msgid "%1$s has been kicked out"
 msgstr "%1$s வெளியேற்றப்பட்டுள்ளன"
 
-#: dist/converse-no-dependencies.js:43335
+#: dist/converse-no-dependencies.js:40656
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
 msgstr "இணைப்பு மாற்றம் காரணமாக %1$s அகற்றப்பட்டுள்ளன"
 
-#: dist/converse-no-dependencies.js:43337
+#: dist/converse-no-dependencies.js:40658
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
 msgstr "உறுப்பினராக இல்லாததால் %1$s அகற்றப்பட்டுள்ளன"
 
-#: dist/converse-no-dependencies.js:43361
+#: dist/converse-no-dependencies.js:40682
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
 msgstr "%1$s இனி இந்த குழுமத்தின் நிர்வாகியாக இருக்காது"
 
-#: dist/converse-no-dependencies.js:43366
+#: dist/converse-no-dependencies.js:40687
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
 msgstr "%1$s இனி இந்த குரூபியின் உரிமையாளர் அல்ல"
 
-#: dist/converse-no-dependencies.js:43371
+#: dist/converse-no-dependencies.js:40692
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
 msgstr "இந்த குரூப்சாட்டில் இருந்து %1$s இனி தடை செய்யப்படாது"
 
-#: dist/converse-no-dependencies.js:43377
+#: dist/converse-no-dependencies.js:40698
 #, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
 msgstr "%1$s இனி இந்த குரூப்சாட்டின் உறுப்பினராக இல்லை"
 
-#: dist/converse-no-dependencies.js:43383
+#: dist/converse-no-dependencies.js:40704
 #, javascript-format
 msgid "%1$s is now a member of this groupchat"
 msgstr "%1$s இப்போது இந்த குழுமத்தின் உறுப்பினராக உள்ளன"
 
-#: dist/converse-no-dependencies.js:43389
+#: dist/converse-no-dependencies.js:40710
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
 msgstr "%1$s இப்போது இந்த குழுமத்தின் %2$s ஆகும்"
 
-#: dist/converse-no-dependencies.js:43515
+#: dist/converse-no-dependencies.js:40836
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
@@ -402,123 +400,123 @@ msgstr ""
 "நீங்கள் தேர்ந்தெடுத்த புனைப்பெயர் ஒதுக்கப்பட்டுள்ளது அல்லது தற்போது பயன்பாட்டில் உள்ளது, "
 "தயவுசெய்து வேறு ஒன்றைத் தேர்வுசெய்க."
 
-#: dist/converse-no-dependencies.js:43542
+#: dist/converse-no-dependencies.js:40863
 msgid "Password incorrect"
 msgstr "கடவுச்சொல் தவறானது"
 
-#: dist/converse-no-dependencies.js:43549
+#: dist/converse-no-dependencies.js:40870
 msgid "You are not on the member list of this groupchat."
 msgstr "இந்த குழுமத்தின் உறுப்பினர் பட்டியலில் நீங்கள் இல்லை."
 
-#: dist/converse-no-dependencies.js:43557
+#: dist/converse-no-dependencies.js:40878
 msgid "You are not allowed to create new groupchats."
 msgstr "புதிய குழு அரட்டைகளை உருவாக்க உங்களுக்கு இசைவு இல்லை."
 
-#: dist/converse-no-dependencies.js:43560
+#: dist/converse-no-dependencies.js:40881
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "உங்கள் புனைப்பெயர் இந்த குரூப்சாட்டின் கொள்கைகளுக்கு இணங்கவில்லை."
 
-#: dist/converse-no-dependencies.js:43575
+#: dist/converse-no-dependencies.js:40896
 msgid "This groupchat does not (yet) exist."
 msgstr "இந்த குரூப்சாட் (இன்னும்) இல்லை."
 
-#: dist/converse-no-dependencies.js:43578
+#: dist/converse-no-dependencies.js:40899
 msgid "This groupchat has reached its maximum number of participants."
 msgstr "இந்த குரூப்சாட் அதன் அதிகபட்ச பங்கேற்பாளர்களை எட்டியுள்ளது."
 
-#: dist/converse-no-dependencies.js:43581
+#: dist/converse-no-dependencies.js:40902
 msgid "Remote server not found"
 msgstr "தொலை சேவையகம் கிடைக்கவில்லை"
 
-#: dist/converse-no-dependencies.js:43584
+#: dist/converse-no-dependencies.js:40905
 msgid "You're not allowed to enter this groupchat"
 msgstr "இந்த குழுமத்திற்குள் நுழைய உங்களுக்கு இசைவு இல்லை"
 
-#: dist/converse-no-dependencies.js:43587
+#: dist/converse-no-dependencies.js:40908
 msgid "An error happened while trying to enter this groupchat"
 msgstr "இந்த குழுமத்தை உள்ளிட முயற்சிக்கும் போது பிழை ஏற்பட்டது"
 
-#: dist/converse-no-dependencies.js:45929
+#: dist/converse-no-dependencies.js:43256
 #, javascript-format
 msgid "%1$s has gone offline"
 msgstr "%1$s ஆஃப்லைனில் சென்றுவிட்டன"
 
-#: dist/converse-no-dependencies.js:45933
+#: dist/converse-no-dependencies.js:43260
 #, javascript-format
 msgid "%1$s is busy"
 msgstr "%1$s பிசியாக உள்ளது"
 
-#: dist/converse-no-dependencies.js:45935
+#: dist/converse-no-dependencies.js:43262
 #, javascript-format
 msgid "%1$s is online"
 msgstr "%1$s ஆன்லைனில் உள்ளன"
 
-#: dist/converse-no-dependencies.js:49963
+#: dist/converse-no-dependencies.js:47901
 msgid "This groupchat is not anonymous"
 msgstr "இந்த குரூப்சாட் அநாமதேயமானது அல்ல"
 
-#: dist/converse-no-dependencies.js:49964
+#: dist/converse-no-dependencies.js:47902
 msgid "This groupchat now shows unavailable members"
 msgstr "இந்த குரூப்சாட் இப்போது கிடைக்காத உறுப்பினர்களைக் காட்டுகிறது"
 
-#: dist/converse-no-dependencies.js:49965
+#: dist/converse-no-dependencies.js:47903
 msgid "This groupchat does not show unavailable members"
 msgstr "இந்த குரூப்சாட் கிடைக்காத உறுப்பினர்களைக் காட்டாது"
 
-#: dist/converse-no-dependencies.js:49966
+#: dist/converse-no-dependencies.js:47904
 msgid "The groupchat configuration has changed"
 msgstr "குரூப்சாட் உள்ளமைவு மாறிவிட்டது"
 
-#: dist/converse-no-dependencies.js:49967
+#: dist/converse-no-dependencies.js:47905
 msgid "Groupchat logging is now enabled"
 msgstr "குரூப்சாட் பதிவு இப்போது இயக்கப்பட்டது"
 
-#: dist/converse-no-dependencies.js:49968
+#: dist/converse-no-dependencies.js:47906
 msgid "Groupchat logging is now disabled"
 msgstr "குரூப்சாட் பதிவு இப்போது முடக்கப்பட்டுள்ளது"
 
-#: dist/converse-no-dependencies.js:49969
+#: dist/converse-no-dependencies.js:47907
 msgid "This groupchat is now no longer anonymous"
 msgstr "இந்த குரூப்சாட் இப்போது அநாமதேயமாக இல்லை"
 
-#: dist/converse-no-dependencies.js:49970
+#: dist/converse-no-dependencies.js:47908
 msgid "This groupchat is now semi-anonymous"
 msgstr "இந்த குரூப்சாட் இப்போது அரை அநாமதேயமானது"
 
-#: dist/converse-no-dependencies.js:49971
+#: dist/converse-no-dependencies.js:47909
 msgid "This groupchat is now fully-anonymous"
 msgstr "இந்த குரூப்சாட் இப்போது முழுமையாக அநாமதேயமானது"
 
-#: dist/converse-no-dependencies.js:49972
+#: dist/converse-no-dependencies.js:47910
 msgid "A new groupchat has been created"
 msgstr "ஒரு புதிய குரூப்சாட் உருவாக்கப்பட்டுள்ளது"
 
 #. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:49974
+#: dist/converse-no-dependencies.js:47912
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
 msgstr "உங்கள் புனைப்பெயர் தானாகவே %1$s ஆக அமைக்கப்பட்டுள்ளது"
 
-#: dist/converse-no-dependencies.js:49975
+#: dist/converse-no-dependencies.js:47913
 msgid "You have been banned from this groupchat"
 msgstr "இந்த குழு அரட்டையிலிருந்து உங்களுக்கு தடை விதிக்கப்பட்டுள்ளது"
 
 #. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:49977
+#: dist/converse-no-dependencies.js:47915
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "உங்கள் புனைப்பெயர் %1$s ஆக மாற்றப்பட்டுள்ளது"
 
-#: dist/converse-no-dependencies.js:49978
+#: dist/converse-no-dependencies.js:47916
 msgid "You have been kicked from this groupchat"
 msgstr "இந்த குழு அரட்டையிலிருந்து நீங்கள் உதைக்கப்பட்டுள்ளீர்கள்"
 
-#: dist/converse-no-dependencies.js:49979
+#: dist/converse-no-dependencies.js:47917
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr "இணைப்பு மாற்றம் காரணமாக நீங்கள் இந்த குழுமத்திலிருந்து அகற்றப்பட்டீர்கள்"
 
-#: dist/converse-no-dependencies.js:49980
+#: dist/converse-no-dependencies.js:47918
 #, fuzzy
 msgid ""
 "You have been removed from this groupchat because it has changed to members-"
@@ -527,7 +525,7 @@ msgstr ""
 "இந்த குரூபிலிருந்து நீங்கள் அகற்றப்பட்டிருக்கிறீர்கள், ஏனெனில் குரூப்சாட் உறுப்பினர்களுக்கு "
 "மட்டுமே மாறிவிட்டது, நீங்கள் உறுப்பினராக இல்லை"
 
-#: dist/converse-no-dependencies.js:49981
+#: dist/converse-no-dependencies.js:47919
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
@@ -535,15 +533,15 @@ msgstr ""
 "இந்த குழுமத்திலிருந்து நீங்கள் அகற்றப்பட்டிருக்கிறீர்கள், ஏனெனில் அதை ஓச்டிங் செய்யும் பணி "
 "மூடப்படுகிறது"
 
-#: dist/converse-no-dependencies.js:49982
+#: dist/converse-no-dependencies.js:47920
 msgid "You have exited this groupchat due to a technical problem"
 msgstr "தொழில்நுட்ப சிக்கல் காரணமாக நீங்கள் இந்த குழுவிலிருந்து வெளியேறிவிட்டீர்கள்"
 
-#: dist/converse-no-dependencies.js:50893
+#: dist/converse-no-dependencies.js:48838
 msgid "Timeout Error"
 msgstr "காலக்கெடு பிழை"
 
-#: dist/converse-no-dependencies.js:50893
+#: dist/converse-no-dependencies.js:48838
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
@@ -551,156 +549,214 @@ msgstr ""
 "அனுமதிக்கப்பட்ட நேரத்திற்குள் சேவையகம் உங்கள் புக்மார்க்குகளை திருப்பித் தரவில்லை. அவற்றை "
 "மீண்டும் கோர பக்கத்தை மீண்டும் ஏற்றலாம்."
 
-#: dist/converse-no-dependencies.js:54299
+#: dist/converse-no-dependencies.js:53091
 #, fuzzy
 msgid "You are blocked from sending messages."
 msgstr "ஒரு செய்தியை அனுப்ப உங்களுக்கு இசைவு இல்லை."
 
-#: dist/converse-no-dependencies.js:56320
+#: dist/converse-no-dependencies.js:55125
 msgid "A timeout occurred"
 msgstr "நேரம் முடிந்தது"
 
-#: dist/converse-no-dependencies.js:59395
+#: dist/converse-no-dependencies.js:58683
 msgid "Timeout while trying to fetch archived messages."
 msgstr "காப்பகப்படுத்தப்பட்ட செய்திகளைப் பெற முயற்சிக்கும்போது நேரம் முடிந்தது."
 
-#: dist/converse-no-dependencies.js:59408
+#: dist/converse-no-dependencies.js:58696
 msgid "An error occurred while querying for archived messages."
 msgstr "காப்பகப்படுத்தப்பட்ட செய்திகளுக்கு வினவும்போது பிழை ஏற்பட்டது."
 
-#: dist/converse-no-dependencies.js:63505
+#: dist/converse-no-dependencies.js:62085
 #, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
 msgstr "மன்னிக்கவும், ஒரு தொடர்பாக %1$s ஐ சேர்க்க முயற்சிக்கும்போது பிழை ஏற்பட்டது."
 
-#: dist/converse-no-dependencies.js:63819
+#: dist/converse-no-dependencies.js:62399
 msgid "This client does not allow presence subscriptions"
 msgstr "இந்த கிளையன்ட் இருப்பு சந்தாக்களை அனுமதிக்காது"
 
-#: dist/converse-no-dependencies.js:65764
+#: dist/converse-no-dependencies.js:63665
+#, fuzzy
+msgid "me"
+msgstr "பெயர்"
+
+#: dist/converse-no-dependencies.js:64345
 msgid "Unsaved contacts"
 msgstr "சேமிக்கப்படாத தொடர்புகள்"
 
-#: dist/converse-no-dependencies.js:65765
+#: dist/converse-no-dependencies.js:64346
 msgid "My contacts"
 msgstr "எனது தொடர்புகள்"
 
-#: dist/converse-no-dependencies.js:65766
-msgid "Pending contacts"
-msgstr "தொடர்புகள் நிலுவையில் உள்ளன"
-
-#: dist/converse-no-dependencies.js:65767
+#: dist/converse-no-dependencies.js:64347
 msgid "Contact requests"
 msgstr "தொடர்பு கோரிக்கைகள்"
 
-#: dist/converse-no-dependencies.js:65768
+#: dist/converse-no-dependencies.js:64348
 msgid "Ungrouped"
 msgstr "குழுவாக"
 
-#: dist/converse-no-dependencies.js:65769
-#: dist/converse-no-dependencies.js:97508
+#: dist/converse-no-dependencies.js:64349
+#: dist/converse-no-dependencies.js:98200
 msgid "New messages"
 msgstr "புதிய செய்திகள்"
 
-#: dist/converse-no-dependencies.js:76240
-#: dist/converse-no-dependencies.js:76241
-#: dist/converse-no-dependencies.js:102008
-#: dist/converse-no-dependencies.js:108452
+#: dist/converse-no-dependencies.js:75081
+msgid "Menu"
+msgstr "பட்டியல்"
+
+#: dist/converse-no-dependencies.js:75395
+msgid "Click to set a new picture"
+msgstr "புதிய படத்தை அமைக்க சொடுக்கு செய்க"
+
+#: dist/converse-no-dependencies.js:75876
+msgid "Older versions"
+msgstr "பழைய பதிப்புகள்"
+
+#: dist/converse-no-dependencies.js:75878
+msgid "No older versions found"
+msgstr "பழைய பதிப்புகள் கிடைக்கவில்லை"
+
+#: dist/converse-no-dependencies.js:75878
+msgid "Current version"
+msgstr "தற்போதைய பதிப்பு"
+
+#: dist/converse-no-dependencies.js:77193
+#: dist/converse-no-dependencies.js:115259
+msgid "Offline"
+msgstr "இணையமில்லாமல்"
+
+#: dist/converse-no-dependencies.js:77194
+#, fuzzy
+msgid "Unavailable"
+msgstr "கிடைக்கிறது"
+
+#: dist/converse-no-dependencies.js:77195
+#: dist/converse-no-dependencies.js:115258
+msgid "Extended Away"
+msgstr "விலகிச் சென்றது"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:77196
+#: dist/converse-no-dependencies.js:115257
+#: dist/converse-no-dependencies.js:123433
+msgid "Away"
+msgstr "தொலைவில்"
+
+#: dist/converse-no-dependencies.js:77197
+msgid "Do not disturb"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:77198
+#: dist/converse-no-dependencies.js:115255
+msgid "Chatty"
+msgstr "சாட்டி"
+
+#: dist/converse-no-dependencies.js:77199
+#: dist/converse-no-dependencies.js:115254
+#: dist/converse-no-dependencies.js:123435
+msgid "Online"
+msgstr "ஆன்லைனில்"
+
+#: dist/converse-no-dependencies.js:79077
+#: dist/converse-no-dependencies.js:79078
+#: dist/converse-no-dependencies.js:102859
+#: dist/converse-no-dependencies.js:109363
 msgid "Close"
 msgstr "மூடு"
 
-#: dist/converse-no-dependencies.js:77051
-#: dist/converse-no-dependencies.js:84584
-#: dist/converse-no-dependencies.js:89358
-#: dist/converse-no-dependencies.js:89432
-#: dist/converse-no-dependencies.js:89460
-#: dist/converse-no-dependencies.js:120640
+#: dist/converse-no-dependencies.js:79931
+#: dist/converse-no-dependencies.js:86415
+#: dist/converse-no-dependencies.js:91036
+#: dist/converse-no-dependencies.js:91082
+#: dist/converse-no-dependencies.js:91156
+#: dist/converse-no-dependencies.js:91184
+#: dist/converse-no-dependencies.js:96132
+#: dist/converse-no-dependencies.js:103272
+#: dist/converse-no-dependencies.js:106097
+#: dist/converse-no-dependencies.js:120215
+#: dist/converse-no-dependencies.js:130805
+#: dist/converse-no-dependencies.js:138109
 msgid "Confirm"
 msgstr "உறுதிப்படுத்தவும்"
 
-#: dist/converse-no-dependencies.js:77051
-#: dist/converse-no-dependencies.js:80429
-#: dist/converse-no-dependencies.js:133038
+#: dist/converse-no-dependencies.js:79931
+#: dist/converse-no-dependencies.js:84448
+#: dist/converse-no-dependencies.js:134334
 msgid "Cancel"
 msgstr "ரத்துசெய்"
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:79606
-#, javascript-format
-msgid "Download file \"%1$s\""
-msgstr "\"%1$s\" ஐ பதிவிறக்குக"
-
-#: dist/converse-no-dependencies.js:80398
+#: dist/converse-no-dependencies.js:84417
 msgid "Execute"
 msgstr "செயல்படுத்தவும்"
 
-#: dist/converse-no-dependencies.js:80399
+#: dist/converse-no-dependencies.js:84418
 msgid "Previous"
 msgstr "முந்தைய"
 
-#: dist/converse-no-dependencies.js:80400
+#: dist/converse-no-dependencies.js:84419
 msgid "Next"
 msgstr "அடுத்தது"
 
-#: dist/converse-no-dependencies.js:80401
+#: dist/converse-no-dependencies.js:84420
 msgid "Complete"
 msgstr "முழுமையானது"
 
-#: dist/converse-no-dependencies.js:82955
+#: dist/converse-no-dependencies.js:84769
 msgid "Add to Contacts"
 msgstr "தொடர்புகளில் சேர்க்கவும்"
 
-#: dist/converse-no-dependencies.js:82967
-#: dist/converse-no-dependencies.js:96409
-#: dist/converse-no-dependencies.js:112722
-#: dist/converse-no-dependencies.js:120567
-#: dist/converse-no-dependencies.js:124117
-#: dist/converse-no-dependencies.js:134758
+#: dist/converse-no-dependencies.js:84783
+#: dist/converse-no-dependencies.js:97042
+#: dist/converse-no-dependencies.js:112634
+#: dist/converse-no-dependencies.js:120144
+#: dist/converse-no-dependencies.js:124316
+#: dist/converse-no-dependencies.js:136228
 msgid "Nickname"
 msgstr "புனைப்பெயர்"
 
-#: dist/converse-no-dependencies.js:82967
-#: dist/converse-no-dependencies.js:84948
-#: dist/converse-no-dependencies.js:96406
-#: dist/converse-no-dependencies.js:105649
-#: dist/converse-no-dependencies.js:113507
-#: dist/converse-no-dependencies.js:124116
-#: dist/converse-no-dependencies.js:138054
-#: dist/converse-no-dependencies.js:138654
+#: dist/converse-no-dependencies.js:84783
+#: dist/converse-no-dependencies.js:86778
+#: dist/converse-no-dependencies.js:97039
+#: dist/converse-no-dependencies.js:106324
+#: dist/converse-no-dependencies.js:113418
+#: dist/converse-no-dependencies.js:124315
+#: dist/converse-no-dependencies.js:139494
+#: dist/converse-no-dependencies.js:140699
 msgid "XMPP Address"
 msgstr "எக்ச்எம்பிபி முகவரி"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:82967
-#: dist/converse-no-dependencies.js:83211
+#: dist/converse-no-dependencies.js:84783
+#: dist/converse-no-dependencies.js:85044
 msgid "Affiliation"
 msgstr "இணைப்பு"
 
-#: dist/converse-no-dependencies.js:82969
-#: dist/converse-no-dependencies.js:83215
-#: dist/converse-no-dependencies.js:96411
-#: dist/converse-no-dependencies.js:124118
+#: dist/converse-no-dependencies.js:84785
+#: dist/converse-no-dependencies.js:85048
+#: dist/converse-no-dependencies.js:97043
+#: dist/converse-no-dependencies.js:124317
 msgid "Role"
 msgstr "பங்கு"
 
-#: dist/converse-no-dependencies.js:82971
+#: dist/converse-no-dependencies.js:84787
 msgid "Hats"
 msgstr "தொப்பிகள்"
 
-#: dist/converse-no-dependencies.js:82971
+#: dist/converse-no-dependencies.js:84787
 msgid "Occupant Id"
 msgstr "குடியிருப்பாளர் ஐடி"
 
-#: dist/converse-no-dependencies.js:83079
-#: dist/converse-no-dependencies.js:83702
+#: dist/converse-no-dependencies.js:84901
+#: dist/converse-no-dependencies.js:85533
 msgid "Affiliation changed"
 msgstr "இணைப்பு மாற்றப்பட்டது"
 
-#: dist/converse-no-dependencies.js:83082
+#: dist/converse-no-dependencies.js:84904
 msgid "role changed"
 msgstr "பங்கு மாற்றப்பட்டது"
 
-#: dist/converse-no-dependencies.js:83173
+#: dist/converse-no-dependencies.js:85006
 msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
@@ -708,16 +764,16 @@ msgstr ""
 "மதிப்பீட்டாளர்கள் சலுகை பெற்ற பயனர்கள், அவர்கள் பிற பயனர்களின் பாத்திரங்களை மாற்ற முடியும் "
 "(நிர்வாகி அல்லது உரிமையாளர் இணைப்புகள் தவிர."
 
-#: dist/converse-no-dependencies.js:83175
+#: dist/converse-no-dependencies.js:85008
 msgid "The default role, implies that you can read and write messages."
 msgstr "இயல்புநிலை பங்கு, நீங்கள் செய்திகளைப் படித்து எழுதலாம் என்பதைக் குறிக்கிறது."
 
-#: dist/converse-no-dependencies.js:83177
+#: dist/converse-no-dependencies.js:85010
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr "மிதமான பல பயனர் அரட்டையில் செய்திகளை எழுத பார்வையாளர்கள் அனுமதிக்கப்படவில்லை."
 
-#: dist/converse-no-dependencies.js:83182
+#: dist/converse-no-dependencies.js:85015
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
@@ -725,7 +781,7 @@ msgstr ""
 "உரிமையாளர் மிக உயர்ந்த இணைப்பு. உரிமையாளர்கள் மற்ற அனைத்து பயனர்களின் பாத்திரங்களையும் "
 "இணைப்புகளையும் மாற்றலாம்."
 
-#: dist/converse-no-dependencies.js:83184
+#: dist/converse-no-dependencies.js:85017
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
@@ -733,29 +789,29 @@ msgstr ""
 "நிர்வாகி 2 வது மிக உயர்ந்த இணைப்பு. உரிமையாளர்களைத் தவிர மற்ற அனைத்து பயனர்களின் "
 "பாத்திரங்களையும் இணைப்புகளையும் நிர்வாகிகள் மாற்றலாம்."
 
-#: dist/converse-no-dependencies.js:83186
+#: dist/converse-no-dependencies.js:85019
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
 msgstr ""
 "ஒரு பயனரைத் தடைசெய்ய, நீங்கள் அவர்களுக்கு \"வெளியேற்றப்பட்டவர்\" என்ற இணைப்பைக் "
 "கொடுக்கிறீர்கள்."
 
-#: dist/converse-no-dependencies.js:83212
+#: dist/converse-no-dependencies.js:85045
 msgid "No users with that affiliation found."
 msgstr "அந்த இணைப்பைக் கொண்ட எந்த பயனர்களும் கிடைக்கவில்லை."
 
-#: dist/converse-no-dependencies.js:83213
+#: dist/converse-no-dependencies.js:85046
 msgid "No users with that role found."
 msgstr "அந்த பாத்திரத்துடன் கூடிய பயனர்கள் யாரும் காணப்படவில்லை."
 
-#: dist/converse-no-dependencies.js:83214
+#: dist/converse-no-dependencies.js:85047
 msgid "Type here to filter the search results"
 msgstr "தேடல் முடிவுகளை வடிகட்ட இங்கே தட்டச்சு செய்க"
 
-#: dist/converse-no-dependencies.js:83216
+#: dist/converse-no-dependencies.js:85049
 msgid "Show users"
 msgstr "பயனர்களைக் காட்டு"
 
-#: dist/converse-no-dependencies.js:83217
+#: dist/converse-no-dependencies.js:85050
 msgid ""
 "Roles are assigned to users to grant or deny them certain abilities in a "
 "multi-user chat. They're assigned either explicitly or implicitly as part of "
@@ -767,7 +823,7 @@ msgstr ""
 "ஒதுக்கப்படுகின்றன. ஒரு இணைப்பு காரணமாக இல்லாத ஒரு பங்கு, பயனரின் அமர்வின் காலத்திற்கு "
 "மட்டுமே செல்லுபடியாகும்."
 
-#: dist/converse-no-dependencies.js:83218
+#: dist/converse-no-dependencies.js:85051
 msgid ""
 "An affiliation is a long-lived entitlement which typically implies a certain "
 "role and which grants privileges and responsibilities. For example admins "
@@ -777,21 +833,21 @@ msgstr ""
 "குறிக்கிறது மற்றும் இது சலுகைகள் மற்றும் பொறுப்புகளை வழங்குகிறது. எடுத்துக்காட்டாக "
 "நிர்வாகிகள் மற்றும் உரிமையாளர்கள் தானாகவே மதிப்பீட்டாளர் பாத்திரத்தைக் கொண்டுள்ளனர்."
 
-#: dist/converse-no-dependencies.js:83707
+#: dist/converse-no-dependencies.js:85538
 msgid "Role changed"
 msgstr "பங்கு மாற்றப்பட்டது"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:84118
+#: dist/converse-no-dependencies.js:85949
 msgid "Moderator Tools"
 msgstr "மதிப்பீட்டாளர் கருவிகள்"
 
-#: dist/converse-no-dependencies.js:84535
+#: dist/converse-no-dependencies.js:86366
 #, javascript-format
 msgid "%1$s has invited you to join a groupchat: %2$s"
 msgstr "குழு அரட்டையில் சேர %1$s உங்களை அழைத்தது: %2$s"
 
-#: dist/converse-no-dependencies.js:84537
+#: dist/converse-no-dependencies.js:86368
 #, javascript-format
 msgid ""
 "%1$s has invited you to join a groupchat: %2$s, and left the following "
@@ -800,38 +856,38 @@ msgstr ""
 "%1$s உங்களை ஒரு குழுசட்டில் சேர அழைத்துள்ளன: %2$s, மற்றும் பின்வரும் காரணத்தை "
 "விட்டுவிட்டது: \" %3$s\""
 
-#: dist/converse-no-dependencies.js:84566
+#: dist/converse-no-dependencies.js:86397
 msgid "Are you sure you want to destroy this groupchat?"
 msgstr "இந்த குழு அரட்டையை அழிக்க விரும்புகிறீர்களா?"
 
-#: dist/converse-no-dependencies.js:84569
+#: dist/converse-no-dependencies.js:86400
 msgid "Please enter the XMPP address of this groupchat to confirm"
 msgstr "உறுதிப்படுத்த இந்த குழுமத்தின் XMPP முகவரியை உள்ளிடவும்"
 
-#: dist/converse-no-dependencies.js:84571
-#: dist/converse-no-dependencies.js:138051
+#: dist/converse-no-dependencies.js:86402
+#: dist/converse-no-dependencies.js:139489
 msgid "name@example.org"
 msgstr "name@example.org"
 
-#: dist/converse-no-dependencies.js:84575
+#: dist/converse-no-dependencies.js:86406
 msgid "Optional reason for destroying this groupchat"
 msgstr "இந்த குழுமத்தை அழிக்க விருப்ப காரணம்"
 
-#: dist/converse-no-dependencies.js:84576
-#: dist/converse-no-dependencies.js:110604
-#: dist/converse-no-dependencies.js:111151
+#: dist/converse-no-dependencies.js:86407
+#: dist/converse-no-dependencies.js:111237
+#: dist/converse-no-dependencies.js:111820
 msgid "Reason"
 msgstr "காரணம்"
 
-#: dist/converse-no-dependencies.js:84579
+#: dist/converse-no-dependencies.js:86410
 msgid "Optional XMPP address for a new groupchat that replaces this one"
 msgstr "இதை மாற்றும் புதிய குழுமத்திற்கான விருப்ப XMPP முகவரி"
 
-#: dist/converse-no-dependencies.js:84580
+#: dist/converse-no-dependencies.js:86411
 msgid "replacement@example.org"
 msgstr "மாற்று@example.org"
 
-#: dist/converse-no-dependencies.js:84768
+#: dist/converse-no-dependencies.js:86599
 msgid ""
 "Couldn't find a participant with that nickname. They might have left the "
 "groupchat."
@@ -840,12 +896,12 @@ msgstr ""
 "வெளியேறியிருக்கலாம்."
 
 #. e.g. Your nickname is "coolguy69"
-#: dist/converse-no-dependencies.js:84879
+#: dist/converse-no-dependencies.js:86710
 #, javascript-format
 msgid "Your nickname is \"%1$s\""
 msgstr "உங்கள் புனைப்பெயர் \"%1$s\""
 
-#: dist/converse-no-dependencies.js:84897
+#: dist/converse-no-dependencies.js:86728
 msgid "Error: invalid number of arguments"
 msgstr "பிழை: தவறான வாதங்களின் எண்ணிக்கை"
 
@@ -856,11 +912,11 @@ msgstr "பிழை: தவறான வாதங்களின் எண்�
 #. * @param {AdHocCommands} el
 #.
 #. harmony default export
-#: dist/converse-no-dependencies.js:84944
+#: dist/converse-no-dependencies.js:86774
 msgid "On which entity do you want to run commands?"
 msgstr "எந்த நிறுவனத்தில் கட்டளைகளை இயக்க விரும்புகிறீர்கள்?"
 
-#: dist/converse-no-dependencies.js:84945
+#: dist/converse-no-dependencies.js:86775
 msgid ""
 "Certain XMPP services and entities allow privileged users to execute ad-hoc "
 "commands on them."
@@ -868,31 +924,31 @@ msgstr ""
 "சில எக்ச்எம்பிபி சேவைகள் மற்றும் நிறுவனங்கள் சலுகை பெற்ற பயனர்களை தற்காலிக கட்டளைகளை "
 "இயக்க அனுமதிக்கின்றன."
 
-#: dist/converse-no-dependencies.js:84946
+#: dist/converse-no-dependencies.js:86776
 msgid "Commands found"
 msgstr "கட்டளைகள் காணப்பட்டன"
 
-#: dist/converse-no-dependencies.js:84947
+#: dist/converse-no-dependencies.js:86777
 msgid "List available commands"
 msgstr "கிடைக்கக்கூடிய கட்டளைகளை பட்டியலிடுங்கள்"
 
-#: dist/converse-no-dependencies.js:84949
+#: dist/converse-no-dependencies.js:86779
 msgid "No commands found"
 msgstr "கட்டளைகள் எதுவும் கிடைக்கவில்லை"
 
-#: dist/converse-no-dependencies.js:85448
+#: dist/converse-no-dependencies.js:87278
 msgid "Sorry, an error occurred while looking for commands on that entity."
 msgstr "மன்னிக்கவும், அந்த நிறுவனத்தில் கட்டளைகளைத் தேடும்போது பிழை ஏற்பட்டது."
 
-#: dist/converse-no-dependencies.js:85458
+#: dist/converse-no-dependencies.js:87288
 msgid "The specified entity doesn't support ad-hoc commands"
 msgstr "குறிப்பிட்ட நிறுவனம் தற்காலிக கட்டளைகளை ஆதரிக்கவில்லை"
 
-#: dist/converse-no-dependencies.js:85513
+#: dist/converse-no-dependencies.js:87343
 msgid "An error occurred while trying to fetch the command form"
 msgstr "கட்டளை படிவத்தைப் பெற முயற்சிக்கும்போது பிழை ஏற்பட்டது"
 
-#: dist/converse-no-dependencies.js:85597
+#: dist/converse-no-dependencies.js:87427
 msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
@@ -900,16 +956,16 @@ msgstr ""
 "மன்னிக்கவும், கட்டளையை இயக்க முயற்சிக்கும்போது பிழை ஏற்பட்டது. விவரங்களுக்கு உருவாக்குபவர் "
 "கன்சோலைப் பார்க்கவும்"
 
-#: dist/converse-no-dependencies.js:85607
+#: dist/converse-no-dependencies.js:87437
 msgid "Executing"
 msgstr "செயல்படுத்துதல்"
 
-#: dist/converse-no-dependencies.js:85611
-#: dist/converse-no-dependencies.js:85616
+#: dist/converse-no-dependencies.js:87441
+#: dist/converse-no-dependencies.js:87446
 msgid "Completed"
 msgstr "முடிந்தது"
 
-#: dist/converse-no-dependencies.js:85660
+#: dist/converse-no-dependencies.js:87490
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
@@ -917,22 +973,22 @@ msgstr ""
 "கட்டளையை ரத்து செய்ய முயற்சிக்கும்போது பிழை ஏற்பட்டது. விவரங்களுக்கு உருவாக்குபவர் "
 "கன்சோலைப் பார்க்கவும்"
 
-#: dist/converse-no-dependencies.js:85667
+#: dist/converse-no-dependencies.js:87497
 msgid "Error: unexpected result"
 msgstr "பிழை: எதிர்பாராத முடிவு"
 
-#: dist/converse-no-dependencies.js:86096
+#: dist/converse-no-dependencies.js:87926
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "\"%1$s\" புத்தகக்குறியை அகற்ற விரும்புகிறீர்களா?"
 
-#: dist/converse-no-dependencies.js:86139
+#: dist/converse-no-dependencies.js:87969
 msgid "Unbookmark this groupchat"
 msgstr "இந்த குழு அரட்டையை புத்தகமோர்"
 
-#: dist/converse-no-dependencies.js:86140
-#: dist/converse-no-dependencies.js:135538
-#: dist/converse-no-dependencies.js:135990
+#: dist/converse-no-dependencies.js:87970
+#: dist/converse-no-dependencies.js:137014
+#: dist/converse-no-dependencies.js:137470
 msgid "Click to open this groupchat"
 msgstr "இந்த குழு அரட்டையைத் திறக்க சொடுக்கு செய்க"
 
@@ -951,75 +1007,78 @@ msgstr "இந்த குழு அரட்டையைத் திறக்
 #. * @param {ListFilter} el
 #.
 #. harmony default export
-#: dist/converse-no-dependencies.js:86165
-#: dist/converse-no-dependencies.js:114492
-#: dist/converse-no-dependencies.js:139285
+#: dist/converse-no-dependencies.js:87995
+#: dist/converse-no-dependencies.js:115250
+#: dist/converse-no-dependencies.js:141337
 msgid "Filter"
 msgstr "வடிப்பி"
 
-#: dist/converse-no-dependencies.js:86816
-#: dist/converse-no-dependencies.js:136060
+#: dist/converse-no-dependencies.js:88644
+#: dist/converse-no-dependencies.js:137540
 msgid "Bookmarks"
 msgstr "புக்மார்க்குகள்"
 
-#: dist/converse-no-dependencies.js:86837
+#: dist/converse-no-dependencies.js:88665
 #, javascript-format
 msgid "Bookmark for \"%1$s\""
 msgstr "\"%1$s\" க்கான புக்மார்க்கு"
 
-#: dist/converse-no-dependencies.js:86838
+#: dist/converse-no-dependencies.js:88666
 msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr "தொடக்கத்தில் இந்த குரூப்சாட் தானாகவே சேர விரும்புகிறீர்களா?"
 
-#: dist/converse-no-dependencies.js:86839
+#: dist/converse-no-dependencies.js:88667
 msgid "Remove"
 msgstr "அகற்று"
 
-#: dist/converse-no-dependencies.js:86840
-#: dist/converse-no-dependencies.js:119376
-#: dist/converse-no-dependencies.js:138053
+#: dist/converse-no-dependencies.js:88668
+#: dist/converse-no-dependencies.js:97076
+#: dist/converse-no-dependencies.js:118949
+#: dist/converse-no-dependencies.js:139492
+#: dist/converse-no-dependencies.js:140144
 msgid "Name"
 msgstr "பெயர்"
 
-#: dist/converse-no-dependencies.js:86841
+#: dist/converse-no-dependencies.js:88669
 msgid "What should your nickname for this groupchat be?"
 msgstr "இந்த குழுமத்திற்கான உங்கள் புனைப்பெயர் என்னவாக இருக்க வேண்டும்?"
 
-#: dist/converse-no-dependencies.js:86842
+#: dist/converse-no-dependencies.js:88670
 #, fuzzy
 msgid "Password (for a protected groupchat)"
 msgstr "கடவுச்சொல் பாதுகாக்கப்பட்டது"
 
-#: dist/converse-no-dependencies.js:86843
+#: dist/converse-no-dependencies.js:88671
 msgid ""
 "If the groupchat requires a password to enter, you can save it here. Note "
 "this is not intended to be a secure storage."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:86844
+#: dist/converse-no-dependencies.js:88672
+#: dist/converse-no-dependencies.js:97076
 msgid "Update"
 msgstr "புதுப்பிப்பு"
 
-#: dist/converse-no-dependencies.js:86844
-#: dist/converse-no-dependencies.js:118183
-#: dist/converse-no-dependencies.js:123851
+#: dist/converse-no-dependencies.js:88672
+#: dist/converse-no-dependencies.js:118252
+#: dist/converse-no-dependencies.js:123436
 msgid "Save"
 msgstr "சேமி"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:87132
+#: dist/converse-no-dependencies.js:88960
 msgid "Bookmark"
 msgstr "புத்தககுறி"
 
-#: dist/converse-no-dependencies.js:89312
+#: dist/converse-no-dependencies.js:91036
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr ""
 "உங்களிடம் ஒரு உச்சரிக்கப்படாத செய்தி உள்ளது, நீங்கள் தொடர்ந்தால் இழக்கப்படும். நீங்கள் உறுதியாக "
 "இருக்கிறீர்களா?"
 
-#: dist/converse-no-dependencies.js:89352
-#: dist/converse-no-dependencies.js:89422
+#: dist/converse-no-dependencies.js:91076
+#: dist/converse-no-dependencies.js:91146
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
@@ -1028,303 +1087,309 @@ msgstr ""
 "ஆதரிக்காமல் இருக்கலாம் என்பதையும், இந்த செய்தி எல்லா இடங்களிலும் அகற்றப்படாமல் போகலாம் "
 "என்பதையும் அறிந்து கொள்ளுங்கள்."
 
-#: dist/converse-no-dependencies.js:89353
-#: dist/converse-no-dependencies.js:89427
-#: dist/converse-no-dependencies.js:89455
+#: dist/converse-no-dependencies.js:91077
+#: dist/converse-no-dependencies.js:91151
+#: dist/converse-no-dependencies.js:91179
 msgid "Are you sure you want to retract this message?"
 msgstr "இந்த செய்தியை நீங்கள் திரும்பப் பெற விரும்புகிறீர்களா?"
 
-#: dist/converse-no-dependencies.js:89394
+#: dist/converse-no-dependencies.js:91118
 msgid "A timeout occurred while trying to retract the message"
 msgstr "செய்தியைத் திரும்பப் பெற முயற்சிக்கும்போது நேரம் முடிந்தது"
 
-#: dist/converse-no-dependencies.js:89395
-#: dist/converse-no-dependencies.js:89399
-#: dist/converse-no-dependencies.js:89486
-#: dist/converse-no-dependencies.js:95529
-#: dist/converse-no-dependencies.js:95603
-#: dist/converse-no-dependencies.js:95655
-#: dist/converse-no-dependencies.js:103236
-#: dist/converse-no-dependencies.js:115188
-#: dist/converse-no-dependencies.js:115197
-#: dist/converse-no-dependencies.js:119298
-#: dist/converse-no-dependencies.js:127180
-#: dist/converse-no-dependencies.js:127182
-#: dist/converse-no-dependencies.js:128429
-#: dist/converse-no-dependencies.js:129747
+#: dist/converse-no-dependencies.js:91119
+#: dist/converse-no-dependencies.js:91123
+#: dist/converse-no-dependencies.js:91210
+#: dist/converse-no-dependencies.js:96156
+#: dist/converse-no-dependencies.js:96230
+#: dist/converse-no-dependencies.js:96282
+#: dist/converse-no-dependencies.js:104136
+#: dist/converse-no-dependencies.js:114656
+#: dist/converse-no-dependencies.js:114665
+#: dist/converse-no-dependencies.js:118871
+#: dist/converse-no-dependencies.js:126911
+#: dist/converse-no-dependencies.js:126913
+#: dist/converse-no-dependencies.js:128320
+#: dist/converse-no-dependencies.js:130778
 msgid "Error"
 msgstr "பிழை"
 
-#: dist/converse-no-dependencies.js:89398
+#: dist/converse-no-dependencies.js:91122
 msgid "Sorry, you're not allowed to retract this message."
 msgstr "மன்னிக்கவும், இந்த செய்தியை திரும்பப் பெற உங்களுக்கு இசைவு இல்லை."
 
-#: dist/converse-no-dependencies.js:89472
+#: dist/converse-no-dependencies.js:91196
 msgid "You are about to retract this message."
 msgstr "இந்த செய்தியை நீங்கள் திரும்பப் பெற உள்ளீர்கள்."
 
-#: dist/converse-no-dependencies.js:89472
+#: dist/converse-no-dependencies.js:91196
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
 "பின்வாங்குவதற்கான காரணத்தை விளக்கும் செய்தியை நீங்கள் விருப்பமாக ஒரு செய்தியைச் சேர்க்கலாம்."
 
-#: dist/converse-no-dependencies.js:89477
+#: dist/converse-no-dependencies.js:91201
 msgid "Message Retraction"
 msgstr "செய்தி திரும்பப் பெறுதல்"
 
-#: dist/converse-no-dependencies.js:89477
+#: dist/converse-no-dependencies.js:91201
 msgid "Optional reason"
 msgstr "விருப்ப காரணம்"
 
-#: dist/converse-no-dependencies.js:89485
+#: dist/converse-no-dependencies.js:91209
 msgid "Sorry, you're not allowed to retract this message"
 msgstr "மன்னிக்கவும், இந்த செய்தியை திரும்பப் பெற உங்களுக்கு இசைவு இல்லை"
 
-#: dist/converse-no-dependencies.js:89604
+#: dist/converse-no-dependencies.js:91328
 msgid "Show media"
 msgstr "ஊடகத்தைக் காட்டு"
 
-#: dist/converse-no-dependencies.js:89604
+#: dist/converse-no-dependencies.js:91328
 msgid "Hide media"
 msgstr "மீடியாவை மறைக்கவும்"
 
 #. * @type {MessageActionAttributes}
-#: dist/converse-no-dependencies.js:89659
+#: dist/converse-no-dependencies.js:91392
 msgid "Cancel Editing"
 msgstr "திருத்துதல் ரத்துசெய்"
 
-#: dist/converse-no-dependencies.js:89659
+#: dist/converse-no-dependencies.js:91392
+#: dist/converse-no-dependencies.js:97049
 msgid "Edit"
 msgstr "தொகு"
 
-#: dist/converse-no-dependencies.js:89682
+#: dist/converse-no-dependencies.js:91415
 msgid "Retract"
 msgstr "பின்வாங்கல்"
 
-#: dist/converse-no-dependencies.js:89699
+#: dist/converse-no-dependencies.js:91432
 msgid "Copy"
 msgstr "நகலெடு"
 
-#: dist/converse-no-dependencies.js:89709
+#: dist/converse-no-dependencies.js:91442
 msgid "Quote"
 msgstr "மேற்கோள்"
 
-#: dist/converse-no-dependencies.js:89924
+#: dist/converse-no-dependencies.js:91660
 msgid "Image: "
 msgstr "படம்: "
 
-#: dist/converse-no-dependencies.js:94720
-msgid "Menu"
-msgstr "பட்டியல்"
-
-#: dist/converse-no-dependencies.js:94924
-msgid "Older versions"
-msgstr "பழைய பதிப்புகள்"
-
-#: dist/converse-no-dependencies.js:94926
-msgid "No older versions found"
-msgstr "பழைய பதிப்புகள் கிடைக்கவில்லை"
-
-#: dist/converse-no-dependencies.js:94926
-msgid "Current version"
-msgstr "தற்போதைய பதிப்பு"
-
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:95048
+#: dist/converse-no-dependencies.js:95675
 msgid "Message versions"
 msgstr "செய்தி பதிப்புகள்"
 
-#: dist/converse-no-dependencies.js:95505
+#: dist/converse-no-dependencies.js:96132
 msgid "Are you sure you want to remove this contact?"
 msgstr "இந்த தொடர்பை அகற்ற விரும்புகிறீர்களா?"
 
-#: dist/converse-no-dependencies.js:95529
+#: dist/converse-no-dependencies.js:96156
 #, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
-msgstr ""
-"மன்னிக்கவும், ஒரு தொடர்பாக %1$s ஐ சேர்க்க முயற்சிக்கும்போது பிழை ஏற்பட்டது"
+msgstr "மன்னிக்கவும், ஒரு தொடர்பாக %1$s ஐ சேர்க்க முயற்சிக்கும்போது பிழை ஏற்பட்டது"
 
-#: dist/converse-no-dependencies.js:95565
+#: dist/converse-no-dependencies.js:96192
 msgid "Do you want to block this contact, so they cannot send you messages?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:95603
+#: dist/converse-no-dependencies.js:96230
 #, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
-msgstr ""
-"மன்னிக்கவும், ஒரு தொடர்பாக %1$s ஐ சேர்க்க முயற்சிக்கும்போது பிழை ஏற்பட்டது"
+msgstr "மன்னிக்கவும், ஒரு தொடர்பாக %1$s ஐ சேர்க்க முயற்சிக்கும்போது பிழை ஏற்பட்டது"
 
-#: dist/converse-no-dependencies.js:95635
+#: dist/converse-no-dependencies.js:96262
 msgid "Do you want to unblock this contact, so they can send you messages?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:95655
+#: dist/converse-no-dependencies.js:96282
 #, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
-msgstr ""
-"மன்னிக்கவும், உங்கள் செய்தியை அனுப்ப முயற்சிக்கும்போது பிழை ஏற்பட்டது %1$s"
+msgstr "மன்னிக்கவும், உங்கள் செய்தியை அனுப்ப முயற்சிக்கும்போது பிழை ஏற்பட்டது %1$s"
 
-#: dist/converse-no-dependencies.js:96340
+#: dist/converse-no-dependencies.js:96973
 msgid "Remove from blocklist"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:96350
+#: dist/converse-no-dependencies.js:96983
 #, fuzzy
 msgid "Add to blocklist"
 msgstr "தொடர்புகளில் சேர்க்கவும்"
 
-#: dist/converse-no-dependencies.js:96360
+#: dist/converse-no-dependencies.js:96993
 msgid "Remove as contact"
 msgstr "தொடர்பாக அகற்று"
 
-#: dist/converse-no-dependencies.js:96407
-#: dist/converse-no-dependencies.js:124114
+#: dist/converse-no-dependencies.js:97040
+#: dist/converse-no-dependencies.js:124313
 msgid "Email"
 msgstr "மின்னஞ்சல்"
 
-#: dist/converse-no-dependencies.js:96408
-#: dist/converse-no-dependencies.js:124115
+#: dist/converse-no-dependencies.js:97041
+#: dist/converse-no-dependencies.js:124314
 msgid "Full Name"
 msgstr "முழு பெயர்"
 
-#: dist/converse-no-dependencies.js:96410
-#: dist/converse-no-dependencies.js:101375
-msgid "The User's Profile Image"
-msgstr "பயனரின் சுயவிவரப் படம்"
-
-#: dist/converse-no-dependencies.js:96412
-#: dist/converse-no-dependencies.js:124121
+#: dist/converse-no-dependencies.js:97044
+#: dist/converse-no-dependencies.js:124320
 msgid "URL"
 msgstr "முகவரி"
 
-#: dist/converse-no-dependencies.js:97041
+#: dist/converse-no-dependencies.js:97045
+#: dist/converse-no-dependencies.js:139490
+#: dist/converse-no-dependencies.js:140142
+#, fuzzy
+msgid "Groups"
+msgstr "குழு"
+
+#: dist/converse-no-dependencies.js:97046
+#: dist/converse-no-dependencies.js:139491
+#: dist/converse-no-dependencies.js:140143
+msgid "Use commas to separate multiple values"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:97047
+#: dist/converse-no-dependencies.js:124321
+msgid "OMEMO"
+msgstr "மெமோ"
+
+#: dist/converse-no-dependencies.js:97048
+#: dist/converse-no-dependencies.js:124322
+msgid "Profile"
+msgstr "சுயவிவரம்"
+
+#: dist/converse-no-dependencies.js:97051
+#: dist/converse-no-dependencies.js:102219
+msgid "The User's Profile Image"
+msgstr "பயனரின் சுயவிவரப் படம்"
+
+#: dist/converse-no-dependencies.js:97762
 msgid "Uploading file:"
 msgstr "பதிவேற்றும் கோப்பு:"
 
-#: dist/converse-no-dependencies.js:97062
+#: dist/converse-no-dependencies.js:97783
 msgid "Retry"
 msgstr "மீண்டும் முயற்சிக்கவும்"
 
-#: dist/converse-no-dependencies.js:97560
-msgid "This message has been edited"
+#: dist/converse-no-dependencies.js:98252
+#, fuzzy
+msgid "el message has been edited"
 msgstr "இந்த செய்தி திருத்தப்பட்டுள்ளது"
 
 #. *
 #. * @param {import('../message').default} el
 #.
 #. harmony default export
-#: dist/converse-no-dependencies.js:97571
+#: dist/converse-no-dependencies.js:98263
 msgid "Show more"
 msgstr "மேலும் காட்டு"
 
-#: dist/converse-no-dependencies.js:97573
+#: dist/converse-no-dependencies.js:98265
 msgid "Show less"
 msgstr "குறைவாகக் காட்டு"
 
-#: dist/converse-no-dependencies.js:97575
+#: dist/converse-no-dependencies.js:98267
 msgid "Message delivery failed."
 msgstr "செய்தி வழங்கல் தோல்வியடைந்தது."
 
-#: dist/converse-no-dependencies.js:98279
+#: dist/converse-no-dependencies.js:99023
 msgid "A moderator"
 msgstr "ஒரு மதிப்பீட்டாளர்"
 
-#: dist/converse-no-dependencies.js:98280
-#: dist/converse-no-dependencies.js:98282
+#: dist/converse-no-dependencies.js:99024
+#: dist/converse-no-dependencies.js:99026
 #, fuzzy, javascript-format
 msgid "%1$s has removed a message"
 msgstr "%1$s இந்த செய்தியை அகற்றிவிட்டது"
 
-#: dist/converse-no-dependencies.js:98282
+#: dist/converse-no-dependencies.js:99026
 #, fuzzy
 msgid "You have removed a message"
 msgstr "உங்களிடம் படிக்காத செய்திகள் உள்ளன"
 
-#: dist/converse-no-dependencies.js:99429
+#: dist/converse-no-dependencies.js:100245
 msgid "Search results"
 msgstr "தேடல் முடிவுகள்"
 
-#: dist/converse-no-dependencies.js:99460
+#: dist/converse-no-dependencies.js:100276
 msgid "Search"
 msgstr "தேடல்"
 
-#: dist/converse-no-dependencies.js:100215
+#: dist/converse-no-dependencies.js:101037
 msgid "Insert emojis"
 msgstr "ஈமோசிகளை செருகவும்"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:100835
+#: dist/converse-no-dependencies.js:101659
 msgid "Message characters remaining"
 msgstr "செய்தி எழுத்துக்கள் மீதமுள்ளவை"
 
-#: dist/converse-no-dependencies.js:100986
+#: dist/converse-no-dependencies.js:101829
 msgid "Send the message"
 msgstr "செய்தியை அனுப்பவும்"
 
-#: dist/converse-no-dependencies.js:101188
+#: dist/converse-no-dependencies.js:102036
 msgid "Start a call"
 msgstr "அழைப்பைத் தொடங்கவும்"
 
-#: dist/converse-no-dependencies.js:101225
+#: dist/converse-no-dependencies.js:102069
 msgid "Choose a file to send"
 msgstr "அனுப்ப ஒரு கோப்பைத் தேர்வுசெய்க"
 
-#: dist/converse-no-dependencies.js:101241
+#: dist/converse-no-dependencies.js:102085
 msgid "Click to write as a normal (non-spoiler) message"
 msgstr "சாதாரண (ச்பாய்லர் அல்லாத) செய்தியாக எழுத சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:101243
+#: dist/converse-no-dependencies.js:102087
 msgid "Click to write your message as a spoiler"
 msgstr "உங்கள் செய்தியை ச்பாய்லராக எழுத சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:101904
-#: dist/converse-no-dependencies.js:120545
+#: dist/converse-no-dependencies.js:102755
+#: dist/converse-no-dependencies.js:120122
 msgid "Details"
 msgstr "விவரங்கள்"
 
-#: dist/converse-no-dependencies.js:101905
+#: dist/converse-no-dependencies.js:102756
 msgid "See more information about this person"
 msgstr "இந்த நபரைப் பற்றிய கூடுதல் தகவலைக் காண்க"
 
-#: dist/converse-no-dependencies.js:101940
+#: dist/converse-no-dependencies.js:102791
 msgid "Unblock user"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:101940
+#: dist/converse-no-dependencies.js:102791
 #, fuzzy
 msgid "Are you sure you want to unblock this user?"
 msgstr "நீங்கள் நிச்சயமாக வெளியேற விரும்புகிறீர்களா?"
 
-#: dist/converse-no-dependencies.js:101957
+#: dist/converse-no-dependencies.js:102808
 msgid "Unblock this user"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:101958
+#: dist/converse-no-dependencies.js:102809
 #, fuzzy
 msgid "Allow this user to send you messages"
 msgstr "முடக்கிய பயனரை செய்திகளை இடுகையிட அனுமதிக்கவும்"
 
-#: dist/converse-no-dependencies.js:101974
+#: dist/converse-no-dependencies.js:102825
 #, fuzzy
 msgid "Block user"
 msgstr "பயனர்களைக் காட்டு"
 
-#: dist/converse-no-dependencies.js:101974
+#: dist/converse-no-dependencies.js:102825
 #, fuzzy
 msgid "Are you sure you want to block this user?"
 msgstr "நீங்கள் நிச்சயமாக வெளியேற விரும்புகிறீர்களா?"
 
-#: dist/converse-no-dependencies.js:101994
+#: dist/converse-no-dependencies.js:102845
 msgid "Block this user"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:101995
+#: dist/converse-no-dependencies.js:102846
 msgid "Prevent this user from sending you any further messages"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:102009
+#: dist/converse-no-dependencies.js:102860
 msgid "Close and end this conversation"
 msgstr "இந்த உரையாடலை மூடி முடிக்கவும்"
 
@@ -1337,65 +1402,69 @@ msgstr "இந்த உரையாடலை மூடி முடிக்க
 #. * @param {import('../occupant-bottom-panel').default} el
 #.
 #. harmony default export
-#: dist/converse-no-dependencies.js:102060
-#: dist/converse-no-dependencies.js:112932
-#: dist/converse-no-dependencies.js:114665
+#: dist/converse-no-dependencies.js:102911
+#: dist/converse-no-dependencies.js:112839
+#: dist/converse-no-dependencies.js:114129
 msgid "You have unread messages"
 msgstr "உங்களிடம் படிக்காத செய்திகள் உள்ளன"
 
-#: dist/converse-no-dependencies.js:102421
+#: dist/converse-no-dependencies.js:103272
 msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "இந்த உரையாடலில் இருந்து செய்திகளை அழிக்க விரும்புகிறீர்களா?"
 
-#: dist/converse-no-dependencies.js:102553
-#: dist/converse-no-dependencies.js:112155
+#: dist/converse-no-dependencies.js:103404
+#: dist/converse-no-dependencies.js:112045
 msgid "Hidden message"
 msgstr "மறைக்கப்பட்ட செய்தி"
 
-#: dist/converse-no-dependencies.js:102553
-#: dist/converse-no-dependencies.js:112155
+#: dist/converse-no-dependencies.js:103404
+#: dist/converse-no-dependencies.js:112045
 msgid "Message"
 msgstr "செய்தி"
 
-#: dist/converse-no-dependencies.js:102554
-#: dist/converse-no-dependencies.js:112156
+#: dist/converse-no-dependencies.js:103405
+#: dist/converse-no-dependencies.js:112046
 msgid "Optional hint"
 msgstr "விருப்ப குறிப்பு"
 
-#: dist/converse-no-dependencies.js:103235
+#: dist/converse-no-dependencies.js:104135
 msgid "Sorry, the connection has been lost, and your message could not be sent"
 msgstr "மன்னிக்கவும், இணைப்பு இழந்துவிட்டது, உங்கள் செய்தியை அனுப்ப முடியவில்லை"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:104676
+#: dist/converse-no-dependencies.js:105573
 msgid "Remove messages"
 msgstr "செய்திகளை அகற்று"
 
-#: dist/converse-no-dependencies.js:104676
+#: dist/converse-no-dependencies.js:105573
 msgid "Close this chat"
 msgstr "இந்த அரட்டையை மூடு"
 
-#: dist/converse-no-dependencies.js:104676
+#: dist/converse-no-dependencies.js:105573
 msgid "Write in the third person"
 msgstr "மூன்றாவது நபரில் எழுதுங்கள்"
 
-#: dist/converse-no-dependencies.js:104676
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:105573
+#: dist/converse-no-dependencies.js:117458
 msgid "Show this menu"
 msgstr "இந்த மெனுவைக் காட்டு"
 
-#: dist/converse-no-dependencies.js:105528
+#: dist/converse-no-dependencies.js:106097
 msgid "Are you sure you want to log out?"
 msgstr "நீங்கள் நிச்சயமாக வெளியேற விரும்புகிறீர்களா?"
 
-#: dist/converse-no-dependencies.js:105589
-#: dist/converse-no-dependencies.js:113506
-#: dist/converse-no-dependencies.js:138531
-#: dist/converse-no-dependencies.js:139126
+#: dist/converse-no-dependencies.js:106158
+#: dist/converse-no-dependencies.js:113417
+#: dist/converse-no-dependencies.js:140005
+#: dist/converse-no-dependencies.js:141177
 msgid "Please enter a valid XMPP address"
 msgstr "செல்லுபடியாகும் எக்ச்எம்பிபி முகவரியை உள்ளிடவும்"
 
-#: dist/converse-no-dependencies.js:105622
+#: dist/converse-no-dependencies.js:106273
+msgid "A big thank you to our sponsors 🙏"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:106305
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1409,159 +1478,165 @@ msgstr ""
 "அனைத்து தற்காலிக சேமிப்பிலும் நீக்கப்படாது. தயவுசெய்து கவனிக்கவும், நம்பத்தகாத சாதனத்தைப் "
 "பயன்படுத்தும் போது, ஓமமோ குறியாக்கம் கிடைக்கவில்லை."
 
-#: dist/converse-no-dependencies.js:105623
+#: dist/converse-no-dependencies.js:106306
 msgid "This is a trusted device"
 msgstr "இது நம்பகமான சாதனம்"
 
-#: dist/converse-no-dependencies.js:105627
+#: dist/converse-no-dependencies.js:106307
+msgid "Info"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:106310
 msgid "Connection URL"
 msgstr "இணைப்பு முகவரி"
 
-#: dist/converse-no-dependencies.js:105628
+#: dist/converse-no-dependencies.js:106311
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
 msgstr "உங்கள் XMPP சேவையகத்துடன் இணைக்கப் பயன்படும் HTTP அல்லது வெப்சாக்கெட் முகவரி"
 
-#: dist/converse-no-dependencies.js:105629
+#: dist/converse-no-dependencies.js:106312
 msgid "e.g. wss://example.org/xmpp-websocket"
 msgstr "எ.கா. wss: //example.org/xmpp-websocket"
 
-#: dist/converse-no-dependencies.js:105634
+#: dist/converse-no-dependencies.js:106317
 msgid "Password"
 msgstr "கடவுச்சொல்"
 
-#: dist/converse-no-dependencies.js:105638
-msgid "Create an account"
-msgstr "ஒரு கணக்கை உருவாக்கவும்"
-
-#: dist/converse-no-dependencies.js:105639
-msgid "Don't have a chat account?"
-msgstr "அரட்டை கணக்கு இல்லையா?"
-
-#: dist/converse-no-dependencies.js:105648
+#: dist/converse-no-dependencies.js:106323
 msgid "Log in"
 msgstr "புகுபதிகை"
 
-#: dist/converse-no-dependencies.js:105652
+#: dist/converse-no-dependencies.js:106327
 msgid "Username"
 msgstr "பயனர்பெயர்"
 
-#: dist/converse-no-dependencies.js:105652
+#: dist/converse-no-dependencies.js:106327
 msgid "user@domain"
 msgstr "பயனர்@டொமைன்"
 
-#: dist/converse-no-dependencies.js:105658
+#: dist/converse-no-dependencies.js:106333
 msgid "Disconnected"
 msgstr "துண்டிக்கப்பட்டது"
 
-#: dist/converse-no-dependencies.js:105659
+#: dist/converse-no-dependencies.js:106334
 msgid "Click here to log in anonymously"
 msgstr "அநாமதேயமாக உள்நுழைய இங்கே சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:106405
-msgid "Log out"
-msgstr "விடுபதிகை"
-
-#: dist/converse-no-dependencies.js:106413
-msgid "Show details about this chat client"
-msgstr "இந்த அரட்டை கிளையன்ட் பற்றிய விவரங்களைக் காட்டு"
-
-#: dist/converse-no-dependencies.js:106757
+#: dist/converse-no-dependencies.js:107100
 msgid "Chat Contacts"
 msgstr "அரட்டை தொடர்புகள்"
 
-#: dist/converse-no-dependencies.js:106757
+#: dist/converse-no-dependencies.js:107100
 msgid "Toggle chat"
 msgstr "அரட்டையை மாற்றவும்"
 
-#: dist/converse-no-dependencies.js:108453
+#: dist/converse-no-dependencies.js:107731
+msgid "About Converse"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:108571
+msgid "Log out"
+msgstr "விடுபதிகை"
+
+#: dist/converse-no-dependencies.js:108579
+msgid "Show details about this chat client"
+msgstr "இந்த அரட்டை கிளையன்ட் பற்றிய விவரங்களைக் காட்டு"
+
+#: dist/converse-no-dependencies.js:109364
 msgid "Close these announcements"
 msgstr "இந்த அறிவிப்புகளை மூடு"
 
-#: dist/converse-no-dependencies.js:109029
+#: dist/converse-no-dependencies.js:109940
 msgid "Click to open this server message"
 msgstr "இந்த சேவையக செய்தியைத் திறக்க சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:109038
+#: dist/converse-no-dependencies.js:109949
 msgid "Announcements"
 msgstr "அறிவிப்புகள்"
 
-#: dist/converse-no-dependencies.js:109637
+#: dist/converse-no-dependencies.js:110548
 msgid "Click to load missing messages"
 msgstr "காணாமல் போன செய்திகளை ஏற்ற சொடுக்கு செய்க"
 
+#. *
+#. * @param {import('../affiliation-form').default} el
+#.
 #. harmony default export
-#: dist/converse-no-dependencies.js:110602
+#: dist/converse-no-dependencies.js:111235
 msgid "Change affiliation"
 msgstr "இணைப்பை மாற்றவும்"
 
-#: dist/converse-no-dependencies.js:110603
+#: dist/converse-no-dependencies.js:111236
 msgid "New affiliation"
 msgstr "புதிய இணைப்பு"
 
-#: dist/converse-no-dependencies.js:111078
+#: dist/converse-no-dependencies.js:111742
 msgid "Timeout error while trying to set the affiliation"
 msgstr "இணைப்பை அமைக்க முயற்சிக்கும்போது காலக்கெடு பிழை"
 
-#: dist/converse-no-dependencies.js:111080
+#: dist/converse-no-dependencies.js:111744
 msgid "Sorry, you're not allowed to make that change"
 msgstr "மன்னிக்கவும், அந்த மாற்றத்தை செய்ய உங்களுக்கு இசைவு இல்லை"
 
-#: dist/converse-no-dependencies.js:111082
+#: dist/converse-no-dependencies.js:111746
 msgid "Sorry, something went wrong while trying to set the affiliation"
 msgstr "மன்னிக்கவும், இணைப்பை அமைக்க முயற்சிக்கும்போது ஏதோ தவறு ஏற்பட்டது"
 
+#. *
+#. * @param {import('../role-form').default} el
+#.
 #. harmony default export
-#: dist/converse-no-dependencies.js:111149
+#: dist/converse-no-dependencies.js:111818
 msgid "Change role"
 msgstr "பங்கு மாற்றவும்"
 
-#: dist/converse-no-dependencies.js:111150
+#: dist/converse-no-dependencies.js:111819
 msgid "New Role"
 msgstr "புதிய பங்கு"
 
-#: dist/converse-no-dependencies.js:111290
+#: dist/converse-no-dependencies.js:111991
 msgid "You're not allowed to make that change"
 msgstr "அந்த மாற்றத்தை செய்ய உங்களுக்கு இசைவு இல்லை"
 
-#: dist/converse-no-dependencies.js:111292
+#: dist/converse-no-dependencies.js:111993
 msgid "Sorry, something went wrong while trying to set the role"
 msgstr "மன்னிக்கவும், பாத்திரத்தை அமைக்க முயற்சிக்கும்போது ஏதோ தவறு ஏற்பட்டது"
 
-#: dist/converse-no-dependencies.js:112723
+#: dist/converse-no-dependencies.js:112635
 msgid "Change nickname"
 msgstr "புனைப்பெயரை மாற்றவும்"
 
-#: dist/converse-no-dependencies.js:112723
+#: dist/converse-no-dependencies.js:112635
 msgid "Enter groupchat"
 msgstr "குரூப்சாட்டை உள்ளிடவும்"
 
-#: dist/converse-no-dependencies.js:112724
+#: dist/converse-no-dependencies.js:112636
 msgid "Choose a nickname to enter"
 msgstr "நுழைய ஒரு புனைப்பெயரைத் தேர்வுசெய்க"
 
-#: dist/converse-no-dependencies.js:112724
+#: dist/converse-no-dependencies.js:112636
 msgid "Please choose your nickname"
 msgstr "உங்கள் புனைப்பெயரைத் தேர்வுசெய்க"
 
-#: dist/converse-no-dependencies.js:112934
+#: dist/converse-no-dependencies.js:112841
 msgid "You're not allowed to send messages in this room"
 msgstr "இந்த அறையில் செய்திகளை அனுப்ப உங்களுக்கு இசைவு இல்லை"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:113504
-#: dist/converse-no-dependencies.js:114671
+#: dist/converse-no-dependencies.js:113415
+#: dist/converse-no-dependencies.js:114135
 msgid "Invite"
 msgstr "அழைக்கவும்"
 
-#: dist/converse-no-dependencies.js:113505
+#: dist/converse-no-dependencies.js:113416
 msgid "user@example.org"
 msgstr "user@example.org"
 
-#: dist/converse-no-dependencies.js:113508
+#: dist/converse-no-dependencies.js:113419
 msgid "Optional reason for the invitation"
 msgstr "அழைப்பிற்கான விருப்ப காரணம்"
 
-#: dist/converse-no-dependencies.js:113641
+#: dist/converse-no-dependencies.js:113558
 msgid "Invite someone to this groupchat"
 msgstr "இந்த குழு அரட்டைக்கு ஒருவரை அழைக்கவும்"
 
@@ -1569,541 +1644,508 @@ msgstr "இந்த குழு அரட்டைக்கு ஒருவர
 #. * @typedef {import('@converse/headless').MUCOccupant} MUCOccupant
 #.
 #. * @param {MUCOccupant} o
-#: dist/converse-no-dependencies.js:114321
+#: dist/converse-no-dependencies.js:113955
 #, javascript-format
 msgid "Click to mention %1$s in your message."
 msgstr "உங்கள் செய்தியில் %1$s ஐக் குறிப்பிட சொடுக்கு செய்க."
 
-#: dist/converse-no-dependencies.js:114333
+#: dist/converse-no-dependencies.js:113967
 msgid "Owner"
 msgstr "உரிமையாளர்"
 
-#: dist/converse-no-dependencies.js:114337
+#: dist/converse-no-dependencies.js:113971
 msgid "Admin"
 msgstr "நிர்வாகி"
 
-#: dist/converse-no-dependencies.js:114341
+#: dist/converse-no-dependencies.js:113975
 msgid "Member"
 msgstr "உறுப்பினர்"
 
-#: dist/converse-no-dependencies.js:114345
+#: dist/converse-no-dependencies.js:113979
 msgid "Moderator"
 msgstr "மதிப்பீட்டாளர்"
 
-#: dist/converse-no-dependencies.js:114349
+#: dist/converse-no-dependencies.js:113983
 msgid "Visitor"
 msgstr "பார்வையாளர்"
 
-#: dist/converse-no-dependencies.js:114397
+#: dist/converse-no-dependencies.js:114031
 msgid "This user is a moderator."
 msgstr "இந்த பயனர் ஒரு மதிப்பீட்டாளர்."
 
-#: dist/converse-no-dependencies.js:114398
+#: dist/converse-no-dependencies.js:114032
 msgid "This user can send messages in this groupchat."
 msgstr "இந்த பயனர் இந்த குழுமத்தில் செய்திகளை அனுப்ப முடியும்."
 
-#: dist/converse-no-dependencies.js:114399
+#: dist/converse-no-dependencies.js:114033
 msgid "This user can NOT send messages in this groupchat."
 msgstr "இந்த குழு அரட்டையில் இந்த பயனர் செய்திகளை அனுப்ப முடியாது."
 
-#: dist/converse-no-dependencies.js:114493
+#: dist/converse-no-dependencies.js:114131
+msgid ""
+"This user is not currently in this groupchat and can't receive messages."
+msgstr "இந்த பயனர் தற்போது இந்த குழுவில் இல்லை, செய்திகளைப் பெற முடியாது."
+
+#: dist/converse-no-dependencies.js:114132
+msgid "Invite this user to join this groupchat"
+msgstr "இந்த குழு அரட்டையில் சேர இந்த பயனரை அழைக்கவும்"
+
+#: dist/converse-no-dependencies.js:114133
+msgid "Open a one-on-one chat with this user"
+msgstr "இந்த பயனருடன் ஒருவருக்கொருவர் அரட்டையைத் திறக்கவும்"
+
+#: dist/converse-no-dependencies.js:114134
+msgid "Open Chat"
+msgstr "திறந்த அரட்டை"
+
+#: dist/converse-no-dependencies.js:114663
+#: dist/converse-no-dependencies.js:124170
+msgid "Success"
+msgstr "செய்"
+
+#: dist/converse-no-dependencies.js:114663
+msgid "The user has been invited to join this groupchat"
+msgstr "இந்த குழுவில் சேர பயனர் அழைக்கப்பட்டுள்ளார்"
+
+#: dist/converse-no-dependencies.js:115251
 msgid "Filter by name"
 msgstr "பெயரால் வடிகட்டவும்"
 
-#: dist/converse-no-dependencies.js:114494
-#: dist/converse-no-dependencies.js:139288
+#: dist/converse-no-dependencies.js:115252
+#: dist/converse-no-dependencies.js:141340
 msgid "Filter by status"
 msgstr "நிலை மூலம் வடிகட்டவும்"
 
-#: dist/converse-no-dependencies.js:114495
-#: dist/converse-no-dependencies.js:139289
+#: dist/converse-no-dependencies.js:115253
+#: dist/converse-no-dependencies.js:141341
 msgid "Any"
 msgstr "ஏதேனும்"
 
-#: dist/converse-no-dependencies.js:114496
-#: dist/converse-no-dependencies.js:123850
-msgid "Online"
-msgstr "ஆன்லைனில்"
-
-#: dist/converse-no-dependencies.js:114497
-#: dist/converse-no-dependencies.js:139292
-msgid "Chatty"
-msgstr "சாட்டி"
-
-#: dist/converse-no-dependencies.js:114498
-#: dist/converse-no-dependencies.js:123849
-#: dist/converse-no-dependencies.js:139293
+#: dist/converse-no-dependencies.js:115256
+#: dist/converse-no-dependencies.js:123434
 msgid "Busy"
 msgstr "பிசியாக"
-
-#. harmony default export
-#: dist/converse-no-dependencies.js:114499
-#: dist/converse-no-dependencies.js:123848
-#: dist/converse-no-dependencies.js:139294
-msgid "Away"
-msgstr "தொலைவில்"
-
-#: dist/converse-no-dependencies.js:114500
-#: dist/converse-no-dependencies.js:139295
-msgid "Extended Away"
-msgstr "விலகிச் சென்றது"
-
-#: dist/converse-no-dependencies.js:114501
-#: dist/converse-no-dependencies.js:139296
-msgid "Offline"
-msgstr "இணையமில்லாமல்"
 
 #. *
 #. * @param {import('../occupants').default} el
 #.
 #. harmony default export
-#: dist/converse-no-dependencies.js:114560
+#: dist/converse-no-dependencies.js:115318
 msgid "Participant"
 msgstr "பங்கேற்பாளர்"
 
-#: dist/converse-no-dependencies.js:114560
-#: dist/converse-no-dependencies.js:114616
+#: dist/converse-no-dependencies.js:115318
+#: dist/converse-no-dependencies.js:115374
 msgid "Participants"
 msgstr "பங்கேற்பாளர்கள்"
 
-#: dist/converse-no-dependencies.js:114561
-#: dist/converse-no-dependencies.js:114614
+#: dist/converse-no-dependencies.js:115319
+#: dist/converse-no-dependencies.js:115372
 msgid "Hide"
 msgstr "மறை"
 
-#: dist/converse-no-dependencies.js:114562
-#: dist/converse-no-dependencies.js:139376
+#: dist/converse-no-dependencies.js:115320
+#: dist/converse-no-dependencies.js:141428
 msgid "Show filter"
 msgstr "வடிகட்டியைக் காட்டு"
 
-#: dist/converse-no-dependencies.js:114563
-#: dist/converse-no-dependencies.js:139377
+#: dist/converse-no-dependencies.js:115321
+#: dist/converse-no-dependencies.js:141429
 msgid "Hide filter"
 msgstr "வடிகட்டியை மறைக்கவும்"
 
-#: dist/converse-no-dependencies.js:114565
+#: dist/converse-no-dependencies.js:115323
 msgid "Invite someone"
 msgstr "ஒருவரை அழைக்கவும்"
 
-#: dist/converse-no-dependencies.js:114566
+#: dist/converse-no-dependencies.js:115324
 msgid "Invite someone to join this groupchat"
 msgstr "இந்த குழு அரட்டையில் சேர ஒருவரை அழைக்கவும்"
 
-#: dist/converse-no-dependencies.js:114615
+#: dist/converse-no-dependencies.js:115373
 msgid "No participant data found"
 msgstr "பங்கேற்பாளர் தரவு எதுவும் கிடைக்கவில்லை"
 
-#: dist/converse-no-dependencies.js:114617
+#: dist/converse-no-dependencies.js:115375
 msgid "Show details"
 msgstr "விவரங்களைக் காட்டு"
 
-#: dist/converse-no-dependencies.js:114667
-msgid ""
-"This user is not currently in this groupchat and can't receive messages."
-msgstr "இந்த பயனர் தற்போது இந்த குழுவில் இல்லை, செய்திகளைப் பெற முடியாது."
-
-#: dist/converse-no-dependencies.js:114668
-msgid "Invite this user to join this groupchat"
-msgstr "இந்த குழு அரட்டையில் சேர இந்த பயனரை அழைக்கவும்"
-
-#: dist/converse-no-dependencies.js:114669
-msgid "Open a one-on-one chat with this user"
-msgstr "இந்த பயனருடன் ஒருவருக்கொருவர் அரட்டையைத் திறக்கவும்"
-
-#: dist/converse-no-dependencies.js:114670
-msgid "Open Chat"
-msgstr "திறந்த அரட்டை"
-
-#: dist/converse-no-dependencies.js:115195
-#: dist/converse-no-dependencies.js:124678
-msgid "Success"
-msgstr "செய்"
-
-#: dist/converse-no-dependencies.js:115195
-msgid "The user has been invited to join this groupchat"
-msgstr "இந்த குழுவில் சேர பயனர் அழைக்கப்பட்டுள்ளார்"
-
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Change user's affiliation to admin"
 msgstr "நிர்வாகிக்கு பயனரின் தொடர்பை மாற்றவும்"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Ban user by changing their affiliation to outcast"
 msgstr "பயனர்களை வெளியேற்றுவதன் மூலம் பயனரை தடைசெய்க"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Clear the chat area"
 msgstr "அரட்டை பகுதியை அழிக்கவும்"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Close this groupchat"
 msgstr "இந்த குரூபட்டை மூடு"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Change user role to participant"
 msgstr "பங்கேற்பாளருக்கு பயனர் பங்கை மாற்றவும்"
 
-#: dist/converse-no-dependencies.js:117242
-#: dist/converse-no-dependencies.js:120617
+#: dist/converse-no-dependencies.js:117458
+#: dist/converse-no-dependencies.js:120192
 msgid "Remove this groupchat"
 msgstr "இந்த குழுவை அகற்றவும்"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Kick user from groupchat"
 msgstr "குழு அரட்டையிலிருந்து பயனரை உதைக்கவும்"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Write in 3rd person"
 msgstr "3 வது நபரில் எழுதுங்கள்"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Grant membership to a user"
 msgstr "ஒரு பயனருக்கு உறுப்பினர் வழங்கவும்"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Opens up the moderator tools GUI"
 msgstr "மதிப்பீட்டாளர் கருவிகள் GUI ஐ திறக்கிறது"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Remove user's ability to post messages"
 msgstr "செய்திகளை இடுகையிடுவதற்கான பயனரின் திறனை அகற்று"
 
-#. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:117242
-#: dist/converse-no-dependencies.js:119672
+#: dist/converse-no-dependencies.js:117458
+#: dist/converse-no-dependencies.js:119248
 msgid "Change your nickname"
 msgstr "உங்கள் புனைப்பெயரை மாற்றவும்"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Grant moderator role to user"
 msgstr "பயனருக்கு மதிப்பீட்டாளர் பாத்திரத்தை வழங்கவும்"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Grant ownership of this groupchat"
 msgstr "இந்த குழுமத்தின் உரிமையை வழங்கவும்"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Register your nickname"
 msgstr "உங்கள் புனைப்பெயரை பதிவு செய்யுங்கள்"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Revoke the user's current affiliation"
 msgstr "பயனரின் தற்போதைய இணைப்பை ரத்து செய்யுங்கள்"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Set groupchat subject"
 msgstr "குரூப்சாட் பொருள் அமைக்கவும்"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Set groupchat subject (alias for /subject)"
 msgstr "குரூப்சாட் பொருள் அமைக்கவும் ( /பாடத்திற்கான மாற்றுப்பெயர்)"
 
-#: dist/converse-no-dependencies.js:117242
+#: dist/converse-no-dependencies.js:117458
 msgid "Allow muted user to post messages"
 msgstr "முடக்கிய பயனரை செய்திகளை இடுகையிட அனுமதிக்கவும்"
 
-#: dist/converse-no-dependencies.js:117283
+#: dist/converse-no-dependencies.js:117505
 msgid ""
 "The conversation has moved to a new address. Click the link below to enter."
 msgstr ""
 "உரையாடல் ஒரு புதிய முகவரிக்கு நகர்ந்துள்ளது. உள்ளிட கீழே உள்ள இணைப்பைக் சொடுக்கு செய்க."
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:117289
+#: dist/converse-no-dependencies.js:117511
 msgid "This groupchat no longer exists"
 msgstr "இந்த குரூபாய் இனி இல்லை"
 
-#: dist/converse-no-dependencies.js:117290
+#: dist/converse-no-dependencies.js:117512
 #, javascript-format
 msgid "The following reason was given: \"%1$s\""
 msgstr "பின்வரும் காரணம் கொடுக்கப்பட்டது: \"%1$s\""
 
-#: dist/converse-no-dependencies.js:117923
+#: dist/converse-no-dependencies.js:118157
 #, javascript-format
 msgid "This action was done by %1$s."
 msgstr "இந்த நடவடிக்கை %1$s ஆல் செய்யப்பட்டது."
 
-#: dist/converse-no-dependencies.js:117927
+#: dist/converse-no-dependencies.js:118161
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr "கொடுக்கப்பட்ட காரணம்: \"%1$s\"."
 
-#: dist/converse-no-dependencies.js:118036
-msgid "Click to set a new picture"
-msgstr "புதிய படத்தை அமைக்க சொடுக்கு செய்க"
-
-#: dist/converse-no-dependencies.js:118161
+#: dist/converse-no-dependencies.js:118230
 msgid "Loading configuration form"
 msgstr "உள்ளமைவு படிவத்தை ஏற்றுகிறது"
 
-#: dist/converse-no-dependencies.js:119177
+#: dist/converse-no-dependencies.js:118750
 #, javascript-format
 msgid "Configure %1$s"
 msgstr "%1$s ஐ உள்ளமைக்கவும்"
 
-#: dist/converse-no-dependencies.js:119297
+#: dist/converse-no-dependencies.js:118870
 msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr "மன்னிக்கவும், கட்டமைப்பு படிவத்தை சமர்ப்பிக்க முயற்சிக்கும்போது பிழை ஏற்பட்டது."
 
-#: dist/converse-no-dependencies.js:119310
+#: dist/converse-no-dependencies.js:118883
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
 msgstr "மன்னிக்கவும், குரூப்சாட் அவதாரத்தை சேமிக்க முயற்சிக்கும் போது பிழை ஏற்பட்டது."
 
-#: dist/converse-no-dependencies.js:119310
-#: dist/converse-no-dependencies.js:125226
+#: dist/converse-no-dependencies.js:118883
+#: dist/converse-no-dependencies.js:124872
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
 "எந்தவொரு பிழை வெளியீட்டிற்கும் உங்கள் உலாவியின் உருவாக்குபவர் கன்சோலை நீங்கள் சரிபார்க்கலாம்."
 
-#: dist/converse-no-dependencies.js:119350
+#: dist/converse-no-dependencies.js:118923
 msgid "Topic"
 msgstr "தலைப்பு"
 
-#: dist/converse-no-dependencies.js:119351
+#: dist/converse-no-dependencies.js:118924
 msgid "Topic author"
 msgstr "தலைப்பு ஆசிரியர்"
 
-#: dist/converse-no-dependencies.js:119365
+#: dist/converse-no-dependencies.js:118938
 msgid "XMPP address"
 msgstr "எக்ச்எம்பிபி முகவரி"
 
-#: dist/converse-no-dependencies.js:119366
+#: dist/converse-no-dependencies.js:118939
 msgid "Message archiving"
 msgstr "செய்தி காப்பகமானது"
 
-#: dist/converse-no-dependencies.js:119367
+#: dist/converse-no-dependencies.js:118940
 msgid "Messages are archived on the server"
 msgstr "செய்திகள் சேவையகத்தில் காப்பகப்படுத்தப்படுகின்றன"
 
-#: dist/converse-no-dependencies.js:119368
+#: dist/converse-no-dependencies.js:118941
 msgid "Description"
 msgstr "விவரம்"
 
-#: dist/converse-no-dependencies.js:119369
+#: dist/converse-no-dependencies.js:118942
 msgid "Features"
 msgstr "நற்பொருத்தங்கள்"
 
-#: dist/converse-no-dependencies.js:119370
-#: dist/converse-no-dependencies.js:135506
+#: dist/converse-no-dependencies.js:118943
+#: dist/converse-no-dependencies.js:136982
 msgid "Hidden"
 msgstr "மறைக்கப்பட்ட"
 
-#: dist/converse-no-dependencies.js:119371
+#: dist/converse-no-dependencies.js:118944
 msgid "This groupchat is not publicly searchable"
 msgstr "இந்த குரூப்சாட் பகிரங்கமாக தேட முடியாது"
 
-#: dist/converse-no-dependencies.js:119372
+#: dist/converse-no-dependencies.js:118945
 msgid "This groupchat is restricted to members only"
 msgstr "இந்த குரூப்சாட் உறுப்பினர்களுக்கு மட்டுமே கட்டுப்படுத்தப்பட்டுள்ளது"
 
-#: dist/converse-no-dependencies.js:119373
+#: dist/converse-no-dependencies.js:118946
 msgid "Members only"
 msgstr "உறுப்பினர்கள் மட்டுமே"
 
-#: dist/converse-no-dependencies.js:119374
-#: dist/converse-no-dependencies.js:135508
+#: dist/converse-no-dependencies.js:118947
+#: dist/converse-no-dependencies.js:136984
 msgid "Moderated"
 msgstr "மிதமான"
 
-#: dist/converse-no-dependencies.js:119375
+#: dist/converse-no-dependencies.js:118948
 msgid ""
 "Participants entering this groupchat need to request permission to write"
 msgstr "இந்த குழுவில் நுழையும் பங்கேற்பாளர்கள் எழுத இசைவு கோர வேண்டும்"
 
-#: dist/converse-no-dependencies.js:119377
+#: dist/converse-no-dependencies.js:118950
 msgid "This groupchat does not require a password upon entry"
 msgstr "இந்த குரூப்சாட் நுழைந்தவுடன் கடவுச்சொல் தேவையில்லை"
 
-#: dist/converse-no-dependencies.js:119378
+#: dist/converse-no-dependencies.js:118951
 msgid "No password required"
 msgstr "கடவுச்சொல் தேவையில்லை"
 
-#: dist/converse-no-dependencies.js:119379
+#: dist/converse-no-dependencies.js:118952
 msgid "Not anonymous"
 msgstr "அநாமதேயர் அல்ல"
 
-#: dist/converse-no-dependencies.js:119380
+#: dist/converse-no-dependencies.js:118953
 msgid "All other groupchat participants can see your XMPP address"
 msgstr "மற்ற அனைத்து குரூப்சாட் பங்கேற்பாளர்களும் உங்கள் எக்ச்எம்பிபி முகவரியைக் காணலாம்"
 
-#: dist/converse-no-dependencies.js:119381
+#: dist/converse-no-dependencies.js:118954
 msgid "Not moderated"
 msgstr "மிதமானதாக இல்லை"
 
-#: dist/converse-no-dependencies.js:119382
+#: dist/converse-no-dependencies.js:118955
 msgid "Participants entering this groupchat can write right away"
 msgstr "இந்த குழுமத்திற்குள் நுழையும் பங்கேற்பாளர்கள் இப்போதே எழுதலாம்"
 
-#: dist/converse-no-dependencies.js:119383
+#: dist/converse-no-dependencies.js:118956
 msgid "Online users"
 msgstr "நிகழ்நிலை பயனர்கள்"
 
-#: dist/converse-no-dependencies.js:119384
-#: dist/converse-no-dependencies.js:135510
+#: dist/converse-no-dependencies.js:118957
+#: dist/converse-no-dependencies.js:136986
 msgid "Open"
 msgstr "திற"
 
-#: dist/converse-no-dependencies.js:119385
+#: dist/converse-no-dependencies.js:118958
 msgid "Anyone can join this groupchat"
 msgstr "இந்த குழுவில் யார் வேண்டுமானாலும் சேரலாம்"
 
-#: dist/converse-no-dependencies.js:119386
+#: dist/converse-no-dependencies.js:118959
 msgid "This groupchat requires a password before entry"
 msgstr "இந்த குழுமத்திற்கு நுழைவதற்கு முன் கடவுச்சொல் தேவைப்படுகிறது"
 
-#: dist/converse-no-dependencies.js:119387
+#: dist/converse-no-dependencies.js:118960
 msgid "Password protected"
 msgstr "கடவுச்சொல் பாதுகாக்கப்பட்டது"
 
-#: dist/converse-no-dependencies.js:119388
+#: dist/converse-no-dependencies.js:118961
 msgid "Persistent"
 msgstr "விடாமுயற்சி"
 
-#: dist/converse-no-dependencies.js:119389
+#: dist/converse-no-dependencies.js:118962
 msgid "This groupchat persists even if it's unoccupied"
 msgstr "இந்த குரூப்சாட் அது பாதிக்கப்படாவிட்டாலும் தொடர்கிறது"
 
-#: dist/converse-no-dependencies.js:119390
-#: dist/converse-no-dependencies.js:135512
+#: dist/converse-no-dependencies.js:118963
+#: dist/converse-no-dependencies.js:136988
 msgid "Public"
 msgstr "பொது"
 
-#: dist/converse-no-dependencies.js:119391
+#: dist/converse-no-dependencies.js:118964
 msgid "This groupchat is publicly searchable"
 msgstr "இந்த குரூப்சாட் பொதுவில் தேடக்கூடியது"
 
-#: dist/converse-no-dependencies.js:119392
-#: dist/converse-no-dependencies.js:135513
+#: dist/converse-no-dependencies.js:118965
+#: dist/converse-no-dependencies.js:136989
 msgid "Semi-anonymous"
 msgstr "அரை-அநாமதேய"
 
-#: dist/converse-no-dependencies.js:119393
+#: dist/converse-no-dependencies.js:118966
 msgid "Only moderators can see your XMPP address"
 msgstr "மதிப்பீட்டாளர்கள் மட்டுமே உங்கள் XMPP முகவரியைக் காணலாம்"
 
-#: dist/converse-no-dependencies.js:119394
-#: dist/converse-no-dependencies.js:135514
+#: dist/converse-no-dependencies.js:118967
+#: dist/converse-no-dependencies.js:136990
 msgid "Temporary"
 msgstr "தற்காலிக"
 
-#: dist/converse-no-dependencies.js:119395
+#: dist/converse-no-dependencies.js:118968
 msgid "This groupchat will disappear once the last person leaves"
 msgstr "கடைசி நபர் வெளியேறியவுடன் இந்த குரூப்சாட் மறைந்துவிடும்"
 
-#: dist/converse-no-dependencies.js:119559
+#: dist/converse-no-dependencies.js:119136
 msgid "Groupchat info"
 msgstr "குரூப்சாட் செய்தி"
 
-#: dist/converse-no-dependencies.js:119921
+#: dist/converse-no-dependencies.js:119495
 msgid "Hide the groupchat topic"
 msgstr "குரூப்சாட் தலைப்பை மறைக்கவும்"
 
-#: dist/converse-no-dependencies.js:119924
-#: dist/converse-no-dependencies.js:135537
+#: dist/converse-no-dependencies.js:119498
+#: dist/converse-no-dependencies.js:137013
 msgid "Show more information on this groupchat"
 msgstr "இந்த குரூப்சாட் பற்றிய கூடுதல் தகவல்களைக் காட்டுங்கள்"
 
-#: dist/converse-no-dependencies.js:120546
+#: dist/converse-no-dependencies.js:120123
 msgid "Show more information about this groupchat"
 msgstr "இந்த குரூபைப் பற்றிய கூடுதல் தகவல்களைக் காட்டு"
 
-#: dist/converse-no-dependencies.js:120556
+#: dist/converse-no-dependencies.js:120133
 msgid "Configure"
 msgstr "உள்ளமைக்கவும்"
 
-#: dist/converse-no-dependencies.js:120557
+#: dist/converse-no-dependencies.js:120134
 msgid "Configure this groupchat"
 msgstr "இந்த குரூப்சை உள்ளமைக்கவும்"
 
-#: dist/converse-no-dependencies.js:120568
+#: dist/converse-no-dependencies.js:120145
 msgid "Change the nickname you're using in this groupchat"
 msgstr "இந்த குழுமத்தில் நீங்கள் பயன்படுத்தும் புனைப்பெயரை மாற்றவும்"
 
-#: dist/converse-no-dependencies.js:120581
+#: dist/converse-no-dependencies.js:120156
 msgid "Show topic"
 msgstr "தலைப்பைக் காட்டு"
 
-#: dist/converse-no-dependencies.js:120581
+#: dist/converse-no-dependencies.js:120156
 msgid "Hide topic"
 msgstr "தலைப்பை மறைக்கவும்"
 
-#: dist/converse-no-dependencies.js:120582
+#: dist/converse-no-dependencies.js:120157
 msgid "Show the topic message in the heading"
 msgstr "தலைப்பில் தலைப்பு செய்தியைக் காட்டுங்கள்"
 
-#: dist/converse-no-dependencies.js:120582
+#: dist/converse-no-dependencies.js:120157
 msgid "Hide the topic in the heading"
 msgstr "தலைப்பில் தலைப்பை மறைக்கவும்"
 
-#: dist/converse-no-dependencies.js:120592
+#: dist/converse-no-dependencies.js:120167
 msgid "Show participants"
 msgstr "பங்கேற்பாளர்களைக் காட்டு"
 
-#: dist/converse-no-dependencies.js:120592
+#: dist/converse-no-dependencies.js:120167
 msgid "Hide participants"
 msgstr "பங்கேற்பாளர்களை மறைக்க"
 
-#: dist/converse-no-dependencies.js:120593
+#: dist/converse-no-dependencies.js:120168
 msgid "Show the groupchat participants"
 msgstr "குரூப்சாட் பங்கேற்பாளர்களைக் காட்டு"
 
-#: dist/converse-no-dependencies.js:120593
+#: dist/converse-no-dependencies.js:120168
 msgid "Hide the groupchat participants"
 msgstr "குரூப்சாட் பங்கேற்பாளர்களை மறைக்கவும்"
 
-#: dist/converse-no-dependencies.js:120604
+#: dist/converse-no-dependencies.js:120179
 msgid "Moderate"
 msgstr "மிதமான"
 
-#: dist/converse-no-dependencies.js:120605
+#: dist/converse-no-dependencies.js:120180
 msgid "Moderate this groupchat"
 msgstr "இந்த குரூப்சாட்டை மிதப்படுத்துங்கள்"
 
-#: dist/converse-no-dependencies.js:120616
+#: dist/converse-no-dependencies.js:120191
 msgid "Destroy"
 msgstr "அழிக்கவும்"
 
-#: dist/converse-no-dependencies.js:120629
+#: dist/converse-no-dependencies.js:120204
 msgid "Leave"
 msgstr "விடுப்பு"
 
-#: dist/converse-no-dependencies.js:120630
+#: dist/converse-no-dependencies.js:120205
 msgid "Leave and close this groupchat"
 msgstr "இந்த குழுவை விட்டுவிட்டு மூடு"
 
-#: dist/converse-no-dependencies.js:120638
+#: dist/converse-no-dependencies.js:120213
 msgid "Are you sure you want to leave this groupchat?"
 msgstr "இந்த குழு அரட்டையை விட்டு வெளியேற விரும்புகிறீர்களா?"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:120686
+#: dist/converse-no-dependencies.js:120261
 msgid "This groupchat requires a password"
 msgstr "இந்த குழுமத்திற்கு கடவுச்சொல் தேவை"
 
-#: dist/converse-no-dependencies.js:120687
+#: dist/converse-no-dependencies.js:120262
 msgid "Password: "
 msgstr "கடவுச்சொல்: "
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:120688
-#: dist/converse-no-dependencies.js:124152
+#: dist/converse-no-dependencies.js:120263
+#: dist/converse-no-dependencies.js:123644
 msgid "Submit"
 msgstr "சமர்ப்பிக்கவும்"
 
-#: dist/converse-no-dependencies.js:122090
-#: dist/converse-no-dependencies.js:122108
+#: dist/converse-no-dependencies.js:121672
+#: dist/converse-no-dependencies.js:121690
 msgid "Minimize"
 msgstr "குறைக்கவும்"
 
-#: dist/converse-no-dependencies.js:122091
+#: dist/converse-no-dependencies.js:121673
 msgid "Minimize this chat"
 msgstr "இந்த அரட்டையை குறைக்கவும்"
 
-#: dist/converse-no-dependencies.js:122109
+#: dist/converse-no-dependencies.js:121691
 msgid "Minimize this groupchat"
 msgstr "இந்த குழுமத்தைக் குறைக்கவும்"
 
-#: dist/converse-no-dependencies.js:122216
+#: dist/converse-no-dependencies.js:121798
 msgid "hidden"
 msgstr "மறைக்கப்பட்ட"
 
@@ -2111,61 +2153,125 @@ msgstr "மறைக்கப்பட்ட"
 #. * @param {import('../minimized-chat').default} el
 #.
 #. harmony default export
-#: dist/converse-no-dependencies.js:122764
+#: dist/converse-no-dependencies.js:122346
 msgid "Click to restore this chat"
 msgstr "இந்த அரட்டையை மீட்டெடுக்க சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:123592
+#: dist/converse-no-dependencies.js:123177
 msgid "has gone offline"
 msgstr "ஆஃப்லைனில் சென்றுவிட்டது"
 
-#: dist/converse-no-dependencies.js:123594
+#: dist/converse-no-dependencies.js:123179
 msgid "has gone away"
 msgstr "போய்விட்டது"
 
-#: dist/converse-no-dependencies.js:123596
+#: dist/converse-no-dependencies.js:123181
 msgid "is busy"
 msgstr "பிசியாக உள்ளது"
 
-#: dist/converse-no-dependencies.js:123598
+#: dist/converse-no-dependencies.js:123183
 msgid "has come online"
 msgstr "ஆன்லைனில் வந்துள்ளது"
 
 #. workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:123632
-#: dist/converse-no-dependencies.js:123638
+#: dist/converse-no-dependencies.js:123217
+#: dist/converse-no-dependencies.js:123223
 #, javascript-format
 msgid "Notification from %1$s"
 msgstr "%1$s இலிருந்து அறிவிப்பு"
 
-#: dist/converse-no-dependencies.js:123640
-#: dist/converse-no-dependencies.js:123648
-#: dist/converse-no-dependencies.js:123651
+#: dist/converse-no-dependencies.js:123225
+#: dist/converse-no-dependencies.js:123233
+#: dist/converse-no-dependencies.js:123236
 #, javascript-format
 msgid "%1$s says"
 msgstr "%1$s கூறுகின்றன"
 
-#: dist/converse-no-dependencies.js:123769
+#: dist/converse-no-dependencies.js:123354
 msgid "wants to be your contact"
 msgstr "உங்கள் தொடர்பாக இருக்க விரும்புகிறது"
 
-#: dist/converse-no-dependencies.js:123852
+#: dist/converse-no-dependencies.js:123437
 msgid "Away for long"
 msgstr "நீண்ட நேரம்"
 
-#: dist/converse-no-dependencies.js:123853
+#: dist/converse-no-dependencies.js:123438
 msgid "Personal status message"
 msgstr "தனிப்பட்ட நிலை செய்தி"
 
-#: dist/converse-no-dependencies.js:124016
+#: dist/converse-no-dependencies.js:123605
 msgid "Change chat status"
 msgstr "அரட்டை நிலையை மாற்றவும்"
 
-#: dist/converse-no-dependencies.js:124119
+#: dist/converse-no-dependencies.js:123645
+msgid "The new passwords must match"
+msgstr "புதிய கடவுச்சொற்கள் பொருந்த வேண்டும்"
+
+#: dist/converse-no-dependencies.js:123646
+msgid "New password"
+msgstr "புதிய கடவுச்சொல்"
+
+#: dist/converse-no-dependencies.js:123647
+msgid "Confirm new password"
+msgstr "புதிய கடவுச்சொல்லை உறுதிப்படுத்தவும்"
+
+#: dist/converse-no-dependencies.js:124129
+msgid "Timeout error"
+msgstr "காலக்கெடு பிழை"
+
+#: dist/converse-no-dependencies.js:124136
+msgid "Your server does not support password reset"
+msgstr "கடவுச்சொல் மீட்டமைப்பை உங்கள் சேவையகம் ஆதரிக்காது"
+
+#: dist/converse-no-dependencies.js:124143
+msgid ""
+"Your server responded with an unknown error, check the console for details"
+msgstr ""
+"உங்கள் சேவையகம் அறியப்படாத பிழையுடன் பதிலளித்தது, விவரங்களுக்கு கன்சோலைச் சரிபார்க்கவும்"
+
+#: dist/converse-no-dependencies.js:124162
+msgid "Timeout error while trying to set your password"
+msgstr "உங்கள் கடவுச்சொல்லை அமைக்க முயற்சிக்கும்போது காலக்கெடு பிழை"
+
+#: dist/converse-no-dependencies.js:124164
+msgid "Your server does not allow password reset"
+msgstr "கடவுச்சொல் மீட்டமைப்பை உங்கள் சேவையகம் அனுமதிக்காது"
+
+#: dist/converse-no-dependencies.js:124166
+#: dist/converse-no-dependencies.js:124168
+msgid "You are not allowed to change your password"
+msgstr "உங்கள் கடவுச்சொல்லை மாற்ற உங்களுக்கு இசைவு இல்லை"
+
+#: dist/converse-no-dependencies.js:124170
+msgid "Your new password has been set"
+msgstr "உங்கள் புதிய கடவுச்சொல் அமைக்கப்பட்டுள்ளது"
+
+#: dist/converse-no-dependencies.js:124207
+#: dist/converse-no-dependencies.js:124217
+msgid "online"
+msgstr "ஆன்லைனில்"
+
+#: dist/converse-no-dependencies.js:124209
+msgid "busy"
+msgstr "பிசியாக"
+
+#: dist/converse-no-dependencies.js:124211
+msgid "away for long"
+msgstr "நீண்ட நேரம்"
+
+#: dist/converse-no-dependencies.js:124213
+msgid "away"
+msgstr "தொலைவில்"
+
+#: dist/converse-no-dependencies.js:124215
+msgid "offline"
+msgstr "இணையமில்லாமல்"
+
+#: dist/converse-no-dependencies.js:124318
 msgid "Save and close"
 msgstr "சேமித்து மூடு"
 
-#: dist/converse-no-dependencies.js:124120
+#: dist/converse-no-dependencies.js:124319
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
@@ -2173,80 +2279,29 @@ msgstr ""
 "பல பாத்திரங்களை பிரிக்க காற்புள்ளிகளைப் பயன்படுத்தவும். உங்கள் அரட்டை செய்திகளில் உங்கள் "
 "பெயருக்கு அடுத்ததாக உங்கள் பாத்திரங்கள் காட்டப்பட்டுள்ளன."
 
-#: dist/converse-no-dependencies.js:124122
-msgid "OMEMO"
-msgstr "மெமோ"
-
-#: dist/converse-no-dependencies.js:124123
-msgid "Profile"
-msgstr "சுயவிவரம்"
-
-#: dist/converse-no-dependencies.js:124124
+#: dist/converse-no-dependencies.js:124323
 msgid "Reset Password"
 msgstr "கடவுச்சொல்லை மீட்டமைக்கவும்"
 
-#: dist/converse-no-dependencies.js:124153
-msgid "The new passwords must match"
-msgstr "புதிய கடவுச்சொற்கள் பொருந்த வேண்டும்"
-
-#: dist/converse-no-dependencies.js:124154
-msgid "New password"
-msgstr "புதிய கடவுச்சொல்"
-
-#: dist/converse-no-dependencies.js:124155
-msgid "Confirm new password"
-msgstr "புதிய கடவுச்சொல்லை உறுதிப்படுத்தவும்"
-
-#: dist/converse-no-dependencies.js:124637
-msgid "Timeout error"
-msgstr "காலக்கெடு பிழை"
-
-#: dist/converse-no-dependencies.js:124644
-msgid "Your server does not support password reset"
-msgstr "கடவுச்சொல் மீட்டமைப்பை உங்கள் சேவையகம் ஆதரிக்காது"
-
-#: dist/converse-no-dependencies.js:124651
-msgid ""
-"Your server responded with an unknown error, check the console for details"
-msgstr ""
-"உங்கள் சேவையகம் அறியப்படாத பிழையுடன் பதிலளித்தது, விவரங்களுக்கு கன்சோலைச் சரிபார்க்கவும்"
-
-#: dist/converse-no-dependencies.js:124670
-msgid "Timeout error while trying to set your password"
-msgstr "உங்கள் கடவுச்சொல்லை அமைக்க முயற்சிக்கும்போது காலக்கெடு பிழை"
-
-#: dist/converse-no-dependencies.js:124672
-msgid "Your server does not allow password reset"
-msgstr "கடவுச்சொல் மீட்டமைப்பை உங்கள் சேவையகம் அனுமதிக்காது"
-
-#: dist/converse-no-dependencies.js:124674
-#: dist/converse-no-dependencies.js:124676
-msgid "You are not allowed to change your password"
-msgstr "உங்கள் கடவுச்சொல்லை மாற்ற உங்களுக்கு இசைவு இல்லை"
-
-#: dist/converse-no-dependencies.js:124678
-msgid "Your new password has been set"
-msgstr "உங்கள் புதிய கடவுச்சொல் அமைக்கப்பட்டுள்ளது"
-
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:125201
+#: dist/converse-no-dependencies.js:124847
 msgid "Your Profile"
 msgstr "உங்கள் சுயவிவரம்"
 
-#: dist/converse-no-dependencies.js:125226
+#: dist/converse-no-dependencies.js:124872
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "மன்னிக்கவும், உங்கள் சுயவிவரத் தரவைச் சேமிக்க முயற்சிக்கும்போது பிழை ஏற்பட்டது."
 
-#: dist/converse-no-dependencies.js:125340
+#: dist/converse-no-dependencies.js:124986
 msgid "About"
 msgstr "பற்றி"
 
-#: dist/converse-no-dependencies.js:125341
+#: dist/converse-no-dependencies.js:124987
 msgid "Commands"
 msgstr "கட்டளைகள்"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:125349
+#: dist/converse-no-dependencies.js:124995
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
@@ -2254,47 +2309,32 @@ msgstr ""
 "%1$s திறந்த மூல %2$s xmpp அரட்டை வாங்கி %3$s opkode %2$s ஆல் உங்களிடம் கொண்டு "
 "வரப்பட்டது"
 
-#: dist/converse-no-dependencies.js:125350
+#: dist/converse-no-dependencies.js:124996
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
 msgstr "%1$s %2$s ஐ உங்கள் சொந்த மொழியில் மொழிபெயர்க்கவும்"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:125465
+#: dist/converse-no-dependencies.js:125111
 msgid "Settings"
 msgstr "அமைப்புகள்"
 
-#: dist/converse-no-dependencies.js:125480
-#: dist/converse-no-dependencies.js:125490
-msgid "online"
-msgstr "ஆன்லைனில்"
-
-#: dist/converse-no-dependencies.js:125482
-msgid "busy"
-msgstr "பிசியாக"
-
-#: dist/converse-no-dependencies.js:125484
-msgid "away for long"
-msgstr "நீண்ட நேரம்"
-
-#: dist/converse-no-dependencies.js:125486
-msgid "away"
-msgstr "தொலைவில்"
-
-#: dist/converse-no-dependencies.js:125488
-msgid "offline"
-msgstr "இணையமில்லாமல்"
-
-#: dist/converse-no-dependencies.js:125513
+#: dist/converse-no-dependencies.js:125137
 #, javascript-format
 msgid "I am %1$s"
 msgstr "நான் %1$s"
 
-#: dist/converse-no-dependencies.js:125514
+#: dist/converse-no-dependencies.js:125138
 msgid "Click to change your chat status"
 msgstr "உங்கள் அரட்டை நிலையை மாற்ற சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:127173
+#. harmony default export
+#: dist/converse-no-dependencies.js:125353
+#, javascript-format
+msgid "Download file \"%1$s\""
+msgstr "\"%1$s\" ஐ பதிவிறக்குக"
+
+#: dist/converse-no-dependencies.js:126904
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
@@ -2303,7 +2343,7 @@ msgstr ""
 "மன்னிக்கவும், ஒரு மறைகுறியாக்கப்பட்ட செய்தியை எங்களால் அனுப்ப முடியவில்லை, ஏனெனில் %1$s "
 "அவர்களின் ஓம்மோ தகவல்களைக் காண அவர்களின் இருப்புக்கு நீங்கள் குழுசேர வேண்டும்"
 
-#: dist/converse-no-dependencies.js:127175
+#: dist/converse-no-dependencies.js:126906
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
@@ -2312,11 +2352,11 @@ msgstr ""
 "மன்னிக்கவும், ஒரு மறைகுறியாக்கப்பட்ட செய்தியை எங்களால் அனுப்ப முடியவில்லை, ஏனெனில் %1$s "
 "க்கான தொலை சேவையகத்தைக் கண்டுபிடிக்க முடியவில்லை"
 
-#: dist/converse-no-dependencies.js:127177
+#: dist/converse-no-dependencies.js:126908
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr "எதிர்பாராத பிழை காரணமாக மறைகுறியாக்கப்பட்ட செய்தியை அனுப்ப முடியவில்லை."
 
-#: dist/converse-no-dependencies.js:127212
+#: dist/converse-no-dependencies.js:126954
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
@@ -2324,7 +2364,7 @@ msgstr ""
 "இது உங்கள் வாடிக்கையாளர் ஆதரிக்கத் தெரியாத ஓம்மோ மறைகுறியாக்கப்பட்ட செய்தி. Https://"
 "conversations.im/omemo பற்றிய கூடுதல் தகவல்களைக் கண்டறியவும்"
 
-#: dist/converse-no-dependencies.js:127453
+#: dist/converse-no-dependencies.js:127227
 msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
@@ -2332,7 +2372,7 @@ msgstr ""
 "பிழை: பெறப்பட்ட மறைகுறியாக்கப்பட்ட கோப்பை மறைகுறியாக்க முடியவில்லை, ஏனெனில் அதை "
 "பதிவிறக்கம் செய்ய முடியவில்லை"
 
-#: dist/converse-no-dependencies.js:127661
+#: dist/converse-no-dependencies.js:127474
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
@@ -2340,11 +2380,11 @@ msgstr ""
 "மன்னிக்கவும், பெறப்பட்ட ஓம்மோ செய்தியை மறைகுறியாக்க முடியவில்லை, ஏனெனில் அந்த பயனருக்கான "
 "எக்ச்எம்பிபி முகவரி எங்களிடம் இல்லை."
 
-#: dist/converse-no-dependencies.js:127726
+#: dist/converse-no-dependencies.js:127539
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr "மன்னிக்கவும், பிழை காரணமாக பெறப்பட்ட ஓம்மோ செய்தியை மறைகுறியாக்க முடியவில்லை."
 
-#: dist/converse-no-dependencies.js:128361
+#: dist/converse-no-dependencies.js:128249
 #, javascript-format
 msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
@@ -2353,7 +2393,7 @@ msgstr ""
 "%1$s ஓம்மோவை ஆதரிக்கும் கிளையன்ட் இருப்பதாகத் தெரியவில்லை. மறைகுறியாக்கப்பட்ட அரட்டை இனி "
 "இந்த க்ரூச்சாட்டில் சாத்தியமில்லை."
 
-#: dist/converse-no-dependencies.js:128425
+#: dist/converse-no-dependencies.js:128316
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
@@ -2361,7 +2401,7 @@ msgstr ""
 "இந்த குழுமத்தில் இறுதி முதல் இறுதி குறியாக்கத்தைப் பயன்படுத்த முடியாது, குழுவிற்கு சில "
 "அநாமதேயங்கள் உள்ளன அல்லது அனைத்து பங்கேற்பாளர்களும் ஓமமோவை ஆதரிக்கவில்லை."
 
-#: dist/converse-no-dependencies.js:128427
+#: dist/converse-no-dependencies.js:128318
 #, javascript-format
 msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
@@ -2370,15 +2410,15 @@ msgstr ""
 "எண்ட்-டு-எண்ட் குறியாக்கத்தைப் பயன்படுத்த முடியாது, ஏனெனில் %1$s ஓம்மோவை ஆதரிக்காத "
 "கிளையண்டைப் பயன்படுத்துகிறது."
 
-#: dist/converse-no-dependencies.js:128440
+#: dist/converse-no-dependencies.js:128336
 msgid "Messages are being sent in plaintext"
 msgstr "செய்திகள் எளிய உரையில் அனுப்பப்படுகின்றன"
 
-#: dist/converse-no-dependencies.js:128441
+#: dist/converse-no-dependencies.js:128337
 msgid "Messages are sent encrypted"
 msgstr "செய்திகள் குறியாக்கம் செய்யப்படுகின்றன"
 
-#: dist/converse-no-dependencies.js:128444
+#: dist/converse-no-dependencies.js:128340
 msgid ""
 "This groupchat needs to be members-only and non-anonymous in order to "
 "support OMEMO encrypted messages"
@@ -2386,26 +2426,26 @@ msgstr ""
 "ஓமமோ மறைகுறியாக்கப்பட்ட செய்திகளை ஆதரிக்க இந்த குழு உறுப்பினர்கள் மட்டுமே மற்றும் "
 "அநாமதேயர் அல்லாதவர்களாக இருக்க வேண்டும்"
 
-#: dist/converse-no-dependencies.js:128446
+#: dist/converse-no-dependencies.js:128342
 msgid "OMEMO encryption is not supported"
 msgstr "ஓமெமோ குறியாக்கம் ஆதரிக்கப்படவில்லை"
 
-#: dist/converse-no-dependencies.js:128474
+#: dist/converse-no-dependencies.js:128375
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
 msgstr ""
 "மன்னிக்கவும், ஓம்மோ மறைகுறியாக்கப்பட்ட செய்தியை நாங்கள் அனுப்பக்கூடிய சாதனங்கள் எதுவும் "
 "கிடைக்கவில்லை."
 
-#: dist/converse-no-dependencies.js:128659
+#: dist/converse-no-dependencies.js:128568
 msgid "Trusted"
 msgstr "நம்பகமான"
 
-#: dist/converse-no-dependencies.js:128660
+#: dist/converse-no-dependencies.js:128569
 msgid "Untrusted"
 msgstr "நம்பத்தகாதது"
 
-#: dist/converse-no-dependencies.js:128661
+#: dist/converse-no-dependencies.js:128570
 msgid "Choose which devices you trust for OMEMO encrypted communication"
 msgstr ""
 
@@ -2413,55 +2453,55 @@ msgstr ""
 #. * @param {import('../fingerprints').Fingerprints} el
 #.
 #. harmony default export
-#: dist/converse-no-dependencies.js:128676
+#: dist/converse-no-dependencies.js:128585
 msgid "OMEMO Fingerprints"
 msgstr "ஓமமோ கைரேகைகள்"
 
-#: dist/converse-no-dependencies.js:128677
+#: dist/converse-no-dependencies.js:128586
 msgid "No OMEMO-enabled devices found"
 msgstr "OMEMO- இயக்கப்பட்ட சாதனங்கள் எதுவும் காணப்படவில்லை"
 
-#: dist/converse-no-dependencies.js:129184
+#: dist/converse-no-dependencies.js:130208
 msgid "Checkbox for selecting the following fingerprint"
 msgstr "பின்வரும் கைரேகையைத் தேர்ந்தெடுப்பதற்கான தேர்வுப்பெட்டி"
 
-#: dist/converse-no-dependencies.js:129188
+#: dist/converse-no-dependencies.js:130212
 msgid "Device without a fingerprint"
 msgstr "கைரேகை இல்லாமல் சாதனம்"
 
-#: dist/converse-no-dependencies.js:129189
+#: dist/converse-no-dependencies.js:130213
 msgid "Checkbox for selecting the following device"
 msgstr "பின்வரும் சாதனத்தைத் தேர்ந்தெடுப்பதற்கான தேர்வுப்பெட்டி"
 
-#: dist/converse-no-dependencies.js:129197
+#: dist/converse-no-dependencies.js:130225
 msgid "Other OMEMO-enabled devices"
 msgstr "பிற OMEMO- இயக்கப்பட்ட சாதனங்கள்"
 
-#: dist/converse-no-dependencies.js:129198
+#: dist/converse-no-dependencies.js:130226
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr "மற்ற அனைத்து ஓமமோ சாதனங்களின் கைரேகைகளைத் தேர்ந்தெடுக்க தேர்வுப்பெட்டி"
 
-#: dist/converse-no-dependencies.js:129199
+#: dist/converse-no-dependencies.js:130227
 msgid "Remove checked devices and close"
 msgstr "சரிபார்க்கப்பட்ட சாதனங்களை அகற்றி மூடு"
 
-#: dist/converse-no-dependencies.js:129200
+#: dist/converse-no-dependencies.js:130228
 msgid "Select all"
 msgstr "அனைத்தையும் தெரிவுசெய்"
 
-#: dist/converse-no-dependencies.js:129209
+#: dist/converse-no-dependencies.js:130239
 msgid "This device's OMEMO fingerprint"
 msgstr "இந்த சாதனத்தின் ஓமமோ கைரேகை"
 
-#: dist/converse-no-dependencies.js:129210
+#: dist/converse-no-dependencies.js:130240
 msgid "Generate new keys and fingerprint"
 msgstr "புதிய விசைகள் மற்றும் கைரேகையை உருவாக்குங்கள்"
 
-#: dist/converse-no-dependencies.js:129747
+#: dist/converse-no-dependencies.js:130778
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "மன்னிக்கவும், சாதனங்களை அகற்ற முயற்சிக்கும்போது பிழை ஏற்பட்டது."
 
-#: dist/converse-no-dependencies.js:129774
+#: dist/converse-no-dependencies.js:130805
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
@@ -2471,54 +2511,57 @@ msgstr ""
 "மேலும் முன்னர் மறைகுறியாக்கப்பட்ட அனைத்து செய்திகளும் இந்த சாதனத்தில் மறைகுறியாக்கப்படாது."
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:132993
-#: dist/converse-no-dependencies.js:133056
+#: dist/converse-no-dependencies.js:134280
+#: dist/converse-no-dependencies.js:134356
 msgid "Already have a chat account?"
 msgstr "ஏற்கனவே அரட்டை கணக்கு உள்ளதா?"
 
-#: dist/converse-no-dependencies.js:132994
-#: dist/converse-no-dependencies.js:133057
-msgid "Log in here"
-msgstr "இங்கே உள்நுழைக"
+#: dist/converse-no-dependencies.js:134281
+#: dist/converse-no-dependencies.js:134357
+msgid "Go back to login"
+msgstr ""
 
+#. *
+#. * @param {import('../form').default} el
+#.
 #. harmony default export
-#: dist/converse-no-dependencies.js:133011
+#: dist/converse-no-dependencies.js:134302
 msgid "Choose a different provider"
 msgstr "வேறு வழங்குநரைத் தேர்வுசெய்க"
 
-#: dist/converse-no-dependencies.js:133012
+#: dist/converse-no-dependencies.js:134303
 msgid "Account Registration:"
 msgstr "கணக்கு பதிவு:"
 
-#: dist/converse-no-dependencies.js:133013
+#: dist/converse-no-dependencies.js:134304
 msgid "Register"
 msgstr "பதிவு செய்யுங்கள்"
 
-#: dist/converse-no-dependencies.js:133049
+#: dist/converse-no-dependencies.js:134349
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "உதவிக்குறிப்பு: பொது எக்ச்எம்பிபி வழங்குநர்களின் பட்டியல் கிடைக்கிறது"
 
-#: dist/converse-no-dependencies.js:133050
+#: dist/converse-no-dependencies.js:134350
 msgid "here"
 msgstr "இங்கே"
 
-#: dist/converse-no-dependencies.js:133055
+#: dist/converse-no-dependencies.js:134355
 msgid "Fetch registration form"
 msgstr "பதிவு படிவத்தைப் பெறுங்கள்"
 
-#: dist/converse-no-dependencies.js:133062
+#: dist/converse-no-dependencies.js:134366
 msgid "Create your account"
 msgstr "உங்கள் கணக்கை உருவாக்கவும்"
 
-#: dist/converse-no-dependencies.js:133063
+#: dist/converse-no-dependencies.js:134367
 msgid "Please enter the XMPP provider to register with:"
 msgstr "இதனுடன் பதிவு செய்ய எக்ச்எம்பிபி வழங்குநரை உள்ளிடவும்:"
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:134976
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "மன்னிக்கவும், நீங்கள் தேர்ந்தெடுத்த வழங்குநருடன் எங்களால் இணைக்க முடியவில்லை."
 
-#: dist/converse-no-dependencies.js:133708
+#: dist/converse-no-dependencies.js:134988
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -2526,15 +2569,29 @@ msgstr ""
 "மன்னிக்கவும், கொடுக்கப்பட்ட வழங்குநர் இசைக்குழு கணக்கு பதிவில் ஆதரிக்கவில்லை. தயவுசெய்து "
 "வேறு வழங்குநருடன் முயற்சிக்கவும்."
 
-#: dist/converse-no-dependencies.js:133845
+#: dist/converse-no-dependencies.js:135085
+msgid "Invalid connection URL, only HTTPS and WSS accepted"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:135153
 msgid "Now logging you in"
 msgstr "இப்போது உங்களை உள்நுழைகிறது"
 
-#: dist/converse-no-dependencies.js:133847
+#: dist/converse-no-dependencies.js:135155
 msgid "Registered successfully"
 msgstr "வெற்றிகரமாக பதிவு செய்யப்பட்டது"
 
-#: dist/converse-no-dependencies.js:133935
+#: dist/converse-no-dependencies.js:135248
+#: dist/converse-no-dependencies.js:135253
+#, fuzzy
+msgid "Registration failed."
+msgstr "பதிவு படிவத்தைப் பெறுங்கள்"
+
+#: dist/converse-no-dependencies.js:135248
+msgid "Please try a different username."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:135257
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -2542,11 +2599,19 @@ msgstr ""
 "வழங்குநர் உங்கள் பதிவு முயற்சியை நிராகரித்தார். சரியான தன்மைக்காக நீங்கள் உள்ளிட்ட "
 "மதிப்புகளை சரிபார்க்கவும்."
 
-#: dist/converse-no-dependencies.js:134163
+#: dist/converse-no-dependencies.js:135568
+msgid "Create an account"
+msgstr "ஒரு கணக்கை உருவாக்கவும்"
+
+#: dist/converse-no-dependencies.js:135569
+msgid "Don't have a chat account?"
+msgstr "அரட்டை கணக்கு இல்லையா?"
+
+#: dist/converse-no-dependencies.js:135622
 msgid " e.g. conversejs.org"
 msgstr " எ.கா. Tsnversys.org"
 
-#: dist/converse-no-dependencies.js:134759
+#: dist/converse-no-dependencies.js:136229
 msgid "This field is required"
 msgstr "இந்த புலம் தேவை"
 
@@ -2554,212 +2619,208 @@ msgstr "இந்த புலம் தேவை"
 #. * @param {import('../add-muc.js').default} el
 #.
 #. harmony default export
-#: dist/converse-no-dependencies.js:134767
+#: dist/converse-no-dependencies.js:136237
 msgid "Join"
 msgstr "சேர"
 
-#: dist/converse-no-dependencies.js:134770
+#: dist/converse-no-dependencies.js:136240
 msgid "Groupchat name"
 msgstr "குழு அரட்டை பெயர்"
 
-#: dist/converse-no-dependencies.js:134772
+#: dist/converse-no-dependencies.js:136242
 #, fuzzy
 msgid "Groupchat name or address"
 msgstr "குரூப்சாட் முகவரி"
 
-#: dist/converse-no-dependencies.js:135297
+#: dist/converse-no-dependencies.js:136773
 msgid "Enter a new Groupchat"
 msgstr "புதிய குழு அரட்டையை உள்ளிடவும்"
 
-#: dist/converse-no-dependencies.js:135421
+#: dist/converse-no-dependencies.js:136897
 #, fuzzy
 msgid "Invalid groupchat address, it cannot be empty."
 msgstr "இந்த குரூப்சாட் (இன்னும்) இல்லை."
 
-#: dist/converse-no-dependencies.js:135428
+#: dist/converse-no-dependencies.js:136904
 msgid "Invalid groupchat address, a forward slash is not allowed."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:135435
+#: dist/converse-no-dependencies.js:136911
 msgid "Invalid groupchat address, more than one @ sign is not allowed."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:135441
+#: dist/converse-no-dependencies.js:136917
 msgid "Invalid groupchat address, it cannot start or end with an @ sign."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:135455
+#: dist/converse-no-dependencies.js:136931
 msgid ""
 "No default groupchat service found. You'll need to specify the full address, "
 "for example room@conference.example.org"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:135471
+#: dist/converse-no-dependencies.js:136947
 msgid "Groupchat id is invalid."
 msgstr "குரூப்சாட் ஐடி தவறானது."
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:135501
+#: dist/converse-no-dependencies.js:136977
 msgid "Description:"
 msgstr "விளக்கம்:"
 
-#: dist/converse-no-dependencies.js:135502
+#: dist/converse-no-dependencies.js:136978
 msgid "Groupchat XMPP Address:"
 msgstr "Groupchat xmpp முகவரி:"
 
-#: dist/converse-no-dependencies.js:135503
+#: dist/converse-no-dependencies.js:136979
 msgid "Participants:"
 msgstr "பங்கேற்பாளர்கள்:"
 
-#: dist/converse-no-dependencies.js:135504
+#: dist/converse-no-dependencies.js:136980
 msgid "Features:"
 msgstr "அம்சங்கள்:"
 
-#: dist/converse-no-dependencies.js:135505
+#: dist/converse-no-dependencies.js:136981
 msgid "Requires authentication"
 msgstr "ஏற்பு தேவை"
 
-#: dist/converse-no-dependencies.js:135507
+#: dist/converse-no-dependencies.js:136983
 msgid "Requires an invitation"
 msgstr "அழைப்பு தேவை"
 
-#: dist/converse-no-dependencies.js:135509
+#: dist/converse-no-dependencies.js:136985
 msgid "Non-anonymous"
 msgstr "அநாமதேய அல்லாத"
 
-#: dist/converse-no-dependencies.js:135511
+#: dist/converse-no-dependencies.js:136987
 msgid "Permanent"
 msgstr "நிரந்தர"
 
-#: dist/converse-no-dependencies.js:135515
+#: dist/converse-no-dependencies.js:136991
 msgid "Unmoderated"
 msgstr "மாற்றப்படாதது"
 
-#: dist/converse-no-dependencies.js:135532
+#: dist/converse-no-dependencies.js:137008
 msgid "Show groupchats"
 msgstr "குழு அரட்டைகளைக் காட்டு"
 
-#: dist/converse-no-dependencies.js:135533
+#: dist/converse-no-dependencies.js:137009
 msgid "Server address"
 msgstr "சேவையக முகவரி"
 
-#: dist/converse-no-dependencies.js:135730
+#: dist/converse-no-dependencies.js:137212
 msgid "conference.example.org"
 msgstr "conference.example.org"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:135751
+#: dist/converse-no-dependencies.js:137233
 msgid "Query for Groupchats"
 msgstr "குழு அரட்டைகளுக்கான வினவல்"
 
-#: dist/converse-no-dependencies.js:135789
+#: dist/converse-no-dependencies.js:137271
 msgid "Groupchats found"
 msgstr "குழுமங்கள் காணப்பட்டன"
 
-#: dist/converse-no-dependencies.js:135797
+#: dist/converse-no-dependencies.js:137279
 msgid "No groupchats found"
 msgstr "குரூபாய்ச் எதுவும் கிடைக்கவில்லை"
 
-#: dist/converse-no-dependencies.js:135988
+#: dist/converse-no-dependencies.js:137468
 msgid "Leave this groupchat"
 msgstr "இந்த குழு அரட்டையை விட்டு விடுங்கள்"
 
-#: dist/converse-no-dependencies.js:136003
+#: dist/converse-no-dependencies.js:137483
 msgid "Click to hide these rooms"
 msgstr "இந்த அறைகளை மறைக்க சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:136056
+#: dist/converse-no-dependencies.js:137536
 msgid "Click to toggle the list of open groupchats"
 msgstr "திறந்த குழு அரட்டைகளின் பட்டியலை மாற்ற சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:136057
+#: dist/converse-no-dependencies.js:137537
 msgid "Groupchats"
 msgstr "குழுமங்கள்"
 
-#: dist/converse-no-dependencies.js:136058
+#: dist/converse-no-dependencies.js:137538
 msgid "Query server"
 msgstr "வினவல் சேவையகம்"
 
-#: dist/converse-no-dependencies.js:136059
+#: dist/converse-no-dependencies.js:137539
 msgid "Add groupchat"
 msgstr "குழு அரட்டையைச் சேர்க்கவும்"
 
-#: dist/converse-no-dependencies.js:136628
+#: dist/converse-no-dependencies.js:138109
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "நீங்கள் நிச்சயமாகக் குழுமம் %1$s ஐ விட்டுவிட விரும்புகிறீர்களா?"
 
-#: dist/converse-no-dependencies.js:137297
+#: dist/converse-no-dependencies.js:138685
 #, javascript-format
 msgid "Click to accept the contact request from %1$s (XMPP address: %2$s)"
 msgstr ""
 "தொடர்பு கோரிக்கையை %1$s (xmpp முகவரி: %2$s) இலிருந்து ஏற்றுக்கொள்ள சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:137298
+#: dist/converse-no-dependencies.js:138686
 #, javascript-format
 msgid "Click to decline the contact request from %1$s (XMPP address: %2$s)"
 msgstr "தொடர்பு கோரிக்கையை %1$s (XMPP முகவரி: %2$s) இலிருந்து குறைக்க சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:137299
-#: dist/converse-no-dependencies.js:137362
-#: dist/converse-no-dependencies.js:137389
+#: dist/converse-no-dependencies.js:138687
+#: dist/converse-no-dependencies.js:138752
+#: dist/converse-no-dependencies.js:138779
 #, javascript-format
 msgid "Click to chat with %1$s (XMPP address: %2$s)"
 msgstr "%1$s (xmpp முகவரி: %2$s) உடன் அரட்டையடிக்க சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:137305
+#: dist/converse-no-dependencies.js:138693
 msgid "This contact is busy"
 msgstr "இந்த தொடர்பு பிசியாக உள்ளது"
 
-#: dist/converse-no-dependencies.js:137306
+#: dist/converse-no-dependencies.js:138694
 msgid "This contact is online"
 msgstr "இந்த தொடர்பு ஆன்லைனில் உள்ளது"
 
-#: dist/converse-no-dependencies.js:137307
+#: dist/converse-no-dependencies.js:138695
 msgid "This contact is offline"
 msgstr "இந்த தொடர்பு ஆஃப்லைனில் உள்ளது"
 
-#: dist/converse-no-dependencies.js:137308
+#: dist/converse-no-dependencies.js:138696
 msgid "This contact is unavailable"
 msgstr "இந்த தொடர்பு கிடைக்கவில்லை"
 
-#: dist/converse-no-dependencies.js:137309
+#: dist/converse-no-dependencies.js:138697
 msgid "This contact is away for an extended period"
 msgstr "இந்த தொடர்பு நீண்ட காலத்திற்கு தொலைவில் உள்ளது"
 
-#: dist/converse-no-dependencies.js:137310
+#: dist/converse-no-dependencies.js:138698
 msgid "This contact is away"
 msgstr "இந்த தொடர்பு தொலைவில் உள்ளது"
 
-#: dist/converse-no-dependencies.js:137332
+#: dist/converse-no-dependencies.js:138720
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
 msgstr "தொடர்பாக %1$s ஐ அகற்ற சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:137362
+#: dist/converse-no-dependencies.js:138752
 #, fuzzy
 msgid "Click to chat with yourself"
 msgstr "உங்கள் பட்டியலில் %1$s ஐச் சேர்க்க சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:137363
-msgid "(me)"
-msgstr ""
+#: dist/converse-no-dependencies.js:138778
+#, fuzzy, javascript-format
+msgid "Click to add %1$s as a contact"
+msgstr "தொடர்பாக %1$s ஐ அகற்ற சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:137388
-#, javascript-format
-msgid "Click to add %1$s to your roster"
-msgstr "உங்கள் பட்டியலில் %1$s ஐச் சேர்க்க சொடுக்கு செய்க"
-
-#: dist/converse-no-dependencies.js:137979
+#: dist/converse-no-dependencies.js:139417
 #, fuzzy
 msgid "Decline contact request"
 msgstr "தொடர்பு கோரிக்கைகள்"
 
-#: dist/converse-no-dependencies.js:137979
+#: dist/converse-no-dependencies.js:139417
 msgid "Are you sure you want to decline this contact request?"
 msgstr "இந்த தொடர்பு கோரிக்கையை நீங்கள் மறுக்க விரும்புகிறீர்களா?"
 
-#: dist/converse-no-dependencies.js:137980
+#: dist/converse-no-dependencies.js:139418
 msgid "Block this user from sending you further messages"
 msgstr ""
 
@@ -2767,87 +2828,118 @@ msgstr ""
 #. * @param {import('../add-contact.js').default} el
 #.
 #. harmony default export
-#: dist/converse-no-dependencies.js:138050
+#: dist/converse-no-dependencies.js:139488
+#: dist/converse-no-dependencies.js:140141
 msgid "Add"
 msgstr "கூட்டு"
 
-#: dist/converse-no-dependencies.js:138052
-msgid "Group"
-msgstr "குழு"
+#: dist/converse-no-dependencies.js:139494
+#, fuzzy
+msgid "Search name or XMPP address"
+msgstr "குரூப்சாட் முகவரி"
 
-#: dist/converse-no-dependencies.js:138519
+#: dist/converse-no-dependencies.js:139993
 msgid "Add a Contact"
 msgstr "ஒரு தொடர்பைச் சேர்க்கவும்"
 
-#: dist/converse-no-dependencies.js:138534
+#: dist/converse-no-dependencies.js:140008
 msgid "This contact has already been added"
 msgstr "இந்த தொடர்பு ஏற்கனவே சேர்க்கப்பட்டுள்ளது"
 
-#: dist/converse-no-dependencies.js:138568
-#: dist/converse-no-dependencies.js:139154
+#: dist/converse-no-dependencies.js:140042
+#: dist/converse-no-dependencies.js:140659
+#: dist/converse-no-dependencies.js:141205
 #, fuzzy
 msgid "Sorry, something went wrong"
 msgstr "மன்னிக்கவும், புதுப்பிக்க முயற்சிக்கும்போது ஏதோ தவறு ஏற்பட்டது"
 
-#: dist/converse-no-dependencies.js:138612
-msgid "Sorry, could not find a contact with that name"
-msgstr "மன்னிக்கவும், அந்த பெயருடன் ஒரு தொடர்பைக் கண்டுபிடிக்க முடியவில்லை"
+#: dist/converse-no-dependencies.js:140092
+msgid ""
+"Invalid value for the name and XMPP address. Please use the format \"Name "
+"<username@example.org>\"."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:140620
+#, fuzzy
+msgid "Contact Request"
+msgstr "தொடர்பு கோரிக்கைகள்"
 
 #. *
 #. * @param {import('../new-chat.js').default} el
 #.
 #. harmony default export
-#: dist/converse-no-dependencies.js:138653
+#: dist/converse-no-dependencies.js:140698
 #, fuzzy
 msgid "Start Chat"
 msgstr "அழைப்பைத் தொடங்கவும்"
 
-#: dist/converse-no-dependencies.js:139114
-#: dist/converse-no-dependencies.js:139365
+#: dist/converse-no-dependencies.js:141165
+#: dist/converse-no-dependencies.js:141417
 #, fuzzy
 msgid "Start a new chat"
 msgstr "அழைப்பைத் தொடங்கவும்"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:139258
+#: dist/converse-no-dependencies.js:141309
 msgid "Click to hide these contacts"
 msgstr "இந்த தொடர்புகளை மறைக்க சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:139286
+#: dist/converse-no-dependencies.js:141338
 msgid "Filter by contact name"
 msgstr "தொடர்பு பெயர் மூலம் வடிகட்டவும்"
 
-#: dist/converse-no-dependencies.js:139287
+#: dist/converse-no-dependencies.js:141339
 msgid "Filter by group name"
 msgstr "குழு பெயரால் வடிகட்டவும்"
 
-#: dist/converse-no-dependencies.js:139290
+#: dist/converse-no-dependencies.js:141342
 msgid "Unread"
 msgstr "படிக்காதது"
-
-#: dist/converse-no-dependencies.js:139291
-msgid "Available"
-msgstr "கிடைக்கிறது"
 
 #. *
 #. * @param {import('../rosterview').default} el
 #.
 #. harmony default export
-#: dist/converse-no-dependencies.js:139362
+#: dist/converse-no-dependencies.js:141414
 msgid "Contacts"
 msgstr "தொடர்புகள்"
 
-#: dist/converse-no-dependencies.js:139363
+#: dist/converse-no-dependencies.js:141415
 msgid "Click to toggle contacts"
 msgstr "தொடர்புகளை மாற்ற சொடுக்கு செய்க"
 
-#: dist/converse-no-dependencies.js:139364
+#: dist/converse-no-dependencies.js:141416
 msgid "Add a contact"
 msgstr "ஒரு தொடர்பைச் சேர்க்கவும்"
 
-#: dist/converse-no-dependencies.js:139396
+#: dist/converse-no-dependencies.js:141448
 msgid "Re-sync contacts"
 msgstr "மீண்டும் ஒத்திசைவு தொடர்புகள்"
+
+#, javascript-format
+#~ msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
+#~ msgstr "மன்னிக்கவும், எக்ச்எம்பிபி ஓச்டுடன் டொமைனுடன் இணைக்க முடியவில்லை: %1$s"
+
+#, javascript-format
+#~ msgid "Error: timeout while fetching %1s list for MUC %2s"
+#~ msgstr "பிழை: MUC %2s க்கு %1s பட்டியலைப் பெறும்போது நேரம் முடிந்தது"
+
+#, javascript-format
+#~ msgid "Error: not allowed to fetch %1s list for MUC %2s"
+#~ msgstr "பிழை: MUC %2s க்கு %1s பட்டியலைப் பெற அனுமதிக்கப்படவில்லை"
+
+#~ msgid "Pending contacts"
+#~ msgstr "தொடர்புகள் நிலுவையில் உள்ளன"
+
+#~ msgid "Log in here"
+#~ msgstr "இங்கே உள்நுழைக"
+
+#, javascript-format
+#~ msgid "Click to add %1$s to your roster"
+#~ msgstr "உங்கள் பட்டியலில் %1$s ஐச் சேர்க்க சொடுக்கு செய்க"
+
+#~ msgid "Sorry, could not find a contact with that name"
+#~ msgstr "மன்னிக்கவும், அந்த பெயருடன் ஒரு தொடர்பைக் கண்டுபிடிக்க முடியவில்லை"
 
 #~ msgid "Error: couldn't register new nickname in members only room"
 #~ msgstr ""

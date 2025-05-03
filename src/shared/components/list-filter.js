@@ -1,16 +1,14 @@
-import debounce from "lodash-es/debounce";
+import debounce from 'lodash-es/debounce';
 import { CustomElement } from 'shared/components/element.js';
-import { api } from "@converse/headless";
+import { api } from '@converse/headless';
 
 import './styles/list-filter.scss';
-
 
 /**
  * A component that exposes a text input to enable filtering of a list of DOM items.
  */
 export default class ListFilter extends CustomElement {
-
-    constructor () {
+    constructor() {
         super();
         this.items = null;
         this.model = null;
@@ -18,21 +16,21 @@ export default class ListFilter extends CustomElement {
         this.promise = Promise.resolve();
     }
 
-    static get properties () {
+    static get properties() {
         return {
             items: { type: Array },
             model: { type: Object },
             promise: { type: Promise },
             template: { type: Object },
-        }
+        };
     }
 
-    initialize () {
-        this.liveFilter = debounce((ev) => this.model.save({'text': ev.target.value}), 250);
+    initialize() {
+        this.liveFilter = debounce((ev) => this.model.save({ 'text': ev.target.value }), 250);
 
-        this.listenTo(this.items, "add", () => this.requestUpdate());
-        this.listenTo(this.items, "destroy", () => this.requestUpdate());
-        this.listenTo(this.items, "remove", () => this.requestUpdate());
+        this.listenTo(this.items, 'add', () => this.requestUpdate());
+        this.listenTo(this.items, 'destroy', () => this.requestUpdate());
+        this.listenTo(this.items, 'remove', () => this.requestUpdate());
 
         this.listenTo(this.model, 'change', () => {
             this.dispatchUpdateEvent();
@@ -43,35 +41,35 @@ export default class ListFilter extends CustomElement {
         this.requestUpdate();
     }
 
-    render () {
+    render() {
         return this.shouldBeVisible() ? this.template(this) : '';
     }
 
-    dispatchUpdateEvent () {
+    dispatchUpdateEvent() {
         this.dispatchEvent(new CustomEvent('update', { 'detail': this.model.changed }));
     }
 
     /**
      * @param {Event} ev
      */
-    changeChatStateFilter (ev) {
+    changeChatStateFilter(ev) {
         ev && ev.preventDefault();
-        const state = /** @type {HTMLInputElement} */(this.querySelector('.state-type')).value;
+        const state = /** @type {HTMLInputElement} */ (this.querySelector('.state-type')).value;
         this.model.save({ state });
     }
 
     /**
      * @param {Event} ev
      */
-    changeTypeFilter (ev) {
+    changeTypeFilter(ev) {
         ev && ev.preventDefault();
-        const target = /** @type {HTMLInputElement} */(ev.target);
-        const type = /** @type {HTMLElement} */(target.closest('converse-icon'))?.dataset.type || 'items';
+        const target = /** @type {HTMLInputElement} */ (ev.target);
+        const type = /** @type {HTMLElement} */ (target.closest('converse-icon'))?.dataset.type || 'items';
         if (type === 'state') {
-            const state = /** @type {HTMLInputElement} */(this.querySelector('.state-type')).value;
+            const state = /** @type {HTMLInputElement} */ (this.querySelector('.state-type')).value;
             this.model.save({ type, state });
         } else {
-            const text = /** @type {HTMLInputElement} */(this.querySelector('.items-filter')).value;
+            const text = /** @type {HTMLInputElement} */ (this.querySelector('.items-filter')).value;
             this.model.save({ type, text });
         }
     }
@@ -79,7 +77,7 @@ export default class ListFilter extends CustomElement {
     /**
      * @param {Event} ev
      */
-    submitFilter (ev) {
+    submitFilter(ev) {
         ev?.preventDefault();
         this.liveFilter();
     }
@@ -89,23 +87,23 @@ export default class ListFilter extends CustomElement {
      * has added values to the filter).
      * @returns {boolean}
      */
-    isActive () {
-        return (this.model.get('type') === 'state' || this.model.get('text'));
+    isActive() {
+        return this.model.get('type') === 'state' || this.model.get('text');
     }
 
     /**
      * @returns {boolean}
      */
-    shouldBeVisible () {
+    shouldBeVisible() {
         return this.items?.length >= 5 || this.isActive();
     }
 
     /**
      * @param {Event} ev
      */
-    clearFilter (ev) {
+    clearFilter(ev) {
         ev && ev.preventDefault();
-        this.model.save({'text': ''});
+        this.model.save({ 'text': '' });
     }
 }
 

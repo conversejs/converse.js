@@ -4,17 +4,16 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import { Model } from '@converse/skeletor';
 import { RosterFilter } from '../../plugins/roster/filter.js';
-import { PRIVATE_CHAT_TYPE } from "../../shared/constants";
+import { PRIVATE_CHAT_TYPE } from '../../shared/constants';
 import { initStorage } from '../../utils/storage.js';
 import { shouldClearCache } from '../../utils/session.js';
 
 const { $pres } = converse.env;
 
-
-function initRoster () {
+function initRoster() {
     // Initialize the collections that represent the roster contacts and groups
     const roster = new _converse.exports.RosterContacts();
     Object.assign(_converse, { roster }); // XXX Deprecated
@@ -48,7 +47,6 @@ function initRoster () {
     api.trigger('rosterInitialized', roster);
 }
 
-
 /**
  * Fetch all the roster groups, and then the roster contacts.
  * Emit an event after fetching is done in each case.
@@ -56,12 +54,12 @@ function initRoster () {
  *      will be ignored it's guaranteed that the XMPP server
  *      will be queried for the roster.
  */
-async function populateRoster (ignore_cache=false) {
+async function populateRoster(ignore_cache = false) {
     const connection = api.connection.get();
     if (ignore_cache) {
         connection.send_initial_presence = true;
     }
-    const roster = /** @type {RosterContacts} */(_converse.state.roster);
+    const roster = /** @type {RosterContacts} */ (_converse.state.roster);
     try {
         await roster.fetchRosterContacts();
         api.trigger('rosterContactsFetched', roster);
@@ -72,26 +70,30 @@ async function populateRoster (ignore_cache=false) {
     }
 }
 
-
-function updateUnreadCounter (chatbox) {
-    const roster = /** @type {RosterContacts} */(_converse.state.roster);
+function updateUnreadCounter(chatbox) {
+    const roster = /** @type {RosterContacts} */ (_converse.state.roster);
     const contact = roster?.get(chatbox.get('jid'));
-    contact?.save({'num_unread': chatbox.get('num_unread')});
+    contact?.save({ 'num_unread': chatbox.get('num_unread') });
 }
 
 let presence_ref;
 
-function registerPresenceHandler () {
+function registerPresenceHandler() {
     unregisterPresenceHandler();
     const connection = api.connection.get();
-    presence_ref = connection.addHandler(presence => {
-            const roster = /** @type {RosterContacts} */(_converse.state.roster);
+    presence_ref = connection.addHandler(
+        (presence) => {
+            const roster = /** @type {RosterContacts} */ (_converse.state.roster);
             roster.presenceHandler(presence);
             return true;
-        }, null, 'presence', null);
+        },
+        null,
+        'presence',
+        null
+    );
 }
 
-export function unregisterPresenceHandler () {
+export function unregisterPresenceHandler() {
     if (presence_ref) {
         const connection = api.connection.get();
         connection.deleteHandler(presence_ref);
@@ -99,18 +101,17 @@ export function unregisterPresenceHandler () {
     }
 }
 
-async function clearPresences () {
+async function clearPresences() {
     await _converse.state.presences?.clearStore();
 }
-
 
 /**
  * Roster specific event handler for the clearSession event
  */
-export async function onClearSession () {
+export async function onClearSession() {
     await clearPresences();
     if (shouldClearCache(_converse)) {
-        const roster = /** @type {RosterContacts} */(_converse.state.roster);
+        const roster = /** @type {RosterContacts} */ (_converse.state.roster);
         if (roster) {
             roster.data?.destroy();
             await roster.clearStore();
@@ -120,12 +121,11 @@ export async function onClearSession () {
     }
 }
 
-
 /**
  * Roster specific event handler for the presencesInitialized event
  * @param {Boolean} reconnecting
  */
-export function onPresencesInitialized (reconnecting) {
+export function onPresencesInitialized(reconnecting) {
     if (reconnecting) {
         /**
          * Similar to `rosterInitialized`, but instead pertaining to reconnection.
@@ -138,70 +138,67 @@ export function onPresencesInitialized (reconnecting) {
     } else {
         initRoster();
     }
-    const roster = /** @type {RosterContacts} */(_converse.state.roster);
+    const roster = /** @type {RosterContacts} */ (_converse.state.roster);
     roster.onConnected();
     registerPresenceHandler();
     populateRoster(!api.connection.get().restored);
 }
 
-
 /**
  * Roster specific event handler for the statusInitialized event
  * @param { Boolean } reconnecting
  */
-export async function onStatusInitialized (reconnecting) {
-     if (reconnecting) {
-         // When reconnecting and not resuming a previous session,
-         // we clear all cached presence data, since it might be stale
-         // and we'll receive new presence updates
-         !api.connection.get().hasResumed() && (await clearPresences());
-     } else {
-         const presences = new _converse.exports.Presences();
-         Object.assign(_converse, { presences });
-         Object.assign(_converse.state, { presences });
+export async function onStatusInitialized(reconnecting) {
+    if (reconnecting) {
+        // When reconnecting and not resuming a previous session,
+        // we clear all cached presence data, since it might be stale
+        // and we'll receive new presence updates
+        !api.connection.get().hasResumed() && (await clearPresences());
+    } else {
+        const presences = new _converse.exports.Presences();
+        Object.assign(_converse, { presences });
+        Object.assign(_converse.state, { presences });
 
-         const bare_jid = _converse.session.get('bare_jid');
-         const id = `converse.presences-${bare_jid}`;
+        const bare_jid = _converse.session.get('bare_jid');
+        const id = `converse.presences-${bare_jid}`;
 
-         initStorage(presences, id, 'session');
-         // We might be continuing an existing session, so we fetch
-         // cached presence data.
-         presences.fetch();
-     }
-     /**
-      * Triggered once the _converse.Presences collection has been
-      * initialized and its cached data fetched.
-      * Returns a boolean indicating whether this event has fired due to
-      * Converse having reconnected.
-      * @event _converse#presencesInitialized
-      * @type {boolean}
-      * @example _converse.api.listen.on('presencesInitialized', reconnecting => { ... });
-      */
-     api.trigger('presencesInitialized', reconnecting);
+        initStorage(presences, id, 'session');
+        // We might be continuing an existing session, so we fetch
+        // cached presence data.
+        presences.fetch();
+    }
+    /**
+     * Triggered once the _converse.Presences collection has been
+     * initialized and its cached data fetched.
+     * Returns a boolean indicating whether this event has fired due to
+     * Converse having reconnected.
+     * @event _converse#presencesInitialized
+     * @type {boolean}
+     * @example _converse.api.listen.on('presencesInitialized', reconnecting => { ... });
+     */
+    api.trigger('presencesInitialized', reconnecting);
 }
-
 
 /**
  * Roster specific event handler for the chatBoxesInitialized event
  */
-export function onChatBoxesInitialized () {
+export function onChatBoxesInitialized() {
     const { chatboxes } = _converse.state;
     chatboxes.on('change:num_unread', updateUnreadCounter);
 
-    chatboxes.on('add', chatbox => {
+    chatboxes.on('add', (chatbox) => {
         if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
             chatbox.setModelContact(chatbox.get('jid'));
         }
     });
 }
 
-
 /**
  * Roster specific handler for the rosterContactsFetched promise
  */
-export function onRosterContactsFetched () {
-    const roster = /** @type {RosterContacts} */(_converse.state.roster);
-    roster.on('add', contact => {
+export function onRosterContactsFetched() {
+    const roster = /** @type {RosterContacts} */ (_converse.state.roster);
+    roster.on('add', (contact) => {
         // When a new contact is added, check if we already have a
         // chatbox open for it, and if so attach it to the chatbox.
         const chatbox = _converse.state.chatboxes.findWhere({ 'jid': contact.get('jid') });
@@ -215,8 +212,10 @@ export function onRosterContactsFetched () {
  * @param {String} jid - The Jabber ID of the user whose subscription is being canceled
  * @param {String} [message] - An optional message to the user
  */
-export function rejectPresenceSubscription (jid, message) {
-    const pres = $pres({to: jid, type: "unsubscribed"});
-    if (message && message !== "") { pres.c("status").t(message); }
+export function rejectPresenceSubscription(jid, message) {
+    const pres = $pres({ to: jid, type: 'unsubscribed' });
+    if (message && message !== '') {
+        pres.c('status').t(message);
+    }
     api.send(pres);
 }

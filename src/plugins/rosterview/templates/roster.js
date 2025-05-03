@@ -118,7 +118,7 @@ export default (el) => {
 
         <div class="list-container roster-contacts ${is_closed ? 'hidden' : ''}">
             ${is_filter_visible
-                ? html` <converse-list-filter
+                ? html`<converse-list-filter
                       @update=${() => el.requestUpdate()}
                       .promise=${api.waitUntil('rosterInitialized')}
                       .items=${_converse.state.roster}

@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-03 23:31+0200\n"
 "PO-Revision-Date: 2025-05-05 01:09+0000\n"
-"Last-Translator: nautilusx <translate@disroot.org>\n"
+"Last-Translator: Bob Idle <102661087+bobidle@users.noreply.github.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
 "Language: de\n"
@@ -2771,7 +2771,7 @@ msgstr "Nicht moderiert"
 
 #: dist/converse-no-dependencies.js:137008
 msgid "Show groupchats"
-msgstr "Gruppen"
+msgstr "Gruppenchats"
 
 #: dist/converse-no-dependencies.js:137009
 msgid "Server address"

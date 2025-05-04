@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-05 11:45+0200\n"
-"PO-Revision-Date: 2025-04-13 07:01+0000\n"
+"POT-Creation-Date: 2025-05-03 23:31+0200\n"
+"PO-Revision-Date: 2025-05-05 01:09+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: dist/converse-no-dependencies.js:14511
 msgid "Could not automatically determine a connection URL"
-msgstr ""
+msgstr "无法自动确定连接 URL"
 
 #: dist/converse-no-dependencies.js:14821
 #: dist/converse-no-dependencies.js:14875
@@ -35,11 +35,11 @@ msgstr "您的 XMPP 地址和/或密码不正确，请重试。"
 #: dist/converse-no-dependencies.js:14891
 #, javascript-format
 msgid "We could not connect to %1$s, is your XMPP address correct?"
-msgstr ""
+msgstr "无法连接到 %1$s，您的 XMPP 地址是否正确？"
 
 #: dist/converse-no-dependencies.js:14893
 msgid "The XMPP server rejected the connection because of a policy violation"
-msgstr ""
+msgstr "由于违反策略，XMPP 服务器拒绝了连接"
 
 #: dist/converse-no-dependencies.js:14895
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -605,9 +605,8 @@ msgid "Offline"
 msgstr "离线"
 
 #: dist/converse-no-dependencies.js:77194
-#, fuzzy
 msgid "Unavailable"
-msgstr "可用"
+msgstr "已离线"
 
 #: dist/converse-no-dependencies.js:77195
 #: dist/converse-no-dependencies.js:115258
@@ -623,7 +622,7 @@ msgstr "离开"
 
 #: dist/converse-no-dependencies.js:77197
 msgid "Do not disturb"
-msgstr ""
+msgstr "请勿打扰"
 
 #: dist/converse-no-dependencies.js:77198
 #: dist/converse-no-dependencies.js:115255
@@ -1194,7 +1193,6 @@ msgstr "URL"
 #: dist/converse-no-dependencies.js:97045
 #: dist/converse-no-dependencies.js:139490
 #: dist/converse-no-dependencies.js:140142
-#, fuzzy
 msgid "Groups"
 msgstr "分组"
 
@@ -1202,7 +1200,7 @@ msgstr "分组"
 #: dist/converse-no-dependencies.js:139491
 #: dist/converse-no-dependencies.js:140143
 msgid "Use commas to separate multiple values"
-msgstr ""
+msgstr "使用英文逗号分隔多个值"
 
 #: dist/converse-no-dependencies.js:97047
 #: dist/converse-no-dependencies.js:124321
@@ -1228,7 +1226,6 @@ msgid "Retry"
 msgstr "重试"
 
 #: dist/converse-no-dependencies.js:98252
-#, fuzzy
 msgid "This message has been edited"
 msgstr "已编辑此消息"
 
@@ -1413,7 +1410,7 @@ msgstr "请输入有效的 XMPP 地址"
 
 #: dist/converse-no-dependencies.js:106273
 msgid "A big thank you to our sponsors 🙏"
-msgstr ""
+msgstr "衷心感谢我们的赞助商 🙏"
 
 #: dist/converse-no-dependencies.js:106305
 msgid ""
@@ -1433,7 +1430,7 @@ msgstr "这是可信设备"
 
 #: dist/converse-no-dependencies.js:106307
 msgid "Info"
-msgstr ""
+msgstr "信息"
 
 #: dist/converse-no-dependencies.js:106310
 msgid "Connection URL"
@@ -1481,7 +1478,7 @@ msgstr "切换聊天"
 
 #: dist/converse-no-dependencies.js:107731
 msgid "About Converse"
-msgstr ""
+msgstr "关于 Converse"
 
 #: dist/converse-no-dependencies.js:108571
 msgid "Log out"
@@ -2446,7 +2443,7 @@ msgstr "已有聊天账号？"
 #: dist/converse-no-dependencies.js:134281
 #: dist/converse-no-dependencies.js:134357
 msgid "Go back to login"
-msgstr ""
+msgstr "返回登录"
 
 #. *
 #. * @param {import('../form').default} el
@@ -2496,7 +2493,7 @@ msgstr "抱歉，给定的提供者不支持带内注册账号。请尝试其他
 
 #: dist/converse-no-dependencies.js:135085
 msgid "Invalid connection URL, only HTTPS and WSS accepted"
-msgstr ""
+msgstr "连接 URL 无效，仅接受 HTTPS 和 WSS"
 
 #: dist/converse-no-dependencies.js:135153
 msgid "Now logging you in"
@@ -2508,13 +2505,12 @@ msgstr "注册成功"
 
 #: dist/converse-no-dependencies.js:135248
 #: dist/converse-no-dependencies.js:135253
-#, fuzzy
 msgid "Registration failed."
-msgstr "获取注册表"
+msgstr "注册失败。"
 
 #: dist/converse-no-dependencies.js:135248
 msgid "Please try a different username."
-msgstr ""
+msgstr "请尝试其他用户名。"
 
 #: dist/converse-no-dependencies.js:135257
 msgid ""
@@ -2727,9 +2723,9 @@ msgid "Click to chat with yourself"
 msgstr "点击即可与自己聊天"
 
 #: dist/converse-no-dependencies.js:138778
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to add %1$s as a contact"
-msgstr "点击即可将 %1$s 作为联系人移除"
+msgstr "点击即可将 %1$s 作为联系人添加"
 
 #: dist/converse-no-dependencies.js:139417
 msgid "Decline contact request"
@@ -2753,9 +2749,8 @@ msgid "Add"
 msgstr "添加"
 
 #: dist/converse-no-dependencies.js:139494
-#, fuzzy
 msgid "Search name or XMPP address"
-msgstr "群聊名或地址"
+msgstr "搜索名称或 XMPP 地址"
 
 #: dist/converse-no-dependencies.js:139993
 msgid "Add a Contact"
@@ -2775,10 +2770,9 @@ msgstr "抱歉，出了点问题"
 msgid ""
 "Invalid value for the name and XMPP address. Please use the format \"Name "
 "<username@example.org>\"."
-msgstr ""
+msgstr "名称和 XMPP 地址的值无效。请使用“名称 <用户名@example.org>”格式。"
 
 #: dist/converse-no-dependencies.js:140620
-#, fuzzy
 msgid "Contact Request"
 msgstr "联系人请求"
 

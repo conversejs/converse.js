@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-05 11:45+0200\n"
-"PO-Revision-Date: 2025-04-06 22:02+0000\n"
-"Last-Translator: Yurt Page <yurtpage@gmail.com>\n"
+"POT-Creation-Date: 2025-05-03 23:31+0200\n"
+"PO-Revision-Date: 2025-05-05 01:09+0000\n"
+"Last-Translator: solokot <solokot@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: dist/converse-no-dependencies.js:14511
 msgid "Could not automatically determine a connection URL"
-msgstr ""
+msgstr "Невозможно автоматически определить URL-адрес подключения"
 
 #: dist/converse-no-dependencies.js:14821
 #: dist/converse-no-dependencies.js:14875
@@ -37,11 +37,11 @@ msgstr ""
 #: dist/converse-no-dependencies.js:14891
 #, javascript-format
 msgid "We could not connect to %1$s, is your XMPP address correct?"
-msgstr ""
+msgstr "Невозможно подключиться к %1$s, XMPP-адрес правильный?"
 
 #: dist/converse-no-dependencies.js:14893
 msgid "The XMPP server rejected the connection because of a policy violation"
-msgstr ""
+msgstr "XMPP-сервер отклонил подключение из-за нарушения политики"
 
 #: dist/converse-no-dependencies.js:14895
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -630,9 +630,8 @@ msgid "Offline"
 msgstr "Не в сети"
 
 #: dist/converse-no-dependencies.js:77194
-#, fuzzy
 msgid "Unavailable"
-msgstr "Доступный"
+msgstr "Недоступен"
 
 #: dist/converse-no-dependencies.js:77195
 #: dist/converse-no-dependencies.js:115258
@@ -648,7 +647,7 @@ msgstr "Отошёл"
 
 #: dist/converse-no-dependencies.js:77197
 msgid "Do not disturb"
-msgstr ""
+msgstr "Не беспокоить"
 
 #: dist/converse-no-dependencies.js:77198
 #: dist/converse-no-dependencies.js:115255
@@ -1243,15 +1242,14 @@ msgstr "Ссылка"
 #: dist/converse-no-dependencies.js:97045
 #: dist/converse-no-dependencies.js:139490
 #: dist/converse-no-dependencies.js:140142
-#, fuzzy
 msgid "Groups"
-msgstr "Группа"
+msgstr "Группы"
 
 #: dist/converse-no-dependencies.js:97046
 #: dist/converse-no-dependencies.js:139491
 #: dist/converse-no-dependencies.js:140143
 msgid "Use commas to separate multiple values"
-msgstr ""
+msgstr "Используйте запятые для разделения нескольких значений"
 
 #: dist/converse-no-dependencies.js:97047
 #: dist/converse-no-dependencies.js:124321
@@ -1277,7 +1275,6 @@ msgid "Retry"
 msgstr "Повторить"
 
 #: dist/converse-no-dependencies.js:98252
-#, fuzzy
 msgid "This message has been edited"
 msgstr "Это сообщение было отредактировано"
 
@@ -1463,7 +1460,7 @@ msgstr "Пожалуйста, введите корректный XMPP-адре�
 
 #: dist/converse-no-dependencies.js:106273
 msgid "A big thank you to our sponsors 🙏"
-msgstr ""
+msgstr "Большое спасибо нашим спонсорам 🙏"
 
 #: dist/converse-no-dependencies.js:106305
 msgid ""
@@ -1486,7 +1483,7 @@ msgstr "Это доверенное устройство"
 
 #: dist/converse-no-dependencies.js:106307
 msgid "Info"
-msgstr ""
+msgstr "Информация"
 
 #: dist/converse-no-dependencies.js:106310
 msgid "Connection URL"
@@ -1535,7 +1532,7 @@ msgstr "Включить чат"
 
 #: dist/converse-no-dependencies.js:107731
 msgid "About Converse"
-msgstr ""
+msgstr "О Converse"
 
 #: dist/converse-no-dependencies.js:108571
 msgid "Log out"
@@ -2528,7 +2525,7 @@ msgstr "Уже есть учётная запись чата?"
 #: dist/converse-no-dependencies.js:134281
 #: dist/converse-no-dependencies.js:134357
 msgid "Go back to login"
-msgstr ""
+msgstr "Вернуться к входу в систему"
 
 #. *
 #. * @param {import('../form').default} el
@@ -2580,7 +2577,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:135085
 msgid "Invalid connection URL, only HTTPS and WSS accepted"
-msgstr ""
+msgstr "Неправильный URL подключения, допускаются только HTTPS и WSS"
 
 #: dist/converse-no-dependencies.js:135153
 msgid "Now logging you in"
@@ -2592,14 +2589,12 @@ msgstr "Зарегистрирован успешно"
 
 #: dist/converse-no-dependencies.js:135248
 #: dist/converse-no-dependencies.js:135253
-#, fuzzy
 msgid "Registration failed."
-msgstr "Не удалось авторизоваться"
+msgstr "Регистрация не выполнена."
 
 #: dist/converse-no-dependencies.js:135248
-#, fuzzy
 msgid "Please try a different username."
-msgstr "Пожалуйста, введите доступный псевдоним XMPP"
+msgstr "Введите другое имя пользователя."
 
 #: dist/converse-no-dependencies.js:135257
 msgid ""
@@ -2819,9 +2814,9 @@ msgid "Click to chat with yourself"
 msgstr "Нажмите, чтобы начать чат с собой"
 
 #: dist/converse-no-dependencies.js:138778
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to add %1$s as a contact"
-msgstr "Нажмите, чтобы удалить %1$s как контакт"
+msgstr "Нажмите, чтобы добавить %1$s как контакт"
 
 #: dist/converse-no-dependencies.js:139417
 msgid "Decline contact request"
@@ -2845,9 +2840,8 @@ msgid "Add"
 msgstr "Добавить"
 
 #: dist/converse-no-dependencies.js:139494
-#, fuzzy
 msgid "Search name or XMPP address"
-msgstr "Адрес или адрес группового чата"
+msgstr "Название или XMPP-адрес"
 
 #: dist/converse-no-dependencies.js:139993
 msgid "Add a Contact"
@@ -2868,11 +2862,12 @@ msgid ""
 "Invalid value for the name and XMPP address. Please use the format \"Name "
 "<username@example.org>\"."
 msgstr ""
+"Неправильное значение имени и XMPP-адреса. Используйте формат "
+"\"Имя <username@example.org>\"."
 
 #: dist/converse-no-dependencies.js:140620
-#, fuzzy
 msgid "Contact Request"
-msgstr "Запросы на авторизацию"
+msgstr "Запрос контакта"
 
 #. *
 #. * @param {import('../new-chat.js').default} el

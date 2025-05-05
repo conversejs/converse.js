@@ -8,4 +8,9 @@ export type Field = {
     required?: boolean;
     value?: string;
 };
+export type ToastProperties = {
+    title?: string;
+    body?: string;
+    name: string;
+};
 //# sourceMappingURL=types.d.ts.map

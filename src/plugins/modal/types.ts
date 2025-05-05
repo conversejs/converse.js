@@ -8,3 +8,9 @@ export type Field = {
     required?: boolean; // Whether the field is required or not
     value?: string;
 }
+
+export type ToastProperties = {
+    title?: string;
+    body?: string;
+    name: string;
+}

@@ -1,0 +1,22 @@
+.conversejs {
+    converse-toasts {
+        converse-toast {
+            .toast {
+                position: relative;
+                margin-block-start: 1em;
+                margin-inline-end: 1em;
+                float: right;
+                .toast-header {
+                    img {
+                        height: 1.5em;
+                    }
+                }
+                .toast-body__container {
+                    .btn-close {
+                        margin-inline-end: 1em;
+                    }
+                }
+            }
+        }
+    }
+}

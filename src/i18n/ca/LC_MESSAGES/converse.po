@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-05 11:45+0200\n"
-"PO-Revision-Date: 2025-04-21 11:07+0000\n"
+"POT-Creation-Date: 2025-05-03 23:31+0200\n"
+"PO-Revision-Date: 2025-05-05 02:10+0000\n"
 "Last-Translator: fran secs <fransecs@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/conversejs/"
 "translations/ca/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11.1-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: ca\n"
 "Language-Code: ca\n"
@@ -29,7 +29,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:14511
 msgid "Could not automatically determine a connection URL"
-msgstr ""
+msgstr "No s'ha pogut determinar automàticament una URL de connexió"
 
 #: dist/converse-no-dependencies.js:14821
 #: dist/converse-no-dependencies.js:14875
@@ -44,11 +44,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:14891
 #, javascript-format
 msgid "We could not connect to %1$s, is your XMPP address correct?"
-msgstr ""
+msgstr "No ens hem pogut connectar a %1$s, és correcta l'adreça XMPP?"
 
 #: dist/converse-no-dependencies.js:14893
 msgid "The XMPP server rejected the connection because of a policy violation"
 msgstr ""
+"El servidor XMPP ha rebutjat la connexió a causa d'una infracció de la "
+"directiva"
 
 #: dist/converse-no-dependencies.js:14895
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -636,9 +638,8 @@ msgid "Offline"
 msgstr "Fora de línia"
 
 #: dist/converse-no-dependencies.js:77194
-#, fuzzy
 msgid "Unavailable"
-msgstr "Disponible"
+msgstr "No disponible"
 
 #: dist/converse-no-dependencies.js:77195
 #: dist/converse-no-dependencies.js:115258
@@ -654,7 +655,7 @@ msgstr "Absent"
 
 #: dist/converse-no-dependencies.js:77197
 msgid "Do not disturb"
-msgstr ""
+msgstr "No molestar"
 
 #: dist/converse-no-dependencies.js:77198
 #: dist/converse-no-dependencies.js:115255
@@ -1247,15 +1248,14 @@ msgstr "URL"
 #: dist/converse-no-dependencies.js:97045
 #: dist/converse-no-dependencies.js:139490
 #: dist/converse-no-dependencies.js:140142
-#, fuzzy
 msgid "Groups"
-msgstr "Grup"
+msgstr "Grups"
 
 #: dist/converse-no-dependencies.js:97046
 #: dist/converse-no-dependencies.js:139491
 #: dist/converse-no-dependencies.js:140143
 msgid "Use commas to separate multiple values"
-msgstr ""
+msgstr "Utilitzeu comes per separar diversos valors"
 
 #: dist/converse-no-dependencies.js:97047
 #: dist/converse-no-dependencies.js:124321
@@ -1281,7 +1281,6 @@ msgid "Retry"
 msgstr "Tornar a provar"
 
 #: dist/converse-no-dependencies.js:98252
-#, fuzzy
 msgid "This message has been edited"
 msgstr "Aquest missatge ha sigut editat"
 
@@ -1466,7 +1465,7 @@ msgstr "Introduïu una adreça XMPP vàlida"
 
 #: dist/converse-no-dependencies.js:106273
 msgid "A big thank you to our sponsors 🙏"
-msgstr ""
+msgstr "Moltes gràcies als nostres patrocinadors 🙏"
 
 #: dist/converse-no-dependencies.js:106305
 msgid ""
@@ -1489,7 +1488,7 @@ msgstr "Aquest és un dispositiu de confiança"
 
 #: dist/converse-no-dependencies.js:106307
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 #: dist/converse-no-dependencies.js:106310
 msgid "Connection URL"
@@ -1538,7 +1537,7 @@ msgstr "Alternar xat"
 
 #: dist/converse-no-dependencies.js:107731
 msgid "About Converse"
-msgstr ""
+msgstr "Sobre Converse"
 
 #: dist/converse-no-dependencies.js:108571
 msgid "Log out"
@@ -2531,7 +2530,7 @@ msgstr "Teniu ja un compte de xat?"
 #: dist/converse-no-dependencies.js:134281
 #: dist/converse-no-dependencies.js:134357
 msgid "Go back to login"
-msgstr ""
+msgstr "Tornar a l'inici de sessió"
 
 #. *
 #. * @param {import('../form').default} el
@@ -2583,7 +2582,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:135085
 msgid "Invalid connection URL, only HTTPS and WSS accepted"
-msgstr ""
+msgstr "URL de connexió no vàlida, només s'accepta HTTPS i WSS"
 
 #: dist/converse-no-dependencies.js:135153
 msgid "Now logging you in"
@@ -2595,13 +2594,12 @@ msgstr "Registre correcte"
 
 #: dist/converse-no-dependencies.js:135248
 #: dist/converse-no-dependencies.js:135253
-#, fuzzy
 msgid "Registration failed."
-msgstr "Error d'autenticació"
+msgstr "El registre ha fallat."
 
 #: dist/converse-no-dependencies.js:135248
 msgid "Please try a different username."
-msgstr ""
+msgstr "Proveu un nom d'usuari diferent."
 
 #: dist/converse-no-dependencies.js:135257
 msgid ""
@@ -2821,9 +2819,9 @@ msgid "Click to chat with yourself"
 msgstr "Clica per xatejar amb tu mateix/a"
 
 #: dist/converse-no-dependencies.js:138778
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to add %1$s as a contact"
-msgstr "Feu clic per eliminar %1$s com a contacte"
+msgstr "Feu clic per afegir %1$s com a contacte"
 
 #: dist/converse-no-dependencies.js:139417
 msgid "Decline contact request"
@@ -2847,9 +2845,8 @@ msgid "Add"
 msgstr "Afegir"
 
 #: dist/converse-no-dependencies.js:139494
-#, fuzzy
 msgid "Search name or XMPP address"
-msgstr "Adreça o nom del grup"
+msgstr "Cerca el nom o l'adreça XMPP"
 
 #: dist/converse-no-dependencies.js:139993
 msgid "Add a Contact"
@@ -2870,11 +2867,12 @@ msgid ""
 "Invalid value for the name and XMPP address. Please use the format \"Name "
 "<username@example.org>\"."
 msgstr ""
+"Valor no vàlid per al nom i l'adreça XMPP. Si us plau, utilitzeu el format "
+"\"Nom <identificador@exemple.cat>\"."
 
 #: dist/converse-no-dependencies.js:140620
-#, fuzzy
 msgid "Contact Request"
-msgstr "Sol·licituds de contacte"
+msgstr "Sol·licitud de contacte"
 
 #. *
 #. * @param {import('../new-chat.js').default} el

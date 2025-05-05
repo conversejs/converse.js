@@ -6,12 +6,12 @@ export default class AddContactModal extends BaseModal {
      */
     validateSubmission(jid: string): boolean;
     /**
-     * @param {HTMLFormElement} _form
+     * @param {HTMLFormElement} form
      * @param {string} jid
      * @param {string} name
      * @param {string[]} groups
      */
-    afterSubmission(_form: HTMLFormElement, jid: string, name: string, groups: string[]): Promise<void>;
+    afterSubmission(form: HTMLFormElement, jid: string, name: string, groups: string[]): Promise<void>;
     /**
      * @param {Event} ev
      */

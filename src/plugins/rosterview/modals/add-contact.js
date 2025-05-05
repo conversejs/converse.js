@@ -42,12 +42,12 @@ export default class AddContactModal extends BaseModal {
     }
 
     /**
-     * @param {HTMLFormElement} _form
+     * @param {HTMLFormElement} form
      * @param {string} jid
      * @param {string} name
      * @param {string[]} groups
      */
-    async afterSubmission(_form, jid, name, groups) {
+    async afterSubmission(form, jid, name, groups) {
         try {
             await api.contacts.add({ jid, name, groups });
         } catch (e) {
@@ -56,6 +56,7 @@ export default class AddContactModal extends BaseModal {
             return;
         }
         api.chats.open(jid, {}, true);
+        form.reset();
         this.model.clear();
         this.modal.hide();
     }

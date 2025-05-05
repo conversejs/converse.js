@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 7.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-03 23:31+0200\n"
+"POT-Creation-Date: 2025-05-05 11:45+0200\n"
 "PO-Revision-Date: 2024-10-10 21:15+0000\n"
 "Last-Translator: scr22ch <much@genocide.fun>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/conversejs/"
@@ -1305,7 +1305,7 @@ msgstr "Επανάληψη"
 
 #: dist/converse-no-dependencies.js:98252
 #, fuzzy
-msgid "el message has been edited"
+msgid "This message has been edited"
 msgstr "Αυτό το μήνυμα έχει επεξεργαστεί"
 
 #. *

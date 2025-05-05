@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-03 23:31+0200\n"
+"POT-Creation-Date: 2025-05-05 11:45+0200\n"
 "PO-Revision-Date: 2025-04-21 11:07+0000\n"
 "Last-Translator: fran secs <fransecs@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/conversejs/"
@@ -1282,7 +1282,7 @@ msgstr "Tornar a provar"
 
 #: dist/converse-no-dependencies.js:98252
 #, fuzzy
-msgid "el message has been edited"
+msgid "This message has been edited"
 msgstr "Aquest missatge ha sigut editat"
 
 #. *

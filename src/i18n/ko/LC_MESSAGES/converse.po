@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 10.1.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-03 23:31+0200\n"
+"POT-Creation-Date: 2025-05-05 11:45+0200\n"
 "PO-Revision-Date: 2025-03-21 04:43+0000\n"
 "Last-Translator: Joseph Moon <yurinboy@hotmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/conversejs/"
@@ -1251,7 +1251,7 @@ msgstr "재시도"
 
 #: dist/converse-no-dependencies.js:98252
 #, fuzzy
-msgid "el message has been edited"
+msgid "This message has been edited"
 msgstr "이 메시지는 편집되었습니다."
 
 #. *

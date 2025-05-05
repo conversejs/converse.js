@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-03 23:31+0200\n"
+"POT-Creation-Date: 2025-05-05 11:45+0200\n"
 "PO-Revision-Date: 2025-04-13 07:01+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
@@ -1229,7 +1229,7 @@ msgstr "重试"
 
 #: dist/converse-no-dependencies.js:98252
 #, fuzzy
-msgid "el message has been edited"
+msgid "This message has been edited"
 msgstr "已编辑此消息"
 
 #. *

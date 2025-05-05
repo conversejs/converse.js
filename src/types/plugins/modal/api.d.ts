@@ -12,7 +12,7 @@ declare namespace modal_api {
         function show(name: string | any, properties?: any, ev?: Event): any;
         /**
          * Return a modal with the passed-in identifier, if it exists.
-         * @param { String } id
+         * @param {String} id
          */
         function get(id: string): any;
         /**
@@ -24,7 +24,7 @@ declare namespace modal_api {
         function create(name: string, properties?: any): HTMLElement;
         /**
          * Remove a particular modal
-         * @param { String } name
+         * @param {String} name
          */
         function remove(name: string): void;
         /**
@@ -60,5 +60,20 @@ declare namespace modal_api {
      * @param { (Array<String>|String) } messages - The alert text to show to the user.
      */
     function alert(type: ("info" | "warn" | "error"), title: string, messages: (Array<string> | string)): void;
+    namespace toast {
+        /**
+         * @param {string} name
+         * @param {import('./types').ToastProperties} [properties] - Optional properties that will be set on a newly created toast instance.
+         */
+        function show(name: string, properties?: import("./types").ToastProperties): void;
+        /**
+         * @param {String} [name]
+         */
+        function get(name?: string): any;
+        /**
+         * @param {String} [name]
+         */
+        function remove(name?: string): void;
+    }
 }
 //# sourceMappingURL=api.d.ts.map

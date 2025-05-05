@@ -4,7 +4,7 @@ import { CustomElement } from 'shared/components/element.js';
 
 export class ModalsContainer extends CustomElement {
     render() {
-        return html` <converse-about-modal></converse-about-modal> `;
+        return html`<converse-about-modal></converse-about-modal>`;
     }
 }
 

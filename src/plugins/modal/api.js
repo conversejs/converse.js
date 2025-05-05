@@ -1,9 +1,12 @@
 import './alert.js';
 import Confirm from './confirm.js';
 import { Model } from '@converse/skeletor';
+import { api } from '@converse/headless';
 
 let modals = [];
 let modals_map = {};
+
+let toasts_map = {};
 
 const modal_api = {
     /**
@@ -20,7 +23,7 @@ const modal_api = {
          * @param {Object} [properties] - Optional properties that will be set on a newly created modal instance.
          * @param {Event} [ev] - The DOM event that causes the modal to be shown.
          */
-        show (name, properties, ev) {
+        show(name, properties, ev) {
             let modal;
             if (typeof name === 'string') {
                 modal = this.get(name) ?? this.create(name, properties);
@@ -37,10 +40,10 @@ const modal_api = {
 
         /**
          * Return a modal with the passed-in identifier, if it exists.
-         * @param { String } id
+         * @param {String} id
          */
-        get (id) {
-            return modals_map[id] ?? modals.filter(m => m.id == id).pop();
+        get(id) {
+            return modals_map[id] ?? modals.filter((m) => m.id == id).pop();
         },
 
         /**
@@ -49,17 +52,17 @@ const modal_api = {
          * @param {Object} [properties] - Optional properties that will be
          *  set on the modal instance.
          */
-        create (name, properties) {
+        create(name, properties) {
             const ModalClass = customElements.get(name);
-            const modal = modals_map[name] = new ModalClass(properties);
+            const modal = (modals_map[name] = new ModalClass(properties));
             return modal;
         },
 
         /**
          * Remove a particular modal
-         * @param { String } name
+         * @param {String} name
          */
-        remove (name) {
+        remove(name) {
             let modal;
             if (typeof name === 'string') {
                 modal = modals_map[name];
@@ -67,7 +70,7 @@ const modal_api = {
             } else {
                 // Legacy...
                 modal = name;
-                modals = modals.filter(m => m !== modal);
+                modals = modals.filter((m) => m !== modal);
             }
             modal?.remove();
         },
@@ -75,11 +78,11 @@ const modal_api = {
         /**
          * Remove all modals
          */
-        removeAll () {
-            modals.forEach(m => m.remove());
+        removeAll() {
+            modals.forEach((m) => m.remove());
             modals = [];
             modals_map = {};
-        }
+        },
     },
 
     /**
@@ -91,12 +94,12 @@ const modal_api = {
      * @returns {Promise<Array|false>} A promise which resolves with an array of
      *  filled in fields or `false` if the confirm dialog was closed or canceled.
      */
-    async confirm (title, messages=[], fields=[]) {
+    async confirm(title, messages = [], fields = []) {
         if (typeof messages === 'string') {
             messages = [messages];
         }
-        const model = new Model({title, messages, fields, 'type': 'confirm'})
-        const confirm = new Confirm({model});
+        const model = new Model({ title, messages, fields, 'type': 'confirm' });
+        const confirm = new Confirm({ model });
         confirm.show();
         let result;
         try {
@@ -117,20 +120,22 @@ const modal_api = {
      * @returns { Promise<String|false> } A promise which resolves with the text provided by the
      *  user or `false` if the user canceled the prompt.
      */
-    async prompt (title, messages=[], placeholder='') {
+    async prompt(title, messages = [], placeholder = '') {
         if (typeof messages === 'string') {
             messages = [messages];
         }
         const model = new Model({
             title,
             messages,
-            'fields': [{
-                'name': 'reason',
-                'placeholder': placeholder,
-            }],
-            'type': 'prompt'
-        })
-        const prompt = new Confirm({model});
+            fields: [
+                {
+                    'name': 'reason',
+                    'placeholder': placeholder,
+                },
+            ],
+            type: 'prompt',
+        });
+        const prompt = new Confirm({ model });
         prompt.show();
         let result;
         try {
@@ -149,7 +154,7 @@ const modal_api = {
      * @param { String } title - The header text for the alert.
      * @param { (Array<String>|String) } messages - The alert text to show to the user.
      */
-    alert (type, title, messages) {
+    alert(type, title, messages) {
         if (typeof messages === 'string') {
             messages = [messages];
         }
@@ -162,14 +167,44 @@ const modal_api = {
             level = 'alert-warning';
         }
 
-        const model = new Model({
-            'title': title,
-            'messages': messages,
-            'level': level,
-            'type': 'alert'
-        })
+        const model = new Model({ title, messages, level, 'type': 'alert' });
         modal_api.modal.show('converse-alert-modal', { model });
-    }
-}
+    },
+
+    /**
+     * API namespace for methods relating to toast messages
+     * @namespace _converse.api.toast
+     * @memberOf _converse.api
+     */
+    toast: {
+        /**
+         * @param {string} name
+         * @param {import('./types').ToastProperties} [properties] - Optional properties that will be set on a newly created toast instance.
+         */
+        show(name, properties) {
+            toasts_map[name] = properties;
+            api.trigger('showToast', properties);
+        },
+
+        /**
+         * @param {String} [name]
+         */
+        get(name) {
+            if (name) {
+                return toasts_map[name];
+            } else {
+                return Object.keys(toasts_map).map((name) => ({ name, ...toasts_map[name] }));
+            }
+        },
+
+        /**
+         * @param {String} [name]
+         */
+        remove(name) {
+            delete toasts_map[name];
+            api.trigger('hideToast');
+        },
+    },
+};
 
 export default modal_api;

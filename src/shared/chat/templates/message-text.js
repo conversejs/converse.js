@@ -6,7 +6,7 @@ import { html } from 'lit';
  * @param {import('../message').default} el
  */
 function tplEditedIcon(el) {
-    const i18n_edited = __('el message has been edited');
+    const i18n_edited = __('This message has been edited');
     return html`<converse-icon
         title="${i18n_edited}"
         class="fa fa-edit chat-msg__edit-modal"

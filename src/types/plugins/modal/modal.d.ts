@@ -13,6 +13,7 @@ declare class BaseModal extends CustomElement {
      */
     constructor(options: any);
     model: any;
+    onKeyDown: (ev: KeyboardEvent) => void;
     initialized: Promise<any> & {
         isResolved: boolean;
         isPending: boolean;
@@ -20,6 +21,7 @@ declare class BaseModal extends CustomElement {
         resolve: (value: any) => void;
         reject: (reason?: any) => void;
     };
+    connectedCallback(): void;
     get modal(): Modal;
     initialize(): void;
     /**

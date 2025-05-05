@@ -33,6 +33,12 @@ class BaseModal extends CustomElement {
         this.tabIndex = -1;
         this.ariaHidden = 'true';
 
+        this.onKeyDown = /** @param {KeyboardEvent} ev */(ev) => {
+            if (ev.key === 'Escape' && this.ariaHidden === 'false') {
+                this.close();
+            }
+        }
+
         this.initialized = getOpenPromise();
 
         // Allow properties to be set via passed in options
@@ -46,6 +52,17 @@ class BaseModal extends CustomElement {
             this.ariaHidden = 'true';
         });
     }
+
+    connectedCallback() {
+        super.connectedCallback();
+        window.addEventListener('keydown', this.onKeyDown);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('resize', this.onKeyDown);
+        super.disconnectedCallback();
+    }
+
 
     get modal () {
         if (!this.#modal) {

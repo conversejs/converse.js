@@ -7,8 +7,6 @@ export default class Confirm extends BaseModal {
         resolve: (value: any) => void;
         reject: (reason?: any) => void;
     };
-    onKeyDown: (ev: KeyboardEvent) => void;
-    connectedCallback(): void;
     renderModal(): import("lit-html").TemplateResult<1>;
     getModalTitle(): any;
     renderModalFooter(): string;

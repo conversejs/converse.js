@@ -111,7 +111,7 @@ export default class MessageForm extends CustomElement {
 
         const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea'));
         if (!textarea) {
-            log.error("onPaste: could not find textarea to paste in to!");
+            log.error('onPaste: could not find textarea to paste in to!');
             return;
         }
 
@@ -158,10 +158,15 @@ export default class MessageForm extends CustomElement {
      * @param {KeyboardEvent} [ev]
      */
     onKeyDown(ev) {
-        if (ev.ctrlKey) {
-            // When ctrl is pressed, no chars are entered into the textarea.
+        const { keycodes } = converse;
+        if (
+            ev.ctrlKey ||
+            (ev.shiftKey && ev.key === keycodes.ENTER) ||
+            [keycodes.SHIFT, keycodes.META, keycodes.ESCAPE, keycodes.ALT].includes(ev.key)
+        ) {
             return;
         }
+
         if (!ev.shiftKey && !ev.altKey && !ev.metaKey) {
             const target = /** @type {HTMLInputElement|HTMLTextAreaElement} */ (ev.target);
 
@@ -191,13 +196,6 @@ export default class MessageForm extends CustomElement {
             ) {
                 return this.model.editLaterMessage();
             }
-        }
-        if (
-            [converse.keycodes.SHIFT, converse.keycodes.META, converse.keycodes.ESCAPE, converse.keycodes.ALT].includes(
-                ev.key
-            )
-        ) {
-            return;
         }
         if (this.model.get('chat_state') !== COMPOSING) {
             // Set chat state to composing if key is not a forward-slash

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-14 11:21+0200\n"
-"PO-Revision-Date: 2025-05-05 01:09+0000\n"
+"PO-Revision-Date: 2025-05-09 04:01+0000\n"
 "Last-Translator: \"josé m.\" <correoxm@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -1269,10 +1269,9 @@ msgstr "Subindo ficheiro:"
 msgid "Retry"
 msgstr "Reintentar"
 
-#: dist/converse-no-dependencies.js:100895
-#, fuzzy
+#: dist/converse-no-dependencies.js:98252
 msgid "This message has been edited"
-msgstr "Esta mensaxe foi editada"
+msgstr "Esta mensaxe está editada"
 
 #. *
 #. * @param {import('../message').default} el

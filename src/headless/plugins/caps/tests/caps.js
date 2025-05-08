@@ -21,7 +21,9 @@ describe("A sent presence stanza", function () {
         _converse.api.disco.own.features.add("http://jabber.org/protocol/disco#items");
         _converse.api.disco.own.features.add("http://jabber.org/protocol/muc");
 
-        const presence = await _converse.xmppstatus.constructPresence();
+        const { profile } = _converse.state;
+
+        const presence = await profile.constructPresence();
         expect(presence.toLocaleString()).toBe(
             `<presence xmlns="jabber:client">`+
                 `<priority>0</priority>`+
@@ -31,7 +33,8 @@ describe("A sent presence stanza", function () {
 
     it("has a given priority", mock.initConverse(['statusInitialized'], {}, async (_converse) => {
         const { api } = _converse;
-        let pres = await _converse.xmppstatus.constructPresence('online', null, 'Hello world');
+        const { profile } = _converse.state;
+        let pres = await profile.constructPresence('online', null, 'Hello world');
         expect(pres.toLocaleString()).toBe(
             `<presence xmlns="jabber:client">`+
                 `<status>Hello world</status>`+
@@ -41,7 +44,7 @@ describe("A sent presence stanza", function () {
         );
 
         api.settings.set('priority', 2);
-        pres = await _converse.xmppstatus.constructPresence('away', null, 'Going jogging');
+        pres = await profile.constructPresence('away', null, 'Going jogging');
         expect(pres.toLocaleString()).toBe(
             `<presence xmlns="jabber:client">`+
                 `<show>away</show>`+
@@ -52,7 +55,7 @@ describe("A sent presence stanza", function () {
         );
 
         api.settings.set('priority', undefined);
-        pres = await _converse.xmppstatus.constructPresence('dnd', null, 'Doing taxes');
+        pres = await profile.constructPresence('dnd', null, 'Doing taxes');
         expect(pres.toLocaleString()).toBe(
             `<presence xmlns="jabber:client">`+
                 `<show>dnd</show>`+

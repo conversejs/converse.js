@@ -4,7 +4,7 @@
  * @typedef {import('@converse/headless').RosterContacts} RosterContacts
  */
 import { __ } from 'i18n';
-import { _converse, api, converse, log, constants, u, XMPPStatus } from '@converse/headless';
+import { _converse, api, converse, log, constants, u, Profile } from '@converse/headless';
 
 const { Strophe } = converse.env;
 const { STATUS_WEIGHTS } = constants;
@@ -111,11 +111,11 @@ export function toggleGroup(ev, name) {
  *
  * The goal is to be able to filter against the VCard fullname,
  * roster nickname and JID.
- * @param {RosterContact|XMPPStatus} contact
+ * @param {RosterContact|Profile} contact
  * @returns {string} Lower-cased, tab-separated values
  */
 function getFilterCriteria(contact) {
-    const nick = contact instanceof XMPPStatus ? contact.getNickname() : contact.get('nickname');
+    const nick = contact instanceof Profile ? contact.getNickname() : contact.get('nickname');
     const jid = contact.get('jid');
     let criteria = contact.getDisplayName({ context: 'roster' });
     criteria = !criteria.includes(jid) ? criteria.concat(`   ${jid}`) : criteria;
@@ -124,7 +124,7 @@ function getFilterCriteria(contact) {
 }
 
 /**
- * @param {RosterContact|XMPPStatus} contact
+ * @param {RosterContact|Profile} contact
  * @param {string} groupname
  * @returns {boolean}
  */
@@ -236,8 +236,8 @@ export function populateContactsMap(contacts_map, contact) {
 }
 
 /**
- * @param {RosterContact|XMPPStatus} contact1
- * @param {RosterContact|XMPPStatus} contact2
+ * @param {RosterContact|Profile} contact1
+ * @param {RosterContact|Profile} contact2
  * @returns {(-1|0|1)}
  */
 export function contactsComparator(contact1, contact2) {

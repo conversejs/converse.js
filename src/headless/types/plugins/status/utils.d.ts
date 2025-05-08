@@ -1,4 +1,7 @@
-export function initStatus(reconnecting: any): void;
+/**
+ * @param {boolean} reconnecting
+ */
+export function initStatus(reconnecting: boolean): void;
 export function isIdle(): boolean;
 export function getIdleSeconds(): number;
 /**

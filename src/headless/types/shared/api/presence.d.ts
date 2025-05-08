@@ -14,6 +14,6 @@ declare namespace _default {
 }
 export default _default;
 export type Builder = import("strophe.js").Builder;
-export type XMPPStatus = import("../../plugins/status/status").default;
+export type Profile = import("../../plugins/status/profile").default;
 export type MUC = import("../../plugins/muc/muc.js").default;
 //# sourceMappingURL=presence.d.ts.map

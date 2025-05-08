@@ -161,13 +161,13 @@ export async function onDirectMUCInvitation (message) {
 export function getDefaultMUCNickname () {
     // XXX: if anything changes here, update the docs for the
     // locked_muc_nickname setting.
-    const { xmppstatus } = _converse.state;
-    if (!xmppstatus) {
+    const { profile } = _converse.state;
+    if (!profile) {
         log.error("Called getDefaultMUCNickname before statusInitialized has been fired.");
         return '';
 
     }
-    const nick = xmppstatus.getNickname();
+    const nick = profile.getNickname();
     if (nick) {
         return nick;
     } else if (api.settings.get('muc_nickname_from_jid')) {

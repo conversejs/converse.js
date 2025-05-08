@@ -215,9 +215,9 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         const maxstanzas = is_new || this.features.get("mam_enabled") ? 0 : api.settings.get("muc_history_max_stanzas");
         password = password || this.get("password");
 
-        const { xmppstatus } = _converse.state;
-        const status = xmppstatus.get("status");
-        const status_message = xmppstatus.get("status_message");
+        const { profile } = _converse.state;
+        const status = profile.get("status");
+        const status_message = profile.get("status_message");
         const stanza = stx`
             <presence xmlns="jabber:client"
                       id="${getUniqueId()}"
@@ -2055,7 +2055,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      */
     async sendStatusPresence(type, status, child_nodes) {
         if (this.session.get("connection_status") === ROOMSTATUS.ENTERED) {
-            const presence = await _converse.state.xmppstatus.constructPresence(type, this.getRoomJIDAndNick(), status);
+            const presence = await _converse.state.profile.constructPresence(type, this.getRoomJIDAndNick(), status);
             /** @type {Element[]|Builder[]} */ (child_nodes)
                 ?.map((c) => c?.tree() ?? c)
                 .forEach((c) => presence.cnode(c).up());

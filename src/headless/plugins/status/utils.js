@@ -17,21 +17,25 @@ function onStatusInitialized (reconnecting) {
     api.trigger('statusInitialized', reconnecting);
 }
 
+/**
+ * @param {boolean} reconnecting
+ */
 export function initStatus (reconnecting) {
-    // If there's no xmppstatus obj, then we were never connected to
+    // If there's no profile obj, then we were never connected to
     // begin with, so we set reconnecting to false.
-    reconnecting = _converse.state.xmppstatus === undefined ? false : reconnecting;
+    reconnecting = _converse.state.profile === undefined ? false : reconnecting;
     if (reconnecting) {
         onStatusInitialized(reconnecting);
     } else {
         const id = `converse.xmppstatus-${_converse.session.get('bare_jid')}`;
-        _converse.state.xmppstatus = new _converse.exports.XMPPStatus({ id });
-        Object.assign(_converse, { xmppstatus: _converse.state.xmppstatus });
-        initStorage(_converse.state.xmppstatus, id, 'session');
-        _converse.state.xmppstatus.fetch({
-            'success': () => onStatusInitialized(reconnecting),
-            'error': () => onStatusInitialized(reconnecting),
-            'silent': true
+        _converse.state.profile = new _converse.exports.Profile({ id });
+        _converse.state.xmppstatus = _converse.state.profile; // Deprecated
+        Object.assign(_converse, { xmppstatus: _converse.state.profile }); // Deprecated
+        initStorage(_converse.state.profile, id, 'session');
+        _converse.state.profile.fetch({
+            success: () => onStatusInitialized(reconnecting),
+            error: () => onStatusInitialized(reconnecting),
+            silent: true
         });
     }
 }
@@ -72,7 +76,7 @@ export function onUserActivity () {
         auto_changed_status = false;
         // XXX: we should really remember the original state here, and
         // then set it back to that...
-        _converse.state.xmppstatus.set('status', api.settings.get("default_state"));
+        _converse.state.profile.set('status', api.settings.get("default_state"));
     }
 }
 
@@ -85,8 +89,8 @@ export function onEverySecond () {
         // This can happen when the connection reconnects.
         return;
     }
-    const { xmppstatus } = _converse.state;
-    const stat = xmppstatus.get('status');
+    const { profile } = _converse.state;
+    const stat = profile.get('status');
     idle_seconds++;
     if (api.settings.get("csi_waiting_time") > 0 &&
             idle_seconds > api.settings.get("csi_waiting_time") &&
@@ -103,12 +107,12 @@ export function onEverySecond () {
             idle_seconds > api.settings.get("auto_away") &&
             stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
         auto_changed_status = true;
-        xmppstatus.set('status', 'away');
+        profile.set('status', 'away');
     } else if (api.settings.get("auto_xa") > 0 &&
             idle_seconds > api.settings.get("auto_xa") &&
             stat !== 'xa' && stat !== 'dnd') {
         auto_changed_status = true;
-        xmppstatus.set('status', 'xa');
+        profile.set('status', 'xa');
     }
 }
 

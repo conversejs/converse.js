@@ -11,7 +11,7 @@ export default function ModelWithContact(BaseModel) {
     return class ModelWithContact extends BaseModel {
         /**
          * @typedef {import('../plugins/roster/contact').default} RosterContact
-         * @typedef {import('./_converse.js').XMPPStatus} XMPPStatus
+         * @typedef {import('./_converse.js').Profile} Profile
          */
 
         initialize() {
@@ -19,7 +19,7 @@ export default function ModelWithContact(BaseModel) {
             this.rosterContactAdded = getOpenPromise();
             /**
              * @public
-             * @type {RosterContact|XMPPStatus}
+             * @type {RosterContact|Profile}
              */
             this.contact = null;
         }
@@ -34,7 +34,7 @@ export default function ModelWithContact(BaseModel) {
 
             let contact;
             if (Strophe.getBareJidFromJid(jid) === session.get('bare_jid')) {
-                contact = state.xmppstatus;
+                contact = state.profile;
             } else {
                 contact = await api.contacts.get(jid);
                 if (!contact && !(await api.blocklist.get()).get(jid)) {

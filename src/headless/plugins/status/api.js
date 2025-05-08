@@ -18,7 +18,7 @@ export default {
          */
         async get () {
             await api.waitUntil('statusInitialized');
-            return _converse.state.xmppstatus.get('status');
+            return _converse.state.profile.get('status');
         },
 
         /**
@@ -43,7 +43,7 @@ export default {
                 data.status_message = message;
             }
             await api.waitUntil('statusInitialized');
-            _converse.state.xmppstatus.save(data);
+            _converse.state.profile.save(data);
         },
 
         /**
@@ -61,7 +61,7 @@ export default {
              */
             async get () {
                 await api.waitUntil('statusInitialized');
-                return _converse.state.xmppstatus.get('status_message');
+                return _converse.state.profile.get('status_message');
             },
             /**
              * @async
@@ -71,7 +71,7 @@ export default {
              */
             async set (status) {
                 await api.waitUntil('statusInitialized');
-                _converse.state.xmppstatus.save({ status_message: status });
+                _converse.state.profile.save({ status_message: status });
             }
         }
     }

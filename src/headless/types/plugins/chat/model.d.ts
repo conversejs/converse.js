@@ -207,7 +207,7 @@ declare const ChatBox_base: {
             resolve: (value: any) => void;
             reject: (reason?: any) => void;
         };
-        contact: import("../roster/contact.js").default | import("../status/status.js").default;
+        contact: import("../roster/contact.js").default | import("../status/profile.js").default;
         setModelContact(jid: string): Promise<void>;
         cid: any;
         attributes: {};

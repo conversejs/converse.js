@@ -8,7 +8,7 @@ import { isIdle, getIdleSeconds } from './utils.js';
 
 const { Strophe, $pres } = converse.env;
 
-export default class XMPPStatus extends ModelWithVCard(ColorAwareModel(Model)) {
+export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
     defaults() {
         return { status: api.settings.get('default_state') };
     }
@@ -79,8 +79,8 @@ export default class XMPPStatus extends ModelWithVCard(ColorAwareModel(Model)) {
 
         if (type === 'subscribe') {
             presence = $pres({ to, type });
-            const { xmppstatus } = _converse.state;
-            const nick = xmppstatus.getNickname();
+            const { profile } = _converse.state;
+            const nick = profile.getNickname();
             if (nick) presence.c('nick', { 'xmlns': Strophe.NS.NICK }).t(nick).up();
         } else if (
             type === 'unavailable' ||

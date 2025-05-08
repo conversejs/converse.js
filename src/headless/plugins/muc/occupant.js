@@ -173,7 +173,7 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
             {
                 body,
                 from: own_occupant.get("from"),
-                fullname: _converse.state.xmppstatus.get("fullname"),
+                fullname: _converse.state.profile.get("fullname"),
                 id: origin_id,
                 jid: this.get("jid"),
                 message: body,

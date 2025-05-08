@@ -1,3 +1,3 @@
-export { XMPPStatus };
-import XMPPStatus from './status.js';
+export { Profile };
+import Profile from './profile.js';
 //# sourceMappingURL=index.d.ts.map

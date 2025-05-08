@@ -3,7 +3,7 @@
  * @typedef {import('@converse/skeletor').Storage} Storage
  * @typedef {import('@converse/skeletor').Collection} Collection
  * @typedef {import('../plugins/disco/index').DiscoState} DiscoState
- * @typedef {import('../plugins/status/status').default} XMPPStatus
+ * @typedef {import('../plugins/status/profile').default} Profile
  * @typedef {import('../plugins/vcard/vcard').default} VCards
  */
 import log from "@converse/log";
@@ -136,9 +136,9 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
          * Namespace for storing the state, as represented by instances of
          * Models and Collections.
          *
-         * @typedef {Object & Record<string, Collection|Model|VCards|XMPPStatus|DiscoState>} ConverseState
+         * @typedef {Object & Record<string, Collection|Model|VCards|Profile|DiscoState>} ConverseState
          * @property {VCards} [vcards]
-         * @property {XMPPStatus} xmppstatus
+         * @property {Profile} profile
          * @property {DiscoState} disco
          */
         this.state = /** @type {ConverseState} */({});

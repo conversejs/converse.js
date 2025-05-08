@@ -1,6 +1,6 @@
 /**
  * @typedef {import('../../plugins/muc/message').default} MUCMessage
- * @typedef {import('../../plugins/status/status').default} XMPPStatus
+ * @typedef {import('../../plugins/status/profile').default} Profile
  * @typedef {import('../../plugins/vcard/vcards').default} VCards
  * @typedef {import('../../plugins/vcard/vcard').default} VCard
  * @typedef {import('../../shared/model-with-contact.js').default} ModelWithContact
@@ -117,12 +117,12 @@ export async function getVCardForModel(model, lazy_load = false) {
 export async function getVCardForOccupant(occupant, lazy_load = true) {
     await api.waitUntil("VCardsInitialized");
 
-    const { vcards, xmppstatus } = _converse.state;
+    const { vcards, profile } = _converse.state;
     const muc = occupant?.collection?.chatroom;
     const nick = occupant.get("nick");
 
     if (nick && muc?.get("nick") === nick) {
-        return xmppstatus.vcard;
+        return profile.vcard;
     } else {
         const jid = occupant.get("jid") || occupant.get("from");
         if (jid) {
@@ -143,12 +143,12 @@ async function getVCardForMUCMessage(message, lazy_load = true) {
     if (["error", "info"].includes(message.get("type"))) return;
 
     await api.waitUntil("VCardsInitialized");
-    const { vcards, xmppstatus } = _converse.state;
+    const { vcards, profile } = _converse.state;
     const muc = message?.collection?.chatbox;
     const nick = Strophe.getResourceFromJid(message.get("from"));
 
     if (nick && muc?.get("nick") === nick) {
-        return xmppstatus.vcard;
+        return profile.vcard;
     } else {
         const jid = message.occupant?.get("jid") || message.get("from");
         if (jid) {

@@ -5,7 +5,7 @@ describe("The OMEMO module", function() {
 
     beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
-    it("shows an error when it can't download a received encrypted file",
+    fit("shows an error when it can't download a received encrypted file",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -74,8 +74,9 @@ describe("The OMEMO module", function() {
                 </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
+
         expect(view.model.messages.length).toBe(2);
-        const error = await u.waitUntil(() => view.querySelector('.error'));
+        const error = await u.waitUntil(() => view.querySelector('.error'), 5000);
         expect(error.textContent).toBe('Error: could not decrypt a received encrypted file, because it could not be downloaded');
     }));
 

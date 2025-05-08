@@ -10,7 +10,10 @@ const { Strophe, $pres } = converse.env;
 
 export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
     defaults() {
-        return { status: api.settings.get('default_state') };
+        return {
+            status: api.settings.get('default_state'),
+            groups: [],
+        };
     }
 
     getStatus() {

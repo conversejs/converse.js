@@ -45,7 +45,11 @@ export default class ChatHeading extends CustomElement {
      */
     showUserDetailsModal(ev) {
         ev.preventDefault();
-        api.modal.show('converse-user-details-modal', { model: this.model }, ev);
+        if (this.model?.contact instanceof _converse.exports.Profile) {
+            api.modal.show('converse-profile-modal', { model: this.model }, ev);
+        } else {
+            api.modal.show('converse-user-details-modal', { model: this.model }, ev);
+        }
     }
 
     /**

@@ -1,4 +1,4 @@
-import Resources from "./resources.js";
+import Resources from './resources.js';
 import { Model } from '@converse/skeletor';
 import converse from '../../shared/api/public.js';
 import { initStorage } from '../../utils/storage.js';
@@ -6,17 +6,19 @@ import { initStorage } from '../../utils/storage.js';
 const { Strophe, dayjs, sizzle } = converse.env;
 
 class Presence extends Model {
-    get idAttribute () { // eslint-disable-line class-methods-use-this
+    get idAttribute() {
+        // eslint-disable-line class-methods-use-this
         return 'jid';
     }
 
-    defaults () { // eslint-disable-line class-methods-use-this
+    defaults() {
+        // eslint-disable-line class-methods-use-this
         return {
-            'show': 'offline'
-        }
+            'show': 'offline',
+        };
     }
 
-    initialize () {
+    initialize() {
         super.initialize();
         this.resources = new Resources();
         const id = `converse.identities-${this.get('jid')}`;
@@ -26,7 +28,7 @@ class Presence extends Model {
         this.listenTo(this.resources, 'change', this.onResourcesChanged);
     }
 
-    onResourcesChanged () {
+    onResourcesChanged() {
         const hpr = this.getHighestPriorityResource();
         const show = hpr?.attributes?.show || 'offline';
         if (this.get('show') !== show) {
@@ -39,8 +41,8 @@ class Presence extends Model {
      * If multiple resources have the same priority, take the latest one.
      * @private
      */
-    getHighestPriorityResource () {
-        return this.resources.sortBy(r => `${r.get('priority')}-${r.get('timestamp')}`).reverse()[0];
+    getHighestPriorityResource() {
+        return this.resources.sortBy((r) => `${r.get('priority')}-${r.get('timestamp')}`).reverse()[0];
     }
 
     /**
@@ -49,7 +51,7 @@ class Presence extends Model {
      * Also updates the presence if the resource has higher priority (and is newer).
      * @param { Element } presence: The presence stanza
      */
-    addResource (presence) {
+    addResource(presence) {
         const jid = presence.getAttribute('from');
         const name = Strophe.getResourceFromJid(jid);
         const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, presence).pop();
@@ -59,7 +61,7 @@ class Presence extends Model {
             name,
             'priority': Number.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
             'show': presence.querySelector('show')?.textContent ?? 'online',
-            'timestamp': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString()
+            'timestamp': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : new Date().toISOString(),
         };
         if (resource) {
             resource.save(settings);
@@ -74,7 +76,7 @@ class Presence extends Model {
      * resource.
      * @param { string } name: The resource name
      */
-    removeResource (name) {
+    removeResource(name) {
         const resource = this.resources.get(name);
         resource?.destroy();
     }

@@ -1,4 +1,4 @@
-import { _converse, api, converse } from "@converse/headless";
+import { _converse, api, converse } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import tplChatboxHead from './templates/chat-head.js';
@@ -8,21 +8,19 @@ import './styles/chat-head.scss';
 
 const { Strophe } = converse.env;
 
-
 export default class ChatHeading extends CustomElement {
-
-    constructor () {
+    constructor() {
         super();
         this.jid = null;
     }
 
-    static get properties () {
+    static get properties() {
         return {
             jid: { type: String },
-        }
+        };
     }
 
-    initialize () {
+    initialize() {
         const { chatboxes } = _converse.state;
         this.model = chatboxes.get(this.jid);
         this.listenTo(this.model, 'change:status', () => this.requestUpdate());
@@ -38,14 +36,14 @@ export default class ChatHeading extends CustomElement {
         this.requestUpdate();
     }
 
-    render () {
+    render() {
         return tplChatboxHead(this);
     }
 
     /**
      * @param {Event} ev
      */
-    showUserDetailsModal (ev) {
+    showUserDetailsModal(ev) {
         ev.preventDefault();
         api.modal.show('converse-user-details-modal', { model: this.model }, ev);
     }
@@ -53,7 +51,7 @@ export default class ChatHeading extends CustomElement {
     /**
      * @param {Event} ev
      */
-    close (ev) {
+    close(ev) {
         ev.preventDefault();
         this.model.close();
     }
@@ -63,12 +61,12 @@ export default class ChatHeading extends CustomElement {
      * @emits _converse#getHeadingButtons
      * @returns {Promise<Array.<import('./types').HeadingButtonAttributes>>}
      */
-    async getHeadingButtons () {
+    async getHeadingButtons() {
         const buttons = [
             /** @type {import('./types').HeadingButtonAttributes} */
             {
                 a_class: 'show-user-details-modal',
-                handler: /** @param {Event} ev */(ev) => this.showUserDetailsModal(ev),
+                handler: /** @param {Event} ev */ (ev) => this.showUserDetailsModal(ev),
                 i18n_text: __('Details'),
                 i18n_title: __('See more information about this person'),
                 icon_class: 'fa-id-card',
@@ -78,17 +76,16 @@ export default class ChatHeading extends CustomElement {
         ];
 
         const domain = _converse.session.get('domain');
-        if (domain && await api.disco.supports(Strophe.NS.BLOCKING, domain)) {
+        if (domain && (await api.disco.supports(Strophe.NS.BLOCKING, domain))) {
             const blocklist = await api.blocklist.get();
             if (blocklist.get(this.model.get('jid'))) {
                 buttons.push({
                     a_class: 'unblock-user',
                     handler: /** @param {Event} ev */ async (ev) => {
                         ev.preventDefault();
-                        const result = await api.confirm(
-                            __('Unblock user'),
-                            [__('Are you sure you want to unblock this user?')]
-                        );
+                        const result = await api.confirm(__('Unblock user'), [
+                            __('Are you sure you want to unblock this user?'),
+                        ]);
                         if (result) {
                             api.blocklist.remove(this.model.get('jid'));
                         }
@@ -97,17 +94,16 @@ export default class ChatHeading extends CustomElement {
                     i18n_title: __('Allow this user to send you messages'),
                     icon_class: 'fa-check',
                     name: 'unblock',
-                    standalone: false
+                    standalone: false,
                 });
             } else {
                 buttons.push({
                     a_class: 'block-user',
                     handler: /** @param {Event} ev */ async (ev) => {
                         ev.preventDefault();
-                        const result = await api.confirm(
-                            __('Block user'),
-                            [__('Are you sure you want to block this user?')]
-                        );
+                        const result = await api.confirm(__('Block user'), [
+                            __('Are you sure you want to block this user?'),
+                        ]);
                         if (result) {
                             const jid = this.model.get('jid');
                             api.blocklist.add(jid);
@@ -119,7 +115,7 @@ export default class ChatHeading extends CustomElement {
                     i18n_title: __('Prevent this user from sending you any further messages'),
                     icon_class: 'fa-trash',
                     name: 'block',
-                    standalone: false
+                    standalone: false,
                 });
             }
         }
@@ -127,12 +123,12 @@ export default class ChatHeading extends CustomElement {
         if (!api.settings.get('singleton')) {
             buttons.push({
                 a_class: 'close-chatbox-button',
-                handler: /** @param {Event} ev */(ev) => this.close(ev),
+                handler: /** @param {Event} ev */ (ev) => this.close(ev),
                 i18n_text: __('Close'),
                 i18n_title: __('Close and end this conversation'),
                 icon_class: 'fa-times',
                 name: 'close',
-                standalone: api.settings.get('view_mode') === 'overlayed'
+                standalone: api.settings.get('view_mode') === 'overlayed',
             });
         }
         const { chatboxviews } = _converse.state;

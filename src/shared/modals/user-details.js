@@ -1,20 +1,18 @@
-import { api } from "@converse/headless";
+import { api } from '@converse/headless';
 import { blockContact, removeContact, unblockContact } from 'plugins/rosterview/utils.js';
-import BaseModal from "plugins/modal/modal.js";
+import BaseModal from 'plugins/modal/modal.js';
 import { __ } from 'i18n';
-import { tplUserDetailsModal } from "./templates/user-details.js";
+import { tplUserDetailsModal } from './templates/user-details.js';
 
 import './styles/user-details.scss';
 
-
 export default class UserDetailsModal extends BaseModal {
-
-    constructor (options) {
+    constructor(options) {
         super(options);
         this.tab = 'profile';
     }
 
-    initialize () {
+    initialize() {
         super.initialize();
         this.addListeners();
         /**
@@ -49,15 +47,15 @@ export default class UserDetailsModal extends BaseModal {
         return true;
     }
 
-    renderModal () {
+    renderModal() {
         return tplUserDetailsModal(this);
     }
 
-    getModalTitle () {
+    getModalTitle() {
         return this.model.getDisplayName();
     }
 
-    registerContactEventHandlers () {
+    registerContactEventHandlers() {
         this.listenTo(this.model.contact, 'change', () => this.requestUpdate());
         this.listenTo(this.model.contact.vcard, 'change', () => this.requestUpdate());
         this.model.contact.on('destroy', () => {
@@ -76,8 +74,8 @@ export default class UserDetailsModal extends BaseModal {
         ev?.preventDefault?.();
         const form = /** @type {HTMLFormElement} */ (ev.target);
         const data = new FormData(form);
-        const name = /** @type {string} */ (data.get("name") || "").trim();
-        const groups = /** @type {string} */(data.get('groups'))?.split(',').map((g) => g.trim()) || [];
+        const name = /** @type {string} */ (data.get('name') || '').trim();
+        const groups = /** @type {string} */ (data.get('groups'))?.split(',').map((g) => g.trim()) || [];
         this.model.contact.update({
             nickname: name,
             groups,
@@ -88,7 +86,7 @@ export default class UserDetailsModal extends BaseModal {
     /**
      * @param {MouseEvent} ev
      */
-    async removeContact (ev) {
+    async removeContact(ev) {
         ev?.preventDefault?.();
         setTimeout(() => removeContact(this.model.contact), 1);
         this.modal.hide();

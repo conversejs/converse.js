@@ -192,7 +192,9 @@
         box-shadow:
             0 0 0.5rem 0 rgba(var(--secondary-rgb), 0.6) inset,
             0 0 2rem 0 rgba(var(--secondary-rgb), 0.3) inset,
-            0 0 3rem 2rem rgba(var(--secondary-rgb), 0.1) inset !important;
+            0 0 3rem 2rem rgba(var(--secondary-rgb), 0.1) inset,
+            0 0 1rem 0.5rem rgba(var(--background-color-rgb), 0.3),
+            0 0 2rem 1rem rgba(var(--background-color-rgb), 0.1) !important;
 
         .modal-header {
             .btn-close {
@@ -207,9 +209,7 @@
             box-shadow:
                 0 0 0.5rem 0 rgba(var(--primary-rgb), 0.6) inset,
                 0 0 2rem 0 rgba(var(--primary-rgb), 0.3) inset,
-                0 0 3rem 2rem rgba(var(--secondary-rgb), 0.1) inset,
-                0 0 1rem 0.5rem rgba(var(--background-color-rgb), 0.5),
-                0 0 2rem 1rem rgba(var(--background-color-rgb), 0.4) !important;
+                0 0 3rem 2rem rgba(var(--secondary-rgb), 0.1) inset;
         }
     }
 

@@ -29,11 +29,16 @@ export default class Avatar extends CustomElement {
     }
 
     render() {
-        const { image_type, image, data_uri } = Object.assign(
-            {},
-            this.pickerdata?.attributes,
-            this.model?.vcard?.attributes
-        );
+        let image_type;
+        let image;
+        let data_uri;
+        if (this.pickerdata) {
+            image_type = this.pickerdata.image_type;
+            data_uri = this.pickerdata.data_uri;
+        } else {
+            image_type = this.model?.vcard?.get('image_type');
+            image = this.model?.vcard?.get('image');
+        }
 
         if (image_type && (image || data_uri)) {
             return tplAvatar({

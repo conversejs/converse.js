@@ -3,7 +3,6 @@ import { until } from "lit/directives/until.js";
 import { api, converse, _converse } from "@converse/headless";
 import { getGroupsAutoCompleteList } from "plugins/rosterview/utils.js";
 import { __ } from "i18n";
-import avatar from "shared/avatar/templates/avatar.js";
 
 const { Strophe } = converse.env;
 
@@ -84,13 +83,6 @@ export function tplUserDetailsModal(el) {
     const i18n_profile = __("Profile");
     const ii18n_edit = __("Edit");
 
-    const avatar_data = {
-        alt_text: __("The User's Profile Image"),
-        extra_classes: "mb-3",
-        height: "160",
-        width: "160",
-    };
-
     const navigation_tabs = [
         html`<li role="presentation" class="nav-item">
             <a
@@ -158,7 +150,12 @@ export function tplUserDetailsModal(el) {
                 role="tabpanel"
                 aria-labelledby="profile-tab"
             >
-                ${o.image ? html`<div class="mb-4">${avatar(Object.assign(o, avatar_data))}</div>` : ""}
+                <div class="mb-4 centered">
+                    <converse-avatar
+                        .model="${el.model}"
+                        name="${el.model.getDisplayName()}"
+                        height="140" width="140" ></converse-avatar>
+                </div>
                 ${o.fullname
                     ? html`
                           <div class="row mb-2">

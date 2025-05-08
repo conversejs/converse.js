@@ -1,7 +1,8 @@
-import { api } from '@converse/headless';
-import { CustomElement } from 'shared/components/element.js';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
+import { api } from '@converse/headless';
+import { __ } from 'i18n';
+import { CustomElement } from 'shared/components/element.js';
 import tplAvatar from './templates/avatar.js';
 
 import './avatar.scss';
@@ -41,7 +42,7 @@ export default class Avatar extends CustomElement {
                 width: this.width,
                 image: data_uri || `data:${image_type};base64,${image}`,
                 image_type,
-                alt_text: this.name
+                alt_text: __('The profile picture of %1$s', this.name),
             });
         }
 

@@ -2,7 +2,7 @@
 
 const u = converse.env.utils;
 
-describe("The XMPPStatus model", function () {
+describe("The Profile model", function () {
 
     it("won't send <show>online</show> when setting a custom status message",
             mock.initConverse(async (_converse) => {

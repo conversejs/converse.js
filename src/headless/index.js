@@ -41,7 +41,7 @@ import './plugins/pubsub/index.js'; // XEP-0060 Pubsub
 export { RosterContact, RosterContacts, RosterFilter, Presence, Presences } from './plugins/roster/index.js';
 
 import './plugins/smacks/index.js'; // XEP-0198 Stream Management
-export { XMPPStatus } from './plugins/status/index.js';
+export { Profile } from './plugins/status/index.js';
 export { VCard, VCards } from './plugins/vcard/index.js'; // XEP-0054 VCard-temp
 // ---------------------------
 // END: Removable components

@@ -1,4 +1,4 @@
-import XMPPStatus from './status.js';
+import Profile from './profile.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
@@ -32,7 +32,14 @@ converse.plugins.add('converse-status', {
         });
         api.promises.add(['statusInitialized']);
 
-        const exports = { XMPPStatus, onUserActivity, onEverySecond, sendCSI, registerIntervalHandler };
+        const exports = {
+            XMPPStatus: Profile, // Deprecated
+            Profile,
+            onUserActivity,
+            onEverySecond,
+            sendCSI,
+            registerIntervalHandler
+        };
         Object.assign(_converse, exports); // Deprecated
         Object.assign(_converse.exports, exports);
         Object.assign(_converse.api.user, status_api);
@@ -45,10 +52,10 @@ converse.plugins.add('converse-status', {
         api.listen.on('beforeTearDown', tearDown);
 
         api.listen.on('clearSession', () => {
-            if (shouldClearCache(_converse) && _converse.state.xmppstatus) {
-                _converse.state.xmppstatus.destroy();
-                delete _converse.state.xmppstatus;
-                Object.assign(_converse, { xmppstatus: undefined }); // XXX DEPRECATED
+            if (shouldClearCache(_converse) && _converse.state.profile) {
+                _converse.state.profile.destroy();
+                delete _converse.state.profile;
+                Object.assign(_converse, { profile: undefined }); // XXX DEPRECATED
                 api.promises.add(['statusInitialized']);
             }
         });

@@ -1,6 +1,6 @@
 import RosterContact from "@converse/headless/types/plugins/roster/contact";
-import XMPPStatus from "@converse/headless/types/plugins/status/status";
+import Profile from "@converse/headless/types/plugins/status/profile";
 export type ContactsMap = {
-    [Key: string]: (XMPPStatus | RosterContact)[];
+    [Key: string]: (Profile | RosterContact)[];
 };
 //# sourceMappingURL=types.d.ts.map

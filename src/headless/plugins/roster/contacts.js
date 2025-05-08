@@ -418,7 +418,7 @@ class RosterContacts extends Collection {
         const jid = presence.getAttribute('from');
         const resource = Strophe.getResourceFromJid(jid);
         const presence_type = presence.getAttribute('type');
-        const { xmppstatus } = _converse.state;
+        const { profile } = _converse.state;
 
         if ((api.connection.get().jid !== jid) &&
                 (presence_type !== 'unavailable') &&
@@ -428,10 +428,10 @@ class RosterContacts extends Collection {
             // synchronize_availability option set to update,
             // we'll update ours as well.
             const show = presence.querySelector('show')?.textContent || 'online';
-            xmppstatus.save({ 'status': show }, { 'silent': true });
+            profile.save({ 'status': show }, { silent: true });
 
             const status_message = presence.querySelector('status')?.textContent;
-            if (status_message) xmppstatus.save({ status_message });
+            if (status_message) profile.save({ status_message });
         }
         if (_converse.session.get('jid') === jid && presence_type === 'unavailable') {
             // XXX: We've received an "unavailable" presence from our

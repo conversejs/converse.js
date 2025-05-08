@@ -196,7 +196,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
             {
                 body,
                 from: _converse.session.get('jid'),
-                fullname: _converse.state.xmppstatus.get('fullname'),
+                fullname: _converse.state.profile.get('fullname'),
                 id: origin_id,
                 is_spoiler,
                 jid: this.get('jid'),

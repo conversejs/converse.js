@@ -24,11 +24,11 @@ export function highlightRosterItem(jid: string): void;
  */
 export function toggleGroup(ev: Event, name: string): void;
 /**
- * @param {RosterContact|XMPPStatus} contact
+ * @param {RosterContact|Profile} contact
  * @param {string} groupname
  * @returns {boolean}
  */
-export function isContactFiltered(contact: RosterContact | XMPPStatus, groupname: string): boolean;
+export function isContactFiltered(contact: RosterContact | Profile, groupname: string): boolean;
 /**
  * @param {RosterContact} contact
  * @param {string} groupname
@@ -49,11 +49,11 @@ export function shouldShowGroup(group: string, model: Model): boolean;
  */
 export function populateContactsMap(contacts_map: import("./types").ContactsMap, contact: RosterContact): import("./types").ContactsMap;
 /**
- * @param {RosterContact|XMPPStatus} contact1
- * @param {RosterContact|XMPPStatus} contact2
+ * @param {RosterContact|Profile} contact1
+ * @param {RosterContact|Profile} contact2
  * @returns {(-1|0|1)}
  */
-export function contactsComparator(contact1: RosterContact | XMPPStatus, contact2: RosterContact | XMPPStatus): (-1 | 0 | 1);
+export function contactsComparator(contact1: RosterContact | Profile, contact2: RosterContact | Profile): (-1 | 0 | 1);
 /**
  * @param {string} a
  * @param {string} b
@@ -71,5 +71,5 @@ export function getNamesAutoCompleteList(query: string): Promise<{
 export type Model = import("@converse/skeletor").Model;
 export type RosterContact = import("@converse/headless").RosterContact;
 export type RosterContacts = import("@converse/headless").RosterContacts;
-import { XMPPStatus } from '@converse/headless';
+import { Profile } from '@converse/headless';
 //# sourceMappingURL=utils.d.ts.map

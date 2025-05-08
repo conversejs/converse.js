@@ -78,7 +78,7 @@ declare const BaseMessage_base: {
             resolve: (value: any) => void;
             reject: (reason?: any) => void;
         };
-        contact: import("../index.js").RosterContact | import("../index.js").XMPPStatus;
+        contact: import("../index.js").RosterContact | import("../index.js").Profile;
         setModelContact(jid: string): Promise<void>;
         cid: any;
         attributes: {};

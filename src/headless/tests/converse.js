@@ -99,21 +99,24 @@ describe("Converse", function() {
 
             it("has a method for getting the user's availability",
                     mock.initConverse(['statusInitialized'], {}, async(_converse) => {
-                _converse.xmppstatus.set('status', 'online');
+
+                const { profile } = _converse.state;
+                profile.set('status', 'online');
                 expect(await _converse.api.user.status.get()).toBe('online');
-                _converse.xmppstatus.set('status', 'dnd');
+                profile.set('status', 'dnd');
                 expect(await _converse.api.user.status.get()).toBe('dnd');
             }));
 
             it("has a method for setting the user's availability", mock.initConverse(async (_converse) => {
                 await _converse.api.user.status.set('away');
-                expect(await _converse.xmppstatus.get('status')).toBe('away');
+                const { profile } = _converse.state;
+                expect(await profile.get('status')).toBe('away');
                 await _converse.api.user.status.set('dnd');
-                expect(await _converse.xmppstatus.get('status')).toBe('dnd');
+                expect(await profile.get('status')).toBe('dnd');
                 await _converse.api.user.status.set('xa');
-                expect(await _converse.xmppstatus.get('status')).toBe('xa');
+                expect(await profile.get('status')).toBe('xa');
                 await _converse.api.user.status.set('chat');
-                expect(await _converse.xmppstatus.get('status')).toBe('chat');
+                expect(await profile.get('status')).toBe('chat');
                 const promise = _converse.api.user.status.set('invalid')
                 promise.catch(e => {
                     expect(e.message).toBe('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
@@ -122,23 +125,26 @@ describe("Converse", function() {
 
             it("allows setting the status message as well", mock.initConverse(async (_converse) => {
                 await _converse.api.user.status.set('away', "I'm in a meeting");
-                expect(_converse.xmppstatus.get('status')).toBe('away');
-                expect(_converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
+                const { profile } = _converse.state;
+                expect(profile.get('status')).toBe('away');
+                expect(profile.get('status_message')).toBe("I'm in a meeting");
             }));
 
             it("has a method for getting the user's status message",
                     mock.initConverse(['statusInitialized'], {}, async (_converse) => {
-                await _converse.xmppstatus.set('status_message', undefined);
+                const { profile } = _converse.state;
+                await profile.set('status_message', undefined);
                 expect(await _converse.api.user.status.message.get()).toBe(undefined);
-                await _converse.xmppstatus.set('status_message', "I'm in a meeting");
+                await profile.set('status_message', "I'm in a meeting");
                 expect(await _converse.api.user.status.message.get()).toBe("I'm in a meeting");
             }));
 
             it("has a method for setting the user's status message",
                     mock.initConverse(['statusInitialized'], {}, async (_converse) => {
-                _converse.xmppstatus.set('status_message', undefined);
+                const { profile } = _converse.state;
+                profile.set('status_message', undefined);
                 await _converse.api.user.status.message.set("I'm in a meeting");
-                expect(_converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
+                expect(profile.get('status_message')).toBe("I'm in a meeting");
             }));
         });
     });

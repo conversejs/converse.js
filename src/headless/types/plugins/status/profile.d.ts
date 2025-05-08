@@ -1,4 +1,4 @@
-declare const XMPPStatus_base: {
+declare const Profile_base: {
     new (...args: any[]): {
         _vcard: import("../vcard/vcard.js").default;
         lazy_load_vcard: boolean;
@@ -137,7 +137,7 @@ declare const XMPPStatus_base: {
         propertyIsEnumerable(v: PropertyKey): boolean;
     };
 } & typeof Model;
-export default class XMPPStatus extends XMPPStatus_base {
+export default class Profile extends Profile_base {
     defaults(): {
         status: any;
     };
@@ -163,4 +163,4 @@ export default class XMPPStatus extends XMPPStatus_base {
 }
 import { Model } from '@converse/skeletor';
 export {};
-//# sourceMappingURL=status.d.ts.map
+//# sourceMappingURL=profile.d.ts.map

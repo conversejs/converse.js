@@ -44,8 +44,9 @@ describe("Groupchats", function () {
         it("sends the user status when joining and when it changes",
                 mock.initConverse(['statusInitialized'], {}, async function (_converse) {
 
+            const { profile } = _converse.state;
             const muc_jid = 'coven@chat.shakespeare.lit';
-            _converse.xmppstatus.set('status', 'away');
+            profile.set('status', 'away');
 
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             while (sent_stanzas.length) sent_stanzas.pop();
@@ -64,7 +65,7 @@ describe("Groupchats", function () {
 
             while (sent_stanzas.length) sent_stanzas.pop();
 
-            _converse.xmppstatus.set('status', 'xa');
+            profile.set('status', 'xa');
             pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence' && s.getAttribute('to') === `${muc_jid}/romeo`).pop());
 
             expect(Strophe.serialize(pres)).toBe(
@@ -74,8 +75,8 @@ describe("Groupchats", function () {
                     `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`)
 
-            _converse.xmppstatus.set('status', 'dnd');
-            _converse.xmppstatus.set('status_message', 'Do not disturb');
+            profile.set('status', 'dnd');
+            profile.set('status_message', 'Do not disturb');
             while (sent_stanzas.length) sent_stanzas.pop();
 
             const muc2_jid = 'cave@chat.shakespeare.lit';

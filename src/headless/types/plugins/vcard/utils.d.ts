@@ -36,7 +36,7 @@ export function fetchVCard(jid: string): Promise<import("./types").VCardResult |
     vcard_error: string;
 }>;
 export type MUCMessage = import("../../plugins/muc/message").default;
-export type XMPPStatus = import("../../plugins/status/status").default;
+export type Profile = import("../../plugins/status/profile").default;
 export type VCards = import("../../plugins/vcard/vcards").default;
 export type VCard = import("../../plugins/vcard/vcard").default;
 export type ModelWithContact = typeof import("../../shared/model-with-contact.js").default;

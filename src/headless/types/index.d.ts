@@ -1,6 +1,6 @@
 export { EmojiPicker } from "./plugins/emoji/index.js";
 export { MAMPlaceholderMessage } from "./plugins/mam/index.js";
-export { XMPPStatus } from "./plugins/status/index.js";
+export { Profile } from "./plugins/status/index.js";
 export default converse;
 import BaseMessage from './shared/message.js';
 import ModelWithMessages from './shared/model-with-messages.js';

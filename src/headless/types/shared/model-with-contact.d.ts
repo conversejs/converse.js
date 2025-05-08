@@ -6,7 +6,7 @@ export default function ModelWithContact<T extends import("./types").ModelExtend
     new (...args: any[]): {
         /**
          * @typedef {import('../plugins/roster/contact').default} RosterContact
-         * @typedef {import('./_converse.js').XMPPStatus} XMPPStatus
+         * @typedef {import('./_converse.js').Profile} Profile
          */
         initialize(): void;
         rosterContactAdded: Promise<any> & {
@@ -18,9 +18,9 @@ export default function ModelWithContact<T extends import("./types").ModelExtend
         };
         /**
          * @public
-         * @type {RosterContact|XMPPStatus}
+         * @type {RosterContact|Profile}
          */
-        contact: import("../plugins/roster/contact").default | import("../index.js").XMPPStatus;
+        contact: import("../plugins/roster/contact").default | import("../index.js").Profile;
         /**
          * @param {string} jid
          */

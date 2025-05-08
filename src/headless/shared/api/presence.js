@@ -1,6 +1,6 @@
 /**
  * @typedef {import('strophe.js').Builder} Builder
- * @typedef {import('../../plugins/status/status').default} XMPPStatus
+ * @typedef {import('../../plugins/status/profile').default} Profile
  * @typedef {import('../../plugins/muc/muc.js').default} MUC
  */
 import _converse from '../_converse.js';
@@ -35,7 +35,7 @@ export default {
                 children = Array.isArray(nodes) ? nodes : [nodes];
             }
 
-            const model = /** @type {XMPPStatus} */(_converse.state.xmppstatus);
+            const model = /** @type {Profile} */(_converse.state.profile);
             const presence = await model.constructPresence(type, to, status);
             children.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
             send(presence);

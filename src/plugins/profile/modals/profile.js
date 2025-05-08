@@ -11,7 +11,7 @@ import './styles/profile.scss';
 export default class ProfileModal extends BaseModal {
     /**
      * @typedef {import('@converse/headless/types/plugins/vcard/api').VCardData} VCardData
-     * @typedef {import("@converse/headless").XMPPStatus} XMPPStatus
+     * @typedef {import("@converse/headless").Profile} Profile
      */
 
     /**
@@ -28,7 +28,7 @@ export default class ProfileModal extends BaseModal {
         /**
          * Triggered when the _converse.ProfileModal has been created and initialized.
          * @event _converse#profileModalInitialized
-         * @type {XMPPStatus}
+         * @type {Profile}
          * @example _converse.api.listen.on('profileModalInitialized', status => { ... });
          */
         api.trigger('profileModalInitialized', this.model);

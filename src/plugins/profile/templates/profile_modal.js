@@ -141,7 +141,10 @@ export default (el) => {
                     </div>
                     <hr/>
                     <div>
-                        <button type="submit" class="save-form btn btn-primary">${i18n_save}</button>
+                        ${el._submitting ?
+                            html`<converse-spinner></converse-spinner>` :
+                            html`<button type="submit" class="save-form btn btn-primary">${i18n_save}</button>`
+                        }
                     </div>
                 </form>
             </div>

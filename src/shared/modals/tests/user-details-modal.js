@@ -108,7 +108,7 @@ describe("The User Details Modal", function () {
         expect(header.textContent).toBe("Error");
         expect(u.ancestor(header, '.modal-content').querySelector('.modal-body p').textContent.trim())
             .toBe("Sorry, an error occurred while trying to remove Mercutio as a contact");
-        document.querySelector('.alert-danger .btn-close').click();
+        document.querySelector('.alert-danger .btn[aria-label="Close"]').click();
 
         show_modal_button = view.querySelector('.show-msg-author-modal');
         show_modal_button.click();

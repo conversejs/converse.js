@@ -57,6 +57,10 @@
     --link-color: #2D3991;
     --subdued-color: gray;
 
+    // toast colors
+    --toast-color: var(--background-color);
+    --toast-bg-color: var(--secondary-color);
+
     // The background when selecting text with your mouse
     --selection-color: black;
 

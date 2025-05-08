@@ -5,9 +5,9 @@
  *  https://github.com/obsidiansoft-io/fa-icons/blob/master/LICENSE
  * @license Mozilla Public License (MPLv2)
  */
-import { CustomElement } from './element.js';
-import { api } from '@converse/headless';
 import { html } from 'lit';
+import { api } from '@converse/headless';
+import { CustomElement } from './element.js';
 
 import './styles/icon.scss';
 

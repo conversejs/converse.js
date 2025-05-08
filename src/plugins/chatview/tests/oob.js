@@ -1,7 +1,10 @@
 /*global mock, converse */
-const { Strophe, u } = converse.env;
+const { Strophe, u, stx } = converse.env;
 
 describe("A Chat Message", function () {
+
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     describe("which contains an OOB URL", function () {
 
         it("will render audio from oob mp3 URLs",
@@ -16,13 +19,14 @@ describe("A Chat Message", function () {
             spyOn(view.model, 'sendMessage').and.callThrough();
 
             const url = 'https://montague.lit/audio.mp3';
-            let stanza = u.toStanza(`
+            let stanza = stx`
                 <message from="${contact_jid}"
                          type="chat"
-                         to="romeo@montague.lit/orchard">
+                         to="romeo@montague.lit/orchard"
+                         xmlns="jabber:client">
                     <body>Have you heard this funny audio?</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
-                </message>`)
+                </message>`
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg audio').length, 1000);
@@ -34,13 +38,14 @@ describe("A Chat Message", function () {
             expect(media.querySelector('audio').getAttribute('src')).toBe(url);
 
             // If the <url> and <body> contents is the same, don't duplicate.
-            stanza = u.toStanza(`
+            stanza = stx`
                 <message from="${contact_jid}"
                          type="chat"
-                         to="romeo@montague.lit/orchard">
+                         to="romeo@montague.lit/orchard"
+                         xmlns="jabber:client">
                     <body>${url}</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
-                </message>`);
+                </message>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
@@ -68,13 +73,14 @@ describe("A Chat Message", function () {
             spyOn(view.model, 'sendMessage').and.callThrough();
 
             const url = 'https://montague.lit/video.mp4';
-            let stanza = u.toStanza(`
+            let stanza = stx`
                 <message from="${contact_jid}"
                          type="chat"
-                         to="romeo@montague.lit/orchard">
+                         to="romeo@montague.lit/orchard"
+                         xmlns="jabber:client">
                     <body>Have you seen this funny video?</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
-                </message>`);
+                </message>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg video').length, 2000)
             let msg = view.querySelector('.chat-msg .chat-msg__text');
@@ -84,13 +90,14 @@ describe("A Chat Message", function () {
             expect(media.querySelector('video').getAttribute('src')).toBe(url);
 
             // If the <url> and <body> contents is the same, don't duplicate.
-            stanza = u.toStanza(`
+            stanza = stx`
                 <message from="${contact_jid}"
                          type="chat"
-                         to="romeo@montague.lit/orchard">
+                         to="romeo@montague.lit/orchard"
+                         xmlns="jabber:client">
                     <body>https://montague.lit/video.mp4</body>
                     <x xmlns="jabber:x:oob"><url>https://montague.lit/video.mp4</url></x>
-                </message>`);
+                </message>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             msg = view.querySelector('converse-chat-message .chat-msg__text');
@@ -112,13 +119,14 @@ describe("A Chat Message", function () {
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
             const url = 'https://montague.lit/funny.pdf';
-            const stanza = u.toStanza(`
+            const stanza = stx`
                 <message from="${contact_jid}"
                          type="chat"
-                         to="romeo@montague.lit/orchard">
+                         to="romeo@montague.lit/orchard"
+                         xmlns="jabber:client">
                     <body>Have you downloaded this funny file?</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
-                </message>`);
+                </message>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg a').length, 1000);
@@ -144,14 +152,14 @@ describe("A Chat Message", function () {
             spyOn(view.model, 'sendMessage').and.callThrough();
             const url = base_url+"/logo/conversejs-filled.svg";
 
-            const stanza = u.toStanza(`
+            const stanza = stx`
                 <message xmlns="jabber:client"
                         from="${contact_jid}"
                         type="chat"
                         to="romeo@montague.lit/orchard">
                     <body>Have you seen this funny image?</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
-                </message>`);
+                </message>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));

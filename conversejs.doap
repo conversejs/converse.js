@@ -111,6 +111,12 @@
     </implements>
     <implements>
       <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0153.html"/>
+        <xmpp:since>11.0.0</xmpp:since>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0156.html"/>
         <xmpp:since>6.0.0</xmpp:since>
       </xmpp:SupportedXep>

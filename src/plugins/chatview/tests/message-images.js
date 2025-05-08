@@ -5,7 +5,7 @@ describe("A Chat Message", function () {
 
     it("will render images from their URLs", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         await mock.waitForRoster(_converse, 'current');
-        const base_url = 'https://conversejs.org';
+        const base_url = `${window.origin}/base`;
         let message = base_url+"/logo/conversejs-filled.svg";
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
@@ -17,7 +17,7 @@ describe("A Chat Message", function () {
         let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
             `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                `<img class="chat-image img-thumbnail" loading="lazy" src="https://conversejs.org/logo/conversejs-filled.svg">`+
+                `<img class="chat-image img-thumbnail" loading="lazy" src="${base_url}/logo/conversejs-filled.svg">`+
             `</a>`);
 
         message += "?param1=val1&param2=val2";

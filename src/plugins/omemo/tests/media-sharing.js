@@ -5,7 +5,7 @@ describe("The OMEMO module", function() {
 
     beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
-    fit("shows an error when it can't download a received encrypted file",
+    it("shows an error when it can't download a received encrypted file",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);

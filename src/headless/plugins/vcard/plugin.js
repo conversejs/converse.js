@@ -2,22 +2,27 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "../status/index.js";
-import VCard from "./vcard.js";
-import _converse from "../../shared/_converse.js";
-import api from "../../shared/api/index.js";
-import converse from "../../shared/api/public.js";
-import vcard_api from "./api.js";
-import VCards from "./vcards";
-import { clearVCardsSession, onOccupantAvatarChanged } from "./utils.js";
+import '../status/index.js';
+import VCard from './vcard.js';
+import _converse from '../../shared/_converse.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
+import vcard_api from './api.js';
+import VCards from './vcards';
+import {
+    clearVCardsSession,
+    onOccupantAvatarChanged,
+    registerPresenceHandler,
+    unregisterPresenceHandler,
+} from './utils.js';
 
 const { Strophe } = converse.env;
 
-converse.plugins.add("converse-vcard", {
-    dependencies: ["converse-status", "converse-roster"],
+converse.plugins.add('converse-vcard', {
+    dependencies: ['converse-status', 'converse-roster'],
 
     enabled() {
-        return !api.settings.get("blacklisted_plugins")?.includes("converse-vcard");
+        return !api.settings.get('blacklisted_plugins')?.includes('converse-vcard');
     },
 
     initialize() {
@@ -25,7 +30,7 @@ converse.plugins.add("converse-vcard", {
             lazy_load_vcards: true,
         });
 
-        api.promises.add("VCardsInitialized");
+        api.promises.add('VCardsInitialized');
 
         Object.assign(_converse.api, vcard_api);
 
@@ -34,24 +39,27 @@ converse.plugins.add("converse-vcard", {
         Object.assign(_converse.exports, exports);
 
         api.listen.on(
-            "chatRoomInitialized",
+            'chatRoomInitialized',
             /** @param {import('../muc/muc').default} m */ (m) => {
-                m.listenTo(m.occupants, "change:image_hash", (o) => onOccupantAvatarChanged(o));
+                m.listenTo(m.occupants, 'change:image_hash', (o) => onOccupantAvatarChanged(o));
             }
         );
 
-        api.listen.on("addClientFeatures", () => api.disco.own.features.add(Strophe.NS.VCARD));
-        api.listen.on("clearSession", () => clearVCardsSession());
+        api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.VCARD));
+        api.listen.on('clearSession', () => clearVCardsSession());
 
-        api.listen.on("visibilityChanged", ({ el }) => {
+        api.listen.on('visibilityChanged', ({ el }) => {
             const { model } = el;
-            if (model?.vcard) model.vcard.trigger("visibilityChanged");
+            if (model?.vcard) model.vcard.trigger('visibilityChanged');
         });
 
-        api.listen.on("connected", () => {
+        api.listen.on('connected', () => {
             const vcards = new _converse.exports.VCards();
             _converse.state.vcards = vcards;
             Object.assign(_converse, { vcards }); // XXX DEPRECATED
         });
+
+        api.listen.on('presencesInitialized', () => registerPresenceHandler());
+        api.listen.on('beforeTearDown', () => unregisterPresenceHandler());
     },
 });

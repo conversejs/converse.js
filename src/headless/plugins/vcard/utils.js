@@ -7,15 +7,17 @@
  * @typedef {import('../muc/occupant.js').default} MUCOccupant
  * @typedef {import('@converse/skeletor/src/types/helpers.js').Model} Model
  */
-import _converse from "../../shared/_converse.js";
-import api from "../../shared/api/index.js";
-import converse from "../../shared/api/public.js";
-import log from "@converse/log";
-import { shouldClearCache } from "../../utils/session.js";
-import { isElement } from "../../utils/html.js";
-import { parseErrorStanza } from "../../shared/parsers.js";
+import _converse from '../../shared/_converse.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
+import log from '@converse/log';
+import { shouldClearCache } from '../../utils/session.js';
+import { isElement } from '../../utils/html.js';
+import { parseErrorStanza } from '../../shared/parsers.js';
 
-const { Strophe, $iq, u } = converse.env;
+const { Strophe, $iq, u, sizzle } = converse.env;
+
+Strophe.addNamespace('VCARD_UPDATE', 'vcard-temp:x:update');
 
 /**
  * @param {Element} iq
@@ -23,22 +25,23 @@ const { Strophe, $iq, u } = converse.env;
  */
 export async function onVCardData(iq) {
     const result = {
-        email: iq.querySelector(":scope > vCard EMAIL USERID")?.textContent,
-        fullname: iq.querySelector(":scope > vCard FN")?.textContent,
-        image: iq.querySelector(":scope > vCard PHOTO BINVAL")?.textContent,
-        image_type: iq.querySelector(":scope > vCard PHOTO TYPE")?.textContent,
-        nickname: iq.querySelector(":scope > vCard NICKNAME")?.textContent,
-        role: iq.querySelector(":scope > vCard ROLE")?.textContent,
+        email: iq.querySelector(':scope > vCard EMAIL USERID')?.textContent,
+        fullname: iq.querySelector(':scope > vCard FN')?.textContent,
+        image: iq.querySelector(':scope > vCard PHOTO BINVAL')?.textContent,
+        image_type: iq.querySelector(':scope > vCard PHOTO TYPE')?.textContent,
+        nickname: iq.querySelector(':scope > vCard NICKNAME')?.textContent,
+        role: iq.querySelector(':scope > vCard ROLE')?.textContent,
         stanza: iq, // TODO: remove?
-        url: iq.querySelector(":scope > vCard URL")?.textContent,
+        url: iq.querySelector(':scope > vCard URL')?.textContent,
         vcard_updated: new Date().toISOString(),
         error: undefined,
         vcard_error: undefined,
+        image_hash: undefined,
     };
     if (result.image) {
         const buffer = u.base64ToArrayBuffer(result.image);
-        const ab = await crypto.subtle.digest("SHA-1", buffer);
-        result["image_hash"] = u.arrayBufferToHex(ab);
+        const ab = await crypto.subtle.digest('SHA-1', buffer);
+        result['image_hash'] = u.arrayBufferToHex(ab);
     }
     return result;
 }
@@ -49,9 +52,9 @@ export async function onVCardData(iq) {
  * @param {Element} [vcard_el]
  */
 export function createStanza(type, jid, vcard_el) {
-    const iq = $iq(jid ? { "type": type, "to": jid } : { "type": type });
+    const iq = $iq(jid ? { 'type': type, 'to': jid } : { 'type': type });
     if (!vcard_el) {
-        iq.c("vCard", { "xmlns": Strophe.NS.VCARD });
+        iq.c('vCard', { 'xmlns': Strophe.NS.VCARD });
     } else {
         iq.cnode(vcard_el);
     }
@@ -62,13 +65,13 @@ export function createStanza(type, jid, vcard_el) {
  * @param {MUCOccupant} occupant
  */
 export function onOccupantAvatarChanged(occupant) {
-    const hash = occupant.get("image_hash");
+    const hash = occupant.get('image_hash');
     const vcards = [];
-    if (occupant.get("jid")) {
-        vcards.push(_converse.state.vcards.get(occupant.get("jid")));
+    if (occupant.get('jid')) {
+        vcards.push(_converse.state.vcards.get(occupant.get('jid')));
     }
-    vcards.push(_converse.state.vcards.get(occupant.get("from")));
-    vcards.forEach((v) => hash && v && v?.get("image_hash") !== hash && api.vcard.update(v, true));
+    vcards.push(_converse.state.vcards.get(occupant.get('from')));
+    vcards.forEach((v) => hash && v && v?.get('image_hash') !== hash && api.vcard.update(v, true));
 }
 
 /**
@@ -77,7 +80,7 @@ export function onOccupantAvatarChanged(occupant) {
  * @returns {Promise<VCard|null>}
  */
 export async function getVCardForModel(model, lazy_load = false) {
-    await api.waitUntil("VCardsInitialized");
+    await api.waitUntil('VCardsInitialized');
 
     let vcard;
     if (model instanceof _converse.exports.MUCOccupant) {
@@ -87,12 +90,12 @@ export async function getVCardForModel(model, lazy_load = false) {
     } else {
         let jid;
         if (model instanceof _converse.exports.Message) {
-            if (["error", "info"].includes(model.get("type"))) {
+            if (['error', 'info'].includes(model.get('type'))) {
                 return;
             }
-            jid = Strophe.getBareJidFromJid(model.get("from"));
+            jid = Strophe.getBareJidFromJid(model.get('from'));
         } else {
-            jid = model.get("jid");
+            jid = model.get('jid');
         }
 
         if (!jid) {
@@ -104,7 +107,7 @@ export async function getVCardForModel(model, lazy_load = false) {
     }
 
     if (vcard) {
-        vcard.on("change", () => model.trigger("vcard:change"));
+        vcard.on('change', () => model.trigger('vcard:change'));
     }
     return vcard;
 }
@@ -115,16 +118,16 @@ export async function getVCardForModel(model, lazy_load = false) {
  * @returns {Promise<VCard|null>}
  */
 export async function getVCardForOccupant(occupant, lazy_load = true) {
-    await api.waitUntil("VCardsInitialized");
+    await api.waitUntil('VCardsInitialized');
 
     const { vcards, profile } = _converse.state;
     const muc = occupant?.collection?.chatroom;
-    const nick = occupant.get("nick");
+    const nick = occupant.get('nick');
 
-    if (nick && muc?.get("nick") === nick) {
+    if (nick && muc?.get('nick') === nick) {
         return profile.vcard;
     } else {
-        const jid = occupant.get("jid") || occupant.get("from");
+        const jid = occupant.get('jid') || occupant.get('from');
         if (jid) {
             return vcards.get(jid) || vcards.create({ jid }, { lazy_load });
         } else {
@@ -140,21 +143,21 @@ export async function getVCardForOccupant(occupant, lazy_load = true) {
  * @returns {Promise<VCard|null>}
  */
 async function getVCardForMUCMessage(message, lazy_load = true) {
-    if (["error", "info"].includes(message.get("type"))) return;
+    if (['error', 'info'].includes(message.get('type'))) return;
 
-    await api.waitUntil("VCardsInitialized");
+    await api.waitUntil('VCardsInitialized');
     const { vcards, profile } = _converse.state;
     const muc = message?.collection?.chatbox;
-    const nick = Strophe.getResourceFromJid(message.get("from"));
+    const nick = Strophe.getResourceFromJid(message.get('from'));
 
-    if (nick && muc?.get("nick") === nick) {
+    if (nick && muc?.get('nick') === nick) {
         return profile.vcard;
     } else {
-        const jid = message.occupant?.get("jid") || message.get("from");
+        const jid = message.occupant?.get('jid') || message.get('from');
         if (jid) {
             return vcards.get(jid) || vcards.create({ jid }, { lazy_load });
         } else {
-            log.warn(`Could not get VCard for message because no JID found! msgid: ${message.get("msgid")}`);
+            log.warn(`Could not get VCard for message because no JID found! msgid: ${message.get('msgid')}`);
             return null;
         }
     }
@@ -162,7 +165,7 @@ async function getVCardForMUCMessage(message, lazy_load = true) {
 
 export function clearVCardsSession() {
     if (shouldClearCache(_converse)) {
-        api.promises.add("VCardsInitialized");
+        api.promises.add('VCardsInitialized');
         if (_converse.state.vcards) {
             _converse.state.vcards.clearStore();
             Object.assign(_converse, { vcards: undefined }); // XXX DEPRECATED
@@ -175,11 +178,11 @@ export function clearVCardsSession() {
  * @param {string} jid
  */
 export async function fetchVCard(jid) {
-    const bare_jid = _converse.session.get("bare_jid");
+    const bare_jid = _converse.session.get('bare_jid');
     const to = Strophe.getBareJidFromJid(jid) === bare_jid ? null : jid;
     let iq;
     try {
-        iq = await api.sendIQ(createStanza("get", to));
+        iq = await api.sendIQ(createStanza('get', to));
     } catch (error) {
         const { message: error_msg } = (isElement(error) ? await parseErrorStanza(error) : error) ?? {};
         return {
@@ -190,4 +193,49 @@ export async function fetchVCard(jid) {
         };
     }
     return onVCardData(iq);
+}
+
+/**
+ * @param {Element} pres
+ */
+async function handleVCardUpdatePresence(pres) {
+    await api.waitUntil('VCardsInitialized');
+    const photo = sizzle(`x[xmlns="${Strophe.NS.VCARD_UPDATE}"] photo`, pres).pop();
+    if (photo) {
+        const avatar_hash = photo.textContent;
+        const from_jid = Strophe.getBareJidFromJid(pres.getAttribute('from'));
+        const vcard = await _converse.state.vcards.get(from_jid);
+        if (vcard?.get('image_hash') !== avatar_hash) {
+            api.vcard.update(from_jid, true).catch((e) => log.error(e));
+        }
+    }
+}
+
+let presence_ref;
+
+export function unregisterPresenceHandler() {
+    if (presence_ref) {
+        const connection = api.connection.get();
+        connection.deleteHandler(presence_ref);
+        presence_ref = null;
+    }
+}
+
+export function registerPresenceHandler() {
+    unregisterPresenceHandler();
+    const connection = api.connection.get();
+    presence_ref = connection.addHandler(
+        /** @param {Element} pres */
+        (pres) => {
+            try {
+                handleVCardUpdatePresence(pres);
+            } catch (e) {
+                log.error(e);
+            }
+            return true;
+        },
+        null,
+        'presence',
+        null
+    );
 }

@@ -34,7 +34,7 @@
     // Bootstrap variables
     --primary-color: var(--green-2) !important;
     --primary-color-hover: var(--green-3) !important;
-    --secondary-color: var(--blue-1) !important;
+    --secondary-color: var(--blue-2) !important;
     --success-color: var(--green-3);
     --danger-color: var(--red);
     --warning-color: var(--orange);
@@ -68,6 +68,10 @@
     --headlines-color: var(--yellow);
     --link-color: var(--blue-2);
     --subdued-color: gray;
+
+    // toast colors
+    --toast-color: var(--background-color);
+    --toast-bg-color: var(--secondary-color);
 
     // The background when selecting text with your mouse
     --selection-color: var(--green-1);

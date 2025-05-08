@@ -1852,7 +1852,7 @@ describe("Groupchats", function () {
             expect(view.model.features.get('unsecured')).toBe(false);
             await u.waitUntil(() => view.querySelector('.chatbox-title__text').textContent.trim() === 'Room');
 
-            modal.querySelector('.btn-close').click();
+            modal.querySelector('.btn[aria-label="Close"]').click();
             view.querySelector('.configure-chatroom-button').click();
 
             const IQs = _converse.api.connection.get().IQ_stanzas;

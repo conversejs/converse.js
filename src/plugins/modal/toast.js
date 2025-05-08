@@ -46,9 +46,11 @@ export default class Toast extends CustomElement {
                           ? html`<button
                                 @click="${this.hide}"
                                 type="button"
-                                class="btn-close centered"
+                                class="btn centered"
                                 aria-label="${__('Close')}"
-                            ></button>`
+                            >
+                                <converse-icon size="1em" class="fa fa-times"></converse-icon>
+                            </button>`
                           : ''}
                   </div>`
                 : ''}

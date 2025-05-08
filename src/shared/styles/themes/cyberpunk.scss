@@ -86,6 +86,10 @@
     --link-color: var(--cyan);
     --subdued-color: gray;
 
+    // toast colors
+    --toast-color: var(--foreground-color);
+    --toast-bg-color: var(--secondary-color);
+
     // The background when selecting text with your mouse
     --selection-color: black;
 
@@ -197,7 +201,7 @@
             0 0 2rem 1rem rgba(var(--background-color-rgb), 0.1) !important;
 
         .modal-header {
-            .btn-close {
+            .fa-times {
                 svg {
                     fill: var(--primary-color);
                 }

@@ -1,19 +1,26 @@
 .conversejs {
     converse-toasts {
+        position: fixed;
+        top: 1em;
+        right: 1em;
+
         converse-toast {
             .toast {
+                color: var(--toast-color);
+                background-color: var(--toast-bg-color);
                 position: relative;
                 margin-block-start: 1em;
                 margin-inline-end: 1em;
-                float: right;
                 .toast-header {
                     img {
                         height: 1.5em;
                     }
                 }
                 .toast-body__container {
-                    .btn-close {
-                        margin-inline-end: 1em;
+                    .fa-times {
+                        svg {
+                            fill: var(--toast-color);
+                        }
                     }
                 }
             }

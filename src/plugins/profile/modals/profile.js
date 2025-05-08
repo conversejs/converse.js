@@ -14,6 +14,10 @@ export default class ProfileModal extends BaseModal {
      * @typedef {import("@converse/headless").Profile} Profile
      */
 
+    static properties = {
+        _submitting: { state: true }
+    }
+
     /**
      * @param {Object} options
      */
@@ -55,8 +59,9 @@ export default class ProfileModal extends BaseModal {
                 __("Sorry, an error happened while trying to save your profile data."),
                 __("You can check your browser's developer console for any error output.")
             ].join(" "));
-            return;
+            return false;
         }
+        return true;
     }
 
     /**
@@ -64,6 +69,8 @@ export default class ProfileModal extends BaseModal {
      */
     async onFormSubmitted (ev) {
         ev.preventDefault();
+        this._submitting = true;
+
         const form_data = new FormData(/** @type {HTMLFormElement} */(ev.target));
         const image_file = /** @type {File} */(form_data.get('avatar_image'));
 
@@ -83,8 +90,9 @@ export default class ProfileModal extends BaseModal {
                     image: btoa(/** @type {string} */(reader.result)),
                     image_type: image_file.type
                 });
-                await this.setVCard(data);
-                this.modal.hide();
+                if (await this.setVCard(data)) {
+                    this.modal.hide();
+                }
             };
             reader.readAsBinaryString(image_data);
         } else {
@@ -92,9 +100,12 @@ export default class ProfileModal extends BaseModal {
                 image: this.model.vcard.get('image'),
                 image_type: this.model.vcard.get('image_type')
             });
-            await this.setVCard(data);
-            this.modal.hide();
+            if (await this.setVCard(data)) {
+                this.modal.hide();
+                api.toast.show('vcard-updated', { body: __("Profile updated successfully") });
+            }
         }
+        this._submitting = false;
     }
 }
 

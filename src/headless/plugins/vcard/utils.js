@@ -36,7 +36,7 @@ export async function onVCardData(iq) {
         vcard_error: undefined,
     };
     if (result.image) {
-        const buffer = u.base64ToArrayBuffer(result["image"]);
+        const buffer = u.base64ToArrayBuffer(result.image);
         const ab = await crypto.subtle.digest("SHA-1", buffer);
         result["image_hash"] = u.arrayBufferToHex(ab);
     }

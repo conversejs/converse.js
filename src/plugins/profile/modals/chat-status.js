@@ -8,7 +8,7 @@ import './styles/chat-status-modal.scss';
 const u = converse.env.utils;
 
 export default class ChatStatusModal extends BaseModal {
-    initialize () {
+    initialize() {
         super.initialize();
         this.requestUpdate();
         this.addEventListener(
@@ -20,15 +20,15 @@ export default class ChatStatusModal extends BaseModal {
         );
     }
 
-    renderModal () {
+    renderModal() {
         return tplChatStatusModal(this);
     }
 
-    getModalTitle () {
+    getModalTitle() {
         return __('Change chat status');
     }
 
-    clearStatusMessage (ev) {
+    clearStatusMessage(ev) {
         if (ev && ev.preventDefault) {
             ev.preventDefault();
             u.hideElement(this.querySelector('.clear-input'));
@@ -37,7 +37,7 @@ export default class ChatStatusModal extends BaseModal {
         roster_filter.value = '';
     }
 
-    onFormSubmitted (ev) {
+    onFormSubmitted(ev) {
         ev.preventDefault();
         const data = new FormData(ev.target);
         this.model.save({

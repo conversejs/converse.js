@@ -753,7 +753,7 @@ function getMockVcardFetcher (settings) {
         if (nickname) vcard.c('NICKNAME').t(nickname);
         const vcard_el = vcard.tree();
 
-        return {
+        return Promise.resolve({
             stanza: vcard_el,
             fullname: vcard_el.querySelector('FN')?.textContent,
             nickname: vcard_el.querySelector('NICKNAME')?.textContent,
@@ -762,7 +762,7 @@ function getMockVcardFetcher (settings) {
             url: vcard_el.querySelector('URL')?.textContent,
             vcard_updated: dayjs().format(),
             vcard_error: undefined
-        };
+        });
     }
 }
 
@@ -793,7 +793,7 @@ async function _initConverse (settings) {
 
     window._converse = _converse;
 
-    if (_converse.api.vcard) {
+    if (!settings?.no_vcard_mocks && _converse.api.vcard) {
         _converse.api.vcard.get = getMockVcardFetcher(settings);
     }
 

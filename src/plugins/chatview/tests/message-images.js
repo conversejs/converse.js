@@ -1,5 +1,4 @@
 /*global mock, converse */
-
 const { sizzle, u } = converse.env;
 
 describe("A Chat Message", function () {
@@ -90,12 +89,12 @@ describe("A Chat Message", function () {
 
     it("will automatically update its rendering of media and the message actions when settings change",
         mock.initConverse(
-            ['chatBoxesFetched'], {'render_media': ['imgur.com']},
+            ['chatBoxesFetched'], {'render_media': ['conversejs.org']},
             async function (_converse) {
 
         const { api } = _converse;
         await mock.waitForRoster(_converse, 'current');
-        const message = 'https://imgur.com/oxymPax.png';
+        const message = "https://conversejs.org/logo/conversejs-filled-192.svg";
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.chatboxviews.get(contact_jid);
@@ -120,19 +119,19 @@ describe("A Chat Message", function () {
         actions_el.querySelector('.chat-msg__action-hide-previews').click();
         await u.waitUntil(() => actions_el.textContent.includes('Hide media'));
 
-        api.settings.set('render_media', ['imgur.com']);
+        api.settings.set('render_media', ['conversejs.org']);
         await u.waitUntil(() => actions_el.textContent.includes('Hide media'));
         await u.waitUntil(() => view.querySelector('converse-chat-message-body img'));
 
-        api.settings.set('render_media', ['conversejs.org']);
+        api.settings.set('render_media', ['imgur.com']);
         await u.waitUntil(() => actions_el.textContent.includes('Show media'));
         await u.waitUntil(() => !view.querySelector('converse-chat-message-body img'));
 
-        api.settings.set('allowed_image_domains', ['conversejs.org']);
+        api.settings.set('allowed_image_domains', ['imgur.com']);
         await u.waitUntil(() => !actions_el.textContent.includes('Show media'));
         expect(actions_el.textContent.includes('Hide media')).toBe(false);
 
-        api.settings.set('render_media', ['imgur.com']);
+        api.settings.set('render_media', ['conversejs.org']);
         return new Promise(resolve => setTimeout(() => {
             expect(actions_el.textContent.includes('Hide media')).toBe(false);
             expect(actions_el.textContent.includes('Show media')).toBe(false);

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 9.1.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-14 11:21+0200\n"
-"PO-Revision-Date: 2025-04-19 23:05+0000\n"
+"PO-Revision-Date: 2025-05-11 17:04+0000\n"
 "Last-Translator: Abduqadir Abliz <sahranbay@gmail.com>\n"
 "Language-Team: Uyghur <https://hosted.weblate.org/projects/conversejs/"
 "translations/ug/>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11.1-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: dist/converse-no-dependencies.js:16569
 msgid "Could not automatically determine a connection URL"
-msgstr ""
+msgstr "باغلانما تور ئادرېسىنى ئۆزلۈكىدىن جەزملىيەلمەيدۇ"
 
 #: dist/converse-no-dependencies.js:16879
 #: dist/converse-no-dependencies.js:16933
@@ -35,7 +35,7 @@ msgstr "سىزنىڭ XMPP ئادىرسىڭىز ياكى/ مەخپىي نۇمۇر
 #: dist/converse-no-dependencies.js:16949
 #, javascript-format
 msgid "We could not connect to %1$s, is your XMPP address correct?"
-msgstr ""
+msgstr "%1$s غا باغلىنالمايمىز، XMPP ئادرېسىڭىز توغرىمۇ؟"
 
 #: dist/converse-no-dependencies.js:16951
 msgid "The XMPP server rejected the connection because of a policy violation"

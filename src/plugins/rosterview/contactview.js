@@ -100,11 +100,11 @@ export default class RosterContactView extends ObservableElement {
 
         const result = await api.confirm(
             __('Decline contact request'),
-            [__('Are you sure you want to decline this contact request?')],
+            [__('Are you sure you want to decline this contact request from %1$s?', this.model.getDisplayName())],
             blocking_supported
                 ? [
                       {
-                          label: __('Block this user from sending you further messages'),
+                          label: __('Also block this user from sending you further messages'),
                           name: 'block',
                           type: 'checkbox',
                       },

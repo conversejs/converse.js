@@ -21,7 +21,7 @@ export default {
         /**
          * Send out a presence stanza
          * @method _converse.api.user.presence.send
-         * @param {String} [type]
+         * @param {import('../../plugins/status/types').presence_type} [type]
          * @param {String} [to]
          * @param {String} [status] - An optional status message
          * @param {Array<Element>|Array<Builder>|Element|Builder} [nodes]
@@ -36,7 +36,7 @@ export default {
             }
 
             const model = /** @type {Profile} */(_converse.state.profile);
-            const presence = await model.constructPresence(type, to, status);
+            const presence = await model.constructPresence({ type, to, status });
             children.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
             send(presence);
 

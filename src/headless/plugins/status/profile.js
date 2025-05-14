@@ -6,7 +6,7 @@ import ModelWithVCard from '../../shared/model-with-vcard';
 import ColorAwareModel from '../../shared/color.js';
 import { isIdle, getIdleSeconds } from './utils.js';
 
-const { Strophe, $pres } = converse.env;
+const { Stanza, Strophe, stx } = converse.env;
 
 export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
     defaults() {
@@ -69,58 +69,43 @@ export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
         return this.vcard?.get('nickname') || api.settings.get('nickname');
     }
 
-    /** Constructs a presence stanza
-     * @param {string} [type]
-     * @param {string} [to] - The JID to which this presence should be sent
-     * @param {string} [status_message]
+    /**
+     * Constructs a presence stanza
+     * @param {import('./types').presence_attrs} [attrs={}]
      */
-    async constructPresence(type, to = null, status_message) {
-        type = typeof type === 'string' ? type : this.get('status') || api.settings.get('default_state');
-        status_message = typeof status_message === 'string' ? status_message : this.get('status_message');
+    async constructPresence(attrs = {}) {
+        debugger;
+        const type =
+            typeof attrs.type === 'string' ? attrs.type : this.get('status') || api.settings.get('default_state');
+        const status = typeof attrs.status === 'string' ? attrs.status : this.get('status_message');
+        const include_nick = status === 'subscribe';
+        const { show, to } = attrs;
 
-        let presence;
-
-        if (type === 'subscribe') {
-            presence = $pres({ to, type });
-            const { profile } = _converse.state;
-            const nick = profile.getNickname();
-            if (nick) presence.c('nick', { 'xmlns': Strophe.NS.NICK }).t(nick).up();
-        } else if (
-            type === 'unavailable' ||
-            type === 'probe' ||
-            type === 'error' ||
-            type === 'unsubscribe' ||
-            type === 'unsubscribed' ||
-            type === 'subscribed'
-        ) {
-            presence = $pres({ to, type });
-        } else if (type === 'offline') {
-            presence = $pres({ to, type: 'unavailable' });
-        } else if (type === 'online') {
-            presence = $pres({ to });
-        } else {
-            presence = $pres({ to }).c('show').t(type).up();
-        }
-
-        if (status_message) presence.c('status').t(status_message).up();
-
+        const { profile } = _converse.state;
+        const nick = include_nick ? profile.getNickname() : null;
         const priority = api.settings.get('priority');
-        presence
-            .c('priority')
-            .t(Number.isNaN(Number(priority)) ? 0 : priority)
-            .up();
 
+        let idle_since;
         if (isIdle()) {
-            const idle_since = new Date();
+            idle_since = new Date();
             idle_since.setSeconds(idle_since.getSeconds() - getIdleSeconds());
-            presence.c('idle', { xmlns: Strophe.NS.IDLE, since: idle_since.toISOString() });
         }
+
+        const presence = stx`
+            <presence ${to ? Stanza.unsafeXML(`to="${Strophe.xmlescape(to)}"`) : ''}
+                    ${type ? Stanza.unsafeXML(`type="${Strophe.xmlescape(type)}"`) : ''}
+                    xmlns="jabber:client">
+                ${nick ? stx`<nick xmlns="${Strophe.NS.NICK}">${nick}</nick>` : ''}
+                ${show ? stx`<show>${show}</show>` : ''}
+                ${status ? stx`<status>${status}</status>` : ''}
+                <priority>${Number.isNaN(Number(priority)) ? 0 : priority}</priority>
+                ${idle_since ? stx`<idle xmlns="${Strophe.NS.IDLE}" since="${idle_since.toISOString()}"></idle>` : ''}
+            </presence>`;
 
         /**
          * *Hook* which allows plugins to modify a presence stanza
          * @event _converse#constructedPresence
          */
-        presence = await api.hook('constructedPresence', null, presence);
-        return presence;
+        return await api.hook('constructedPresence', null, presence);
     }
 }

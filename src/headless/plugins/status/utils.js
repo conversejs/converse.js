@@ -7,6 +7,9 @@ import { ACTIVE, INACTIVE } from '../../shared/constants.js';
 
 const { Strophe, $build } = converse.env;
 
+/**
+ * @param {boolean} reconnecting
+ */
 function onStatusInitialized(reconnecting) {
     /**
      * Triggered when the user's own chat status has been initialized.

@@ -1,4 +1,5 @@
 <h2 align="center">
+
   <a href="https://conversejs.org" target="_blank" rel="noopener">
     <img alt="Converse.js" src="https://github.com/conversejs/converse.js/blob/master/logo/readme.png" width="480">
   </a>

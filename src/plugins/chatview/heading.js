@@ -106,7 +106,10 @@ export default class ChatHeading extends CustomElement {
                     handler: /** @param {Event} ev */ async (ev) => {
                         ev.preventDefault();
                         const result = await api.confirm(__('Block user'), [
-                            __('Are you sure you want to block this user?'),
+                            __(
+                                'Are you sure you want to prevent %1$s from contacting you further?',
+                                this.model.getDisplayName()
+                            ),
                         ]);
                         if (result) {
                             const jid = this.model.get('jid');

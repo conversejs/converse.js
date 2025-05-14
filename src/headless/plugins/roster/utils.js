@@ -66,14 +66,18 @@ async function populateRoster(ignore_cache = false) {
     } catch (reason) {
         log.error(reason);
     } finally {
-        connection.send_initial_presence && api.user.presence.send();
+        if (connection.send_initial_presence) {
+            api.user.presence.send();
+            _converse.state.profile.save({ presence: 'online' });
+
+        }
     }
 }
 
 function updateUnreadCounter(chatbox) {
     const roster = /** @type {RosterContacts} */ (_converse.state.roster);
     const contact = roster?.get(chatbox.get('jid'));
-    contact?.save({ 'num_unread': chatbox.get('num_unread') });
+    contact?.save({ num_unread: chatbox.get('num_unread') });
 }
 
 let presence_ref;
@@ -82,6 +86,7 @@ function registerPresenceHandler() {
     unregisterPresenceHandler();
     const connection = api.connection.get();
     presence_ref = connection.addHandler(
+        /** @param {Element} presence */
         (presence) => {
             const roster = /** @type {RosterContacts} */ (_converse.state.roster);
             roster.presenceHandler(presence);

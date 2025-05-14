@@ -87,9 +87,9 @@ declare class RosterContacts extends Collection {
      */
     handleIncomingSubscription(presence: Element): void;
     /**
-     * @param {Element} presence
+     * @param {Element} stanza
      */
-    handleOwnPresence(presence: Element): void;
+    handleOwnPresence(stanza: Element): void;
     /**
      * @param {Element} presence
      */

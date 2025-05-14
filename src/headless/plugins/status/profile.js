@@ -11,13 +11,22 @@ const { Stanza, Strophe, stx } = converse.env;
 export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
     defaults() {
         return {
-            status: api.settings.get('default_state'),
+            presence: 'online',
+            status: null,
+            show: null,
             groups: [],
         };
     }
 
-    getStatus() {
-        return this.get('status');
+    /**
+     * @return {import('./types').connection_status}
+     */
+    getStatus () {
+        const presence  = this.get('presence');
+        if (presence === 'offline' || presence === 'unavailable') {
+            return 'offline';
+        }
+        return this.get('show') || presence || 'offline';
     }
 
     /**
@@ -47,11 +56,11 @@ export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
     initialize() {
         super.initialize();
         this.on('change', (item) => {
-            if (!(item.changed instanceof Object)) {
-                return;
-            }
-            if ('status' in item.changed || 'status_message' in item.changed) {
-                api.user.presence.send(this.get('status'), null, this.get('status_message'));
+            if (item.changed?.status || item.changed?.status_message || item.changed?.show) {
+                api.user.presence.send({
+                    show: this.get('show'),
+                    status: this.get('status_message'),
+                });
             }
         });
     }
@@ -72,16 +81,14 @@ export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
     /**
      * Constructs a presence stanza
      * @param {import('./types').presence_attrs} [attrs={}]
+     * @returns {Promise<Stanza>}
      */
     async constructPresence(attrs = {}) {
-        debugger;
-        const type =
-            typeof attrs.type === 'string' ? attrs.type : this.get('status') || api.settings.get('default_state');
-        const status = typeof attrs.status === 'string' ? attrs.status : this.get('status_message');
-        const include_nick = status === 'subscribe';
-        const { show, to } = attrs;
-
+        const { type, to } = attrs;
         const { profile } = _converse.state;
+        const status = typeof attrs.status === 'string' ? attrs.status : this.get('status_message');
+        const show = attrs.show || this.get('status');
+        const include_nick = type === 'subscribe';
         const nick = include_nick ? profile.getNickname() : null;
         const priority = api.settings.get('priority');
 

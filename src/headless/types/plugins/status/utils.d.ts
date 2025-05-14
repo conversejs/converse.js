@@ -8,6 +8,10 @@ export function getIdleSeconds(): number;
  * Resets counters and flags relating to CSI and auto_away/auto_xa
  */
 export function onUserActivity(): void;
+/**
+ * An interval handler running every second.
+ * Used for CSI and the auto_away and auto_xa features.
+ */
 export function onEverySecond(): void;
 /**
  * Send out a Client State Indication (XEP-0352)

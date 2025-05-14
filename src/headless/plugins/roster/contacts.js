@@ -412,12 +412,12 @@ class RosterContacts extends Collection {
     }
 
     /**
-     * @param {Element} presence
+     * @param {Element} stanza
      */
-    handleOwnPresence (presence) {
-        const jid = presence.getAttribute('from');
+    handleOwnPresence (stanza) {
+        const jid = stanza.getAttribute('from');
         const resource = Strophe.getResourceFromJid(jid);
-        const presence_type = presence.getAttribute('type');
+        const presence_type = stanza.getAttribute('type');
         const { profile } = _converse.state;
 
         if ((api.connection.get().jid !== jid) &&
@@ -427,10 +427,10 @@ class RosterContacts extends Collection {
             // Another resource has changed its status and
             // synchronize_availability option set to update,
             // we'll update ours as well.
-            const show = presence.querySelector('show')?.textContent || 'online';
-            profile.save({ 'status': show }, { silent: true });
+            const show = stanza.querySelector('show')?.textContent;
+            profile.save({ show, presence: 'online' }, { silent: true });
 
-            const status_message = presence.querySelector('status')?.textContent;
+            const status_message = stanza.querySelector('status')?.textContent;
             if (status_message) profile.save({ status_message });
         }
         if (_converse.session.get('jid') === jid && presence_type === 'unavailable') {

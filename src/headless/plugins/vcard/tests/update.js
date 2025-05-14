@@ -24,7 +24,7 @@ describe('A VCard', function () {
                         </presence>`
                 )
             );
-            const sent_stanza = await u.waitUntil(() => IQ_stanzas.filter((s) => sizzle('vCard', s).length).pop(), 500);
+            const sent_stanza = await u.waitUntil(() => IQ_stanzas.filter((s) => sizzle('vCard', s).length).pop(), 1000);
             expect(sent_stanza).toEqualStanza(stx`
                 <iq type="get"
                         to="mercutio@montague.lit"
@@ -102,7 +102,7 @@ describe('A VCard', function () {
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             let sent_stanza = await u.waitUntil(() =>
                 IQ_stanzas.filter((s) => sizzle(`vCard`, s).length).pop()
-            );
+            , 500);
             _converse.api.connection.get()._dataRecv(
                 mock.createRequest(stx`
                 <iq from='${own_jid}'

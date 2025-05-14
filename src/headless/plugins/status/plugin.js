@@ -26,7 +26,6 @@ converse.plugins.add('converse-status', {
             auto_away: 0, // Seconds after which user status is set to 'away'
             auto_xa: 0, // Seconds after which user status is set to 'xa'
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
-            default_state: 'online',
             idle_presence_timeout: 300, // Seconds after which an idle presence is sent
             priority: 0,
         });

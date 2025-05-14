@@ -150,17 +150,16 @@ async function tplActionButtons(o) {
  */
 export default (el) => {
     const o = el.model;
-    const affiliation = o.get('affiliation');
-    const hint_show = PRETTY_CHAT_STATUS[o.get('show')];
+    const { show, presence, affiliation } = el.model.attributes;
+    const hint_show = PRETTY_CHAT_STATUS[show || presence];
     const role = o.get('role');
 
-    const show = o.get('show');
     let classes, color;
-    if (show === 'online') {
+    if (show === 'chat' || (!show && presence === 'online')) {
         [classes, color] = ['fa fa-circle', 'chat-status-online'];
     } else if (show === 'dnd') {
         [classes, color] = ['fa fa-minus-circle', 'chat-status-busy'];
-    } else if (show === 'away') {
+    } else if (show === 'away' || show === 'xa') {
         [classes, color] = ['fa fa-circle', 'chat-status-away'];
     } else {
         [classes, color] = ['fa fa-circle', 'chat-status-offline'];

@@ -21,13 +21,11 @@ export default {
         /**
          * Send out a presence stanza
          * @method _converse.api.user.presence.send
-         * @param {import('../../plugins/status/types').presence_type} [type]
-         * @param {String} [to]
-         * @param {String} [status] - An optional status message
+         * @param {import('../../plugins/status/types').presence_attrs} [attrs]
          * @param {Array<Element>|Array<Builder>|Element|Builder} [nodes]
          *  Nodes(s) to be added as child nodes of the `presence` XML element.
          */
-        async send (type, to, status, nodes) {
+        async send(attrs, nodes) {
             await waitUntil('statusInitialized');
 
             let children = [];
@@ -35,15 +33,16 @@ export default {
                 children = Array.isArray(nodes) ? nodes : [nodes];
             }
 
-            const model = /** @type {Profile} */(_converse.state.profile);
-            const presence = await model.constructPresence({ type, to, status });
-            children.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
+            const model = /** @type {Profile} */ (_converse.state.profile);
+            const presence = await model.constructPresence(attrs);
+            children.map((c) => c?.tree() ?? c).forEach((c) => presence.cnode(c).up());
             send(presence);
 
-            if (['away', 'chat', 'dnd', 'online', 'xa', undefined].includes(type)) {
-                const mucs = /** @type {MUC[]} */(await rooms.get());
-                mucs.forEach(muc => muc.sendStatusPresence(type, status, children));
+            const { show, type } = attrs || {};
+            if (show || !type) {
+                const mucs = /** @type {MUC[]} */ (await rooms.get());
+                mucs.forEach((muc) => muc.sendStatusPresence(attrs, children));
             }
-        }
-    }
-}
+        },
+    },
+};

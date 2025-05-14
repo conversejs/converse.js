@@ -8,19 +8,23 @@ import { getPrettyStatus } from '../utils.js';
  * @param {import('../statusview').default} el
  */
 export default (el) => {
-    const chat_status = el.model.get('status') || 'offline';
+    const show = el.model.get('show');
+    const presence = el.model.get('presence') || 'online';
+    const chat_status = show || presence;
     const status_message = el.model.get('status_message') || __("I am %1$s", getPrettyStatus(chat_status));
     const i18n_change_status = __('Click to change your chat status');
+
     let classes, color;
-    if (chat_status === 'online') {
+    if (show === 'chat' || (!show && presence === 'online')) {
         [classes, color] = ['fa fa-circle chat-status', 'chat-status-online'];
-    } else if (chat_status === 'dnd') {
+    } else if (show === 'dnd') {
         [classes, color] =  ['fa fa-minus-circle chat-status', 'chat-status-busy'];
-    } else if (chat_status === 'away') {
+    } else if (show === 'away' || show === 'xa') {
         [classes, color] =  ['fa fa-circle chat-status', 'chat-status-away'];
     } else {
         [classes, color] = ['fa fa-circle chat-status', 'comment'];
     }
+
     return html`
         <div class="userinfo">
             <div class="controlbox-section profile d-flex">

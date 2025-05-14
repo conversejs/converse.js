@@ -13,9 +13,20 @@ export default class ImagePicker extends CustomElement {
     model: any;
     width: any;
     height: any;
-    data: Model;
     nonce: string;
     render(): import("lit-html").TemplateResult<1>;
+    /**
+     * Clears the selected image.
+     * @param {Event} ev
+     */
+    clearImage(ev: Event): void;
+    data: {
+        data_uri: any;
+        image_type: any;
+    } | {
+        data_uri: string | ArrayBuffer;
+        image_type: string;
+    };
     /**
      * @param {Event} ev
      */
@@ -26,5 +37,4 @@ export default class ImagePicker extends CustomElement {
     updateFilePreview(ev: InputEvent): void;
 }
 import { CustomElement } from './element.js';
-import { Model } from '@converse/skeletor';
 //# sourceMappingURL=image-picker.d.ts.map

@@ -105,6 +105,7 @@
 - Changed the signature of the `api.contacts.add` API method.
 - The deprecated API method `api.settings.update` has been removed. Use
   `api.settings.extend` instead.
+- Removed the `default_state` config option.
 - New config option [rtl_langs](https://conversejs.org/docs/html/configuration.html#rtl-langs) for specifying languages for which
   Converse's UI should be shown in right-to-left order.
 

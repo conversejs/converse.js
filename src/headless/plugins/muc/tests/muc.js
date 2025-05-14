@@ -46,7 +46,7 @@ describe("Groupchats", function () {
 
             const { profile } = _converse.state;
             const muc_jid = 'coven@chat.shakespeare.lit';
-            profile.set('status', 'away');
+            profile.set('show', 'away');
 
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             while (sent_stanzas.length) sent_stanzas.pop();
@@ -65,31 +65,30 @@ describe("Groupchats", function () {
 
             while (sent_stanzas.length) sent_stanzas.pop();
 
-            profile.set('status', 'xa');
+            profile.set('show', 'xa');
             pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence' && s.getAttribute('to') === `${muc_jid}/romeo`).pop());
 
-            expect(Strophe.serialize(pres)).toBe(
-                `<presence to="${muc_jid}/romeo" xmlns="jabber:client">`+
-                    `<show>xa</show>`+
-                    `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
-                `</presence>`)
+            expect(pres).toEqualStanza(stx`
+                <presence to="${muc_jid}/romeo" xmlns="jabber:client">
+                    <show>xa</show>
+                    <priority>0</priority>
+                    <c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>
+                </presence>`)
 
-            profile.set('status', 'dnd');
-            profile.set('status_message', 'Do not disturb');
+            profile.set({ show: 'dnd', status_message: 'Do not disturb' });
             while (sent_stanzas.length) sent_stanzas.pop();
 
             const muc2_jid = 'cave@chat.shakespeare.lit';
             const muc2 = await mock.openAndEnterMUC(_converse, muc2_jid, 'romeo');
 
             pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
-            expect(Strophe.serialize(pres)).toBe(
-                `<presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="${muc2_jid}/romeo" xmlns="jabber:client">`+
-                    `<x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>`+
-                    `<show>dnd</show>`+
-                    `<status>Do not disturb</status>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
-                `</presence>`);
+            expect(pres).toEqualStanza(stx`
+                <presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="${muc2_jid}/romeo" xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
+                    <show>dnd</show>
+                    <status>Do not disturb</status>
+                    <c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>
+                </presence>`);
 
             expect(muc2.getOwnOccupant().get('show')).toBe('dnd');
 

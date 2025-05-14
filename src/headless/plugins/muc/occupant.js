@@ -36,7 +36,8 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
     defaults() {
         return {
             hats: [],
-            show: "offline",
+            presence: 'offline',
+            show: undefined,
             states: [],
             hidden: true,
             num_unread: 0,

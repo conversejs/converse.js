@@ -35,6 +35,8 @@ export function fetchVCard(jid: string): Promise<import("./types").VCardResult |
     error: any;
     vcard_error: string;
 }>;
+export function unregisterPresenceHandler(): void;
+export function registerPresenceHandler(): void;
 export type MUCMessage = import("../../plugins/muc/message").default;
 export type Profile = import("../../plugins/status/profile").default;
 export type VCards = import("../../plugins/vcard/vcards").default;

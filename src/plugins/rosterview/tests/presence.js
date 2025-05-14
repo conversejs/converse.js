@@ -43,7 +43,7 @@ describe("A sent presence stanza", function () {
 
         await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).length === 2);
         sent_presence = sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop();
-        expect(Strophe.serialize(sent_presence))
+        expect(sent_presence)
             .toEqualStanza(stx`
                 <presence xmlns="jabber:client">
                     <show>dnd</show>

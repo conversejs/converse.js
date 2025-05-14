@@ -7,7 +7,9 @@ export default class ProfileModal extends BaseModal {
         _submitting: {
             state: boolean;
         };
-        model: any;
+        model: {
+            type: typeof Model;
+        };
     };
     renderModal(): import("lit-html").TemplateResult<1>;
     getModalTitle(): any;
@@ -22,4 +24,5 @@ export default class ProfileModal extends BaseModal {
     _submitting: boolean;
 }
 import BaseModal from "plugins/modal/modal.js";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=profile.d.ts.map

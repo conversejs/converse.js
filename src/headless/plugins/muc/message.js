@@ -113,7 +113,7 @@ class MUCMessage extends BaseMessage {
 
                 if (api.settings.get('muc_send_probes')) {
                     const jid = `${this.chatbox.get('jid')}/${nick}`;
-                    api.user.presence.send('probe', jid);
+                    api.user.presence.send({ to: jid, type: 'probe' });
                 }
             }
         }

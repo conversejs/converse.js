@@ -805,7 +805,7 @@ describe("Groupchats", function () {
                 "some1, newgirl and nomorenicks have entered the groupchat\nnewguy and insider have left the groupchat");
 
             expect(view.model.occupants.length).toBe(5);
-            expect(view.model.occupants.findWhere({'jid': 'insider@montague.lit'}).get('show')).toBe('offline');
+            expect(view.model.occupants.findWhere({'jid': 'insider@montague.lit'}).get('presence')).toBe('offline');
 
             // New girl leaves
             presence = $pres({

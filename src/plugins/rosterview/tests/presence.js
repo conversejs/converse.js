@@ -4,6 +4,7 @@ const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe("A sent presence stanza", function () {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
     beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
     afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
@@ -25,12 +26,12 @@ describe("A sent presence stanza", function () {
 
         const sent_stanzas = _converse.api.connection.get().sent_stanzas;
         let sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop());
-        expect(Strophe.serialize(sent_presence))
-            .toBe(`<presence xmlns="jabber:client">`+
-                    `<status>My custom status</status>`+
-                    `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
-                    `</presence>`)
+        expect(sent_presence).toEqualStanza(stx`
+            <presence xmlns="jabber:client">
+                <status>My custom status</status>
+                <priority>0</priority>
+                <c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>
+            </presence>`)
         await u.waitUntil(() => modal.getAttribute('aria-hidden') === "true");
         await u.waitUntil(() => !u.isVisible(modal));
 
@@ -43,12 +44,12 @@ describe("A sent presence stanza", function () {
         await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).length === 2);
         sent_presence = sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop();
         expect(Strophe.serialize(sent_presence))
-            .toBe(
-                `<presence xmlns="jabber:client">`+
-                    `<show>dnd</show>`+
-                    `<status>My custom status</status>`+
-                    `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
-                `</presence>`)
+            .toEqualStanza(stx`
+                <presence xmlns="jabber:client">
+                    <show>dnd</show>
+                    <status>My custom status</status>
+                    <priority>0</priority>
+                    <c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>
+                </presence>`)
     }));
 });

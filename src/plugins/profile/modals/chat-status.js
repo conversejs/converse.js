@@ -28,6 +28,9 @@ export default class ChatStatusModal extends BaseModal {
         return __('Change chat status');
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     clearStatusMessage(ev) {
         if (ev && ev.preventDefault) {
             ev.preventDefault();
@@ -37,12 +40,23 @@ export default class ChatStatusModal extends BaseModal {
         roster_filter.value = '';
     }
 
+    /**
+     * @param {SubmitEvent} ev
+     */
     onFormSubmitted(ev) {
         ev.preventDefault();
-        const data = new FormData(ev.target);
+        const data = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+        let show, presence;
+        const chat_status = data.get('chat_status');
+        if (chat_status === 'online') {
+            presence = 'online';
+        } else {
+            show = chat_status;
+        }
         this.model.save({
             status_message: data.get('status_message'),
-            status: data.get('chat_status'),
+            presence,
+            show,
         });
         this.close();
     }

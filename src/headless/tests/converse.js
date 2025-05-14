@@ -110,13 +110,13 @@ describe("Converse", function() {
             it("has a method for setting the user's availability", mock.initConverse(async (_converse) => {
                 await _converse.api.user.status.set('away');
                 const { profile } = _converse.state;
-                expect(await profile.get('status')).toBe('away');
+                expect(await profile.get('show')).toBe('dnd');
                 await _converse.api.user.status.set('dnd');
-                expect(await profile.get('status')).toBe('dnd');
+                expect(await profile.get('show')).toBe('dnd');
                 await _converse.api.user.status.set('xa');
-                expect(await profile.get('status')).toBe('xa');
+                expect(await profile.get('show')).toBe('xa');
                 await _converse.api.user.status.set('chat');
-                expect(await profile.get('status')).toBe('chat');
+                expect(await profile.get('show')).toBe('chat');
                 const promise = _converse.api.user.status.set('invalid')
                 promise.catch(e => {
                     expect(e.message).toBe('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
@@ -126,7 +126,7 @@ describe("Converse", function() {
             it("allows setting the status message as well", mock.initConverse(async (_converse) => {
                 await _converse.api.user.status.set('away', "I'm in a meeting");
                 const { profile } = _converse.state;
-                expect(profile.get('status')).toBe('away');
+                expect(profile.get('show')).toBe('dnd');
                 expect(profile.get('status_message')).toBe("I'm in a meeting");
             }));
 

@@ -52,7 +52,7 @@ export default (el) => {
         </div>
 
         ${el.model
-            ? html` <div class="row">
+            ? html`<div class="row">
                   <div class="col">
                       <converse-avatar
                           .model=${el.model}

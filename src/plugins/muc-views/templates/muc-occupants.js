@@ -21,8 +21,13 @@ function isOccupantFiltered (el, occ) {
     if (!q) return false;
 
     if (type === 'state') {
-        const show = occ.get('show');
-        return q === 'online' ? ["offline", "unavailable"].includes(show) : !show.includes(q);
+        const presence = occ.get('presence');
+        if (q === 'online') {
+            return ["offline", "unavailable"].includes(presence);
+        } else if (q === 'ofline') {
+            return presence === 'online';
+        }
+        return !occ.get('show')?.includes(q);
     } else if (type === 'items')  {
         return !occ.getDisplayName().toLowerCase().includes(q);
     }

@@ -795,16 +795,6 @@ JIDs with other domains are still allowed but need to be provided in full.
 To specify only one domain and disallow other domains, see the `locked_domain`_
 option.
 
-default_state
--------------
-
-* Default: ``'online'``
-
-The default chat status that the user wil have. If you for example set this to
-``'chat'``, then Converse will send out a presence stanza with ``"show"``
-set to ``'chat'`` as soon as you've been logged in.
-
-
 discover_connection_methods
 ---------------------------
 

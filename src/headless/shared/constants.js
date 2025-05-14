@@ -3,6 +3,18 @@ import { Strophe } from 'strophe.js';
 export const BOSH_WAIT = 59;
 export const VERSION_NAME = "v11.0.0";
 
+export const PRES_SHOW_VALUES = ['chat', 'dnd', 'away', 'xa'];
+export const PRES_TYPE_VALUES = [
+    'available',
+    'unavailable',
+    'error',
+    'probe',
+    'subscribe',
+    'subscribed',
+    'unsubscribe',
+    'unsubscribed',
+];
+
 export const STATUS_WEIGHTS = {
     offline: 6,
     unavailable: 5,

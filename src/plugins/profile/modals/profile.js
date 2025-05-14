@@ -1,3 +1,4 @@
+import { Model } from '@converse/skeletor';
 import { _converse, api, log } from "@converse/headless";
 import { compressImage, isImageWithAlphaChannel } from 'utils/file.js';
 import BaseModal from "plugins/modal/modal.js";
@@ -15,7 +16,8 @@ export default class ProfileModal extends BaseModal {
      */
 
     static properties = {
-        _submitting: { state: true }
+        _submitting: { state: true },
+        model: { type: Model },
     }
 
     /**

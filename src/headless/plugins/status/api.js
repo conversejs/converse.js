@@ -1,6 +1,6 @@
 import api from '../../shared/api/index.js';
 import _converse from '../../shared/_converse.js';
-import { STATUS_WEIGHTS } from '../../shared/constants';
+import { PRES_SHOW_VALUES, PRES_TYPE_VALUES, STATUS_WEIGHTS } from '../../shared/constants';
 
 
 export default {
@@ -18,7 +18,16 @@ export default {
          */
         async get () {
             await api.waitUntil('statusInitialized');
-            return _converse.state.profile.get('status');
+
+            const show = _converse.state.profile.get('show');
+            if (show) {
+                return show;
+            }
+            const status = _converse.state.profile.get('status');
+            if (!status) {
+                return 'online';
+            }
+            return status;
         },
 
         /**
@@ -33,12 +42,20 @@ export default {
          * @example _converse.api.user.status.set('dnd', 'In a meeting');
          */
         async set (value, message) {
-            const data = {'status': value};
             if (!Object.keys(STATUS_WEIGHTS).includes(value)) {
                 throw new Error(
                     'Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1'
                 );
             }
+
+            let show = PRES_SHOW_VALUES.includes(value) ? value : undefined;
+            if (value === 'away') {
+                show = 'dnd';
+            }
+
+            const type = PRES_TYPE_VALUES.includes(value) ? value : undefined;
+            const data = { show, type };
+
             if (typeof message === 'string') {
                 data.status_message = message;
             }

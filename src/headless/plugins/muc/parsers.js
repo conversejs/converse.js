@@ -425,7 +425,7 @@ export async function parseMUCPresence(stanza, chatbox) {
         muc_jid: Strophe.getBareJidFromJid(from),
         occupant_id: getOccupantID(stanza, chatbox),
         status: stanza.querySelector(':scope > status')?.textContent ?? undefined,
-        show: stanza.querySelector(':scope > show')?.textContent ?? (type !== 'unavailable' ? 'online' : 'offline'),
+        show: stanza.querySelector(':scope > show')?.textContent ?? undefined,
         image_hash: sizzle(`presence > x[xmlns="${Strophe.NS.VCARDUPDATE}"] photo`, stanza).pop()?.textContent,
         hats: sizzle(`presence > hats[xmlns="${Strophe.NS.MUC_HATS}"] hat`, stanza).map(
             /** @param {Element} h */ (h) => ({

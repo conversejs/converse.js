@@ -387,8 +387,8 @@ async function receiveOwnMUCPresence (_converse, muc_jid, nick, affiliation='own
                 ? stx`<occupant-id xmlns="${Strophe.NS.OCCUPANTID}" id="${u.getUniqueId()}"/>`
                 : ''
             }
-            ${ _converse.xmppstatus.get('status')
-                ? stx`<show>${_converse.xmppstatus.get('status')}</show>`
+            ${ _converse.state.profile.get('show')
+                ? stx`<show>${_converse.state.profile.get('show')}</show>`
                 : ''
             }
         </presence>`));

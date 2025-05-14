@@ -44,6 +44,8 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
          */
         this.listenTo(this.presence, 'change:show', () => api.trigger('contactPresenceChanged', this));
         this.listenTo(this.presence, 'change:show', () => this.trigger('presenceChanged'));
+        this.listenTo(this.presence, 'change:presence', () => api.trigger('contactPresenceChanged', this));
+        this.listenTo(this.presence, 'change:presence', () => this.trigger('presenceChanged'));
         /**
          * Synchronous event which provides a hook for further initializing a RosterContact
          * @event _converse#rosterContactInitialized
@@ -60,7 +62,11 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
     }
 
     getStatus () {
-        return this.presence.get('show') || 'offline';
+        const presence  = this.presence.get('presence');
+        if (presence === 'offline' || presence === 'unavailable') {
+            return 'offline';
+        }
+        return this.presence.get('show') || presence || 'offline';
     }
 
     openChat () {
@@ -81,7 +87,11 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
      *      reason for the subscription request.
      */
     subscribe (message) {
-        api.user.presence.send('subscribe', this.get('jid'), message);
+        api.user.presence.send({
+            type: 'subscribe',
+            to: this.get('jid'),
+            status: message
+        });
         this.save('ask', "subscribe"); // ask === 'subscribe' Means we have asked to subscribe to them.
         return this;
     }

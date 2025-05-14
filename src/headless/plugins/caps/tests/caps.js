@@ -39,7 +39,7 @@ describe('A sent presence stanza', function () {
         mock.initConverse(['statusInitialized'], {}, async (_converse) => {
             const { api } = _converse;
             const { profile } = _converse.state;
-            let pres = await profile.constructPresence('online', null, 'Hello world');
+            let pres = await profile.constructPresence({ status: 'Hello world' });
             expect(pres.node).toEqualStanza(stx`
             <presence xmlns="jabber:client">
                 <status>Hello world</status>
@@ -48,7 +48,7 @@ describe('A sent presence stanza', function () {
             </presence>`);
 
             api.settings.set('priority', 2);
-            pres = await profile.constructPresence('away', null, 'Going jogging');
+            pres = await profile.constructPresence({ show: 'away', status: 'Going jogging' });
             expect(pres.node).toEqualStanza(stx`
             <presence xmlns="jabber:client">
                 <show>away</show>
@@ -58,7 +58,7 @@ describe('A sent presence stanza', function () {
             </presence>`);
 
             api.settings.set('priority', undefined);
-            pres = await profile.constructPresence('dnd', null, 'Doing taxes');
+            pres = await profile.constructPresence({ show: 'dnd', status: 'Doing taxes' });
             expect(pres.node).toEqualStanza(stx`
             <presence xmlns="jabber:client">
                 <show>dnd</show>

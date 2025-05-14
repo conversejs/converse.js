@@ -79,21 +79,22 @@ export function onUserActivity() {
         auto_changed_status = false;
         // XXX: we should really remember the original state here, and
         // then set it back to that...
-        _converse.state.profile.set('status', api.settings.get('default_state'));
+        _converse.state.profile.set('show', undefined);
     }
 }
 
+/**
+ * An interval handler running every second.
+ * Used for CSI and the auto_away and auto_xa features.
+ */
 export function onEverySecond() {
-    /* An interval handler running every second.
-     * Used for CSI and the auto_away and auto_xa features.
-     */
     if (!api.connection.get()?.authenticated) {
         // We can't send out any stanzas when there's no authenticated connection.
         // This can happen when the connection reconnects.
         return;
     }
     const { profile } = _converse.state;
-    const stat = profile.get('status');
+    const show = profile.get('show');
     idle_seconds++;
     if (api.settings.get('csi_waiting_time') > 0 && idle_seconds > api.settings.get('csi_waiting_time') && !inactive) {
         sendCSI(INACTIVE);
@@ -109,20 +110,20 @@ export function onEverySecond() {
     if (
         api.settings.get('auto_away') > 0 &&
         idle_seconds > api.settings.get('auto_away') &&
-        stat !== 'away' &&
-        stat !== 'xa' &&
-        stat !== 'dnd'
+        show !== 'away' &&
+        show !== 'xa' &&
+        show !== 'dnd'
     ) {
         auto_changed_status = true;
-        profile.set('status', 'away');
+        profile.set('show', 'away');
     } else if (
         api.settings.get('auto_xa') > 0 &&
         idle_seconds > api.settings.get('auto_xa') &&
-        stat !== 'xa' &&
-        stat !== 'dnd'
+        show !== 'xa' &&
+        show !== 'dnd'
     ) {
         auto_changed_status = true;
-        profile.set('status', 'xa');
+        profile.set('show', 'xa');
     }
 }
 

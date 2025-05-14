@@ -163,6 +163,7 @@ export default class Profile extends Profile_base {
     /**
      * Constructs a presence stanza
      * @param {import('./types').presence_attrs} [attrs={}]
+     * @returns {Promise<Stanza>}
      */
     constructPresence(attrs?: import("./types").presence_attrs): Promise<any>;
 }

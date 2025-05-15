@@ -1,4 +1,4 @@
-import { api } from '@converse/headless';
+import { api, _converse } from '@converse/headless';
 import { blockContact, removeContact, unblockContact } from 'plugins/rosterview/utils.js';
 import BaseModal from 'plugins/modal/modal.js';
 import { __ } from 'i18n';
@@ -27,10 +27,21 @@ export default class UserDetailsModal extends BaseModal {
     addListeners() {
         this.listenTo(this.model, 'change', () => this.requestUpdate());
 
-        this.model.rosterContactAdded.then(() => this.registerContactEventHandlers());
+        if (this.model instanceof _converse.exports.ChatBox) {
+            this.model.rosterContactAdded.then(() => this.registerContactEventHandlers(this.model.contact));
+            if (this.model.contact !== undefined) {
+                this.registerContactEventHandlers(this.model.contact);
+            }
+        } else {
+            this.registerContactEventHandlers(this.model);
+        }
+    }
 
-        if (this.model.contact !== undefined) {
-            this.registerContactEventHandlers();
+    getContact() {
+        if (this.model instanceof _converse.exports.ChatBox) {
+            return this.model.contact;
+        } else {
+            return this.model;
         }
     }
 
@@ -55,16 +66,16 @@ export default class UserDetailsModal extends BaseModal {
         return this.model.getDisplayName();
     }
 
-    registerContactEventHandlers() {
-        this.listenTo(this.model.contact, 'change', () => this.requestUpdate());
-        this.listenTo(this.model.contact.vcard, 'change', () => this.requestUpdate());
-        this.model.contact.on('destroy', () => {
-            delete this.model.contact;
-            this.close();
-        });
-
-        // Refresh the vcard
-        api.vcard.update(this.model.contact.vcard, true);
+    /**
+     * @param {import('@converse/headless/types/plugins/roster/contact').default} contact
+     */
+    registerContactEventHandlers(contact) {
+        this.listenTo(contact, 'change', () => this.requestUpdate());
+        this.listenTo(contact, 'destroy', () => this.close());
+        this.listenTo(contact.vcard, 'change', () => this.requestUpdate());
+        if (contact.vcard) { // Refresh the vcard
+            api.vcard.update(contact.vcard, true);
+        }
     }
 
     /**
@@ -76,7 +87,7 @@ export default class UserDetailsModal extends BaseModal {
         const data = new FormData(form);
         const name = /** @type {string} */ (data.get('name') || '').trim();
         const groups = /** @type {string} */ (data.get('groups'))?.split(',').map((g) => g.trim()) || [];
-        this.model.contact.update({
+        this.getContact().update({
             nickname: name,
             groups,
         });
@@ -88,7 +99,7 @@ export default class UserDetailsModal extends BaseModal {
      */
     async removeContact(ev) {
         ev?.preventDefault?.();
-        setTimeout(() => removeContact(this.model.contact), 1);
+        setTimeout(() => removeContact(this.getContact()), 1);
         this.modal.hide();
     }
 
@@ -97,7 +108,7 @@ export default class UserDetailsModal extends BaseModal {
      */
     async blockContact(ev) {
         ev?.preventDefault?.();
-        setTimeout(() => blockContact(this.model.contact), 1);
+        setTimeout(() => blockContact(this.getContact()), 1);
         this.modal.hide();
     }
 
@@ -106,7 +117,7 @@ export default class UserDetailsModal extends BaseModal {
      */
     async unblockContact(ev) {
         ev?.preventDefault?.();
-        setTimeout(() => unblockContact(this.model.contact), 1);
+        setTimeout(() => unblockContact(this.getContact()), 1);
         this.modal.hide();
     }
 }

@@ -27,6 +27,10 @@ export default class RosterContactView extends ObservableElement {
     /**
      * @param {MouseEvent} ev
      */
+    showUserDetailsModal(ev: MouseEvent): Promise<void>;
+    /**
+     * @param {MouseEvent} ev
+     */
     blockContact(ev: MouseEvent): Promise<void>;
     /**
      * @param {MouseEvent} ev

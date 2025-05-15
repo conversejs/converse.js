@@ -53,7 +53,7 @@ export function tplUserDetailsModal(el) {
     const vcard_json = vcard ? vcard.toJSON() : {};
     const o = { ...el.model.toJSON(), ...vcard_json };
 
-    const is_roster_contact = el.model.contact !== undefined;
+    const is_roster_contact = el.getContact() !== undefined;
     const allow_contact_removal = api.settings.get("allow_contact_removal");
 
     const domain = _converse.session.get("domain");
@@ -133,7 +133,7 @@ export function tplUserDetailsModal(el) {
         );
     }
 
-    const { contact } = el.model;
+    const contact = el.getContact();
     if (!contact) return ''; // Happens during tests
 
     const name = contact.get("nickname") || contact.vcard?.get('fullname');

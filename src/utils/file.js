@@ -109,14 +109,8 @@ export async function isImageWithAlphaChannel(image_file) {
 }
 
 /**
- * @typedef {Object} CompressionOptions
- * @property {number} targetSize
- * @property {number} quality
- * @property {number} maxWidth
- * @property {number} maxHeight
- *
  * @param {File} file
- * @param {CompressionOptions} options
+ * @param {import('./types').CompressionOptions} options
  * @returns {Promise<Blob>}
  */
 export async function compressImage(
@@ -126,10 +120,15 @@ export async function compressImage(
         quality: 0.75,
         maxWidth: 256,
         maxHeight: 256,
+        maxUncompressedSize: 100, // In KB
     }
 ) {
-    const compress = new Compress(options);
-    const conversions = await compress.compress([file]);
-    const { photo } = conversions[0];
-    return photo.data;
+    if (options.maxUncompressedSize && file.size > options.maxUncompressedSize * 1024) {
+        delete options.maxUncompressedSize;
+        const compress = new Compress(options);
+        const conversions = await compress.compress([file]);
+        const { photo } = conversions[0];
+        return photo.data;
+    }
+    return file;
 }

@@ -5,17 +5,11 @@
  */
 export function isImageWithAlphaChannel(image_file: File): Promise<boolean>;
 /**
- * @typedef {Object} CompressionOptions
- * @property {number} targetSize
- * @property {number} quality
- * @property {number} maxWidth
- * @property {number} maxHeight
- *
  * @param {File} file
- * @param {CompressionOptions} options
+ * @param {import('./types').CompressionOptions} options
  * @returns {Promise<Blob>}
  */
-export function compressImage(file: File, options?: CompressionOptions): Promise<Blob>;
+export function compressImage(file: File, options?: import("./types").CompressionOptions): Promise<Blob>;
 export const MIMETYPES_MAP: {
     aac: string;
     abw: string;
@@ -94,11 +88,5 @@ export const MIMETYPES_MAP: {
     '3gp': string;
     '3g2': string;
     '7z': string;
-};
-export type CompressionOptions = {
-    targetSize: number;
-    quality: number;
-    maxWidth: number;
-    maxHeight: number;
 };
 //# sourceMappingURL=file.d.ts.map

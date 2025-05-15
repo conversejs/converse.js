@@ -42,7 +42,6 @@ export default {
          */
         async set (jid, data) {
             if (!jid) throw Error("No jid provided for the VCard data");
-            debugger;
             api.waitUntil('VCardsInitialized');
 
             let vcard = _converse.state.vcards.get(jid);

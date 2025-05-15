@@ -201,7 +201,7 @@ declare const _default: {
         unique<T extends unknown>(arr: Array<T>): Array<T>;
     } & import("headless/types/utils/index.js").CommonUtils & import("headless/types/utils/index.js").PluginUtils;
     isImageWithAlphaChannel(image_file: File): Promise<boolean>;
-    compressImage(file: File, options?: CompressionOptions): Promise<Blob>;
+    compressImage(file: File, options?: import("./types.js").CompressionOptions): Promise<Blob>;
     MIMETYPES_MAP: {
         aac: string;
         abw: string;
@@ -285,6 +285,5 @@ declare const _default: {
 };
 export default _default;
 import * as html from "./html.js";
-import * as file from "./file.js";
 import * as color from "./color.js";
 //# sourceMappingURL=index.d.ts.map

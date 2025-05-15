@@ -23,6 +23,6 @@ export default class ProfileModal extends BaseModal {
     onFormSubmitted(ev: SubmitEvent): Promise<void>;
     _submitting: boolean;
 }
-import BaseModal from "plugins/modal/modal.js";
+import BaseModal from 'plugins/modal/modal.js';
 import { Model } from '@converse/skeletor';
 //# sourceMappingURL=profile.d.ts.map

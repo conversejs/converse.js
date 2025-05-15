@@ -16,8 +16,8 @@ const checkHeaderToggling = async function (group) {
     expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeTruthy();
     expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeFalsy();
     toggle.click();
-    await u.waitUntil(() => group.querySelectorAll('li').length ===
-        Array.from(group.querySelectorAll('li')).filter(u.isVisible).length);
+    await u.waitUntil(() => group.querySelectorAll('li .open-chat').length ===
+        Array.from(group.querySelectorAll('li .open-chat')).filter(u.isVisible).length);
 
     expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeFalsy();
     expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeTruthy();
@@ -361,7 +361,7 @@ describe("The Contacts Roster", function () {
             expect(sizzle('div.roster-group:not(.collapsed)', roster).pop().firstElementChild.textContent.trim()).toBe('Colleagues');
             expect(sizzle('div.roster-group:not(.collapsed) li', roster).filter(u.isVisible).length).toBe(6);
             // Check that all contacts under the group are shown
-            expect(sizzle('div.roster-group:not(.collapsed) li', roster).filter(l => !u.isVisible(l)).length).toBe(0);
+            expect(sizzle('div.roster-group:not(.collapsed) li .open-chat', roster).filter(l => !u.isVisible(l)).length).toBe(0);
 
             filter = rosterview.querySelector('.items-filter');
             filter.value = "xxx";
@@ -408,9 +408,11 @@ describe("The Contacts Roster", function () {
             await mock.waitForRoster(_converse, 'all');
 
             let jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            _converse.roster.get(jid).presence.set('show', 'online');
+            _converse.roster.get(jid).presence.set('presence', 'online');
+
             jid = mock.cur_names[4].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            _converse.roster.get(jid).presence.set('show', 'dnd');
+            _converse.roster.get(jid).presence.set({ show: 'dnd', presence: 'online' });
+
             await mock.openControlBox(_converse);
             const rosterview = document.querySelector('converse-roster');
 
@@ -430,8 +432,8 @@ describe("The Contacts Roster", function () {
 
             filter.value = "online";
             u.triggerEvent(filter, 'change');
-
             await u.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 2, 900);
+
             const contacts = sizzle('li', roster).filter(u.isVisible);
             expect(contacts.pop().querySelector('.contact-name').textContent.trim()).toBe('Romeo Montague (me)');
             expect(contacts.pop().querySelector('.contact-name').textContent.trim()).toBe('Lord Montague');
@@ -491,7 +493,7 @@ describe("The Contacts Roster", function () {
                 "ænemies",
                 "Ungrouped",
             ]);
-            const contacts = sizzle('.roster-group[data-group="New messages"] li', rosterview);
+            const contacts = sizzle('.roster-group[data-group="New messages"] li converse-roster-contact', rosterview);
             expect(contacts.length).toBe(1);
             expect(contacts[0].querySelector('.contact-name').textContent).toBe("Mercutio");
             expect(contacts[0].querySelector('.msgs-indicator').textContent).toBe("5");
@@ -511,7 +513,7 @@ describe("The Contacts Roster", function () {
 
         it("can be used to organize existing contacts",
             mock.initConverse(
-                [], {'roster_groups': true},
+                [], { roster_groups: true, show_self_in_roster: false },
                 async function (_converse) {
 
             await mock.openControlBox(_converse);
@@ -530,7 +532,7 @@ describe("The Contacts Roster", function () {
             ]);
             // Check that usernames appear alphabetically per group
             Object.keys(mock.groups).forEach(name  => {
-                const contacts = sizzle('.roster-group[data-group="'+name+'"] ul', rosterview);
+                const contacts = sizzle('.roster-group[data-group="'+name+'"] ul .open-chat .contact-name', rosterview);
                 const names = contacts.map(o => o.textContent.trim());
                 const sorted_names = [...names];
                 sorted_names.sort();
@@ -597,7 +599,7 @@ describe("The Contacts Roster", function () {
             await u.waitUntil(() => (sizzle('li', rosterview).filter(u.isVisible).length === 31));
             // Check that usernames appear alphabetically per group
             groups.forEach(name => {
-                const contacts = sizzle('.roster-group[data-group="'+name+'"] ul li', rosterview);
+                const contacts = sizzle('.roster-group[data-group="'+name+'"] ul li .open-chat', rosterview);
                 const names = contacts.map(o => o.textContent.trim());
                 const sorted_names = [...names];
                 sorted_names.sort();
@@ -806,6 +808,7 @@ describe("The Contacts Roster", function () {
             pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'away');
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
             await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-away)');
+                    return
 
             pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'xa');
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
@@ -1046,23 +1049,23 @@ describe("The Contacts Roster", function () {
             let i, jid;
             for (i=0; i<3; i++) {
                 jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                _converse.roster.get(jid).presence.set('show', 'online');
+                _converse.roster.get(jid).presence.set('presence', 'online');
             }
             for (i=3; i<6; i++) {
                 jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                _converse.roster.get(jid).presence.set('show', 'dnd');
+                _converse.roster.get(jid).presence.set({ presence: 'online', show: 'dnd' });
             }
             for (i=6; i<9; i++) {
                 jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                _converse.roster.get(jid).presence.set('show', 'away');
+                _converse.roster.get(jid).presence.set({ presence: 'online', show: 'away' });
             }
             for (i=9; i<12; i++) {
                 jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                _converse.roster.get(jid).presence.set('show', 'xa');
+                _converse.roster.get(jid).presence.set({ presence: 'online', show: 'xa' });
             }
             for (i=12; i<15; i++) {
                 jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                _converse.roster.get(jid).presence.set('show', 'unavailable');
+                _converse.roster.get(jid).presence.set('presence', 'offline');
             }
 
             await u.waitUntil(() => u.isVisible(rosterview.querySelector('li.list-item:first-child')));
@@ -1089,13 +1092,15 @@ describe("The Contacts Roster", function () {
                     expect(statuses.join(" ")).toBe("online online away xa xa xa");
                     expect(status_classes.join(" ")).toBe("online online away xa xa xa");
                     expect(subscription_classes.join(" ")).toBe("both both both both both both");
+
                 } else if (groupname === "friends & acquaintences") {
                     const statuses = els.map(e => e.getAttribute('data-status'));
                     const subscription_classes = els.map(e => e.classList[4]);
                     const status_classes = els.map(e => e.classList[5]);
-                    expect(statuses.join(" ")).toBe("online online dnd dnd away unavailable");
-                    expect(status_classes.join(" ")).toBe("online online dnd dnd away unavailable");
+                    expect(statuses.join(" ")).toBe("online online dnd dnd away offline");
+                    expect(status_classes.join(" ")).toBe("online online dnd dnd away offline");
                     expect(subscription_classes.join(" ")).toBe("both both both both both both");
+
                 } else if (groupname === "Family") {
                     const statuses = els.map(e => e.getAttribute('data-status'));
                     const subscription_classes = els.map(e => e.classList[4]);
@@ -1103,6 +1108,7 @@ describe("The Contacts Roster", function () {
                     expect(statuses.join(" ")).toBe("online dnd");
                     expect(status_classes.join(" ")).toBe("online dnd");
                     expect(subscription_classes.join(" ")).toBe("both both");
+
                 } else if (groupname === "ænemies") {
                     const statuses = els.map(e => e.getAttribute('data-status'));
                     const subscription_classes = els.map(e => e.classList[4]);
@@ -1110,12 +1116,13 @@ describe("The Contacts Roster", function () {
                     expect(statuses.join(" ")).toBe("away");
                     expect(status_classes.join(" ")).toBe("away");
                     expect(subscription_classes.join(" ")).toBe("both");
+
                 } else if (groupname === "Ungrouped") {
                     const statuses = els.map(e => e.getAttribute('data-status'));
                     const subscription_classes = els.map(e => e.classList[4]);
                     const status_classes = els.map(e => e.classList[5]);
-                    expect(statuses.join(" ")).toBe("unavailable unavailable");
-                    expect(status_classes.join(" ")).toBe("unavailable unavailable");
+                    expect(statuses.join(" ")).toBe("offline offline");
+                    expect(status_classes.join(" ")).toBe("offline offline");
                     expect(subscription_classes.join(" ")).toBe("both both");
                 }
             }

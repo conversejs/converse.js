@@ -168,9 +168,8 @@ export async function onStatusInitialized(reconnecting) {
         const id = `converse.presences-${bare_jid}`;
 
         initStorage(presences, id, 'session');
-        // We might be continuing an existing session, so we fetch
-        // cached presence data.
-        presences.fetch();
+        // We might be continuing an existing session, so we fetch cached presence data.
+        await new Promise((r) => presences.fetch({ success: r, error: r }));
     }
     /**
      * Triggered once the _converse.Presences collection has been
@@ -179,7 +178,7 @@ export async function onStatusInitialized(reconnecting) {
      * Converse having reconnected.
      * @event _converse#presencesInitialized
      * @type {boolean}
-     * @example _converse.api.listen.on('presencesInitialized', reconnecting => { ... });
+     * @example _converse.api.listen.on('presencesInitialized', (reconnecting) => { ... });
      */
     api.trigger('presencesInitialized', reconnecting);
 }

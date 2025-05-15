@@ -24,7 +24,6 @@ export class Connection extends Connection_base {
     /**
      * Establish a new XMPP session by logging in with the supplied JID and
      * password.
-     * @method Connnection.connect
      * @param {String} jid
      * @param {String} password
      * @param {Function} callback

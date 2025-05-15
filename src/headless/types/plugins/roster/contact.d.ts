@@ -151,7 +151,7 @@ declare class RosterContact extends RosterContact_base {
         resolve: (value: any) => void;
         reject: (reason?: any) => void;
     };
-    setPresence(): void;
+    setPresence(): Promise<void>;
     presence: any;
     getStatus(): any;
     openChat(): void;

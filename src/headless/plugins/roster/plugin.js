@@ -32,7 +32,13 @@ converse.plugins.add('converse-roster', {
             synchronize_availability: true
         });
 
-        api.promises.add(['cachedRoster', 'roster', 'rosterContactsFetched', 'rosterInitialized']);
+        api.promises.add([
+            'cachedRoster',
+            'roster',
+            'rosterContactsFetched',
+            'rosterInitialized',
+            'presencesInitialized',
+        ]);
 
         // API methods only available to plugins
         Object.assign(_converse.api, roster_api);

@@ -32,7 +32,7 @@ export default class RosterContactView extends ObservableElement {
         this.listenTo(this.model, 'highlight', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
-        this.listenTo(this.model, 'presenceChanged', () => this.requestUpdate());
+        this.listenTo(this.model, 'presence:change', () => this.requestUpdate());
     }
 
     render() {

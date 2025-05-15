@@ -21,8 +21,8 @@ describe('An unsaved Contact', function () {
             await _converse.handleMessageStanza(msg);
 
             const rosterview = document.querySelector('converse-roster');
-            await u.waitUntil(() => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li`).length);
-            expect(rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li`).length).toBe(1);
+            await u.waitUntil(() => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length);
+            expect(rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length).toBe(1);
             const el = rosterview.querySelector(`ul[data-group="Unsaved contacts"] li .contact-name`);
             expect(el.textContent).toBe('Mercutio');
         })
@@ -63,8 +63,8 @@ describe('An unsaved Contact', function () {
                 </message>`;
             await _converse.handleMessageStanza(msg);
 
-            await u.waitUntil(() => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li`).length);
-            expect(rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li`).length).toBe(1);
+            await u.waitUntil(() => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length);
+            expect(rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length).toBe(1);
             const el = rosterview.querySelector(`ul[data-group="Unsaved contacts"] li .contact-name`);
             expect(el.textContent).toBe('Mercutio');
         })
@@ -90,8 +90,8 @@ describe('An unsaved Contact', function () {
             await _converse.handleMessageStanza(msg);
 
             const rosterview = document.querySelector('converse-roster');
-            await u.waitUntil(() => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li`).length);
-            expect(rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li`).length).toBe(1);
+            await u.waitUntil(() => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length);
+            expect(rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length).toBe(1);
             const el = rosterview.querySelector(`ul[data-group="Unsaved contacts"] li .contact-name`);
             expect(el.textContent).toBe('Mercutio');
 

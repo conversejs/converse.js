@@ -1,13 +1,17 @@
 export default class UserDetailsModal extends BaseModal {
     constructor(options: any);
     addListeners(): void;
+    getContact(): any;
     /**
      * @param {Map<string, any>} changed
      */
     shouldUpdate(changed: Map<string, any>): boolean;
     renderModal(): import("lit-html").TemplateResult<1> | "";
     getModalTitle(): any;
-    registerContactEventHandlers(): void;
+    /**
+     * @param {import('@converse/headless/types/plugins/roster/contact').default} contact
+     */
+    registerContactEventHandlers(contact: import("@converse/headless/types/plugins/roster/contact").default): void;
     /**
      * @param {MouseEvent} ev
      */
@@ -25,5 +29,5 @@ export default class UserDetailsModal extends BaseModal {
      */
     unblockContact(ev: MouseEvent): Promise<void>;
 }
-import BaseModal from "plugins/modal/modal.js";
+import BaseModal from 'plugins/modal/modal.js';
 //# sourceMappingURL=user-details.d.ts.map

@@ -73,6 +73,19 @@ export default class RosterContactView extends ObservableElement {
     /**
      * @param {MouseEvent} ev
      */
+    async showUserDetailsModal(ev) {
+        ev?.preventDefault?.();
+        ev.preventDefault();
+        if (this.model instanceof _converse.exports.Profile) {
+            api.modal.show('converse-profile-modal', { model: this.model }, ev);
+        } else {
+            api.modal.show('converse-user-details-modal', { model: this.model }, ev);
+        }
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
     async blockContact(ev) {
         ev?.preventDefault?.();
         await blockContact(this.model);

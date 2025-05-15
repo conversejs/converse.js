@@ -2,7 +2,27 @@ import { __ } from 'i18n';
 import { api } from '@converse/headless';
 import { html } from 'lit';
 import { getUnreadMsgsDisplay } from 'shared/chat/utils.js';
-import { tplRemoveLink } from './roster_item';
+import { tplDetailsButton, tplRemoveButton } from './roster_item';
+
+
+/**
+ * @param {import('../contactview').default} el
+ */
+function tplAddContactButton(el) {
+    const display_name = el.model.getDisplayName();
+    const i18n_add_contact = __('Click to add %1$s as a contact', display_name);
+    return html`<a
+        class="dropdown-item add-contact"
+        role="button"
+        @click="${el.addContact}"
+        title="${i18n_add_contact}"
+        data-toggle="modal"
+    >
+        <converse-icon class="fa fa-user-plus" size="1.5em"></converse-icon>
+        ${__('Save as contact')}
+    </a>`;
+}
+
 
 /**
  * @param {import('../contactview').default} el
@@ -12,8 +32,14 @@ export default (el) => {
     const display_name = el.model.getDisplayName();
     const jid = el.model.get('jid');
 
-    const i18n_add_contact = __('Click to add %1$s as a contact', display_name);
     const i18n_chat = __('Click to chat with %1$s (XMPP address: %2$s)', display_name, jid);
+
+    const btns = [
+       ...(api.settings.get('allow_contact_removal') ? [tplRemoveButton(el)] : []),
+       tplDetailsButton(el),
+       tplAddContactButton(el)
+    ];
+
     return html`
         <a
             class="list-item-link cbox-list-item open-chat ${num_unread ? 'unread-msgs' : ''}"
@@ -36,16 +62,7 @@ export default (el) => {
             <span class="contact-name ${num_unread ? 'unread-msgs' : ''}">${display_name}</span>
         </a>
         <span class="contact-actions">
-            <a
-                class="add-contact list-item-action"
-                @click="${(ev) => el.addContact(ev)}"
-                aria-label="${i18n_add_contact}"
-                title="${i18n_add_contact}"
-                href="#"
-            >
-                <converse-icon class="fa fa-user-plus" size="1.5em"></converse-icon>
-            </a>
-            ${api.settings.get('allow_contact_removal') ? tplRemoveLink(el) : ''}
+            <converse-dropdown class="btn-group dropstart list-item-action" .items=${btns}></converse-dropdown>
         </span>
     `;
 };

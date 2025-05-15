@@ -1,6 +1,6 @@
 export default class ProfileModal extends BaseModal {
     /**
-     * @typedef {import('@converse/headless/types/plugins/vcard/api').VCardData} VCardData
+     * @typedef {import('@converse/headless/types/plugins/vcard/types').VCardData} VCardData
      * @typedef {import("@converse/headless").Profile} Profile
      */
     static properties: {
@@ -16,7 +16,7 @@ export default class ProfileModal extends BaseModal {
     /**
      * @param {VCardData} data
      */
-    setVCard(data: import("@converse/headless/types/plugins/vcard/api").VCardData): Promise<boolean>;
+    setVCard(data: import("@converse/headless/types/plugins/vcard/types").VCardData): Promise<boolean>;
     /**
      * @param {SubmitEvent} ev
      */

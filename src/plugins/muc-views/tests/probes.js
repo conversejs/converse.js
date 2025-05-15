@@ -32,7 +32,8 @@ describe('Groupchats', function () {
                 expect(probe).toEqualStanza(
                     stx`<presence to="${muc_jid}/ralphm" type="probe" xmlns="jabber:client">
                         <priority>0</priority>
-                        <c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>
+                        <x xmlns="vcard-temp:x:update"/>
+                        <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
                     </presence>`
                 );
 
@@ -65,7 +66,8 @@ describe('Groupchats', function () {
                 expect(probe).toEqualStanza(
                     stx`<presence to="${muc_jid}/gonePhising" type="probe" xmlns="jabber:client">
                         <priority>0</priority>
-                        <c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>
+                        <x xmlns="vcard-temp:x:update"/>
+                        <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
                     </presence>`
                 );
 

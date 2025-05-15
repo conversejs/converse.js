@@ -16,4 +16,13 @@ export interface VCardResult {
     vcard_error?: string;
     vcard_updated?: string;
 }
+export type VCardData = {
+    fn?: string;
+    nickname?: string;
+    role?: string;
+    email?: string;
+    url?: string;
+    image_type?: string;
+    image?: string;
+};
 //# sourceMappingURL=types.d.ts.map

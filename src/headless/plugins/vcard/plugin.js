@@ -14,6 +14,7 @@ import {
     onOccupantAvatarChanged,
     registerPresenceHandler,
     unregisterPresenceHandler,
+    updatePresence,
 } from './utils.js';
 
 const { Strophe } = converse.env;
@@ -45,7 +46,10 @@ converse.plugins.add('converse-vcard', {
             }
         );
 
-        api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.VCARD));
+        api.listen.on('addClientFeatures', () => {
+            api.disco.own.features.add(Strophe.NS.VCARD);
+            api.disco.own.features.add(Strophe.NS.VCARD_UPDATE);
+        });
         api.listen.on('clearSession', () => clearVCardsSession());
 
         api.listen.on('visibilityChanged', ({ el }) => {
@@ -61,5 +65,6 @@ converse.plugins.add('converse-vcard', {
 
         api.listen.on('presencesInitialized', () => registerPresenceHandler());
         api.listen.on('beforeTearDown', () => unregisterPresenceHandler());
+        api.listen.on('constructedPresence', (_, p) => updatePresence(p));
     },
 });

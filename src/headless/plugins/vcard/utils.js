@@ -14,37 +14,11 @@ import log from '@converse/log';
 import { shouldClearCache } from '../../utils/session.js';
 import { isElement } from '../../utils/html.js';
 import { parseErrorStanza } from '../../shared/parsers.js';
+import {parseVCardResultStanza} from './parsers.js';
 
-const { Strophe, $iq, u, sizzle } = converse.env;
+const { Strophe, $iq, sizzle, stx } = converse.env;
 
 Strophe.addNamespace('VCARD_UPDATE', 'vcard-temp:x:update');
-
-/**
- * @param {Element} iq
- * @returns {Promise<import("./types").VCardResult>}
- */
-export async function onVCardData(iq) {
-    const result = {
-        email: iq.querySelector(':scope > vCard EMAIL USERID')?.textContent,
-        fullname: iq.querySelector(':scope > vCard FN')?.textContent,
-        image: iq.querySelector(':scope > vCard PHOTO BINVAL')?.textContent,
-        image_type: iq.querySelector(':scope > vCard PHOTO TYPE')?.textContent,
-        nickname: iq.querySelector(':scope > vCard NICKNAME')?.textContent,
-        role: iq.querySelector(':scope > vCard ROLE')?.textContent,
-        stanza: iq, // TODO: remove?
-        url: iq.querySelector(':scope > vCard URL')?.textContent,
-        vcard_updated: new Date().toISOString(),
-        error: undefined,
-        vcard_error: undefined,
-        image_hash: undefined,
-    };
-    if (result.image) {
-        const buffer = u.base64ToArrayBuffer(result.image);
-        const ab = await crypto.subtle.digest('SHA-1', buffer);
-        result['image_hash'] = u.arrayBufferToHex(ab);
-    }
-    return result;
-}
 
 /**
  * @param {"get"|"set"|"result"} type
@@ -192,7 +166,7 @@ export async function fetchVCard(jid) {
             vcard_error: new Date().toISOString(),
         };
     }
-    return onVCardData(iq);
+    return parseVCardResultStanza(iq);
 }
 
 /**
@@ -222,7 +196,7 @@ export function unregisterPresenceHandler() {
 }
 
 export function registerPresenceHandler() {
-    unregisterPresenceHandler();
+    // unregisterPresenceHandler();
     const connection = api.connection.get();
     presence_ref = connection.addHandler(
         /** @param {Element} pres */
@@ -238,4 +212,15 @@ export function registerPresenceHandler() {
         'presence',
         null
     );
+}
+
+/**
+ * @param {import('strophe.js').Builder} stanza
+ */
+export function updatePresence(stanza) {
+    if (sizzle(`x[xmlns=${Strophe.NS.VCARD_UPDATE}"]`, stanza.root()).length === 0) {
+        const node = stx`<x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>`;
+        stanza.root().cnode(node).up();
+    }
+    return stanza;
 }

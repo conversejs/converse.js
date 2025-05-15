@@ -7,18 +7,7 @@ import api from '../../shared/api/index.js';
 import converse from "../../shared/api/public.js";
 import { createStanza, fetchVCard } from './utils.js';
 
-const { dayjs, u } = converse.env;
-
-/**
- * @typedef {Object} VCardData
- * @property {string} [VCardData.fn]
- * @property {string} [VCardData.nickname]
- * @property {string} [VCardData.role]
- * @property {string} [VCardData.email]
- * @property {string} [VCardData.url]
- * @property {string} [VCardData.image_type]
- * @property {string} [VCardData.image]
- */
+const { Strophe, dayjs, u, stx } = converse.env;
 
 export default {
     /**
@@ -39,8 +28,7 @@ export default {
          *
          * @method _converse.api.vcard.set
          * @param {string} jid The JID for which the VCard should be set
-         * @param {VCardData} data A map of VCard keys and values
-         *
+         * @param {import("./types").VCardData} data A map of VCard keys and values
          * @example
          * let jid = _converse.bare_jid;
          * _converse.api.vcard.set( jid, {
@@ -53,13 +41,26 @@ export default {
          * }).
          */
         async set (jid, data) {
+            if (!jid) throw Error("No jid provided for the VCard data");
+            debugger;
             api.waitUntil('VCardsInitialized');
 
-            if (!jid) {
-                throw Error("No jid provided for the VCard data");
+            let vcard = _converse.state.vcards.get(jid);
+            const old_vcard_attrs = vcard?.attributes ?? null;
+            if (vcard && old_vcard_attrs.image !== data.image) {
+                // Optimistically update the vcard with image data. Otherwise some servers (e.g. Ejabberd)
+                // could send a XEP-0153 vcard:update presence which would cause us to refetch the vcard again.
+                const buffer = u.base64ToArrayBuffer(data.image);
+                const hash_ab = await crypto.subtle.digest('SHA-1', buffer);
+                vcard.save({
+                    image: data.image,
+                    image_type: data.image_type,
+                    image_hash: u.arrayBufferToHex(hash_ab),
+                });
             }
-            const div = document.createElement('div');
-            const vcard_el = u.toStanza(`
+
+            let result;
+            const vcard_el = stx`
                 <vCard xmlns="vcard-temp">
                     <FN>${data.fn ?? ''}</FN>
                     <NICKNAME>${data.nickname ?? ''}</NICKNAME>
@@ -70,14 +71,22 @@ export default {
                         <TYPE>${data.image_type ?? ''}</TYPE>
                         <BINVAL>${data.image ?? ''}</BINVAL>
                     </PHOTO>
-                </vCard>`, div);
-            let result;
+                </vCard>`;
             try {
                 result = await api.sendIQ(createStanza("set", jid, vcard_el));
             } catch (e) {
+                if (old_vcard_attrs) vcard.save(old_vcard_attrs);
                 throw (e);
             }
-            await api.vcard.update(jid, true);
+
+            vcard = await api.vcard.update(jid, true);
+            if (u.isOwnJID(jid)) {
+                // Send out a XEP-0153 presence with the image hash
+                const node = stx`<x xmlns="${Strophe.NS.VCARD_UPDATE}">
+                    <photo>${vcard.get('image_hash') ?? ''}</photo>
+                </x>`;
+                api.user.presence.send({}, node);
+            }
             return result;
         },
 
@@ -179,6 +188,7 @@ export default {
                 delete data['stanza']
                 u.safeSave(model, data);
             }
+            return model;
         }
     }
 }

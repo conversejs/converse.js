@@ -5,7 +5,7 @@ import _converse from '../../shared/_converse.js';
 import converse from '../../shared/api/public.js';
 import { arrayBufferToBase64, stringToArrayBuffer  } from '../../utils/arraybuffer.js';
 
-const { Strophe, $build } = converse.env;
+const { Strophe, stx } = converse.env;
 
 function propertySort (array, property) {
     return array.sort((a, b) => { return a[property] > b[property] ? -1 : 1 });
@@ -29,22 +29,16 @@ async function generateVerificationString () {
     return arrayBufferToBase64(ab);
 }
 
-async function createCapsNode () {
-    return $build("c", {
-        'xmlns': Strophe.NS.CAPS,
-        'hash': "sha-1",
-        'node': "https://conversejs.org",
-        'ver': await generateVerificationString()
-    }).tree();
-}
-
-
 /**
  * Given a stanza, adds a XEP-0115 CAPS element
  * @param {Strophe.Builder} stanza
  */
 export async function addCapsNode (stanza) {
-    const caps_el = await createCapsNode();
-    stanza.root().cnode(caps_el).up();
+    const node = stx`<c
+        xmlns="${Strophe.NS.CAPS}"
+        hash="sha-1"
+        node="https://conversejs.org"
+        ver="${await generateVerificationString()}"></c>`;
+    stanza.root().cnode(node).up();
     return stanza;
 }

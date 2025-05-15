@@ -101,8 +101,8 @@ describe("XEP-0198 Stream Management", function () {
         expect(_converse.session.get('unacked_stanzas')[1]).toBe(Strophe.serialize(IQ_stanzas[3]));
         expect(_converse.session.get('unacked_stanzas')[2]).toBe(Strophe.serialize(IQ_stanzas[4]));
         expect(_converse.session.get('unacked_stanzas')[3]).toBe(
-            `<presence xmlns="jabber:client"><priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
+            `<presence xmlns="jabber:client"><priority>0</priority><x xmlns="vcard-temp:x:update"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`);
 
         r = u.toStanza(`<r xmlns="urn:xmpp:sm:3"/>`);

@@ -7,7 +7,7 @@ import './styles/profile.scss';
 
 class Profile extends CustomElement {
     initialize () {
-        this.model = _converse.state.xmppstatus;
+        this.model = _converse.state.profile;
         this.listenTo(this.model, "change", () => this.requestUpdate());
         this.listenTo(this.model, "vcard:add", () => this.requestUpdate());
         this.listenTo(this.model, "vcard:change", () => this.requestUpdate());

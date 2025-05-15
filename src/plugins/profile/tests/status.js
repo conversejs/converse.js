@@ -33,7 +33,8 @@ describe("The Controlbox", function () {
                 <presence xmlns="jabber:client">
                     <show>dnd</show>
                     <priority>0</priority>
-                    <c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>
+                    <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
+                    <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
                 </presence>`);
             const view = await u.waitUntil(() => document.querySelector('converse-user-profile'));
             const first_child = view.querySelector('.xmpp-status span:first-child');
@@ -56,12 +57,13 @@ describe("The Controlbox", function () {
             modal.querySelector('[type="submit"]').click();
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop());
-            expect(Strophe.serialize(sent_presence)).toBe(
-                `<presence xmlns="jabber:client">`+
-                    `<status>I am happy</status>`+
-                    `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
-                `</presence>`);
+            expect(sent_presence).toEqualStanza(stx`
+                <presence xmlns="jabber:client">
+                    <status>I am happy</status>
+                    <priority>0</priority>
+                    <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
+                    <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
+                </presence>`);
 
             const view = await u.waitUntil(() => document.querySelector('converse-user-profile'));
             const first_child = view.querySelector('.xmpp-status span:first-child');

@@ -26,6 +26,7 @@ describe('A sent presence stanza', function () {
             expect(presence.node).toEqualStanza(stx`
             <presence xmlns="jabber:client">
                 <priority>0</priority>
+                <x xmlns="vcard-temp:x:update"/>
                 <c hash="sha-1"
                     node="https://conversejs.org"
                     ver="QgayPKawpkPSDYmwT/WM94uAlu0="
@@ -44,7 +45,8 @@ describe('A sent presence stanza', function () {
             <presence xmlns="jabber:client">
                 <status>Hello world</status>
                 <priority>0</priority>
-                <c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>
+                <x xmlns="vcard-temp:x:update"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`);
 
             api.settings.set('priority', 2);
@@ -54,7 +56,8 @@ describe('A sent presence stanza', function () {
                 <show>away</show>
                 <status>Going jogging</status>
                 <priority>2</priority>
-                <c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>
+                <x xmlns="vcard-temp:x:update"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`);
 
             api.settings.set('priority', undefined);
@@ -64,7 +67,8 @@ describe('A sent presence stanza', function () {
                 <show>dnd</show>
                 <status>Doing taxes</status>
                 <priority>0</priority>
-                <c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>
+                <x xmlns="vcard-temp:x:update"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`);
         })
     );

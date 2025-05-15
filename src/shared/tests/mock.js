@@ -767,10 +767,12 @@ function getMockVcardFetcher (settings) {
 }
 
 const theme = ['dracula', 'classic', 'cyberpunk', 'nordic'][Math.floor(Math.random()*4)];
+let originalVCardGet;
 
 async function _initConverse (settings) {
     clearStores();
     await clearIndexedDB();
+
 
     _converse = await converse.initialize(Object.assign({
         animate: false,
@@ -793,8 +795,12 @@ async function _initConverse (settings) {
 
     window._converse = _converse;
 
+    originalVCardGet = originalVCardGet || _converse.api.vcard.get;
+
     if (!settings?.no_vcard_mocks && _converse.api.vcard) {
         _converse.api.vcard.get = getMockVcardFetcher(settings);
+    } else {
+        _converse.api.vcard.get = originalVCardGet;
     }
 
     if (settings?.auto_login !== false) {

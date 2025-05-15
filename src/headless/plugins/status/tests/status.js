@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const u = converse.env.utils;
+const { u, sizzle } = converse.env;
 
 describe("The Profile model", function () {
 
@@ -12,7 +12,8 @@ describe("The Profile model", function () {
         _converse.api.user.status.message.set("I'm also happy!");
 
         const stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('presence')).pop());
-        expect(stanza.childNodes.length).toBe(3);
+        expect(stanza.childNodes.length).toBe(4);
+        expect(sizzle(`x[xmlns="${Strophe.NS.VCARD_UPDATE}"]`, stanza).length).toBe(1);
         expect(stanza.querySelectorAll('status').length).toBe(1);
         expect(stanza.querySelector('status').textContent).toBe("I'm also happy!");
         expect(stanza.querySelectorAll('show').length).toBe(0);

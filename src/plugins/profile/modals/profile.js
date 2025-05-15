@@ -11,7 +11,7 @@ import './styles/profile.scss';
 
 export default class ProfileModal extends BaseModal {
     /**
-     * @typedef {import('@converse/headless/types/plugins/vcard/api').VCardData} VCardData
+     * @typedef {import('@converse/headless/types/plugins/vcard/types').VCardData} VCardData
      * @typedef {import("@converse/headless").Profile} Profile
      */
 

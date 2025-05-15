@@ -278,6 +278,7 @@ declare class MUCOccupant extends MUCOccupant_base {
     initialize(): Promise<void>;
     defaults(): {
         hats: any[];
+        presence: string;
         show: any;
         states: any[];
         hidden: boolean;

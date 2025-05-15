@@ -5,6 +5,8 @@ const { Strophe, u, stx, sizzle } = converse.env;
 
 describe("XEP-0437 Room Activity Indicators", function () {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("will be activated for a MUC that becomes hidden",
         mock.initConverse(
             [], {
@@ -73,31 +75,33 @@ describe("XEP-0437 Room Activity Indicators", function () {
         view.model.save({'hidden': true});
         await u.waitUntil(() => sent_stanzas.length === 4);
 
-        expect(Strophe.serialize(sent_stanzas[0])).toBe(
-            `<message to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">`+
-                `<inactive xmlns="http://jabber.org/protocol/chatstates"/>`+
-                `<no-store xmlns="urn:xmpp:hints"/>`+
-                `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
-            `</message>`
+        expect(sent_stanzas[0]).toEqualStanza(stx`
+            <message to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">
+                <inactive xmlns="http://jabber.org/protocol/chatstates"/>
+                <no-store xmlns="urn:xmpp:hints"/>
+                <no-permanent-store xmlns="urn:xmpp:hints"/>
+            </message>`
         );
 
-        expect(Strophe.serialize(sent_stanzas[1])).toBe(
-            `<message from="${_converse.jid}" id="${sent_stanzas[1].getAttribute('id')}" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">`+
-                `<received id="${last_msg_id}" xmlns="urn:xmpp:chat-markers:0"/>`+
-            `</message>`
+        expect(sent_stanzas[1]).toEqualStanza(stx`
+            <message from="${_converse.jid}" id="${sent_stanzas[1].getAttribute('id')}" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">
+                <received id="${last_msg_id}" xmlns="urn:xmpp:chat-markers:0"/>
+            </message>`
         );
-        expect(Strophe.serialize(sent_stanzas[2])).toBe(
-            `<presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">`+
-                `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
-            `</presence>`
+        expect(sent_stanzas[2]).toEqualStanza(stx`
+            <presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">
+                <priority>0</priority>
+                <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
+                <c hash="sha-1" node="https://conversejs.org" ver="1zMU0D2z+vTfsHt07Z7AyaxbtR8=" xmlns="http://jabber.org/protocol/caps"/>
+            </presence>`
         );
-        expect(Strophe.serialize(sent_stanzas[3])).toBe(
-            `<presence to="montague.lit" xmlns="jabber:client">`+
-                `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
-                `<rai xmlns="urn:xmpp:rai:0"/>`+
-            `</presence>`
+        expect(sent_stanzas[3]).toEqualStanza(stx`
+            <presence to="montague.lit" xmlns="jabber:client">
+                <priority>0</priority>
+                <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
+                <c hash="sha-1" node="https://conversejs.org" ver="1zMU0D2z+vTfsHt07Z7AyaxbtR8=" xmlns="http://jabber.org/protocol/caps"/>
+                <rai xmlns="urn:xmpp:rai:0"/>
+            </presence>`
         );
 
         await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED);
@@ -149,18 +153,20 @@ describe("XEP-0437 Room Activity Indicators", function () {
         await u.waitUntil(() => getSentPresences().length === 3, 500);
         const sent_presences = getSentPresences();
 
-        expect(Strophe.serialize(sent_presences[1])).toBe(
-            `<presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">`+
-                `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
-            `</presence>`
+        expect(sent_presences[1]).toEqualStanza(stx`
+            <presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">
+                <priority>0</priority>
+                <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
+                <c hash="sha-1" node="https://conversejs.org" ver="1zMU0D2z+vTfsHt07Z7AyaxbtR8=" xmlns="http://jabber.org/protocol/caps"/>
+            </presence>`
         );
-        expect(Strophe.serialize(sent_presences[2])).toBe(
-            `<presence to="montague.lit" xmlns="jabber:client">`+
-                `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
-                `<rai xmlns="urn:xmpp:rai:0"/>`+
-            `</presence>`
+        expect(sent_presences[2]).toEqualStanza(stx`
+            <presence to="montague.lit" xmlns="jabber:client">
+                <priority>0</priority>
+                <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
+                <c hash="sha-1" node="https://conversejs.org" ver="1zMU0D2z+vTfsHt07Z7AyaxbtR8=" xmlns="http://jabber.org/protocol/caps"/>
+                <rai xmlns="urn:xmpp:rai:0"/>
+            </presence>`
         );
 
         await u.waitUntil(() => model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED);
@@ -203,18 +209,20 @@ describe("XEP-0437 Room Activity Indicators", function () {
         await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').length === 2);
 
         const sent_presences = sent_stanzas.filter(s => s.nodeName === 'presence');
-        expect(Strophe.serialize(sent_presences[0])).toBe(
-            `<presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">`+
-                `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
-            `</presence>`
+        expect(sent_presences[0]).toEqualStanza(stx`
+            <presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">
+                <priority>0</priority>
+                <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
+                <c hash="sha-1" node="https://conversejs.org" ver="1zMU0D2z+vTfsHt07Z7AyaxbtR8=" xmlns="http://jabber.org/protocol/caps"/>
+            </presence>`
         );
-        expect(Strophe.serialize(sent_presences[1])).toBe(
-            `<presence to="montague.lit" xmlns="jabber:client">`+
-                `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
-                `<rai xmlns="urn:xmpp:rai:0"/>`+
-            `</presence>`
+        expect(sent_presences[1]).toEqualStanza(stx`
+            <presence to="montague.lit" xmlns="jabber:client">
+                <priority>0</priority>
+                <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
+                <c hash="sha-1" node="https://conversejs.org" ver="1zMU0D2z+vTfsHt07Z7AyaxbtR8=" xmlns="http://jabber.org/protocol/caps"/>
+                <rai xmlns="urn:xmpp:rai:0"/>
+            </presence>`
         );
         // If an error presence with "resource-constraint" is returned, we rejoin
         const activity_stanza = stx`

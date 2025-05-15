@@ -47,10 +47,8 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         this.initialized = getOpenPromise();
 
         const jid = this.get('jid');
-        const { presences } = _converse.state;
-        this.presence = presences.get(jid) || presences.create({ jid });
+        this.setPresence(jid);
         await this.setModelContact(jid);
-        this.presence.on('change:show', (item) => this.onPresenceChanged(item));
 
         this.on('change:chat_state', () => sendChatState(this.get('jid'), this.get('chat_state')));
         this.on('change:hidden', () => this.get('hidden') && this.setChatState(INACTIVE));
@@ -64,6 +62,16 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
          */
         await api.trigger('chatBoxInitialized', this, { synchronous: true });
         this.initialized.resolve();
+    }
+
+    /**
+     * @param {string} jid
+     */
+    async setPresence(jid) {
+        await api.waitUntil('presencesInitialized');
+        const { presences } = _converse.state;
+        this.presence = presences.get(jid) || presences.create({ jid });
+        this.presence.on('change:show', (item) => this.onPresenceChanged(item));
     }
 
     /**

@@ -108,7 +108,6 @@ export class Connection extends Strophe.Connection {
     /**
      * Establish a new XMPP session by logging in with the supplied JID and
      * password.
-     * @method Connnection.connect
      * @param {String} jid
      * @param {String} password
      * @param {Function} callback

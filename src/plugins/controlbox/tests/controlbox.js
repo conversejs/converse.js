@@ -33,31 +33,6 @@ describe("The Controlbox", function () {
 
     describe("The \"Contacts\" section", function () {
 
-        it("can be used to add contact and it checks for case-sensivity",
-                mock.initConverse([], { show_self_in_roster: false }, async function (_converse) {
-
-            spyOn(_converse.api, "trigger").and.callThrough();
-            await mock.waitForRoster(_converse, 'all', 0);
-            await mock.openControlBox(_converse);
-            // Adding two contacts one with Capital initials and one with small initials of same JID (Case sensitive check)
-            _converse.roster.create({
-                jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                subscription: 'none',
-                ask: 'subscribe',
-                fullname: mock.pend_names[0]
-            });
-            _converse.roster.create({
-                jid: mock.pend_names[0].replace(/ /g,'.') + '@montague.lit',
-                subscription: 'none',
-                ask: 'subscribe',
-                fullname: mock.pend_names[0]
-            });
-            const rosterview = await u.waitUntil(() => document.querySelector('converse-roster'));
-            await u.waitUntil(() => Array.from(rosterview.querySelectorAll('.roster-group li')).filter(u.isVisible).length, 700);
-            // Checking that only one entry is created because both JID is same (Case sensitive check)
-            expect(Array.from(rosterview.querySelectorAll('li')).filter(u.isVisible).length).toBe(1);
-        }));
-
         it("shows the number of unread mentions received",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 

@@ -369,6 +369,10 @@ declare class ChatBox extends ChatBox_base {
         resolve: (value: any) => void;
         reject: (reason?: any) => void;
     };
+    /**
+     * @param {string} jid
+     */
+    setPresence(jid: string): Promise<void>;
     presence: any;
     /**
      * @param {MessageAttributes|StanzaParseError} attrs_or_error

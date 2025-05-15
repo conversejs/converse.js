@@ -13,7 +13,7 @@ export function tplRemoveButton(el) {
     return html`<a
         class="dropdown-item remove-xmpp-contact"
         role="button"
-        @click="${el.removeContact}"
+        @click="${(ev) => el.removeContact(ev)}"
         title="${i18n_remove}"
         data-toggle="modal"
     >

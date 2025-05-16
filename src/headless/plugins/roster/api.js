@@ -83,7 +83,6 @@ export default {
         async add(attributes, persist = true, subscribe = true, message = '') {
             if (!isValidJID(attributes?.jid)) throw new Error('api.contacts.add: Valid JID required');
 
-            await api.waitUntil('rosterContactsFetched');
             const { roster } = _converse.state;
             return roster.addContact(attributes, persist, subscribe, message);
         },

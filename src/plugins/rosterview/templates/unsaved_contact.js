@@ -14,7 +14,7 @@ function tplAddContactButton(el) {
     return html`<a
         class="dropdown-item add-contact"
         role="button"
-        @click="${el.addContact}"
+        @click="${(ev) => el.addContact(ev)}"
         title="${i18n_add_contact}"
         data-toggle="modal"
     >
@@ -31,13 +31,11 @@ export default (el) => {
     const num_unread = getUnreadMsgsDisplay(el.model);
     const display_name = el.model.getDisplayName();
     const jid = el.model.get('jid');
-
     const i18n_chat = __('Click to chat with %1$s (XMPP address: %2$s)', display_name, jid);
-
     const btns = [
-       ...(api.settings.get('allow_contact_removal') ? [tplRemoveButton(el)] : []),
        tplDetailsButton(el),
-       tplAddContactButton(el)
+       tplAddContactButton(el),
+       ...(api.settings.get('allow_contact_removal') ? [tplRemoveButton(el)] : []),
     ];
 
     return html`

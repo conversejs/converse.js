@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { __ } from 'i18n';
 import { getUnreadMsgsDisplay } from 'shared/chat/utils.js';
-import {tplDetailsButton } from './roster_item';
+import {tplDetailsButton } from './roster_item.js';
 
 /**
  * @param {import('../contactview').default} el

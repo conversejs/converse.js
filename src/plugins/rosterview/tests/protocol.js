@@ -460,7 +460,7 @@ describe("Presence subscriptions", function () {
 
             const header = sizzle('a:contains("Contact requests")', rosterview).pop();
             expect(u.isVisible(header)).toBe(true);
-            const contacts = header.nextElementSibling.querySelectorAll('li');
+            const contacts = header.nextElementSibling.querySelectorAll('.open-chat');
             expect(contacts.length).toBe(1);
         }));
     });

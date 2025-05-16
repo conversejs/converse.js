@@ -12,5 +12,6 @@ export type ToastProperties = {
     title?: string;
     body?: string;
     name: string;
+    type: 'info' | 'danger';
 };
 //# sourceMappingURL=types.d.ts.map

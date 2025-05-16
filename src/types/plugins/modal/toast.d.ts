@@ -1,5 +1,8 @@
 export default class Toast extends CustomElement {
     static get properties(): {
+        type: {
+            type: StringConstructor;
+        };
         name: {
             type: StringConstructor;
         };
@@ -13,7 +16,8 @@ export default class Toast extends CustomElement {
     name: string;
     body: string;
     header: string;
-    initialize(): void;
+    type: string;
+    timeoutId: NodeJS.Timeout;
     render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {MouseEvent} [ev]

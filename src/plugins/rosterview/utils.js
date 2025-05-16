@@ -35,6 +35,43 @@ export async function removeContact(contact, unauthorize = false) {
 
 /**
  * @param {RosterContact} contact
+ */
+export async function declineContactRequest(contact) {
+    const domain = _converse.session.get('domain');
+    const blocking_supported = await api.disco.supports(Strophe.NS.BLOCKING, domain);
+
+    const result = await api.confirm(
+        __('Remove and decline contact request'),
+        [__('Are you sure you want to decline the contact request from %1$s?', contact.getDisplayName())],
+        blocking_supported
+            ? [
+                  {
+                      label: __('Also block this user from sending you further messages'),
+                      name: 'block',
+                      type: 'checkbox',
+                  },
+              ]
+            : []
+    );
+
+    if (result) {
+        const chat = await api.chats.get(contact.get('jid'));
+        chat?.close();
+        contact.unauthorize();
+
+        if (blocking_supported && Array.isArray(result) && result.find((i) => i.name === 'block')?.value === 'on') {
+            api.blocklist.add(contact.get('jid'));
+            api.toast.show('', { body: __('Contact request declined and user blocked') });
+        } else {
+            api.toast.show('', { body: __('Contact request declined') });
+        }
+        contact.destroy();
+    }
+    return this;
+}
+
+/**
+ * @param {RosterContact} contact
  * @returns {Promise<boolean>}
  */
 export async function blockContact(contact) {
@@ -47,10 +84,7 @@ export async function blockContact(contact) {
     (await api.chats.get(contact.get('jid')))?.close();
 
     try {
-        await Promise.all([
-            api.blocklist.add(contact.get('jid')),
-            contact.remove(true)
-        ]);
+        await Promise.all([api.blocklist.add(contact.get('jid')), contact.remove(true)]);
     } catch (e) {
         log.error(e);
         api.alert('error', __('Error'), [
@@ -327,6 +361,6 @@ export async function getNamesAutoCompleteList(query) {
     }
     return json.map((i) => ({
         label: `${i.fullname} <${i.jid}>`,
-        value: `${i.fullname} <${i.jid}>`
+        value: `${i.fullname} <${i.jid}>`,
     }));
 }

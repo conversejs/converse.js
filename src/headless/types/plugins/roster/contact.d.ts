@@ -208,6 +208,7 @@ declare class RosterContact extends RosterContact_base {
      * @returns {Promise}
      */
     sendRosterRemoveStanza(): Promise<any>;
+    isUnsaved(): boolean;
 }
 import { Model } from '@converse/skeletor';
 //# sourceMappingURL=contact.d.ts.map

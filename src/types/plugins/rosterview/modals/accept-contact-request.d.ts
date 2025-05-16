@@ -7,5 +7,5 @@ export default class AcceptContactRequest extends BaseModal {
      */
     acceptContactRequest(ev: Event): Promise<void>;
 }
-import BaseModal from "plugins/modal/modal.js";
+import BaseModal from 'plugins/modal/modal.js';
 //# sourceMappingURL=accept-contact-request.d.ts.map

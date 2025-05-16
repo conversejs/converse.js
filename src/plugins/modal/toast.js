@@ -7,6 +7,7 @@ import './styles/toast.scss';
 export default class Toast extends CustomElement {
     static get properties() {
         return {
+            type: { type: String },
             name: { type: String },
             title: { type: String },
             body: { type: String },
@@ -18,17 +19,24 @@ export default class Toast extends CustomElement {
         this.name = '';
         this.body = '';
         this.header = '';
+        this.type = 'info';
     }
 
-    initialize() {
-        super.initialize();
-        setTimeout(() => this.hide(), 5000);
+    /**
+     * @param {import('lit').PropertyValues} changed
+     */
+    updated(changed) {
+        if (changed.get('type') !== 'danger') {
+            this.timeoutId = setTimeout(() => this.hide(), 5000);
+        } else {
+            clearTimeout(this.timeoutId);
+        }
     }
 
     render() {
-        return html`<div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+        return html`<div class="toast show text-bg-${this.type}" role="alert" aria-live="assertive" aria-atomic="true">
             ${this.title
-                ? html` <div class="toast-header">
+                ? html`<div class="toast-header">
                       <img src="/logo/conversejs-filled.svg" class="rounded me-2" alt="${__('Converse logo')}" />
                       <strong class="me-auto">${this.title ?? ''}</strong>
                       <button

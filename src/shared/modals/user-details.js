@@ -1,5 +1,6 @@
-import { api, _converse } from '@converse/headless';
-import { blockContact, removeContact, unblockContact } from 'plugins/rosterview/utils.js';
+import { Model } from '@converse/skeletor';
+import { api, _converse, log } from '@converse/headless';
+import { blockContact, declineContactRequest, removeContact, unblockContact } from 'plugins/rosterview/utils.js';
 import BaseModal from 'plugins/modal/modal.js';
 import { __ } from 'i18n';
 import { tplUserDetailsModal } from './templates/user-details.js';
@@ -73,9 +74,22 @@ export default class UserDetailsModal extends BaseModal {
         this.listenTo(contact, 'change', () => this.requestUpdate());
         this.listenTo(contact, 'destroy', () => this.close());
         this.listenTo(contact.vcard, 'change', () => this.requestUpdate());
-        if (contact.vcard) { // Refresh the vcard
+        if (contact.vcard) {
+            // Refresh the vcard
             api.vcard.update(contact.vcard, true);
         }
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    async addContact(ev) {
+        ev?.preventDefault?.();
+        this.modal.hide();
+        api.modal.show('converse-add-contact-modal', {
+            contact: this.model,
+            model: new Model()
+        }, ev);
     }
 
     /**
@@ -118,6 +132,30 @@ export default class UserDetailsModal extends BaseModal {
     async unblockContact(ev) {
         ev?.preventDefault?.();
         setTimeout(() => unblockContact(this.getContact()), 1);
+        this.modal.hide();
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    async acceptContactRequest(ev) {
+        ev?.preventDefault?.();
+        setTimeout(() => {
+            api.modal.show(
+                'converse-accept-contact-request-modal',
+                { model: new Model(), contact: this.getContact() },
+                ev
+            );
+        });
+        this.modal.hide();
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    async declineContactRequest(ev) {
+        ev?.preventDefault?.();
+        setTimeout(() => declineContactRequest(this.getContact()));
         this.modal.hide();
     }
 }

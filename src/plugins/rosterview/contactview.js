@@ -1,13 +1,11 @@
 import { Model } from '@converse/skeletor';
-import { _converse, converse, api } from '@converse/headless';
+import { _converse, api } from '@converse/headless';
 import { ObservableElement } from 'shared/components/observable.js';
 import tplRequestingContact from './templates/requesting_contact.js';
 import tplRosterItem from './templates/roster_item.js';
 import tplUnsavedContact from './templates/unsaved_contact.js';
 import { __ } from 'i18n';
-import { blockContact, removeContact } from './utils.js';
-
-const { Strophe } = converse.env;
+import { blockContact, declineContactRequest, removeContact } from './utils.js';
 
 export default class RosterContactView extends ObservableElement {
     /**
@@ -17,7 +15,7 @@ export default class RosterContactView extends ObservableElement {
     constructor() {
         super();
         this.model = null;
-        this.observable = /** @type {ObservableProperty} */ ("once");
+        this.observable = /** @type {ObservableProperty} */ ('once');
     }
 
     static get properties() {
@@ -59,7 +57,10 @@ export default class RosterContactView extends ObservableElement {
      */
     addContact(ev) {
         ev?.preventDefault?.();
-        api.modal.show('converse-add-contact-modal', { model: new Model() }, ev);
+        api.modal.show('converse-add-contact-modal', {
+            contact: this.model,
+            model: new Model()
+        }, ev);
     }
 
     /**
@@ -96,11 +97,7 @@ export default class RosterContactView extends ObservableElement {
      */
     async acceptRequest(ev) {
         ev?.preventDefault?.();
-        api.modal.show(
-            'converse-accept-contact-request-modal',
-            { model: new Model(), contact: this.model },
-            ev
-        );
+        api.modal.show('converse-accept-contact-request-modal', { model: new Model(), contact: this.model }, ev);
     }
 
     /**
@@ -108,38 +105,7 @@ export default class RosterContactView extends ObservableElement {
      */
     async declineRequest(ev) {
         ev?.preventDefault?.();
-        const domain = _converse.session.get('domain');
-        const blocking_supported = await api.disco.supports(Strophe.NS.BLOCKING, domain);
-
-        const result = await api.confirm(
-            __('Remove and decline contact request'),
-            [__('Are you sure you want to decline the contact request from %1$s?', this.model.getDisplayName())],
-            blocking_supported
-                ? [
-                      {
-                          label: __('Also block this user from sending you further messages'),
-                          name: 'block',
-                          type: 'checkbox',
-                      },
-                  ]
-                : []
-        );
-
-        if (result) {
-            const chat = await api.chats.get(this.model.get('jid'));
-            chat?.close();
-            this.model.unauthorize();
-
-            if (blocking_supported && Array.isArray(result)) {
-                const should_block = result.find((i) => i.name === 'block')?.value === 'on';
-                if (should_block) {
-                    api.blocklist.add(this.model.get('jid'));
-                }
-            }
-
-            this.model.destroy();
-        }
-        return this;
+        declineContactRequest(this.model);
     }
 }
 

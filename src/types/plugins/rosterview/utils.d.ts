@@ -6,6 +6,10 @@
 export function removeContact(contact: RosterContact, unauthorize?: boolean): Promise<boolean>;
 /**
  * @param {RosterContact} contact
+ */
+export function declineContactRequest(contact: RosterContact): Promise<any>;
+/**
+ * @param {RosterContact} contact
  * @returns {Promise<boolean>}
  */
 export function blockContact(contact: RosterContact): Promise<boolean>;

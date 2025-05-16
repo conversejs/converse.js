@@ -203,6 +203,10 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
         </iq>`;
         return await api.sendIQ(iq);
     }
+
+    isUnsaved () {
+        return this.get('subscription') === undefined;
+    }
 }
 
 export default RosterContact;

@@ -54,6 +54,25 @@ function initConverse (promise_names=[], settings=null, func) {
     }
 }
 
+export async function checkHeaderToggling(group) {
+    const toggle = group.querySelector('a.group-toggle');
+    expect(u.isVisible(group)).toBeTruthy();
+    expect(group.querySelectorAll('ul.collapsed').length).toBe(0);
+    expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeFalsy();
+    expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeTruthy();
+    toggle.click();
+
+    await u.waitUntil(() => group.querySelectorAll('ul.collapsed').length === 1);
+    expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeTruthy();
+    expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeFalsy();
+    toggle.click();
+    await u.waitUntil(() => group.querySelectorAll('li .open-chat').length ===
+        Array.from(group.querySelectorAll('li .open-chat')).filter(u.isVisible).length);
+
+    expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeFalsy();
+    expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeTruthy();
+};
+
 async function waitUntilDiscoConfirmed (_converse, entity_jid, identities, features=[], items=[], type='info') {
     const sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`;
     const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.find(iq => sizzle(sel, iq).length));
@@ -925,6 +944,7 @@ Object.assign(mock, {
     bundleHasBeenPublished,
     chatroom_names,
     chatroom_roles,
+    checkHeaderToggling,
     closeAllChatBoxes,
     closeControlBox,
     createChatMessage,

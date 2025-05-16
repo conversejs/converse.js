@@ -39,7 +39,7 @@ export default class RosterContactView extends ObservableElement {
     /**
      * @param {MouseEvent} ev
      */
-    declineRequest(ev: MouseEvent): Promise<this>;
+    declineRequest(ev: MouseEvent): Promise<void>;
 }
 import { ObservableElement } from 'shared/components/observable.js';
 //# sourceMappingURL=contactview.d.ts.map

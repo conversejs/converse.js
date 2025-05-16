@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-14 11:21+0200\n"
-"PO-Revision-Date: 2025-05-05 01:09+0000\n"
+"PO-Revision-Date: 2025-05-16 19:38+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -585,12 +585,11 @@ msgstr "菜单"
 
 #: dist/converse-no-dependencies.js:77558
 msgid "Click to set a new picture"
-msgstr "点击即可设置新图片"
+msgstr "点击即可设置新照片"
 
 #: dist/converse-no-dependencies.js:77559
-#, fuzzy
 msgid "Clear picture"
-msgstr "清除聊天区"
+msgstr "清除照片"
 
 #: dist/converse-no-dependencies.js:78061
 msgid "Older versions"
@@ -671,7 +670,7 @@ msgstr "取消"
 
 #: dist/converse-no-dependencies.js:84983
 msgid "Converse logo"
-msgstr ""
+msgstr "Converse 徽标"
 
 #: dist/converse-no-dependencies.js:87060
 msgid "Execute"
@@ -690,9 +689,9 @@ msgid "Complete"
 msgstr "完成"
 
 #: dist/converse-no-dependencies.js:87308
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The profile picture of %1$s"
-msgstr "您的个人资料图片"
+msgstr "%1$s 的个人资料照片"
 
 #: dist/converse-no-dependencies.js:87419
 msgid "Add to Contacts"
@@ -1340,9 +1339,9 @@ msgid "Block user"
 msgstr "屏蔽用户"
 
 #: dist/converse-no-dependencies.js:105475
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to prevent %1$s from contacting you further?"
-msgstr "是否确定要移除此联系人？"
+msgstr "是否确定要阻止 %1$s 继续联系您？"
 
 #: dist/converse-no-dependencies.js:105495
 msgid "Block this user"
@@ -2249,9 +2248,8 @@ msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "抱歉，尝试保存您的个人资料数据时出错。"
 
 #: dist/converse-no-dependencies.js:127618
-#, fuzzy
 msgid "Profile updated successfully"
-msgstr "注册成功"
+msgstr "个人资料已成功更新"
 
 #: dist/converse-no-dependencies.js:127661
 msgid "About"
@@ -2752,14 +2750,13 @@ msgid "Decline contact request"
 msgstr "拒绝联系人请求"
 
 #: dist/converse-no-dependencies.js:142092
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to decline this contact request from %1$s?"
-msgstr "是否确定要拒绝此联系人请求？"
+msgstr "是否确定要拒绝来自 %1$s 的此联系人请求？"
 
 #: dist/converse-no-dependencies.js:142093
-#, fuzzy
 msgid "Also block this user from sending you further messages"
-msgstr "阻止此用户继续向您发送消息"
+msgstr "同时阻止此用户继续向您发送消息"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2789,9 +2786,8 @@ msgid "Sorry, something went wrong"
 msgstr "抱歉，出了点问题"
 
 #: dist/converse-no-dependencies.js:142724
-#, fuzzy
 msgid "Contact added successfully"
-msgstr "注册成功"
+msgstr "联系人已成功添加"
 
 #: dist/converse-no-dependencies.js:142771
 msgid ""

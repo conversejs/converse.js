@@ -7,7 +7,7 @@ import log from '@converse/log';
 import { initStorage } from '../../utils/storage.js';
 import { rejectPresenceSubscription } from './utils.js';
 
-const { Strophe, $iq, sizzle, stx, u, Stanza } = converse.env;
+const { Strophe, sizzle, stx, u, Stanza } = converse.env;
 
 class RosterContacts extends Collection {
     constructor() {
@@ -96,10 +96,10 @@ class RosterContacts extends Collection {
     async fetchRosterContacts() {
         const result = await new Promise((resolve, reject) => {
             this.fetch({
-                'add': true,
-                'silent': true,
-                'success': resolve,
-                'error': (_, e) => reject(e),
+                add: true,
+                silent: true,
+                success: resolve,
+                error: (_, e) => reject(e),
             });
         });
         if (u.isErrorObject(result)) {
@@ -258,7 +258,7 @@ class RosterContacts extends Collection {
             log.warn(`Ignoring roster illegitimate roster push message from ${iq.getAttribute('from')}`);
             return;
         }
-        api.send($iq({ type: 'result', id, from: api.connection.get().jid }));
+        api.send(stx`<iq type="result" id="${id}" from="${api.connection.get().jid}" xmlns="jabber:client" />`);
 
         const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
         this.data.save('version', query.getAttribute('ver'));
@@ -290,20 +290,17 @@ class RosterContacts extends Collection {
     }
 
     /**
-     * Fetch the roster from the XMPP server
+     * Fetches the roster from the XMPP server and updates the local state
      * @emits _converse#roster
-     * @param {boolean} [full=false] - Whether to fetch the full roster or just the changes.
-     * @returns {promise}
+     * @returns {Promise}
      */
-    async fetchFromServer(full = false) {
-        const stanza = $iq({
-            'type': 'get',
-            'id': u.getUniqueId('roster'),
-        }).c('query', { xmlns: Strophe.NS.ROSTER });
-
-        if (this.rosterVersioningSupported() && !full) {
-            stanza.attrs({ 'ver': this.data.get('version') });
-        }
+    async fetchFromServer() {
+        const stanza = stx`
+            <iq type="get" id="${u.getUniqueId('roster')}" xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.ROSTER}"
+                    ${this.rosterVersioningSupported() ? Stanza.unsafeXML(`ver="${this.data.get('version')}"`) : ''}>
+                </query>
+            </iq>`;
 
         const iq = await api.sendIQ(stanza, null, false);
 

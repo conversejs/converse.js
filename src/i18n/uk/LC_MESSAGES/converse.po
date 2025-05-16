@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-14 11:21+0200\n"
-"PO-Revision-Date: 2025-05-05 01:09+0000\n"
+"PO-Revision-Date: 2025-05-16 09:32+0000\n"
 "Last-Translator: Максим Горпиніч <maksimgorpinic4@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
 "translations/uk/>\n"
@@ -2002,7 +2002,7 @@ msgstr "Присутні"
 #: dist/converse-no-dependencies.js:121604
 #: dist/converse-no-dependencies.js:139661
 msgid "Open"
-msgstr "ВІДЧИНЕНО"
+msgstr "Відчинено"
 
 #: dist/converse-no-dependencies.js:121605
 msgid "Anyone can join this groupchat"
@@ -2317,7 +2317,7 @@ msgstr "Успішно зареєстровано"
 
 #: dist/converse-no-dependencies.js:127661
 msgid "About"
-msgstr "про"
+msgstr "Про"
 
 #: dist/converse-no-dependencies.js:127662
 msgid "Commands"

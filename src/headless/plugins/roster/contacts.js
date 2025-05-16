@@ -1,30 +1,32 @@
-import { Collection, Model } from "@converse/skeletor";
+import { Collection, Model } from '@converse/skeletor';
 import RosterContact from './contact.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import { initStorage } from '../../utils/storage.js';
 import { rejectPresenceSubscription } from './utils.js';
 
 const { Strophe, $iq, sizzle, stx, u, Stanza } = converse.env;
 
 class RosterContacts extends Collection {
-    constructor () {
+    constructor() {
         super();
         this.model = RosterContact;
         this.data = null;
     }
 
-    initialize () {
+    initialize() {
         const bare_jid = _converse.session.get('bare_jid');
         const id = `roster.state-${bare_jid}-${this.get('jid')}`;
         this.state = new Model({ id, 'collapsed_groups': [] });
         initStorage(this.state, id);
         this.state.fetch();
-        api.listen.on('chatBoxClosed',
+        api.listen.on(
+            'chatBoxClosed',
             /** @param {import('../../shared/chatbox').default} model */
-            (model) => this.removeUnsavedContact(model));
+            (model) => this.removeUnsavedContact(model)
+        );
     }
 
     /**
@@ -37,7 +39,7 @@ class RosterContacts extends Collection {
         }
     }
 
-    onConnected () {
+    onConnected() {
         // Called as soon as the connection has been established
         // (either after initial login, or after reconnection).
         // Use the opportunity to register stanza handlers.
@@ -49,23 +51,29 @@ class RosterContacts extends Collection {
      * Register a handler for roster IQ "set" stanzas, which update
      * roster contacts.
      */
-    registerRosterHandler () {
+    registerRosterHandler() {
         // Register a handler for roster IQ "set" stanzas, which update
         // roster contacts.
-        api.connection.get().addHandler(/** @param {Element} iq */(iq) => {
-            _converse.state.roster.onRosterPush(iq);
-            return true;
-        }, Strophe.NS.ROSTER, 'iq', "set");
+        api.connection.get().addHandler(
+            /** @param {Element} iq */ (iq) => {
+                _converse.state.roster.onRosterPush(iq);
+                return true;
+            },
+            Strophe.NS.ROSTER,
+            'iq',
+            'set'
+        );
     }
 
     /**
      * Register a handler for RosterX message stanzas, which are
      * used to suggest roster contacts to a user.
      */
-    registerRosterXHandler () {
+    registerRosterXHandler() {
         let t = 0;
         const connection = api.connection.get();
-        connection.addHandler(/** @param {Element} msg */(msg) => {
+        connection.addHandler(
+            /** @param {Element} msg */ (msg) => {
                 setTimeout(() => {
                     const { roster } = _converse.state;
                     api.connection.get().flush();
@@ -85,7 +93,7 @@ class RosterContacts extends Collection {
      * and if that's empty, then by querying the XMPP server.
      * @returns {promise} Promise which resolves once the contacts have been fetched.
      */
-    async fetchRosterContacts () {
+    async fetchRosterContacts() {
         const result = await new Promise((resolve, reject) => {
             this.fetch({
                 'add': true,
@@ -119,7 +127,7 @@ class RosterContacts extends Collection {
     /**
      * @param {Element} msg
      */
-    subscribeToSuggestedItems (msg) {
+    subscribeToSuggestedItems(msg) {
         Array.from(msg.querySelectorAll('item')).forEach((item) => {
             if (item.getAttribute('action') === 'add') {
                 this.addContact({
@@ -135,7 +143,7 @@ class RosterContacts extends Collection {
     /**
      * @param {string} jid
      */
-    isSelf (jid) {
+    isSelf(jid) {
         return u.isSameBareJID(jid, api.connection.get().jid);
     }
 
@@ -143,14 +151,14 @@ class RosterContacts extends Collection {
      * Send an IQ stanza to the XMPP server to add a new roster contact.
      * @param {import('./types').RosterContactAttributes} attributes
      */
-    sendContactAddIQ (attributes) {
+    sendContactAddIQ(attributes) {
         const { jid, groups } = attributes;
         const name = attributes.name ? attributes.name : null;
         const iq = stx`
             <iq type="set" xmlns="jabber:client">
                 <query xmlns="${Strophe.NS.ROSTER}">
-                    <item jid="${jid}" ${name ? Stanza.unsafeXML(`name="${Strophe.xmlescape(name)}"`) : ""}>
-                        ${groups?.map(/** @param {string} g */(g) => stx`<group>${g}</group>`)}
+                    <item jid="${jid}" ${name ? Stanza.unsafeXML(`name="${Strophe.xmlescape(name)}"`) : ''}>
+                        ${groups?.map(/** @param {string} g */ (g) => stx`<group>${g}</group>`)}
                     </item>
                 </query>
             </iq>`;
@@ -167,7 +175,7 @@ class RosterContacts extends Collection {
      * @param {string} [message=''] - An optional message to include with the presence subscription
      * @returns {Promise<RosterContact>}
      */
-    async addContact (attributes, persist=true, subscribe=true, message='') {
+    async addContact(attributes, persist = true, subscribe = true, message = '') {
         const { jid, name } = attributes ?? {};
         if (!jid || !u.isValidJID(jid)) throw new Error('Invalid JID provided to addContact');
 
@@ -184,7 +192,8 @@ class RosterContacts extends Collection {
             }
         }
 
-        const contact = await this.create({
+        const contact = await this.create(
+            {
                 ...{
                     ask: undefined,
                     nickname: name,
@@ -210,7 +219,7 @@ class RosterContacts extends Collection {
      * @param {string} [sub_msg=''] - Optional message to be included in our
      *   reciprocal subscription request.
      */
-    async subscribeBack (bare_jid, presence, auth_msg='', sub_msg='') {
+    async subscribeBack(bare_jid, presence, auth_msg = '', sub_msg = '') {
         const contact = this.get(bare_jid);
         const { RosterContact } = _converse.exports;
         if (contact instanceof RosterContact) {
@@ -222,7 +231,7 @@ class RosterContacts extends Collection {
                 jid: bare_jid,
                 name: nickname,
                 groups: [],
-                subscription: 'from'
+                subscription: 'from',
             });
             if (contact instanceof RosterContact) {
                 contact.authorize(auth_msg).subscribe(sub_msg);
@@ -235,7 +244,7 @@ class RosterContacts extends Collection {
      * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
      * @param {Element} iq - The IQ stanza received from the XMPP server.
      */
-    onRosterPush (iq) {
+    onRosterPush(iq) {
         const id = iq.getAttribute('id');
         const from = iq.getAttribute('from');
         const bare_jid = _converse.session.get('bare_jid');
@@ -249,7 +258,7 @@ class RosterContacts extends Collection {
             log.warn(`Ignoring roster illegitimate roster push message from ${iq.getAttribute('from')}`);
             return;
         }
-        api.send($iq({type: 'result', id, from: api.connection.get().jid}));
+        api.send($iq({ type: 'result', id, from: api.connection.get().jid }));
 
         const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
         this.data.save('version', query.getAttribute('ver'));
@@ -276,7 +285,7 @@ class RosterContacts extends Collection {
         return;
     }
 
-    rosterVersioningSupported () {
+    rosterVersioningSupported() {
         return api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
     }
 
@@ -286,7 +295,7 @@ class RosterContacts extends Collection {
      * @param {boolean} [full=false] - Whether to fetch the full roster or just the changes.
      * @returns {promise}
      */
-    async fetchFromServer (full=false) {
+    async fetchFromServer(full = false) {
         const stanza = $iq({
             'type': 'get',
             'id': u.getUniqueId('roster'),
@@ -305,7 +314,7 @@ class RosterContacts extends Collection {
                 if (!this.data.get('version') && this.models.length) {
                     // We're getting the full roster, so remove all cached
                     // contacts that aren't included in it.
-                    const jids = items.map(/** @param {Element} item */(item) => item.getAttribute('jid'));
+                    const jids = items.map(/** @param {Element} item */ (item) => item.getAttribute('jid'));
                     this.forEach((m) => !m.get('requesting') && !jids.includes(m.get('jid')) && m.destroy());
                 }
                 items.forEach((item) => this.updateContact(item));
@@ -336,7 +345,7 @@ class RosterContacts extends Collection {
      * node received in the resulting IQ stanza from the server.
      * @param {Element} item
      */
-    updateContact (item) {
+    updateContact(item) {
         const jid = item.getAttribute('jid');
         const contact = this.get(jid);
         const subscription = item.getAttribute('subscription');
@@ -361,7 +370,7 @@ class RosterContacts extends Collection {
     /**
      * @param {Element} presence
      */
-    createRequestingContact (presence) {
+    createRequestingContact(presence) {
         const jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
         const nickname = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop()?.textContent || null;
         const user_data = {
@@ -383,7 +392,7 @@ class RosterContacts extends Collection {
     /**
      * @param {Element} presence
      */
-    handleIncomingSubscription (presence) {
+    handleIncomingSubscription(presence) {
         const jid = presence.getAttribute('from'),
             bare_jid = Strophe.getBareJidFromJid(jid),
             contact = this.get(bare_jid);
@@ -414,16 +423,18 @@ class RosterContacts extends Collection {
     /**
      * @param {Element} stanza
      */
-    handleOwnPresence (stanza) {
+    handleOwnPresence(stanza) {
         const jid = stanza.getAttribute('from');
         const resource = Strophe.getResourceFromJid(jid);
         const presence_type = stanza.getAttribute('type');
         const { profile } = _converse.state;
 
-        if ((api.connection.get().jid !== jid) &&
-                (presence_type !== 'unavailable') &&
-                (api.settings.get('synchronize_availability') === true ||
-                 api.settings.get('synchronize_availability') === resource)) {
+        if (
+            api.connection.get().jid !== jid &&
+            presence_type !== 'unavailable' &&
+            (api.settings.get('synchronize_availability') === true ||
+                api.settings.get('synchronize_availability') === resource)
+        ) {
             // Another resource has changed its status and
             // synchronize_availability option set to update,
             // we'll update ours as well.
@@ -455,7 +466,7 @@ class RosterContacts extends Collection {
     /**
      * @param {Element} presence
      */
-    presenceHandler (presence) {
+    presenceHandler(presence) {
         const presence_type = presence.getAttribute('type');
         if (presence_type === 'error') return true;
 

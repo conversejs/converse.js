@@ -112,8 +112,8 @@ export default class RosterContactView extends ObservableElement {
         const blocking_supported = await api.disco.supports(Strophe.NS.BLOCKING, domain);
 
         const result = await api.confirm(
-            __('Decline contact request'),
-            [__('Are you sure you want to decline this contact request from %1$s?', this.model.getDisplayName())],
+            __('Remove and decline contact request'),
+            [__('Are you sure you want to decline the contact request from %1$s?', this.model.getDisplayName())],
             blocking_supported
                 ? [
                       {

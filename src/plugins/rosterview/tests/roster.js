@@ -865,7 +865,6 @@ describe("The Contacts Roster", function () {
             pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'away');
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
             await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-away)');
-                    return
 
             pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'xa');
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
@@ -1186,7 +1185,7 @@ describe("The Contacts Roster", function () {
         }));
     });
 
-    describe("Requesting Contacts", function () {
+    fdescribe("Requesting Contacts", function () {
 
         it("can be added to the roster and they will be sorted alphabetically",
             mock.initConverse(

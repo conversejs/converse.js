@@ -108,8 +108,9 @@ declare const MUC_base: {
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
-        getOldestMessage(): any;
-        getMostRecentMessage(): any;
+        isChatMessage(_message: import("../../shared/message.js").default<any>): boolean;
+        getOldestMessage(): import("../../shared/message.js").default<any>;
+        getMostRecentMessage(): import("../../shared/message.js").default<any>;
         getMessageReferencedByError(attrs: object): any;
         findDanglingRetraction(attrs: object): import("../../shared/message.js").default<any> | null;
         getDuplicateMessage(attrs: object): import("../../shared/message.js").default<any>;
@@ -484,6 +485,10 @@ declare class MUC extends MUC_base {
     }): Promise<void>;
     canModerateMessages(): any;
     canPostMessages(): boolean;
+    /**
+     * @param {import('../../shared/message').default} message
+     */
+    isChatMessage(message: import("../../shared/message.js").default<any>): boolean;
     /**
      * Return an array of unique nicknames based on all occupants and messages in this MUC.
      * @returns {String[]}

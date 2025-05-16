@@ -38,8 +38,9 @@ declare const ChatBoxBase_base: {
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
-        getOldestMessage(): any;
-        getMostRecentMessage(): any;
+        isChatMessage(_message: import("./message.js").default<any>): boolean;
+        getOldestMessage(): import("./message.js").default<any>;
+        getMostRecentMessage(): import("./message.js").default<any>;
         getMessageReferencedByError(attrs: object): any;
         findDanglingRetraction(attrs: object): import("./message.js").default<any> | null;
         getDuplicateMessage(attrs: object): import("./message.js").default<any>;

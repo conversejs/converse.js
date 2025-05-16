@@ -236,6 +236,14 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
     canPostMessages() {
         return true;
     }
+
+    /**
+     * @param {import('../../shared/message').default} message
+     */
+    isChatMessage(message) {
+        const type = message.get('type');
+        return type === this.get('message_type') || type === 'normal';
+    }
 }
 
 export default ChatBox;

@@ -77,10 +77,11 @@
 - Add new themes 'Cyberpunk' and 'Nordic' and remove the old 'Concord' theme.
 - Improved accessibility.
 - New "getOccupantActionButtons" hook, so that plugins can add actions on MUC occupants.
+- Update the "Add MUC" modal to add validation and to allow specifying only the MUC name and not the whole address.
 - MUC occupants badges: displays short labels, with full label as title.
 - New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#show-background)
 - New config option [lazy_load_vcards](https://conversejs.org/docs/html/configuration.html#lazy-load-vcards)
-- Update the "Add MUC" modal to add validation and to allow specifying only the MUC name and not the whole address.
+- New config option [enable_roster_versioning](https://conversejs.org/docs/html/configuration.html#enable-roster-versioning)
 
 ### Default config changes
 - Make `fullscreen` the default `view_mode`.

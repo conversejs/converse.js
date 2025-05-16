@@ -65,7 +65,7 @@ describe("The Contacts Roster", function () {
     it("is populated once we have registered a presence handler", mock.initConverse([], {}, async function (_converse) {
         const IQs = _converse.api.connection.get().IQ_stanzas;
         const stanza = await u.waitUntil(
-            () => IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
+            () => IQs.filter(iq => sizzle('iq query[xmlns="jabber:iq:roster"]', iq).length).pop());
 
         expect(stanza).toEqualStanza(
             stx`<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
@@ -83,15 +83,20 @@ describe("The Contacts Roster", function () {
     }));
 
     it("supports roster versioning", mock.initConverse([], {}, async function (_converse) {
-        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+        const { IQ_stanzas } = _converse.api.connection.get();
         let stanza = await u.waitUntil(
-            () => IQ_stanzas.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop()
-        );
-        expect(_converse.roster.data.get('version')).toBeUndefined();
-        expect(Strophe.serialize(stanza)).toBe(
-            `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
-                `<query xmlns="jabber:iq:roster"/>`+
-            `</iq>`);
+            () => IQ_stanzas.filter(iq => sizzle('iq query[xmlns="jabber:iq:roster"]', iq).length).pop());
+
+        const { roster } = _converse.state;
+
+        expect(roster.data.get('version')).toBeUndefined();
+        expect(stanza).toEqualStanza(stx`
+            <iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster"/>
+            </iq>`);
+
+        while (IQ_stanzas.length) IQ_stanzas.pop();
+
         let result = stx`
             <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
                 <query xmlns="jabber:iq:roster" ver="ver7">
@@ -101,16 +106,17 @@ describe("The Contacts Roster", function () {
             </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
-        await u.waitUntil(() => _converse.roster.models.length > 1);
-        expect(_converse.roster.data.get('version')).toBe('ver7');
-        expect(_converse.roster.models.length).toBe(2);
+        await u.waitUntil(() => roster.models.length > 1);
+        expect(roster.data.get('version')).toBe('ver7');
+        expect(roster.models.length).toBe(2);
 
-        _converse.roster.fetchFromServer();
-        stanza = _converse.api.connection.get().IQ_stanzas.pop();
-        expect(Strophe.serialize(stanza)).toBe(
-            `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
-                `<query ver="ver7" xmlns="jabber:iq:roster"/>`+
-            `</iq>`);
+        roster.fetchFromServer();
+        stanza = await u.waitUntil(
+            () => IQ_stanzas.filter(iq => sizzle('iq query[xmlns="jabber:iq:roster"]', iq).length).pop());
+        expect(stanza).toEqualStanza(
+            stx`<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
+                <query ver="ver7" xmlns="jabber:iq:roster"/>
+            </iq>`);
 
         result = stx`
             <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
@@ -124,16 +130,68 @@ describe("The Contacts Roster", function () {
                 </query>
             </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(roster_push));
-        expect(_converse.roster.data.get('version')).toBe('ver34');
-        expect(_converse.roster.models.length).toBe(1);
-        expect(_converse.roster.at(0).get('jid')).toBe('nurse@example.com');
+        expect(roster.data.get('version')).toBe('ver34');
+        expect(roster.models.length).toBe(1);
+        expect(roster.at(0).get('jid')).toBe('nurse@example.com');
+    }));
+
+    it("can ignore roster versioning", mock.initConverse([], { enable_roster_versioning: false }, async function (_converse) {
+        const { IQ_stanzas } = _converse.api.connection.get();
+        let stanza = await u.waitUntil(
+            () => IQ_stanzas.filter(iq => sizzle('iq query[xmlns="jabber:iq:roster"]', iq).length).pop());
+
+        const { roster } = _converse.state;
+
+        expect(roster.data.get('version')).toBeUndefined();
+        expect(stanza).toEqualStanza(stx`
+            <iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster"/>
+            </iq>`);
+
+        while (IQ_stanzas.length) IQ_stanzas.pop();
+
+        let result = stx`
+            <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster" ver="ver7">
+                    <item jid="nurse@example.com"/>
+                    <item jid="romeo@example.com"/>
+                </query>
+            </iq>`;
+        _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+
+        await u.waitUntil(() => roster.models.length > 1);
+        expect(roster.data.get('version')).toBe('ver7');
+        expect(roster.models.length).toBe(2);
+
+        roster.fetchFromServer();
+        stanza = await u.waitUntil(
+            () => IQ_stanzas.filter(iq => sizzle('iq query[xmlns="jabber:iq:roster"]', iq).length).pop());
+        expect(stanza).toEqualStanza(
+            stx`<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster"/>
+            </iq>`);
+
+        result = stx`
+            <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster" ver="ver8">
+                    <item jid="nurse@example.com"/>
+                    <item jid='romeo@example.com' subscription='remove'/>
+                </query>
+            </iq>`;
+        _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+
+        await u.waitUntil(() => roster.data.get('version') === 'ver8');
+        expect(roster.models.length).toBe(1);
+        expect(roster.at(0).get('jid')).toBe('nurse@example.com');
     }));
 
     it("also contains contacts with subscription of none", mock.initConverse(
         [], {}, async function (_converse) {
 
-        const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-        const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
+        const { IQ_stanzas } = _converse.api.connection.get();
+        let stanza = await u.waitUntil(
+            () => IQ_stanzas.filter(iq => sizzle('iq query[xmlns="jabber:iq:roster"]', iq).length).pop());
+
         _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
             <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
                 <query xmlns="jabber:iq:roster">
@@ -150,7 +208,7 @@ describe("The Contacts Roster", function () {
             </iq>
         `));
 
-        while (sent_IQs.length) sent_IQs.pop();
+        while (IQ_stanzas.length) IQ_stanzas.pop();
 
         await u.waitUntil(() => _converse.roster.length === 3);
         expect(_converse.roster.pluck('jid')).toEqual(['juliet@example.net', 'mercutio@example.net', 'lord.capulet@example.net']);
@@ -160,9 +218,9 @@ describe("The Contacts Roster", function () {
     it("can be refreshed if loglevel is set to debug", mock.initConverse(
         [], {loglevel: 'debug'}, async function (_converse) {
 
-        const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+        const { IQ_stanzas } = _converse.api.connection.get();
         let stanza = await u.waitUntil(
-            () => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
+            () => IQ_stanzas.filter(iq => sizzle('iq query[xmlns="jabber:iq:roster"]', iq).length).pop());
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
             <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
@@ -177,7 +235,7 @@ describe("The Contacts Roster", function () {
             </iq>
         `));
 
-        while (sent_IQs.length) sent_IQs.pop();
+        while (IQ_stanzas.length) IQ_stanzas.pop();
 
         await u.waitUntil(() => _converse.roster.length === 2);
         expect(_converse.roster.pluck('jid')).toEqual(['juliet@example.net', 'mercutio@example.net']);
@@ -192,8 +250,7 @@ describe("The Contacts Roster", function () {
         sync_button.click();
 
         stanza = await u.waitUntil(
-            () => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop()
-        );
+            () => IQ_stanzas.filter(iq => sizzle('iq query[xmlns="jabber:iq:roster"]', iq).length).pop());
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
             <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
@@ -1292,8 +1349,10 @@ describe("The Contacts Roster", function () {
 
             await mock.openControlBox(_converse);
 
-            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-            const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
+            const { IQ_stanzas } = _converse.api.connection.get();
+            const stanza = await u.waitUntil(
+                () => IQ_stanzas.filter(iq => sizzle('iq query[xmlns="jabber:iq:roster"]', iq).length).pop());
+
             // Taken from the spec
             // https://xmpp.org/rfcs/rfc3921.html#rfc.section.7.3
             const result = stx`

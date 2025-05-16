@@ -64,7 +64,7 @@ declare class RosterContacts extends Collection {
      * @param {Element} iq - The IQ stanza received from the XMPP server.
      */
     onRosterPush(iq: Element): void;
-    rosterVersioningSupported(): any;
+    shouldUseRosterVersioning(): any;
     /**
      * Fetches the roster from the XMPP server and updates the local state
      * @emits _converse#roster

@@ -1,7 +1,9 @@
 converse-spinner {
     &.vertically-centered {
-        height: 100%;
-        margin-top: 30%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%; /* Ensure the parent has a defined height */
     }
 }
 

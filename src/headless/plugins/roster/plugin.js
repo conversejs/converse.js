@@ -26,9 +26,10 @@ converse.plugins.add('converse-roster', {
 
     initialize () {
         api.settings.extend({
-            show_self_in_roster: true,
             allow_contact_requests: true,
             auto_subscribe: false,
+            enable_roster_versioning: true,
+            show_self_in_roster: true,
             synchronize_availability: true
         });
 

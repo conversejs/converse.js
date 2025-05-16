@@ -278,15 +278,19 @@ class RosterContacts extends Collection {
         /**
          * When the roster receives a push event from server (i.e. new entry in your contacts roster).
          * @event _converse#rosterPush
-         * @type { Element }
+         * @type {Element}
          * @example _converse.api.listen.on('rosterPush', iq => { ... });
          */
         api.trigger('rosterPush', iq);
         return;
     }
 
-    rosterVersioningSupported() {
-        return api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
+    shouldUseRosterVersioning() {
+        return (
+            api.settings.get('enable_roster_versioning') &&
+            this.data.get('version') &&
+            api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver')
+        );
     }
 
     /**
@@ -298,7 +302,7 @@ class RosterContacts extends Collection {
         const stanza = stx`
             <iq type="get" id="${u.getUniqueId('roster')}" xmlns="jabber:client">
                 <query xmlns="${Strophe.NS.ROSTER}"
-                    ${this.rosterVersioningSupported() ? Stanza.unsafeXML(`ver="${this.data.get('version')}"`) : ''}>
+                    ${this.shouldUseRosterVersioning() ? Stanza.unsafeXML(`ver="${this.data.get('version')}"`) : ''}>
                 </query>
             </iq>`;
 

@@ -920,6 +920,16 @@ The app servers are specified with the `push_app_servers`_ option.
     Registering a push app server against a MUC domain is not (yet) standardized
     and this feature should be considered experimental.
 
+
+enable_roster_versioning
+------------------------
+
+* Default: ``true``
+
+Determines support for `roster versioning <https://xmpp.org/rfcs/rfc6121.html#roster-versioning>`_.
+If set to ``false``, the full roster will always be fetched.
+
+
 enable_smacks
 -------------
 
@@ -2096,6 +2106,16 @@ everywhere.
 
 This warning isn't applicable to all deployments of Converse and can therefore
 be turned off by setting this config variable to ``false``.
+
+
+show_self_in_roster
+-------------------
+
+* Default: ``true``
+
+If true, you'll see yourself in your list of contacts (aka the "roster") and
+can open a chat with yourself.
+
 
 show_send_button
 ----------------

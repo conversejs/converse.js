@@ -39,4 +39,12 @@ export default class HeadlinesFeed extends ChatBoxBase {
     canPostMessages() {
         return false;
     }
+
+    /**
+     * @param {import('../../shared/message').default} message
+     */
+    isChatMessage(message) {
+        const type = message.get('type');
+        return type === this.get('message_type') || type === 'normal';
+    }
 }

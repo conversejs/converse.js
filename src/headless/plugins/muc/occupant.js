@@ -210,6 +210,13 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
         stanza.cnode(stx`<x xmlns="${Strophe.NS.MUC}#user"/>`).root();
         return stanza;
     }
+
+    /**
+     * @param {import('../../shared/message').default} message
+     */
+    isChatMessage(message) {
+        return message.get('type') === this.get('message_type');
+    }
 }
 
 export default MUCOccupant;

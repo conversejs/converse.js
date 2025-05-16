@@ -41,6 +41,7 @@ module.exports = function(config) {
       { pattern: "src/headless/plugins/bookmarks/tests/deprecated.js", type: 'module' },
       { pattern: "src/headless/plugins/caps/tests/caps.js", type: 'module' },
       { pattern: "src/headless/plugins/chat/tests/api.js", type: 'module' },
+      { pattern: "src/headless/plugins/chat/tests/chat.js", type: 'module' },
       { pattern: "src/headless/plugins/disco/tests/disco.js", type: 'module' },
       { pattern: "src/headless/plugins/mam/tests/api.js", type: 'module' },
       { pattern: "src/headless/plugins/muc/tests/affiliations.js", type: 'module' },

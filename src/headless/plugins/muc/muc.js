@@ -1040,6 +1040,13 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
+     * @param {import('../../shared/message').default} message
+     */
+    isChatMessage(message) {
+        return message.get('type') === this.get('message_type');
+    }
+
+    /**
      * Return an array of unique nicknames based on all occupants and messages in this MUC.
      * @returns {String[]}
      */

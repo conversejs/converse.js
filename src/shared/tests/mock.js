@@ -532,11 +532,11 @@ async function waitForRoster (_converse, type='current', length=-1, include_nick
     await _converse.api.waitUntil('rosterContactsFetched');
 }
 
-function createChatMessage (_converse, sender_jid, message) {
+function createChatMessage (_converse, sender_jid, message, type='chat') {
     return $msg({
                 from: sender_jid,
                 to: _converse.api.connection.get().jid,
-                type: 'chat',
+                type,
                 id: (new Date()).getTime()
             })
             .c('body').t(message).up()

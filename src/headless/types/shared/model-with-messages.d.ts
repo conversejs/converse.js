@@ -133,8 +133,17 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
-        getOldestMessage(): any;
-        getMostRecentMessage(): any;
+        /**
+         * Used by sub-classes to indicate wether a message is a chat
+         * message, as opposed to error or info messages.
+         * @param {BaseMessage} _message
+         * @returns {boolean}
+         */
+        isChatMessage(_message: import("./message").default<any>): boolean;
+        /** @returns {BaseMessage} */
+        getOldestMessage(): import("./message").default<any>;
+        /** @returns {BaseMessage} */
+        getMostRecentMessage(): import("./message").default<any>;
         /**
          * Given an error `<message>` stanza's attributes, find the saved message model which is
          * referenced by that error.
@@ -299,5 +308,5 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         propertyIsEnumerable(v: PropertyKey): boolean;
     };
 } & T;
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=model-with-messages.d.ts.map

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-14 11:21+0200\n"
-"PO-Revision-Date: 2025-05-05 01:09+0000\n"
+"PO-Revision-Date: 2025-05-18 05:01+0000\n"
 "Last-Translator: \"Mr. EddX\" <mreddx@chatrix.one>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/bg/>\n"
@@ -603,9 +603,8 @@ msgid "Click to set a new picture"
 msgstr "Кликнете за нова снимка"
 
 #: dist/converse-no-dependencies.js:77559
-#, fuzzy
 msgid "Clear picture"
-msgstr "Изчисти чата"
+msgstr "Премахни изображение"
 
 #: dist/converse-no-dependencies.js:78061
 msgid "Older versions"
@@ -686,7 +685,7 @@ msgstr "Отменяне"
 
 #: dist/converse-no-dependencies.js:84983
 msgid "Converse logo"
-msgstr ""
+msgstr "Converse лого"
 
 #: dist/converse-no-dependencies.js:87060
 msgid "Execute"
@@ -705,9 +704,9 @@ msgid "Complete"
 msgstr "Завършен"
 
 #: dist/converse-no-dependencies.js:87308
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The profile picture of %1$s"
-msgstr "Вашата профилна снимка"
+msgstr "Профилната снимка на %1$s"
 
 #: dist/converse-no-dependencies.js:87419
 msgid "Add to Contacts"
@@ -1387,9 +1386,10 @@ msgid "Block user"
 msgstr "Блокирай портебителя"
 
 #: dist/converse-no-dependencies.js:105475
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to prevent %1$s from contacting you further?"
-msgstr "Сигурни ли сте, че искате да премахнете този познат?"
+msgstr ""
+"Сигурни ли сте, че желаете да предотвратите по-нататъшно свързване с %1$s?"
 
 #: dist/converse-no-dependencies.js:105495
 msgid "Block this user"
@@ -2315,9 +2315,8 @@ msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "Възникна грешка при опит за запазване на данните от Вашия профил."
 
 #: dist/converse-no-dependencies.js:127618
-#, fuzzy
 msgid "Profile updated successfully"
-msgstr "Записани сте успешно"
+msgstr "Профилът е актуализиран успешно"
 
 #: dist/converse-no-dependencies.js:127661
 msgid "About"
@@ -2845,14 +2844,13 @@ msgid "Decline contact request"
 msgstr "Отхвърлете заявката за контакт"
 
 #: dist/converse-no-dependencies.js:142092
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to decline this contact request from %1$s?"
-msgstr "Сигурни ли сте, че искате да откажете тази заявка за познанство?"
+msgstr "Сигурни ли сте, че желаете да отхвърлите заявката за контакт от %1$s?"
 
 #: dist/converse-no-dependencies.js:142093
-#, fuzzy
 msgid "Also block this user from sending you further messages"
-msgstr "Блокирай потребителя за да не изпраща повече съобщения"
+msgstr "Също така блокирай потребител да не изпраща повече съобщения"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2882,9 +2880,8 @@ msgid "Sorry, something went wrong"
 msgstr "Съжалявам, нещо се обърка"
 
 #: dist/converse-no-dependencies.js:142724
-#, fuzzy
 msgid "Contact added successfully"
-msgstr "Записани сте успешно"
+msgstr "Контактът е добавен успешно"
 
 #: dist/converse-no-dependencies.js:142771
 msgid ""

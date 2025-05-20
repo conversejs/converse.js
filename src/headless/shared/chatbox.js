@@ -61,7 +61,7 @@ export default class ChatBoxBase extends ModelWithMessages(Model) {
             return this;
         }
         // Overlayed view mode
-        u.safeSave(this, { 'hidden': false });
+        u.safeSave(this, { hidden: false });
         this.trigger('show');
         return this;
     }

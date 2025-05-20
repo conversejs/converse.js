@@ -8,8 +8,8 @@
     --blue-rgb: 56, 117, 146;
     --dark-blue: #397491;
     --dark-green: #1e9652;
-    --dark-red: #d24e2b;
-    --dark-red-rgb: 210, 78, 43;
+    --red: #d24e2b;
+    --red-rgb: 210, 78, 43;
     --gray: #818479;
     --green: #3aa569;
     --green-rgb: 58, 165, 105;
@@ -36,8 +36,8 @@
     --secondary-rgb: var(--light-blue-rgb);
     --success-color: var(--green);
     --success-color-rgb: var(--green-rgb);
-    --danger-color: var(--dark-red);
-    --danger-color-rgb: var(--dark-red-rgb);
+    --danger-color: var(--red);
+    --danger-color-rgb: var(--red-rgb);
     --warning-color: var(--orange);
     --info-color: var(--light-blue);
     --info-color-rgb: var(--light-blue-rgb);
@@ -51,7 +51,7 @@
 
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
-    --converse-highlight-color: var(--dark-red);
+    --converse-highlight-color: var(--red);
     .navbar-nav {
         --converse-nav-link-color: var(--link-color) !important;
     }
@@ -75,7 +75,7 @@
 
     --controlbox-color: var(--light-blue);
     --disabled-color: gray;
-    --error-color: var(--dark-red);
+    --error-color: var(--red);
     --focus-color: var(--light-blue);
     --heading-color: var(--background-color);
     --headlines-color: var(--orange);

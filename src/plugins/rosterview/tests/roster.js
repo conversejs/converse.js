@@ -515,7 +515,7 @@ describe("The Contacts Roster", function () {
                 "Ungrouped",
             ]);
 
-            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            const contact_jid = mock.getContactJID(0);
             const contact = await _converse.api.contacts.get(contact_jid);
             contact.save({'num_unread': 5});
 
@@ -839,23 +839,23 @@ describe("The Contacts Roster", function () {
             const icon_el = document.querySelector('converse-roster-contact converse-icon');
             expect(icon_el.getAttribute('color')).toBe('var(--chat-status-offline)');
 
-            let pres = $pres({from: 'mercutio@montague.lit/resource'});
+            let pres = stx`<presence from="mercutio@montague.lit/resource" xmlns="jabber:client"/>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
             await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-online)');
 
-            pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'away');
+            pres = stx`<presence from="mercutio@montague.lit/resource" xmlns="jabber:client"><show>away</show></presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
             await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-away)');
 
-            pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'xa');
+            pres = stx`<presence from="mercutio@montague.lit/resource" xmlns="jabber:client"><show>xa</show></presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
             await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-offline)');
 
-            pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'dnd');
+            pres = stx`<presence from="mercutio@montague.lit/resource" xmlns="jabber:client"><show>dnd</show></presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
             await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-busy)');
 
-            pres = $pres({from: 'mercutio@montague.lit/resource', type: 'unavailable'});
+            pres = stx`<presence from="mercutio@montague.lit/resource" type="unavailable" xmlns="jabber:client"/>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
             await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-offline)');
         }));
@@ -867,10 +867,11 @@ describe("The Contacts Roster", function () {
 
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 0);
+            const { roster } = _converse.state;
             await mock.openControlBox(_converse);
             const rosterview = document.querySelector('converse-roster');
             await Promise.all(mock.cur_names.map(name => {
-                const contact = _converse.roster.create({
+                const contact = roster.create({
                     jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                     subscription: 'both',
                     ask: null,
@@ -885,6 +886,28 @@ describe("The Contacts Roster", function () {
             const els = sizzle('.current-xmpp-contact.offline a.open-chat .contact-name', rosterview)
             const t = els.reduce((result, value) => (result + value.textContent.trim()), '');
             expect(t).toEqual(mock.cur_names.slice(0,mock.cur_names.length).sort().join(''));
+
+            // Check that ordering changes based on chat status
+            let contact_jid = mock.getContactJID(roster.length-1);
+            let contact = await _converse.api.contacts.get(contact_jid);
+            contact.presence.set('presence', 'online');
+            let sel = 'ul.roster-group-contacts li:first-child converse-roster-contact';
+            await u.waitUntil(() => rosterview.querySelector(sel).model?.get('jid') === contact_jid);
+
+            contact_jid = mock.getContactJID(roster.length-2);
+            contact = await _converse.api.contacts.get(contact_jid);
+            contact.presence.set({ show: 'dnd', presence: 'online' });
+
+            sel = 'ul.roster-group-contacts li:nth-child(3) converse-roster-contact';
+            await u.waitUntil(() => rosterview.querySelector(sel).model?.get('jid') === contact_jid);
+
+            contact_jid = mock.getContactJID(roster.length-3);
+            contact = await _converse.api.contacts.get(contact_jid);
+            contact.presence.set({ show: 'away', presence: 'online' });
+
+            sel = 'ul.roster-group-contacts li:nth-child(4) converse-roster-contact';
+            await u.waitUntil(() => rosterview.querySelector(sel).model?.get('jid') === contact_jid);
+
         }));
 
         it("can be removed by the user",

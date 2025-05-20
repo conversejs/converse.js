@@ -54,7 +54,11 @@ function initConverse (promise_names=[], settings=null, func) {
     }
 }
 
-export async function checkHeaderToggling(group) {
+function getContactJID(index) {
+    return mock.cur_names[index].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+}
+
+async function checkHeaderToggling(group) {
     const toggle = group.querySelector('a.group-toggle');
     expect(u.isVisible(group)).toBeTruthy();
     expect(group.querySelectorAll('ul.collapsed').length).toBe(0);
@@ -959,6 +963,7 @@ Object.assign(mock, {
     groups,
     groups_map,
     initConverse,
+    getContactJID,
     initializedOMEMO,
     num_contacts,
     openAddMUCModal,

@@ -32,6 +32,7 @@ export default class RosterView extends CustomElement {
         this.listenTo(roster, 'destroy', () => this.requestUpdate());
         this.listenTo(roster, 'remove', () => this.requestUpdate());
         this.listenTo(roster, 'change', () => this.requestUpdate());
+        this.listenTo(roster, 'presence:change', () => this.requestUpdate());
         this.listenTo(roster.state, 'change', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
         /**

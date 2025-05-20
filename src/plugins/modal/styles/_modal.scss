@@ -41,11 +41,11 @@ $prefix: 'converse-';
                 color: var(--background-color);
             }
         }
-        .btn-close {
+        .btn {
             --converse-btn-close-bg: none;
             margin: 0;
             padding: 0;
-            font-size: 2.5em;
+            font-size: 1em;
             svg {
                 fill: var(--background-color);
             }

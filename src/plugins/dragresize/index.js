@@ -24,7 +24,8 @@ converse.plugins.add('converse-dragresize', {
          * loaded by converse.js's plugin machinery.
          */
         api.settings.extend({
-            'allow_dragresize': true,
+            allow_dragresize: true,
+            dragresize_top_margin: 0,
         });
 
         Object.assign(_converse.exports.ChatView?.prototype ?? {}, DragResizableMixin);

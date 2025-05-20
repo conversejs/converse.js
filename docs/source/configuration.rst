@@ -750,27 +750,6 @@ a chat state indication of ``active`` will be sent out.
 
 A value of ``0`` means that this feature is disabled.
 
-.. _`lazy_load_vcards`:
-
-lazy_load_vcards
-----------------
-
-* Default:  ``true``
-
-Determines whether vCards are fetched lazily, i.e. only when their data should
-be shown in the UI, or eagerly, which is immediately once the entity the vCard
-relates to is known.
-
-.. _`loglevel`:
-
-loglevel
---------
-
-* Default:  ``'info'``
-* Allowed values: ``'debug'``, ``'info'``, ``'warn'``, ``'error'``, ``'fatal'``
-
-You can also set this value by changing a URL fragment `#converse?loglevel=debug`
-
 .. _`dark_theme`:
 
 dark_theme
@@ -814,6 +793,17 @@ domain_placeholder
 * Default: ``e.g. conversejs.org``
 
 The placeholder text shown in the domain input on the registration form.
+
+dragresize_top_margin
+---------------------
+
+* Default: ``0``
+
+A number, in pixels, which is a top margin that a chat box cannot be resized
+beyond. For example, if it's set to ``100``, then a chat box cannot be resized
+beyond ``100px`` from the top of the window.
+Only relevant when ``view_mode`` is set to ``'overlayed'``.
+
 
 embed_3rd_party_media_players
 -----------------------------
@@ -979,6 +969,27 @@ geouri_replacement
 
 String used to replace geo-URIs with. Ought to be a link to osm or similar. ``$1`` and ``$2`` is replaced by
 latitude and longitude respectively.
+
+.. _`lazy_load_vcards`:
+
+lazy_load_vcards
+----------------
+
+* Default:  ``true``
+
+Determines whether vCards are fetched lazily, i.e. only when their data should
+be shown in the UI, or eagerly, which is immediately once the entity the vCard
+relates to is known.
+
+.. _`loglevel`:
+
+loglevel
+--------
+
+* Default:  ``'info'``
+* Allowed values: ``'debug'``, ``'info'``, ``'warn'``, ``'error'``, ``'fatal'``
+
+You can also set this value by changing a URL fragment `#converse?loglevel=debug`
 
 hide_muc_participants
 ---------------------

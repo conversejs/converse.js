@@ -82,6 +82,7 @@ export function onStartVerticalResize(ev, trigger = true) {
     resizing.chatbox = chatbox_el;
     resizing.direction = 'top';
     chatbox_el.prev_pageY = ev.pageY;
+
     if (trigger) {
         /**
          * Triggered once the user starts to vertically resize a {@link _converse.ChatBoxView}

@@ -39,7 +39,7 @@ export class ConverseFooter extends CustomElement {
                                                       rel="noopener"
                                                       ><img
                                                           style="width: 13em"
-                                                          src="/media/logos/bairesdev-primary.png"
+                                                          src="https://conversejs.org/media/logos/bairesdev-primary.png"
                                                           alt="BairesDev"
                                                   /></a>
                                               </div>
@@ -51,8 +51,8 @@ export class ConverseFooter extends CustomElement {
                                                       ><img
                                                           style="width: 12em"
                                                           src="${is_dark_theme
-                                                              ? '/media/logos/blokt-invert.png'
-                                                              : '/media/logos/blokt.png'}"
+                                                              ? 'https://conversejs.org/media/logos/blokt-invert.png'
+                                                              : 'https://conversejs.org/media/logos/blokt.png'}"
                                                           alt="Blokt Crypto & Privacy"
                                                   /></a>
                                               </div>
@@ -61,7 +61,7 @@ export class ConverseFooter extends CustomElement {
                                                       href="https://www.keycdn.com?utm_source=conversejs"
                                                       target="_blank"
                                                       rel="noopener"
-                                                      ><img style="height: 3em" src="/logo/keycdn.png" alt="KeyCDN"
+                                                      ><img style="height: 3em" src="https://conversejs.org/logo/keycdn.png" alt="KeyCDN"
                                                   /></a>
                                               </div>
                                           </div>

@@ -1,5 +1,5 @@
-&[data-converse-theme="nordic"],
-&[data-bs-theme="nordic"] {
+&[data-converse-theme='nordic'],
+&[data-bs-theme='nordic'] {
     $theme: 'nordic' !default;
 
     // Darker gray theme colors
@@ -8,38 +8,61 @@
     --polar-night-3: #434c5e;
     --polar-night-4: #4c566a;
 
-    --snow-storm-1:  #d8dee9;
-    --snow-storm-2:  #e5e9f0;
-    --snow-storm-3:  #eceff4;
+    --snow-storm-1: #d8dee9;
+    --snow-storm-2: #e5e9f0;
+    --snow-storm-3: #eceff4;
 
-    --green-1:       #5D9795;
-    --green-2:       #387C79;
-    --green-3:       #8FBCBA;
-    --green-4:       #0B4C4A;
+    --green-1: #5d9795;
+    --green1-rgb: 93, 151, 149;
+    --green-2: #387c79;
+    --green2-rgb: 56, 124, 121;
+    --green-3: #8fbcba;
+    --green3-rgb: 143, 188, 186;
+    --green-4: #0b4c4a;
 
-    --blue-1:        #5D9795;
-    --blue-2:        #475D8B;
+    --blue-1: #5d9795;
+    --blue-2: #475d8b;
+    --blue2-rgb: 71, 93, 139;
 
-    --orange:           #D0925F;
-    --orange-darker:    #A76632;
-    --purple:           #b48ead;
-    --red:              #bf616a;
-    --yellow:           #ebcb8b;
+    --orange: #d0925f;
+    --orange-rgb: 208, 146, 95;
+    --orange-darker: #a76632;
+    --purple: #b48ead;
+    --purple-rgb: 180, 142, 173;
+    --red: #bf616a;
+    --red-rgb: 191, 97, 106;
+    --yellow: #ebcb8b;
+    --yellow-rgb: 235, 203, 139;
 
     // Base variables
     // --------------
     --background-color: var(--snow-storm-2);
+    --background-color-rgb: 229, 233, 240;
     --foreground-color: var(--polar-night-2);
+
+    --chat-rgb: var(--green1-rgb);
+    --muc-rgb: var(--orange-rgb);
 
     // Bootstrap variables
     --primary-color: var(--green-2) !important;
+    --primary-rgb: var(--green2-rgb);
     --primary-color-hover: var(--green-3) !important;
     --secondary-color: var(--blue-2) !important;
+    --secondary-rgb: var(--blue2-rgb);
     --success-color: var(--green-3);
+    --success-color-rgb: var(--green3-rgb);
     --danger-color: var(--red);
+    --danger-color-rgb: var(--red-rgb);
     --warning-color: var(--orange);
     --info-color: var(--purple);
+    --info-color-rgb: var(--purple-rgb);
 
+    --converse-info: var(--info-color);
+    --converse-info-rgb: var(--info-color-rgb);
+    --converse-success: var(--success-color);
+    --converse-success-rgb: var(--success-color-rgb);
+    --converse-danger: var(--danger-color);
+    --converse-danger-rgb: var(--danger-color-rgb);
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--red);
@@ -52,6 +75,10 @@
     }
     .modal {
         --converse-modal-color: var(--foreground-color) !important;
+    }
+    .toast {
+        --converse-toast-color: var(--background-color);
+        --converse-toast-bg: var(--secondary-color) !important;
     }
 
     // Online status indicators

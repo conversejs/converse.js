@@ -1,35 +1,59 @@
-&[data-converse-theme="dracula"],
-&[data-bs-theme="dracula"] {
+&[data-converse-theme='dracula'],
+&[data-bs-theme='dracula'] {
     $theme: 'dracula' !default;
 
     // Hex color values
     // ----------------
     --cyan: #8be9fd;
     --green: #50fa7b;
+    --green-rgb: 80, 250, 123;
     --orange: #ffb86c;
+    --orange-rgb: 255, 184, 108;
     --pink: #ff79c6;
+    --pink-rgb: 255, 121, 198;
     --purple: #bd93f9;
+    --purple-rgb: 189, 147, 249;
     --red: #ff5555;
+    --red-rgb: 255, 85, 85;
     --yellow: #f1fa8c;
+    --yellow-rgb: 241, 250, 140;
     --gray: #6272a4;
     --darkgray: #212529;
 
     // Base variables
     // --------------
     --background-color: #282a36;
+    --background-color-rgb: 40, 42, 54;
     --foreground-color: #f8f8f2;
+
+    --chat-rgb: var(--green-rgb);
+    --muc-rgb: var(--orange-rgb);
 
     // Bootstrap variables
     --primary-color: var(--pink) !important;
+    --primary-rgb: var(--pink-rgb);
     --secondary-color: var(--purple) !important;
+    --secondary-rgb: var(--purple-rgb);
     --success-color: var(--green);
+    --success-color-rgb: var(--green-rgb);
     --danger-color: var(--red);
+    --danger-color-rgb: var(--red-rgb);
     --warning-color: var(--orange);
     --info-color: var(--yellow);
+    --info-color-rgb: var(--yellow-rgb);
 
+    --converse-info: var(--info-color);
+    --converse-info-rgb: var(--info-color-rgb);
+    --converse-success: var(--success-color);
+    --converse-success-rgb: var(--success-color-rgb);
+    --converse-danger: var(--danger-color);
+    --converse-danger-rgb: var(--danger-color-rgb);
+
+    --converse-body-bg-rgb: var(--background-color-rgb);
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--yellow) !important;
+    --converse-secondary-color: var(--secondary-color);
     .navbar-nav {
         --converse-nav-link-color: var(--link-color) !important;
         --converse-nav-link-hover-color: var(--link-color-hover) !important;
@@ -47,6 +71,10 @@
             --converse-list-group-active-color: var(--background-color) !important;
         }
     }
+    .toast {
+        --converse-toast-color: var(--background-color);
+        --converse-toast-bg: var(--secondary-color) !important;
+    }
 
     // Online status indicators
     --chat-status-away: var(--orange);
@@ -62,10 +90,6 @@
     --headlines-color: var(--pink);
     --link-color: var(--cyan);
     --subdued-color: var(--gray);
-
-    // toast colors
-    --toast-color: var(--background-color);
-    --toast-bg-color: var(--secondary-color);
 
     // The background when selecting text with your mouse
     --selection-color: black;

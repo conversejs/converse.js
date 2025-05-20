@@ -5,9 +5,20 @@
         right: 1em;
 
         converse-toast {
+            --converse-toast-border-width: 0;
+
             .toast {
-                color: var(--toast-color);
-                background-color: var(--toast-bg-color);
+                color: var(--converse-toast-color) !important;
+                background-color: var(--converse-toast-bg) !important;
+                &.text-bg-success {
+                    background-color: rgba(var(--converse-success-rgb), 0.85) !important;
+                }
+                &.text-bg-danger {
+                    background-color: rgba(var(--converse-danger-rgb), 0.85) !important;
+                }
+                &.text-bg-info{
+                    background-color: rgba(var(--converse-info-rgb), 0.85) !important;
+                }
                 position: relative;
                 margin-block-start: 1em;
                 margin-inline-end: 1em;
@@ -19,7 +30,7 @@
                 .toast-body__container {
                     .fa-times {
                         svg {
-                            fill: var(--toast-color);
+                            fill: var(--converse-toast-color);
                         }
                     }
                 }

@@ -9,45 +9,56 @@
     --blue: #1ba2f6;
     --cyan: #32fbe2;
     --green: #3cf281;
+    --green-rgb: 60, 242, 129;
     --indigo: #6610f2;
     --orange: #f1b633;
+    --orange-rgb: 255, 193, 7;
     --pink: #ea39b8;
+    --pink-rgb: 234, 57, 185;
     --purple: #6f42c1;
+    --purple-rgb: 111, 66, 193;
     --red: #e44c55;
+    --red-rgb: 228, 76, 84;
     --teal: #3f81a2;
     --white: #efefef;
     --yellow: #ffc107;
+    --yellow-rgb: 255, 193, 7;
 
     // Base variables
     // --------------
     --background-color: #1a0933;
+    --background-color-rgb: 26, 9, 51;
     --background-color-lighter: #2c174c;
     --foreground-color: var(--white);
 
-    // RGB values to be used with rgba()
-    // ---------------------------------
-    --background-color-rgb: 26, 9, 51;
-    --green-rgb: 60, 242, 129;
-    --orange-rgb: 255, 193, 7;
-    --pink-rgb: 234, 57, 185;
-    --purple-rgb: 111, 66, 193;
-
     --chat-rgb: var(--green-rgb);
     --muc-rgb: var(--orange-rgb);
-    --primary-rgb: var(--pink-rgb);
-    --secondary-rgb: var(--purple-rgb);
 
     // Bootstrap variables
     --primary-color: var(--pink) !important;
+    --primary-rgb: var(--pink-rgb);
     --secondary-color: var(--purple) !important;
+    --secondary-rgb: var(--purple-rgb);
     --success-color: var(--green);
+    --success-color-rgb: var(--green-rgb);
     --danger-color: var(--red);
+    --danger-color-rgb: var(--red-rgb);
     --warning-color: var(--orange);
     --info-color: var(--yellow);
+    --info-color-rgb: var(--yellow-rgb);
 
+    --converse-info: var(--info-color);
+    --converse-info-rgb: var(--info-color-rgb);
+    --converse-success: var(--success-color);
+    --converse-success-rgb: var(--success-color-rgb);
+    --converse-danger: var(--danger-color);
+    --converse-danger-rgb: var(--danger-color-rgb);
+
+    --converse-body-bg-rgb: var(--background-color-rgb);
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--yellow);
+    --converse-secondary-color: var(--secondary-color);
 
     .shadow-lg {
         --converse-box-shadow-lg: 0 1rem 3rem var(--background-color);
@@ -69,6 +80,10 @@
             --converse-list-group-active-color: var(--background-color) !important;
         }
     }
+    .toast {
+        --converse-toast-color: var(--background-color);
+        --converse-toast-bg: var(--secondary-color) !important;
+    }
 
     // Online status indicators
     --chat-status-away: var(--orange);
@@ -84,10 +99,6 @@
     --headlines-color: var(--indigo);
     --link-color: var(--cyan);
     --subdued-color: gray;
-
-    // toast colors
-    --toast-color: var(--foreground-color);
-    --toast-bg-color: var(--secondary-color);
 
     // The background when selecting text with your mouse
     --selection-color: black;

@@ -34,7 +34,7 @@ export default class Toast extends CustomElement {
     }
 
     render() {
-        return html`<div class="toast show text-bg-${this.type}" role="alert" aria-live="assertive" aria-atomic="true">
+        return html`<div class="toast show text-bg-${this.type ?? 'info'}" role="alert" aria-live="assertive" aria-atomic="true">
             ${this.title
                 ? html`<div class="toast-header">
                       <img src="/logo/conversejs-filled.svg" class="rounded me-2" alt="${__('Converse logo')}" />

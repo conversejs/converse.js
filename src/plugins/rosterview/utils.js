@@ -61,9 +61,15 @@ export async function declineContactRequest(contact) {
 
         if (blocking_supported && Array.isArray(result) && result.find((i) => i.name === 'block')?.value === 'on') {
             api.blocklist.add(contact.get('jid'));
-            api.toast.show('', { body: __('Contact request declined and user blocked') });
+            api.toast.show('declined-and-blocked', {
+                type: 'success',
+                body: __('Contact request declined and user blocked')
+            });
         } else {
-            api.toast.show('', { body: __('Contact request declined') });
+            api.toast.show('request-declined', {
+                type: 'success',
+                body: __('Contact request declined')
+            });
         }
         contact.destroy();
     }

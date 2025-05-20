@@ -66,7 +66,8 @@ export default class AcceptContactRequest extends BaseModal {
             groups,
         });
         api.toast.show('accept-request-success', {
-            body: __('Succesfully accepted the contact request'),
+            type: 'success',
+            body: __('Successfully accepted the contact request'),
         });
         this.modal.hide();
     }

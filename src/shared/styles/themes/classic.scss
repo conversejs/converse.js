@@ -5,28 +5,49 @@
     // Hex color values
     // ----------------
     --blue: #387592;
+    --blue-rgb: 56, 117, 146;
     --dark-blue: #397491;
     --dark-green: #1e9652;
     --dark-red: #d24e2b;
+    --dark-red-rgb: 210, 78, 43;
     --gray: #818479;
     --green: #3aa569;
+    --green-rgb: 58, 165, 105;
     --light-blue: #578ea9;
+    --light-blue-rgb: 87, 142, 169;
     --lighter-blue: #eff4f7;
     --orange: #e7a151;
+    --orange-rgb: 231, 161, 81;
     --redder-orange: #e77051;
 
     // Base variables
     // --------------
     --foreground-color: #666;
     --background-color: #efefef;
+    --background-color-rgb: 102, 102, 102;
+
+    --chat-rgb: var(--green-rgb);
+    --muc-rgb: var(--orange-rgb);
 
     // Bootstrap variables
     --primary-color: var(--blue) !important;
+    --primary-rgb: var(--blue-rgb);
     --secondary-color: var(--light-blue) !important;
+    --secondary-rgb: var(--light-blue-rgb);
     --success-color: var(--green);
+    --success-color-rgb: var(--green-rgb);
     --danger-color: var(--dark-red);
+    --danger-color-rgb: var(--dark-red-rgb);
     --warning-color: var(--orange);
     --info-color: var(--light-blue);
+    --info-color-rgb: var(--light-blue-rgb);
+
+    --converse-info: var(--info-color);
+    --converse-info-rgb: var(--info-color-rgb);
+    --converse-success: var(--success-color);
+    --converse-success-rgb: var(--success-color-rgb);
+    --converse-danger: var(--danger-color);
+    --converse-danger-rgb: var(--danger-color-rgb);
 
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
@@ -40,6 +61,10 @@
     }
     .modal {
         --converse-modal-color: var(--foreground-color) !important;
+    }
+    .toast {
+        --converse-toast-color: var(--background-color);
+        --converse-toast-bg: var(--secondary-color) !important;
     }
 
     // Online status indicators
@@ -56,10 +81,6 @@
     --headlines-color: var(--orange);
     --link-color: #2D3991;
     --subdued-color: gray;
-
-    // toast colors
-    --toast-color: var(--background-color);
-    --toast-bg-color: var(--secondary-color);
 
     // The background when selecting text with your mouse
     --selection-color: black;

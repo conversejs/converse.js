@@ -106,7 +106,7 @@ export default class ProfileModal extends BaseModal {
             });
             if (await this.setVCard(data)) {
                 this.modal.hide();
-                api.toast.show('vcard-updated', { body: __('Profile updated successfully') });
+                api.toast.show('vcard-updated', { type: 'success', body: __('Profile updated successfully') });
             }
             this._submitting = false;
         }

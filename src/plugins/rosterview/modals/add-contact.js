@@ -63,7 +63,7 @@ export default class AddContactModal extends BaseModal {
         });
         api.chats.open(jid, {}, true);
         this.model.clear();
-        api.toast.show('contact-added', { body: __('Contact added successfully') });
+        api.toast.show('contact-added', { type: 'success', body: __('Contact added successfully') });
         this.modal.hide();
     }
 

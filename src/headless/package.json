@@ -69,7 +69,7 @@
     "pluggable.js": "3.0.1",
     "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
-    "strophe.js": "strophe/strophejs#fb70dcb4e202f632bc9932915b4522f70ad4d47c"
+    "strophe.js": "3.1.1"
   },
   "devDependencies": {}
 }

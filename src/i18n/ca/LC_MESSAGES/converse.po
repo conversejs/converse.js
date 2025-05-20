@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-20 15:35+0200\n"
-"PO-Revision-Date: 2025-05-05 02:10+0000\n"
+"PO-Revision-Date: 2025-05-21 07:47+0000\n"
 "Last-Translator: fran secs <fransecs@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/conversejs/"
 "translations/ca/>\n"
@@ -621,9 +621,8 @@ msgid "Click to set a new picture"
 msgstr "Feu clic per establir una imatge nova"
 
 #: dist/converse-no-dependencies.js:79655
-#, fuzzy
 msgid "Clear picture"
-msgstr "Netejar l'àrea de xat"
+msgstr "Esborrar imatge"
 
 #: dist/converse-no-dependencies.js:80157
 msgid "Older versions"
@@ -707,7 +706,7 @@ msgstr "Cancel·lar"
 
 #: dist/converse-no-dependencies.js:87070
 msgid "Converse logo"
-msgstr ""
+msgstr "Logo de Converse"
 
 #: dist/converse-no-dependencies.js:89150
 msgid "Execute"
@@ -726,9 +725,9 @@ msgid "Complete"
 msgstr "Complet"
 
 #: dist/converse-no-dependencies.js:89398
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The profile picture of %1$s"
-msgstr "El Teu Perfil"
+msgstr "Foto del perfil de %1$s"
 
 #: dist/converse-no-dependencies.js:89509
 msgid "Add to Contacts"
@@ -1222,28 +1221,25 @@ msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
 msgstr "S'ha produït un error intentant suprimir %1$s com a contacte"
 
 #: dist/converse-no-dependencies.js:100926
-#, fuzzy
 msgid "Remove and decline contact request"
-msgstr "Refusa sol·licitud de contacte"
+msgstr "Eliminar i refusar la sol·licitud de contacte"
 
 #: dist/converse-no-dependencies.js:100926
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to decline the contact request from %1$s?"
-msgstr "Confirmeu refusar aquesta sol·licitud de contacte?"
+msgstr "Confirmeu que voleu refusar la sol·licitud de contacte de %1$s?"
 
 #: dist/converse-no-dependencies.js:100927
-#, fuzzy
 msgid "Also block this user from sending you further messages"
-msgstr "Impediu que aquest compte us enviï més missatges"
+msgstr "Bloquejar també aquest compte perquè no us enviï més missatges"
 
 #: dist/converse-no-dependencies.js:100949
 msgid "Contact request declined and user blocked"
-msgstr ""
+msgstr "Sol·licitud de contacte refusada i compte bloquejat"
 
 #: dist/converse-no-dependencies.js:100954
-#, fuzzy
 msgid "Contact request declined"
-msgstr "Sol·licituds de contacte"
+msgstr "Sol·licitud de contacte refusada"
 
 #: dist/converse-no-dependencies.js:100993
 msgid "Do you want to block this contact, so they cannot send you messages?"
@@ -1272,9 +1268,8 @@ msgid "Add to blocklist"
 msgstr "Afegir a la llista de bloqueig"
 
 #: dist/converse-no-dependencies.js:101793
-#, fuzzy
 msgid "Add as contact"
-msgstr "Afegir un contacte"
+msgstr "Afegir com a contacte"
 
 #: dist/converse-no-dependencies.js:101803
 msgid "Remove as contact"
@@ -1283,12 +1278,11 @@ msgstr "Eliminar com a contacte"
 #: dist/converse-no-dependencies.js:101813
 #: dist/converse-no-dependencies.js:145213
 msgid "Accept"
-msgstr ""
+msgstr "Acceptar"
 
 #: dist/converse-no-dependencies.js:101823
-#, fuzzy
 msgid "Decline"
-msgstr "En línia"
+msgstr "Refusar"
 
 #: dist/converse-no-dependencies.js:101871
 #: dist/converse-no-dependencies.js:129276
@@ -1446,9 +1440,9 @@ msgid "Block user"
 msgstr "Blocar compte"
 
 #: dist/converse-no-dependencies.js:107763
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to prevent %1$s from contacting you further?"
-msgstr "Confirmeu l'eliminació d'aquest contacte?"
+msgstr "Segur que voleu evitar que %1$s us contacti més?"
 
 #: dist/converse-no-dependencies.js:107783
 msgid "Block this user"
@@ -1852,7 +1846,7 @@ msgstr "Bandejar compte canviant-li l'afiliació a marginat"
 
 #: dist/converse-no-dependencies.js:122401
 msgid "Clear the chat area"
-msgstr "Netejar l'àrea de xat"
+msgstr "Esborrar l'àrea de xat"
 
 #: dist/converse-no-dependencies.js:122401
 msgid "Close this groupchat"
@@ -2276,9 +2270,8 @@ msgid "Personal status message"
 msgstr "Missatge d'estat personal"
 
 #: dist/converse-no-dependencies.js:128392
-#, fuzzy
 msgid "Clear status message"
-msgstr "Missatge d'estat personal"
+msgstr "Esborrar el missatge d'estat"
 
 #: dist/converse-no-dependencies.js:128552
 msgid "Change chat status"
@@ -2374,9 +2367,8 @@ msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "S'ha produït un error intentant desar les dades del vostre perfil."
 
 #: dist/converse-no-dependencies.js:129926
-#, fuzzy
 msgid "Profile updated successfully"
-msgstr "Registre correcte"
+msgstr "El perfil s'ha actualitzat correctament"
 
 #: dist/converse-no-dependencies.js:129972
 msgid "About"
@@ -2869,9 +2861,9 @@ msgid "Click to remove %1$s as a contact"
 msgstr "Feu clic per eliminar %1$s com a contacte"
 
 #: dist/converse-no-dependencies.js:143718
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to show more details about %1$s"
-msgstr "Mostra més informació d'aquesta sala"
+msgstr "Feu clic per mostrar més detalls sobre %1$s"
 
 #: dist/converse-no-dependencies.js:143753
 msgid "Click to chat with yourself"
@@ -2899,9 +2891,8 @@ msgstr ""
 "%2$s)"
 
 #: dist/converse-no-dependencies.js:143784
-#, fuzzy
 msgid "Accept as contact"
-msgstr "Afegir un contacte"
+msgstr "Acceptar com a contacte"
 
 #: dist/converse-no-dependencies.js:143833
 #, javascript-format
@@ -2909,9 +2900,8 @@ msgid "Click to add %1$s as a contact"
 msgstr "Feu clic per afegir %1$s com a contacte"
 
 #: dist/converse-no-dependencies.js:143836
-#, fuzzy
 msgid "Save as contact"
-msgstr "Eliminar com a contacte"
+msgstr "Desar com a contacte"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2934,14 +2924,12 @@ msgid "This contact has already been added"
 msgstr "Aquest contacte ja s'ha afegit"
 
 #: dist/converse-no-dependencies.js:145108
-#, fuzzy
 msgid "Sorry, something went wrong while adding the contact"
-msgstr "S'ha produït un error intentant assignar el rol"
+msgstr "Aguna cosa ha anat malament en afegir el contacte"
 
 #: dist/converse-no-dependencies.js:145116
-#, fuzzy
 msgid "Contact added successfully"
-msgstr "Registre correcte"
+msgstr "Contacte afegit correctament"
 
 #: dist/converse-no-dependencies.js:145163
 msgid ""
@@ -2952,13 +2940,12 @@ msgstr ""
 "\"Nom <identificador@exemple.cat>\"."
 
 #: dist/converse-no-dependencies.js:145734
-#, fuzzy
 msgid "Sorry, something went wrong while accepting the contact request"
-msgstr "S'ha produït un error intentant assignar el rol"
+msgstr "Alguna cosa ha anat malament en acceptar la sol·licitud de contacte"
 
 #: dist/converse-no-dependencies.js:145744
 msgid "Successfully accepted the contact request"
-msgstr ""
+msgstr "Sol·licitud de contacte acceptada correctament"
 
 #. *
 #. * @param {import('../new-chat.js').default} el

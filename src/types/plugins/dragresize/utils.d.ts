@@ -15,20 +15,37 @@ export function initializeDragResize(model: import("@converse/headless/types/sha
  * @returns {string}
  */
 export function getResizingDirection(): string;
-export function onStartVerticalResize(ev: any, trigger?: boolean): boolean;
-export function onStartHorizontalResize(ev: any, trigger?: boolean): boolean;
-export function onStartDiagonalResize(ev: any): void;
+/**
+ * @param {MouseEvent} ev
+ * @param {boolean} [trigger=true]
+ */
+export function onStartVerticalResize(ev: MouseEvent, trigger?: boolean): boolean;
+/**
+ * @param {MouseEvent} ev
+ * @param {boolean} [trigger=true]
+ */
+export function onStartHorizontalResize(ev: MouseEvent, trigger?: boolean): boolean;
+/**
+ * @param {MouseEvent} ev
+ */
+export function onStartDiagonalResize(ev: MouseEvent): void;
 /**
  * Applies some resistance to `value` around the `default_value`.
  * If value is close enough to `default_value`, then it is returned, otherwise
  * `value` is returned.
- * @param { number } value
- * @param { number } default_value
- * @returns { number }
+ * @param {number} value
+ * @param {number} default_value
+ * @returns {number}
  */
 export function applyDragResistance(value: number, default_value: number): number;
-export function onMouseMove(ev: any): boolean;
-export function onMouseUp(ev: any): boolean;
+/**
+ * @param {MouseEvent} ev
+ */
+export function onMouseMove(ev: MouseEvent): boolean;
+/**
+ * @param {MouseEvent} ev
+ */
+export function onMouseUp(ev: MouseEvent): boolean;
 export type ResizingData = {
     chatbox: HTMLElement;
     direction: string;

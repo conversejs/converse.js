@@ -65,6 +65,10 @@ export function getResizingDirection() {
     return resizing.direction;
 }
 
+/**
+ * @param {MouseEvent} ev
+ * @param {boolean} [trigger=true]
+ */
 export function onStartVerticalResize(ev, trigger = true) {
     if (!api.settings.get('allow_dragresize')) {
         return true;
@@ -88,6 +92,10 @@ export function onStartVerticalResize(ev, trigger = true) {
     }
 }
 
+/**
+ * @param {MouseEvent} ev
+ * @param {boolean} [trigger=true]
+ */
 export function onStartHorizontalResize(ev, trigger = true) {
     if (!api.settings.get('allow_dragresize')) {
         return true;
@@ -111,6 +119,9 @@ export function onStartHorizontalResize(ev, trigger = true) {
     }
 }
 
+/**
+ * @param {MouseEvent} ev
+ */
 export function onStartDiagonalResize(ev) {
     onStartHorizontalResize(ev, false);
     onStartVerticalResize(ev, false);
@@ -127,9 +138,9 @@ export function onStartDiagonalResize(ev) {
  * Applies some resistance to `value` around the `default_value`.
  * If value is close enough to `default_value`, then it is returned, otherwise
  * `value` is returned.
- * @param { number } value
- * @param { number } default_value
- * @returns { number }
+ * @param {number} value
+ * @param {number} default_value
+ * @returns {number}
  */
 export function applyDragResistance(value, default_value) {
     if (value === undefined) {
@@ -144,6 +155,9 @@ export function applyDragResistance(value, default_value) {
     return value;
 }
 
+/**
+ * @param {MouseEvent} ev
+ */
 export function onMouseMove(ev) {
     if (!resizing.chatbox || !api.settings.get('allow_dragresize')) {
         return true;
@@ -152,6 +166,9 @@ export function onMouseMove(ev) {
     resizing.chatbox.resizeChatBox(ev);
 }
 
+/**
+ * @param {MouseEvent} ev
+ */
 export function onMouseUp(ev) {
     if (!resizing.chatbox || !api.settings.get('allow_dragresize')) {
         return true;

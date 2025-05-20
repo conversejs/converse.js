@@ -2,16 +2,34 @@ export default DragResizableMixin;
 declare namespace DragResizableMixin {
     function initDragResize(): {
         initDragResize(): any;
-        resizeChatBox(ev: any): void;
+        /**
+         * @param {MouseEvent} ev
+         */
+        resizeChatBox(ev: MouseEvent): void;
         setDimensions(): void;
-        setChatBoxHeight(height: any): void;
-        setChatBoxWidth(width: any): void;
+        /**
+         * @param {number} height
+         */
+        setChatBoxHeight(height: number): void;
+        /**
+         * @param {number} width
+         */
+        setChatBoxWidth(width: number): void;
         adjustToViewport(): void;
     };
-    function resizeChatBox(ev: any): void;
+    /**
+     * @param {MouseEvent} ev
+     */
+    function resizeChatBox(ev: MouseEvent): void;
     function setDimensions(): void;
-    function setChatBoxHeight(height: any): void;
-    function setChatBoxWidth(width: any): void;
+    /**
+     * @param {number} height
+     */
+    function setChatBoxHeight(height: number): void;
+    /**
+     * @param {number} width
+     */
+    function setChatBoxWidth(width: number): void;
     function adjustToViewport(): void;
 }
 //# sourceMappingURL=mixin.d.ts.map

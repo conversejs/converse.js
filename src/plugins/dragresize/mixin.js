@@ -99,10 +99,11 @@ const DragResizableMixin = {
      * @param {number} width
      */
     setChatBoxWidth(width) {
-        this.style.width = width ? applyDragResistance(width, this.model.get('default_width')) + 'px' : '';
+        const style_width = width ? applyDragResistance(width, this.model.get('default_width')) + 'px' : '';
+        this.style.width = style_width;
         const flyout_el = this.querySelector('.box-flyout');
         if (flyout_el !== null) {
-            flyout_el.style.width = width;
+            flyout_el.style.width = style_width;
         }
     },
 

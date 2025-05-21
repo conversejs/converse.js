@@ -1,5 +1,4 @@
 import { html } from 'lit';
-import log from '@converse/log';
 import { u } from '@converse/headless';
 import { isDomainAllowed } from 'utils/url.js';
 import 'shared/texture/components/image.js';

@@ -1,4 +1,4 @@
-import { html } from 'lit';
+import { html, nothing } from 'lit';
 import { api, converse } from '@converse/headless';
 import { shouldRenderMediaFromURL } from '../../../utils/url.js';
 import { getAuthorStyle } from '../../../utils/color.js';
@@ -110,16 +110,13 @@ export default (el) => {
                     if (el.model.get('hide_url_previews') === true) {
                         return '';
                     }
-                    if (!shouldRenderMediaFromURL(m['og:image'], 'image')) {
-                        return '';
-                    }
                     return html`<converse-message-unfurl
                         @animationend="${el.onUnfurlAnimationEnd}"
                         class="${el.model.get('url_preview_transition')}"
                         jid="${el.model_with_messages?.get('jid')}"
                         description="${m['og:description'] || ''}"
                         title="${m['og:title'] || ''}"
-                        image="${m['og:image'] || ''}"
+                        image="${(m['og:image'] && shouldRenderMediaFromURL(m['og:image'], 'image')) ? m['og:image'] : nothing}"
                         site_name="${m['og:site_name'] || ''}"
                         url="${m['og:url'] || ''}"
                     ></converse-message-unfurl>`;

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-20 15:35+0200\n"
-"PO-Revision-Date: 2025-05-16 19:38+0000\n"
+"PO-Revision-Date: 2025-05-21 07:47+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -259,7 +259,7 @@ msgstr "%1$s 不再是主持人"
 #: dist/converse-no-dependencies.js:44355
 #, javascript-format
 msgid "%1$s has been given a voice"
-msgstr "%1$s 已经有了发言权"
+msgstr "%1$s 已有发言权"
 
 #: dist/converse-no-dependencies.js:44357
 #, javascript-format
@@ -309,7 +309,7 @@ msgstr "%1$s 不再是主持人"
 #: dist/converse-no-dependencies.js:44382
 #, javascript-format
 msgid "%1$s have been given voices"
-msgstr "%1$s 已经有了发言权"
+msgstr "%1$s 已有发言权"
 
 #: dist/converse-no-dependencies.js:44384
 #, javascript-format
@@ -548,7 +548,7 @@ msgstr "查询归档消息时出错。"
 #: dist/converse-no-dependencies.js:66272
 #, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
-msgstr "抱歉，尝试将 %1$s 作为联系人添加时出错。"
+msgstr "抱歉，尝试添加联系人 %1$s 时出错。"
 
 #: dist/converse-no-dependencies.js:66564
 msgid "This client does not allow presence subscriptions"
@@ -1163,17 +1163,16 @@ msgstr "是否确定要移除此联系人？"
 #: dist/converse-no-dependencies.js:100895
 #, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
-msgstr "抱歉，尝试将 %1$s 作为联系人移除时出错"
+msgstr "抱歉，尝试移除联系人 %1$s 时出错"
 
 #: dist/converse-no-dependencies.js:100926
-#, fuzzy
 msgid "Remove and decline contact request"
-msgstr "拒绝联系人请求"
+msgstr "移除并拒绝联系人请求"
 
 #: dist/converse-no-dependencies.js:100926
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to decline the contact request from %1$s?"
-msgstr "是否确定要拒绝来自 %1$s 的此联系人请求？"
+msgstr "是否确定要拒绝来自 %1$s 的联系人请求？"
 
 #: dist/converse-no-dependencies.js:100927
 msgid "Also block this user from sending you further messages"
@@ -1181,12 +1180,11 @@ msgstr "同时阻止此用户继续向您发送消息"
 
 #: dist/converse-no-dependencies.js:100949
 msgid "Contact request declined and user blocked"
-msgstr ""
+msgstr "联系人请求已拒绝，用户已屏蔽"
 
 #: dist/converse-no-dependencies.js:100954
-#, fuzzy
 msgid "Contact request declined"
-msgstr "联系人请求"
+msgstr "联系人请求已拒绝"
 
 #: dist/converse-no-dependencies.js:100993
 msgid "Do you want to block this contact, so they cannot send you messages?"
@@ -1215,23 +1213,21 @@ msgid "Add to blocklist"
 msgstr "添加到屏蔽列表"
 
 #: dist/converse-no-dependencies.js:101793
-#, fuzzy
 msgid "Add as contact"
 msgstr "添加联系人"
 
 #: dist/converse-no-dependencies.js:101803
 msgid "Remove as contact"
-msgstr "作为联系人移除"
+msgstr "移除联系人"
 
 #: dist/converse-no-dependencies.js:101813
 #: dist/converse-no-dependencies.js:145213
 msgid "Accept"
-msgstr ""
+msgstr "接受"
 
 #: dist/converse-no-dependencies.js:101823
-#, fuzzy
 msgid "Decline"
-msgstr "在线"
+msgstr "拒绝"
 
 #: dist/converse-no-dependencies.js:101871
 #: dist/converse-no-dependencies.js:129276
@@ -1285,7 +1281,7 @@ msgstr "重试"
 
 #: dist/converse-no-dependencies.js:103183
 msgid "This message has been edited"
-msgstr "已编辑此消息"
+msgstr "此消息已编辑"
 
 #. *
 #. * @param {import('../message').default} el
@@ -1550,7 +1546,7 @@ msgstr "登出"
 
 #: dist/converse-no-dependencies.js:113514
 msgid "Show details about this chat client"
-msgstr "显示有关此聊天客户端的详情"
+msgstr "显示关于此聊天客户端的详情"
 
 #: dist/converse-no-dependencies.js:114299
 msgid "Close these announcements"
@@ -2055,7 +2051,7 @@ msgstr "显示此群聊的更多信息"
 
 #: dist/converse-no-dependencies.js:125066
 msgid "Show more information about this groupchat"
-msgstr "显示有关此群聊的更多信息"
+msgstr "显示关于此群聊的更多信息"
 
 #: dist/converse-no-dependencies.js:125076
 msgid "Configure"
@@ -2208,9 +2204,8 @@ msgid "Personal status message"
 msgstr "个人状态信息"
 
 #: dist/converse-no-dependencies.js:128392
-#, fuzzy
 msgid "Clear status message"
-msgstr "个人状态信息"
+msgstr "清除状态消息"
 
 #: dist/converse-no-dependencies.js:128552
 msgid "Change chat status"
@@ -2771,12 +2766,12 @@ msgstr "此联系人离开"
 #: dist/converse-no-dependencies.js:143706
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr "点击即可将 %1$s 作为联系人移除"
+msgstr "点击即可移除联系人 %1$s"
 
 #: dist/converse-no-dependencies.js:143718
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to show more details about %1$s"
-msgstr "显示更多关于此聊天室的信息"
+msgstr "点击即可显示关于 %1$s 的更多详情"
 
 #: dist/converse-no-dependencies.js:143753
 msgid "Click to chat with yourself"
@@ -2800,19 +2795,17 @@ msgid "Click to decline the contact request from %1$s (XMPP address: %2$s)"
 msgstr "点击即可拒绝来自 %1$s 的联系人请求（XMPP 地址：%2$s）"
 
 #: dist/converse-no-dependencies.js:143784
-#, fuzzy
 msgid "Accept as contact"
-msgstr "添加联系人"
+msgstr "接受联系人"
 
 #: dist/converse-no-dependencies.js:143833
 #, javascript-format
 msgid "Click to add %1$s as a contact"
-msgstr "点击即可将 %1$s 作为联系人添加"
+msgstr "点击即可添加联系人 %1$s"
 
 #: dist/converse-no-dependencies.js:143836
-#, fuzzy
 msgid "Save as contact"
-msgstr "作为联系人移除"
+msgstr "保存联系人"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2832,12 +2825,11 @@ msgstr "添加联系人"
 
 #: dist/converse-no-dependencies.js:145081
 msgid "This contact has already been added"
-msgstr "已添加此联系人"
+msgstr "此联系人已添加"
 
 #: dist/converse-no-dependencies.js:145108
-#, fuzzy
 msgid "Sorry, something went wrong while adding the contact"
-msgstr "抱歉，尝试设置角色时出了点问题"
+msgstr "抱歉，添加联系人时出了点问题"
 
 #: dist/converse-no-dependencies.js:145116
 msgid "Contact added successfully"
@@ -2850,13 +2842,12 @@ msgid ""
 msgstr "名称和 XMPP 地址的值无效。请使用“名称 <用户名@example.org>”格式。"
 
 #: dist/converse-no-dependencies.js:145734
-#, fuzzy
 msgid "Sorry, something went wrong while accepting the contact request"
-msgstr "抱歉，尝试设置角色时出了点问题"
+msgstr "抱歉，接受联系人请求时出了点问题"
 
 #: dist/converse-no-dependencies.js:145744
 msgid "Successfully accepted the contact request"
-msgstr ""
+msgstr "已成功接受联系人请求"
 
 #. *
 #. * @param {import('../new-chat.js').default} el

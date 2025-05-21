@@ -1,10 +1,10 @@
 /** Converse.js
  *
- *  An XMPP chat client that runs in the browser.
+ *  An XMPP chat client for the web
  *
- *  Version: 10.1.5
+ *  Version: 11.0.0
  *
- *  Copyright: JC Brand 2013-2018
+ *  Copyright: JC Brand 2013-2025
  *  Except for 3rd party dependencies.
  *  Please refer to the unminified version of this file for details.
  *

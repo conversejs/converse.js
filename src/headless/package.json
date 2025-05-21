@@ -1,6 +1,6 @@
 {
   "name": "@converse/headless",
-  "version": "10.1.7",
+  "version": "11.0.0",
   "description": "Converse.js Headless build",
   "author": "JC Brand <jc@opkode.com>",
   "contributors": [

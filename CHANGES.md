@@ -1,6 +1,6 @@
 # Changelog
 
-## 11.0.0 (Unreleased)
+## 11.0.0 (2025-05-21)
 
 ### Github Issues
 - #122: Set horizontal layout direction based on the language

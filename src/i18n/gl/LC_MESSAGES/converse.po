@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-20 15:35+0200\n"
-"PO-Revision-Date: 2025-05-16 19:38+0000\n"
+"PO-Revision-Date: 2025-05-23 04:03+0000\n"
 "Last-Translator: \"josé m.\" <correoxm@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -1200,12 +1200,11 @@ msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
 msgstr "Lamentámolo, algo fallou ao intentar retirar a %1$s como contacto"
 
 #: dist/converse-no-dependencies.js:100926
-#, fuzzy
 msgid "Remove and decline contact request"
-msgstr "Rexeitar a solicitude de contacto"
+msgstr "Eliminar e rexeitar a solicitude de contacto"
 
 #: dist/converse-no-dependencies.js:100926
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to decline the contact request from %1$s?"
 msgstr "Tes certeza de querer rexeitar a solicitude de contacto de %1$s?"
 
@@ -1215,12 +1214,11 @@ msgstr "Evitar tamén que esta conta che envíe máis mensaxes"
 
 #: dist/converse-no-dependencies.js:100949
 msgid "Contact request declined and user blocked"
-msgstr ""
+msgstr "Rexeitouse a solicitude e bloqueouse a usuaria"
 
 #: dist/converse-no-dependencies.js:100954
-#, fuzzy
 msgid "Contact request declined"
-msgstr "Solicitudes de contacto"
+msgstr "Rexeitouse a solicitude de contacto"
 
 #: dist/converse-no-dependencies.js:100993
 msgid "Do you want to block this contact, so they cannot send you messages?"
@@ -1249,9 +1247,8 @@ msgid "Add to blocklist"
 msgstr "Engadir á lista de bloqueo"
 
 #: dist/converse-no-dependencies.js:101793
-#, fuzzy
 msgid "Add as contact"
-msgstr "Engadir un contacto"
+msgstr "Engadir como contacto"
 
 #: dist/converse-no-dependencies.js:101803
 msgid "Remove as contact"
@@ -1260,12 +1257,11 @@ msgstr "Eliminar como contacto"
 #: dist/converse-no-dependencies.js:101813
 #: dist/converse-no-dependencies.js:145213
 msgid "Accept"
-msgstr ""
+msgstr "Aceptar"
 
 #: dist/converse-no-dependencies.js:101823
-#, fuzzy
 msgid "Decline"
-msgstr "Conectado"
+msgstr "Rexeitar"
 
 #: dist/converse-no-dependencies.js:101871
 #: dist/converse-no-dependencies.js:129276
@@ -2251,9 +2247,8 @@ msgid "Personal status message"
 msgstr "Mensaxe de estado persoal"
 
 #: dist/converse-no-dependencies.js:128392
-#, fuzzy
 msgid "Clear status message"
-msgstr "Mensaxe de estado persoal"
+msgstr "Limpar mensaxe de estado"
 
 #: dist/converse-no-dependencies.js:128552
 msgid "Change chat status"
@@ -2847,9 +2842,9 @@ msgid "Click to remove %1$s as a contact"
 msgstr "Pulse para eliminar %1$s como contacto"
 
 #: dist/converse-no-dependencies.js:143718
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to show more details about %1$s"
-msgstr "Mostrar máis detalles sobre esta conversa en grupo"
+msgstr "Preme para mostrar máis detalles sobre %1$s"
 
 #: dist/converse-no-dependencies.js:143753
 msgid "Click to chat with yourself"
@@ -2875,9 +2870,8 @@ msgstr ""
 "Prema para rexeitar a solicitude do contacto desde %1$s (enderezo XMPP: %2$s)"
 
 #: dist/converse-no-dependencies.js:143784
-#, fuzzy
 msgid "Accept as contact"
-msgstr "Engadir un contacto"
+msgstr "Aceptar como contacto"
 
 #: dist/converse-no-dependencies.js:143833
 #, javascript-format
@@ -2885,9 +2879,8 @@ msgid "Click to add %1$s as a contact"
 msgstr "Preme para engadir a %1$s como contacto"
 
 #: dist/converse-no-dependencies.js:143836
-#, fuzzy
 msgid "Save as contact"
-msgstr "Eliminar como contacto"
+msgstr "Gardar como contacto"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2910,9 +2903,8 @@ msgid "This contact has already been added"
 msgstr "Este contacto xa foi engadido"
 
 #: dist/converse-no-dependencies.js:145108
-#, fuzzy
 msgid "Sorry, something went wrong while adding the contact"
-msgstr "Lamentámolo, algo fallou ao intentar establer o rol"
+msgstr "Lamentámolo, algo fallou ao engadir o contacto"
 
 #: dist/converse-no-dependencies.js:145116
 msgid "Contact added successfully"
@@ -2927,13 +2919,12 @@ msgstr ""
 "<usuaria@exemplo.org>\"."
 
 #: dist/converse-no-dependencies.js:145734
-#, fuzzy
 msgid "Sorry, something went wrong while accepting the contact request"
-msgstr "Lamentámolo, algo fallou ao intentar establer o rol"
+msgstr "Lamentámolo, algo fallou ao aceptar a solicitude do contacto"
 
 #: dist/converse-no-dependencies.js:145744
 msgid "Successfully accepted the contact request"
-msgstr ""
+msgstr "Aceptouse a solicitude do contacto"
 
 #. *
 #. * @param {import('../new-chat.js').default} el

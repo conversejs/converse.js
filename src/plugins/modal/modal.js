@@ -126,12 +126,15 @@ class BaseModal extends CustomElement {
     /**
      * @param {string} message
      * @param {'primary'|'secondary'|'danger'} type
+     * @param {boolean} [is_ephemeral=true]
      */
-    alert(message, type = 'primary') {
+    alert(message, type = 'primary', is_ephemeral = true) {
         this.model.set('alert', { message, type });
-        setTimeout(() => {
-            this.model.set('alert', undefined);
-        }, 5000);
+        if (is_ephemeral) {
+            setTimeout(() => {
+                this.model.set('alert', undefined);
+            }, 5000);
+        }
     }
 
     async show() {

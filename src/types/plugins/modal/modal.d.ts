@@ -47,8 +47,9 @@ declare class BaseModal extends CustomElement {
     /**
      * @param {string} message
      * @param {'primary'|'secondary'|'danger'} type
+     * @param {boolean} [is_ephemeral=true]
      */
-    alert(message: string, type?: "primary" | "secondary" | "danger"): void;
+    alert(message: string, type?: "primary" | "secondary" | "danger", is_ephemeral?: boolean): void;
     show(): Promise<void>;
     #private;
 }

@@ -122,7 +122,7 @@
     }
 
     .suggestion-box > ul > li[aria-selected="true"] {
-        background: var(--secondary-color);
+        background: var(--highlight-color);
         color: var(--foreground-color);
     }
 

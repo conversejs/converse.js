@@ -1,3 +1,4 @@
+import { html } from 'lit';
 import { converse } from '@converse/headless';
 
 const u = converse.env.utils;
@@ -31,14 +32,20 @@ export const helpers = {
         }
     },
 
-    regExpEscape(s) {
-        return s.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
-    },
-
     isMention(word, ac_triggers) {
         return ac_triggers.includes(word[0]) || (u.isMentionBoundary(word[0]) && ac_triggers.includes(word[1]));
     },
 };
+
+/**
+ * Escapes special characters in a string to be used in a regular expression.
+ * This function takes a string and returns a new string with all special characters
+ * escaped, ensuring that the string can be safely used in a RegExp constructor.
+ * @param {string} s - The string to escape.
+ */
+export function regExpEscape(s) {
+    return s.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
+}
 
 /**
  * @param {string} text
@@ -46,7 +53,7 @@ export const helpers = {
  * @returns {boolean}
  */
 export function FILTER_CONTAINS(text, input) {
-    return RegExp(helpers.regExpEscape(input.trim()), 'i').test(text);
+    return RegExp(regExpEscape(input.trim()), 'i').test(text);
 }
 
 /**
@@ -55,7 +62,7 @@ export function FILTER_CONTAINS(text, input) {
  * @returns {boolean}
  */
 export function FILTER_STARTSWITH(text, input) {
-    return RegExp('^' + helpers.regExpEscape(input.trim()), 'i').test(text);
+    return RegExp('^' + regExpEscape(input.trim()), 'i').test(text);
 }
 
 /**
@@ -81,21 +88,20 @@ export const SORT_BY_QUERY_POSITION = function (a, b) {
     return (x === -1 ? Infinity : x) < (y === -1 ? Infinity : y) ? -1 : 1;
 };
 
-export const ITEM = (text, input) => {
+/**
+ * Renders an item for display in a list.
+ * @param {string} text - The text to display.
+ * @param {string} input - The input string to highlight.
+ * @returns {import('lit').TemplateResult} The rendered HTML for the item.
+ */
+export function getAutoCompleteItem(text, input) {
     input = input.trim();
-    const element = document.createElement('li');
-    element.setAttribute('aria-selected', 'false');
-
-    const regex = new RegExp('(' + input + ')', 'ig');
+    const regex = new RegExp('(' + regExpEscape(input) + ')', 'ig');
     const parts = input ? text.split(regex) : [text];
-    parts.forEach((txt) => {
-        if (input && txt.match(regex)) {
-            const match = document.createElement('mark');
-            match.textContent = txt;
-            element.appendChild(match);
-        } else {
-            element.appendChild(document.createTextNode(txt));
-        }
-    });
-    return element;
-};
+
+    return html`
+        <li aria-selected="false">
+            ${parts.map((txt) => (input && txt.match(regex) ? html`<mark>${txt}</mark>` : txt))}
+        </li>
+    `;
+}

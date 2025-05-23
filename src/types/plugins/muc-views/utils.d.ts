@@ -28,9 +28,9 @@ export function getChatRoomBodyTemplate(model: MUC): import("lit-html").Template
  * @param {MUC} muc
  * @param {Suggestion} text
  * @param {string} input
- * @returns {HTMLLIElement}
+ * @returns {import('lit').TemplateResult} The rendered HTML for the item.
  */
-export function getAutoCompleteListItem(muc: MUC, text: Suggestion, input: string): HTMLLIElement;
+export function getAutoCompleteListItem(muc: MUC, text: Suggestion, input: string): import("lit").TemplateResult;
 export function getAutoCompleteList(): Promise<any[]>;
 /**
  * @param {MUC} muc

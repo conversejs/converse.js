@@ -4,10 +4,11 @@
  * @license Mozilla Public License (MPLv2)
  */
 
+import { render, html } from 'lit';
 import { EventEmitter } from '@converse/skeletor';
 import { converse, u } from '@converse/headless';
 import Suggestion from './suggestion.js';
-import { helpers, FILTER_CONTAINS, ITEM, SORT_BY_QUERY_POSITION } from './utils.js';
+import { helpers, getAutoCompleteItem, FILTER_CONTAINS, SORT_BY_QUERY_POSITION } from './utils.js';
 
 const { siblingIndex } = u;
 
@@ -30,7 +31,7 @@ export class AutoComplete extends EventEmitter(Object) {
         this.max_items = 10;
         this.auto_first = false; // Should the first element be automatically selected?
         this.data = (a, _v) => a;
-        this.item = ITEM;
+        this.item = getAutoCompleteItem;
 
         if (u.hasClass('suggestion-box', el)) {
             this.container = el;
@@ -40,7 +41,7 @@ export class AutoComplete extends EventEmitter(Object) {
         this.input = /** @type {HTMLInputElement} */ (this.container.querySelector('.suggestion-box__input'));
         this.input.setAttribute('aria-autocomplete', 'list');
 
-        this.ul = this.container.querySelector('.suggestion-box__results');
+        this.ul = /** @type {HTMLElement} */(this.container.querySelector('.suggestion-box__results'));
         this.status = this.container.querySelector('.suggestion-box__additions');
 
         Object.assign(this, config);
@@ -191,7 +192,7 @@ export class AutoComplete extends EventEmitter(Object) {
     }
 
     /**
-     * @param {Element} selected
+     * @param {Element} [selected]
      */
     select(selected) {
         if (selected) {
@@ -204,7 +205,10 @@ export class AutoComplete extends EventEmitter(Object) {
             this.insertValue(suggestion);
             this.close({ reason: 'select' });
             this.auto_completing = false;
-            this.trigger('suggestion-box-selectcomplete', { text: suggestion });
+            this.trigger('suggestion-box-selectcomplete', {
+                text: suggestion, // DEPRECATED
+                suggestion
+            });
         }
     }
 
@@ -311,8 +315,6 @@ export class AutoComplete extends EventEmitter(Object) {
             }
 
             this.index = -1;
-            this.ul.innerHTML = '';
-
             this.suggestions = list
                 .map(
                     /** @param {import('./types').XHRResultItem} item */ (item) =>
@@ -324,9 +326,10 @@ export class AutoComplete extends EventEmitter(Object) {
                 this.suggestions = this.suggestions.sort(this.sort);
             }
             this.suggestions = this.suggestions.slice(0, this.max_items);
-            this.suggestions.forEach((text) => this.ul.appendChild(this.item(text, value)));
 
-            if (this.ul.children.length === 0) {
+            render(html`${this.suggestions.map((text) => this.item(text, value))}`, this.ul);
+
+            if (this.suggestions.length === 0) {
                 this.close({ reason: 'nomatches' });
             } else {
                 this.open();

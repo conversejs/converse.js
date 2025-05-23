@@ -142,18 +142,15 @@ export function getChatRoomBodyTemplate(model) {
  * @param {MUC} muc
  * @param {Suggestion} text
  * @param {string} input
- * @returns {HTMLLIElement}
+ * @returns {import('lit').TemplateResult} The rendered HTML for the item.
  */
 export function getAutoCompleteListItem(muc, text, input) {
     input = input.trim();
-    const li = document.createElement('li');
-    li.setAttribute('aria-selected', 'false');
-
-    if (api.settings.get('muc_mention_autocomplete_show_avatar')) {
+    let avatar_model;
+    const show_avatar = api.settings.get('muc_mention_autocomplete_show_avatar');
+    if (show_avatar) {
         const t = text.label.toLowerCase();
-        const avatar_el = /** @type {Avatar} */ (document.createElement('converse-avatar'));
-
-        avatar_el.model = muc.occupants.findWhere((o) => {
+        avatar_model = muc.occupants.findWhere((o) => {
             if (o.getDisplayName()?.toLowerCase()?.startsWith(t)) {
                 return o;
             } else if (o.get('nickname')?.toLowerCase()?.startsWith(t)) {
@@ -162,27 +159,23 @@ export function getAutoCompleteListItem(muc, text, input) {
                 return o;
             }
         });
-        avatar_el.setAttribute('name', avatar_el.model.getDisplayName());
-        avatar_el.setAttribute('height', '22');
-        avatar_el.setAttribute('width', '22');
-        avatar_el.setAttribute('class', 'avatar avatar-autocomplete');
-        li.appendChild(avatar_el);
     }
 
     const regex = new RegExp('(' + input + ')', 'ig');
     const parts = input ? text.split(regex) : [text];
-
-    parts.forEach((txt) => {
-        if (input && txt.match(regex)) {
-            const match = document.createElement('mark');
-            match.textContent = txt;
-            li.appendChild(match);
-        } else {
-            li.appendChild(document.createTextNode(txt));
-        }
-    });
-
-    return li;
+    return html`
+        <li aria-selected="false">
+            ${parts.map((txt) => (input && txt.match(regex) ? html`<mark>${txt}</mark>` : txt))}
+            ${show_avatar
+                ? html`<converse-avatar
+                      name="${avatar_model.getDisplayName()}"
+                      height="22"
+                      width="22"
+                      class="avatar avatar-autocomplete"
+                  ></converse-avatar>`
+                : ''}
+        </li>
+    `;
 }
 
 export async function getAutoCompleteList() {

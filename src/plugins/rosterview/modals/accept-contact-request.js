@@ -4,7 +4,7 @@ import BaseModal from 'plugins/modal/modal.js';
 import tplAcceptContactRequest from './templates/accept-contact-request.js';
 import { __ } from 'i18n';
 
-export default class AcceptContactRequest extends BaseModal {
+export default class AcceptContactRequestModal extends BaseModal {
     /**
      * @param {Object} options
      */
@@ -73,4 +73,4 @@ export default class AcceptContactRequest extends BaseModal {
     }
 }
 
-api.elements.define('converse-accept-contact-request-modal', AcceptContactRequest);
+api.elements.define('converse-accept-contact-request-modal', AcceptContactRequestModal);

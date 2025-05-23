@@ -3,8 +3,8 @@
  * @typedef {import("shared/avatar/avatar").default} Avatar
  * @typedef {import("shared/autocomplete/suggestion").default} Suggestion
  */
-import { html } from "lit";
-import { api, converse, log, constants } from "@converse/headless";
+import { html } from 'lit';
+import { api, converse, log, constants } from '@converse/headless';
 import './modals/occupant.js';
 import './modals/moderator-tools.js';
 import tplSpinner from 'templates/spinner.js';
@@ -18,14 +18,14 @@ const COMMAND_TO_AFFILIATION = {
     'ban': 'outcast',
     'member': 'member',
     'owner': 'owner',
-    'revoke': 'none'
+    'revoke': 'none',
 };
 const COMMAND_TO_ROLE = {
     'deop': 'participant',
     'kick': 'none',
     'mute': 'visitor',
     'op': 'moderator',
-    'voice': 'participant'
+    'voice': 'participant',
 };
 
 /**
@@ -33,11 +33,11 @@ const COMMAND_TO_ROLE = {
  * MUC invitation.
  * @async
  */
-export function confirmDirectMUCInvitation ({ contact, jid, reason }) {
+export function confirmDirectMUCInvitation({ contact, jid, reason }) {
     if (!reason) {
         return api.confirm(__('%1$s has invited you to join a groupchat: %2$s', contact, jid));
     } else {
-       return api.confirm(
+        return api.confirm(
             __(
                 '%1$s has invited you to join a groupchat: %2$s, and left the following reason: "%3$s"',
                 contact,
@@ -51,7 +51,7 @@ export function confirmDirectMUCInvitation ({ contact, jid, reason }) {
 /**
  * @param {string} jid
  */
-export function clearHistory (jid) {
+export function clearHistory(jid) {
     if (location.hash === `converse/room?jid=${jid}`) {
         history.pushState(null, '', window.location.pathname);
     }
@@ -60,7 +60,7 @@ export function clearHistory (jid) {
 /**
  * @param {MUC} model
  */
-export async function destroyMUC (model) {
+export async function destroyMUC(model) {
     const messages = [__('Are you sure you want to destroy this groupchat?')];
     let fields = [
         {
@@ -68,23 +68,23 @@ export async function destroyMUC (model) {
             'label': __('Please enter the XMPP address of this groupchat to confirm'),
             'challenge': model.get('jid'),
             'placeholder': __('name@example.org'),
-            'required': true
+            'required': true,
         },
         {
             'name': 'reason',
             'label': __('Optional reason for destroying this groupchat'),
-            'placeholder': __('Reason')
+            'placeholder': __('Reason'),
         },
         {
             'name': 'newjid',
             'label': __('Optional XMPP address for a new groupchat that replaces this one'),
-            'placeholder': __('replacement@example.org')
-        }
+            'placeholder': __('replacement@example.org'),
+        },
     ];
     try {
         fields = await api.confirm(__('Confirm'), messages, fields);
-        const reason = fields.filter(f => f.name === 'reason').pop()?.value;
-        const newjid = fields.filter(f => f.name === 'newjid').pop()?.value;
+        const reason = fields.filter((f) => f.name === 'reason').pop()?.value;
+        const newjid = fields.filter((f) => f.name === 'newjid').pop()?.value;
         return model.sendDestroyIQ(reason, newjid).then(() => model.close());
     } catch (e) {
         log.error(e);
@@ -94,7 +94,7 @@ export async function destroyMUC (model) {
 /**
  * @param {MUC} model
  */
-export function getNicknameRequiredTemplate (model) {
+export function getNicknameRequiredTemplate(model) {
     const jid = model.get('jid');
     if (api.settings.get('muc_show_logs_before_join')) {
         return html`<converse-muc-chatarea class="row g-0" jid="${jid}"></converse-muc-chatarea>`;
@@ -106,23 +106,34 @@ export function getNicknameRequiredTemplate (model) {
 /**
  * @param {MUC} model
  */
-export function getChatRoomBodyTemplate (model) {
+export function getChatRoomBodyTemplate(model) {
     const view = model.session.get('view');
     const jid = model.get('jid');
     const RS = converse.ROOMSTATUS;
-    const conn_status =  model.session.get('connection_status');
+    const conn_status = model.session.get('connection_status');
 
     if (view === converse.MUC.VIEWS.CONFIG) {
         return html`<converse-muc-config-form class="muc-form-container" jid="${jid}"></converse-muc-config-form>`;
     } else {
         return html`
-            ${ conn_status == RS.PASSWORD_REQUIRED ? html`<converse-muc-password-form class="muc-form-container" jid="${jid}"></converse-muc-password-form>` : '' }
-            ${ conn_status == RS.ENTERED ? html`<converse-muc-chatarea class="row g-0" jid="${jid}"></converse-muc-chatarea>` : '' }
-            ${ conn_status == RS.CONNECTING ? tplSpinner({class: 'vertically-centered'}) : '' }
-            ${ conn_status == RS.NICKNAME_REQUIRED ? getNicknameRequiredTemplate(model) : '' }
-            ${ conn_status == RS.DISCONNECTED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }
-            ${ conn_status == RS.BANNED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }
-            ${ conn_status == RS.DESTROYED ? html`<converse-muc-destroyed jid="${jid}"></converse-muc-destroyed>` : '' }
+            ${conn_status == RS.PASSWORD_REQUIRED
+                ? html`<converse-muc-password-form
+                      class="muc-form-container"
+                      jid="${jid}"
+                  ></converse-muc-password-form>`
+                : ''}
+            ${conn_status == RS.ENTERED
+                ? html`<converse-muc-chatarea class="row g-0" jid="${jid}"></converse-muc-chatarea>`
+                : ''}
+            ${conn_status == RS.CONNECTING ? tplSpinner({ class: 'vertically-centered' }) : ''}
+            ${conn_status == RS.NICKNAME_REQUIRED ? getNicknameRequiredTemplate(model) : ''}
+            ${conn_status == RS.DISCONNECTED
+                ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>`
+                : ''}
+            ${conn_status == RS.BANNED
+                ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>`
+                : ''}
+            ${conn_status == RS.DESTROYED ? html`<converse-muc-destroyed jid="${jid}"></converse-muc-destroyed>` : ''}
         `;
     }
 }
@@ -133,14 +144,14 @@ export function getChatRoomBodyTemplate (model) {
  * @param {string} input
  * @returns {HTMLLIElement}
  */
-export function getAutoCompleteListItem (muc, text, input) {
+export function getAutoCompleteListItem(muc, text, input) {
     input = input.trim();
     const li = document.createElement('li');
     li.setAttribute('aria-selected', 'false');
 
     if (api.settings.get('muc_mention_autocomplete_show_avatar')) {
         const t = text.label.toLowerCase();
-        const avatar_el = /** @type {Avatar} */(document.createElement('converse-avatar'));
+        const avatar_el = /** @type {Avatar} */ (document.createElement('converse-avatar'));
 
         avatar_el.model = muc.occupants.findWhere((o) => {
             if (o.getDisplayName()?.toLowerCase()?.startsWith(t)) {
@@ -161,7 +172,7 @@ export function getAutoCompleteListItem (muc, text, input) {
     const regex = new RegExp('(' + input + ')', 'ig');
     const parts = input ? text.split(regex) : [text];
 
-    parts.forEach(txt => {
+    parts.forEach((txt) => {
         if (input && txt.match(regex)) {
             const match = document.createElement('mark');
             match.textContent = txt;
@@ -174,16 +185,16 @@ export function getAutoCompleteListItem (muc, text, input) {
     return li;
 }
 
-export async function getAutoCompleteList () {
+export async function getAutoCompleteList() {
     const models = [...(await api.rooms.get()), ...(await api.contacts.get())];
-    const jids = [...new Set(models.map(o => Strophe.getDomainFromJid(o.get('jid'))))];
+    const jids = [...new Set(models.map((o) => Strophe.getDomainFromJid(o.get('jid'))))];
     return jids;
 }
 
 /**
  * @param {MUC} muc
  */
-function setRole (muc, command, args, required_affiliations = [], required_roles = []) {
+function setRole(muc, command, args, required_affiliations = [], required_roles = []) {
     const role = COMMAND_TO_ROLE[command];
     if (!role) {
         throw Error(`ChatRoomView#setRole called with invalid command: ${command}`);
@@ -201,15 +212,14 @@ function setRole (muc, command, args, required_affiliations = [], required_roles
     const reason = args.split(nick_or_jid, 2)[1].trim();
     // We're guaranteed to have an occupant due to getNickOrJIDFromCommandArgs
     const occupant = muc.getOccupant(nick_or_jid);
-    muc.setRole(occupant, role, reason, undefined, e => muc.onCommandError(e));
+    muc.setRole(occupant, role, reason, undefined, (e) => muc.onCommandError(e));
     return true;
 }
-
 
 /**
  * @param {MUC} muc
  */
-function verifyAndSetAffiliation (muc, command, args, required_affiliations) {
+function verifyAndSetAffiliation(muc, command, args, required_affiliations) {
     const affiliation = COMMAND_TO_AFFILIATION[command];
     if (!affiliation) {
         throw Error(`verifyAffiliations called with invalid command: ${command}`);
@@ -246,17 +256,17 @@ function verifyAndSetAffiliation (muc, command, args, required_affiliations) {
         attrs['nick'] = occupant.get('nick');
     }
 
-    u.muc.setAffiliation(affiliation, muc.get('jid'), [attrs])
+    u.muc
+        .setAffiliation(affiliation, muc.get('jid'), [attrs])
         .then(() => muc.occupants.fetchMembers())
-        .catch(err => muc.onCommandError(err));
+        .catch((err) => muc.onCommandError(err));
 }
-
 
 /**
  * @param {MUC} muc
  * @param {string} [affiliation]
  */
-export function showModeratorToolsModal (muc, affiliation) {
+export function showModeratorToolsModal(muc, affiliation) {
     if (!muc.verifyRoles(['moderator'])) {
         return;
     }
@@ -270,19 +280,18 @@ export function showModeratorToolsModal (muc, affiliation) {
     modal.show();
 }
 
-
-export function showOccupantModal (ev, occupant) {
+export function showOccupantModal(ev, occupant) {
     api.modal.show('converse-muc-occupant-modal', { 'model': occupant }, ev);
 }
 
-
-export function parseMessageForMUCCommands (data, handled) {
+export function parseMessageForMUCCommands(data, handled) {
     const model = data.model;
-    if (handled ||
-            model.get('type') !== CHATROOMS_TYPE || (
-            api.settings.get('muc_disable_slash_commands') &&
-            !Array.isArray(api.settings.get('muc_disable_slash_commands'))
-    )) {
+    if (
+        handled ||
+        model.get('type') !== CHATROOMS_TYPE ||
+        (api.settings.get('muc_disable_slash_commands') &&
+            !Array.isArray(api.settings.get('muc_disable_slash_commands')))
+    ) {
         return handled;
     }
 
@@ -318,7 +327,7 @@ export function parseMessageForMUCCommands (data, handled) {
         if (!model.verifyAffiliations(['owner'])) {
             return true;
         }
-        destroyMUC(model).catch(e => model.onCommandError(e));
+        destroyMUC(model).catch((e) => model.onCommandError(e));
         return true;
     } else if (command === 'help' && allowed_commands.includes(command)) {
         model.set({ 'show_help_messages': false }, { 'silent': true });
@@ -354,10 +363,10 @@ export function parseMessageForMUCCommands (data, handled) {
         if (args.length > 1) {
             model.createMessage({
                 'message': __('Error: invalid number of arguments'),
-                'type': 'error'
+                'type': 'error',
             });
         } else {
-            model.registerNickname().then(err_msg => {
+            model.registerNickname().then((err_msg) => {
                 err_msg && model.createMessage({ 'message': err_msg, 'type': 'error' });
             });
         }
@@ -365,8 +374,10 @@ export function parseMessageForMUCCommands (data, handled) {
     } else if (command === 'revoke' && allowed_commands.includes(command)) {
         verifyAndSetAffiliation(model, command, args, ['admin', 'owner']);
         return true;
-    } else if (command === 'topic' && allowed_commands.includes(command) ||
-            command === 'subject' && allowed_commands.includes(command)) {
+    } else if (
+        (command === 'topic' && allowed_commands.includes(command)) ||
+        (command === 'subject' && allowed_commands.includes(command))
+    ) {
         model.setSubject(args);
         return true;
     } else if (command === 'voice' && allowed_commands.includes(command)) {

@@ -3,44 +3,41 @@ import { converse } from '@converse/headless';
 const u = converse.env.utils;
 
 export const helpers = {
-    getElement (expr, el) {
+    getElement(expr, el) {
         return typeof expr === 'string' ? (el || document).querySelector(expr) : expr || null;
     },
 
-    bind (element, o) {
+    bind(element, o) {
         if (element) {
             for (var event in o) {
                 if (!Object.prototype.hasOwnProperty.call(o, event)) {
                     continue;
                 }
                 const callback = o[event];
-                event.split(/\s+/).forEach(event => element.addEventListener(event, callback));
+                event.split(/\s+/).forEach((event) => element.addEventListener(event, callback));
             }
         }
     },
 
-    unbind (element, o) {
+    unbind(element, o) {
         if (element) {
             for (var event in o) {
                 if (!Object.prototype.hasOwnProperty.call(o, event)) {
                     continue;
                 }
                 const callback = o[event];
-                event.split(/\s+/).forEach(event => element.removeEventListener(event, callback));
+                event.split(/\s+/).forEach((event) => element.removeEventListener(event, callback));
             }
         }
     },
 
-    regExpEscape (s) {
+    regExpEscape(s) {
         return s.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
     },
 
-    isMention (word, ac_triggers) {
-        return (
-            ac_triggers.includes(word[0]) ||
-            (u.isMentionBoundary(word[0]) && ac_triggers.includes(word[1]))
-        );
-    }
+    isMention(word, ac_triggers) {
+        return ac_triggers.includes(word[0]) || (u.isMentionBoundary(word[0]) && ac_triggers.includes(word[1]));
+    },
 };
 
 /**
@@ -48,30 +45,30 @@ export const helpers = {
  * @param {string} input
  * @returns {boolean}
  */
-export function FILTER_CONTAINS (text, input) {
+export function FILTER_CONTAINS(text, input) {
     return RegExp(helpers.regExpEscape(input.trim()), 'i').test(text);
-};
+}
 
 /**
  * @param {string} text
  * @param {string} input
  * @returns {boolean}
  */
-export function FILTER_STARTSWITH (text, input) {
+export function FILTER_STARTSWITH(text, input) {
     return RegExp('^' + helpers.regExpEscape(input.trim()), 'i').test(text);
-};
+}
 
 /**
  * @param {string} a
  * @param {string} b
  * @returns {number}
  */
-export function SORT_BY_LENGTH (a, b) {
+export function SORT_BY_LENGTH(a, b) {
     if (a.length !== b.length) {
         return a.length - b.length;
     }
     return a < b ? -1 : 1;
-};
+}
 
 export const SORT_BY_QUERY_POSITION = function (a, b) {
     const query = a.query.toLowerCase();
@@ -91,7 +88,7 @@ export const ITEM = (text, input) => {
 
     const regex = new RegExp('(' + input + ')', 'ig');
     const parts = input ? text.split(regex) : [text];
-    parts.forEach(txt => {
+    parts.forEach((txt) => {
         if (input && txt.match(regex)) {
             const match = document.createElement('mark');
             match.textContent = txt;

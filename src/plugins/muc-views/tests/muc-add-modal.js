@@ -32,7 +32,7 @@ describe('The "Groupchats" Add modal', function () {
     it("doesn't require the domain when muc_domain is set",
         mock.initConverse(['chatBoxesFetched'], { muc_domain: 'muc.example.org' }, async function (_converse) {
 
-            const modal = await mock.openAddMUCModal(_converse);
+            let modal = await mock.openAddMUCModal(_converse);
             expect(modal.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
             const label_name = modal.querySelector('label[for="chatroom"]');
@@ -51,7 +51,8 @@ describe('The "Groupchats" Add modal', function () {
             // However, you can still open MUCs with different domains
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-add-muc-modal').click();
-            await u.waitUntil(() => u.isVisible(modal), 1000);
+            modal = await u.waitUntil(() => document.querySelector('converse-add-muc-modal'), 1000);
+
             name_input = modal.querySelector('input[name="chatroom"]');
             name_input.value = 'lounge@conference.example.org';
             nick_input = modal.querySelector('input[name="nickname"]');
@@ -69,8 +70,7 @@ describe('The "Groupchats" Add modal', function () {
     it('uses the muc_domain if locked_muc_domain is true', mock.initConverse(
         ['chatBoxesFetched'], { muc_domain: 'muc.example.org', locked_muc_domain: true },
         async function (_converse) {
-            const modal = await mock.openAddMUCModal(_converse);
-
+            let modal = await mock.openAddMUCModal(_converse);
             expect(modal.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
             const label_name = modal.querySelector('label[for="chatroom"]');
@@ -89,7 +89,7 @@ describe('The "Groupchats" Add modal', function () {
             // However, you can still open MUCs with different domains
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-add-muc-modal').click();
-            await u.waitUntil(() => u.isVisible(modal), 1000);
+            modal = await u.waitUntil(() => document.querySelector('converse-add-muc-modal'));
             name_input = modal.querySelector('input[name="chatroom"]');
             name_input.value = 'lounge@conference';
             nick_input = modal.querySelector('input[name="nickname"]');

@@ -122,8 +122,8 @@ describe('The User Details Modal', function () {
             show_modal_button.click();
             await u.waitUntil(() => u.isVisible(modal), 2000);
 
-            remove_contact_button = modal.querySelector('button.remove-contact');
-            expect(u.isVisible(remove_contact_button)).toBeTruthy();
+            modal.querySelector('#edit-tab').click();
+            await u.waitUntil(() => u.isVisible(modal.querySelector('button.remove-contact')));
         })
     );
 

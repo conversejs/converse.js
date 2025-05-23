@@ -105,3 +105,11 @@ export function getAutoCompleteItem(text, input) {
         </li>
     `;
 }
+
+
+Object.assign(u, {
+    autocomplete: {
+        regExpEscape,
+        getAutoCompleteItem,
+    },
+});

@@ -1,6 +1,6 @@
 import AutoComplete from "./autocomplete.js";
 import { CustomElement } from "shared/components/element.js";
-import { FILTER_CONTAINS, FILTER_STARTSWITH } from "./utils.js";
+import { FILTER_CONTAINS, FILTER_STARTSWITH, getAutoCompleteItem } from "./utils.js";
 import { api, u } from "@converse/headless";
 import { html } from "lit";
 
@@ -32,6 +32,9 @@ import { html } from "lit";
  *  The `name` attribute of the `input` element
  * @property {String} [placeholder]
  *  The `placeholder` attribute of the `input` element
+ * @property {Function} [renderItem]
+ *  Optional function which must return a lit TemplateResult which renders an
+ *  suggestion item in the autocomplete list.
  * @property {String} [triggers]
  *  String of space separated characters which trigger autocomplete
  * @property {Function} [validate]
@@ -61,6 +64,7 @@ export default class AutoCompleteComponent extends CustomElement {
             name: { type: String },
             placeholder: { type: String },
             position: { type: String },
+            renderItem: { type: Function },
             required: { type: Boolean },
             triggers: { type: String },
             validate: { type: Function },
@@ -84,6 +88,8 @@ export default class AutoCompleteComponent extends CustomElement {
         this.name = "";
         this.placeholder = "";
         this.position = "above";
+        this.renderItem = getAutoCompleteItem;
+
         this.required = false;
         this.triggers = "";
         this.validate = null;
@@ -139,6 +145,7 @@ export default class AutoCompleteComponent extends CustomElement {
             match_current_word: true,
             max_items: this.max_items,
             min_chars: this.min_chars,
+            item: this.renderItem,
         });
         this.auto_complete.on("suggestion-box-selectcomplete", ({ suggestion }) => {
             this.auto_completing = false;

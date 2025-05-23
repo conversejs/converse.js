@@ -1,6 +1,14 @@
 .conversejs {
+    .modal-alert {
+        .alert {
+            p {
+                margin: 0;
+            }
+        }
+    }
 
-    .alert-info, .alert-danger {
+    .alert-info,
+    .alert-danger {
         h3 {
             color: var(--background-color);
             font-size: large;
@@ -30,5 +38,4 @@
         border-color: var(--danger-color-dark);
         background-color: var(--danger-color);
     }
-
 }

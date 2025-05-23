@@ -26,6 +26,9 @@
  *  The `name` attribute of the `input` element
  * @property {String} [placeholder]
  *  The `placeholder` attribute of the `input` element
+ * @property {Function} [renderItem]
+ *  Optional function which must return a lit TemplateResult which renders an
+ *  suggestion item in the autocomplete list.
  * @property {String} [triggers]
  *  String of space separated characters which trigger autocomplete
  * @property {Function} [validate]
@@ -80,6 +83,9 @@ export default class AutoCompleteComponent extends CustomElement {
         position: {
             type: StringConstructor;
         };
+        renderItem: {
+            type: FunctionConstructor;
+        };
         required: {
             type: BooleanConstructor;
         };
@@ -107,6 +113,7 @@ export default class AutoCompleteComponent extends CustomElement {
     name: string;
     placeholder: string;
     position: string;
+    renderItem: typeof getAutoCompleteItem;
     required: boolean;
     triggers: string;
     validate: any;
@@ -121,5 +128,6 @@ export default class AutoCompleteComponent extends CustomElement {
     onChange(): Promise<this>;
 }
 import { CustomElement } from "shared/components/element.js";
+import { getAutoCompleteItem } from "./utils.js";
 import AutoComplete from "./autocomplete.js";
 //# sourceMappingURL=component.d.ts.map

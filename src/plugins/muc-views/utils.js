@@ -165,15 +165,18 @@ export function getAutoCompleteListItem(muc, text, input) {
     const parts = input ? text.split(regex) : [text];
     return html`
         <li aria-selected="false">
-            ${parts.map((txt) => (input && txt.match(regex) ? html`<mark>${txt}</mark>` : txt))}
             ${show_avatar
                 ? html`<converse-avatar
-                      name="${avatar_model.getDisplayName()}"
-                      height="22"
-                      width="22"
-                      class="avatar avatar-autocomplete"
+                        .model=${avatar_model}
+                        name="${avatar_model.getDisplayName()}"
+                        height="22"
+                        width="22"
+                        class="avatar avatar-autocomplete"
                   ></converse-avatar>`
                 : ''}
+            <span class="autocomplete-item">
+                ${parts.map((txt) => (input && txt.match(regex) ? html`<mark>${txt}</mark>` : txt))}
+            </span>
         </li>
     `;
 }

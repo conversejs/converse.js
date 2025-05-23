@@ -368,5 +368,6 @@ export async function getNamesAutoCompleteList(query) {
     return json.map((i) => ({
         label: `${i.fullname} <${i.jid}>`,
         value: `${i.fullname} <${i.jid}>`,
+        ...i, // Return rest of the JSON as well, could be useful to 3rd party plugin
     }));
 }

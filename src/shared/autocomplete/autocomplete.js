@@ -186,10 +186,13 @@ export class AutoComplete extends EventEmitter(Object) {
                 // scroll to highlighted element in case parent's height is fixed
                 this.ul.scrollTop = list[i].offsetTop - this.ul.clientHeight + list[i].clientHeight;
             }
-            this.trigger('suggestion-box-highlight', { 'text': this.suggestions[this.index] });
+            this.trigger('suggestion-box-highlight', { text: this.suggestions[this.index] });
         }
     }
 
+    /**
+     * @param {Element} selected
+     */
     select(selected) {
         if (selected) {
             this.index = siblingIndex(selected);

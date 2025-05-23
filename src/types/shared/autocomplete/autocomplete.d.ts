@@ -28,10 +28,10 @@ export class AutoComplete extends AutoComplete_base {
     max_items: number;
     auto_first: boolean;
     data: (a: any, _v: any) => any;
-    item: (text: any, input: any) => HTMLLIElement;
+    item: typeof getAutoCompleteItem;
     container: Element | HTMLElement;
     input: HTMLInputElement;
-    ul: Element;
+    ul: HTMLElement;
     status: Element;
     index: number;
     set list(list: any);
@@ -57,7 +57,10 @@ export class AutoComplete extends AutoComplete_base {
      * @param {boolean} scroll=true
      */
     goto(i: number, scroll?: boolean): void;
-    select(selected: any): void;
+    /**
+     * @param {Element} [selected]
+     */
+    select(selected?: Element): void;
     auto_completing: boolean;
     /**
      * @param {Event} ev
@@ -78,5 +81,6 @@ export class AutoComplete extends AutoComplete_base {
 }
 export default AutoComplete;
 import { FILTER_CONTAINS } from './utils.js';
+import { getAutoCompleteItem } from './utils.js';
 import Suggestion from './suggestion.js';
 //# sourceMappingURL=autocomplete.d.ts.map

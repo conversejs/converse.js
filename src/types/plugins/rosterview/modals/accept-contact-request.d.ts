@@ -1,4 +1,4 @@
-export default class AcceptContactRequest extends BaseModal {
+export default class AcceptContactRequestModal extends BaseModal {
     contact: any;
     renderModal(): import("lit-html").TemplateResult<1>;
     getModalTitle(): any;

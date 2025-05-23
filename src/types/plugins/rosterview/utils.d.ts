@@ -68,10 +68,7 @@ export function getJIDsAutoCompleteList(): any[];
 /**
  * @param {string} query
  */
-export function getNamesAutoCompleteList(query: string): Promise<{
-    label: string;
-    value: string;
-}[]>;
+export function getNamesAutoCompleteList(query: string): Promise<any[]>;
 export type Model = import("@converse/skeletor").Model;
 export type RosterContact = import("@converse/headless").RosterContact;
 export type RosterContacts = import("@converse/headless").RosterContacts;

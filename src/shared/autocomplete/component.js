@@ -140,7 +140,14 @@ export default class AutoCompleteComponent extends CustomElement {
             max_items: this.max_items,
             min_chars: this.min_chars,
         });
-        this.auto_complete.on("suggestion-box-selectcomplete", () => (this.auto_completing = false));
+        this.auto_complete.on("suggestion-box-selectcomplete", ({ suggestion }) => {
+            this.auto_completing = false;
+            this.dispatchEvent(new CustomEvent('autocomplete-select', {
+                detail: { suggestion },
+                bubbles: true,
+                composed: true
+            }));
+        });
     }
 
     /** @param {KeyboardEvent} ev */

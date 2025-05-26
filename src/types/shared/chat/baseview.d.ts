@@ -7,7 +7,10 @@ export default class BaseChatView extends CustomElement {
     jid: any;
     model: any;
     updated(): void;
-    close(ev: any): any;
+    /**
+     * @param {MouseEvent} ev
+     */
+    close(ev: MouseEvent): any;
     maybeFocus(): void;
     focus(): this;
     getBottomPanel(): Element;

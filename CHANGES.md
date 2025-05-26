@@ -6,6 +6,7 @@
 - Remove modal from the DOM when it's closed
 - Fix login form style for `classic` theme
 - Properly handle OGP metadata that doesn't have an image
+- Fix TypeError which prevents logging out
 
 ## 11.0.0 (2025-05-21)
 

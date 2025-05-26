@@ -57,7 +57,7 @@ function isAllowedProtocolForMedia(url) {
     }
     const uri = u.getURL(url);
     return (
-        protocol === "http:" || (protocol === "https:" && ["https", "aesgcm"].includes(uri.protocol.toLowerCase()))
+        protocol === "http:" || (protocol === "https:" && ["https:", "aesgcm:"].includes(uri.protocol.toLowerCase()))
     );
 }
 

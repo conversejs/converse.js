@@ -1,5 +1,12 @@
 # Changelog
 
+## 11.0.0 (Unreleased)
+
+- #3672: Images not rendering
+- Remove modal from the DOM when it's closed
+- Fix login form style for `classic` theme
+- Properly handle OGP metadata that doesn't have an image
+
 ## 11.0.0 (2025-05-21)
 
 ### Github Issues

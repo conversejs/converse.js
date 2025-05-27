@@ -57,11 +57,13 @@
                 background: var(--background-color);
                 color: var(--text-color);
                 cursor: pointer;
-                display: flex;
+                display: block;
                 overflow-x: hidden;
                 padding: 1em;
                 position: relative;
+                text-align: left;
                 text-overflow: ellipsis;
+                white-space: nowrap;
                 &:hover {
                     mark {
                         background-color: unset;

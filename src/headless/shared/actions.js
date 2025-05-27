@@ -1,8 +1,8 @@
-import log from "@converse/log";
-import { Strophe } from "strophe.js";
-import api from "./api/index.js";
-import converse from "./api/public.js";
-import {CHAT_STATES, MARKER_TYPES} from "./constants.js";
+import log from '@converse/log';
+import { Strophe } from 'strophe.js';
+import api from './api/index.js';
+import converse from './api/public.js';
+import { CHAT_STATES, MARKER_TYPES } from './constants.js';
 
 const { u, stx, Stanza } = converse.env;
 
@@ -14,9 +14,9 @@ const { u, stx, Stanza } = converse.env;
  */
 export function rejectMessage(stanza, text) {
     api.send(
-        stx`<message to="${stanza.getAttribute("from")}"
+        stx`<message to="${stanza.getAttribute('from')}"
                     type="error"
-                    id="${stanza.getAttribute("id")}"
+                    id="${stanza.getAttribute('id')}"
                     xmlns="jabber:client">
                 <error type="cancel">
                     <not-allowed xmlns="${Strophe.NS.STANZAS}"/>
@@ -45,7 +45,7 @@ export function sendMarker(to_jid, id, type, msg_type) {
         <message from="${api.connection.get().jid}"
                 id="${u.getUniqueId()}"
                 to="${to_jid}"
-                type="${msg_type ? msg_type : "chat"}"
+                type="${msg_type ? msg_type : 'chat'}"
                 xmlns="jabber:client">
             <${Stanza.unsafeXML(type)} xmlns="${Strophe.NS.MARKERS}" id="${id}"/>
         </message>`;
@@ -76,13 +76,17 @@ export function sendReceiptStanza(to_jid, id) {
  * @param {import("./types").ChatStateType} chat_state
  */
 export function sendChatState(jid, chat_state) {
-    if (api.settings.get("send_chat_state_notifications") && chat_state) {
-        const allowed = api.settings.get("send_chat_state_notifications");
+    if (!jid) {
+        log.error(`sendChatState called with no JID`);
+        return;
+    } else if (!CHAT_STATES.includes(chat_state)) {
+        log.error(`Invalid chat state: ${chat_state}`);
+        return;
+    }
+
+    if (api.settings.get('send_chat_state_notifications') && chat_state) {
+        const allowed = api.settings.get('send_chat_state_notifications');
         if (Array.isArray(allowed) && !allowed.includes(chat_state)) {
-            return;
-        }
-        if (!CHAT_STATES.includes(chat_state)) {
-            log.error(`Invalid chat state: ${chat_state}`);
             return;
         }
         api.send(
@@ -102,7 +106,7 @@ export function sendChatState(jid, chat_state) {
  * @param {string} retraction_id - Unique ID for the retraction message
  */
 export function sendRetractionMessage(jid, message, retraction_id) {
-    const origin_id = message.get("origin_id");
+    const origin_id = message.get('origin_id');
     if (!origin_id) {
         throw new Error("Can't retract message without a XEP-0359 Origin ID");
     }

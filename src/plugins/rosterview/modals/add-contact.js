@@ -15,7 +15,6 @@ export default class AddContactModal extends BaseModal {
     initialize() {
         super.initialize();
         this.listenTo(this.contact, 'change', () => this.requestUpdate());
-        this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.requestUpdate();
         this.addEventListener(
             'shown.bs.modal',
@@ -37,13 +36,13 @@ export default class AddContactModal extends BaseModal {
      */
     validateSubmission(jid) {
         if (!jid || jid.split('@').filter((s) => !!s).length < 2) {
-            this.model.set('error', __('Please enter a valid XMPP address'));
+            this.alert(__('Please enter a valid XMPP address'), 'danger', false);
             return false;
         } else if (!this.contact && _converse.state.roster.get(Strophe.getBareJidFromJid(jid))) {
-            this.model.set('error', __('This contact has already been added'));
+            this.alert(__('This contact has already been added'), 'danger', false);
             return false;
         }
-        this.model.set('error', null);
+        this.alert(null); // Clear the alert
         return true;
     }
 
@@ -62,7 +61,7 @@ export default class AddContactModal extends BaseModal {
             return;
         });
         api.chats.open(jid, {}, true);
-        this.model.clear();
+        this.alert(null); // clear alert
         api.toast.show('contact-added', { type: 'success', body: __('Contact added successfully') });
         this.modal.hide();
     }
@@ -87,12 +86,13 @@ export default class AddContactModal extends BaseModal {
                 name = match[1].trim();
                 jid = match[2].trim();
             } else {
-                this.model.set('alert', {
-                    type: 'danger',
-                    message: __(
+                this.alert(
+                    __(
                         'Invalid value for the name and XMPP address. Please use the format "Name <username@example.org>".'
                     ),
-                });
+                    'danger',
+                    false
+                );
                 return;
             }
         } else {

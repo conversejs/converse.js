@@ -7,4 +7,8 @@ export function getPrettyStatus(stat: string): any;
  * form.
  */
 export function shouldShowPasswordResetForm(): boolean;
+/**
+ * @param {MouseEvent} ev
+ */
+export function logOut(ev: MouseEvent): Promise<void>;
 //# sourceMappingURL=utils.d.ts.map

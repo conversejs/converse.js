@@ -13,8 +13,8 @@ function tplAlert(type, message) {
  * @param {import ('../modal').default} el
  */
 export default (el) => {
-    const alert = el.model?.get('alert');
-    const level = el.model?.get('level') ?? '';
+    const alert = el.state?.get('alert');
+    const level = el.state?.get('level') ?? '';
     return html`
         <div class="modal-dialog" role="document" role="dialog">
             <div class="modal-content">

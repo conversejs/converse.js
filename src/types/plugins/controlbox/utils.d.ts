@@ -9,10 +9,6 @@ export function showControlBox(ev?: Event): void;
 export function navigateToControlBox(jid: string): void;
 export function disconnect(): void;
 export function clearSession(): void;
-/**
- * @param {MouseEvent} ev
- */
-export function logOut(ev: MouseEvent): Promise<void>;
 export function onChatBoxesFetched(): void;
 /**
  * Given the login `<form>` element, parse its data and update the

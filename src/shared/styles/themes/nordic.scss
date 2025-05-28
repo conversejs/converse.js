@@ -80,6 +80,10 @@
         --converse-toast-color: var(--background-color);
         --converse-toast-bg: var(--secondary-color) !important;
     }
+    converse-chat-heading,
+    converse-muc-heading {
+        box-shadow: var(--converse-box-shadow) !important;
+    }
 
     // Online status indicators
     --chat-status-away: var(--orange);

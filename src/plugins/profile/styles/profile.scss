@@ -1,5 +1,12 @@
 converse-user-profile {
-    padding: 0.5em 1em;
+    padding: 0.5em 1em 0.75em 1em;
+    border-bottom: 0.1rem var(--controlbox-color) solid;
+
+    .show-profile {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow-x: hidden;
+    }
 
     .change-status {
         min-width: 25px;
@@ -21,7 +28,7 @@ converse-user-profile {
             text-overflow: ellipsis;
         }
         .profile {
-            margin-bottom: 0.75em;
+            margin-bottom: 0.5em;
         }
     }
 

@@ -1601,10 +1601,10 @@ describe("Groupchats", function () {
             await mock.waitForReservedNick(_converse, muc_jid, 'romeo');
             await mock.receiveOwnMUCPresence(_converse, muc_jid, 'romeo');
             await promise;
-
             expect(_converse.api.confirm).toHaveBeenCalledWith(
-                name + ' has invited you to join a groupchat: '+ muc_jid +
-                ', and left the following reason: "'+reason+'"');
+                'Invitation to a groupchat',
+                `Mercutio has invited you to join the groupchat "${muc_jid}", and left the following reason: "${reason}"`
+            );
             expect(_converse.chatboxes.models.length).toBe(2);
             expect(_converse.chatboxes.models[0].id).toBe('controlbox');
             expect(_converse.chatboxes.models[1].id).toBe(muc_jid);

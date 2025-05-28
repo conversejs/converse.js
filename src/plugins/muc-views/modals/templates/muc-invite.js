@@ -11,7 +11,7 @@ export default (el) => {
         <form class="converse-form" @submit=${(ev) => el.submitInviteForm(ev)}>
             <fieldset>
                 <label class="form-label clearfix" for="invitee_jids">${i18n_invite_label}:</label>
-                ${ el.model.get('invalid_invite_jid') ? html`<div class="error error-feedback">${i18n_error_message}</div>` : '' }
+                ${ el.state.get('invalid_invite_jid') ? html`<div class="error error-feedback">${i18n_error_message}</div>` : '' }
                 <converse-autocomplete
                     .getAutoCompleteList="${() => el.getAutoCompleteList()}"
                     ?autofocus=${true}

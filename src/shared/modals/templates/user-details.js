@@ -176,7 +176,7 @@ export function tplUserDetailsModal(el) {
     }
 
     const name = contact?.get('nickname') || contact.vcard?.get('fullname');
-    const groups = contact?.get('groups');
+    const groups = contact?.get('groups') || [];
 
     return html`
         <ul class="nav nav-pills justify-content-center">

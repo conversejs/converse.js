@@ -59,7 +59,7 @@ export default class MUCOccupants extends CustomElement {
      */
     showInviteModal (ev) {
         ev.preventDefault();
-        api.modal.show('converse-muc-invite-modal', { model: new Model(), muc: this.model }, ev);
+        api.modal.show('converse-muc-invite-modal', { muc: this.model }, ev);
     }
 
     /** @param {MouseEvent} ev */

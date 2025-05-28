@@ -11,7 +11,7 @@ export default class Confirm extends BaseModal {
 
     initialize() {
         super.initialize();
-        this.listenTo(this.model, 'change', () => this.requestUpdate());
+        this.listenTo(this.state, 'change', () => this.requestUpdate());
         this.addEventListener(
             'hide.bs.modal',
             () => {
@@ -47,7 +47,7 @@ export default class Confirm extends BaseModal {
     }
 
     getModalTitle() {
-        return this.model.get('title');
+        return this.state.get('title');
     }
 
     renderModalFooter() {
@@ -61,7 +61,7 @@ export default class Confirm extends BaseModal {
         ev.preventDefault();
         const form = /** @type {HTMLFormElement} */ (ev.target);
         const form_data = new FormData(form);
-        const fields = (this.model.get('fields') || []).map(
+        const fields = (this.state.get('fields') || []).map(
             /** @param {import('./types.js').Field} field */ (field) => {
                 const value = form_data.get(field.name);
                 field.value = /** @type {string} */ (value);
@@ -73,9 +73,9 @@ export default class Confirm extends BaseModal {
         );
 
         if (fields.filter((c) => c.challenge_failed).length) {
-            this.model.set('fields', fields);
+            this.state.set('fields', fields);
             // Setting an array doesn't trigger a change event
-            this.model.trigger('change');
+            this.state.trigger('change');
             return;
         }
         this.confirmation.resolve(fields);

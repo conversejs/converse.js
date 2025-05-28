@@ -257,7 +257,7 @@ export function tplUserDetailsModal(el) {
                       `
                     : ''}
 
-                <hr />
+                ${contact.get('requesting') || !is_roster_contact || !contact ? html`<hr />` : ''}
                 ${contact.get('requesting')
                     ? html`<div class="row mb-2">
                               <div class="col-sm-4"><label>${__('Contact Request')}:</label></div>

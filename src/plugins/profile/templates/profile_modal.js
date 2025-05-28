@@ -1,8 +1,9 @@
-import 'shared/components/image-picker.js';
-import { __ } from 'i18n';
-import { _converse } from '@converse/headless';
 import { html } from 'lit';
+import { _converse } from '@converse/headless';
+import { __ } from 'i18n';
+import 'shared/components/image-picker.js';
 import { shouldShowPasswordResetForm } from '../utils';
+import tplChatStatusForm from './chat-status-form.js';
 
 /**
  * @param {import('../modals/profile').default} el
@@ -33,13 +34,30 @@ export default (el) => {
         'Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.'
     );
     const i18n_url = __('URL');
-
+    const i18n_status = __('Status');
     const i18n_omemo = __('OMEMO');
     const i18n_profile = __('Profile');
     const ii18n_reset_password = __('Reset Password');
 
     // Initialize navigation_tabs as a Map
     const navigation_tabs = new Map();
+
+    navigation_tabs.set(
+        'status',
+        html`<li role="presentation" class="nav-item">
+            <a
+                class="nav-link ${el.tab === 'status' ? 'active' : ''}"
+                id="status-tab"
+                href="#status-tabpanel"
+                aria-controls="status-tabpanel"
+                role="tab"
+                @click="${(ev) => el.switchTab(ev)}"
+                data-name="status"
+                data-toggle="tab"
+                >${i18n_status}</a
+            >
+        </li>`
+    );
 
     navigation_tabs.set(
         'profile',
@@ -105,8 +123,21 @@ export default (el) => {
                 : ''
         }
         <div class="tab-content">
+            ${
+                navigation_tabs.get('passwordreset')
+                    ? html`<div
+                          class="tab-pane ${el.tab === 'status' ? 'active' : ''}"
+                          id="status-tabpanel"
+                          role="tabpanel"
+                          aria-labelledby="status-tab"
+                      >
+                          ${el.tab === 'status' ? tplChatStatusForm(el) : ''}
+                      </div>`
+                    : ''
+            }
+
             <div class="tab-pane ${el.tab === 'profile' ? 'active' : ''}" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
-                <form class="converse-form converse-form--modal" action="#" @submit=${(ev) => el.onFormSubmitted(ev)}>
+                <form class="converse-form converse-form--modal" action="#" @submit=${(ev) => el.onProfileFormSubmitted(ev)}>
                     <div class="row py-2">
                         <div class="col-auto">
                             <converse-image-picker .model=${el.model} width="128" height="128"></converse-image-picker>
@@ -135,22 +166,22 @@ export default (el) => {
                         <input id="vcard-email" type="email" class="form-control" name="email" value="${o.email || ''}"/>
                     </div>
                     <div>
-                        <label for="vcard-role" class="col-form-label">${i18n_role}:</label>
+                        <label for="vcard-role" class="col-form-label pb-0">${i18n_role}:</label>
+                        <small id="vcard-role-help" class="d-block pb-1 form-text text-muted">${i18n_role_help}</small>
                         <input id="vcard-role" type="text" class="form-control" name="role" value="${o.role || ''}" aria-describedby="vcard-role-help"/>
-                        <small id="vcard-role-help" class="form-text text-muted">${i18n_role_help}</small>
                     </div>
-                    <hr/>
-                    <div>
-                        ${el._submitting ?
-                            html`<converse-spinner></converse-spinner>` :
-                            html`<button type="submit" class="save-form btn btn-primary">${i18n_save}</button>`
+                    <div class="mt-3">
+                        ${
+                            el._submitting
+                                ? html`<converse-spinner></converse-spinner>`
+                                : html`<button type="submit" class="save-form btn btn-primary">${i18n_save}</button>`
                         }
                     </div>
                 </form>
             </div>
             ${
                 navigation_tabs.get('passwordreset')
-                    ? html` <div
+                    ? html`<div
                           class="tab-pane ${el.tab === 'passwordreset' ? 'active' : ''}"
                           id="passwordreset-tabpanel"
                           role="tabpanel"

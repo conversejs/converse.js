@@ -87,12 +87,12 @@ export default class AddContactModal extends BaseModal {
                 name = match[1].trim();
                 jid = match[2].trim();
             } else {
-                this.model.set(
-                    'error',
-                    __(
+                this.model.set('alert', {
+                    type: 'danger',
+                    message: __(
                         'Invalid value for the name and XMPP address. Please use the format "Name <username@example.org>".'
-                    )
-                );
+                    ),
+                });
                 return;
             }
         } else {

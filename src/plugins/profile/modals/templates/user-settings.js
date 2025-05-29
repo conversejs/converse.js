@@ -1,14 +1,23 @@
 import DOMPurify from 'dompurify';
-import { __ } from 'i18n';
-import { _converse, api } from '@converse/headless';
 import { html } from 'lit';
+import { until } from 'lit/directives/until.js';
+import { _converse, api } from '@converse/headless';
+import { __ } from 'i18n';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+
+async function getFeatures() {
+    const domain = _converse.session.get('domain');
+    const features = await api.disco.getFeatures(domain);
+    const names = features.map((f) => f.get('var'));
+    return names.toSorted?.() || names;
+}
 
 /**
  * @param {import('../user-settings').default} el
  */
 const tplNavigation = (el) => {
     const i18n_about = __('About');
+    const i18n_server = __('Server');
     const i18n_commands = __('Commands');
 
     const show_client_info = api.settings.get('show_client_info');
@@ -47,6 +56,19 @@ const tplNavigation = (el) => {
                             >
                         </li>`
                       : ''}
+                  <li role="presentation" class="nav-item">
+                      <a
+                          class="nav-link ${el.tab === 'server' ? 'active' : ''}"
+                          id="server-tab"
+                          href="#server-tabpanel"
+                          aria-controls="server-tabpanel"
+                          role="tab"
+                          data-toggle="tab"
+                          data-name="server"
+                          @click=${(ev) => el.switchTab(ev)}
+                          >${i18n_server}</a
+                      >
+                  </li>
               </ul>`
             : ''}
     `;
@@ -84,7 +106,10 @@ export default (el) => {
                       aria-labelledby="about-tab"
                   >
                       <div class="container">
-                          <converse-brand-logo class="d-flex justify-content-center mt-3" hide_byline></converse-brand-logo>
+                          <converse-brand-logo
+                              class="d-flex justify-content-center mt-3"
+                              hide_byline
+                          ></converse-brand-logo>
                           <p class="text-center brand-subtitle">${_converse.VERSION_NAME}</p>
                           <p class="text-center brand-subtitle">${unsafeHTML(DOMPurify.sanitize(first_subtitle))}</p>
                           <p class="text-center brand-subtitle">${unsafeHTML(DOMPurify.sanitize(second_subtitle))}</p>
@@ -103,6 +128,25 @@ export default (el) => {
                       </div>
                   `
                 : ''}
+
+            <div
+                class="tab-pane tab-pane--columns ${el.tab === 'server' ? 'active' : ''}"
+                id="server-tabpanel"
+                role="tabpanel"
+                aria-labelledby="server-tab"
+            >
+                <div class="container">
+                    <h5 class="mt-3">${__('Server Features')}</h5>
+                    <ul>
+                        ${until(
+                            getFeatures().then((features) => {
+                                return html`${features.map((f) => html`<li>${f}</li>`)}`;
+                            }),
+                            ''
+                        )}
+                    </ul>
+                </div>
+            </div>
         </div>
     `;
 };

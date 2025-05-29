@@ -3,6 +3,9 @@ import { __ } from 'i18n';
 import BaseModal from "plugins/modal/modal.js";
 import tplUserSettingsModal from "./templates/user-settings.js";
 
+import './styles/user-settings.scss';
+
+
 export default class UserSettingsModal extends BaseModal {
 
     constructor (options) {
@@ -23,7 +26,7 @@ export default class UserSettingsModal extends BaseModal {
         return tplUserSettingsModal(this);
     }
 
-    getModalTitle () { // eslint-disable-line class-methods-use-this
+    getModalTitle () {
         return __('Settings');
     }
 }

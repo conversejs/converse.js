@@ -18,6 +18,6 @@ converse.plugins.add('converse-profile', {
     ],
 
     initialize () {
-        api.settings.extend({ 'show_client_info': true });
+        api.settings.extend({ show_client_info: true });
     },
 });

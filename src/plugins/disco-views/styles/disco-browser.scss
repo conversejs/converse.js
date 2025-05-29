@@ -1,0 +1,13 @@
+converse-disco-browser {
+    .items-list {
+        .list-item {
+            padding-inline-start: 0.5em !important;
+            padding-inline-end: 0.5em !important;
+        }
+        &.features {
+            .list-item {
+                padding: 0.2em 0;
+            }
+        }
+    }
+}

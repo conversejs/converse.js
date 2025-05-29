@@ -1,6 +1,6 @@
 /**
  * @description Converse.js (A browser based XMPP chat client)
- * @copyright 2021, The Converse developers
+ * @copyright 2025, The Converse developers
  * @license Mozilla Public License (MPLv2)
  */
 import 'shared/styles/index.scss';

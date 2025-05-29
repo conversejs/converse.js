@@ -20,7 +20,7 @@ export function tplRemoveButton(el) {
         <converse-icon class="fa fa-trash-alt" size="1em"></converse-icon>
         ${__('Remove')}
     </a>`;
-};
+}
 
 /**
  * @param {import('../contactview').default} el
@@ -38,7 +38,7 @@ export function tplDetailsButton(el) {
         <converse-icon class="fa fa-id-card" size="1em"></converse-icon>
         ${__('Details')}
     </a>`;
-};
+}
 
 /**
  * @param {import('../contactview').default} el
@@ -67,11 +67,11 @@ export default (el) => {
         : __('Click to chat with %1$s (XMPP address: %2$s)', display_name, jid);
 
     const btns = [
-       tplDetailsButton(el),
-       ...(api.settings.get('allow_contact_removal') && !is_self ? [tplRemoveButton(el)] : []),
+        tplDetailsButton(el),
+        ...(api.settings.get('allow_contact_removal') && !is_self ? [tplRemoveButton(el)] : []),
     ];
 
-    return html` <a
+    return html`<a
             class="list-item-link cbox-list-item open-chat ${num_unread ? 'unread-msgs' : ''}"
             title="${i18n_chat}"
             href="#"
@@ -87,12 +87,15 @@ export default (el) => {
                     height="30"
                     width="30"
                 ></converse-avatar>
-                <converse-icon
-                    title="${desc_status}"
-                    color="var(--${color})"
-                    size="1em"
-                    class="${classes} chat-status chat-status--avatar"
-                ></converse-icon>
+
+                ${['both', 'to'].includes(el.model.get('subscription'))
+                    ? html` <converse-icon
+                          title="${desc_status}"
+                          color="var(--${color})"
+                          size="1em"
+                          class="${classes} chat-status chat-status--avatar"
+                      ></converse-icon>`
+                    : ''}
             </span>
             ${num_unread ? html`<span class="msgs-indicator badge">${num_unread}</span>` : ''}
             <span class="contact-name contact-name--${show} ${num_unread ? 'unread-msgs' : ''}">${display_name}</span>

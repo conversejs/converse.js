@@ -14,18 +14,18 @@ const { Strophe, u } = converse.env;
 const { CHATROOMS_TYPE } = constants;
 
 const COMMAND_TO_AFFILIATION = {
-    'admin': 'admin',
-    'ban': 'outcast',
-    'member': 'member',
-    'owner': 'owner',
-    'revoke': 'none',
+    admin: 'admin',
+    ban: 'outcast',
+    member: 'member',
+    owner: 'owner',
+    revoke: 'none',
 };
 const COMMAND_TO_ROLE = {
-    'deop': 'participant',
-    'kick': 'none',
-    'mute': 'visitor',
-    'op': 'moderator',
-    'voice': 'participant',
+    deop: 'participant',
+    kick: 'none',
+    mute: 'visitor',
+    op: 'moderator',
+    voice: 'participant',
 };
 
 /**

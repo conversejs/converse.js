@@ -1,4 +1,4 @@
-import { html } from 'lit/html.js';
+import { html } from 'lit';
 import { api } from '@converse/headless';
 import { CustomElement } from './element.js';
 import './brand-logo.js';

@@ -1,24 +1,16 @@
 import DOMPurify from 'dompurify';
 import { html } from 'lit';
-import { until } from 'lit/directives/until.js';
 import { _converse, api } from '@converse/headless';
 import { __ } from 'i18n';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-
-async function getFeatures() {
-    const domain = _converse.session.get('domain');
-    const features = await api.disco.getFeatures(domain);
-    const names = features.map((f) => f.get('var'));
-    return names.toSorted?.() || names;
-}
 
 /**
  * @param {import('../user-settings').default} el
  */
 const tplNavigation = (el) => {
     const i18n_about = __('About');
-    const i18n_server = __('Server');
     const i18n_commands = __('Commands');
+    const i18n_services = __('Services');
 
     const show_client_info = api.settings.get('show_client_info');
     const allow_adhoc_commands = api.settings.get('allow_adhoc_commands');
@@ -58,15 +50,15 @@ const tplNavigation = (el) => {
                       : ''}
                   <li role="presentation" class="nav-item">
                       <a
-                          class="nav-link ${el.tab === 'server' ? 'active' : ''}"
+                          class="nav-link ${el.tab === 'disco' ? 'active' : ''}"
                           id="server-tab"
                           href="#server-tabpanel"
                           aria-controls="server-tabpanel"
                           role="tab"
                           data-toggle="tab"
-                          data-name="server"
+                          data-name="disco"
                           @click=${(ev) => el.switchTab(ev)}
-                          >${i18n_server}</a
+                          >${i18n_services}</a
                       >
                   </li>
               </ul>`
@@ -130,22 +122,12 @@ export default (el) => {
                 : ''}
 
             <div
-                class="tab-pane tab-pane--columns ${el.tab === 'server' ? 'active' : ''}"
+                class="tab-pane tab-pane--columns ${el.tab === 'disco' ? 'active' : ''}"
                 id="server-tabpanel"
                 role="tabpanel"
                 aria-labelledby="server-tab"
             >
-                <div class="container">
-                    <h5 class="mt-3">${__('Server Features')}</h5>
-                    <ul>
-                        ${until(
-                            getFeatures().then((features) => {
-                                return html`${features.map((f) => html`<li>${f}</li>`)}`;
-                            }),
-                            ''
-                        )}
-                    </ul>
-                </div>
+                ${el.tab === 'disco' ? html`<converse-disco-browser></converse-disco-browser>` : ''}
             </div>
         </div>
     `;

@@ -494,7 +494,7 @@ async function createContacts (_converse, type, length) {
         ask = null;
     } else if (type === 'pending') {
         names = pend_names;
-        subscription = 'from';
+        subscription = 'none';
         requesting = false;
         ask = 'subscribe';
     } else if (type === 'current') {
@@ -530,7 +530,7 @@ async function waitForRoster (_converse, type='current', length=-1, include_nick
             result.c('item', {
                 jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                 name: include_nick ? name : undefined,
-                subscription: 'from',
+                subscription: 'none',
                 ask: 'subscribe'
             }).up()
         );

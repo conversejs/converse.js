@@ -11,9 +11,27 @@ export type RosterContactUpdateAttrs = {
     nickname?: string;
     groups?: string[];
 };
+/**
+ * There are four primary presence subscription states (these states are
+ * described from the perspective of the user, not the contact):
+ *
+ * none: The user does not have a subscription to the contact's
+ *     presence, and the contact does not have a subscription to the
+ *     user's presence.
+ *
+ * to: The user has a subscription to the contact's presence, but the
+ *     contact does not have a subscription to the user's presence.
+ *
+ * from: The contact has a subscription to the user's presence, but the
+ *     user does not have a subscription to the contact's presence.
+ *
+ * both: Both the user and the contact have subscriptions to each
+ *     other's presence (i.e. the union of 'from' and 'to').
+ */
+export type subscriptionState = 'none' | 'to' | 'from' | 'both';
 export type RosterContactAttributes = {
     jid: string;
-    subscription: 'none' | 'to' | 'from' | 'both';
+    subscription: subscriptionState;
     ask?: 'subscribe';
     name?: string;
     groups?: string[];

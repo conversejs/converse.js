@@ -1,33 +1,25 @@
 import DOMPurify from 'dompurify';
 import { html } from 'lit';
-import { until } from 'lit/directives/until.js';
 import { _converse, api } from '@converse/headless';
 import { __ } from 'i18n';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-
-async function getFeatures() {
-    const domain = _converse.session.get('domain');
-    const features = await api.disco.getFeatures(domain);
-    const names = features.map((f) => f.get('var'));
-    return names.toSorted?.() || names;
-}
 
 /**
  * @param {import('../user-settings').default} el
  */
 const tplNavigation = (el) => {
     const i18n_about = __('About');
-    const i18n_server = __('Server');
     const i18n_commands = __('Commands');
-
+    const i18n_services = __('Services');
     const show_client_info = api.settings.get('show_client_info');
     const allow_adhoc_commands = api.settings.get('allow_adhoc_commands');
-    const show_tabs = show_client_info && allow_adhoc_commands;
+    const has_disco_browser = _converse.pluggable.plugins['converse-disco-views']?.enabled(_converse);
+    const show_tabs = (show_client_info ? 1 : 0) + (allow_adhoc_commands ? 1 : 0) + (has_disco_browser ? 1 : 0) >= 2;
     return html`
         ${show_tabs
             ? html`<ul class="nav nav-pills justify-content-center">
                   ${show_client_info
-                      ? html` <li role="presentation" class="nav-item">
+                      ? html`<li role="presentation" class="nav-item">
                             <a
                                 class="nav-link ${el.tab === 'about' ? 'active' : ''}"
                                 id="about-tab"
@@ -42,7 +34,7 @@ const tplNavigation = (el) => {
                         </li>`
                       : ''}
                   ${allow_adhoc_commands
-                      ? html` <li role="presentation" class="nav-item">
+                      ? html`<li role="presentation" class="nav-item">
                             <a
                                 class="nav-link ${el.tab === 'commands' ? 'active' : ''}"
                                 id="commands-tab"
@@ -56,19 +48,21 @@ const tplNavigation = (el) => {
                             >
                         </li>`
                       : ''}
-                  <li role="presentation" class="nav-item">
-                      <a
-                          class="nav-link ${el.tab === 'server' ? 'active' : ''}"
-                          id="server-tab"
-                          href="#server-tabpanel"
-                          aria-controls="server-tabpanel"
-                          role="tab"
-                          data-toggle="tab"
-                          data-name="server"
-                          @click=${(ev) => el.switchTab(ev)}
-                          >${i18n_server}</a
-                      >
-                  </li>
+                  ${has_disco_browser
+                      ? html`<li role="presentation" class="nav-item">
+                            <a
+                                class="nav-link ${el.tab === 'disco' ? 'active' : ''}"
+                                id="server-tab"
+                                href="#server-tabpanel"
+                                aria-controls="server-tabpanel"
+                                role="tab"
+                                data-toggle="tab"
+                                data-name="disco"
+                                @click=${(ev) => el.switchTab(ev)}
+                                >${i18n_services}</a
+                            >
+                        </li>`
+                      : ''}
               </ul>`
             : ''}
     `;
@@ -128,25 +122,16 @@ export default (el) => {
                       </div>
                   `
                 : ''}
-
-            <div
-                class="tab-pane tab-pane--columns ${el.tab === 'server' ? 'active' : ''}"
-                id="server-tabpanel"
-                role="tabpanel"
-                aria-labelledby="server-tab"
-            >
-                <div class="container">
-                    <h5 class="mt-3">${__('Server Features')}</h5>
-                    <ul>
-                        ${until(
-                            getFeatures().then((features) => {
-                                return html`${features.map((f) => html`<li>${f}</li>`)}`;
-                            }),
-                            ''
-                        )}
-                    </ul>
-                </div>
-            </div>
+            ${_converse.pluggable.plugins['converse-disco-views']?.enabled(_converse)
+                ? html` <div
+                      class="tab-pane tab-pane--columns ${el.tab === 'disco' ? 'active' : ''}"
+                      id="server-tabpanel"
+                      role="tabpanel"
+                      aria-labelledby="server-tab"
+                  >
+                      ${el.tab === 'disco' ? html`<converse-disco-browser></converse-disco-browser>` : ''}
+                  </div>`
+                : ''}
         </div>
     `;
 };

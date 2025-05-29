@@ -22,10 +22,11 @@ import "./plugins/adhoc-views/index.js";    // Views for XEP-0050 Ad-Hoc command
 import "./plugins/bookmark-views/index.js"; // Views for XEP-0048 Bookmarks
 import "./plugins/chatview/index.js";       // Renders standalone chat boxes for single user chat
 import "./plugins/controlbox/index.js";     // The control box
+import "./plugins/disco-views/index.js";    // Adds a service discovery browser component
 import "./plugins/headlines-view/index.js";
 import "./plugins/mam-views/index.js";
-import "./plugins/muc-views/index.js";      // Views related to MUC
 import "./plugins/minimize/index.js";       // Allows chat boxes to be minimized
+import "./plugins/muc-views/index.js";      // Views related to MUC
 import "./plugins/notifications/index.js";
 import "./plugins/profile/index.js";
 import "./plugins/omemo/index.js";

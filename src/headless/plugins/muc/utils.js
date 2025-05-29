@@ -1,7 +1,7 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import { MUC_ROLE_WEIGHTS } from './constants.js';
 import { safeSave } from '../../utils/init.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
@@ -12,7 +12,7 @@ const { Strophe, sizzle, u } = converse.env;
 /**
  * @returns {Promise<string|undefined>}
  */
-export async function getDefaultMUCService () {
+export async function getDefaultMUCService() {
     let muc_service = api.settings.get('muc_domain') || _converse.session.get('default_muc_service');
     if (!muc_service) {
         const domain = _converse.session.get('domain');
@@ -31,11 +31,11 @@ export async function getDefaultMUCService () {
 /**
  * @param {import('@converse/skeletor').Model} model
  */
-export function isChatRoom (model) {
+export function isChatRoom(model) {
     return model?.get('type') === 'chatroom';
 }
 
-export function shouldCreateGroupchatMessage (attrs) {
+export function shouldCreateGroupchatMessage(attrs) {
     return attrs.nick && (u.shouldCreateMessage(attrs) || attrs.is_tombstone);
 }
 
@@ -43,7 +43,7 @@ export function shouldCreateGroupchatMessage (attrs) {
  * @param {import('./occupant').default} occupant1
  * @param {import('./occupant').default} occupant2
  */
-export function occupantsComparator (occupant1, occupant2) {
+export function occupantsComparator(occupant1, occupant2) {
     const role1 = occupant1.get('role') || 'none';
     const role2 = occupant2.get('role') || 'none';
     if (MUC_ROLE_WEIGHTS[role1] === MUC_ROLE_WEIGHTS[role2]) {
@@ -55,8 +55,9 @@ export function occupantsComparator (occupant1, occupant2) {
     }
 }
 
-export function registerDirectInvitationHandler () {
+export function registerDirectInvitationHandler() {
     api.connection.get().addHandler(
+        /** @param {Element} message */
         (message) => {
             _converse.exports.onDirectMUCInvitation(message);
             return true;
@@ -66,27 +67,27 @@ export function registerDirectInvitationHandler () {
     );
 }
 
-export function disconnectChatRooms () {
+export function disconnectChatRooms() {
     /* When disconnecting, mark all groupchats as
      * disconnected, so that they will be properly entered again
      * when fetched from session storage.
      */
     return _converse.state.chatboxes
-        .filter(m => m.get('type') === CHATROOMS_TYPE)
-        .forEach(m => m.session.save({ 'connection_status': converse.ROOMSTATUS.DISCONNECTED }));
+        .filter((m) => m.get('type') === CHATROOMS_TYPE)
+        .forEach((m) => m.session.save({ 'connection_status': converse.ROOMSTATUS.DISCONNECTED }));
 }
 
-export async function onWindowStateChanged () {
+export async function onWindowStateChanged() {
     if (!document.hidden && api.connection.connected()) {
         const rooms = await api.rooms.get();
-        rooms.forEach(room => room.rejoinIfNecessary());
+        rooms.forEach((room) => room.rejoinIfNecessary());
     }
 }
 
 /**
  * @param {Event} [event]
  */
-export async function routeToRoom (event) {
+export async function routeToRoom(event) {
     if (!location.hash.startsWith('#converse/room?jid=')) {
         return;
     }
@@ -109,7 +110,7 @@ export async function routeToRoom (event) {
  * @param {string} jid
  * @param {Object} settings
  */
-export async function openChatRoom (jid, settings) {
+export async function openChatRoom(jid, settings) {
     settings.type = CHATROOMS_TYPE;
     settings.id = jid;
     const chatbox = await api.rooms.get(jid, settings, true);
@@ -117,15 +118,13 @@ export async function openChatRoom (jid, settings) {
     return chatbox;
 }
 
-
 /**
  * A direct MUC invitation to join a groupchat has been received
  * See XEP-0249: Direct MUC invitations.
- * @private
  * @method _converse.ChatRoom#onDirectMUCInvitation
  * @param {Element} message - The message stanza containing the invitation.
  */
-export async function onDirectMUCInvitation (message) {
+export async function onDirectMUCInvitation(message) {
     const x_el = sizzle('x[xmlns="jabber:x:conference"]', message).pop(),
         from = Strophe.getBareJidFromJid(message.getAttribute('from')),
         room_jid = x_el.getAttribute('jid'),
@@ -158,14 +157,13 @@ export async function onDirectMUCInvitation (message) {
     }
 }
 
-export function getDefaultMUCNickname () {
+export function getDefaultMUCNickname() {
     // XXX: if anything changes here, update the docs for the
     // locked_muc_nickname setting.
     const { profile } = _converse.state;
     if (!profile) {
-        log.error("Called getDefaultMUCNickname before statusInitialized has been fired.");
+        log.error('Called getDefaultMUCNickname before statusInitialized has been fired.');
         return '';
-
     }
     const nick = profile.getNickname();
     if (nick) {
@@ -182,7 +180,7 @@ export function getDefaultMUCNickname () {
  * @param {import('./types').MUCStatusCode} code
  * @memberOf _converse
  */
-export function isInfoVisible (code) {
+export function isInfoVisible(code) {
     const info_messages = api.settings.get('muc_show_info_messages');
     if (info_messages.includes(code)) {
         return true;
@@ -190,15 +188,14 @@ export function isInfoVisible (code) {
     return false;
 }
 
-
 /**
  * Automatically join groupchats, based on the
  * "auto_join_rooms" configuration setting, which is an array
  * of strings (groupchat JIDs) or objects (with groupchat JID and other settings).
  */
-export async function autoJoinRooms () {
+export async function autoJoinRooms() {
     await Promise.all(
-        api.settings.get('auto_join_rooms').map(muc => {
+        api.settings.get('auto_join_rooms').map((muc) => {
             if (typeof muc === 'string') {
                 if (_converse.state.chatboxes.where({ 'jid': muc }).length) {
                     return Promise.resolve();
@@ -222,8 +219,7 @@ export async function autoJoinRooms () {
     api.trigger('roomsAutoJoined');
 }
 
-
-export function onAddClientFeatures () {
+export function onAddClientFeatures() {
     api.disco.own.features.add(Strophe.NS.MUC);
 
     if (api.settings.get('allow_muc_invitations')) {
@@ -231,19 +227,16 @@ export function onAddClientFeatures () {
     }
 }
 
-export function onBeforeTearDown () {
+export function onBeforeTearDown() {
     _converse.state.chatboxes
         .where({ 'type': CHATROOMS_TYPE })
-        .forEach(muc => safeSave(muc.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED }));
+        .forEach((muc) => safeSave(muc.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED }));
 }
 
-export function onStatusInitialized () {
+export function onStatusInitialized() {
     window.addEventListener(getUnloadEvent(), () => {
         const using_websocket = api.connection.isType('websocket');
-        if (
-            using_websocket &&
-            (!api.settings.get('enable_smacks') || !_converse.session.get('smacks_stream_id'))
-        ) {
+        if (using_websocket && (!api.settings.get('enable_smacks') || !_converse.session.get('smacks_stream_id'))) {
             // For non-SMACKS websocket connections, or non-resumeable
             // connections, we disconnect all chatrooms when the page unloads.
             // See issue #1111
@@ -252,7 +245,7 @@ export function onStatusInitialized () {
     });
 }
 
-export function onBeforeResourceBinding () {
+export function onBeforeResourceBinding() {
     api.connection.get().addHandler(
         /** @param {Element} stanza */
         (stanza) => {

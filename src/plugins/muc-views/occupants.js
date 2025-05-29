@@ -1,5 +1,4 @@
 import debounce from 'lodash-es/debounce.js';
-import { Model } from '@converse/skeletor';
 import { _converse, api, u, RosterFilter } from "@converse/headless";
 import { CustomElement } from 'shared/components/element.js';
 import tplMUCOccupants from "./templates/muc-occupants.js";

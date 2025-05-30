@@ -149,7 +149,11 @@
     input[type='submit'],
     input[type='button'],
     input[type='text'],
-    input[type='password'],
+    input[type='password'] {
+        font-size: var(--font-size-large);
+        min-height: 0;
+    }
+    
     button {
         font-size: var(--font-size);
         min-height: 0;

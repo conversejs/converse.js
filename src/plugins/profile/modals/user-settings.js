@@ -1,7 +1,6 @@
 import { api } from "@converse/headless";
 import { __ } from 'i18n';
 import BaseModal from "plugins/modal/modal.js";
-import 'shared/components/disco-browser.js';
 import tplUserSettingsModal from "./templates/user-settings.js";
 
 import './styles/user-settings.scss';

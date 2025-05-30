@@ -11,6 +11,7 @@ export const VIEW_PLUGINS = [
     'converse-chatboxviews',
     'converse-chatview',
     'converse-controlbox',
+    'converse-disco-views',
     'converse-dragresize',
     'converse-fullscreen',
     'converse-headlines-view',

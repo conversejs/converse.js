@@ -154,6 +154,7 @@ class DiscoEntity extends Model {
                 if (e.message !== 'item-not-found') {
                     log.error(`Error querying disco#info for ${this.get('jid')}: ${e.message}`);
                 }
+                this.save({ error: e.message });
                 this.waitUntilFeaturesDiscovered.resolve(e);
                 this.waitUntilItemsFetched.resolve(e);
             } else {

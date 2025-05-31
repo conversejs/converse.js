@@ -58,6 +58,10 @@ export default class ProfileModal extends BaseModal {
      * @param {MouseEvent} ev
      */
     clearStatusMessage(ev: MouseEvent): void;
+    /**
+     * @param {MouseEvent} ev
+     */
+    logOut(ev: MouseEvent): Promise<void>;
 }
 import BaseModal from 'plugins/modal/modal.js';
 import { Model } from '@converse/skeletor';

@@ -4,12 +4,12 @@ import { _converse, api, log } from '@converse/headless';
 import { __ } from 'i18n';
 import BaseModal from 'plugins/modal/modal.js';
 import { compressImage } from 'utils/file.js';
-import { modal_close_button } from 'plugins/modal/templates/buttons.js';
 import '../password-reset.js';
+import { modal_close_button } from 'plugins/modal/templates/buttons.js';
+import tplLogoutButton from '../templates/logout_button.js';
 import tplProfileModal from '../templates/profile_modal.js';
 
 import './styles/profile.scss';
-import logout_button from '../templates/logout_button.js';
 
 export default class ProfileModal extends BaseModal {
     /**
@@ -79,7 +79,7 @@ export default class ProfileModal extends BaseModal {
      */
     renderModalFooter() {
         return html`<div class="modal-footer d-flex justify-content-between">
-            ${modal_close_button} ${logout_button()}
+            ${modal_close_button} ${tplLogoutButton(this)}
         </div>`;
     }
 
@@ -179,6 +179,18 @@ export default class ProfileModal extends BaseModal {
         this._show_clear_button = false;
         const roster_filter = /** @type {HTMLInputElement} */ (this.querySelector('input[name="status_message"]'));
         roster_filter.value = '';
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    async logOut(ev) {
+        ev?.preventDefault();
+        this.close();
+        const result = await api.confirm(__('Confirm'), __('Are you sure you want to log out?'));
+        if (result) {
+            api.user.logout();
+        }
     }
 }
 

@@ -16,7 +16,7 @@ export namespace DEFAULT_SETTINGS {
     let geouri_replacement: string;
     let i18n: any;
     let jid: any;
-    let reuse_scram_keys: boolean;
+    let reuse_keys: boolean;
     let keepalive: boolean;
     let loglevel: string;
     let locales: string[];
@@ -46,9 +46,9 @@ export type ConfigurationSettings = {
      */
     auto_login?: boolean;
     /**
-     * - Save SCRAM keys after login to allow for future auto login
+     * - Save keys after login to allow for future auto login
      */
-    reuse_scram_keys?: boolean;
+    reuse_keys?: boolean;
     auto_reconnect?: boolean;
     blacklisted_plugins?: Array<string>;
     clear_cache_on_logout?: boolean;

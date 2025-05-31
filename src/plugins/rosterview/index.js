@@ -9,6 +9,7 @@ import '../modal';
 import AddContactModal from './modals/add-contact.js';
 import AcceptContactRequestModal from './modals/accept-contact-request.js';
 import NewChatModal from './modals/new-chat.js';
+import BlockListModal from './modals/blocklist.js';
 import RosterView from './rosterview.js';
 
 import 'shared/styles/status.scss';
@@ -27,12 +28,13 @@ converse.plugins.add('converse-rosterview', {
         api.promises.add('rosterViewInitialized');
 
         const exports = {
+            AcceptContactRequestModal,
+            AddContactModal,
+            BlockListModal,
+            NewChatModal,
+            RosterContactView,
             RosterFilter,
             RosterView,
-            RosterContactView,
-            AddContactModal,
-            AcceptContactRequestModal,
-            NewChatModal,
         };
         Object.assign(_converse, exports); // DEPRECATED
         Object.assign(_converse.exports, exports);

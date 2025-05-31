@@ -41,6 +41,7 @@ const blocklist = {
         const blocklist = await waitUntil('blocklistInitialized');
         const jids = Array.isArray(jid) ? jid : [jid];
         if (send_stanza) await sendUnblockStanza(jids);
+        jids.forEach((jid) => blocklist.get(jid)?.destroy());
         blocklist.remove(jids);
         return blocklist;
     },

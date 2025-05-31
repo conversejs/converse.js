@@ -149,6 +149,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/rosterview/tests/new-chat-modal.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/presence.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/protocol.js", type: 'module' },
+      { pattern: "src/plugins/rosterview/tests/blocklist.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/requesting_contacts.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/roster.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/unsaved-contacts.js", type: 'module' },

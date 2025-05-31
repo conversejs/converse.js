@@ -1,5 +1,5 @@
 import { __ } from 'i18n';
-import { _converse, api } from '@converse/headless';
+import { _converse } from '@converse/headless';
 
 /**
  * @param {string} stat

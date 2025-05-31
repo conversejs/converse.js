@@ -11,6 +11,8 @@ export default class RosterView extends CustomElement {
     showAddContactModal(ev: MouseEvent): void;
     /** @param {MouseEvent} ev */
     showNewChatModal(ev: MouseEvent): void;
+    /** @param {MouseEvent} ev */
+    showBlocklistModal(ev: MouseEvent): void;
     /** @param {MouseEvent} [ev] */
     syncContacts(ev?: MouseEvent): Promise<void>;
     syncing_contacts: boolean;

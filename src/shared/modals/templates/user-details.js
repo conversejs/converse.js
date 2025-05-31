@@ -44,7 +44,7 @@ function tplBlockButton(el) {
     const i18n_block = __('Add to blocklist');
     return html`
         <button type="button" @click="${(ev) => el.blockContact(ev)}" class="btn btn-danger">
-            <converse-icon class="fas fa-times" color="var(--background-color)" size="1em"></converse-icon
+            <converse-icon class="fas fa-list-ul" color="var(--background-color)" size="1em"></converse-icon
             >&nbsp;${i18n_block}
         </button>
     `;

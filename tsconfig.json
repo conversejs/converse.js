@@ -19,7 +19,8 @@
 
     "lib": [
       "ES2020",
-      "dom"
+      "dom",
+      "dom.iterable"
     ],
 
     "allowJs": true,

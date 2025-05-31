@@ -60,6 +60,10 @@
     --converse-highlight-color: var(--yellow);
     --converse-secondary-color: var(--secondary-color);
 
+    .form-check-input:checked {
+        background-color: var(--purple);
+        border-color: var(--purple);
+    }
     .shadow-lg {
         --converse-box-shadow-lg: 0 1rem 3rem var(--background-color);
     }

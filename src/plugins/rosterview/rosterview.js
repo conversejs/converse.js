@@ -49,12 +49,17 @@ export default class RosterView extends CustomElement {
 
     /** @param {MouseEvent} ev */
     showAddContactModal (ev) {
-        api.modal.show('converse-add-contact-modal', {'model': new Model()}, ev);
+        api.modal.show('converse-add-contact-modal', { model: new Model()}, ev);
     }
 
     /** @param {MouseEvent} ev */
     showNewChatModal (ev) {
-        api.modal.show('converse-new-chat-modal', {'model': new Model()}, ev);
+        api.modal.show('converse-new-chat-modal', { model: new Model()}, ev);
+    }
+
+    /** @param {MouseEvent} ev */
+    showBlocklistModal(ev) {
+        api.modal.show('converse-blocklist-modal', {}, ev);
     }
 
     /** @param {MouseEvent} [ev] */

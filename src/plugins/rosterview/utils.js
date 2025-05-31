@@ -85,7 +85,7 @@ export async function blockContact(contact) {
     if (!(await api.disco.supports(Strophe.NS.BLOCKING, domain))) return false;
 
     const i18n_confirm = __('Do you want to block this contact, so they cannot send you messages?');
-    if (!(await api.confirm(i18n_confirm))) return false;
+    if (!(await api.confirm(__('Confirm'), i18n_confirm))) return false;
 
     (await api.chats.get(contact.get('jid')))?.close();
 

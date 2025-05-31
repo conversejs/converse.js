@@ -66,6 +66,12 @@
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--red);
+    --converse-border-color: lightgray;
+
+    .form-check-input:checked {
+        background-color: var(--purple);
+        border-color: var(--purple);
+    }
     .navbar-nav {
         --converse-nav-link-color: var(--link-color) !important;
     }

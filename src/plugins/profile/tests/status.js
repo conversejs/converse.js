@@ -23,7 +23,7 @@ describe("The Controlbox", function () {
             await mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.querySelector('.change-status').click()
-            const modal = _converse.api.modal.get('converse-chat-status-modal');
+            const modal = _converse.api.modal.get('converse-profile-modal');
             await u.waitUntil(() => u.isVisible(modal), 1000);
             modal.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
             modal.querySelector('[type="submit"]').click();
@@ -49,7 +49,7 @@ describe("The Controlbox", function () {
             await mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.querySelector('.change-status').click()
-            const modal = _converse.api.modal.get('converse-chat-status-modal');
+            const modal = _converse.api.modal.get('converse-profile-modal');
 
             await u.waitUntil(() => u.isVisible(modal), 1000);
             const msg = 'I am happy';

@@ -11,10 +11,8 @@ export default (el) => {
     const i18n_groups_help = __('Use commas to separate multiple values');
     const i18n_nickname = __('Name');
     const i18n_xmpp_address = __('XMPP Address');
-    const error = el.model.get('error');
 
     return html` <div class="modal-body">
-        ${error ? html`<div class="alert alert-danger" role="alert">${error}</div>` : ''}
         <form class="converse-form" @submit=${(ev) => el.acceptContactRequest(ev)}>
             <div class="mb-3">
                 <label class="form-label clearfix" for="name">${i18n_nickname}:</label>

@@ -27,10 +27,13 @@ export default (el) => {
                 >
                     <converse-icon size="1em" class="fa fa-arrow-left"></converse-icon>
                 </button>
-                <a @click="${(ev) => {
+                <a
+                    @click="${(ev) => {
                         ev.preventDefault();
                         el.muc.save({ 'sidebar_view': 'occupants' });
-                    }}">${i18n_participants}</a>
+                    }}"
+                    >${i18n_participants}</a
+                >
             </span>
             <converse-dropdown
                 .items=${[
@@ -54,14 +57,18 @@ export default (el) => {
         ${el.model
             ? html`<div class="row">
                   <div class="col">
-                      <converse-avatar
-                          .model=${el.model}
-                          class="avatar modal-avatar justify-content-center"
-                          name="${el.model.getDisplayName()}"
-                          nonce=${el.getVcard()?.get('vcard_updated')}
-                          height="120"
-                          width="120"
-                      ></converse-avatar>
+                      <a
+                          title="${i18n_show_details}"
+                          @click=${() => el.showOccupantModal()}
+                          ><converse-avatar
+                              .model=${el.model}
+                              class="avatar modal-avatar justify-content-center"
+                              name="${el.model.getDisplayName()}"
+                              nonce=${el.getVcard()?.get('vcard_updated')}
+                              height="120"
+                              width="120"
+                          ></converse-avatar>
+                      </a>
                   </div>
               </div>`
             : ''}
@@ -72,11 +79,13 @@ export default (el) => {
                           ${jid ? html`<a @click="${() => el.openChat(jid)}">${jid}</a>` : ''}
                       </li>
                       <li>
-                        ${ affiliation && affiliation !== 'None' ? html`<span class="badge text-bg-primary">${affiliation}</span>` : '' }
-                        ${ role ? html`<span class="badge text-bg-secondary">${role}</span>` : '' }
-                        ${hats.length
-                            ? html`${hats.map((h) => html`<span class="badge text-bg-info">${h}</span>`)}`
-                            : ''}
+                          ${affiliation && affiliation !== 'None'
+                              ? html`<span class="badge text-bg-primary">${affiliation}</span>`
+                              : ''}
+                          ${role ? html`<span class="badge text-bg-secondary">${role}</span>` : ''}
+                          ${hats.length
+                              ? html`${hats.map((h) => html`<span class="badge text-bg-info">${h}</span>`)}`
+                              : ''}
                       </li>`
                 : html`<li>${i18n_no_occupant}</li>`}
         </ul>
@@ -84,9 +93,7 @@ export default (el) => {
         ${el.model
             ? html`<div class="chat-body">
                   <div class="chat-content chat-content-sendbutton" aria-live="polite">
-                      <converse-chat-content
-                          .model="${el.model}"
-                      ></converse-chat-content>
+                      <converse-chat-content .model="${el.model}"></converse-chat-content>
                   </div>
                   <converse-occupant-bottom-panel .model=${el.model} .muc=${el.muc} class="bottom-panel">
                   </converse-occupant-bottom-panel>

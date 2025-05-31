@@ -15,7 +15,6 @@ export default class AcceptContactRequestModal extends BaseModal {
 
     initialize() {
         super.initialize();
-        this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.listenTo(this.contact, 'change', () => this.requestUpdate());
         this.requestUpdate();
         this.addEventListener(

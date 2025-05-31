@@ -22,6 +22,7 @@ export default (el) => {
     const i18n_toggle_contacts = __('Click to toggle contacts');
     const i18n_title_add_contact = __('Add a contact');
     const i18n_title_new_chat = __('Start a new chat');
+    const i18n_show_blocklist = __('Show block list');
     const { state } = _converse;
     const roster = [
         ...(state.roster || []),
@@ -69,6 +70,18 @@ export default (el) => {
             </a>
         `);
     }
+
+    btns.push(html`
+        <a
+            href="#"
+            class="dropdown-item" role="button"
+            @click="${(/** @type {MouseEvent} */ ev) => el.showBlocklistModal(ev)}"
+            title="${i18n_show_blocklist}"
+        >
+            <converse-icon class="fa fa-list-ul" size="1em"></converse-icon>
+            ${i18n_show_blocklist}
+        </a>
+    `);
 
     if (roster.length > 5) {
         btns.push(html`

@@ -1,4 +1,3 @@
-import { Model } from '@converse/skeletor';
 import { _converse, api } from '@converse/headless';
 import { ObservableElement } from 'shared/components/observable.js';
 import tplRequestingContact from './templates/requesting_contact.js';
@@ -57,10 +56,7 @@ export default class RosterContactView extends ObservableElement {
      */
     addContact(ev) {
         ev?.preventDefault?.();
-        api.modal.show('converse-add-contact-modal', {
-            contact: this.model,
-            model: new Model()
-        }, ev);
+        api.modal.show('converse-add-contact-modal', { contact: this.model }, ev);
     }
 
     /**
@@ -97,7 +93,7 @@ export default class RosterContactView extends ObservableElement {
      */
     async acceptRequest(ev) {
         ev?.preventDefault?.();
-        api.modal.show('converse-accept-contact-request-modal', { model: new Model(), contact: this.model }, ev);
+        api.modal.show('converse-accept-contact-request-modal', { contact: this.model }, ev);
     }
 
     /**

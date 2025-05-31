@@ -12,6 +12,7 @@ export default (el) => {
     const presence = el.model.get('presence') || 'online';
     const chat_status = show || presence;
     const status_message = el.model.get('status_message') || __("I am %1$s", getPrettyStatus(chat_status));
+    const i18n_change_profile = __('Update your profile');
     const i18n_change_status = __('Click to change your chat status');
 
     let classes, color;
@@ -27,17 +28,20 @@ export default (el) => {
 
     return html`
         <div class="userinfo">
-            <div class="controlbox-section profile d-flex">
-                <a class="show-profile" href="#" @click=${el.showProfileModal}>
+            <div class="controlbox-section profile d-flex justify-content-between">
+                <a class="show-profile"
+                        href="#"
+                        @click="${(ev) => el.showProfileModal(ev, 'profile')}"
+                        title="${i18n_change_profile}">
                     <converse-avatar class="avatar align-self-center"
                         .model=${el.model}
                         name="${el.model.getDisplayName()}"
                         nonce=${el.model.vcard?.get('vcard_updated')}
                         height="40" width="40"></converse-avatar>
+                    <span class="username align-self-center w-100" role="heading" aria-level="2">
+                        ${el.model.getDisplayName()}
+                    </span>
                 </a>
-                <span class="username w-100 align-self-center" role="heading" aria-level="2">
-                    ${el.model.getDisplayName()}
-                </span>
                 <converse-controlbox-buttons></converse-controlbox-buttons>
             </div>
             <div class="d-flex xmpp-status">
@@ -45,7 +49,7 @@ export default (el) => {
                    title="${i18n_change_status}"
                    data-toggle="modal"
                    data-target="#changeStatusModal"
-                   @click=${el.showStatusChangeModal}>
+                   @click="${(ev) => el.showProfileModal(ev)}">
 
                     <span class="${chat_status} w-100" data-value="${chat_status}">
                         <converse-icon

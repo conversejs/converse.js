@@ -1,42 +1,37 @@
-import 'shared/autocomplete/index.js';
+import { _converse, api, converse } from '@converse/headless';
 import BaseModal from 'plugins/modal/modal.js';
+import 'shared/autocomplete/index.js';
 import tplMUCInviteModal from './templates/muc-invite.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless';
 
 const u = converse.env.utils;
 
 export default class MUCInviteModal extends BaseModal {
-    constructor (options) {
+    constructor(options) {
         super(options);
         this.id = 'converse-muc-invite-modal';
         this.muc = options.muc;
     }
 
-    initialize () {
-        super.initialize();
-        this.listenTo(this.model, 'change', () => this.requestUpdate());
-    }
-
-    renderModal () {
+    renderModal() {
         return tplMUCInviteModal(this);
     }
 
-    getModalTitle () {
+    getModalTitle() {
         return __('Invite someone to this groupchat');
     }
 
-    getAutoCompleteList () {
+    getAutoCompleteList() {
         return _converse.state.roster.map((i) => ({ label: i.getDisplayName(), value: i.get('jid') }));
     }
 
     /**
      * @param {Event} ev
      */
-    submitInviteForm (ev) {
+    submitInviteForm(ev) {
         ev.preventDefault();
         // TODO: Add support for sending an invite to multiple JIDs
-        const data = new FormData(/** @type {HTMLFormElement} */(ev.target));
+        const data = new FormData(/** @type {HTMLFormElement} */ (ev.target));
         const jid = /** @type {string} */ (data.get('invitee_jids'))?.trim();
         const reason = data.get('reason');
         if (u.isValidJID(jid)) {
@@ -44,7 +39,7 @@ export default class MUCInviteModal extends BaseModal {
             this.muc.directInvite(jid, reason);
             this.modal.hide();
         } else {
-            this.model.set({ 'invalid_invite_jid': true });
+            this.state.set({ invalid_invite_jid: true });
         }
     }
 }

@@ -18,7 +18,7 @@ describe("A sent presence stanza", function () {
         const cbview = _converse.chatboxviews.get('controlbox');
         const change_status_el = await u.waitUntil(() => cbview.querySelector('.change-status'));
         change_status_el.click()
-        let modal = _converse.api.modal.get('converse-chat-status-modal');
+        let modal = _converse.api.modal.get('converse-profile-modal');
         await u.waitUntil(() => u.isVisible(modal), 1000);
         const msg = 'My custom status';
         modal.querySelector('input[name="status_message"]').value = msg;
@@ -33,11 +33,9 @@ describe("A sent presence stanza", function () {
                 <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
                 <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`)
-        await u.waitUntil(() => modal.getAttribute('aria-hidden') === "true");
-        await u.waitUntil(() => !u.isVisible(modal));
 
         cbview.querySelector('.change-status').click()
-        modal = _converse.api.modal.get('converse-chat-status-modal');
+        modal = _converse.api.modal.get('converse-profile-modal');
         await u.waitUntil(() => modal.getAttribute('aria-hidden') === "false", 1000);
         modal.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
         modal.querySelector('[type="submit"]').click();

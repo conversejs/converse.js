@@ -98,8 +98,8 @@ const modal_api = {
         if (typeof messages === 'string') {
             messages = [messages];
         }
-        const model = new Model({ title, messages, fields, 'type': 'confirm' });
-        const confirm = new Confirm({ model });
+        const state = new Model({ title, messages, fields, 'type': 'confirm' });
+        const confirm = new Confirm({ state });
         confirm.show();
         let result;
         try {
@@ -124,7 +124,7 @@ const modal_api = {
         if (typeof messages === 'string') {
             messages = [messages];
         }
-        const model = new Model({
+        const state = new Model({
             title,
             messages,
             fields: [
@@ -135,7 +135,7 @@ const modal_api = {
             ],
             type: 'prompt',
         });
-        const prompt = new Confirm({ model });
+        const prompt = new Confirm({ state });
         prompt.show();
         let result;
         try {
@@ -167,8 +167,8 @@ const modal_api = {
             level = 'alert-warning';
         }
 
-        const model = new Model({ title, messages, level, 'type': 'alert' });
-        modal_api.modal.show('converse-alert-modal', { model });
+        const state = new Model({ title, messages, level, 'type': 'alert' });
+        modal_api.modal.show('converse-alert-modal', { state });
     },
 
     /**

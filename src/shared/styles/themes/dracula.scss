@@ -54,6 +54,11 @@
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--yellow) !important;
     --converse-secondary-color: var(--secondary-color);
+
+    .form-check-input:checked {
+        background-color: var(--purple);
+        border-color: var(--purple);
+    }
     .navbar-nav {
         --converse-nav-link-color: var(--link-color) !important;
         --converse-nav-link-hover-color: var(--link-color-hover) !important;

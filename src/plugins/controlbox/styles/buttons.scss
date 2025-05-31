@@ -1,14 +1,11 @@
 .conversejs {
     converse-controlbox-buttons {
-        text-align: right;
-        width: 100%;
-
         .btn-toolbar {
             justify-content: flex-end;
 
             .controlbox-heading__btn {
                 cursor: pointer;
-                padding: 0 0 0 1em;
+                padding: 0 0 0 0.75em;
                 font-size: 1em;
                 margin: 0.75em 0 var(--inline-action-margin) 0;
                 text-align: center;

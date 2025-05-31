@@ -29,6 +29,9 @@ class BaseModal extends CustomElement {
     constructor(options) {
         super();
         this.model = null;
+        this.state = new Model();
+        this.listenTo(this.state, 'change', () => this.requestUpdate());
+
         this.className = u.isTestEnv() ? 'modal' : 'modal fade';
         this.tabIndex = -1;
         this.ariaHidden = 'true';
@@ -125,15 +128,18 @@ class BaseModal extends CustomElement {
     }
 
     /**
-     * @param {string} message
-     * @param {'primary'|'secondary'|'danger'} type
+     * @param {string|null} [message]
+     * @param {'info'|'primary'|'secondary'|'danger'} type
      * @param {boolean} [is_ephemeral=true]
      */
     alert(message, type = 'primary', is_ephemeral = true) {
-        this.model.set('alert', { message, type });
+        this.state.set('alert', { message, type });
         if (is_ephemeral) {
-            setTimeout(() => {
-                this.model.set('alert', undefined);
+            if (this.alertTimeout) {
+                clearTimeout(this.alertTimeout);
+            }
+            this.alertTimeout = setTimeout(() => {
+                this.state.set('alert', undefined);
             }, 5000);
         }
     }

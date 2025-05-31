@@ -48,6 +48,7 @@ converse.plugins.add('converse-roster', {
         const labels = {
             HEADER_UNSAVED_CONTACTS: __('Unsaved contacts'),
             HEADER_CURRENT_CONTACTS: __('My contacts'),
+            HEADER_PENDING_CONTACTS: __('Pending contacts'),
             HEADER_REQUESTING_CONTACTS: __('Contact requests'),
             HEADER_UNGROUPED: __('Ungrouped'),
             HEADER_UNREAD: __('New messages'),

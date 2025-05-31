@@ -16,10 +16,8 @@ export default (el) => {
     const using_xhr = api.settings.get('xhr_user_search_url');
     const i18n_xmpp_address = __('XMPP Address');
     const i18n_search_or_address = using_xhr ? __('Search name or XMPP address') : i18n_xmpp_address;
-    const error = el.model.get('error');
 
     return html`<div class="modal-body">
-        ${error ? html`<div class="alert alert-danger" role="alert">${error}</div>` : ''}
         <form class="converse-form add-xmpp-contact" @submit=${(ev) => el.addContactFromForm(ev)}>
             ${el.contact
                 ? html`<input type="hidden" name="jid" value="${el.contact.get('jid')}" />`
@@ -32,7 +30,7 @@ export default (el) => {
                                 min_chars="2"
                                 filter="contains"
                                 ?required="${true}"
-                                value="${el.model.get('jid') || ''}"
+                                value="${el.state.get('jid') || ''}"
                                 placeholder="${i18n_contact_placeholder}"
                                 name="jid"
                             ></converse-autocomplete>`
@@ -43,7 +41,7 @@ export default (el) => {
                                 min_chars="2"
                                 filter="startswith"
                                 ?required="${!api.settings.get('xhr_user_search_url')}"
-                                value="${el.model.get('jid') || ''}"
+                                value="${el.state.get('jid') || ''}"
                                 placeholder="${i18n_contact_placeholder}"
                                 name="jid"
                             ></converse-autocomplete>`}
@@ -56,7 +54,7 @@ export default (el) => {
                           <input
                               type="text"
                               name="name"
-                              value="${el.model.get('nickname') || ''}"
+                              value="${el.state.get('nickname') || ''}"
                               class="form-control"
                           />
                       </div>

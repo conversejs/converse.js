@@ -7,6 +7,24 @@ import { __ } from 'i18n';
 const { Strophe } = converse.env;
 
 /**
+ * @param {import('@converse/headless/types/plugins/roster/contact').default} [contact]
+ */
+function getPrettySubcription(contact) {
+    const s = contact?.get('subscription');
+    if (s === 'none') {
+        return __('Neither of you receive presence updates');
+    } else if (s === 'to') {
+        return __('Only you receive presence updates');
+    } else if (s === 'from') {
+        return __('Only they receive presence updates');
+    } else if (s === 'both') {
+        return __('Both of you receive presence updates');
+    } else {
+        return '';
+    }
+}
+
+/**
  * @param {import('../user-details').default} el
  */
 function tplUnblockButton(el) {
@@ -26,7 +44,7 @@ function tplBlockButton(el) {
     const i18n_block = __('Add to blocklist');
     return html`
         <button type="button" @click="${(ev) => el.blockContact(ev)}" class="btn btn-danger">
-            <converse-icon class="fas fa-times" color="var(--background-color)" size="1em"></converse-icon
+            <converse-icon class="fas fa-list-ul" color="var(--background-color)" size="1em"></converse-icon
             >&nbsp;${i18n_block}
         </button>
     `;
@@ -64,7 +82,11 @@ function tplRemoveButton(el) {
 function tplAcceptButton(el) {
     const i18n_accept = __('Accept');
     return html`
-        <button type="button" @click="${(ev) => el.acceptContactRequest(ev)}" class="btn btn-success accept-contact-request">
+        <button
+            type="button"
+            @click="${(ev) => el.acceptContactRequest(ev)}"
+            class="btn btn-success accept-contact-request"
+        >
             <converse-icon class="fas fa-user-plus" color="var(--background-color)" size="1em"></converse-icon
             >&nbsp;${i18n_accept}
         </button>
@@ -77,7 +99,11 @@ function tplAcceptButton(el) {
 function tplDeclineButton(el) {
     const i18n_decline = __('Decline');
     return html`
-        <button type="button" @click="${(ev) => el.declineContactRequest(ev)}" class="btn btn-danger decline-contact-request">
+        <button
+            type="button"
+            @click="${(ev) => el.declineContactRequest(ev)}"
+            class="btn btn-danger decline-contact-request"
+        >
             <converse-icon class="fas fa-user-plus" color="var(--background-color)" size="1em"></converse-icon
             >&nbsp;${i18n_decline}
         </button>
@@ -176,7 +202,7 @@ export function tplUserDetailsModal(el) {
     }
 
     const name = contact?.get('nickname') || contact.vcard?.get('fullname');
-    const groups = contact?.get('groups');
+    const groups = contact?.get('groups') || [];
 
     return html`
         <ul class="nav nav-pills justify-content-center">
@@ -209,6 +235,13 @@ export function tplUserDetailsModal(el) {
                     <div class="col-sm-4"><label>${i18n_address}:</label></div>
                     <div class="col-sm-8"><a href="xmpp:${o.jid}">${o.jid}</a></div>
                 </div>
+
+                ${contact
+                    ? html` <div class="row mb-2">
+                          <div class="col-sm-4"><label>${__('Presence')}:</label></div>
+                          <div class="col-sm-8">${getPrettySubcription(contact)}</div>
+                      </div>`
+                    : ''}
                 ${o.nickname
                     ? html`
                           <div class="row mb-2">
@@ -256,13 +289,12 @@ export function tplUserDetailsModal(el) {
                           </div>
                       `
                     : ''}
-
-                <hr />
+                ${contact.get('requesting') || !is_roster_contact || !contact ? html`<hr />` : ''}
                 ${contact.get('requesting')
                     ? html`<div class="row mb-2">
-                              <div class="col-sm-4"><label>${__('Contact Request')}:</label></div>
-                              <div class="col-sm-8">${tplAcceptButton(el)} ${tplDeclineButton(el)}</div>
-                          </div>`
+                          <div class="col-sm-4"><label>${__('Contact Request')}:</label></div>
+                          <div class="col-sm-8">${tplAcceptButton(el)} ${tplDeclineButton(el)}</div>
+                      </div>`
                     : ''}
                 ${!is_roster_contact ? tplAddButton(el) : ''}
                 ${!contact

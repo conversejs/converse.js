@@ -1,14 +1,6 @@
 import { html } from 'lit';
 import { api } from '@converse/headless';
 import { __ } from 'i18n';
-import { logOut } from '../utils.js';
-
-function tplSignout() {
-    const i18n_logout = __('Log out');
-    return html`<a class="controlbox-heading__btn logout align-self-center" title="${i18n_logout}" @click=${logOut}>
-        <converse-icon class="fa fa-sign-out-alt" size="1em"></converse-icon>
-    </a>`;
-}
 
 /**
  * @param {import('../buttons').default} el
@@ -41,7 +33,6 @@ export default (el) => {
     const show_settings_button = api.settings.get('show_client_info') || api.settings.get('allow_adhoc_commands');
     return html`<div class="btn-toolbar g-0">
         ${is_connected && show_settings_button ? tplUserSettingsButton(el) : ''}
-        ${is_connected && api.settings.get('allow_logout') ? tplSignout() : ''}
         ${api.settings.get('sticky_controlbox') ? '' : tplCloseButton(el)}
     </div>`;
 };

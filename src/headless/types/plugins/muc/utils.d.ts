@@ -30,7 +30,6 @@ export function openChatRoom(jid: string, settings: any): Promise<any>;
 /**
  * A direct MUC invitation to join a groupchat has been received
  * See XEP-0249: Direct MUC invitations.
- * @private
  * @method _converse.ChatRoom#onDirectMUCInvitation
  * @param {Element} message - The message stanza containing the invitation.
  */

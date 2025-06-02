@@ -77,21 +77,34 @@ function tplRoomItem (el, room) {
  */
 function tplRoomDomainGroup (el, domain, rooms) {
     const i18n_title = __('Click to hide these rooms');
+    const i18n_title_list_rooms = __('Query server');
     const collapsed = el.model.get('collapsed_domains');
     const is_collapsed = collapsed.includes(domain);
+    const btns = [
+        html`<a class="dropdown-item show-list-muc-modal" role="button"
+                @click="${(ev) => {el.model.setDomain(domain); api.modal.show('converse-muc-list-modal', { 'model': el.model }, ev)}}"
+                data-toggle="modal"
+                data-target="#muc-list-modal">
+                    <converse-icon class="fa fa-list-ul" size="1em"></converse-icon>
+                    ${i18n_title_list_rooms}
+        </a>`,
+    ];
     return html`
     <div class="muc-domain-group" data-domain="${domain}">
-        <a href="#"
-           class="list-toggle muc-domain-group-toggle controlbox-padded"
-           title="${i18n_title}"
-           @click=${ev => el.toggleDomainList(ev, domain)}>
+        <div class="d-flex controlbox-padded">
+            <a href="#"
+               class="list-toggle muc-domain-group-toggle w-100"
+               title="${i18n_title}"
+               @click=${ev => el.toggleDomainList(ev, domain)}>
 
-            <converse-icon
-                class="fa ${ is_collapsed ? 'fa-caret-right' : 'fa-caret-down' }"
-                size="1em"
-                color="var(--muc-color)"></converse-icon>
-            ${domain}
-        </a>
+                <converse-icon
+                    class="fa ${ is_collapsed ? 'fa-caret-right' : 'fa-caret-down' }"
+                    size="1em"
+                    color="var(--muc-color)"></converse-icon>
+                ${domain}
+            </a>
+            <converse-dropdown class="btn-group dropstart" .items=${btns}></converse-dropdown>
+        </div>
         <ul class="items-list muc-domain-group-rooms ${ is_collapsed ? 'collapsed' : '' }" data-domain="${domain}">
             ${ rooms.map(room => tplRoomItem(el, room)) }
         </ul>

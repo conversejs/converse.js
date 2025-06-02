@@ -46,6 +46,11 @@ export function onMouseMove(ev: MouseEvent): boolean;
  * @param {MouseEvent} ev
  */
 export function onMouseUp(ev: MouseEvent): boolean;
+/**
+ * @param {import('@converse/headless/types/shared/chatbox').default} chatbox
+ * @param {boolean} should_destroy
+ */
+export function shouldDestroyOnClose(chatbox: import("@converse/headless/types/shared/chatbox").default, should_destroy: boolean): boolean;
 export type ResizingData = {
     chatbox: HTMLElement;
     direction: string;

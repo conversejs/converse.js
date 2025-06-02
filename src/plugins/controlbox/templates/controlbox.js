@@ -1,5 +1,6 @@
+import { html, nothing } from 'lit';
 import { _converse, api, converse, constants } from '@converse/headless';
-import { html } from 'lit';
+import { getChatStyle } from 'shared/chat/utils.js';
 
 const { Strophe } = converse.env;
 const { ANONYMOUS } = constants;
@@ -13,7 +14,6 @@ function whenNotConnected(el) {
     const connecting = [Strophe.Status.RECONNECTING, Strophe.Status.CONNECTING].includes(connection_status);
     const view_mode = api.settings.get('view_mode');
     const show_bg = api.settings.get('show_background');
-
     return html`
         ${show_bg && view_mode === 'fullscreen' ? html`<converse-bg></converse-bg>` : ''}
         <converse-controlbox-buttons class="controlbox-padded"></converse-controlbox-buttons>
@@ -34,7 +34,8 @@ function whenNotConnected(el) {
  * @param {import('../controlbox').default} el
  */
 export default (el) => {
-    return html`<div class="flyout box-flyout">
+    const style = getChatStyle(el.model);
+    return html`<div class="flyout box-flyout" style="${style || nothing}">
         <converse-dragresize></converse-dragresize>
         ${el.model.get('connected')
             ? html`<converse-user-profile></converse-user-profile>

@@ -9,7 +9,8 @@ describe('DiscoBrowser', function () {
             const { api } = _converse;
             await mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
-            cbview.querySelector('a.show-client-info')?.click();
+            const button = await u.waitUntil(() => cbview.querySelector('a.show-client-info'));
+            button.click();
             const modal = api.modal.get('converse-user-settings-modal');
             modal.tab = 'disco';
             await u.waitUntil(() => modal.querySelector('converse-disco-browser'));

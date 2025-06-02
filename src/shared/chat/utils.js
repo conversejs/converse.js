@@ -13,6 +13,20 @@ import tplNewDay from './templates/new-day.js';
 const { dayjs, u } = converse.env;
 const { convertASCII2Emoji, getShortnameReferences, getCodePointReferences } = u;
 
+export function isMobileViewport() {
+    return window.innerWidth <= 768;
+}
+
+/**
+ * @param {import('@converse/headless/types/shared/chatbox').default} model
+ */
+export function getChatStyle(model) {
+    if (isMobileViewport()) return '';
+    const { height, width } = model.toJSON();
+    const is_overlayed = api.settings.get('view_mode') === 'overlayed';
+    return is_overlayed ? `${width ? `width: ${width}px;` : ''}${height ? `height: ${height}px;` : ''}` : '';
+}
+
 /**
  * @param {Model} model
  */

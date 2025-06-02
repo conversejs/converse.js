@@ -89,7 +89,7 @@ describe("Notifications", function () {
                         .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
                     _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-                    await u.waitUntil(() => _converse.chatboxviews.keys().length === 2);
+                    await u.waitUntil(() => _converse.chatboxviews.keys().length === 1);
                     expect(_converse.chatboxviews.keys().includes('notify.example.com')).toBeTruthy();
                     expect(window.Notification).toHaveBeenCalled();
                 }));

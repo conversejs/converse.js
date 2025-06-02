@@ -6,10 +6,9 @@
  * @typedef {import('plugins/controlbox/controlbox').default} ControlBoxView
  * @typedef {import('plugins/headlines-view/view').default} HeadlinesFeedView
  */
-import { _converse, api, converse, u, constants } from '@converse/headless';
+import { _converse, api, u, constants } from '@converse/headless';
 import { __ } from 'i18n';
 
-const { dayjs } = converse.env;
 const { ACTIVE } = constants;
 
 /**

@@ -20,8 +20,6 @@ class ControlBoxView extends CustomElement {
         if (this.model.get('connected') && this.model.get('closed') === undefined) {
             this.model.set('closed', !api.settings.get('show_controlbox_by_default'));
         }
-        this.requestUpdate();
-
         /**
          * Triggered when the _converse.ControlBoxView has been initialized and therefore
          * exists. The controlbox contains the login and register forms when the user is
@@ -38,10 +36,6 @@ class ControlBoxView extends CustomElement {
         this.listenTo(_converse.state.connfeedback, 'change:connection_status', () => this.requestUpdate());
         this.listenTo(this.model, 'change:active-form', () => this.requestUpdate());
         this.listenTo(this.model, 'change:connected', () => this.requestUpdate());
-        this.listenTo(this.model, 'change:closed', () => {
-            this.requestUpdate();
-            if (!this.model.get('closed')) this.afterShown();
-        });
         this.requestUpdate();
     }
 
@@ -66,16 +60,6 @@ class ControlBoxView extends CustomElement {
         }
         u.safeSave(this.model, { closed: true });
         api.trigger('controlBoxClosed', this);
-        return this;
-    }
-
-    afterShown() {
-        /**
-         * Triggered once the controlbox has been opened
-         * @event _converse#controlBoxOpened
-         * @type {ControlBoxView}
-         */
-        api.trigger('controlBoxOpened', this);
         return this;
     }
 }

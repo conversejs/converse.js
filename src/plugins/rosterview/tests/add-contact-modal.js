@@ -67,7 +67,7 @@ describe("The 'Add Contact' widget", function () {
         });
 
         await mock.openControlBox(_converse);
-        const cbview = _converse.chatboxviews.get('controlbox');
+        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
         cbview.querySelector('.add-contact').click()
         const modal = _converse.api.modal.get('converse-add-contact-modal');
         await u.waitUntil(() => u.isVisible(modal), 1000);

@@ -61,28 +61,44 @@ export default class ChatBoxBase extends ModelWithMessages(Model) {
             return this;
         }
         // Overlayed view mode
-        u.safeSave(this, { hidden: false });
+        u.safeSave(this, { hidden: false, closed: false });
         this.trigger('show');
         return this;
+    }
+
+    async shouldDestroyOnClose() {
+        /**
+         * *Hook* which allows plugins to determine whether a chat should be destroyed when it's closed.
+         * For example, used by the converse-dragresize plugin to prevent resized chats
+         * from being destroyed, thereby losing the resize dimensions.
+         * @event _converse#shouldDestroyOnClose
+         * @param {ChatBoxBase} chatbox
+         * @param {boolean} should_destroy
+         */
+        return await api.hook('shouldDestroyOnClose', this, true);
     }
 
     /**
      * @param {Object} [_ev]
      */
     async close(_ev) {
-        try {
-            await new Promise((success, reject) => {
-                return this.destroy({
-                    success,
-                    error: (_m, e) => reject(e),
+        if (await this.shouldDestroyOnClose()) {
+            try {
+                await new Promise((success, reject) => {
+                    return this.destroy({
+                        success,
+                        error: (_m, e) => reject(e),
+                    });
                 });
-            });
-        } catch (e) {
-            log.debug(e);
-        } finally {
-            if (api.settings.get('clear_messages_on_reconnection')) {
-                await this.clearMessages();
+            } catch (e) {
+                log.debug(e);
             }
+        } else {
+            u.safeSave(this, { closed: true });
+        }
+
+        if (api.settings.get('clear_messages_on_reconnection')) {
+            await this.clearMessages();
         }
         /**
          * Triggered once a chatbox has been closed.

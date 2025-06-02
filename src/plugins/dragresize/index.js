@@ -1,5 +1,6 @@
 import './components/dragresize.js';
 import {
+    shouldDestroyOnClose,
     initializeDragResize,
     dragresizeOverIframeHandler,
     registerGlobalEventHandlers,
@@ -36,12 +37,12 @@ converse.plugins.add('converse-dragresize', {
         api.listen.on('headlinesFeedInitialized', initializeDragResize);
         api.listen.on('chatBoxInitialized', initializeDragResize);
         api.listen.on('chatRoomInitialized', initializeDragResize);
-
         api.listen.on('registeredGlobalEventHandlers', registerGlobalEventHandlers);
         api.listen.on('unregisteredGlobalEventHandlers', unregisterGlobalEventHandlers);
         api.listen.on('beforeShowingChatView', (view) => view.initDragResize().setDimensions());
         api.listen.on('startDiagonalResize', dragresizeOverIframeHandler);
         api.listen.on('startHorizontalResize', dragresizeOverIframeHandler);
         api.listen.on('startVerticalResize', dragresizeOverIframeHandler);
+        api.listen.on('shouldDestroyOnClose', shouldDestroyOnClose);
     },
 });

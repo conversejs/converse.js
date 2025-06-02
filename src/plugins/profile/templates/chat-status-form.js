@@ -31,7 +31,7 @@ export default (el) => {
                 />
                 <label class="form-check-label" for="radio-online">
                     <converse-icon size="1em" class="fa fa-circle chat-status chat-status--online"></converse-icon
-                    >${i18n_online}
+                    >&nbsp;${i18n_online}
                 </label>
             </div>
             <div class="form-check">
@@ -45,7 +45,7 @@ export default (el) => {
                 />
                 <label class="form-check-label" for="radio-busy">
                     <converse-icon size="1em" class="fa fa-minus-circle chat-status chat-status--busy"></converse-icon
-                    >${i18n_busy}
+                    >&nbsp;${i18n_busy}
                 </label>
             </div>
             <div class="form-check">
@@ -59,7 +59,7 @@ export default (el) => {
                 />
                 <label class="form-check-label" for="radio-away">
                     <converse-icon size="1em" class="fa fa-circle chat-status chat-status--away"></converse-icon
-                    >${i18n_away}
+                    >&nbsp;${i18n_away}
                 </label>
             </div>
             <div class="form-check">
@@ -73,7 +73,7 @@ export default (el) => {
                 />
                 <label class="form-check-label" for="radio-xa">
                     <converse-icon size="1em" class="far fa-circle chat-status chat-status--xa"></converse-icon
-                    >${i18n_xa}
+                    >&nbsp;${i18n_xa}
                 </label>
             </div>
         </div>

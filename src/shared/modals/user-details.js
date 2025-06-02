@@ -29,9 +29,7 @@ export default class UserDetailsModal extends BaseModal {
 
         if (this.model instanceof _converse.exports.ChatBox) {
             this.model.rosterContactAdded.then(() => this.registerContactEventHandlers(this.model.contact));
-            if (this.model.contact !== undefined) {
-                this.registerContactEventHandlers(this.model.contact);
-            }
+            this.registerContactEventHandlers(this.model.contact);
         } else {
             this.registerContactEventHandlers(this.model);
         }
@@ -70,6 +68,7 @@ export default class UserDetailsModal extends BaseModal {
      * @param {import('@converse/headless/types/plugins/roster/contact').default} contact
      */
     registerContactEventHandlers(contact) {
+        if (!contact) return; // happens during tests
         this.listenTo(contact, 'change', () => this.requestUpdate());
         this.listenTo(contact, 'destroy', () => this.close());
         this.listenTo(contact.vcard, 'change', () => this.requestUpdate());

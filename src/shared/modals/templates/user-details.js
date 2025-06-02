@@ -201,7 +201,7 @@ export function tplUserDetailsModal(el) {
         );
     }
 
-    const name = contact?.get('nickname') || contact.vcard?.get('fullname');
+    const name = contact?.get('nickname') || contact?.vcard?.get('fullname');
     const groups = contact?.get('groups') || [];
 
     return html`
@@ -289,8 +289,8 @@ export function tplUserDetailsModal(el) {
                           </div>
                       `
                     : ''}
-                ${contact.get('requesting') || !is_roster_contact || !contact ? html`<hr />` : ''}
-                ${contact.get('requesting')
+                ${contact?.get('requesting') || !is_roster_contact || !contact ? html`<hr />` : ''}
+                ${contact?.get('requesting')
                     ? html`<div class="row mb-2">
                           <div class="col-sm-4"><label>${__('Contact Request')}:</label></div>
                           <div class="col-sm-8">${tplAcceptButton(el)} ${tplDeclineButton(el)}</div>

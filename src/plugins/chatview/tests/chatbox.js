@@ -117,7 +117,7 @@ describe("Chatboxes", function () {
             api.connection.get()._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
             await u.waitUntil(() => message_promise);
-            expect(_converse.chatboxviews.keys().length).toBe(2);
+            expect(_converse.chatboxviews.keys().length).toBe(1);
             expect(_converse.chatboxviews.keys().pop()).toBe(sender_jid);
         }));
 
@@ -134,7 +134,7 @@ describe("Chatboxes", function () {
             const message_promise = new Promise(resolve => _converse.api.listen.on('message', resolve))
             api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => message_promise);
-            expect(_converse.chatboxviews.keys().length).toBe(1);
+            expect(_converse.chatboxviews.keys().length).toBe(0);
         }));
 
         it("is focused if its already open and you click on its corresponding roster item",
@@ -323,7 +323,7 @@ describe("Chatboxes", function () {
                 api.settings.set('visible_toolbar_buttons', Object.assign({}, buttons, {'call': true}));
 
                 await mock.openChatBoxFor(_converse, contact_jid);
-                view = _converse.chatboxviews.get(contact_jid);
+                view = await u.waitUntil(() => _converse.chatboxviews.get(contact_jid));
                 toolbar = view.querySelector('.chat-toolbar');
                 call_button = toolbar.querySelector('.toggle-call');
                 call_button.click();

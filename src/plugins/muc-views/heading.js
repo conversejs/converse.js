@@ -37,7 +37,7 @@ export default class MUCHeading extends CustomElement {
     }
 
     render () {
-        return (this.model && this.user_settings) ? tplMUCHead(this) : '';
+        return this.model ? tplMUCHead(this) : '';
     }
 
     /**

@@ -1,5 +1,6 @@
-import { html } from 'lit';
+import { html, nothing } from 'lit';
 import { api, constants } from '@converse/headless';
+import { getChatStyle } from 'shared/chat/utils';
 
 const { CHATROOMS_TYPE } = constants;
 
@@ -9,9 +10,11 @@ const { CHATROOMS_TYPE } = constants;
 export default (el) => {
     const help_messages = el.getHelpMessages();
     const show_help_messages = el.model.get('show_help_messages');
+    const is_overlayed = api.settings.get('view_mode') === 'overlayed';
+    const style = getChatStyle(el.model);
     return html`
-        <div class="flyout box-flyout">
-            ${api.settings.get('view_mode') === 'overlayed' ? html`<converse-dragresize></converse-dragresize>` : ''}
+        <div class="flyout box-flyout" style="${style || nothing}">
+            ${is_overlayed ? html`<converse-dragresize></converse-dragresize>` : ''}
             ${el.model
                 ? html`
                       <converse-chat-heading

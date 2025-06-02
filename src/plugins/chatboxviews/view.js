@@ -1,6 +1,6 @@
 import { api, _converse } from '@converse/headless';
-import tplChats from './templates/chats.js';
 import { CustomElement } from 'shared/components/element.js';
+import tplChats from './templates/chats.js';
 
 
 class ConverseChats extends CustomElement {

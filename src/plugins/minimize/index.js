@@ -60,7 +60,7 @@ converse.plugins.add('converse-minimize', {
 
         api.listen.on('chatBoxViewInitialized', view => trimChats(view));
         api.listen.on('chatRoomViewInitialized', view => trimChats(view));
-        api.listen.on('controlBoxOpened', view => trimChats(view));
+        api.listen.on('controlBoxInitialized', view => trimChats(view));
         api.listen.on('chatBoxInitialized', initializeChat);
         api.listen.on('chatRoomInitialized', initializeChat);
 

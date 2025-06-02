@@ -7,8 +7,9 @@ describe('The "Groupchats" List modal', function () {
     it('can be opened from a link in the "Groupchats" section of the controlbox',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             await mock.openControlBox(_converse);
-            const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
-            roomspanel.querySelector('.show-list-muc-modal').click();
+            const cbview = _converse.chatboxviews.get('controlbox');
+            const button = await u.waitUntil(() => cbview.querySelector('converse-rooms-list .show-list-muc-modal'));
+            button.click();
             mock.closeControlBox(_converse);
             const modal = _converse.api.modal.get('converse-muc-list-modal');
             await u.waitUntil(() => u.isVisible(modal), 1000);
@@ -87,8 +88,9 @@ describe('The "Groupchats" List modal', function () {
     it('is pre-filled with the muc_domain',
         mock.initConverse(['chatBoxesFetched'], { 'muc_domain': 'muc.example.org' }, async function (_converse) {
             await mock.openControlBox(_converse);
-            const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
-            roomspanel.querySelector('.show-list-muc-modal').click();
+            const cbview = _converse.chatboxviews.get('controlbox');
+            const button = await u.waitUntil(() => cbview.querySelector('converse-rooms-list .show-list-muc-modal'));
+            button.click();
             mock.closeControlBox(_converse);
             const modal = _converse.api.modal.get('converse-muc-list-modal');
             await u.waitUntil(() => u.isVisible(modal), 1000);
@@ -103,8 +105,9 @@ describe('The "Groupchats" List modal', function () {
             { 'muc_domain': 'chat.shakespeare.lit', 'locked_muc_domain': true },
             async function (_converse) {
                 await mock.openControlBox(_converse);
-                const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
-                roomspanel.querySelector('.show-list-muc-modal').click();
+                const cbview = _converse.chatboxviews.get('controlbox');
+                const button = await u.waitUntil(() => cbview.querySelector('converse-rooms-list .show-list-muc-modal'));
+                button.click();
                 mock.closeControlBox(_converse);
                 const modal = _converse.api.modal.get('converse-muc-list-modal');
                 await u.waitUntil(() => u.isVisible(modal), 1000);

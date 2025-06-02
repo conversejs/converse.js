@@ -15,7 +15,7 @@ describe("A sent presence stanza", function () {
         mock.openControlBox(_converse);
         spyOn(_converse.api.connection.get(), 'send').and.callThrough();
 
-        const cbview = _converse.chatboxviews.get('controlbox');
+        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
         const change_status_el = await u.waitUntil(() => cbview.querySelector('.change-status'));
         change_status_el.click()
         let modal = _converse.api.modal.get('converse-profile-modal');

@@ -178,12 +178,23 @@ export function onMouseUp(ev) {
     const height = applyDragResistance(resizing.chatbox.height, resizing.chatbox.model.get('default_height'));
     const width = applyDragResistance(resizing.chatbox.width, resizing.chatbox.model.get('default_width'));
     if (api.connection.connected()) {
-        resizing.chatbox.model.save({ 'height': height });
-        resizing.chatbox.model.save({ 'width': width });
+        resizing.chatbox.model.save({ height });
+        resizing.chatbox.model.save({ width });
     } else {
-        resizing.chatbox.model.set({ 'height': height });
-        resizing.chatbox.model.set({ 'width': width });
+        resizing.chatbox.model.set({ height });
+        resizing.chatbox.model.set({ width });
     }
     delete resizing.chatbox;
     delete resizing.direction;
+}
+
+/**
+ * @param {import('@converse/headless/types/shared/chatbox').default} chatbox
+ * @param {boolean} should_destroy
+ */
+export function shouldDestroyOnClose(chatbox, should_destroy) {
+    if (chatbox.get('height') || chatbox.get('width')) {
+        return false;
+    }
+    return should_destroy;
 }

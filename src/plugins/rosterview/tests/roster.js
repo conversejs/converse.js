@@ -916,7 +916,7 @@ describe("The Contacts Roster", function () {
 
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
-            const icon_el = document.querySelector('converse-roster-contact converse-icon');
+            const icon_el = await u.waitUntil(() => document.querySelector('converse-roster-contact converse-icon'));
             expect(icon_el.getAttribute('color')).toBe('var(--chat-status-offline)');
 
             let pres = stx`<presence from="mercutio@montague.lit/resource" xmlns="jabber:client"/>`;

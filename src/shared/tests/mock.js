@@ -419,7 +419,7 @@ async function receiveOwnMUCPresence (_converse, muc_jid, nick, affiliation='own
 
 async function openAddMUCModal (_converse) {
     await mock.openControlBox(_converse);
-    const controlbox = _converse.chatboxviews.get('controlbox');
+    const controlbox = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
     controlbox.querySelector('converse-rooms-list .show-add-muc-modal').click();
     const modal = _converse.api.modal.get('converse-add-muc-modal');
     await u.waitUntil(() => u.isVisible(modal), 1000);

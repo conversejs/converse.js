@@ -139,6 +139,7 @@ export default class ChatBoxBase extends ChatBoxBase_base {
      * @param {boolean} force
      */
     maybeShow(force: boolean): this;
+    shouldDestroyOnClose(): Promise<any>;
     /**
      * @param {Object} [_ev]
      */

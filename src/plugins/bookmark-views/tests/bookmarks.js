@@ -108,7 +108,7 @@ describe("Bookmarks", function () {
             ['Second bookmark', "The Play's the Thing", 'Yet another bookmark']
         );
         expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
-        expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(2);
+        expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(1);
 
         // Check that MUC is left when autojoin is set to false
         stanza = stx`<message from="romeo@montague.lit"
@@ -143,7 +143,7 @@ describe("Bookmarks", function () {
             ['Second bookmark', "The Play's the Thing", 'Yet another bookmark']
         );
         expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).toBeUndefined();
-        expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(1);
+        expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(0);
     }));
 
     it("can be retrieved from the XMPP server", mock.initConverse(

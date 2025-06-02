@@ -3,7 +3,7 @@ import api from './api/index.js';
 import { isUniView } from '../utils/session.js';
 import _converse from './_converse.js';
 import converse from './api/public.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import ModelWithMessages from './model-with-messages.js';
 
 const { u } = converse.env;
@@ -24,7 +24,7 @@ export default class ChatBoxBase extends ModelWithMessages(Model) {
             // but we're in embedded mode.
             return;
         }
-        this.set({'box_id': `box-${jid}`});
+        this.set({ 'box_id': `box-${jid}` });
     }
 
     validate(attrs) {

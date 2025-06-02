@@ -20,7 +20,7 @@ function tplUserSettingsButton(el) {
  * @param {import('../buttons').default} el
  */
 function tplCloseButton(el) {
-    return html` <a class="controlbox-heading__btn close align-self-center" @click=${(ev) => el.closeControlBox(ev)}>
+    return html`<a class="controlbox-heading__btn close align-self-center" @click=${(ev) => el.closeControlBox(ev)}>
         <converse-icon class="fa fa-times" size="1em"></converse-icon>
     </a>`;
 }
@@ -31,8 +31,10 @@ function tplCloseButton(el) {
 export default (el) => {
     const is_connected = el.model.get('connected');
     const show_settings_button = api.settings.get('show_client_info') || api.settings.get('allow_adhoc_commands');
-    return html`<div class="btn-toolbar g-0">
-        ${is_connected && show_settings_button ? tplUserSettingsButton(el) : ''}
-        ${api.settings.get('sticky_controlbox') ? '' : tplCloseButton(el)}
-    </div>`;
+    return html`<div class="btn-toolbar g-0" role="toolbar">
+            <div class="btn-group" role="group">
+                ${is_connected && show_settings_button ? tplUserSettingsButton(el) : ''}
+                ${api.settings.get('sticky_controlbox') ? '' : tplCloseButton(el)}
+            </div>
+        </div>`;
 };

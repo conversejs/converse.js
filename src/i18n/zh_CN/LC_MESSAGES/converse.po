@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-02 14:03+0200\n"
-"PO-Revision-Date: 2025-05-21 07:47+0000\n"
+"PO-Revision-Date: 2025-06-03 10:35+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -833,25 +833,24 @@ msgstr "角色已更改"
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:89007
 msgid "Moderator Tools"
-msgstr "审核工具"
+msgstr "主持人工具"
 
 #: dist/converse-no-dependencies.js:89424
 #: dist/converse-no-dependencies.js:89426
-#, fuzzy
 msgid "Invitation to a groupchat"
-msgstr "邀请某人加入此群聊"
+msgstr "群聊邀请"
 
 #: dist/converse-no-dependencies.js:89424
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has invited you to join the groupchat \"%2$s\""
-msgstr "%1$s 邀请您加入群聊：%2$s"
+msgstr "%1$s 邀请您加入群聊“%2$s”"
 
 #: dist/converse-no-dependencies.js:89426
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "%1$s has invited you to join the groupchat \"%2$s\", and left the following "
 "reason: \"%3$s\""
-msgstr "%1$s 邀请您加入群聊：%2$s，并且留下原因：“%3$s”"
+msgstr "%1$s 邀请您加入群聊“%2$s”并留下原因：“%3$s”"
 
 #: dist/converse-no-dependencies.js:89455
 msgid "Are you sure you want to destroy this groupchat?"
@@ -1217,19 +1216,19 @@ msgstr "抱歉，尝试取消屏蔽 %1$s 时出错"
 
 #: dist/converse-no-dependencies.js:100147
 msgid "Neither of you receive presence updates"
-msgstr ""
+msgstr "双方都无法接收在线状态更新"
 
 #: dist/converse-no-dependencies.js:100149
 msgid "Only you receive presence updates"
-msgstr ""
+msgstr "仅您可接收在线状态更新"
 
 #: dist/converse-no-dependencies.js:100151
 msgid "Only they receive presence updates"
-msgstr ""
+msgstr "仅对方可接收在线状态更新"
 
 #: dist/converse-no-dependencies.js:100153
 msgid "Both of you receive presence updates"
-msgstr ""
+msgstr "双方均可接收在线状态更新"
 
 #: dist/converse-no-dependencies.js:100163
 msgid "Remove from blocklist"
@@ -1295,7 +1294,7 @@ msgstr "个人资料"
 
 #: dist/converse-no-dependencies.js:100286
 msgid "Presence"
-msgstr ""
+msgstr "在线状态"
 
 #: dist/converse-no-dependencies.js:100288
 #: dist/converse-no-dependencies.js:144334
@@ -1573,32 +1572,31 @@ msgstr "显示关于此聊天客户端的详情"
 
 #: dist/converse-no-dependencies.js:111818
 msgid "Discover Services"
-msgstr ""
+msgstr "发现服务"
 
 #: dist/converse-no-dependencies.js:111820
 msgid "Inspect"
-msgstr ""
+msgstr "查看"
 
 #: dist/converse-no-dependencies.js:111820
 msgid "Service"
-msgstr ""
+msgstr "服务"
 
 #: dist/converse-no-dependencies.js:111831
-#, fuzzy
 msgid "Identities"
-msgstr "活动"
+msgstr "身份"
 
 #: dist/converse-no-dependencies.js:111832
 msgid "Type"
-msgstr ""
+msgstr "类型"
 
 #: dist/converse-no-dependencies.js:111832
 msgid "Category"
-msgstr ""
+msgstr "类别"
 
 #: dist/converse-no-dependencies.js:111836
 msgid "Items"
-msgstr ""
+msgstr "项目"
 
 #: dist/converse-no-dependencies.js:111843
 #: dist/converse-no-dependencies.js:123746
@@ -1606,14 +1604,13 @@ msgid "Features"
 msgstr "特征"
 
 #: dist/converse-no-dependencies.js:112410
-#, fuzzy
 msgid "No service found with that XMPP address"
-msgstr "聊天室地址"
+msgstr "未找到具有该 XMPP 地址的服务"
 
 #: dist/converse-no-dependencies.js:112414
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: %1$s"
-msgstr "错误"
+msgstr "错误：%1$s"
 
 #: dist/converse-no-dependencies.js:112989
 msgid "Close these announcements"
@@ -2330,9 +2327,8 @@ msgid "offline"
 msgstr "离线"
 
 #: dist/converse-no-dependencies.js:127672
-#, fuzzy
 msgid "Set status"
-msgstr "自定义状态"
+msgstr "设置状态"
 
 #: dist/converse-no-dependencies.js:127673
 msgid "Away for long"
@@ -2357,7 +2353,6 @@ msgid ""
 msgstr "使用逗号分隔多个角色。您的角色会显示在聊天消息中您的名称旁边。"
 
 #: dist/converse-no-dependencies.js:127774
-#, fuzzy
 msgid "Status"
 msgstr "状态"
 
@@ -2379,7 +2374,7 @@ msgstr "个人资料已成功更新"
 
 #: dist/converse-no-dependencies.js:128498
 msgid "Status updated"
-msgstr ""
+msgstr "状态已更新"
 
 #: dist/converse-no-dependencies.js:128529
 msgid "Are you sure you want to log out?"
@@ -2395,7 +2390,7 @@ msgstr "命令"
 
 #: dist/converse-no-dependencies.js:128592
 msgid "Services"
-msgstr ""
+msgstr "服务"
 
 #: dist/converse-no-dependencies.js:128611
 #, javascript-format
@@ -2418,9 +2413,8 @@ msgid "I am %1$s"
 msgstr "我%1$s"
 
 #: dist/converse-no-dependencies.js:128785
-#, fuzzy
 msgid "Update your profile"
-msgstr "您的个人资料"
+msgstr "更新您的个人资料"
 
 #: dist/converse-no-dependencies.js:128786
 msgid "Click to change your chat status"
@@ -2961,46 +2955,40 @@ msgstr "抱歉，出了点问题"
 #: dist/converse-no-dependencies.js:144998
 #, javascript-format
 msgid "%1$s blocked users shown"
-msgstr ""
+msgstr "显示 %1$s 位已屏蔽的用户"
 
 #: dist/converse-no-dependencies.js:144998
-#, fuzzy
 msgid "Unblock selected users"
-msgstr "取消屏蔽此用户"
+msgstr "取消屏蔽所选用户"
 
 #: dist/converse-no-dependencies.js:144998
-#, fuzzy
 msgid "Filter blocked users"
-msgstr "取消屏蔽用户"
+msgstr "筛选已屏蔽的用户"
 
 #: dist/converse-no-dependencies.js:145005
 msgid "clear"
-msgstr ""
+msgstr "清除"
 
 #: dist/converse-no-dependencies.js:145007
-#, fuzzy
 msgid "Select All"
 msgstr "全选"
 
 #: dist/converse-no-dependencies.js:145019
-#, fuzzy
 msgid "No blocked XMPP addresses"
-msgstr "XMPP 地址"
+msgstr "没有已屏蔽的 XMPP 地址"
 
 #: dist/converse-no-dependencies.js:145576
-#, fuzzy
 msgid "Blocklist"
-msgstr "添加到屏蔽列表"
+msgstr "屏蔽列表"
 
 #: dist/converse-no-dependencies.js:145601
 #, javascript-format
 msgid "Successfully unblocked %1$s XMPP addresses"
-msgstr ""
+msgstr "已成功取消屏蔽 %1$s 个 XMPP 地址"
 
 #: dist/converse-no-dependencies.js:145601
-#, fuzzy
 msgid "Successfully unblocked one XMPP address"
-msgstr "搜索名称或 XMPP 地址"
+msgstr "已成功取消屏蔽一个 XMPP 地址"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:145698
@@ -3036,9 +3024,8 @@ msgid "Add a contact"
 msgstr "添加联系人"
 
 #: dist/converse-no-dependencies.js:145807
-#, fuzzy
 msgid "Show block list"
-msgstr "添加到屏蔽列表"
+msgstr "显示屏蔽列表"
 
 #: dist/converse-no-dependencies.js:145841
 msgid "Re-sync contacts"

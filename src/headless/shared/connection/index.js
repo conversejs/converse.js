@@ -280,7 +280,7 @@ export class Connection extends Strophe.Connection {
     }
 
     async finishDisconnection () {
-        this.setConnectionStatus(Strophe.Status.DISCONNECTED);
+        this.setConnectionStatus(Strophe.Status.DISCONNECTED, this.disconnection_reason);
         const { api } = _converse;
         // Properly tear down the session so that it's possible to manually connect again.
         log.debug('DISCONNECTED');

@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-03 12:38+0200\n"
 "PO-Revision-Date: 2025-06-04 11:01+0000\n"
-"Last-Translator: \"Mr. EddX\" <mreddx@chatrix.one>\n"
+"Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/bg/>\n"
 "Language: bg\n"
@@ -1608,9 +1608,8 @@ msgid "Click here to log in anonymously"
 msgstr "Натиснете тук, за да влезете анонимно"
 
 #: dist/converse-no-dependencies.js:110055
-#, fuzzy
 msgid "Chat"
-msgstr "Приказлив(а)"
+msgstr "Чат"
 
 #: dist/converse-no-dependencies.js:110683
 msgid "About Converse"

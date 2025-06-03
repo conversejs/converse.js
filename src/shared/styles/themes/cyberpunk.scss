@@ -20,6 +20,7 @@
     --red: #e44c55;
     --red-rgb: 228, 76, 84;
     --teal: #3f81a2;
+    --teal-rgb: 63, 130, 162;
     --white: #efefef;
     --yellow: #ffc107;
     --yellow-rgb: 255, 193, 7;
@@ -31,8 +32,6 @@
     --background-color-lighter: #2c174c;
     --foreground-color: var(--white);
 
-    --chat-rgb: var(--green-rgb);
-    --muc-rgb: var(--orange-rgb);
 
     // Bootstrap variables
     --primary-color: var(--pink) !important;
@@ -100,7 +99,6 @@
     --error-color: var(--red);
     --focus-color: var(--secondary-color);
     --heading-color: var(--purple);
-    --headlines-color: var(--indigo);
     --link-color: var(--cyan);
     --subdued-color: gray;
 
@@ -113,13 +111,21 @@
 
     // 1:1 Chat-related colors
     --chat-color: var(--green);
+    --chat-rgb: var(--green-rgb);
     --chat-header-fg-color: var(--chat-color);
     --chat-header-bg-color: var(--background-color);
 
     // MUC-related colors
     --muc-color: var(--orange);
+    --muc-rgb: var(--orange-rgb);
     --muc-header-fg-color: var(--muc-color);
     --muc-header-bg-color: var(--background-color);
+
+    // Headlines-related colors
+    --headlines-color: var(--teal);
+    --headlines-rgb: var(--teal-rgb);
+    --headlines-header-fg-color: var(--headlines-color);
+    --headlines-header-bg-color: var(--background-color);
 
     // Derived colors
     // --------------
@@ -257,7 +263,17 @@
             0 0 4rem rgba(var(--chat-rgb), 0.1) !important;
     }
 
-    .chat-head-chatbox {
+    converse-headlines-heading {
+        box-shadow:
+            0 0 1rem 0rem rgba(var(--headlines-rgb), 0.5) inset,
+            0 0 2rem 0rem rgba(var(--headlines-rgb), 0.4) inset,
+            0 0 4rem 2rem rgba(var(--headlines-rgb), 0.2) inset,
+            0 0 1rem 0rem rgba(var(--headlines-rgb), 0.4),
+            0 0 2rem 0rem rgba(var(--headlines-rgb), 0.2),
+            0 0 4rem 0rem rgba(var(--headlines-rgb), 0.1) !important;
+    }
+
+    converse-chat-heading {
         box-shadow:
             0 0 1rem 0rem rgba(var(--chat-rgb), 0.5) inset,
             0 0 2rem 0rem rgba(var(--chat-rgb), 0.4) inset,

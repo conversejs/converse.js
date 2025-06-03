@@ -78,7 +78,6 @@
     --error-color: var(--red);
     --focus-color: var(--light-blue);
     --heading-color: var(--light-blue);
-    --headlines-color: var(--orange);
     --link-color: #2D3991;
     --subdued-color: gray;
 
@@ -98,6 +97,11 @@
     --muc-color: var(--redder-orange);
     --muc-header-fg-color: var(--background-color);
     --muc-header-bg-color: var(--muc-color);
+
+    // Headlines related colors
+    --headlines-color: var(--orange);
+    --headlines-header-fg-color: var(--background-color);
+    --headlines-header-bg-color: var(--headlines-color);
 
     // Derived colors
     // --------------

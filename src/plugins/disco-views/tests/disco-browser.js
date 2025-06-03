@@ -1,6 +1,6 @@
 const { u } = converse.env;
 
-fdescribe('DiscoBrowser', function () {
+describe('DiscoBrowser', function () {
     beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
     it(

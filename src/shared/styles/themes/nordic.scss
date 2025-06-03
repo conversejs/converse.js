@@ -102,7 +102,6 @@
     --error-color: var(--red);
     --focus-color: var(--secondary-color);
     --heading-color: var(--purple);
-    --headlines-color: var(--yellow);
     --link-color: var(--blue-2);
     --subdued-color: gray;
 
@@ -126,6 +125,11 @@
     --muc-color: var(--orange);
     --muc-header-fg-color: var(--background-color);
     --muc-header-bg-color: var(--muc-color);
+
+    // Headlines-related colors
+    --headlines-color: var(--purple);
+    --headlines-header-fg-color: var(--background-color);
+    --headlines-header-bg-color: var(--headlines-color);
 
     // Derived colors
     // --------------

@@ -16,7 +16,7 @@ function tplTrustCheckbox(checked) {
         'To improve performance, we cache your data in this browser. ' +
             'Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. ' +
             "It's important that you explicitly log out, otherwise not all cached data might be deleted. " +
-            'Please note, when using an untrusted device, OMEMO encryption is NOT available.'
+            'Please note, when using an untrusted device, OMEMO encryption is NOT available.',
     );
     const i18n_trusted = __('This is a trusted device');
     return html`
@@ -72,6 +72,10 @@ function tplPasswordInput() {
     `;
 }
 
+function tplDomain(domain) {
+    return html` <span class="input-group-text addon" id="basic-addon2">@${domain}</span> `;
+}
+
 function tplAuthFields() {
     const authentication = api.settings.get('authentication');
     const i18n_login = __('Log in');
@@ -84,16 +88,19 @@ function tplAuthFields() {
     return html`
         <div class="mb-3">
             <label for="converse-login-jid" class="form-label">${i18n_xmpp_address}:</label>
-            <input
-                id="converse-login-jid"
-                ?autofocus=${api.settings.get('auto_focus') ? true : false}
-                value="${api.settings.get('jid') ?? ''}"
-                required
-                class="form-control"
-                type="text"
-                name="jid"
-                placeholder="${placeholder_username}"
-            />
+            <div class="input-group">
+                <input
+                    id="converse-login-jid"
+                    ?autofocus=${api.settings.get('auto_focus') ? true : false}
+                    value="${api.settings.get('jid') ?? ''}"
+                    required
+                    class="form-control"
+                    type="text"
+                    name="jid"
+                    placeholder="${placeholder_username}"
+                />
+                ${locked_domain || default_domain ? tplDomain(locked_domain || default_domain) : ''}
+            </div>
         </div>
         ${authentication !== EXTERNAL ? tplPasswordInput() : ''}
         ${api.settings.get('show_connection_url_input') ? tplConnectionURLInput() : ''}

@@ -1,11 +1,11 @@
+import { _converse, api, converse } from "@converse/headless";
 import './modals/config.js';
 import './modals/muc-details.js';
 import './modals/nickname.js';
-import tplMUCHead from './templates/muc-head.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless";
 import { destroyMUC, showModeratorToolsModal } from './utils.js';
+import tplMUCHead from './templates/muc-head.js';
 
 import './styles/muc-head.scss';
 

@@ -19,18 +19,11 @@ class Profile extends CustomElement {
 
     /**
      * @param {MouseEvent} ev
+     * @param {'status'|'profile'} tab
      */
-    showProfileModal (ev) {
+    showProfileModal (ev, tab='status') {
         ev?.preventDefault();
-        api.modal.show('converse-profile-modal', { model: this.model }, ev);
-    }
-
-    /**
-     * @param {MouseEvent} ev
-     */
-    showStatusChangeModal (ev) {
-        ev?.preventDefault();
-        api.modal.show('converse-chat-status-modal', { model: this.model }, ev);
+        api.modal.show('converse-profile-modal', { model: this.model, tab }, ev);
     }
 }
 

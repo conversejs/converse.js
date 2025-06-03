@@ -47,17 +47,6 @@ export function clearSession() {
     }
 }
 
-/**
- * @param {MouseEvent} ev
- */
-export async function logOut(ev) {
-    ev?.preventDefault();
-    const result = await api.confirm(__('Confirm'), __('Are you sure you want to log out?'));
-    if (result) {
-        api.user.logout();
-    }
-}
-
 export function onChatBoxesFetched() {
     const controlbox = _converse.state.chatboxes.get('controlbox') || addControlBox();
     controlbox.save({ 'connected': true });

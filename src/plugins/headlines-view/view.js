@@ -1,10 +1,8 @@
 import BaseChatView from 'shared/chat/baseview.js';
-import tplHeadlines from './templates/headlines.js';
 import { _converse, api } from '@converse/headless';
-
+import tplHeadlines from './templates/headlines.js';
 
 class HeadlinesFeedView extends BaseChatView {
-
     async initialize() {
         const { chatboxviews, chatboxes } = _converse.state;
         chatboxviews.add(this.jid, this);
@@ -16,7 +14,7 @@ class HeadlinesFeedView extends BaseChatView {
         this.listenTo(this.model.messages, 'remove', () => this.requestUpdate());
         this.listenTo(this.model.messages, 'reset', () => this.requestUpdate());
 
-        document.addEventListener('visibilitychange',  () => this.onWindowStateChanged());
+        document.addEventListener('visibilitychange', () => this.onWindowStateChanged());
 
         await this.model.messages.fetched;
         this.model.maybeShow();
@@ -29,14 +27,14 @@ class HeadlinesFeedView extends BaseChatView {
         api.trigger('headlinesBoxViewInitialized', this);
     }
 
-    render () {
-        return tplHeadlines(this.model);
+    render() {
+        return tplHeadlines(this);
     }
 
     /**
      * @param {Event} ev
      */
-    async close (ev) {
+    async close(ev) {
         ev?.preventDefault?.();
         if (location.hash === 'converse/chat?jid=' + this.model.get('jid')) {
             history.pushState(null, '', window.location.pathname);
@@ -45,13 +43,14 @@ class HeadlinesFeedView extends BaseChatView {
         return this;
     }
 
-    getNotifications () { // eslint-disable-line class-methods-use-this
+    getNotifications() {
+        // eslint-disable-line class-methods-use-this
         // Override method in ChatBox. We don't show notifications for
         // headlines boxes.
         return [];
     }
 
-    afterShown () {
+    afterShown() {
         this.model.clearUnreadMsgCounter();
     }
 }

@@ -2,12 +2,11 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import { api, converse } from '@converse/headless';
 import '../modal/index.js';
-import './modals/chat-status.js';
 import './modals/profile.js';
 import './modals/user-settings.js';
 import './statusview.js';
-import { api, converse } from '@converse/headless';
 
 converse.plugins.add('converse-profile', {
     dependencies: [
@@ -19,6 +18,6 @@ converse.plugins.add('converse-profile', {
     ],
 
     initialize () {
-        api.settings.extend({ 'show_client_info': true });
+        api.settings.extend({ show_client_info: true });
     },
 });

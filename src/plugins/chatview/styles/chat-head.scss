@@ -3,7 +3,6 @@
         .chat-head {
             display: flex;
             flex-direction: row;
-            color: #ffffff;
             font-size: 100%;
             margin: 0;
             padding: 0;
@@ -63,7 +62,6 @@
             }
 
             .chatbox-btn {
-                color: white;
                 &:active {
                     position: relative;
                     top: 1px;

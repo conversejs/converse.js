@@ -15,7 +15,9 @@ export default () => {
     const connection = api.connection.get();
     const logged_out = !connection?.connected || !connection?.authenticated || connection?.disconnecting;
     const connection_status = connfeedback.get('connection_status');
-    const connecting = ['CONNECTED', 'CONNECTING', 'AUTHENTICATING', 'RECONNECTING'].includes(CONNECTION_STATUS[connection_status]);
+    const connecting = ['CONNECTED', 'CONNECTING', 'AUTHENTICATING', 'RECONNECTING'].includes(
+        CONNECTION_STATUS[connection_status]
+    );
 
     return html`
         ${!logged_out && view_mode === 'overlayed'

@@ -233,7 +233,7 @@
                 }
 
                 .flyout {
-                    border-inline-end: 0.2rem solid var(--controlbox-color);
+                    border-inline-end: 0.1rem solid var(--controlbox-color);
                     border-radius: 0;
                     width: 100%;
                     z-index: 1;
@@ -303,16 +303,6 @@
 
 @include media-breakpoint-down(sm) {
     .conversejs {
-        &.converse-overlayed {
-            .converse-chatboxes {
-                .chatbox {
-                    .box-flyout {
-                        margin-left: -1em !important;
-                    }
-                }
-            }
-        }
-
         &.converse-fullscreen,
         &.converse-overlayed {
             left: 0;

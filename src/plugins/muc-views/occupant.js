@@ -67,7 +67,7 @@ export default class MUCOccupant extends CustomElement {
     addToContacts() {
         const model = this.model;
         const jid = model.get('jid');
-        if (jid) api.modal.show('converse-add-contact-modal', { model: new Model({ jid }) });
+        if (jid) api.modal.show('converse-add-contact-modal', { state: new Model({ jid }) });
     }
 
     /**

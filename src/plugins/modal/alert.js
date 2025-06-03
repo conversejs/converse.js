@@ -7,16 +7,15 @@ export default class Alert extends BaseModal {
 
     initialize () {
         super.initialize();
-        this.listenTo(this.model, 'change', () => this.requestUpdate())
         this.addEventListener('hide.bs.modal', () => this.remove(), false);
     }
 
     renderModal () {
-        return tplAlertModal(this.model.toJSON());
+        return tplAlertModal(this.state.toJSON());
     }
 
     getModalTitle () {
-        return this.model.get('title');
+        return this.state.get('title');
     }
 }
 

@@ -1,9 +1,12 @@
+import { html } from 'lit';
 import { Model } from '@converse/skeletor';
 import { _converse, api, log } from '@converse/headless';
-import { compressImage, isImageWithAlphaChannel } from 'utils/file.js';
-import BaseModal from 'plugins/modal/modal.js';
 import { __ } from 'i18n';
+import BaseModal from 'plugins/modal/modal.js';
+import { compressImage } from 'utils/file.js';
 import '../password-reset.js';
+import { modal_close_button } from 'plugins/modal/templates/buttons.js';
+import tplLogoutButton from '../templates/logout_button.js';
 import tplProfileModal from '../templates/profile_modal.js';
 
 import './styles/profile.scss';
@@ -12,11 +15,14 @@ export default class ProfileModal extends BaseModal {
     /**
      * @typedef {import('@converse/headless/types/plugins/vcard/types').VCardData} VCardData
      * @typedef {import("@converse/headless").Profile} Profile
+     * @typedef {import("lit").TemplateResult} TemplateResult
      */
 
     static properties = {
         _submitting: { state: true },
+        _show_clear_button: { type: Boolean, state: true },
         model: { type: Model },
+        tab: { type: String },
     };
 
     /**
@@ -24,12 +30,21 @@ export default class ProfileModal extends BaseModal {
      */
     constructor(options) {
         super(options);
-        this.tab = 'profile';
+        this.tab = 'status';
+        this._show_clear_button = false;
     }
 
     initialize() {
         super.initialize();
         this.listenTo(this.model, 'change', this.render);
+        this.addEventListener(
+            'shown.bs.modal',
+            () => {
+                /** @type {HTMLInputElement} */ (this.querySelector('input[name="status_message"]'))?.focus();
+            },
+            false
+        );
+
         /**
          * Triggered when the _converse.ProfileModal has been created and initialized.
          * @event _converse#profileModalInitialized
@@ -39,12 +54,35 @@ export default class ProfileModal extends BaseModal {
         api.trigger('profileModalInitialized', this.model);
     }
 
-    renderModal() {
-        return tplProfileModal(this);
+    /**
+     * @param {Map<string, boolean>} changed - A map of changed properties.
+     */
+    willUpdate(changed) {
+        if (changed.has('model')) {
+            this._show_clear_button = !!this.model.get('status_message');
+        }
     }
 
     getModalTitle() {
         return __('Your Profile');
+    }
+
+    /**
+     * @returns {TemplateResult}
+     */
+    renderModal() {
+        return tplProfileModal(this);
+    }
+
+    /**
+     * @returns {TemplateResult|String}
+     */
+    renderModalFooter() {
+        return api.settings.get('allow_logout')
+            ? html`<div class="modal-footer d-flex justify-content-between">
+                  ${modal_close_button} ${tplLogoutButton(this)}
+              </div>`
+            : '';
     }
 
     /**
@@ -70,7 +108,7 @@ export default class ProfileModal extends BaseModal {
     /**
      * @param {SubmitEvent} ev
      */
-    async onFormSubmitted(ev) {
+    async onProfileFormSubmitted(ev) {
         ev.preventDefault();
         this._submitting = true;
 
@@ -109,6 +147,51 @@ export default class ProfileModal extends BaseModal {
                 api.toast.show('vcard-updated', { type: 'success', body: __('Profile updated successfully') });
             }
             this._submitting = false;
+        }
+    }
+
+    /**
+     * @param {SubmitEvent} ev
+     */
+    onStatusFormSubmitted(ev) {
+        ev.preventDefault();
+        const data = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+        let show, presence;
+        const chat_status = data.get('chat_status');
+        if (chat_status === 'online') {
+            presence = 'online';
+        } else {
+            show = chat_status;
+        }
+        this.model.save({
+            status_message: data.get('status_message'),
+            presence,
+            show,
+        });
+        this.alert(__('Status updated'), 'info');
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    clearStatusMessage(ev) {
+        if (ev && ev.preventDefault) {
+            ev.preventDefault();
+        }
+        this._show_clear_button = false;
+        const roster_filter = /** @type {HTMLInputElement} */ (this.querySelector('input[name="status_message"]'));
+        roster_filter.value = '';
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    async logOut(ev) {
+        ev?.preventDefault();
+        this.close();
+        const result = await api.confirm(__('Confirm'), __('Are you sure you want to log out?'));
+        if (result) {
+            api.user.logout();
         }
     }
 }

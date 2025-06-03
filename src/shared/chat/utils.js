@@ -16,7 +16,7 @@ const { convertASCII2Emoji, getShortnameReferences, getCodePointReferences } = u
 /**
  * @param {Model} model
  */
-export function getUnreadMsgsDisplay (model) {
+export function getUnreadMsgsDisplay(model) {
     const num_unread = model.get('num_unread') || 0;
     return num_unread < 100 ? num_unread : '99+';
 }
@@ -25,17 +25,18 @@ export function getUnreadMsgsDisplay (model) {
  * @param {Promise<HeadingButtonAttributes>|HeadingButtonAttributes} promise_or_data
  * @returns {Promise<TemplateResult|''>}
  */
-export async function getHeadingDropdownItem (promise_or_data) {
+export async function getHeadingDropdownItem(promise_or_data) {
     const data = await promise_or_data;
     return data
         ? html`
-              <a href="#" role="button"
-                class="dropdown-item ${data.a_class}"
-                @click=${data.handler} title="${data.i18n_title}">
-                  <converse-icon
-                      size="1em"
-                      class="fa ${data.icon_class}"
-                  ></converse-icon>
+              <a
+                  href="#"
+                  role="button"
+                  class="dropdown-item ${data.a_class}"
+                  @click=${data.handler}
+                  title="${data.i18n_title}"
+              >
+                  <converse-icon size="1em" class="fa ${data.icon_class}"></converse-icon>
                   ${data.i18n_text}
               </a>
           `
@@ -46,16 +47,11 @@ export async function getHeadingDropdownItem (promise_or_data) {
  * @param {Promise<HeadingButtonAttributes>|HeadingButtonAttributes} promise_or_data
  * @returns {Promise<TemplateResult>}
  */
-export async function getHeadingStandaloneButton (promise_or_data) {
+export async function getHeadingStandaloneButton(promise_or_data) {
     const data = await promise_or_data;
     return html`
-        <button type="button" class="btn chatbox-btn ${data.a_class}"
-                @click=${data.handler}
-                title="${data.i18n_title}">
-            <converse-icon
-                size="1em"
-                class="fa ${data.icon_class}"
-            ></converse-icon>
+        <button type="button" class="btn chatbox-btn ${data.a_class}" @click=${data.handler} title="${data.i18n_title}">
+            <converse-icon size="1em" class="fa ${data.icon_class}"></converse-icon>
         </button>
     `;
 }
@@ -63,7 +59,7 @@ export async function getHeadingStandaloneButton (promise_or_data) {
 /**
  * @param {Promise<Array<HeadingButtonAttributes>>} promise
  */
-export async function getStandaloneButtons (promise) {
+export async function getStandaloneButtons(promise) {
     const btns = await promise;
     return btns
         .filter((b) => b.standalone)
@@ -75,7 +71,7 @@ export async function getStandaloneButtons (promise) {
 /**
  * @param {Promise<Array<object>>} promise
  */
-export async function getDropdownButtons (promise) {
+export async function getDropdownButtons(promise) {
     const btns = await promise;
     const dropdown_btns = btns.filter((b) => !b.standalone).map((b) => getHeadingDropdownItem(b));
     return dropdown_btns.length
@@ -83,14 +79,13 @@ export async function getDropdownButtons (promise) {
         : '';
 }
 
-
-export function onScrolledDown (model) {
+export function onScrolledDown(model) {
     if (!model.isHidden()) {
         if (api.settings.get('allow_url_history_change')) {
             // Clear location hash if set to one of the messages in our history
             const hash = window.location.hash;
             if (hash && model.messages.get(hash.slice(1))) {
-               history.pushState(null, '', window.location.pathname);
+                history.pushState(null, '', window.location.pathname);
             }
         }
     }
@@ -102,19 +97,19 @@ export function onScrolledDown (model) {
  * @param {Message} message
  * @returns {TemplateResult|undefined}
  */
-export function getDayIndicator (message) {
+export function getDayIndicator(message) {
     const messages = message.collection?.models;
     if (!messages) {
         return;
     }
     const idx = messages.indexOf(message);
-    const prev_message =  messages[idx-1];
+    const prev_message = messages[idx - 1];
     if (!prev_message || dayjs(message.get('time')).isAfter(dayjs(prev_message.get('time')), 'day')) {
         const day_date = dayjs(message.get('time')).startOf('day');
         return tplNewDay({
             'type': 'date',
             'time': day_date.toISOString(),
-            'datestring': day_date.format("dddd MMM Do YYYY")
+            'datestring': day_date.format('dddd MMM Do YYYY'),
         });
     }
 }
@@ -122,33 +117,41 @@ export function getDayIndicator (message) {
 /**
  * @param {MUCMessage} message
  */
-export function getHats (message) {
+export function getHats(message) {
     if (message.get('type') === 'groupchat') {
-        const allowed_hats = api.settings.get('muc_hats').filter(hat => hat).map((hat) => (hat.toLowerCase()));
-        let vcard_roles = []
+        const allowed_hats = api.settings
+            .get('muc_hats')
+            .filter((hat) => hat)
+            .map((hat) => hat.toLowerCase());
+        let vcard_roles = [];
         if (allowed_hats.includes('vcard_roles')) {
             vcard_roles = message.vcard ? message.vcard.get('role') : null;
-            vcard_roles = vcard_roles ? vcard_roles.split(',').filter(hat => hat).map((hat) => ({title: hat})) : [];
+            vcard_roles = vcard_roles
+                ? vcard_roles
+                      .split(',')
+                      .filter((hat) => hat)
+                      .map((hat) => ({ title: hat }))
+                : [];
         }
         const muc_role = message.occupant ? [message.occupant.get('role')] : [];
         const muc_affiliation = message.occupant ? [message.occupant.get('affiliation')] : [];
 
         const affiliation_role_hats = [...muc_role, ...muc_affiliation]
-            .filter(hat => hat).filter((hat) => (allowed_hats.includes(hat.toLowerCase())))
-            .map((hat) => ({title: hat}));
+            .filter((hat) => hat)
+            .filter((hat) => allowed_hats.includes(hat.toLowerCase()))
+            .map((hat) => ({ title: hat }));
         const hats = allowed_hats.includes('xep317') ? message.occupant?.get('hats') || [] : [];
         return [...hats, ...vcard_roles, ...affiliation_role_hats];
     }
     return [];
 }
 
-
-export function getTonedEmojis () {
+export function getTonedEmojis() {
     if (!converse.emojis.toned) {
         converse.emojis.toned = u.unique(
             Object.values(converse.emojis.json.people)
-                .filter(person => person.sn.includes('_tone'))
-                .map(person => person.sn.replace(/_tone[1-5]/, ''))
+                .filter((person) => person.sn.includes('_tone'))
+                .map((person) => person.sn.replace(/_tone[1-5]/, ''))
         );
     }
     return converse.emojis.toned;
@@ -162,7 +165,7 @@ export function getTonedEmojis () {
  * @param {object} data
  * @param {EmojiMarkupOptions} options
  */
-export function getEmojiMarkup (data, options={unicode_only: false, add_title_wrapper: false}) {
+export function getEmojiMarkup(data, options = { unicode_only: false, add_title_wrapper: false }) {
     const emoji = data.emoji;
     const shortname = data.shortname;
     if (emoji) {
@@ -176,23 +179,27 @@ export function getEmojiMarkup (data, options={unicode_only: false, add_title_wr
             }
         } else {
             const path = api.settings.get('emoji_image_path');
-            return html`<img class="emoji"
+            return html`<img
+                class="emoji"
                 loading="lazy"
                 draggable="false"
                 title="${shortname}"
                 alt="${emoji}"
-                src="${path}/72x72/${data.cp}.png"/>`;
+                src="${path}/72x72/${data.cp}.png"
+            />`;
         }
     } else if (options.unicode_only) {
         return shortname;
     } else {
         const { url } = converse.emojis.by_sn[shortname];
-        return html`<img class="emoji"
+        return html`<img
+            class="emoji"
             loading="lazy"
             draggable="false"
             title="${shortname}"
             alt="${shortname}"
-            src="${url.startsWith('.') ? `${api.settings.get('assets_path')}/${url}` : url}">`;
+            src="${url.startsWith('.') ? `${api.settings.get('assets_path')}/${url}` : url}"
+        />`;
     }
 }
 
@@ -200,11 +207,11 @@ export function getEmojiMarkup (data, options={unicode_only: false, add_title_wr
  * @param {string} text
  * @param {object} options
  */
-export function addEmojisMarkup (text, options) {
+export function addEmojisMarkup(text, options) {
     let list = [text];
     [...getShortnameReferences(text), ...getCodePointReferences(text)]
         .sort((a, b) => b.begin - a.begin)
-        .forEach(ref => {
+        .forEach((ref) => {
             const text = list.shift();
             const emoji = getEmojiMarkup(ref, options);
             if (typeof emoji === 'string') {
@@ -243,7 +250,7 @@ export function addEmojisMarkup (text, options) {
  * @returns {Array} An array of at least one string, or otherwise
  * strings and lit TemplateResult objects.
  */
-export function shortnamesToEmojis (str, options={unicode_only: false, add_title_wrapper: false}) {
+export function shortnamesToEmojis(str, options = { unicode_only: false, add_title_wrapper: false }) {
     str = convertASCII2Emoji(str);
     return addEmojisMarkup(str, options);
 }

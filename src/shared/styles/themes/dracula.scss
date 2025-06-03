@@ -54,6 +54,11 @@
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--yellow) !important;
     --converse-secondary-color: var(--secondary-color);
+
+    .form-check-input:checked {
+        background-color: var(--purple);
+        border-color: var(--purple);
+    }
     .navbar-nav {
         --converse-nav-link-color: var(--link-color) !important;
         --converse-nav-link-hover-color: var(--link-color-hover) !important;
@@ -87,7 +92,6 @@
     --error-color: var(--red);
     --focus-color: var(--pink);
     --heading-color: var(--purple);
-    --headlines-color: var(--pink);
     --link-color: var(--cyan);
     --subdued-color: var(--gray);
 
@@ -107,6 +111,11 @@
     --muc-color: var(--orange);
     --muc-header-fg-color: var(--muc-color);
     --muc-header-bg-color: var(--background-color);
+
+    // 1:1 headlines-related colors
+    --headlines-color: var(--pink);
+    --headlines-header-fg-color: var(--headlines-color);
+    --headlines-header-bg-color: var(--background-color);
 
     // Derived colors
     // --------------

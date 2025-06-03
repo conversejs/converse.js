@@ -32,10 +32,8 @@ converse-muc-destroyed {
         &.converse-overlayed {
             .chatbox {
                 &.chatroom {
-                    min-width: var(--chatroom-width) !important;
                     width: var(--chatroom-width);
                     .box-flyout {
-                        min-width: var(--chatroom-width) !important;
                         width: var(--chatroom-width);
                     }
                     .chatbox-title__text {

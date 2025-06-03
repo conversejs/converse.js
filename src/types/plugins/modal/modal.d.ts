@@ -13,6 +13,7 @@ declare class BaseModal extends CustomElement {
      */
     constructor(options: any);
     model: any;
+    state: Model;
     onKeyDown: (ev: KeyboardEvent) => void;
     initialized: Promise<any> & {
         isResolved: boolean;
@@ -45,15 +46,16 @@ declare class BaseModal extends CustomElement {
     close(): void;
     insertIntoDOM(): void;
     /**
-     * @param {string} message
-     * @param {'primary'|'secondary'|'danger'} type
+     * @param {string|null} [message]
+     * @param {'info'|'primary'|'secondary'|'danger'} type
      * @param {boolean} [is_ephemeral=true]
      */
-    alert(message: string, type?: "primary" | "secondary" | "danger", is_ephemeral?: boolean): void;
+    alert(message?: string | null, type?: "info" | "primary" | "secondary" | "danger", is_ephemeral?: boolean): void;
+    alertTimeout: NodeJS.Timeout;
     show(): Promise<void>;
     #private;
 }
 import { CustomElement } from 'shared/components/element.js';
-import Modal from 'bootstrap/js/src/modal.js';
 import { Model } from '@converse/skeletor';
+import Modal from 'bootstrap/js/src/modal.js';
 //# sourceMappingURL=modal.d.ts.map

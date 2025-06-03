@@ -1,9 +1,3 @@
-/**
- * Custom element which renders a list of headline feeds
- * @class
- * @namespace _converse.HeadlinesFeedsList
- * @memberOf _converse
- */
 export class HeadlinesFeedsList extends CustomElement {
     initialize(): void;
     model: any;

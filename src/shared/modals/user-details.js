@@ -1,5 +1,4 @@
-import { Model } from '@converse/skeletor';
-import { api, _converse, log } from '@converse/headless';
+import { api, _converse } from '@converse/headless';
 import { blockContact, declineContactRequest, removeContact, unblockContact } from 'plugins/rosterview/utils.js';
 import BaseModal from 'plugins/modal/modal.js';
 import { __ } from 'i18n';
@@ -86,10 +85,7 @@ export default class UserDetailsModal extends BaseModal {
     async addContact(ev) {
         ev?.preventDefault?.();
         this.modal.hide();
-        api.modal.show('converse-add-contact-modal', {
-            contact: this.model,
-            model: new Model()
-        }, ev);
+        api.modal.show('converse-add-contact-modal', { contact: this.model }, ev);
     }
 
     /**
@@ -143,7 +139,7 @@ export default class UserDetailsModal extends BaseModal {
         setTimeout(() => {
             api.modal.show(
                 'converse-accept-contact-request-modal',
-                { model: new Model(), contact: this.getContact() },
+                { contact: this.getContact() },
                 ev
             );
         });

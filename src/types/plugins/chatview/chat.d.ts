@@ -1,8 +1,5 @@
 /**
  * The view of an open/ongoing chat conversation.
- * @class
- * @namespace _converse.ChatView
- * @memberOf _converse
  */
 export default class ChatView extends BaseChatView {
     length: number;

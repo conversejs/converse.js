@@ -4,15 +4,8 @@ import tplFeedsList from './templates/feeds-list.js';
 
 const { HEADLINES_TYPE } = constants;
 
-/**
- * Custom element which renders a list of headline feeds
- * @class
- * @namespace _converse.HeadlinesFeedsList
- * @memberOf _converse
- */
 export class HeadlinesFeedsList extends CustomElement {
-
-    initialize () {
+    initialize() {
         this.model = _converse.state.chatboxes;
         this.listenTo(this.model, 'add', (m) => this.renderIfHeadline(m));
         this.listenTo(this.model, 'remove', (m) => this.renderIfHeadline(m));
@@ -20,15 +13,15 @@ export class HeadlinesFeedsList extends CustomElement {
         this.requestUpdate();
     }
 
-    render () {
+    render() {
         return tplFeedsList(this);
     }
 
-    renderIfHeadline (model) {
+    renderIfHeadline(model) {
         return model?.get('type') === HEADLINES_TYPE && this.requestUpdate();
     }
 
-    async openHeadline (ev) {
+    async openHeadline(ev) {
         ev.preventDefault();
         const jid = ev.target.getAttribute('data-headline-jid');
         const feed = await api.headlines.get(jid);

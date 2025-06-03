@@ -14,18 +14,18 @@ const { Strophe, u } = converse.env;
 const { CHATROOMS_TYPE } = constants;
 
 const COMMAND_TO_AFFILIATION = {
-    'admin': 'admin',
-    'ban': 'outcast',
-    'member': 'member',
-    'owner': 'owner',
-    'revoke': 'none',
+    admin: 'admin',
+    ban: 'outcast',
+    member: 'member',
+    owner: 'owner',
+    revoke: 'none',
 };
 const COMMAND_TO_ROLE = {
-    'deop': 'participant',
-    'kick': 'none',
-    'mute': 'visitor',
-    'op': 'moderator',
-    'voice': 'participant',
+    deop: 'participant',
+    kick: 'none',
+    mute: 'visitor',
+    op: 'moderator',
+    voice: 'participant',
 };
 
 /**
@@ -35,11 +35,15 @@ const COMMAND_TO_ROLE = {
  */
 export function confirmDirectMUCInvitation({ contact, jid, reason }) {
     if (!reason) {
-        return api.confirm(__('%1$s has invited you to join a groupchat: %2$s', contact, jid));
+        return api.confirm(
+            __('Invitation to a groupchat'),
+            __('%1$s has invited you to join the groupchat "%2$s"', contact, jid)
+        );
     } else {
         return api.confirm(
+            __('Invitation to a groupchat'),
             __(
-                '%1$s has invited you to join a groupchat: %2$s, and left the following reason: "%3$s"',
+                '%1$s has invited you to join the groupchat "%2$s", and left the following reason: "%3$s"',
                 contact,
                 jid,
                 reason
@@ -167,11 +171,11 @@ export function getAutoCompleteListItem(muc, text, input) {
         <li aria-selected="false">
             ${show_avatar
                 ? html`<converse-avatar
-                        .model=${avatar_model}
-                        name="${avatar_model.getDisplayName()}"
-                        height="22"
-                        width="22"
-                        class="avatar avatar-autocomplete"
+                      .model=${avatar_model}
+                      name="${avatar_model.getDisplayName()}"
+                      height="22"
+                      width="22"
+                      class="avatar avatar-autocomplete"
                   ></converse-avatar>`
                 : ''}
             <span class="autocomplete-item">

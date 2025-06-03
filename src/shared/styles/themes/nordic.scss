@@ -66,6 +66,12 @@
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--red);
+    --converse-border-color: lightgray;
+
+    .form-check-input:checked {
+        background-color: var(--purple);
+        border-color: var(--purple);
+    }
     .navbar-nav {
         --converse-nav-link-color: var(--link-color) !important;
     }
@@ -80,6 +86,10 @@
         --converse-toast-color: var(--background-color);
         --converse-toast-bg: var(--secondary-color) !important;
     }
+    converse-chat-heading,
+    converse-muc-heading {
+        box-shadow: var(--converse-box-shadow) !important;
+    }
 
     // Online status indicators
     --chat-status-away: var(--orange);
@@ -92,7 +102,6 @@
     --error-color: var(--red);
     --focus-color: var(--secondary-color);
     --heading-color: var(--purple);
-    --headlines-color: var(--yellow);
     --link-color: var(--blue-2);
     --subdued-color: gray;
 
@@ -116,6 +125,11 @@
     --muc-color: var(--orange);
     --muc-header-fg-color: var(--background-color);
     --muc-header-bg-color: var(--muc-color);
+
+    // Headlines-related colors
+    --headlines-color: var(--purple);
+    --headlines-header-fg-color: var(--background-color);
+    --headlines-header-bg-color: var(--headlines-color);
 
     // Derived colors
     // --------------

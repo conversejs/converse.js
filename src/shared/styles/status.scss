@@ -1,15 +1,16 @@
 .conversejs {
     .chat-status {
-        vertical-align: middle;
-        margin-inline-end: 0;
         border-radius: 50%;
         font-size: 1em;
+        margin-inline-end: 0;
+        padding-bottom: 0.2em;
+        vertical-align: middle;
 
         &.chat-status--avatar {
-          font-size: 0.6rem;
-          margin-inline-start: -0.7em;
-          margin-bottom: -1.9em;
           border-radius: 50%;
+          font-size: 0.6rem;
+          margin-bottom: -1.9em;
+          margin-inline-start: -0.7em;
         }
     }
     .chat-status--offline {

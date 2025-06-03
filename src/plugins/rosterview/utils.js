@@ -85,7 +85,7 @@ export async function blockContact(contact) {
     if (!(await api.disco.supports(Strophe.NS.BLOCKING, domain))) return false;
 
     const i18n_confirm = __('Do you want to block this contact, so they cannot send you messages?');
-    if (!(await api.confirm(i18n_confirm))) return false;
+    if (!(await api.confirm(__('Confirm'), i18n_confirm))) return false;
 
     (await api.chats.get(contact.get('jid')))?.close();
 
@@ -253,6 +253,8 @@ export function populateContactsMap(contacts_map, contact) {
         contact_groups.push(/** @type {string} */ (labels.HEADER_UNGROUPED));
     } else if (contact.get('requesting')) {
         contact_groups.push(/** @type {string} */ (labels.HEADER_REQUESTING_CONTACTS));
+    } else if (contact.get('ask') === 'subscribe') {
+        contact_groups.push(/** @type {string} */ (labels.HEADER_PENDING_CONTACTS));
     } else if (contact.get('subscription') === undefined) {
         contact_groups.push(/** @type {string} */ (labels.HEADER_UNSAVED_CONTACTS));
     } else if (!api.settings.get('roster_groups')) {
@@ -303,6 +305,7 @@ export function groupsComparator(a, b) {
         HEADER_REQUESTING_CONTACTS,
         HEADER_UNGROUPED,
         HEADER_UNREAD,
+        HEADER_PENDING_CONTACTS,
         HEADER_UNSAVED_CONTACTS,
     } = _converse.labels;
 
@@ -311,6 +314,7 @@ export function groupsComparator(a, b) {
     HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
     HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS] = 3;
     HEADER_WEIGHTS[HEADER_UNGROUPED] = 4;
+    HEADER_WEIGHTS[HEADER_PENDING_CONTACTS] = 5;
 
     const WEIGHTS = HEADER_WEIGHTS;
     const special_groups = Object.keys(HEADER_WEIGHTS);
@@ -337,7 +341,12 @@ export function getGroupsAutoCompleteList() {
 
 export function getJIDsAutoCompleteList() {
     const roster = /** @type {RosterContacts} */ (_converse.state.roster);
-    return [...new Set(roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))))];
+    return [
+        ...new Set([
+            ...roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))),
+            _converse.session.get('domain'),
+        ]),
+    ];
 }
 
 /**

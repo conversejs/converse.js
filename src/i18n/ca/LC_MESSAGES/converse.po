@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-03 12:38+0200\n"
-"PO-Revision-Date: 2025-05-21 07:47+0000\n"
+"PO-Revision-Date: 2025-06-04 11:01+0000\n"
 "Last-Translator: fran secs <fransecs@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/conversejs/"
 "translations/ca/>\n"
@@ -878,22 +878,21 @@ msgstr "Eines de moderació"
 
 #: dist/converse-no-dependencies.js:89424
 #: dist/converse-no-dependencies.js:89426
-#, fuzzy
 msgid "Invitation to a groupchat"
-msgstr "Convidar algú a aquest grup"
+msgstr "Invitació a un xat en grup"
 
 #: dist/converse-no-dependencies.js:89424
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has invited you to join the groupchat \"%2$s\""
-msgstr "%1$s us ha convidat a unir-vos a un grup: %2$s"
+msgstr "%1$s us ha convidat a unir-vos al grup «%2$s»"
 
 #: dist/converse-no-dependencies.js:89426
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "%1$s has invited you to join the groupchat \"%2$s\", and left the following "
 "reason: \"%3$s\""
 msgstr ""
-"%1$s us ha convidat a unir-vos al grup %2$s i ha deixat el següent motiu: "
+"%1$s us ha convidat a unir-vos al grup «%2$s» i ha deixat el següent motiu: "
 "«%3$s»"
 
 #: dist/converse-no-dependencies.js:89455
@@ -1272,19 +1271,19 @@ msgstr "S'ha produït un error intentant desblocar %1$s"
 
 #: dist/converse-no-dependencies.js:100147
 msgid "Neither of you receive presence updates"
-msgstr ""
+msgstr "Cap de vosaltres rebrà actualitzacions de presència"
 
 #: dist/converse-no-dependencies.js:100149
 msgid "Only you receive presence updates"
-msgstr ""
+msgstr "Només tu rebràs actualitzacions de presència"
 
 #: dist/converse-no-dependencies.js:100151
 msgid "Only they receive presence updates"
-msgstr ""
+msgstr "Només ell(e)s reben actualitzacions de presència"
 
 #: dist/converse-no-dependencies.js:100153
 msgid "Both of you receive presence updates"
-msgstr ""
+msgstr "Totes dues rebeu actualitzacions de presència"
 
 #: dist/converse-no-dependencies.js:100163
 msgid "Remove from blocklist"
@@ -1350,7 +1349,7 @@ msgstr "Perfil"
 
 #: dist/converse-no-dependencies.js:100286
 msgid "Presence"
-msgstr ""
+msgstr "Presència"
 
 #: dist/converse-no-dependencies.js:100288
 #: dist/converse-no-dependencies.js:144328
@@ -1615,9 +1614,8 @@ msgid "Click here to log in anonymously"
 msgstr "Feu clic aquí per iniciar una sessió anònima"
 
 #: dist/converse-no-dependencies.js:110055
-#, fuzzy
 msgid "Chat"
-msgstr "Xerraire"
+msgstr "Xat"
 
 #: dist/converse-no-dependencies.js:110683
 msgid "About Converse"
@@ -1629,33 +1627,31 @@ msgstr "Mostrar més informació sobre aquest client de xat"
 
 #: dist/converse-no-dependencies.js:111815
 msgid "Discover Services"
-msgstr ""
+msgstr "Descobrir serveis"
 
 #: dist/converse-no-dependencies.js:111817
 msgid "Inspect"
-msgstr ""
+msgstr "Inspeccionar"
 
 #: dist/converse-no-dependencies.js:111817
-#, fuzzy
 msgid "Service"
-msgstr "Servidor"
+msgstr "Servei"
 
 #: dist/converse-no-dependencies.js:111828
-#, fuzzy
 msgid "Identities"
-msgstr "Activitats"
+msgstr "Identitats"
 
 #: dist/converse-no-dependencies.js:111829
 msgid "Type"
-msgstr ""
+msgstr "Tipus"
 
 #: dist/converse-no-dependencies.js:111829
 msgid "Category"
-msgstr ""
+msgstr "Categoria"
 
 #: dist/converse-no-dependencies.js:111833
 msgid "Items"
-msgstr ""
+msgstr "Articles"
 
 #: dist/converse-no-dependencies.js:111840
 #: dist/converse-no-dependencies.js:123740
@@ -1663,14 +1659,13 @@ msgid "Features"
 msgstr "Característiques"
 
 #: dist/converse-no-dependencies.js:112407
-#, fuzzy
 msgid "No service found with that XMPP address"
-msgstr "Adreça del grup"
+msgstr "No s'ha trobat cap servei amb aqueixa adreça XMPP"
 
 #: dist/converse-no-dependencies.js:112411
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: %1$s"
-msgstr "Error"
+msgstr "Error: %1$s"
 
 #: dist/converse-no-dependencies.js:112986
 msgid "Close these announcements"
@@ -2396,9 +2391,8 @@ msgid "offline"
 msgstr "fora de línia"
 
 #: dist/converse-no-dependencies.js:127666
-#, fuzzy
 msgid "Set status"
-msgstr "Estat personalitzat"
+msgstr "Establir l'estat"
 
 #: dist/converse-no-dependencies.js:127667
 msgid "Away for long"
@@ -2426,7 +2420,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:127768
 msgid "Status"
-msgstr ""
+msgstr "Estat"
 
 #: dist/converse-no-dependencies.js:127771
 msgid "Reset Password"
@@ -2446,7 +2440,7 @@ msgstr "El perfil s'ha actualitzat correctament"
 
 #: dist/converse-no-dependencies.js:128492
 msgid "Status updated"
-msgstr ""
+msgstr "Estat actualitzat"
 
 #: dist/converse-no-dependencies.js:128523
 msgid "Are you sure you want to log out?"
@@ -2461,9 +2455,8 @@ msgid "Commands"
 msgstr "Ordres"
 
 #: dist/converse-no-dependencies.js:128586
-#, fuzzy
 msgid "Services"
-msgstr "Servidor"
+msgstr "Serveis"
 
 #: dist/converse-no-dependencies.js:128605
 #, javascript-format
@@ -2487,9 +2480,8 @@ msgid "I am %1$s"
 msgstr "Estic %1$s"
 
 #: dist/converse-no-dependencies.js:128779
-#, fuzzy
 msgid "Update your profile"
-msgstr "Perfil"
+msgstr "Actualitzar el perfil"
 
 #: dist/converse-no-dependencies.js:128780
 msgid "Click to change your chat status"
@@ -3057,46 +3049,40 @@ msgstr "Alguna cosa ha anat malament"
 #: dist/converse-no-dependencies.js:144992
 #, javascript-format
 msgid "%1$s blocked users shown"
-msgstr ""
+msgstr "Es mostren %1$s comptes blocats"
 
 #: dist/converse-no-dependencies.js:144992
-#, fuzzy
 msgid "Unblock selected users"
-msgstr "Desblocar aquest/a usuari/a"
+msgstr "Desblocar els comptes seleccionats"
 
 #: dist/converse-no-dependencies.js:144992
-#, fuzzy
 msgid "Filter blocked users"
-msgstr "Desblocar usuari/a"
+msgstr "Filtrar els comptes blocats"
 
 #: dist/converse-no-dependencies.js:144999
 msgid "clear"
-msgstr ""
+msgstr "netejar"
 
 #: dist/converse-no-dependencies.js:145001
-#, fuzzy
 msgid "Select All"
 msgstr "Seleccionar-ho tot"
 
 #: dist/converse-no-dependencies.js:145013
-#, fuzzy
 msgid "No blocked XMPP addresses"
-msgstr "Adreça XMPP"
+msgstr "Sense adreces XMPP blocades"
 
 #: dist/converse-no-dependencies.js:145570
-#, fuzzy
 msgid "Blocklist"
-msgstr "Afegir a la llista de bloqueig"
+msgstr "Llista de bloqueig"
 
 #: dist/converse-no-dependencies.js:145595
 #, javascript-format
 msgid "Successfully unblocked %1$s XMPP addresses"
-msgstr ""
+msgstr "S'han desblocat correctament %1$s adreces XMPP"
 
 #: dist/converse-no-dependencies.js:145595
-#, fuzzy
 msgid "Successfully unblocked one XMPP address"
-msgstr "Cerca el nom o l'adreça XMPP"
+msgstr "S'ha desblocat correctament una adreça XMPP"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:145692
@@ -3132,9 +3118,8 @@ msgid "Add a contact"
 msgstr "Afegir un contacte"
 
 #: dist/converse-no-dependencies.js:145801
-#, fuzzy
 msgid "Show block list"
-msgstr "Afegir a la llista de bloqueig"
+msgstr "Mostrar la llista de bloqueig"
 
 #: dist/converse-no-dependencies.js:145835
 msgid "Re-sync contacts"

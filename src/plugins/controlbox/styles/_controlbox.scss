@@ -303,16 +303,6 @@
 
 @include media-breakpoint-down(sm) {
     .conversejs {
-        &.converse-overlayed {
-            .converse-chatboxes {
-                .chatbox {
-                    .box-flyout {
-                        margin-left: -1em !important;
-                    }
-                }
-            }
-        }
-
         &.converse-fullscreen,
         &.converse-overlayed {
             left: 0;

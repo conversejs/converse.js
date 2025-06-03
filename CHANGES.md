@@ -3,6 +3,7 @@
 ## 11.0.0 (Unreleased)
 
 - #3672: Images not rendering
+- #3676: Flyout box is not positioned correctly on mobile devices in "overlayed" mode
 - Remove modal from the DOM when it's closed
 - Fix login form style for `classic` theme
 - Properly handle OGP metadata that doesn't have an image

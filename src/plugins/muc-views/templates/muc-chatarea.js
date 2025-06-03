@@ -45,9 +45,9 @@ export default (el) => {
             </div>
             <converse-muc-bottom-panel .model=${el.model} class="bottom-panel"></converse-muc-bottom-panel>
         </div>
-        ${el.model ? html`
+        ${el.model && el.shouldShowSidebar() ? html`
             <converse-split-resize></converse-split-resize>
             <converse-muc-sidebar
-                class="${el.shouldShowSidebar() ? sidebar_classes : 'col-xs-0 hidden' }"
+                class="${sidebar_classes}"
                 jid=${el.jid}></converse-muc-sidebar>` : '' }`
 };

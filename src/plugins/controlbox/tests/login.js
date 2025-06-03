@@ -14,12 +14,12 @@ describe("The Login Form", function () {
         
         const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
         mock.toggleControlBox();
-        await u.waitUntil(() => cbview.querySelectorAll(".input-group").length);
+        await u.waitUntil(() => cbview.querySelectorAll("div.input-group").length);
 
-        const addons = cbview.querySelectorAll('.input-group-text');
+        const addons = cbview.querySelectorAll('span.input-group-text.addon');
         expect(addons.length).toBe(1);
 
-        const addon = cbview.querySelector('.input-group-text')[0];
+        const addon = cbview.querySelector('span.input-group-text')[0];
         expect(addon.innerHTML).toBe('jabber.hot-chilli.eu');
     }));
 
@@ -34,12 +34,12 @@ describe("The Login Form", function () {
         
         const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
         mock.toggleControlBox();
-        await u.waitUntil(() => cbview.querySelectorAll(".input-group").length);
+        await u.waitUntil(() => cbview.querySelectorAll("div.input-group").length);
 
-        const addons = cbview.querySelectorAll('.input-group-text');
+        const addons = cbview.querySelectorAll('span.input-group-text.addon');
         expect(addons.length).toBe(1);
 
-        const addon = cbview.querySelector('.input-group-text')[0];
+        const addon = cbview.querySelector('span.input-group-text')[0];
         expect(addon.innerHTML).toBe('jabber.hot-chilli.eu');
     }));
 

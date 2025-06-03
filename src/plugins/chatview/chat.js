@@ -34,16 +34,7 @@ export default class ChatView extends BaseChatView {
     }
 
     render() {
-        return tplChat(
-            Object.assign(
-                {
-                    model: this.model,
-                    help_messages: this.getHelpMessages(),
-                    show_help_messages: this.model.get('show_help_messages'),
-                },
-                this.model.toJSON()
-            )
-        );
+        return tplChat(this);
     }
 
     getHelpMessages() {

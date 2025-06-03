@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-03 12:38+0200\n"
-"PO-Revision-Date: 2025-06-03 10:35+0000\n"
+"PO-Revision-Date: 2025-06-04 11:01+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -1555,7 +1555,6 @@ msgid "Click here to log in anonymously"
 msgstr "点击此处即可匿名登录"
 
 #: dist/converse-no-dependencies.js:110055
-#, fuzzy
 msgid "Chat"
 msgstr "聊天"
 

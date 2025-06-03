@@ -3,6 +3,45 @@
 const u = converse.env.utils;
 
 describe("The Login Form", function () {
+    fit("contains an addon in the username input with locked_domain name", 
+        mock.initConverse(
+            ['chatBoxesInitialized'],
+            { auto_login: false,
+              allow_registration: false,  },
+            async function (_converse) {
+            
+        _converse.api.settings.set('locked_domain', 'jabber.hot-chilli.eu');
+        
+        const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
+        mock.toggleControlBox();
+        await u.waitUntil(() => cbview.querySelectorAll(".input-group").length);
+
+        const addons = cbview.querySelectorAll('.input-group-text');
+        expect(addons.length).toBe(1);
+
+        const addon = cbview.querySelector('.input-group-text')[0];
+        expect(addon.innerHTML).toBe('jabber.hot-chilli.eu');
+    }));
+
+    fit("contains an addon in the username input with default_domain name", 
+        mock.initConverse(
+            ['chatBoxesInitialized'],
+            { auto_login: false,
+              allow_registration: false,  },
+            async function (_converse) {
+            
+        _converse.api.settings.set('default_domain', 'jabber.hot-chilli.eu');
+        
+        const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
+        mock.toggleControlBox();
+        await u.waitUntil(() => cbview.querySelectorAll(".input-group").length);
+
+        const addons = cbview.querySelectorAll('.input-group-text');
+        expect(addons.length).toBe(1);
+
+        const addon = cbview.querySelector('.input-group-text')[0];
+        expect(addon.innerHTML).toBe('jabber.hot-chilli.eu');
+    }));
 
     it("contains a checkbox to indicate whether the computer is trusted or not",
         mock.initConverse(

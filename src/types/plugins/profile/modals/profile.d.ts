@@ -34,14 +34,6 @@ export default class ProfileModal extends BaseModal {
         values: unknown[];
     };
     /**
-     * @returns {TemplateResult}
-     */
-    renderModalFooter(): {
-        _$litType$: 1 | 2 | 3;
-        strings: TemplateStringsArray;
-        values: unknown[];
-    };
-    /**
      * @param {VCardData} data
      */
     setVCard(data: import("@converse/headless/types/plugins/vcard/types").VCardData): Promise<boolean>;

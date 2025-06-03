@@ -75,12 +75,14 @@ export default class ProfileModal extends BaseModal {
     }
 
     /**
-     * @returns {TemplateResult}
+     * @returns {TemplateResult|String}
      */
     renderModalFooter() {
-        return html`<div class="modal-footer d-flex justify-content-between">
-            ${modal_close_button} ${tplLogoutButton(this)}
-        </div>`;
+        return api.settings.get('allow_logout')
+            ? html`<div class="modal-footer d-flex justify-content-between">
+                  ${modal_close_button} ${tplLogoutButton(this)}
+              </div>`
+            : '';
     }
 
     /**

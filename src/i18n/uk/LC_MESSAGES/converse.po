@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-02 14:03+0200\n"
-"PO-Revision-Date: 2025-05-21 07:47+0000\n"
+"PO-Revision-Date: 2025-06-03 10:35+0000\n"
 "Last-Translator: Максим Горпиніч <maksimgorpinic4@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
 "translations/uk/>\n"
@@ -871,23 +871,22 @@ msgstr "Інструменти модератора"
 
 #: dist/converse-no-dependencies.js:89424
 #: dist/converse-no-dependencies.js:89426
-#, fuzzy
 msgid "Invitation to a groupchat"
-msgstr "Запросіть когось до цього групового чату"
+msgstr "Запрошення до групового чату"
 
 #: dist/converse-no-dependencies.js:89424
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has invited you to join the groupchat \"%2$s\""
-msgstr "%1$s запросив вас приєднатися до групового чату: %2$s"
+msgstr "%1$s запросив вас приєднатися до групового чату \"%2$s\""
 
 #: dist/converse-no-dependencies.js:89426
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "%1$s has invited you to join the groupchat \"%2$s\", and left the following "
 "reason: \"%3$s\""
 msgstr ""
-"%1$s запросив вас приєднатися до групового чату: %2$s і залишив таку "
-"причину: \"%3$s\""
+"%1$s запросив вас приєднатися до групового чату «%2$s» і залишив запит на "
+"таку причину: \"%3$s\""
 
 #: dist/converse-no-dependencies.js:89455
 msgid "Are you sure you want to destroy this groupchat?"
@@ -1267,19 +1266,19 @@ msgstr "На жаль, під час спроби розблокувати %1$s 
 
 #: dist/converse-no-dependencies.js:100147
 msgid "Neither of you receive presence updates"
-msgstr ""
+msgstr "Жоден з вас не отримує оновлення про присутність"
 
 #: dist/converse-no-dependencies.js:100149
 msgid "Only you receive presence updates"
-msgstr ""
+msgstr "Тільки ви отримуватимете оновлення про присутність"
 
 #: dist/converse-no-dependencies.js:100151
 msgid "Only they receive presence updates"
-msgstr ""
+msgstr "Тільки вони отримують оновлення про присутність"
 
 #: dist/converse-no-dependencies.js:100153
 msgid "Both of you receive presence updates"
-msgstr ""
+msgstr "Ви обоє отримуватимете оновлення про присутність"
 
 #: dist/converse-no-dependencies.js:100163
 msgid "Remove from blocklist"
@@ -1345,7 +1344,7 @@ msgstr "Профіль"
 
 #: dist/converse-no-dependencies.js:100286
 msgid "Presence"
-msgstr ""
+msgstr "Присутність"
 
 #: dist/converse-no-dependencies.js:100288
 #: dist/converse-no-dependencies.js:144334
@@ -1628,33 +1627,31 @@ msgstr "Показати деталі про цей клієнт чату"
 
 #: dist/converse-no-dependencies.js:111818
 msgid "Discover Services"
-msgstr ""
+msgstr "Відкрийте для себе послуги"
 
 #: dist/converse-no-dependencies.js:111820
 msgid "Inspect"
-msgstr ""
+msgstr "Оглянути"
 
 #: dist/converse-no-dependencies.js:111820
-#, fuzzy
 msgid "Service"
-msgstr "Сервер"
+msgstr "Сервіс"
 
 #: dist/converse-no-dependencies.js:111831
-#, fuzzy
 msgid "Identities"
-msgstr "Діяльності"
+msgstr "Ідентичності"
 
 #: dist/converse-no-dependencies.js:111832
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: dist/converse-no-dependencies.js:111832
 msgid "Category"
-msgstr ""
+msgstr "Категорія"
 
 #: dist/converse-no-dependencies.js:111836
 msgid "Items"
-msgstr ""
+msgstr "Елементи"
 
 #: dist/converse-no-dependencies.js:111843
 #: dist/converse-no-dependencies.js:123746
@@ -1662,14 +1659,13 @@ msgid "Features"
 msgstr "Особливості"
 
 #: dist/converse-no-dependencies.js:112410
-#, fuzzy
 msgid "No service found with that XMPP address"
-msgstr "Назва кімнати"
+msgstr "Сервіс із цією адресою XMPP не знайдено"
 
 #: dist/converse-no-dependencies.js:112414
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: %1$s"
-msgstr "Помилка"
+msgstr "Помилка: %1$s"
 
 #: dist/converse-no-dependencies.js:112989
 msgid "Close these announcements"
@@ -2392,9 +2388,8 @@ msgid "offline"
 msgstr "офлайн"
 
 #: dist/converse-no-dependencies.js:127672
-#, fuzzy
 msgid "Set status"
-msgstr "Власний статус"
+msgstr "Встановити статус"
 
 #: dist/converse-no-dependencies.js:127673
 msgid "Away for long"
@@ -2422,7 +2417,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:127774
 msgid "Status"
-msgstr ""
+msgstr "Статус"
 
 #: dist/converse-no-dependencies.js:127777
 msgid "Reset Password"
@@ -2442,7 +2437,7 @@ msgstr "Профіль успішно оновлено"
 
 #: dist/converse-no-dependencies.js:128498
 msgid "Status updated"
-msgstr ""
+msgstr "Статус оновлено"
 
 #: dist/converse-no-dependencies.js:128529
 msgid "Are you sure you want to log out?"
@@ -2457,9 +2452,8 @@ msgid "Commands"
 msgstr "Команди"
 
 #: dist/converse-no-dependencies.js:128592
-#, fuzzy
 msgid "Services"
-msgstr "Сервер"
+msgstr "Послуги"
 
 #: dist/converse-no-dependencies.js:128611
 #, javascript-format
@@ -2484,9 +2478,8 @@ msgid "I am %1$s"
 msgstr "Я %1$s"
 
 #: dist/converse-no-dependencies.js:128785
-#, fuzzy
 msgid "Update your profile"
-msgstr "Ваш профіль"
+msgstr "Оновіть свій профіль"
 
 #: dist/converse-no-dependencies.js:128786
 msgid "Click to change your chat status"
@@ -3055,46 +3048,40 @@ msgstr "Вибачте, щось пішло не так"
 #: dist/converse-no-dependencies.js:144998
 #, javascript-format
 msgid "%1$s blocked users shown"
-msgstr ""
+msgstr "%1$s показано заблокованих користувачів"
 
 #: dist/converse-no-dependencies.js:144998
-#, fuzzy
 msgid "Unblock selected users"
-msgstr "Розблокувати цього користувача"
+msgstr "Розблокувати вибраних користувачів"
 
 #: dist/converse-no-dependencies.js:144998
-#, fuzzy
 msgid "Filter blocked users"
-msgstr "Розблокувати користувача"
+msgstr "Фільтрувати заблокованих користувачів"
 
 #: dist/converse-no-dependencies.js:145005
 msgid "clear"
-msgstr ""
+msgstr "очистити"
 
 #: dist/converse-no-dependencies.js:145007
-#, fuzzy
 msgid "Select All"
-msgstr "Вибрати все"
+msgstr "Вибрати всі"
 
 #: dist/converse-no-dependencies.js:145019
-#, fuzzy
 msgid "No blocked XMPP addresses"
-msgstr "адреса XMPP"
+msgstr "Немає заблокованих XMPP-адрес"
 
 #: dist/converse-no-dependencies.js:145576
-#, fuzzy
 msgid "Blocklist"
-msgstr "Додати до чорного списку"
+msgstr "Список блокування"
 
 #: dist/converse-no-dependencies.js:145601
 #, javascript-format
 msgid "Successfully unblocked %1$s XMPP addresses"
-msgstr ""
+msgstr "Успішно розблоковано %1$s XMPP-адрес"
 
 #: dist/converse-no-dependencies.js:145601
-#, fuzzy
 msgid "Successfully unblocked one XMPP address"
-msgstr "Пошук назви або адреси XMPP"
+msgstr "Успішно розблоковано одну XMPP-адресу"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:145698
@@ -3130,9 +3117,8 @@ msgid "Add a contact"
 msgstr "Додати контакт"
 
 #: dist/converse-no-dependencies.js:145807
-#, fuzzy
 msgid "Show block list"
-msgstr "Додати до чорного списку"
+msgstr "Показати список блокування"
 
 #: dist/converse-no-dependencies.js:145841
 msgid "Re-sync contacts"

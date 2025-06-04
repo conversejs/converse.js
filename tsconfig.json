@@ -1,53 +1,27 @@
 {
-  "include": [
-      "src/**/*"
-  ],
-  "exclude": [
-      "src/types/*",
-      "src/**/tests/*",
-      "src/headless/",
-      "src/log/",
-      "src/website.js"
-  ],
   "compilerOptions": {
-    "target": "es2022",
-    "module": "esnext",
-
-    "types": [
-      "@types/webappsec-credential-management"
-    ],
-
-    "lib": [
-      "ES2020",
-      "dom",
-      "dom.iterable"
-    ],
-
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "checkJs": true,
-
-    // Generate d.ts files
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "declarationMap": true,
-
-    "rootDir": "./src",
-    "outDir": "./src/types/",
-    "baseUrl": "./src/",
-    "paths": {
-      "@converse/log": ["log/types/index.d.ts"],
-      "@converse/headless": ["headless/types/index.d.ts"]
-    },
-
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-
-    "strict": false,
-    "noImplicitAny": false,
-
     "skipLibCheck": true,
-
-    "moduleResolution": "node",
-    "resolveJsonModule": true
-  }
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

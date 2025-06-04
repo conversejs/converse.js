@@ -60,6 +60,7 @@ docs/doctrees
 
 # Node.js
 node_modules
+.next
 
 # OSX
 .DS_Store

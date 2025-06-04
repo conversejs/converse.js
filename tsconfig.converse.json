@@ -1,0 +1,53 @@
+{
+  "include": [
+      "src/**/*"
+  ],
+  "exclude": [
+      "src/types/*",
+      "src/**/tests/*",
+      "src/headless/",
+      "src/log/",
+      "src/website.js"
+  ],
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+
+    "types": [
+      "@types/webappsec-credential-management"
+    ],
+
+    "lib": [
+      "ES2020",
+      "dom",
+      "dom.iterable"
+    ],
+
+    "allowJs": true,
+    "checkJs": true,
+
+    // Generate d.ts files
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": true,
+
+    "rootDir": "./src",
+    "outDir": "./src/types/",
+    "baseUrl": "./src/",
+    "paths": {
+      "@converse/log": ["log/types/index.d.ts"],
+      "@converse/headless": ["headless/types/index.d.ts"]
+    },
+
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "strict": false,
+    "noImplicitAny": false,
+
+    "skipLibCheck": true,
+
+    "moduleResolution": "node",
+    "resolveJsonModule": true
+  }
+}

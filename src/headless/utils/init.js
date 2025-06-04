@@ -4,9 +4,7 @@
 import Storage from "@converse/skeletor/src/storage.js";
 import _converse from "../shared/_converse";
 import debounce from "lodash-es/debounce";
-import localDriver from "localforage-webextensionstorage-driver/local";
 import log from "@converse/log";
-import syncDriver from "localforage-webextensionstorage-driver/sync";
 import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN } from "../shared/constants.js";
 import { Model } from "@converse/skeletor";
 import { Strophe } from "strophe.js";
@@ -108,18 +106,6 @@ export function initPersistentStorage(_converse, store_name, key="persistent") {
     const { api } = _converse;
     if (api.settings.get("persistent_store") === "sessionStorage") {
         _converse.storage[key] = _converse.storage["session"];
-        return;
-    } else if (api.settings.get("persistent_store") === "BrowserExtLocal") {
-        Storage.localForage
-            .defineDriver(localDriver)
-            .then(() => Storage.localForage.setDriver("webExtensionLocalStorage"));
-        _converse.storage[key] = Storage.localForage;
-        return;
-    } else if (api.settings.get("persistent_store") === "BrowserExtSync") {
-        Storage.localForage
-            .defineDriver(syncDriver)
-            .then(() => Storage.localForage.setDriver("webExtensionSyncStorage"));
-        _converse.storage[key] = Storage.localForage;
         return;
     }
 

@@ -6,18 +6,13 @@ describe("The Login Form", function () {
     fit("contains an addon in the username input with locked_domain name", 
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { auto_login: false,
-              allow_registration: false ,
-		locked_domain: 'jabber.hot-chilli.eu' },
+            { authentication: 'login', 
+              locked_domain: 'jabber.hot-chilli.eu' },
             async function (_converse) {
-            console.log('Locked Domain:', _converse.api.settings.get('locked_domain'));
+
         const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
         mock.toggleControlBox();
-        await u.waitUntil(() => {
-		const inputGroups = cbview.querySelectorAll('div.input-group');
-		console.log(inputGroups);
-		return inputGroups.length > 0;
-	});
+        await u.waitUntil(() => cbview.querySelectorAll('div.input-group').length);
 
         const addons = cbview.querySelectorAll('span.input-group-text.addon');
         expect(addons.length).toBe(1);

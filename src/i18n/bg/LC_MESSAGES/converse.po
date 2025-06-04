@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-03 12:38+0200\n"
-"PO-Revision-Date: 2025-06-03 10:35+0000\n"
+"PO-Revision-Date: 2025-06-04 11:01+0000\n"
 "Last-Translator: \"Mr. EddX\" <mreddx@chatrix.one>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/bg/>\n"
@@ -653,7 +653,7 @@ msgstr "Не безпокой"
 #: dist/converse-no-dependencies.js:79749
 #: dist/converse-no-dependencies.js:120047
 msgid "Chatty"
-msgstr "Приказлив(а)"
+msgstr "Приказлив"
 
 #: dist/converse-no-dependencies.js:79750
 #: dist/converse-no-dependencies.js:120046

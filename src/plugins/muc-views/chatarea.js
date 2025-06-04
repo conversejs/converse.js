@@ -1,6 +1,7 @@
-import { api, converse, u } from '@converse/headless';
+import { api, converse } from '@converse/headless';
 import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
+import { MOBILE_CUTOFF } from 'shared/constants.js';
 import tplMUCChatarea from './templates/muc-chatarea.js';
 
 export default class MUCChatArea extends CustomElement {
@@ -17,7 +18,7 @@ export default class MUCChatArea extends CustomElement {
         this.jid = null;
         this.type = null;
         this.split = null;
-        this.mediaQueryList = window.matchMedia('(max-width: 576px)');
+        this.viewportMediaQuery = window.matchMedia(`(max-width: ${MOBILE_CUTOFF}px)`);
     }
 
     async initialize() {
@@ -38,19 +39,19 @@ export default class MUCChatArea extends CustomElement {
      */
     #hideSidebarIfSmallViewport(event) {
         if (this.model?.get('hidden_occupants')) return;
-        const is_small = event ? event.matches : this.mediaQueryList.matches;
+        const is_small = event ? event.matches : this.viewportMediaQuery.matches;
         if (is_small) this.model?.save('hidden_occupants', true);
     }
 
     connectedCallback() {
         super.connectedCallback();
         this.hideSidebarIfSmallViewport = this.#hideSidebarIfSmallViewport.bind(this);
-        this.mediaQueryList.addEventListener('change', this.hideSidebarIfSmallViewport);
+        this.viewportMediaQuery.addEventListener('change', this.hideSidebarIfSmallViewport);
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
-        this.mediaQueryList?.removeEventListener('change', this.hideSidebarIfSmallViewport);
+        this.viewportMediaQuery?.removeEventListener('change', this.hideSidebarIfSmallViewport);
     }
 
     shouldShowSidebar() {

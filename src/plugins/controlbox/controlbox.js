@@ -1,5 +1,6 @@
 import { _converse, api, constants, u } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
+import { MOBILE_CUTOFF } from 'shared/constants.js';
 import tplControlbox from './templates/controlbox.js';
 import './navbar.js';
 
@@ -20,6 +21,8 @@ class ControlBoxView extends CustomElement {
         if (this.model.get('connected') && this.model.get('closed') === undefined) {
             this.model.set('closed', !api.settings.get('show_controlbox_by_default'));
         }
+        this.viewportMediaQuery = window.matchMedia(`(max-width: ${MOBILE_CUTOFF}px)`);
+        this.renderOnViewportChange = () => this.requestUpdate();
         /**
          * Triggered when the _converse.ControlBoxView has been initialized and therefore
          * exists. The controlbox contains the login and register forms when the user is
@@ -29,6 +32,17 @@ class ControlBoxView extends CustomElement {
          * @example _converse.api.listen.on('controlBoxInitialized', view => { ... });
          */
         api.trigger('controlBoxInitialized', this);
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        this.viewportMediaQuery.addEventListener('change', this.renderOnViewportChange);
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        _converse.state.chatboxviews.remove('controlbox', this);
+        this.viewportMediaQuery.removeEventListener('change', this.renderOnViewportChange);
     }
 
     setModel() {

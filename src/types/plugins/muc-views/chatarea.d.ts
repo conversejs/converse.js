@@ -13,7 +13,7 @@ export default class MUCChatArea extends CustomElement {
     jid: any;
     type: any;
     split: any;
-    mediaQueryList: MediaQueryList;
+    viewportMediaQuery: MediaQueryList;
     initialize(): Promise<void>;
     model: any;
     render(): import("lit-html").TemplateResult<1> | "";

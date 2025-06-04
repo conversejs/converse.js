@@ -102,7 +102,17 @@ module.exports = {
                 /node_modules\/@converse/,
             ],
             use: {
-                loader: 'babel-loader'
+                loader: 'swc-loader',
+                options: {
+                    jsc: {
+                        parser: {
+                            syntax: 'ecmascript',
+                            jsx: false,
+                            dynamicImport: true,
+                        },
+                        target: 'es2015',
+                    }
+                }
             }
         }],
     },

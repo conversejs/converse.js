@@ -18,15 +18,16 @@ module.exports = merge(common, {
             test: /\.js$/,
             include: /src/,
             use: {
-                loader: 'babel-loader',
+                loader: 'swc-loader',
                 options: {
-                    presets: [
-                        ["@babel/preset-env", {
-                            "targets": {
-                                "browsers": ["ie 11"]
-                            }
-                        }]
-                    ]
+                    jsc: {
+                        target: 'es5',
+                        parser: {
+                            syntax: 'ecmascript',
+                            jsx: false,
+                            dynamicImport: false,
+                        },
+                    }
                 }
             }
         },

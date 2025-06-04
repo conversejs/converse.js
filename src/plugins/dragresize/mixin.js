@@ -1,5 +1,6 @@
 import debounce from 'lodash-es/debounce';
 import { api } from '@converse/headless';
+import log from '@converse/log';
 import { applyDragResistance, getResizingDirection } from './utils.js';
 
 const DragResizableMixin = {
@@ -47,13 +48,12 @@ const DragResizableMixin = {
             diff = ev.pageY - this.prev_pageY;
 
             if (diff) {
-
                 const new_height = this.height - diff;
-                console.log('------------');
-                console.log(`window.innerHeight: ${window.innerHeight}`);
-                console.log(`max_height: ${max_height}`);
-                console.log(`new_height: ${new_height}`);
-                console.log(`diff: ${diff}`);
+                log.debug('------------');
+                log.debug(`window.innerHeight: ${window.innerHeight}`);
+                log.debug(`max_height: ${max_height}`);
+                log.debug(`new_height: ${new_height}`);
+                log.debug(`diff: ${diff}`);
 
                 this.height =
                     this.height - diff > (this.model.get('min_height') || 0)

@@ -18,7 +18,7 @@ describe("The bookmarks list modal", function () {
         );
         mock.openControlBox(_converse);
 
-        const controlbox = _converse.chatboxviews.get('controlbox');
+        const controlbox = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
         const button = await u.waitUntil(() => controlbox.querySelector('.show-bookmark-list-modal'));
         button.click();
 

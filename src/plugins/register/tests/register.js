@@ -19,8 +19,8 @@ describe("The Registration Form", function () {
               allow_registration: false },
             async function (_converse) {
 
-        await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
-        const cbview = _converse.api.controlbox.get();
+        await mock.toggleControlBox();
+        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
         expect(cbview.querySelectorAll('a.register-account').length).toBe(0);
     }));
 
@@ -38,7 +38,7 @@ describe("The Registration Form", function () {
             }
             toggle.click();
         }
-        const cbview = _converse.chatboxviews.get('controlbox');
+        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
         expect(cbview.querySelector('converse-registration-form')).toBe(null);
 
         const register_link = await u.waitUntil(() => cbview.querySelector('a.register-account'));
@@ -61,7 +61,7 @@ describe("The Registration Form", function () {
         const toggle = await u.waitUntil(() => document.querySelector(".toggle-controlbox"));
         toggle.click();
 
-        const cbview = _converse.api.controlbox.get();
+        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
         await u.waitUntil(() => u.isVisible(cbview));
 
         cbview.querySelector('.toggle-register-login').click();
@@ -215,7 +215,7 @@ describe("The Registration Form", function () {
             }
             toggle.click();
         }
-        const cbview = _converse.api.controlbox.get();
+        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
         const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
         login_form.click();
 
@@ -277,7 +277,7 @@ describe("The Registration Form", function () {
             if (!u.isVisible(toggle)) u.removeClass('hidden', toggle);
             toggle.click();
         }
-        const cbview = _converse.api.controlbox.get();
+        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
         const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
         login_form.click();
 
@@ -360,7 +360,7 @@ describe("The Registration Form", function () {
             }
             toggle.click();
         }
-        const cbview = _converse.chatboxviews.get('controlbox');
+        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
         const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
         login_form.click();
 

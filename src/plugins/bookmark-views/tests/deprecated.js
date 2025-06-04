@@ -72,7 +72,7 @@ describe("Bookmarks", function () {
             ['Second bookmark', "The Play's the Thing", 'Yet another bookmark']
         );
         expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
-        expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(2);
+        expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(1);
     }));
 
 
@@ -144,8 +144,7 @@ describe("The bookmarks list modal", function () {
             ['http://jabber.org/protocol/pubsub#publish-options'],
         );
         mock.openControlBox(_converse);
-
-        const controlbox = _converse.chatboxviews.get('controlbox');
+        const controlbox = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
         const button = await u.waitUntil(() => controlbox.querySelector('.show-bookmark-list-modal'));
         button.click();
 

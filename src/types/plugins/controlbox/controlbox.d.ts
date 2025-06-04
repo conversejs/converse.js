@@ -8,11 +8,13 @@ export default ControlBoxView;
  */
 declare class ControlBoxView extends CustomElement {
     initialize(): void;
+    viewportMediaQuery: MediaQueryList;
+    renderOnViewportChange: () => void;
+    connectedCallback(): void;
     setModel(): void;
     model: any;
     render(): import("lit-html").TemplateResult<1> | "";
     close(ev: any): this;
-    afterShown(): this;
 }
 import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=controlbox.d.ts.map

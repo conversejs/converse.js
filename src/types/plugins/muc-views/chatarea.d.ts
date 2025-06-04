@@ -13,11 +13,12 @@ export default class MUCChatArea extends CustomElement {
     jid: any;
     type: any;
     split: any;
+    viewportMediaQuery: MediaQueryList;
     initialize(): Promise<void>;
     model: any;
-    hideSidebarIfSmallViewport: (...args: any[]) => void;
     render(): import("lit-html").TemplateResult<1> | "";
     connectedCallback(): void;
+    hideSidebarIfSmallViewport: any;
     shouldShowSidebar(): boolean;
     getHelpMessages(): string[];
     #private;

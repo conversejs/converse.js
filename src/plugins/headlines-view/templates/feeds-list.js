@@ -4,6 +4,10 @@ import { constants } from '@converse/headless';
 
 const { HEADLINES_TYPE } = constants;
 
+/**
+ * @param {import('../feed-list').HeadlinesFeedsList} el
+ * @param {import('@converse/headless/types/plugins/headlines/feed').default} feed
+ */
 function tplHeadlinesFeedsListItem(el, feed) {
     const open_title = __('Click to open this server message');
     return html`
@@ -12,7 +16,7 @@ function tplHeadlinesFeedsListItem(el, feed) {
                 class="list-item-link open-headline available-room w-100"
                 data-headline-jid="${feed.get('jid')}"
                 title="${open_title}"
-                @click=${(ev) => el.openHeadline(ev)}
+                @click="${(ev) => el.openHeadline(ev)}"
                 href="#"
                 >${feed.get('jid')}</a
             >
@@ -20,10 +24,13 @@ function tplHeadlinesFeedsListItem(el, feed) {
     `;
 }
 
+/**
+ * @param {import('../feed-list').HeadlinesFeedsList} el
+ */
 export default (el) => {
     const feeds = el.model.filter((m) => m.get('type') === HEADLINES_TYPE);
     const heading_headline = __('Announcements');
-    return html` <div class="controlbox-section" id="headline">
+    return html`<div class="controlbox-section" id="headline">
             <div class="d-flex controlbox-padded ${feeds.length ? '' : 'hidden'}">
                 <span class="w-100 controlbox-heading controlbox-heading--headline" role="heading" aria-level="3"
                     >${heading_headline}</span

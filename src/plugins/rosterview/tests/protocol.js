@@ -48,11 +48,10 @@ describe("Presence subscriptions", function () {
              * the interaction between roster items and subscription states.
              */
             mock.openControlBox(_converse);
-            const cbview = _converse.chatboxviews.get('controlbox');
-
             spyOn(_converse.roster, "sendContactAddIQ").and.callThrough();
             spyOn(_converse.api.vcard, "get").and.callThrough();
 
+            const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
             const add_contact_button = await u.waitUntil(() => cbview.querySelector('.add-contact'));
             add_contact_button.click()
 

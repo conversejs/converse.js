@@ -27,6 +27,8 @@
                     line-height: 1.5em;
                     height: 2.5em;
                     span {
+                        overflow-x: hidden;
+                        text-overflow: ellipsis;
                         padding-top: 0.25em;
                     }
                 }

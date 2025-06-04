@@ -6,11 +6,10 @@ const u = converse.env.utils;
 describe("The Controlbox", function () {
 
     it("can be opened by clicking a DOM element with class 'toggle-controlbox'",
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         spyOn(_converse.api, "trigger").and.callThrough();
         document.querySelector('.toggle-controlbox').click();
-        expect(_converse.api.trigger).toHaveBeenCalledWith('controlBoxOpened', jasmine.any(Object));
         const el = await u.waitUntil(() => document.querySelector("#controlbox"));
         expect(u.isVisible(el)).toBe(true);
     }));
@@ -25,7 +24,8 @@ describe("The Controlbox", function () {
         spyOn(view, 'close').and.callThrough();
         spyOn(_converse.api, "trigger").and.callThrough();
 
-        view.querySelector(".controlbox-heading__btn.close").click();
+        const button = await u.waitUntil(() => view.querySelector(".controlbox-heading__btn.close"));
+        button.click();
         expect(view.close).toHaveBeenCalled();
         expect(_converse.api.trigger).toHaveBeenCalledWith('controlBoxClosed', jasmine.any(Object));
     }));

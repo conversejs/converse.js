@@ -1,3 +1,8 @@
+export function isMobileViewport(): boolean;
+/**
+ * @param {import('@converse/headless/types/shared/chatbox').default} model
+ */
+export function getChatStyle(model: import("@converse/headless/types/shared/chatbox").default): string;
 /**
  * @param {Model} model
  */

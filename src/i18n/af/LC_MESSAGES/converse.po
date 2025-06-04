@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-03 12:38+0200\n"
-"PO-Revision-Date: 2025-05-20 15:55+0200\n"
+"PO-Revision-Date: 2025-06-04 11:01+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,14 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 
 #: dist/converse-no-dependencies.js:16375
 msgid "Could not automatically determine a connection URL"
-msgstr ""
+msgstr "Kon nie outomaties die verbindings-URL bepaal nie"
 
 #: dist/converse-no-dependencies.js:16685
 #: dist/converse-no-dependencies.js:16739
@@ -38,11 +38,13 @@ msgstr "U XMPP adres en/of wagwoord is verkeerd. Probeer asseblief weer."
 #: dist/converse-no-dependencies.js:16755
 #, javascript-format
 msgid "We could not connect to %1$s, is your XMPP address correct?"
-msgstr ""
+msgstr "Kon nie 'n verbinding met %1$s maak nie, is die XMPP adres korrek?"
 
 #: dist/converse-no-dependencies.js:16757
 msgid "The XMPP server rejected the connection because of a policy violation"
 msgstr ""
+"Die XMPP-bediener het die verbinding verwerp as gevolg van 'n "
+"beleidsoortreding"
 
 #: dist/converse-no-dependencies.js:16759
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -646,9 +648,8 @@ msgid "Offline"
 msgstr "Aflyn"
 
 #: dist/converse-no-dependencies.js:79745
-#, fuzzy
 msgid "Unavailable"
-msgstr "Beskikbaar"
+msgstr "Onbeskikbaar"
 
 #: dist/converse-no-dependencies.js:79746
 #: dist/converse-no-dependencies.js:120050
@@ -667,7 +668,7 @@ msgstr "Weg"
 
 #: dist/converse-no-dependencies.js:79748
 msgid "Do not disturb"
-msgstr ""
+msgstr "Moenie steur nie"
 
 #: dist/converse-no-dependencies.js:79749
 #: dist/converse-no-dependencies.js:120047
@@ -712,7 +713,7 @@ msgstr "Kanseleer"
 
 #: dist/converse-no-dependencies.js:85340
 msgid "Converse logo"
-msgstr ""
+msgstr "Converse logo"
 
 #: dist/converse-no-dependencies.js:87468
 msgid "Execute"
@@ -731,9 +732,9 @@ msgid "Complete"
 msgstr "Voltooi"
 
 #: dist/converse-no-dependencies.js:87716
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The profile picture of %1$s"
-msgstr "U profielbeeld"
+msgstr "Die profielbeeld van %1$s"
 
 #: dist/converse-no-dependencies.js:87827
 msgid "Add to Contacts"
@@ -880,17 +881,16 @@ msgstr "Moderator-werktuie"
 
 #: dist/converse-no-dependencies.js:89424
 #: dist/converse-no-dependencies.js:89426
-#, fuzzy
 msgid "Invitation to a groupchat"
-msgstr "Nooi iemand uit na hierdie groepsgesprek"
+msgstr "Uitnodiging na 'n groepsgesprek"
 
 #: dist/converse-no-dependencies.js:89424
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has invited you to join the groupchat \"%2$s\""
 msgstr "%1$s het u uitgenooi om die groepgesprek %2$s by te tree"
 
 #: dist/converse-no-dependencies.js:89426
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "%1$s has invited you to join the groupchat \"%2$s\", and left the following "
 "reason: \"%3$s\""
@@ -1281,19 +1281,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:100147
 msgid "Neither of you receive presence updates"
-msgstr ""
+msgstr "Geeneen van julle ontvang teenwoordigheidsopdaterings"
 
 #: dist/converse-no-dependencies.js:100149
 msgid "Only you receive presence updates"
-msgstr ""
+msgstr "Slegs u ontvang teenwoordigheidsopdaterings"
 
 #: dist/converse-no-dependencies.js:100151
 msgid "Only they receive presence updates"
-msgstr ""
+msgstr "Slegs hulle ontvang teenwoordigheidsopdaterings"
 
 #: dist/converse-no-dependencies.js:100153
 msgid "Both of you receive presence updates"
-msgstr ""
+msgstr "Albei van julle ontvang teenwoordigheidsopdaterings"
 
 #: dist/converse-no-dependencies.js:100163
 msgid "Remove from blocklist"
@@ -1359,7 +1359,7 @@ msgstr "Profiel"
 
 #: dist/converse-no-dependencies.js:100286
 msgid "Presence"
-msgstr ""
+msgstr "Teenwoordigheid"
 
 #: dist/converse-no-dependencies.js:100288
 #: dist/converse-no-dependencies.js:144328

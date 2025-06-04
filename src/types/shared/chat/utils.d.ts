@@ -1,3 +1,4 @@
+export function isMobileViewport(): boolean;
 /**
  * @param {import('@converse/headless/types/shared/chatbox').default} model
  */

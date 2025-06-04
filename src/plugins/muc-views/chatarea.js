@@ -3,63 +3,64 @@ import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import tplMUCChatarea from './templates/muc-chatarea.js';
 
-
 export default class MUCChatArea extends CustomElement {
-
-    static get properties () {
+    static get properties() {
         return {
             jid: { type: String },
             show_help_messages: { type: Boolean },
             type: { type: String },
-        }
+        };
     }
 
-    constructor () {
+    constructor() {
         super();
         this.jid = null;
         this.type = null;
         this.split = null;
+        this.mediaQueryList = window.matchMedia('(max-width: 576px)');
     }
 
-    async initialize () {
+    async initialize() {
         this.model = await api.rooms.get(this.jid);
         this.listenTo(this.model, 'change:show_help_messages', () => this.requestUpdate());
         this.listenTo(this.model, 'change:hidden_occupants', () => this.requestUpdate());
         this.listenTo(this.model.session, 'change:connection_status', () => this.requestUpdate());
-
         this.#hideSidebarIfSmallViewport();
-        this.hideSidebarIfSmallViewport = u.debounce(this.#hideSidebarIfSmallViewport.bind(this), 100);
         this.requestUpdate();
     }
 
-    render () {
+    render() {
         return this.model ? tplMUCChatarea(this) : '';
     }
 
-    #hideSidebarIfSmallViewport () {
+    /**
+     * @param {MediaQueryListEvent} [event]
+     */
+    #hideSidebarIfSmallViewport(event) {
         if (this.model?.get('hidden_occupants')) return;
-        const is_small = window.matchMedia("(max-width: 576px)").matches;
+        const is_small = event ? event.matches : this.mediaQueryList.matches;
         if (is_small) this.model?.save('hidden_occupants', true);
     }
 
-    connectedCallback () {
+    connectedCallback() {
         super.connectedCallback();
-        window.addEventListener('resize', this.hideSidebarIfSmallViewport, true);
+        this.hideSidebarIfSmallViewport = this.#hideSidebarIfSmallViewport.bind(this);
+        this.mediaQueryList.addEventListener('change', this.hideSidebarIfSmallViewport);
     }
 
-    disconnectedCallback () {
+    disconnectedCallback() {
         super.disconnectedCallback();
-        window.addEventListener('resize', this.hideSidebarIfSmallViewport, true);
+        this.mediaQueryList?.removeEventListener('change', this.hideSidebarIfSmallViewport);
     }
 
-    shouldShowSidebar () {
+    shouldShowSidebar() {
         return (
             !this.model.get('hidden_occupants') &&
             this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED
         );
     }
 
-    getHelpMessages () {
+    getHelpMessages() {
         const setting = api.settings.get('muc_disable_slash_commands');
         const disabled_commands = Array.isArray(setting) ? setting : [];
         return [
@@ -82,10 +83,10 @@ export default class MUCChatArea extends CustomElement {
             `<strong>/revoke</strong>: ${__("Revoke the user's current affiliation")}`,
             `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
             `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,
-            `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`
+            `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`,
         ]
-            .filter(line => disabled_commands.every(c => !line.startsWith(c + '<', 9)))
-            .filter(line => this.model.getAllowedCommands().some(c => line.startsWith(c + '<', 9)));
+            .filter((line) => disabled_commands.every((c) => !line.startsWith(c + '<', 9)))
+            .filter((line) => this.model.getAllowedCommands().some((c) => line.startsWith(c + '<', 9)));
     }
 }
 

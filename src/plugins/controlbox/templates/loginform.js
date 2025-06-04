@@ -99,7 +99,7 @@ function tplAuthFields() {
                     name="jid"
                     placeholder="${placeholder_username}"
                 />
-                ${locked_domain || default_domain ? tplDomain(locked_domain || default_domain) : ''}
+                ${locked_domain ? tplDomain(locked_domain) : ''}
             </div>
         </div>
         ${authentication !== EXTERNAL ? tplPasswordInput() : ''}

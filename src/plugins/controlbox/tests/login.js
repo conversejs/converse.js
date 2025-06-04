@@ -7,39 +7,22 @@ describe("The Login Form", function () {
         mock.initConverse(
             ['chatBoxesInitialized'],
             { auto_login: false,
-              allow_registration: false,  },
+              allow_registration: false ,
+		locked_domain: 'jabber.hot-chilli.eu' },
             async function (_converse) {
-            
-        _converse.api.settings.set('locked_domain', 'jabber.hot-chilli.eu');
-        
+            console.log('Locked Domain:', _converse.api.settings.get('locked_domain'));
         const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
         mock.toggleControlBox();
-        await u.waitUntil(() => cbview.querySelectorAll("div.input-group").length);
+        await u.waitUntil(() => {
+		const inputGroups = cbview.querySelectorAll('div.input-group');
+		console.log(inputGroups);
+		return inputGroups.length > 0;
+	});
 
         const addons = cbview.querySelectorAll('span.input-group-text.addon');
         expect(addons.length).toBe(1);
 
-        const addon = cbview.querySelector('span.input-group-text')[0];
-        expect(addon.innerHTML).toBe('jabber.hot-chilli.eu');
-    }));
-
-    fit("contains an addon in the username input with default_domain name", 
-        mock.initConverse(
-            ['chatBoxesInitialized'],
-            { auto_login: false,
-              allow_registration: false,  },
-            async function (_converse) {
-            
-        _converse.api.settings.set('default_domain', 'jabber.hot-chilli.eu');
-        
-        const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
-        mock.toggleControlBox();
-        await u.waitUntil(() => cbview.querySelectorAll("div.input-group").length);
-
-        const addons = cbview.querySelectorAll('span.input-group-text.addon');
-        expect(addons.length).toBe(1);
-
-        const addon = cbview.querySelector('span.input-group-text')[0];
+        const addon = addons[0]; 
         expect(addon.innerHTML).toBe('jabber.hot-chilli.eu');
     }));
 

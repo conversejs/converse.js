@@ -8,13 +8,14 @@
 import { api, converse } from '@converse/headless';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
+import { MOBILE_CUTOFF } from 'shared/constants.js';
 import tplNewDay from './templates/new-day.js';
 
 const { dayjs, u } = converse.env;
 const { convertASCII2Emoji, getShortnameReferences, getCodePointReferences } = u;
 
 export function isMobileViewport() {
-    return window.innerWidth <= 768;
+    return window.innerWidth <= MOBILE_CUTOFF;
 }
 
 /**

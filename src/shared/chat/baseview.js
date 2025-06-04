@@ -1,8 +1,6 @@
-/**
- * @typedef {import('@converse/skeletor').Model} Model
- */
 import { CustomElement } from '../components/element.js';
 import { _converse, api, constants } from '@converse/headless';
+import { MOBILE_CUTOFF } from 'shared/constants.js';
 import { onScrolledDown } from './utils.js';
 
 const { CHATROOMS_TYPE, INACTIVE } = constants;
@@ -17,12 +15,20 @@ export default class BaseChatView extends CustomElement {
     constructor() {
         super();
         this.jid = /** @type {string} */ null;
-        this.model = /** @type {Model} */ null;
+        this.model = /** @type {import('@converse/skeletor').Model} */ null;
+        this.viewportMediaQuery = window.matchMedia(`(max-width: ${MOBILE_CUTOFF}px)`);
+        this.renderOnViewportChange = () => this.requestUpdate();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        this.viewportMediaQuery.addEventListener('change', this.renderOnViewportChange);
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
         _converse.state.chatboxviews.remove(this.jid, this);
+        this.viewportMediaQuery.removeEventListener('change', this.renderOnViewportChange);
     }
 
     updated() {

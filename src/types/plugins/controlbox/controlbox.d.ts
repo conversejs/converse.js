@@ -8,6 +8,9 @@ export default ControlBoxView;
  */
 declare class ControlBoxView extends CustomElement {
     initialize(): void;
+    viewportMediaQuery: MediaQueryList;
+    renderOnViewportChange: () => void;
+    connectedCallback(): void;
     setModel(): void;
     model: any;
     render(): import("lit-html").TemplateResult<1> | "";

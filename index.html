@@ -1,282 +1,652 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <title>Converse</title>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Converse.js - "/>
-    <meta name="author" content="JC Brand" />
-    <meta name="keywords" content="xmpp chat webchat converse.js Converse" />
-    <link rel="shortcut icon" type="image/ico" href="images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="/dist/converse.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="/dist/website.min.css" />
-    <script src="https://cdn.conversejs.org/3rdparty/bootstrap-5.3.2.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    <script src="src/website.js"></script>
-</head>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Converse",
-  "description": "Open source XMPP chat client for the web",
-  "url": "https://conversejs.org",
-  "applicationCategory": "CommunicationApplication",
-  "operatingSystem": "Web Browser",
-}
-</script>
+    <head>
+        <title>Converse</title>
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="Converse.js - " />
+        <meta name="author" content="JC Brand" />
+        <meta name="keywords" content="xmpp chat webchat converse.js Converse" />
+        <link rel="shortcut icon" type="image/ico" href="images/favicon.ico" />
+        <link type="text/css" rel="stylesheet" media="screen" href="/dist/converse.min.css" />
+        <link type="text/css" rel="stylesheet" media="screen" href="/dist/website.min.css" />
+        <script
+            src="https://cdn.conversejs.org/3rdparty/bootstrap-5.3.2.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"
+        ></script>
+        <script src="src/website.js"></script>
+    </head>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "Converse",
+            "description": "Open source XMPP chat client for the web",
+            "url": "https://conversejs.org",
+            "applicationCategory": "CommunicationApplication",
+            "operatingSystem": "Web Browser"
+        }
+    </script>
 
-<body id="page-top" data-spy="scroll" class="converse-website">
-
-<section class="section-wrapper">
-    <nav class="navbar sticky-top navbar-expand-lg" role="navigation">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-            <span class="page-scroll">
-                <a class="navbar-brand" href="#intro"><span class="converse-brand-heading">Home</span></a>
-            </span>
-            <ul class="navbar-nav mt-2 mt-lg-0">
-                <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
-                <li class="hidden">
-                    <a class="nav-link" href="#page-top"></a>
-                </li>
-                <li class="nav-item page-scroll">
-                    <a class="nav-link" href="#about">About</a>
-                </li>
-                <li class="nav-item page-scroll">
-                    <a class="nav-link" href="#contact">Contact</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/conversejs/converse.js" target="_blank" rel="noopener">Github&nbsp;<i class="fa fa-external-link-alt"></i></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/docs/html/index.html">Documentation&nbsp;<i class="fa fa-external-link-alt"></i></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/conversejs/converse.js/releases" class="button" target="_blank" rel="noopener">Download&nbsp;<i class="fa fa-external-link-alt"></i></a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-    <section id="intro" class="intro text-center" class="container">
-        <div class="row">
-            <div class="col-md-12 col-md-offset-2">
-                <h1 class="brand-heading fade-in">
-                    <svg class="converse-svg-logo"
-                        xmlns:svg="http://www.w3.org/2000/svg"
-                        xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink"
-                        viewBox="0 0 364 364">
-                    <title>Converse</title>
-                    <g class="cls-1" id="g904">
-                        <g data-name="Layer 2">
-                            <g data-name="Layer 7">
-                                <path
-                                    class="cls-3"
-                                    d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" />
-                                <path
-                                    class="cls-4"
-                                    d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" />
-                            </g>
-                        </g>
-                    </g>
-                </svg>
-                <span class="brand-heading__text">
-                    <span>converse<span class="subdued">.js</span></span>
-                    <p class="byline">messaging freedom</p>
-                </span>
-                </h1>
-
-                <p class="intro-text">A powerful, open-source and web-based <a href="https://xmpp.org" target="_blank" rel="noopener">XMPP</a> chat client.</p>
-                <p class="intro-text">Pluggable and customizable with end-to-end encryption, DMs, group chats, and 30+ language support.</p>
-
-                <div>
-                    <a href="https://chat.conversejs.org" target="_blank" rel="noopener" class="btn btn-primary btn-lg rounded mt-4 mb-4">Take me to the app</a>
-                    <p class="intro-text">Or download the <a href="https://github.com/conversejs/converse-desktop/releases" target="_blank" rel="noopener">desktop</a> version.</p>
+    <body id="page-top" data-spy="scroll" class="converse-website">
+        <section class="section-wrapper">
+            <nav class="navbar sticky-top navbar-expand-lg" role="navigation">
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarTogglerDemo01"
+                    aria-controls="navbarTogglerDemo01"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                    <span class="page-scroll">
+                        <a class="navbar-brand" href="#intro"><span class="converse-brand-heading">Home</span></a>
+                    </span>
+                    <ul class="navbar-nav mt-2 mt-lg-0">
+                        <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                        <li class="hidden">
+                            <a class="nav-link" href="#page-top"></a>
+                        </li>
+                        <li class="nav-item page-scroll">
+                            <a class="nav-link" href="#about">About</a>
+                        </li>
+                        <li class="nav-item page-scroll">
+                            <a class="nav-link" href="#contact">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="https://github.com/conversejs/converse.js"
+                                target="_blank"
+                                rel="noopener"
+                                >Github&nbsp;<i class="fa fa-external-link-alt"></i
+                            ></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/docs/html/index.html"
+                                >Documentation&nbsp;<i class="fa fa-external-link-alt"></i
+                            ></a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="https://github.com/conversejs/converse.js/releases"
+                                class="button"
+                                target="_blank"
+                                rel="noopener"
+                                >Download&nbsp;<i class="fa fa-external-link-alt"></i
+                            ></a>
+                        </li>
+                    </ul>
                 </div>
+            </nav>
 
-                <div id="screenshotCarousel" class="carousel slide mx-auto pt-5" style="max-width: 1200px">
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#screenshotCarousel" data-bs-slide-to="0" class="active"></button>
-                        <button type="button" data-bs-target="#screenshotCarousel" data-bs-slide-to="1"></button>
-                        <button type="button" data-bs-target="#screenshotCarousel" data-bs-slide-to="2"></button>
-                        <button type="button" data-bs-target="#screenshotCarousel" data-bs-slide-to="3"></button>
-                        <button type="button" data-bs-target="#screenshotCarousel" data-bs-slide-to="4"></button>
-                    </div>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="https://conversejs.org/media/screenshots/converse-enter-muc.png" class="rounded shadow d-block w-100" alt="Converse fullpage chat">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="https://conversejs.org/media/screenshots/converse-overlayed.png" class="rounded shadow d-block w-100" alt="Converse overlayed chat">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="https://conversejs.org/media/screenshots/converse-nordic.png" class="rounded shadow d-block w-100" alt="Converses Nordic Theme">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="https://conversejs.org/media/screenshots/converse-prosody.png" class="rounded shadow d-block w-100" alt="Converse Prosody chat">
-                        </div>
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#screenshotCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#screenshotCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
+            <section id="intro" class="intro text-center" class="container">
+                <div class="row">
+                    <div class="col-md-12 col-md-offset-2">
+                        <h1 class="brand-heading fade-in">
+                            <svg
+                                class="converse-svg-logo"
+                                xmlns:svg="http://www.w3.org/2000/svg"
+                                xmlns="http://www.w3.org/2000/svg"
+                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                viewBox="0 0 364 364"
+                            >
+                                <title>Converse</title>
+                                <g class="cls-1" id="g904">
+                                    <g data-name="Layer 2">
+                                        <g data-name="Layer 7">
+                                            <path
+                                                class="cls-3"
+                                                d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z"
+                                            />
+                                            <path
+                                                class="cls-4"
+                                                d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z"
+                                            />
+                                        </g>
+                                    </g>
+                                </g>
+                            </svg>
+                            <span class="brand-heading__text">
+                                <span>converse<span class="subdued">.js</span></span>
+                                <p class="byline">messaging freedom</p>
+                            </span>
+                        </h1>
 
-    <section id="about" class="content-section">
-        <div class="container mx-auto w-50">
-            <div class="row row-cols-1 row-cols-lg-2 g-2">
-                <div class="col">
-                    <div class="h-100 p-3">
-                        <h2>Why Choose Converse? 🤔</h2>
-                        <p>Converse is the leading open-source XMPP chat solution for developers, communities, organizations and businesses needing secure and customizable messaging.</p>
-                        <p>Get a feature-rich chat solution with just a few lines of JavaScript.</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="h-100">
-                        <h2>Demos:</h2>
-                        <p>
-                            <ul class="list-group">
-                                <li><a href="/fullscreen.html"><strong>Standalone app</strong> (in fullscreen view mode)</a></li>
-                                <li><a href="demo/anonymous.html"><strong>Anonymous login</strong> (in overlayed view mode)</a></li>
-                                <li><a href="demo/embedded.html"><strong>Single chat</strong> (in embedded view mode)</a></li>
-                            </ul>
+                        <p class="intro-text">
+                            A powerful, open-source and web-based
+                            <a href="https://xmpp.org" target="_blank" rel="noopener">XMPP</a> chat client.
                         </p>
+                        <p class="intro-text">
+                            Pluggable and customizable with end-to-end encryption, DMs, group chats, and 30+ language
+                            support.
+                        </p>
+
+                        <div>
+                            <a
+                                href="https://chat.conversejs.org"
+                                target="_blank"
+                                rel="noopener"
+                                class="btn btn-primary btn-lg rounded mt-4 mb-4"
+                                >Take me to the app</a
+                            >
+                            <p class="intro-text">
+                                Or download the
+                                <a
+                                    href="https://github.com/conversejs/converse-desktop/releases"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >desktop</a
+                                >
+                                version.
+                            </p>
+                        </div>
+
+                        <div id="screenshotCarousel" class="carousel slide mx-auto pt-5" style="max-width: 1200px">
+                            <div class="carousel-indicators">
+                                <button
+                                    type="button"
+                                    data-bs-target="#screenshotCarousel"
+                                    data-bs-slide-to="0"
+                                    class="active"
+                                ></button>
+                                <button
+                                    type="button"
+                                    data-bs-target="#screenshotCarousel"
+                                    data-bs-slide-to="1"
+                                ></button>
+                                <button
+                                    type="button"
+                                    data-bs-target="#screenshotCarousel"
+                                    data-bs-slide-to="2"
+                                ></button>
+                                <button
+                                    type="button"
+                                    data-bs-target="#screenshotCarousel"
+                                    data-bs-slide-to="3"
+                                ></button>
+                                <button
+                                    type="button"
+                                    data-bs-target="#screenshotCarousel"
+                                    data-bs-slide-to="4"
+                                ></button>
+                            </div>
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img
+                                        src="https://conversejs.org/media/screenshots/converse-enter-muc.png"
+                                        class="rounded shadow d-block w-100"
+                                        alt="Converse fullpage chat"
+                                    />
+                                </div>
+                                <div class="carousel-item">
+                                    <img
+                                        src="https://conversejs.org/media/screenshots/converse-overlayed.png"
+                                        class="rounded shadow d-block w-100"
+                                        alt="Converse overlayed chat"
+                                    />
+                                </div>
+                                <div class="carousel-item">
+                                    <img
+                                        src="https://conversejs.org/media/screenshots/converse-nordic.png"
+                                        class="rounded shadow d-block w-100"
+                                        alt="Converses Nordic Theme"
+                                    />
+                                </div>
+                                <div class="carousel-item">
+                                    <img
+                                        src="https://conversejs.org/media/screenshots/converse-prosody.png"
+                                        class="rounded shadow d-block w-100"
+                                        alt="Converse Prosody chat"
+                                    />
+                                </div>
+                            </div>
+                            <button
+                                class="carousel-control-prev"
+                                type="button"
+                                data-bs-target="#screenshotCarousel"
+                                data-bs-slide="prev"
+                            >
+                                <span class="carousel-control-prev-icon"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button
+                                class="carousel-control-next"
+                                type="button"
+                                data-bs-target="#screenshotCarousel"
+                                data-bs-slide="next"
+                            >
+                                <span class="carousel-control-next-icon"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="row row-cols-1 row-cols-lg-2 g-2">
-                <div class="col">
-                    <div class="h-100 p-3">
-                        <h2>Powerful Features 💪</h2>
-                        <ul class="list-group">
-                            <li><strong>Flexible Deployment</strong> - Embed as an overlayed chat, an embedded widget or use as a full-page app.</li>
-                            <li><strong>Security</strong> - End-to-end encryption and powerful moderator tools.</li>
-                            <li><strong>Customizable</strong> - Plugin architecture with many <a href="https://github.com/conversejs/community-plugins/" target="_blank" rel="noopener">extensions</a> available.</li>
-                            <li><strong>Compatible</strong> - Seamless integration with any XMPP server.</li>
-                            <li>Chat statuses (online, busy, away, offline)</li>
-                            <li>Desktop notifications</li>
-                            <li>URL Previews (requires server support, for example <a href="https://modules.prosody.im/mod_ogp.html" target="_blank" rel="noopener">mod_ogp</a></li>
-                            <li>Multi-user chatrooms (<a href="https://xmpp.org/extensions/xep-0045.html" target="_blank" rel="noopener">XEP-045</a>, <a href="https://xmpp.org/extensions/xep-0402.html" target="_blank" rel="noopener">XEP-402</a>)</li>
-                            <li>Invitations to chat rooms (<a href="https://xmpp.org/extensions/xep-0249.html" target="_blank" rel="noopener">XEP 249</a>)</li>
-                            <li>vCard support (<a href="https://xmpp.org/extensions/xep-0054.html" target="_blank" rel="noopener">XEP 54</a>)</li>
-                            <li>Service discovery (<a href="https://xmpp.org/extensions/xep-0030.html" target="_blank" rel="noopener">XEP 30</a>)</li>
-                            <li>In-band registration (<a href="https://xmpp.org/extensions/xep-0077.html" target="_blank" rel="noopener">XEP 77</a>)</li>
-                            <li>Typing and chat state notifications (<a href="https://xmpp.org/extensions/xep-0085.html" target="_blank" rel="noopener">XEP 85</a>)</li>
-                            <li>File sharing / HTTP File Upload (<a href="https://xmpp.org/extensions/xep-0363.html" target="_blank" rel="noopener">XEP 363</a>)</li>
-                            <li>Message archiving (<a href="https://xmpp.org/extensions/xep-0313.html" target="_blank" rel="noopener">XEP 313</a>)</li>
-                            <li>Client state indication (<a href="https://xmpp.org/extensions/xep-0352.html" target="_blank" rel="noopener">XEP 352</a>)</li>
-                            <li>OMEMO end-to-end encrypted messaging (<a href="https://xmpp.org/extensions/xep-0384.html" target="_blank" rel="noopener">XEP 384</a>)</li>
-                            <li>Message Styling (<a href="https://xmpp.org/extensions/xep-0384.html" target="_blank" rel="noopener">XEP 393</a>)</li>
-                            <li>Anonymous logins, see the <a href="/demo/anonymous.html" target="_blank" rel="noopener">anonymous login demo</a></li>
-                            <li>Message corrections, retractions and moderation</li>
-                            <li>Translated into over 40 languages</li>
+            <section id="about" class="content-section">
+                <div class="container mx-auto w-50">
+                    <div class="row row-cols-1 row-cols-lg-2 g-2">
+                        <div class="col">
+                            <div class="h-100 p-3">
+                                <h2>Why Choose Converse? 🤔</h2>
+                                <p>
+                                    Converse is the leading open-source XMPP chat solution for developers, communities,
+                                    organizations and businesses needing secure and customizable messaging.
+                                </p>
+                                <p>Get a feature-rich chat solution with just a few lines of JavaScript.</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="h-100">
+                                <h2>Demos:</h2>
+                                <ul class="list-group">
+                                    <li>
+                                        <a href="/fullscreen.html"
+                                            ><strong>Standalone app</strong> (in fullscreen view mode)</a
+                                        >
+                                    </li>
+                                    <li>
+                                        <a href="demo/anonymous.html"
+                                            ><strong>Anonymous login</strong> (in overlayed view mode)</a
+                                        >
+                                    </li>
+                                    <li>
+                                        <a href="demo/embedded.html"
+                                            ><strong>Single chat</strong> (in embedded view mode)</a
+                                        >
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-lg-2 g-2">
+                        <div class="col">
+                            <div class="h-100 p-3">
+                                <h2>Powerful Features 💪</h2>
+                                <ul class="list-group">
+                                    <li>
+                                        <strong>Flexible Deployment</strong> - Embed as an overlayed chat, an embedded
+                                        widget or use as a full-page app.
+                                    </li>
+                                    <li>
+                                        <strong>Security</strong> - End-to-end encryption and powerful moderator tools.
+                                    </li>
+                                    <li>
+                                        <strong>Customizable</strong> - Plugin architecture with many
+                                        <a
+                                            href="https://github.com/conversejs/community-plugins/"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >extensions</a
+                                        >
+                                        available.
+                                    </li>
+                                    <li><strong>Compatible</strong> - Seamless integration with any XMPP server.</li>
+                                    <li>Chat statuses (online, busy, away, offline)</li>
+                                    <li>Desktop notifications</li>
+                                    <li>
+                                        URL Previews (requires server support, for example
+                                        <a href="https://modules.prosody.im/mod_ogp.html" target="_blank" rel="noopener"
+                                            >mod_ogp</a
+                                        >
+                                    </li>
+                                    <li>
+                                        Multi-user chatrooms (<a
+                                            href="https://xmpp.org/extensions/xep-0045.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >XEP-045</a
+                                        >,
+                                        <a
+                                            href="https://xmpp.org/extensions/xep-0402.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >XEP-402</a
+                                        >)
+                                    </li>
+                                    <li>
+                                        Invitations to chat rooms (<a
+                                            href="https://xmpp.org/extensions/xep-0249.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >XEP 249</a
+                                        >)
+                                    </li>
+                                    <li>
+                                        vCard support (<a
+                                            href="https://xmpp.org/extensions/xep-0054.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >XEP 54</a
+                                        >)
+                                    </li>
+                                    <li>
+                                        Service discovery (<a
+                                            href="https://xmpp.org/extensions/xep-0030.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >XEP 30</a
+                                        >)
+                                    </li>
+                                    <li>
+                                        In-band registration (<a
+                                            href="https://xmpp.org/extensions/xep-0077.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >XEP 77</a
+                                        >)
+                                    </li>
+                                    <li>
+                                        Typing and chat state notifications (<a
+                                            href="https://xmpp.org/extensions/xep-0085.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >XEP 85</a
+                                        >)
+                                    </li>
+                                    <li>
+                                        File sharing / HTTP File Upload (<a
+                                            href="https://xmpp.org/extensions/xep-0363.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >XEP 363</a
+                                        >)
+                                    </li>
+                                    <li>
+                                        Message archiving (<a
+                                            href="https://xmpp.org/extensions/xep-0313.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >XEP 313</a
+                                        >)
+                                    </li>
+                                    <li>
+                                        Client state indication (<a
+                                            href="https://xmpp.org/extensions/xep-0352.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >XEP 352</a
+                                        >)
+                                    </li>
+                                    <li>
+                                        OMEMO end-to-end encrypted messaging (<a
+                                            href="https://xmpp.org/extensions/xep-0384.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >XEP 384</a
+                                        >)
+                                    </li>
+                                    <li>
+                                        Message Styling (<a
+                                            href="https://xmpp.org/extensions/xep-0384.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >XEP 393</a
+                                        >)
+                                    </li>
+                                    <li>
+                                        Anonymous logins, see the
+                                        <a href="/demo/anonymous.html" target="_blank" rel="noopener"
+                                            >anonymous login demo</a
+                                        >
+                                    </li>
+                                    <li>Message corrections, retractions and moderation</li>
+                                    <li>Translated into over 40 languages</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="row row-cols-1">
+                                <div class="h-100">
+                                    <h2>Developer Friendly 🔨</h2>
+                                    <p>Built by developers, for developers</p>
+                                    <ul class="list-group">
+                                        <li>
+                                            <strong>No vendor lock-in</strong> -
+                                            <a
+                                                href="https://github.com/conversejs/converse.js/blob/master/LICENSE"
+                                                target="_blank"
+                                                rel="noopener"
+                                                >MPLv2</a
+                                            >
+                                            licensed
+                                        </li>
+                                        <li><strong>Plugin architecture</strong> - Enables easy customization</li>
+                                        <li>
+                                            <strong
+                                                >Comprehensive <a href="/docs/html/index.html">documentation</a></strong
+                                            >
+                                        </li>
+                                        <li>Active <strong>community</strong> with 130+ contributors</li>
+                                    </ul>
+                                </div>
+
+                                <div class="h-100">
+                                    <h2>Integration Ready 🔧</h2>
+                                    <p>
+                                        Converse has been integrated into many open source and proprietary applications.
+                                    </p>
+                                    <p>A non-exaustive list of open source integrations includes:</p>
+                                    <ul class="list-group">
+                                        <li>
+                                            <a
+                                                href="https://github.com/JohnXLivingston/peertube-plugin-livechat"
+                                                target="_blank"
+                                                rel="noopener"
+                                                >Peertube</a
+                                            >
+                                        </li>
+                                        <li>
+                                            <a href="https://doc.tiki.org/xmpp" target="_blank" rel="noopener"
+                                                >Tiki Wiki CMS Groupware</a
+                                            >
+                                        </li>
+                                        <li>
+                                            <a href="https://elgg.org/plugins/2997196" target="_blank" rel="noopener"
+                                                >Elgg</a
+                                            >
+                                        </li>
+                                        <li>
+                                            <a
+                                                href="https://github.com/devurandom/roundcube-converse.js-xmpp-plugin"
+                                                target="_blank"
+                                                rel="noopener"
+                                                >Roundcube</a
+                                            >
+                                        </li>
+                                        <li>
+                                            <a
+                                                href="https://wordpress.org/plugins/conversejs/"
+                                                target="_blank"
+                                                rel="noopener"
+                                                >Wordpress</a
+                                            >
+                                        </li>
+                                        <li>
+                                            <a
+                                                href="https://open-store.io/app/conversejs.luigi311"
+                                                target="_blank"
+                                                rel="noopener"
+                                                >ConverseJS for Ubuntu-Touch</a
+                                            >
+                                        </li>
+                                    </ul>
+                                    <p>
+                                        For ease of use, Converse is available as a plugin or add-on module for the
+                                        <a
+                                            href="https://www.igniterealtime.org/projects/openfire/plugins.jsp"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >Openfire</a
+                                        >
+                                        <a
+                                            href="https://modules.prosody.im/mod_conversejs.html"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >Prosody</a
+                                        >
+                                        <a
+                                            href="https://docs.ejabberd.im/admin/configuration/modules/#mod-conversejs"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >Ejabberd</a
+                                        >
+                                        XMPP servers.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="h-100 p-3 rounded-3 text-center">
+                            <h2>Get Started in Minutes 🚀</h2>
+                            <p>
+                                Use our <a href="/fullscreen.html">web app</a> to connect to any XMPP server. You can
+                                log in with your existing XMPP account.
+                            </p>
+                            <p>
+                                No account? No problem! With Converse you can register an account on any public XMPP
+                                server that allows in-band registration. Have a look at the
+                                <a href="https://compliance.conversations.im/" target="_blank" rel="noopener"
+                                    >Conversations compliance page</a
+                                >
+                                for public XMPP servers that allow registrations.
+                            </p>
+                            <p>
+                                Come and chat with us at
+                                <a
+                                    href="https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org"
+                                    class="xmpp JSnocheck"
+                                    title="Converse chat room"
+                                    >discuss@conference.conversejs.org</a
+                                >.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="outro content-section text-center d-flex flex-column justify-content-between" id="contact">
+                <div class="container mx-auto w-50 pb-3">
+                    <h2>Contact ✉️</h2>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            Follow on the
+                            <a href="https://mastodon.xyz/@jcbrand" target="_blank" rel="noopener">Fediverse</a> or
+                            <a
+                                href="https://npub.world/npub1purzvv7zzxqymk9q53qmjvlvlrwhy4dsyjt77nxjym9m77e62wtsnlnndd"
+                                target="_blank"
+                                rel="noopener"
+                                >Nostr</a
+                            >
+                        </li>
+                        <li class="list-group-item">
+                            Chat via XMPP:
+                            <a href="xmpp:jc@opkode.com" class="xmpp JSnocheck" title="XMPP/Jabber">jc@opkode.com</a>
+                        </li>
+                        <li class="list-group-item">
+                            If you have a programming question, you can ask on
+                            <a href="https://stackoverflow.com/questions/tagged/converse.js">Stack Overflow</a>
+                        </li>
+                        <li class="list-group-item">
+                            You can join the Converse XMPP chatroom:
+                            <a
+                                href="xmpp:discuss@conference.conversejs.org?join"
+                                class="xmpp JSnocheck chatroom-name"
+                                title="Converse chat room"
+                                >discuss@conference.conversejs.org</a
+                            >
+                        </li>
+                        <li class="list-group-item">
+                            Please file bugs and feature requests on
+                            <a target="_blank" rel="noopener" href="https://github.com/jcbrand/converse.js/issues"
+                                >Github</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="container mx-auto w-50 pt-3 pb-5">
+                    <h2 style="text-align: center">Professional support and custom development 👷</h2>
+                    <p>
+                        Converse is brought to you by
+                        <a href="https://opkode.com" target="_blank" rel="noopener">Opkode</a>, a boutique software
+                        consultancy.
+                    </p>
+                    <p>
+                        You can hire us for custom software development, including professional support, customizations
+                        or integration of Converse into your site.
+                    </p>
+                    <p>
+                        For inquiries please use our
+                        <a href="https://opkode.com/contact.html" target="_blank" rel="noopener">contact form</a>.
+                    </p>
+                </div>
+
+                <div class="container mx-auto w-50">
+                    <div class="sponsors">
+                        <h2>Special thanks to our sponsors</h2>
+                        <ul
+                            class="list-unstyled row row-cols-1 row-cols-lg-2 row-cols-xl-4 justify-content-center align-items-center"
+                        >
+                            <li class="col text-center">
+                                <a
+                                    href="https://bairesdev.com/sponsoring-open-source-projects/?utm_source=conversejs"
+                                    target="_blank"
+                                    rel="noopener"
+                                    ><img
+                                        class="img-fluid"
+                                        style="max-width: 13em"
+                                        src="/media/logos/bairesdev-primary.png"
+                                        alt="BairesDev"
+                                /></a>
+                            </li>
+                            <li class="col text-center">
+                                <a href="https://blokt.com?utm_source=conversejs" target="_blank" rel="noopener"
+                                    ><img
+                                        class="img-fluid"
+                                        style="max-width: 12em"
+                                        src="/logo/blokt.png"
+                                        alt="Blokt Crypto & Privacy"
+                                /></a>
+                            </li>
+                            <li class="col text-center">
+                                <a href="https://www.keycdn.com?utm_source=conversejs" target="_blank" rel="noopener"
+                                    ><img class="img-fluid" style="max-height: 3em" src="/logo/keycdn.svg" alt="KeyCDN"
+                                /></a>
+                            </li>
+                            <li class="col text-center">
+                                <a href="https://weblate.org?utm_source=conversejs" target="_blank" rel="noopener"
+                                    ><img
+                                        class="img-fluid"
+                                        style="max-height: 2.6em"
+                                        src="/logo/weblate-button.svg"
+                                        alt="Weblate"
+                                /></a>
+                            </li>
                         </ul>
                     </div>
+
+                    <p class="text-center">Sponsorships allow us to fund further development and improvements.</p>
+                    <p>
+                        If you'd like to sponsor this project, please visit
+                        <a href="https://github.com/sponsors/jcbrand" target="_blank" rel="noopener">Github</a>,
+                        <a href="https://www.patreon.com/jcbrand" target="_blank" rel="noopener">Patreon</a>,
+                        <a href="https://liberapay.com/jcbrand" target="_blank" rel="noopener">Liberapay</a> or
+                        <a href="https://opkode.com/contact.html" target="_blank" rel="noopener">contact us</a>.
+                    </p>
                 </div>
-
-                <div class="col">
-                    <div class="row row-cols-1">
-                        <div class="h-100">
-                            <h2>Developer Friendly 🔨</h2>
-                            <p>Built by developers, for developers
-                                <ul class="list-group">
-                                    <li><strong>No vendor lock-in</strong> - <a href="https://github.com/conversejs/converse.js/blob/master/LICENSE" target="_blank" rel="noopener">MPLv2</a> licensed</li>
-                                    <li><strong>Plugin architecture</strong> - Enables easy customization</li>
-                                    <li><strong>Comprehensive <a href="/docs/html/index.html">documentation</a></strong></li>
-                                    <li>Active <strong>community</strong> with 130+ contributors</li>
-                                </ul>
-                            </p>
-                        </div>
-
-                        <div class="h-100">
-                            <h2>Integration Ready 🔧</h2>
-                            <p>Converse has been integrated into many open source and proprietary applications.</p>
-                            <p>A non-exaustive list of open source integrations includes:
-                                <ul class="list-group">
-                                    <li><a href="https://github.com/JohnXLivingston/peertube-plugin-livechat" target="_blank" rel="noopener">Peertube</a></li>
-                                    <li><a href="https://doc.tiki.org/xmpp" target="_blank" rel="noopener">Tiki Wiki CMS Groupware</a></li>
-                                    <li><a href="https://elgg.org/plugins/2997196" target="_blank" rel="noopener">Elgg</a></li>
-                                    <li><a href="https://github.com/devurandom/roundcube-converse.js-xmpp-plugin" target="_blank" rel="noopener">Roundcube</a></li>
-                                    <li><a href="https://wordpress.org/plugins/conversejs/" target="_blank" rel="noopener">Wordpress</a></li>
-                                    <li><a href="https://open-store.io/app/conversejs.luigi311" target="_blank" rel="noopener">ConverseJS for Ubuntu-Touch</a></li>
-                                </ul>
-                            </p>
-                            <p>For ease of use, Converse is available as a plugin or add-on module for the
-                                <a href="https://www.igniterealtime.org/projects/openfire/plugins.jsp" target="_blank" rel="noopener">Openfire</a>
-                                <a href="https://modules.prosody.im/mod_conversejs.html" target="_blank" rel="noopener">Prosody</a>
-                                <a href="https://docs.ejabberd.im/admin/configuration/modules/#mod-conversejs" target="_blank" rel="noopener">Ejabberd</a>
-                                XMPP servers.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="h-100 p-3 rounded-3 text-center">
-                    <h2>Get Started in Minutes 🚀</h2>
-                    <p>Use our <a href="/fullscreen.html">web app</a> to connect to any XMPP server. You can log in with your existing XMPP account.</p>
-                    <p>No account? No problem! With Converse you can register an account on any public XMPP server that allows in-band registration.
-                        Have a look at the <a href="https://compliance.conversations.im/" target="_blank" rel="noopener">Conversations compliance page</a> for public XMPP servers that allow registrations.</p>
-                    <p>Come and chat with us at <a href="https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org" class="xmpp JSnocheck" title="Converse chat room">discuss@conference.conversejs.org</a>.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="outro content-section text-center d-flex flex-column justify-content-between" id="contact">
-        <div class="container mx-auto w-50 pb-3">
-            <h2>Contact ✉️</h2>
-            <ul class="list-group">
-                <li class="list-group-item"">Follow on the <a href="https://mastodon.xyz/@jcbrand" target="_blank" rel="noopener">Fediverse</a> or
-                    <a href="https://npub.world/npub1purzvv7zzxqymk9q53qmjvlvlrwhy4dsyjt77nxjym9m77e62wtsnlnndd" target="_blank" rel="noopener">Nostr</a>
-                <li class="list-group-item"">Chat via XMPP: <a href="xmpp:jc@opkode.com" class="xmpp JSnocheck" title="XMPP/Jabber">jc@opkode.com</a></li>
-                <li class="list-group-item"">If you have a programming question, you can ask on <a href="https://stackoverflow.com/questions/tagged/converse.js">Stack Overflow</a>
-                <li class="list-group-item"">You can join the Converse XMPP chatroom: <a href="xmpp:discuss@conference.conversejs.org?join" class="xmpp JSnocheck chatroom-name" title="Converse chat room">discuss@conference.conversejs.org</a></li>
-                <li class="list-group-item"">Please file bugs and feature requests on <a target="_blank" rel="noopener" href="https://github.com/jcbrand/converse.js/issues">Github</a></li>
-            </ul>
-        </div>
-
-        <div class="container mx-auto w-50 pt-3 pb-5">
-            <h2 style="text-align: center">Professional support and custom development 👷</h2>
-            <p>Converse is brought to you by <a href="https://opkode.com" target="_blank" rel="noopener">Opkode</a>, a boutique software consultancy.</p>
-            <p>You can hire us for custom software development, including professional support, customizations or integration of Converse into your site.</p>
-            <p>For inquiries please use our <a href="https://opkode.com/contact.html" target="_blank" rel="noopener">contact form</a>.</p>
-        </div>
-
-        <div class="container mx-auto w-50">
-            <div class="sponsors">
-                <h2>Special thanks to our sponsors</h2>
-                <ul class="list-unstyled row row-cols-1 row-cols-lg-2 row-cols-xl-4 justify-content-center align-items-center">
-                    <li class="col text-center"><a href="https://bairesdev.com/sponsoring-open-source-projects/?utm_source=conversejs" target="_blank" rel="noopener"><img class="img-fluid" style="max-width: 13em" src="/media/logos/bairesdev-primary.png" alt="BairesDev"></a></li>
-                    <li class="col text-center"><a href="https://blokt.com?utm_source=conversejs" target="_blank" rel="noopener"><img class="img-fluid" style="max-width: 12em" src="/logo/blokt.png" alt="Blokt Crypto & Privacy"></a></li>
-                    <li class="col text-center"><a href="https://www.keycdn.com?utm_source=conversejs" target="_blank" rel="noopener"><img class="img-fluid" style="max-height: 3em" src="/logo/keycdn.svg" alt="KeyCDN"></a></li>
-                    <li class="col text-center"><a href="https://weblate.org?utm_source=conversejs" target="_blank" rel="noopener"><img class="img-fluid" style="max-height: 2.6em" src="/logo/weblate-button.svg" alt="Weblate"></a></li>
-                </ul>
-            </div>
-
-            <p class="text-center">Sponsorships allow us to fund further development and improvements.</p>
-            <p>
-                If you'd like to sponsor this project, please visit
-                <a href="https://github.com/sponsors/jcbrand" target="_blank" rel="noopener">Github</a>,
-                <a href="https://www.patreon.com/jcbrand" target="_blank" rel="noopener">Patreon</a>,
-                <a href="https://liberapay.com/jcbrand" target="_blank" rel="noopener">Liberapay</a> or
-                <a href="https://opkode.com/contact.html" target="_blank" rel="noopener">contact us</a>.
-            </p>
-        </div>
-    </section>
-</section>
-</body>
+            </section>
+        </section>
+    </body>
 </html>

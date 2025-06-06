@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Logging utilities for Converse.js",
   "author": "JC Brand <jc@opkode.com>",
-  "license": "MIT",
+  "license": "MPL-2.0",
   "main": "index.js",
   "types": "types/index.d.ts",
   "module": "index.js",

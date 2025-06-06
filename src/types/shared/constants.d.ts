@@ -8,7 +8,7 @@ export namespace PRETTY_CHAT_STATUS {
     let chat: any;
     let online: any;
 }
-export const MOBILE_CUTOFF: 576;
+export const MOBILE_CUTOFF: 768;
 export type PrettyChatStatus = {
     offline: string;
     unavailable: string;

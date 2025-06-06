@@ -301,7 +301,7 @@
     }
 }
 
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
     .conversejs {
         &.converse-fullscreen,
         &.converse-overlayed {

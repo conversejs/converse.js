@@ -53,4 +53,4 @@ export const PRETTY_CHAT_STATUS = {
 
 // The width in pixels below which we're considered on a mobile device and
 // above a desktop device.
-export const MOBILE_CUTOFF = 576;
+export const MOBILE_CUTOFF = 768;

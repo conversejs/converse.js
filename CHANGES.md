@@ -4,6 +4,7 @@
 
 - #3672: Images not rendering
 - #3676: Flyout box is not positioned correctly on mobile devices in "overlayed" mode
+- #3689: Chat view not accesible for certain widths in "fullscreen" mode
 - Remove modal from the DOM when it's closed
 - Fix login form style for `classic` theme
 - Fix css for the `headlines` feed

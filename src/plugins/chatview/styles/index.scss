@@ -184,7 +184,7 @@
 }
 
 
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
     .conversejs {
         converse-chats:not(.converse-embedded)  {
             > .row {

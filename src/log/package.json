@@ -3,21 +3,49 @@
   "version": "0.0.1",
   "description": "Logging utilities for Converse.js",
   "author": "JC Brand <jc@opkode.com>",
+  "homepage": "https://conversejs.org",
   "license": "MPL-2.0",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./types/index.d.ts",
+        "default": "./index.js"
+      },
+      "require": {
+        "types": "./types/index.d.ts",
+        "default": "./index.js"
+      }
+    }
+  },
   "main": "index.js",
   "types": "types/index.d.ts",
   "module": "index.js",
+  "files": [
+    "README.md",
+    "index.js",
+    "types/**/*.d.ts"
+  ],
   "scripts": {
     "test": "echo \"Error: no tests yet\" && exit 1",
     "types": "tsc"
   },
   "keywords": [
     "converse.js",
-    "logging"
+    "logging",
+    "logger",
+    "log",
+    "debug"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/conversejs/converse.js.git"
+    "url": "https://github.com/conversejs/converse.js.git",
+    "directory": "src/log"
+  },
+  "bugs": {
+    "url": "https://github.com/conversejs/converse.js/issues"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   },
   "devDependencies": {
     "typescript": "^5.5.4"

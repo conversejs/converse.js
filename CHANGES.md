@@ -29,6 +29,7 @@
 - #1195: Add actions to quote and copy messages
 - #1303: Display non-contacts who sent us a message somehow in fullscreen 
 - #1349: XEP-0392 Consistent Color Generation
+- #1521: Display locked domain behind login field?
 - #1700: Deleted pending contacts reappear after page reload
 - #1810: Create clickable link to load older MAM messages if there is no scrollbars.
 - #2118: Show reflected message in MUC 

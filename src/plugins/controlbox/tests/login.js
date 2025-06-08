@@ -4,7 +4,7 @@ const u = converse.env.utils;
 
 describe("The Login Form", function () {
     
-    fit("contains an addon when locked_domain is set", 
+    it("contains an addon when locked_domain is set", 
         mock.initConverse(
             ['chatBoxesInitialized'], 
             { auto_login: false, 

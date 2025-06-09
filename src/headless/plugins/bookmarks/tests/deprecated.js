@@ -9,7 +9,7 @@ describe("A chat room", function () {
         await mock.waitUntilBookmarksReturned(
             _converse,
             [],
-            ['http://jabber.org/protocol/pubsub#publish-options'],
+            ['http://jabber.org/protocol/pubsub#publish-options', 'http://jabber.org/protocol/pubsub#config-node-max'],
             'storage:bookmarks'
         );
 
@@ -86,7 +86,7 @@ describe("A bookmark", function () {
         await mock.waitUntilBookmarksReturned(
             _converse,
             [],
-            ['http://jabber.org/protocol/pubsub#publish-options'],
+            ['http://jabber.org/protocol/pubsub#publish-options', 'http://jabber.org/protocol/pubsub#config-node-max'],
             'storage:bookmarks'
         );
 
@@ -157,7 +157,7 @@ describe("A bookmark", function () {
         await mock.waitUntilBookmarksReturned(
             _converse,
             [],
-            ['http://jabber.org/protocol/pubsub#publish-options'],
+            ['http://jabber.org/protocol/pubsub#publish-options', 'http://jabber.org/protocol/pubsub#config-node-max'],
             'storage:bookmarks'
         );
 

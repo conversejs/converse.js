@@ -164,6 +164,7 @@ async function waitUntilBookmarksReturned (
     bookmarks=[],
     features=[
         'http://jabber.org/protocol/pubsub#publish-options',
+        'http://jabber.org/protocol/pubsub#config-node-max',
         'urn:xmpp:bookmarks:1#compat'
    ],
     node='urn:xmpp:bookmarks:1'

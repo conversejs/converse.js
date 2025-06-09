@@ -88,7 +88,7 @@ function tplAuthFields() {
     return html`
         <div class="mb-3">
             <label for="converse-login-jid" class="form-label">${i18n_xmpp_address}:</label>
-            <div class="input-group">
+            <div class="${locked_domain ? 'input-group' : ''}">
                 <input
                     id="converse-login-jid"
                     ?autofocus=${api.settings.get('auto_focus') ? true : false}
@@ -101,7 +101,7 @@ function tplAuthFields() {
                 />
                 ${locked_domain ? tplDomain(locked_domain) : ''}
             </div>
-	</div>
+        </div>
         ${authentication !== EXTERNAL ? tplPasswordInput() : ''}
         ${api.settings.get('show_connection_url_input') ? tplConnectionURLInput() : ''}
         ${show_trust_checkbox ? tplTrustCheckbox(show_trust_checkbox === 'off' ? false : true) : ''}

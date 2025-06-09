@@ -37,9 +37,8 @@ declare class Bookmarks extends Collection {
     sendBookmarkStanza(bookmark: Bookmark): Promise<void | Element>;
     /**
      * @param {Element} iq
-     * @param {import('./types').BookmarkAttrs} attrs
      */
-    onBookmarkError(iq: Element, attrs: import("./types").BookmarkAttrs): void;
+    onBookmarkError(iq: Element): void;
     /**
      * @param {Promise} deferred
      */

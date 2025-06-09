@@ -123,7 +123,7 @@ class Bookmarks extends Collection {
             send_stanza = true;
         }
         if (send_stanza) {
-            this.sendBookmarkStanza(bookmark).catch((iq) => this.onBookmarkError(iq, attrs));
+            this.sendBookmarkStanza(bookmark).catch((iq) => this.onBookmarkError(iq));
         }
     }
 
@@ -183,12 +183,10 @@ class Bookmarks extends Collection {
 
     /**
      * @param {Element} iq
-     * @param {import('./types').BookmarkAttrs} attrs
      */
-    onBookmarkError(iq, attrs) {
+    onBookmarkError(iq) {
         log.error('Error while trying to add bookmark');
         log.error(iq);
-        this.get(attrs.jid)?.destroy();
     }
 
     /**

@@ -40,8 +40,8 @@ To use it, add these lines to your HTML page's ``<head>`` section:
 .. code-block:: html
 
     <!-- Replace 10.1.5 with your desired version -->
-    <link rel="stylesheet" href="https://cdn.conversejs.org/11.0.0/dist/converse.min.css">
-    <script src="https://cdn.conversejs.org/11.0.0/dist/converse.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="https://cdn.conversejs.org/11.0.1/dist/converse.min.css">
+    <script src="https://cdn.conversejs.org/11.0.1/dist/converse.min.js" charset="utf-8"></script>
 
 .. warning::
     Always specify a version number in production to avoid breaking changes.

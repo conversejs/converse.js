@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "description": "Browser based XMPP chat client",
   "browser": "dist/converse.js",
   "workspaces": [

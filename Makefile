@@ -65,7 +65,7 @@ certs:
 ########################################################################
 ## Translation machinery
 
-GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=src/i18n/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=11.0.0 dist/converse-no-dependencies.js -c
+GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=src/i18n/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=11.0.1 dist/converse-no-dependencies.js -c
 
 src/i18n/converse.pot: dist/converse-no-dependencies.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;

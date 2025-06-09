@@ -1,7 +1,7 @@
 import { Strophe } from 'strophe.js';
 
 export const BOSH_WAIT = 59;
-export const VERSION_NAME = "v11.0.0";
+export const VERSION_NAME = "v11.0.1";
 
 export const PRES_SHOW_VALUES = ['chat', 'dnd', 'away', 'xa'];
 export const PRES_TYPE_VALUES = [

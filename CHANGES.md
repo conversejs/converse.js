@@ -1,6 +1,6 @@
 # Changelog
 
-## 11.0.0 (Unreleased)
+## 11.0.1 (2025-06-09)
 
 - #3672: Images not rendering
 - #3676: Flyout box is not positioned correctly on mobile devices in "overlayed" mode
@@ -13,6 +13,7 @@
 - Fix auto zoom in when input message in ios safari
 - Add a service discovery browser to the settings modal
 - Add a modal to view blocked XMPP addresses
+- Check for PubSub `config-node-max` feature before using the `max` value
 
 ## 11.0.0 (2025-05-21)
 

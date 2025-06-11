@@ -63,7 +63,7 @@ function addClientFeatures () {
 export async function initializeDisco () {
     addClientFeatures();
     api.connection.get().addHandler(
-        stanza => onDiscoInfoRequest(stanza),
+        (stanza) => onDiscoInfoRequest(stanza),
         Strophe.NS.DISCO_INFO,
         'iq', 'get', null, null
     );

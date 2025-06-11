@@ -47,15 +47,15 @@ export default {
          * @param {boolean} [replace=true] Whether this promise should be replaced with a new one when the user logs out.
          * @example _converse.api.promises.add('foo-completed');
          */
-        add (promises, replace=true) {
+        add(promises, replace = true) {
             promises = Array.isArray(promises) ? promises : [promises];
-            promises.forEach(name => {
+            promises.forEach((name) => {
                 /** @type {import('../types').ReplaceableOpenPromise} */
                 const promise = getOpenPromise();
                 promise.replace = replace;
                 _converse.promises[name] = promise;
             });
-        }
+        },
     },
 
     /**
@@ -66,9 +66,9 @@ export default {
      * or a function which should eventually return a truthy value.
      * @returns {Promise}
      */
-    waitUntil (condition) {
+    waitUntil(condition) {
         if (isFunction(condition)) {
-            return waitUntil(/** @type {Function} */(condition));
+            return waitUntil(/** @type {Function} */ (condition));
         } else {
             const promise = _converse.promises[condition];
             if (promise === undefined) {
@@ -77,4 +77,4 @@ export default {
             return promise;
         }
     },
-}
+};

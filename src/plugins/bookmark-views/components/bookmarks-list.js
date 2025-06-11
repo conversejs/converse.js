@@ -1,22 +1,20 @@
-import debounce from "lodash-es/debounce";
+import debounce from 'lodash-es/debounce';
 import { Model } from '@converse/skeletor';
 import { _converse, api, u } from '@converse/headless';
 import tplBookmarksList from './templates/list.js';
-import tplSpinner from "templates/spinner.js";
+import tplSpinner from 'templates/spinner.js';
 import { CustomElement } from 'shared/components/element.js';
 
 import '../styles/bookmarks.scss';
 
-const { initStorage }  = u;
-
+const { initStorage } = u;
 
 export default class BookmarksView extends CustomElement {
-
-    async initialize () {
+    async initialize() {
         await api.waitUntil('bookmarksInitialized');
         const { bookmarks, chatboxes } = _converse.state;
 
-        this.liveFilter = debounce((ev) => this.model.set({'text': ev.target.value}), 100);
+        this.liveFilter = debounce((ev) => this.model.set({ text: ev.target.value }), 100);
 
         this.listenTo(bookmarks, 'add', () => this.requestUpdate());
         this.listenTo(bookmarks, 'remove', () => this.requestUpdate());
@@ -37,14 +35,14 @@ export default class BookmarksView extends CustomElement {
         });
     }
 
-    render () {
+    render() {
         return _converse.state.bookmarks && this.model ? tplBookmarksList(this) : tplSpinner();
     }
 
     /**
      * @param {Event} ev
      */
-    clearFilter (ev) {
+    clearFilter(ev) {
         ev?.stopPropagation?.();
         this.model.set('text', '');
     }

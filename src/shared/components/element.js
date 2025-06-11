@@ -1,28 +1,26 @@
 import { LitElement } from 'lit';
 import { EventEmitter } from '@converse/skeletor';
 
-
 export class CustomElement extends EventEmitter(LitElement) {
-
-    constructor () {
+    constructor() {
         super();
     }
 
-    createRenderRoot () {
+    createRenderRoot() {
         // Render without the shadow DOM
         return this;
     }
 
-    initialize () {
+    initialize() {
         return null;
     }
 
-    connectedCallback () {
+    connectedCallback() {
         super.connectedCallback();
         return this.initialize();
     }
 
-    disconnectedCallback () {
+    disconnectedCallback() {
         super.disconnectedCallback();
         this.stopListening();
     }

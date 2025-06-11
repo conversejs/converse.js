@@ -2,15 +2,16 @@ import { _converse, api, constants } from '@converse/headless';
 import 'plugins/chatview/heading.js';
 import 'plugins/chatview/bottom-panel.js';
 import BaseChatView from 'shared/chat/baseview.js';
-import tplChat from './templates/chat.js';
 import { __ } from 'i18n';
+import DragResizable from 'plugins/dragresize/mixin.js';
+import tplChat from './templates/chat.js';
 
 const { ACTIVE } = constants;
 
 /**
  * The view of an open/ongoing chat conversation.
  */
-export default class ChatView extends BaseChatView {
+export default class ChatView extends DragResizable(BaseChatView) {
     length = 200;
 
     async initialize() {
@@ -52,6 +53,6 @@ export default class ChatView extends BaseChatView {
         this.model.clearUnreadMsgCounter();
         this.maybeFocus();
     }
-}
+};
 
 api.elements.define('converse-chat', ChatView);

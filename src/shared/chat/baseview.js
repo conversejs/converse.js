@@ -1,5 +1,5 @@
-import { CustomElement } from '../components/element.js';
 import { _converse, api, constants } from '@converse/headless';
+import { CustomElement } from '../components/element.js';
 import { MOBILE_CUTOFF } from 'shared/constants.js';
 import { onScrolledDown } from './utils.js';
 
@@ -9,6 +9,7 @@ export default class BaseChatView extends CustomElement {
     static get properties() {
         return {
             jid: { type: String },
+            model: { state: true },
         };
     }
 
@@ -31,12 +32,15 @@ export default class BaseChatView extends CustomElement {
         this.viewportMediaQuery.removeEventListener('change', this.renderOnViewportChange);
     }
 
-    updated() {
-        if (this.model && this.jid !== this.model.get('jid')) {
+    /**
+     * Called when the element's properties change.
+     * @param {import('lit').PropertyValues} changed
+     */
+    updated(changed) {
+        super.updated(changed);
+        if (changed.has('jid') && this.model && this.jid !== this.model.get('jid')) {
             this.stopListening();
             _converse.state.chatboxviews.remove(this.model.get('jid'), this);
-            delete this.model;
-            this.requestUpdate();
             this.initialize();
         }
     }

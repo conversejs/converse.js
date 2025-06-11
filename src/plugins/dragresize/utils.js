@@ -40,18 +40,6 @@ export function dragresizeOverIframeHandler(e) {
 }
 
 /**
- * @param {import('@converse/headless/types/shared/chatbox').default} model
- */
-export function initializeDragResize(model) {
-    const height = model.get('height');
-    const width = model.get('width');
-    u.safeSave(model, {
-        'height': applyDragResistance(height, model.get('default_height')),
-        'width': applyDragResistance(width, model.get('default_width')),
-    });
-}
-
-/**
  * @typedef {Object} ResizingData
  * @property {HTMLElement} chatbox
  * @property {string} direction
@@ -175,14 +163,15 @@ export function onMouseUp(ev) {
         return true;
     }
     ev.preventDefault();
-    const height = applyDragResistance(resizing.chatbox.height, resizing.chatbox.model.get('default_height'));
-    const width = applyDragResistance(resizing.chatbox.width, resizing.chatbox.model.get('default_width'));
-    if (api.connection.connected()) {
-        resizing.chatbox.model.save({ height });
-        resizing.chatbox.model.save({ width });
+    const default_width = resizing.chatbox.model.get('default_width');
+    const default_height = resizing.chatbox.model.get('default_height');
+    const height = applyDragResistance(resizing.chatbox.height, default_height);
+    const width = applyDragResistance(resizing.chatbox.width, default_width);
+
+    if (height !== default_height || width !== default_width) {
+        u.safeSave(resizing.chatbox.model, { height, width });
     } else {
-        resizing.chatbox.model.set({ height });
-        resizing.chatbox.model.set({ width });
+        u.safeSave(resizing.chatbox.model, { height: undefined, width: undefined });
     }
     delete resizing.chatbox;
     delete resizing.direction;

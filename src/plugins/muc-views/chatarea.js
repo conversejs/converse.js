@@ -35,6 +35,18 @@ export default class MUCChatArea extends CustomElement {
     }
 
     /**
+     * Called when the element's properties change.
+     * @param {import('lit').PropertyValues} changed
+     */
+    updated(changed) {
+        super.updated(changed);
+        if (changed.has('jid') && this.model && this.jid !== this.model.get('jid')) {
+            this.stopListening();
+            this.initialize();
+        }
+    }
+
+    /**
      * @param {MediaQueryListEvent} [event]
      */
     #hideSidebarIfSmallViewport(event) {

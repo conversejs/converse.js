@@ -1,6 +1,7 @@
 import { _converse, api, constants, u } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { MOBILE_CUTOFF } from 'shared/constants.js';
+import DragResizable from 'plugins/dragresize/mixin.js';
 import tplControlbox from './templates/controlbox.js';
 import './navbar.js';
 
@@ -13,7 +14,7 @@ const { LOGOUT } = constants;
  * In `overlayed` `view_mode` it's a box like the chat boxes, in `fullscreen`
  * `view_mode` it's a left-aligned sidebar.
  */
-class ControlBoxView extends CustomElement {
+class ControlBoxView extends DragResizable(CustomElement) {
     initialize() {
         this.setModel();
         const { chatboxviews } = _converse.state;

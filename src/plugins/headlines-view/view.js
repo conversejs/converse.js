@@ -1,8 +1,9 @@
-import BaseChatView from 'shared/chat/baseview.js';
 import { _converse, api } from '@converse/headless';
+import BaseChatView from 'shared/chat/baseview.js';
+import DragResizable from 'plugins/dragresize/mixin.js';
 import tplHeadlines from './templates/headlines.js';
 
-class HeadlinesFeedView extends BaseChatView {
+class HeadlinesFeedView extends DragResizable(BaseChatView) {
     async initialize() {
         const { chatboxviews, chatboxes } = _converse.state;
         chatboxviews.add(this.jid, this);

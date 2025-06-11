@@ -1,11 +1,9 @@
 import { api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
-import tplDragresize from "../templates/dragresize.js";
-
+import tplDragresize from '../templates/dragresize.js';
 
 class ConverseDragResize extends CustomElement {
-
-    render () {
+    render() {
         return tplDragresize();
     }
 }

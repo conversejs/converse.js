@@ -3,13 +3,15 @@ export default class BaseChatView extends CustomElement {
         jid: {
             type: StringConstructor;
         };
+        model: {
+            state: boolean;
+        };
     };
     jid: any;
     model: any;
     viewportMediaQuery: MediaQueryList;
     renderOnViewportChange: () => void;
     connectedCallback(): void;
-    updated(): void;
     /**
      * @param {MouseEvent} ev
      */

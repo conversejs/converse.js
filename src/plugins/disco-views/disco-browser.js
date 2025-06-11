@@ -37,7 +37,6 @@ class DiscoBrowser extends CustomElement {
      */
     queryEntity(ev) {
         ev.preventDefault();
-        debugger;
         const form = /** @type {HTMLFormElement} */ (ev.target);
         const data = new FormData(form);
         this._entity_jids = [/** @type {string} */ (data.get('entity_jid')).trim()];

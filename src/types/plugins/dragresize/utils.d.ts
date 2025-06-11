@@ -8,10 +8,6 @@ export function unregisterGlobalEventHandlers(): void;
  */
 export function dragresizeOverIframeHandler(e: Element): void;
 /**
- * @param {import('@converse/headless/types/shared/chatbox').default} model
- */
-export function initializeDragResize(model: import("@converse/headless/types/shared/chatbox").default): void;
-/**
  * @returns {string}
  */
 export function getResizingDirection(): string;

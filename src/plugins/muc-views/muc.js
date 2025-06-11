@@ -1,21 +1,22 @@
 import { _converse, api, converse } from '@converse/headless';
 import BaseChatView from 'shared/chat/baseview.js';
+import DragResizable from 'plugins/dragresize/mixin.js';
 import tplMuc from './templates/muc.js';
 
+export default class MUCView extends DragResizable(BaseChatView) {
+    length = 300;
+    is_chatroom = true;
 
-export default class MUCView extends BaseChatView {
-    length = 300
-    is_chatroom = true
-
-    async initialize () {
+    async initialize() {
         this.model = await api.rooms.get(this.jid);
         _converse.state.chatboxviews.add(this.jid, this);
+
         this.setAttribute('id', this.model.get('box_id'));
 
         this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
         this.listenTo(this.model.session, 'change:view', () => this.requestUpdate());
 
-        document.addEventListener('visibilitychange',  () => this.onWindowStateChanged());
+        document.addEventListener('visibilitychange', () => this.onWindowStateChanged());
 
         this.onConnectionStatusChanged();
         this.model.maybeShow();
@@ -28,11 +29,11 @@ export default class MUCView extends BaseChatView {
         api.trigger('chatRoomViewInitialized', this);
     }
 
-    render () {
+    render() {
         return tplMuc(this);
     }
 
-    onConnectionStatusChanged () {
+    onConnectionStatusChanged() {
         const conn_status = this.model.session.get('connection_status');
         if (conn_status === converse.ROOMSTATUS.CONNECTING) {
             this.model.session.save({

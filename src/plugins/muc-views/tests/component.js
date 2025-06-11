@@ -37,12 +37,11 @@ describe("The <converse-muc> component", function () {
     }));
 
     it("will update correctly when the jid property changes",
-            mock.initConverse([], {'auto_insert': false}, async function (_converse) {
+            mock.initConverse([], { auto_insert: false}, async function (_converse) {
 
         const { api } = _converse;
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
-
 
         const muc_creation_promise = api.rooms.open(muc_jid, {nick, 'hidden': true}, false);
         await mock.waitForMUCDiscoInfo(_converse, muc_jid, []);
@@ -87,7 +86,7 @@ describe("The <converse-muc> component", function () {
         await mock.returnMemberLists(_converse, muc2_jid, [], all_affiliations);
         await model.messages.fetched;
 
-        model2.sendMessage({'body': 'hello from the bar!'});
+        model2.sendMessage({ body: 'hello from the bar!' });
         muc_el.setAttribute('jid', muc2_jid);
 
         await u.waitUntil(() => muc_el.querySelector('converse-chat-message-body').textContent.trim() === 'hello from the bar!');

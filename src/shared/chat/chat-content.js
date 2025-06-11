@@ -16,11 +16,6 @@ const WINDOW_SIZE = 100;
  * gets updated as the user scrolls up and down.
  */
 export default class ChatContent extends CustomElement {
-    /**
-     * @typedef {import('../../plugins/chatview/chat.js').default} ChatView
-     * @typedef {import('../../plugins/muc-views/muc.js').default} MUCView
-     * @typedef {import('../../plugins/muc-views/occupant').default} MUCOccupantView
-     */
     constructor() {
         super();
         this.model = null;
@@ -103,7 +98,7 @@ export default class ChatContent extends CustomElement {
     #markScrolled(ev) {
         let scrolled = true;
 
-        const el = /** @type {ChatView|MUCView|MUCOccupantView} */ (ev.target);
+        const el = /** @type {HTMLElement} */ (ev.target);
         const is_at_bottom = Math.floor(el.scrollTop) === 0;
         const is_at_top =
             Math.ceil(el.clientHeight - el.scrollTop) >= el.scrollHeight - Math.ceil(el.scrollHeight / 20);

@@ -23,7 +23,7 @@ converse.plugins.add('converse-headlines-view', {
      *
      * NB: These plugins need to have already been loaded by the bundler
      */
-    dependencies: ['converse-headlines', 'converse-chatview'],
+    dependencies: ['converse-headlines', 'converse-dragresize', 'converse-chatview'],
 
     initialize () {
         const exports =  {

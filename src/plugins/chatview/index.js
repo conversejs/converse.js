@@ -26,7 +26,7 @@ converse.plugins.add('converse-chatview', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ['converse-chatboxviews', 'converse-chat', 'converse-disco', 'converse-modal'],
+    dependencies: ['converse-dragresize', 'converse-chatboxviews', 'converse-chat', 'converse-disco', 'converse-modal'],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is

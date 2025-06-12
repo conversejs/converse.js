@@ -73,9 +73,7 @@ describe('Requesting Contacts', function () {
             const { roster } = _converse;
             const contact = roster.get(jid);
             spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
-            spyOn(contact, 'unauthorize').and.callFake(function () {
-                return contact;
-            });
+            spyOn(contact, 'unauthorize').and.callFake(() => contact);
             const roster_el = document.querySelector('converse-roster');
             const decline_btn = roster_el.querySelector('.dropdown-item.decline-xmpp-request');
             decline_btn.click();
@@ -212,9 +210,7 @@ describe('Requesting Contacts', function () {
             const jid = name.replace(/ /g, '.').toLowerCase() + '@montague.lit';
             const contact = _converse.roster.get(jid);
             spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
-            spyOn(contact, 'unauthorize').and.callFake(function () {
-                return contact;
-            });
+            spyOn(contact, 'unauthorize').and.callFake(() => contact);
             const req_contact = await u.waitUntil(() =>
                 sizzle(".contact-name:contains('" + name + "')", rosterview).pop()
             );
@@ -271,6 +267,113 @@ describe('Requesting Contacts', function () {
             expect(_converse.roster.data.get('version')).toBe('ver34');
             expect(_converse.roster.models.length).toBe(4);
             expect(_converse.roster.pluck('jid').includes('data@enterprise')).toBeTruthy();
+        })
+    );
+});
+
+describe('A chat with a requesting contact', function () {
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
+    it(
+        'shows an approval alert when chatting with a requesting contact',
+        mock.initConverse([], { lazy_load_vcards: false }, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.createContacts(_converse, 'requesting', 1);
+            const name = mock.req_names[0];
+            const jid = mock.req_jids[0];
+
+            // Open chat with requesting contact
+            const view = await mock.openChatBoxFor(_converse, jid);
+            await u.waitUntil(() => view.querySelector('converse-contact-approval-alert'));
+
+            const alert = view.querySelector('converse-contact-approval-alert');
+            expect(alert).toBeTruthy();
+            expect(alert.textContent).toContain(`${name} would like to be your contact`);
+            expect(alert.querySelector('.btn-success')).toBeTruthy();
+            expect(alert.querySelector('.btn-danger')).toBeTruthy();
+        })
+    );
+
+    it(
+        'can approve a contact request via the approval alert',
+        mock.initConverse([], { lazy_load_vcards: false }, async function (_converse) {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.createContacts(_converse, 'requesting', 1);
+            const jid = mock.req_jids[0];
+            const contact = _converse.roster.get(jid);
+            spyOn(contact, 'authorize').and.callThrough();
+
+            const view = await mock.openChatBoxFor(_converse, jid);
+            await u.waitUntil(() => view.querySelector('converse-contact-approval-alert'));
+
+            const alert = view.querySelector('converse-contact-approval-alert');
+            alert.querySelector('.btn-success').click();
+
+            const modal = api.modal.get('converse-accept-contact-request-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000);
+
+            // Submit the approval modal
+            const sent_stanzas = api.connection.get().sent_stanzas;
+            while (sent_stanzas.length) sent_stanzas.pop();
+            modal.querySelector('button[type="submit"]').click();
+
+            let stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.matches('iq[type="set"]')).pop());
+            expect(stanza).toEqualStanza(
+                stx`<iq type="set" xmlns="jabber:client" id="${stanza.getAttribute('id')}">
+                        <query xmlns="jabber:iq:roster">
+                            <item jid="${contact.get('jid')}" name="Escalus, prince of Verona"></item>
+                        </query>
+                    </iq>`
+            );
+
+            const result = stx`
+                <iq to="${api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client"/>`;
+            api.connection.get()._dataRecv(mock.createRequest(result));
+
+            stanza = await u.waitUntil(() =>
+                sent_stanzas.filter((s) => s.matches('presence[type="subscribed"]')).pop()
+            );
+            expect(stanza).toEqualStanza(
+                stx`<presence to="${contact.get('jid')}" type="subscribed" xmlns="jabber:client"/>`
+            );
+
+            await u.waitUntil(() => contact.authorize.calls.count());
+            expect(contact.authorize).toHaveBeenCalled();
+        })
+    );
+
+    it(
+        'can deny a contact request via the approval alert',
+        mock.initConverse([], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.waitUntilDiscoConfirmed(
+                _converse,
+                _converse.domain,
+                [{ 'category': 'server', 'type': 'IM' }],
+                ['urn:xmpp:blocking']
+            );
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.createContacts(_converse, 'requesting', 1);
+            const jid = mock.req_jids[0];
+            spyOn(api, 'confirm').and.returnValue(Promise.resolve(true));
+
+            const view = await mock.openChatBoxFor(_converse, jid);
+            await u.waitUntil(() => view.querySelector('converse-contact-approval-alert'));
+
+            const sent_stanzas = api.connection.get().sent_stanzas;
+            while (sent_stanzas.length) sent_stanzas.pop();
+
+            const alert = view.querySelector('converse-contact-approval-alert');
+            alert.querySelector('.btn-danger').click();
+
+            await u.waitUntil(() => api.confirm.calls.count());
+
+            let stanza = await u.waitUntil(() =>
+                sent_stanzas.filter((s) => s.matches('presence[type="unsubscribed"]')).pop()
+            );
+            expect(stanza).toEqualStanza(stx`<presence to="${jid}" type="unsubscribed" xmlns="jabber:client"/>`);
+            await u.waitUntil(() => view.querySelector('converse-contact-approval-alert') === null);
         })
     );
 });

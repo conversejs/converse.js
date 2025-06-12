@@ -125,6 +125,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
      */
     unauthorize (message) {
         rejectPresenceSubscription(this.get('jid'), message);
+        this.save({ requesting: false });
         return this;
     }
 

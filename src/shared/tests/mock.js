@@ -529,7 +529,7 @@ async function waitForRoster (_converse, type='current', length=-1, include_nick
     if (type === 'pending' || type === 'all') {
         ((length > -1) ? pend_names.slice(0, length) : pend_names).map(name =>
             result.c('item', {
-                jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
+                jid: `${name.replace(/ /g,'.').toLowerCase()}@${domain}`,
                 name: include_nick ? name : undefined,
                 subscription: 'none',
                 ask: 'subscribe'
@@ -541,7 +541,7 @@ async function waitForRoster (_converse, type='current', length=-1, include_nick
         const names = (length > -1) ? cur_names.slice(0, length) : cur_names;
         names.forEach(name => {
             result.c('item', {
-                jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
+                jid: `${name.replace(/ /g,'.').toLowerCase()}@${domain}`,
                 name: include_nick ? name : undefined,
                 subscription: 'both',
                 ask: null
@@ -653,10 +653,15 @@ const default_muc_features = [
 
 const view_mode = 'overlayed';
 
+const domain = 'montague.lit';
+
 // Names from http://www.fakenamegenerator.com/
 const req_names = [
     'Escalus, prince of Verona', 'The Nurse', 'Paris'
 ];
+
+const req_jids = req_names.map((name) => `${name.replace(/ /g, '.').toLowerCase()}@${domain}`);
+
 const pend_names = [
     'Lord Capulet', 'Guard', 'Servant'
 ];
@@ -976,6 +981,7 @@ Object.assign(mock, {
     pend_names,
     receiveOwnMUCPresence,
     req_names,
+    req_jids,
     returnMemberLists,
     sendMessage,
     toggleControlBox,

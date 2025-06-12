@@ -12,6 +12,7 @@ import NewChatModal from './modals/new-chat.js';
 import BlockListModal from './modals/blocklist.js';
 import RosterView from './rosterview.js';
 
+import './approval-alert.js';
 import 'shared/styles/status.scss';
 import './styles/roster.scss';
 

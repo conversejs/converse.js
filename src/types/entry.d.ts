@@ -20,7 +20,8 @@ declare namespace converse {
     /**
      * Public API method which explicitly loads Converse and allows you the
      * possibility to pass in configuration settings which need to be defined
-     * before loading. Currently this is only the [assets_path](https://conversejs.org/docs/html/configuration.html#assets_path)
+     * before loading. Currently this is only the
+     * [assets_path](https://conversejs.org/docs/html/configuration.html#assets_path)
      * setting.
      *
      * If not called explicitly, this method will be called implicitly once

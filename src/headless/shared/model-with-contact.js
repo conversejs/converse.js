@@ -71,10 +71,11 @@ export default function ModelWithContact(BaseModel) {
 
                 this.listenTo(this.contact, 'destroy', () => {
                     delete this.contact;
+                    this.trigger('contact:destroy');
                 });
 
                 this.rosterContactAdded.resolve();
-                this.trigger('contactAdded', this.contact);
+                this.trigger('contact:add', this.contact);
             }
         }
     };

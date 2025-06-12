@@ -18,8 +18,12 @@ export default class ChatView extends DragResizable(BaseChatView) {
         const { chatboxviews, chatboxes } = _converse.state;
         chatboxviews.add(this.jid, this);
         this.model = chatboxes.get(this.jid);
+        this.listenTo(this.model, 'change:requesting', () => this.requestUpdate());
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:show_help_messages', () => this.requestUpdate());
+        this.listenTo(this.model, 'contact:add', () => this.requestUpdate());
+        this.listenTo(this.model, 'contact:change', () => this.requestUpdate());
+        this.listenTo(this.model, 'contact:destroy', () => this.requestUpdate());
 
         document.addEventListener('visibilitychange', () => this.onWindowStateChanged());
 
@@ -39,7 +43,6 @@ export default class ChatView extends DragResizable(BaseChatView) {
     }
 
     getHelpMessages() {
-        // eslint-disable-line class-methods-use-this
         return [
             `<strong>/clear</strong>: ${__('Remove messages')}`,
             `<strong>/close</strong>: ${__('Close this chat')}`,
@@ -53,6 +56,6 @@ export default class ChatView extends DragResizable(BaseChatView) {
         this.model.clearUnreadMsgCounter();
         this.maybeFocus();
     }
-};
+}
 
 api.elements.define('converse-chat', ChatView);

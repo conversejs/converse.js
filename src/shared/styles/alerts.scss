@@ -14,6 +14,10 @@
             font-size: large;
         }
 
+        p {
+            color: var(--background-color) !important;
+        }
+
         .modal-title {
             font-size: 110%;
         }

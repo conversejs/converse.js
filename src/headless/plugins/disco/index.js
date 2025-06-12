@@ -58,6 +58,7 @@ converse.plugins.add('converse-disco', {
 
         api.listen.on('beforeTearDown', async () => {
             api.promises.add('streamFeaturesAdded');
+            api.promises.add('discoInitialized');
 
             const { stream_features } = _converse.state;
             if (stream_features) {

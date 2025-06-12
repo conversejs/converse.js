@@ -78,6 +78,7 @@ declare const BaseMessage_base: {
             resolve: (value: any) => void;
             reject: (reason?: any) => void;
         };
+        onClosedChanged: () => Promise<void>;
         contact: import("../index.js").RosterContact | import("../index.js").Profile;
         setModelContact(jid: string): Promise<void>;
         cid: any;

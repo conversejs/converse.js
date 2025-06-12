@@ -16,6 +16,7 @@ export default function ModelWithContact<T extends import("./types").ModelExtend
             resolve: (value: any) => void;
             reject: (reason?: any) => void;
         };
+        onClosedChanged: () => Promise<void>;
         /**
          * @public
          * @type {RosterContact|Profile}

@@ -288,6 +288,7 @@ declare class MUC extends MUC_base {
     defaults(): {
         bookmarked: boolean;
         chat_state: any;
+        closed: boolean;
         has_activity: boolean;
         hidden: boolean;
         hidden_occupants: boolean;

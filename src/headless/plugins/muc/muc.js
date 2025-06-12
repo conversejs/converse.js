@@ -70,13 +70,14 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     defaults() {
         /** @type {import('./types').DefaultMUCAttributes} */
         return {
-            'bookmarked': false,
-            'chat_state': undefined,
-            'has_activity': false, // XEP-437
-            'hidden': isUniView() && !api.settings.get('singleton'),
-            'hidden_occupants': !!api.settings.get('hide_muc_participants'),
-            'message_type': 'groupchat',
-            'name': '',
+            bookmarked: false,
+            chat_state: undefined,
+            closed: false,
+            has_activity: false, // XEP-437
+            hidden: isUniView() && !api.settings.get('singleton'),
+            hidden_occupants: !!api.settings.get('hide_muc_participants'),
+            message_type: 'groupchat',
+            name: '',
             // For group chats, we distinguish between generally unread
             // messages and those ones that specifically mention the
             // user.
@@ -85,20 +86,25 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             // ChatBox to indicate unread messages which
             // mention the user and `num_unread_general` to indicate
             // generally unread messages (which *includes* mentions!).
-            'num_unread_general': 0,
-            'num_unread': 0,
-            'roomconfig': {},
-            'time_opened': this.get('time_opened') || new Date().getTime(),
-            'time_sent': new Date(0).toISOString(),
-            'type': CHATROOMS_TYPE,
+            num_unread_general: 0,
+            num_unread: 0,
+            roomconfig: {},
+            time_opened: this.get('time_opened') || new Date().getTime(),
+            time_sent: new Date(0).toISOString(),
+            type: CHATROOMS_TYPE,
         };
     }
 
     async initialize() {
         super.initialize();
+        this.on('change:closed', () => {
+            if (!this.get('closed')) {
+                this.initialize();
+            }
+        });
+        if (this.get('closed')) return;
 
         this.initialized = getOpenPromise();
-
         this.debouncedRejoin = debounce(this.rejoin, 250);
 
         this.initOccupants();
@@ -122,6 +128,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         if (!restored) {
             await this.join();
         }
+
         /**
          * Triggered once a {@link MUC} has been created and initialized.
          * @event _converse#chatRoomInitialized

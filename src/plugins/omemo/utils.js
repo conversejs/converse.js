@@ -18,7 +18,6 @@ import { MIMETYPES_MAP } from 'utils/file.js';
 import { IQError, UserFacingError } from 'shared/errors.js';
 import DeviceLists from './devicelists.js';
 import { getFileName } from 'utils/html.js';
-import { Texture } from 'shared/texture/texture.js';
 
 const { Strophe, sizzle, stx } = converse.env;
 const { CHATROOMS_TYPE, PRIVATE_CHAT_TYPE } = constants;
@@ -275,7 +274,7 @@ async function getAndDecryptFile(url_text) {
 /**
  * @param {string} file_url
  * @param {string|Error} obj_url
- * @param {Texture} richtext
+ * @param {import('shared/texture/texture.js').Texture} richtext
  * @returns {import("lit").TemplateResult}
  */
 function getTemplateForObjectURL(file_url, obj_url, richtext) {
@@ -395,17 +394,15 @@ export async function parseEncryptedMessage(stanza, attrs) {
     }
 }
 
-export function onChatBoxesInitialized() {
-    _converse.state.chatboxes.on('add', (chatbox) => {
-        checkOMEMOSupported(chatbox);
-        if (chatbox.get('type') === CHATROOMS_TYPE) {
-            chatbox.occupants.on('add', (o) => onOccupantAdded(chatbox, o));
-            chatbox.features.on('change', () => checkOMEMOSupported(chatbox));
-        }
-    });
+export function onChatInitialized(chatbox) {
+    checkOMEMOSupported(chatbox);
+    if (chatbox.get('type') === CHATROOMS_TYPE) {
+        chatbox.occupants.on('add', (o) => onOccupantAdded(chatbox, o));
+        chatbox.features.on('change', () => checkOMEMOSupported(chatbox));
+    }
 }
 
-export function onChatInitialized(el) {
+export function onChatComponentInitialized(el) {
     el.listenTo(el.model.messages, 'add', (message) => {
         if (message.get('is_encrypted') && !message.get('is_error')) {
             el.model.save('omemo_supported', true);

@@ -49,8 +49,8 @@ export function handleEncryptedFiles(richtext: import("shared/texture/texture.js
         import('./types').MUCMessageAttrsWithEncryption|import('./types').MessageAttrsWithEncryption>}
  */
 export function parseEncryptedMessage(stanza: Element, attrs: MUCMessageAttributes | MessageAttributes): Promise<MUCMessageAttributes | MessageAttributes | import("./types").MUCMessageAttrsWithEncryption | import("./types").MessageAttrsWithEncryption>;
-export function onChatBoxesInitialized(): void;
-export function onChatInitialized(el: any): void;
+export function onChatInitialized(chatbox: any): void;
+export function onChatComponentInitialized(el: any): void;
 /**
  * @param {string} jid
  * @param {number} id
@@ -123,9 +123,9 @@ export type MessageAttributes = import("@converse/headless/shared/types").Messag
 export type MUCMessageAttributes = import("@converse/headless/plugins/muc/types").MUCMessageAttributes;
 export type ChatBox = import("@converse/headless").ChatBox;
 export type BaseMessage = import("@converse/headless").BaseMessage<any>;
-import { IQError } from "shared/errors.js";
-import { UserFacingError } from "shared/errors.js";
-import { MUC } from "@converse/headless";
+import { IQError } from 'shared/errors.js';
+import { UserFacingError } from 'shared/errors.js';
+import { MUC } from '@converse/headless';
 /**
  * @param {import('./types').EncryptedMessage} obj
  * @returns {Promise<string>}

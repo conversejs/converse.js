@@ -10,7 +10,7 @@ import tplRoomslist from './templates/roomslist.js';
 
 const { Strophe } = converse.env;
 const { initStorage } = u;
-const { CLOSED, OPENED } = constants;
+const { CHATROOMS_TYPE, CLOSED, OPENED } = constants;
 
 export class RoomsList extends CustomElement {
     initialize() {
@@ -52,6 +52,14 @@ export class RoomsList extends CustomElement {
         }
     }
 
+    /** @returns {import('@converse/headless').MUC[]} */
+    getRoomsToShow() {
+        const { chatboxes } = _converse.state;
+        const rooms = chatboxes.filter((m) => m.get('type') === CHATROOMS_TYPE && !m.get('closed'));
+        rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
+        return rooms;
+    }
+
     /** @param {Event} ev */
     async openRoom(ev) {
         ev.preventDefault();
@@ -70,10 +78,7 @@ export class RoomsList extends CustomElement {
         const target = /** @type {HTMLElement} */ (ev.currentTarget);
         const name = target.getAttribute('data-room-name');
         const jid = target.getAttribute('data-room-jid');
-        const result = await api.confirm(
-            __('Confirm'),
-            __('Are you sure you want to leave the groupchat %1$s?', name)
-        );
+        const result = await api.confirm(__('Confirm'), __('Are you sure you want to leave the groupchat %1$s?', name));
         if (result) {
             const room = await api.rooms.get(jid);
             room.close();

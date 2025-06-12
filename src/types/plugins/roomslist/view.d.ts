@@ -6,6 +6,8 @@ export class RoomsList extends CustomElement {
     renderIfChatRoom(model: Model): void;
     /** @param {Model} model */
     renderIfRelevantChange(model: Model): void;
+    /** @returns {import('@converse/headless').MUC[]} */
+    getRoomsToShow(): import("@converse/headless").MUC[];
     /** @param {Event} ev */
     openRoom(ev: Event): Promise<void>;
     /** @param {Event} ev */

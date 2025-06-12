@@ -56,7 +56,6 @@ export async function declineContactRequest(contact) {
 
     if (result) {
         const chat = await api.chats.get(contact.get('jid'));
-        chat?.close();
         contact.unauthorize();
 
         if (blocking_supported && Array.isArray(result) && result.find((i) => i.name === 'block')?.value === 'on') {
@@ -65,13 +64,14 @@ export async function declineContactRequest(contact) {
                 type: 'success',
                 body: __('Contact request declined and user blocked'),
             });
+            chat?.close();
         } else {
             api.toast.show('request-declined', {
                 type: 'success',
                 body: __('Contact request declined'),
             });
         }
-        contact.destroy();
+        if (!chat) contact.destroy();
     }
     return this;
 }

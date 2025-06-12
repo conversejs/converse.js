@@ -20,12 +20,7 @@ declare const ChatView_base: {
         initialize(): any;
         connectedCallback(): any;
         disconnectedCallback(): void;
-        on(name: string, callback: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options? /**
-         * Triggered once the {@link ChatView} has been initialized
-         * @event _converse#chatBoxViewInitialized
-         * @type {ChatView}
-         * @example _converse.api.listen.on('chatBoxViewInitialized', view => { ... });
-         */: Record<string, any>) => any, context: any): any;
+        on(name: string, callback: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any, context: any): any;
         _events: any;
         _listeners: {};
         listenTo(obj: any, name: string, callback?: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any): any;

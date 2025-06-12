@@ -11,7 +11,7 @@ import { getUnreadMsgsDisplay } from "shared/chat/utils";
 
 import '../styles/roomsgroups.scss';
 
-const { CHATROOMS_TYPE, CLOSED } = constants;
+const { CLOSED } = constants;
 const { isUniView } = u;
 
 /** @param {MUC} room */
@@ -124,10 +124,7 @@ function tplRoomDomainGroupList (el, rooms) {
  */
 export default (el) => {
     const group_by_domain = api.settings.get('muc_grouped_by_domain');
-    const { chatboxes } = _converse.state;
-    const rooms = chatboxes.filter((m) => m.get('type') === CHATROOMS_TYPE);
-    rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
-
+    const rooms = el.getRoomsToShow();
     const i18n_desc_rooms = __('Click to toggle the list of open groupchats');
     const i18n_heading_chatrooms = __('Groupchats');
     const i18n_title_list_rooms = __('Query server');

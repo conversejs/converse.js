@@ -24,7 +24,7 @@ import {
     handleMessageSendError,
     initOMEMO,
     omemo,
-    onChatBoxesInitialized,
+    onChatComponentInitialized,
     onChatInitialized,
     parseEncryptedMessage,
     registerPEPPushHandler,
@@ -73,8 +73,9 @@ converse.plugins.add("converse-omemo", {
         Object.assign(_converse.exports, exports);
 
         /******************** Event Handlers ********************/
-        api.waitUntil("chatBoxesInitialized").then(onChatBoxesInitialized);
 
+        api.listen.on('chatRoomInitialized', onChatInitialized);
+        api.listen.on('chatBoxInitialized', onChatInitialized);
         api.listen.on("getOutgoingMessageAttributes", getOutgoingMessageAttributes);
 
         api.listen.on("createMessageStanza", async (chat, data) => {
@@ -94,8 +95,8 @@ converse.plugins.add("converse-omemo", {
         api.listen.on("parseMessage", parseEncryptedMessage);
         api.listen.on("parseMUCMessage", parseEncryptedMessage);
 
-        api.listen.on("chatBoxViewInitialized", onChatInitialized);
-        api.listen.on("chatRoomViewInitialized", onChatInitialized);
+        api.listen.on("chatBoxViewInitialized", onChatComponentInitialized);
+        api.listen.on("chatRoomViewInitialized", onChatComponentInitialized);
 
         api.listen.on("connected", registerPEPPushHandler);
         api.listen.on("getToolbarButtons", getOMEMOToolbarButton);

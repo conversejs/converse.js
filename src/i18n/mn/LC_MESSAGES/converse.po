@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: Converse.js 11.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-09 15:11+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-06-14 03:01+0000\n"
+"Last-Translator: PolarisMail <george@polarismail.com>\n"
+"Language-Team: Mongolian <https://hosted.weblate.org/projects/conversejs/"
+"translations/mn/>\n"
 "Language: mn\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: dist/converse-no-dependencies.js:15306
 msgid "Could not automatically determine a connection URL"
@@ -28,32 +30,34 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:15699
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "Таны имэйл хаяг эсвэл нууц үг буруу байна. Дахин оролдоно уу."
 
 #: dist/converse-no-dependencies.js:15708
 #, javascript-format
 msgid "We could not connect to %1$s, is your XMPP address correct?"
-msgstr ""
+msgstr "Бид %1$s-д холбогдож чадсангүй, таны имэйл хаяг зөв үү?"
 
 #: dist/converse-no-dependencies.js:15710
 msgid "The XMPP server rejected the connection because of a policy violation"
 msgstr ""
+"Чатын системийн аюулгүй байдлын бодлого зөрчсөний улмаас холболт үүсгэхээс "
+"татгалзав."
 
 #: dist/converse-no-dependencies.js:15712
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr ""
+msgstr "Чатын сервер дэмжигдсэн баталгаажуулалтын механизмыг санал болгоогүй"
 
 #: dist/converse-no-dependencies.js:25060
 msgid "Undecryptable OMEMO message"
-msgstr ""
+msgstr "Шифрийг тайлах боломжгүй OMEMO мессеж"
 
 #: dist/converse-no-dependencies.js:25150
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "Уучлаарай, байршуулах URL-г тодорхойлж чадсангүй."
 
 #: dist/converse-no-dependencies.js:25167
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "Уучлаарай, файл байршуулах URL-г тодорхойлж чадсангүй."
 
 #: dist/converse-no-dependencies.js:25243
 #, javascript-format
@@ -61,40 +65,44 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
 "\"%1$s\""
 msgstr ""
+"Уучлаарай, таны файлыг амжилттай байршуулж чадсангүй. Алдааны мэдээлэл: "
+"\"%1$s\""
 
 #: dist/converse-no-dependencies.js:25245
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "Уучлаарай, таны файлыг амжилттай байршуулж чадсангүй."
 
 #: dist/converse-no-dependencies.js:26474
 #: dist/converse-no-dependencies.js:35980
 #, javascript-format
 msgid "%1$s is typing"
-msgstr ""
+msgstr "%1$s бичиж байна"
 
 #: dist/converse-no-dependencies.js:26476
 #: dist/converse-no-dependencies.js:35982
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr ""
+msgstr "%1$s бичихээ больсон"
 
 #: dist/converse-no-dependencies.js:26478
 #: dist/converse-no-dependencies.js:35984
 #: dist/converse-no-dependencies.js:38497
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr ""
+msgstr "%1$s гарсан"
 
 #: dist/converse-no-dependencies.js:26857
 #: dist/converse-no-dependencies.js:26875
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "Уучлаарай, уг файлыг сервер байршуулах боломжгүй."
 
 #: dist/converse-no-dependencies.js:26906
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
 msgstr ""
+"Таны файлын хэмжээ, %1$s нь таны серверийн зөвшөөрөгдсөн дээд хэмжээнээс "
+"хэтэрсэн байна."
 
 #: dist/converse-no-dependencies.js:26906
 #, javascript-format
@@ -102,25 +110,27 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"Таны файлын хэмжээ, %1$s нь серверийн зөвшөөрөгдсөн дээд хэмжээ буюу %2$s-"
+"аас хэтэрсэн байна."
 
 #: dist/converse-no-dependencies.js:27444
 #: dist/converse-no-dependencies.js:33593
 msgid "You're not allowed to retract your message."
-msgstr ""
+msgstr "Та мессежээ буцаах эрхгүй байна."
 
 #: dist/converse-no-dependencies.js:27446
 #: dist/converse-no-dependencies.js:33597
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr ""
+msgstr "Уучлаарай, таны мессежийг буцаах үед алдаа гарлаа."
 
 #: dist/converse-no-dependencies.js:27451
 msgid "You're not allowed to send a message."
-msgstr ""
+msgstr "Та мессеж илгээх эрхгүй байна."
 
 #: dist/converse-no-dependencies.js:27453
 #: dist/converse-no-dependencies.js:33606
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr ""
+msgstr "Уучлаарай, таны мессежийг илгээх явцад алдаа гарлаа."
 
 #: dist/converse-no-dependencies.js:28597
 msgid "Smileys and emotions"
@@ -128,31 +138,31 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:28598
 msgid "People"
-msgstr ""
+msgstr "хүмүүс"
 
 #: dist/converse-no-dependencies.js:28599
 msgid "Activities"
-msgstr ""
+msgstr "Үйл ажиллагаа"
 
 #: dist/converse-no-dependencies.js:28600
 msgid "Travel"
-msgstr ""
+msgstr "Аялал"
 
 #: dist/converse-no-dependencies.js:28601
 msgid "Objects"
-msgstr ""
+msgstr "Объектууд"
 
 #: dist/converse-no-dependencies.js:28602
 msgid "Animals and nature"
-msgstr ""
+msgstr "Амьтад ба байгаль"
 
 #: dist/converse-no-dependencies.js:28603
 msgid "Food and drink"
-msgstr ""
+msgstr "Хоол, ундаа"
 
 #: dist/converse-no-dependencies.js:28604
 msgid "Symbols"
-msgstr ""
+msgstr "Тэмдгүүд"
 
 #: dist/converse-no-dependencies.js:28605
 msgid "Flags"
@@ -167,37 +177,41 @@ msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
 msgstr ""
+"Таны илгээсэн мессежийг буцаах үйлдэл амжилтгүй боллоо, учир нь та бүлгийн "
+"чатад байхгүй байна."
 
 #: dist/converse-no-dependencies.js:33602
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr ""
+msgstr "Та мессеж илгээх эрхгүй байсан тул таны мессеж очоогүй."
 
 #: dist/converse-no-dependencies.js:33604
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr ""
+msgstr "Таны мессеж хүргэгдсэнгүй — та бүлгийн чатад байхгүй байна."
 
 #: dist/converse-no-dependencies.js:33946
 msgid "A timeout happened while trying to retract your message."
-msgstr ""
+msgstr "Мессежийг буцаах боломжгүй — хугацаа хэтэрсэн байна"
 
 #: dist/converse-no-dependencies.js:34714
 msgid "Sorry, an error happened while running the command."
-msgstr ""
+msgstr "Уучлаарай, командыг гүйцэтгэхэд алдаа гарсан байна."
 
 #: dist/converse-no-dependencies.js:34714
 #: dist/converse-no-dependencies.js:104656
 msgid "Check your browser's developer console for details."
 msgstr ""
+"Дэлгэрэнгүй мэдээллийг интернет хөтчийн хөгжүүлэгчийн консол дээрээс шалгана "
+"уу."
 
 #: dist/converse-no-dependencies.js:34734
 #: dist/converse-no-dependencies.js:34752
 msgid "Error: couldn't find a groupchat participant based on your arguments"
-msgstr ""
+msgstr "Алдаа: группын оролцогчийг олж чадсангүй."
 
 #: dist/converse-no-dependencies.js:34742
 msgid "Error: found multiple groupchat participant based on your arguments"
-msgstr ""
+msgstr "Алдаа: өгсөн утгуудаар хэд хэдэн группийн оролцогч олдлоо."
 
 #: dist/converse-no-dependencies.js:34767
 #, javascript-format
@@ -205,264 +219,266 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
+"Алдаа: \"%1$s\" командыг хоёр аргументээр дамжуулах ёстой — хэрэглэгчийн "
+"никнэйм болон сонголтоор шалтгаан."
 
 #: dist/converse-no-dependencies.js:34852
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr ""
+msgstr "Хориглогдсон: үүнийг хийхэд танд шаардлагатай эрх байхгүй байна."
 
 #: dist/converse-no-dependencies.js:34883
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "Хориглогдсон: үүнийг хийхэд таны шаардлагатай үүрэг байхгүй байна."
 
 #: dist/converse-no-dependencies.js:35232
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr ""
+msgstr "Та энэ группт нэгдэх эрхгүй байна."
 
 #: dist/converse-no-dependencies.js:35234
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr ""
+msgstr "Энэ групп зөвхөн гишүүдэд нээлттэй тул та бүртгүүлж чадахгүй байна."
 
 #: dist/converse-no-dependencies.js:35568
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr ""
+msgstr "Сэдвийг %1$s тохируулсан"
 
 #: dist/converse-no-dependencies.js:35568
 #, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr ""
+msgstr "Сэдвийг %1$s арилгасан"
 
 #: dist/converse-no-dependencies.js:35986
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr ""
+msgstr "%1$s группт нэвтэрлээ"
 
 #: dist/converse-no-dependencies.js:35988
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr ""
+msgstr "%1$s группээс гарлаа"
 
 #: dist/converse-no-dependencies.js:35990
 #, javascript-format
 msgid "%1$s is now a moderator"
-msgstr ""
+msgstr "%1$s одоо модератор боллоо"
 
 #: dist/converse-no-dependencies.js:35992
 #, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr ""
+msgstr "%1$s модератор байхаа больсон байна"
 
 #: dist/converse-no-dependencies.js:35994
 #, javascript-format
 msgid "%1$s has been given a voice"
-msgstr ""
+msgstr "%1$s-д ярих эрх олголоо"
 
 #: dist/converse-no-dependencies.js:35996
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr ""
+msgstr "%1$s-ийг ярих эрхгүй болгосон байна"
 
 #: dist/converse-no-dependencies.js:36004
 #, javascript-format
 msgid "%1$s and %2$s"
-msgstr ""
+msgstr "%1$s болон %2$s"
 
 #: dist/converse-no-dependencies.js:36007
 #, javascript-format
 msgid "%1$s are typing"
-msgstr ""
+msgstr "%1$s бичиж байна"
 
 #: dist/converse-no-dependencies.js:36009
 #, javascript-format
 msgid "%1$s have stopped typing"
-msgstr ""
+msgstr "%1$s бичихээ зогсоосон байна"
 
 #: dist/converse-no-dependencies.js:36011
 #, javascript-format
 msgid "%1$s have gone away"
-msgstr ""
+msgstr "%1$s завсарласан байна"
 
 #: dist/converse-no-dependencies.js:36013
 #, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr ""
+msgstr "%1$s группт нэвтэрлээ"
 
 #: dist/converse-no-dependencies.js:36015
 #, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr ""
+msgstr "%1$s группээс гарлаа"
 
 #: dist/converse-no-dependencies.js:36017
 #, javascript-format
 msgid "%1$s are now moderators"
-msgstr ""
+msgstr "%1$s одоо модераторууд боллоо"
 
 #: dist/converse-no-dependencies.js:36019
 #, javascript-format
 msgid "%1$s are no longer moderators"
-msgstr ""
+msgstr "%1$s одоо модератор биш боллоо"
 
 #: dist/converse-no-dependencies.js:36021
 #, javascript-format
 msgid "%1$s have been given voices"
-msgstr ""
+msgstr "%1$s-д харилцах эрх олгогдлоо"
 
 #: dist/converse-no-dependencies.js:36023
 #, javascript-format
 msgid "%1$s have been muted"
-msgstr ""
+msgstr "%1$s ны дуу хаагдсан байна."
 
 #: dist/converse-no-dependencies.js:36373
 #, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr ""
+msgstr "%1$s-ийг %2$s системээс хассан байна"
 
 #: dist/converse-no-dependencies.js:36373
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr ""
+msgstr "%1$s-д хязгаарлалт тавигдлаа"
 
 #: dist/converse-no-dependencies.js:36375
 #, javascript-format
 msgid "%1$s's nickname has changed"
-msgstr ""
+msgstr "%1$s-ийн нэвтрэх нэр өөрчлөгдлөө"
 
 #: dist/converse-no-dependencies.js:36377
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr ""
+msgstr "%1$s-ийг %2$s хаслаа"
 
 #: dist/converse-no-dependencies.js:36377
 #, javascript-format
 msgid "%1$s has been kicked out"
-msgstr ""
+msgstr "%1$s-ийг системээс хаслаа"
 
 #: dist/converse-no-dependencies.js:36379
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr ""
+msgstr "%1$s-ийг харьяалал өөрчлөлтийн улмаас хаслаа"
 
 #: dist/converse-no-dependencies.js:36381
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr ""
+msgstr "%1$s гишүүн биш тул хасагдлаа"
 
 #: dist/converse-no-dependencies.js:36404
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr ""
+msgstr "%1$s энэ группын админ биш болсон байна"
 
 #: dist/converse-no-dependencies.js:36409
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr ""
+msgstr "%1$s энэ группийн админ биш болсон байна"
 
 #: dist/converse-no-dependencies.js:36414
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr ""
+msgstr "%1$s-ийн хориг энэ группд цуцлагдлаа"
 
 #: dist/converse-no-dependencies.js:36420
 #, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
-msgstr ""
+msgstr "%1$s-г энэ группийн гишүүнээс хаслаа"
 
 #: dist/converse-no-dependencies.js:36426
 #, javascript-format
 msgid "%1$s is now a member of this groupchat"
-msgstr ""
+msgstr "%1$s-г энэ группийн гишүүнээр нэмлээ"
 
 #: dist/converse-no-dependencies.js:36432
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr ""
+msgstr "%1$s одоо энэ группийн %2$s эрхтэй боллоо"
 
 #: dist/converse-no-dependencies.js:36558
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
-msgstr ""
+msgstr "Сонгосон ник нэр давхцаж байна, өөр ник нэр сонгоно уу."
 
 #: dist/converse-no-dependencies.js:36584
 msgid "Password incorrect"
-msgstr ""
+msgstr "Нууц үг буруу"
 
 #: dist/converse-no-dependencies.js:36591
 msgid "You are not on the member list of this groupchat."
-msgstr ""
+msgstr "Та энэ группийн гишүүний жагсаалтад байхгүй байна."
 
 #: dist/converse-no-dependencies.js:36599
 msgid "You are not allowed to create new groupchats."
-msgstr ""
+msgstr "Танд шинэ групп үүсгэх эрх байхгүй байна."
 
 #: dist/converse-no-dependencies.js:36602
 msgid "Your nickname doesn't conform to this groupchat's policies."
-msgstr ""
+msgstr "Таны сонгосон ник энэ группийн бодлоготой тохирохгүй байна."
 
 #: dist/converse-no-dependencies.js:36617
 msgid "This groupchat does not (yet) exist."
-msgstr ""
+msgstr "Энэ групп чат одоогоор үүсээгүй байна."
 
 #: dist/converse-no-dependencies.js:36620
 msgid "This groupchat has reached its maximum number of participants."
-msgstr ""
+msgstr "Энэ групп чат дахь гишүүний тоо дүүрсэн байна."
 
 #: dist/converse-no-dependencies.js:36623
 msgid "Remote server not found"
-msgstr ""
+msgstr "Сервер олдсонгүй"
 
 #: dist/converse-no-dependencies.js:36626
 msgid "You're not allowed to enter this groupchat"
-msgstr ""
+msgstr "Танд энэ группт нэвтрэх зөвшөөрөл байхгүй байна."
 
 #: dist/converse-no-dependencies.js:36629
 msgid "An error happened while trying to enter this groupchat"
-msgstr ""
+msgstr "Энэ группт нэвтрэх оролдлого амжилтгүй боллоо."
 
 #: dist/converse-no-dependencies.js:38495
 #, javascript-format
 msgid "%1$s has gone offline"
-msgstr ""
+msgstr "%1$s оффлайн боллоо"
 
 #: dist/converse-no-dependencies.js:38499
 #, javascript-format
 msgid "%1$s is busy"
-msgstr ""
+msgstr "%1$s завгүй байна"
 
 #: dist/converse-no-dependencies.js:38501
 #, javascript-format
 msgid "%1$s is online"
-msgstr ""
+msgstr "%1$s онлайн боллоо"
 
 #: dist/converse-no-dependencies.js:41956
 msgid "This groupchat is not anonymous"
-msgstr ""
+msgstr "Энэ групп чат нийтэд нээлттэй байна."
 
 #: dist/converse-no-dependencies.js:41957
 msgid "This groupchat now shows unavailable members"
-msgstr ""
+msgstr "Энэ групп чат одоо түр оролцоогүй гишүүдийг харуулж байна."
 
 #: dist/converse-no-dependencies.js:41958
 msgid "This groupchat does not show unavailable members"
-msgstr ""
+msgstr "Энэ групп чат идэвхгүй гишүүдийг харуулахгүй байна."
 
 #: dist/converse-no-dependencies.js:41959
 msgid "The groupchat configuration has changed"
-msgstr ""
+msgstr "Групп чатын тохиргоо өөрчлөгдлөө."
 
 #: dist/converse-no-dependencies.js:41960
 msgid "Groupchat logging is now enabled"
-msgstr ""
+msgstr "Групп чатын түүх хадгалах тохиргоо идэвхжлээ."
 
 #: dist/converse-no-dependencies.js:41961
 msgid "Groupchat logging is now disabled"
-msgstr ""
+msgstr "Групп чатын түүх хадгалах тохиргоо одоо идэвхгүй боллоо."
 
 #: dist/converse-no-dependencies.js:41962
 msgid "This groupchat is now no longer anonymous"
-msgstr ""
+msgstr "Энэ групп чат нийтэд ил боллоо."
 
 #: dist/converse-no-dependencies.js:41963
 msgid "This groupchat is now semi-anonymous"
@@ -470,42 +486,42 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:41964
 msgid "This groupchat is now fully-anonymous"
-msgstr ""
+msgstr "Энэ групп чат одоо бүрэн нэрээ нуудаг боллоо."
 
 #: dist/converse-no-dependencies.js:41965
 msgid "A new groupchat has been created"
-msgstr ""
+msgstr "Шинэ групп чат үүслээ."
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:41967
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr ""
+msgstr "Таны нэр автоматаар %1$s гэж тохируулагдлаа."
 
 #: dist/converse-no-dependencies.js:41968
 msgid "You have been banned from this groupchat"
-msgstr ""
+msgstr "Таныг энэ групп чатнаас хаслаа."
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:41970
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr ""
+msgstr "Таны нэр %1$s гэж өөрчлөгдлөө."
 
 #: dist/converse-no-dependencies.js:41971
 msgid "You have been kicked from this groupchat"
-msgstr ""
+msgstr "Таныг энэ групп чатнаас гаргалаа."
 
 #: dist/converse-no-dependencies.js:41972
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
-msgstr ""
+msgstr "Та энэ групп чатаас гишүүнчлэлийн өөрчлөлтийн улмаас хасагдлаа."
 
 #: dist/converse-no-dependencies.js:41973
 msgid ""
 "You have been removed from this groupchat because it has changed to members-"
 "only and you're not a member"
-msgstr ""
+msgstr "Энэ групп чат зөвхөн гишүүдэд зориулсан болгогдсон тул та хасагдлаа."
 
 #: dist/converse-no-dependencies.js:41974
 msgid ""

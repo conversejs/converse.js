@@ -108,7 +108,7 @@ export function getShortnameReferences (text) {
     }
     const references = [...text.matchAll(converse.emojis.shortnames_regex)].filter(ref => ref[0].length > 0);
     return references.map(ref => {
-        const cp = converse.emojis.by_sn[ref[0].toLowerCase()].cp;
+        const cp = converse.emojis.by_sn[ref[0].toLowerCase()]?.cp;
         return {
             cp,
             'begin': ref.index,

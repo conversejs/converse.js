@@ -5,6 +5,7 @@
 - #3700: Fix exception that occurs when optional cp attribute is missing
 - Add approval banner in chats with requesting contacts or unsaved contacts
 - Some fixes regarding manually resized chats in `overlayed` view mode.
+- Replace webpack with [rspack](https://rspack.rs)
 
 ## 11.0.1 (2025-06-09)
 

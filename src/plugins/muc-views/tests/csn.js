@@ -104,7 +104,7 @@ describe("Groupchats", function () {
                 const remove_notifications_timeouts = [];
                 const setTimeout = window.setTimeout;
                 spyOn(window, 'setTimeout').and.callFake((f, w) => {
-                    if (f.toString() === "()=>this.removeNotification(actor, state)") {
+                    if (f.toString() === '()=>this.removeNotification(e,t)') {
                         remove_notifications_timeouts.push(f)
                     }
                     setTimeout(f, w);

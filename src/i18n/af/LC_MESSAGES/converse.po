@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-09 15:11+0200\n"
-"PO-Revision-Date: 2025-06-04 11:01+0000\n"
+"PO-Revision-Date: 2025-06-14 03:01+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -1448,7 +1448,7 @@ msgstr "Sien meer inligting aangaande hierdie persoon"
 
 #: dist/converse-no-dependencies.js:90124
 msgid "Unblock user"
-msgstr ""
+msgstr "Onblokkeer gebruiker"
 
 #: dist/converse-no-dependencies.js:90125
 msgid "Are you sure you want to unblock this user?"
@@ -1549,7 +1549,7 @@ msgstr "Verskaf asseblief 'n geldige XMPP address"
 
 #: dist/converse-no-dependencies.js:92644
 msgid "A big thank you to our sponsors 🙏"
-msgstr ""
+msgstr "Baie dankie aan ons borge 🙏"
 
 #: dist/converse-no-dependencies.js:92797
 msgid ""
@@ -1572,7 +1572,7 @@ msgstr "Hierdie toestel word vertrou"
 
 #: dist/converse-no-dependencies.js:92799
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 #: dist/converse-no-dependencies.js:92802
 msgid "Connection URL"
@@ -1613,13 +1613,12 @@ msgid "Click here to log in anonymously"
 msgstr "Klik hier om anoniem in te log"
 
 #: dist/converse-no-dependencies.js:93419
-#, fuzzy
 msgid "Chat"
-msgstr "Spraaksaam"
+msgstr "Klets"
 
 #: dist/converse-no-dependencies.js:93968
 msgid "About Converse"
-msgstr ""
+msgstr "Aangaande Converse"
 
 #: dist/converse-no-dependencies.js:94674
 msgid "Show details about this chat client"
@@ -1627,32 +1626,31 @@ msgstr "Wys inligting aangaande hierdie kletsprogram"
 
 #: dist/converse-no-dependencies.js:95114
 msgid "Discover Services"
-msgstr ""
+msgstr "Ontdek Dienste"
 
 #: dist/converse-no-dependencies.js:95116
 msgid "Inspect"
-msgstr ""
+msgstr "Ondersoek"
 
 #: dist/converse-no-dependencies.js:95116
 msgid "Service"
-msgstr ""
+msgstr "Diens"
 
 #: dist/converse-no-dependencies.js:95127
-#, fuzzy
 msgid "Identities"
-msgstr "Aktiwiteite"
+msgstr "Identiteite"
 
 #: dist/converse-no-dependencies.js:95128
 msgid "Type"
-msgstr ""
+msgstr "Tipe"
 
 #: dist/converse-no-dependencies.js:95128
 msgid "Category"
-msgstr ""
+msgstr "Kategorie"
 
 #: dist/converse-no-dependencies.js:95132
 msgid "Items"
-msgstr ""
+msgstr "Items"
 
 #: dist/converse-no-dependencies.js:95139
 #: dist/converse-no-dependencies.js:104936
@@ -1660,14 +1658,13 @@ msgid "Features"
 msgstr "Eienskappe"
 
 #: dist/converse-no-dependencies.js:95514
-#, fuzzy
 msgid "No service found with that XMPP address"
-msgstr "Groepgesprek XMPP-adres"
+msgstr "Geen diens by daardie XMPP adres gevind nie"
 
 #: dist/converse-no-dependencies.js:95521
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: %1$s"
-msgstr "Fout"
+msgstr "Fout: %1$s"
 
 #: dist/converse-no-dependencies.js:95928
 msgid "Close these announcements"
@@ -2392,9 +2389,8 @@ msgid "offline"
 msgstr "afgemeld"
 
 #: dist/converse-no-dependencies.js:107973
-#, fuzzy
 msgid "Set status"
-msgstr "Aangepaste status"
+msgstr "Stel status"
 
 #: dist/converse-no-dependencies.js:107974
 msgid "Away for long"
@@ -2420,7 +2416,7 @@ msgstr "Gebruik kommas om rolle te onderskei. Rolle word langs u naam op."
 
 #: dist/converse-no-dependencies.js:108209
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: dist/converse-no-dependencies.js:108212
 msgid "Reset Password"
@@ -2440,7 +2436,7 @@ msgstr "Profiel suksesvol bygewerk"
 
 #: dist/converse-no-dependencies.js:108752
 msgid "Status updated"
-msgstr ""
+msgstr "Status bygewerk"
 
 #: dist/converse-no-dependencies.js:108782
 msgid "Are you sure you want to log out?"
@@ -2456,7 +2452,7 @@ msgstr "Opdragte"
 
 #: dist/converse-no-dependencies.js:108958
 msgid "Services"
-msgstr ""
+msgstr "Dienste"
 
 #: dist/converse-no-dependencies.js:108975
 #, javascript-format
@@ -2479,9 +2475,8 @@ msgid "I am %1$s"
 msgstr "Ek is %1$s"
 
 #: dist/converse-no-dependencies.js:109175
-#, fuzzy
 msgid "Update your profile"
-msgstr "U profiel"
+msgstr "Dateer u profiel op"
 
 #: dist/converse-no-dependencies.js:109176
 msgid "Click to change your chat status"
@@ -2608,7 +2603,7 @@ msgstr "Onvertroud"
 
 #: dist/converse-no-dependencies.js:112410
 msgid "Choose which devices you trust for OMEMO encrypted communication"
-msgstr ""
+msgstr "Kies watter toestelle u vertrou vir versleutelde OMEMO kommunikasie"
 
 #. *
 #. * @param {import('../fingerprints').Fingerprints} el
@@ -2681,7 +2676,7 @@ msgstr "Het u reeds 'n kletsrekening?"
 #: dist/converse-no-dependencies.js:118360
 #: dist/converse-no-dependencies.js:118566
 msgid "Go back to login"
-msgstr ""
+msgstr "Gaan terug na aanmelding"
 
 #. *
 #. * @param {import('../form').default} el
@@ -2733,7 +2728,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:119080
 msgid "Invalid connection URL, only HTTPS and WSS accepted"
-msgstr ""
+msgstr "Ongeldige verbinding-URL, slegs HTTPS en WSS word aanvaar"
 
 #: dist/converse-no-dependencies.js:119151
 msgid "Now logging you in"
@@ -2819,6 +2814,8 @@ msgid ""
 "No default groupchat service found. You'll need to specify the full address, "
 "for example room@conference.example.org"
 msgstr ""
+"Geen verstek groepklets-diens gevind nie. U sal die volle adres moet "
+"verskaf, byvoorbeeld kamer@konferensie.voorbeeld.org"
 
 #: dist/converse-no-dependencies.js:120601
 msgid "Groupchat id is invalid."
@@ -3015,6 +3012,8 @@ msgid ""
 "Invalid value for the name and XMPP address. Please use the format \"Name "
 "<username@example.org>\"."
 msgstr ""
+"Ongeldige waarde vir die naam en XMPP-adres. Gebruik asseblief die formaat "
+"\"Naam <gebruiker@voorbeeld.org>\"."
 
 #: dist/converse-no-dependencies.js:124229
 msgid "Sorry, something went wrong while accepting the contact request"
@@ -3022,7 +3021,7 @@ msgstr "Jammer, 'n fout het voorgekom tydens aanvaarding van die kontakversoek"
 
 #: dist/converse-no-dependencies.js:124241
 msgid "Successfully accepted the contact request"
-msgstr ""
+msgstr "Kontakversoek suksesvol aanvaar"
 
 #. *
 #. * @param {import('../new-chat.js').default} el
@@ -3044,46 +3043,40 @@ msgstr "Jammer, iets het foutgeloop"
 #: dist/converse-no-dependencies.js:124749
 #, javascript-format
 msgid "%1$s blocked users shown"
-msgstr ""
+msgstr "%1$s geblokkeerde gebruikers vertoon"
 
 #: dist/converse-no-dependencies.js:124749
-#, fuzzy
 msgid "Unblock selected users"
-msgstr "Vewyder van die bloklys"
+msgstr "Onblokkeer gekose gebruikers"
 
 #: dist/converse-no-dependencies.js:124749
-#, fuzzy
 msgid "Filter blocked users"
-msgstr "Filtreer volgens status"
+msgstr "Filtreer geblokkeerde gebruikers"
 
 #: dist/converse-no-dependencies.js:124755
 msgid "clear"
-msgstr ""
+msgstr "vee uit"
 
 #: dist/converse-no-dependencies.js:124757
-#, fuzzy
 msgid "Select All"
 msgstr "Kies alle"
 
 #: dist/converse-no-dependencies.js:124768
-#, fuzzy
 msgid "No blocked XMPP addresses"
-msgstr "XMPP-adres"
+msgstr "Geen geblokkeerde XMPP-adresse"
 
 #: dist/converse-no-dependencies.js:125158
-#, fuzzy
 msgid "Blocklist"
-msgstr "Voeg by tot bloklys"
+msgstr "Bloklys"
 
 #: dist/converse-no-dependencies.js:125185
 #, javascript-format
 msgid "Successfully unblocked %1$s XMPP addresses"
-msgstr ""
+msgstr "%1$s adressse suksesvol ongeblokkeer"
 
 #: dist/converse-no-dependencies.js:125185
-#, fuzzy
 msgid "Successfully unblocked one XMPP address"
-msgstr "Soek groepgesprek-adres of -naam"
+msgstr "Een XMPP-adres suksesvol ongeblokkeer"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:125320
@@ -3119,9 +3112,8 @@ msgid "Add a contact"
 msgstr "Nuwe kontak"
 
 #: dist/converse-no-dependencies.js:125571
-#, fuzzy
 msgid "Show block list"
-msgstr "Voeg by tot bloklys"
+msgstr "Wys bloklys"
 
 #: dist/converse-no-dependencies.js:125607
 msgid "Re-sync contacts"

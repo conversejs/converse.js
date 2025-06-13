@@ -156,7 +156,7 @@ devserver: node_modules
 ########################################################################
 ## Builds
 
-dist/converse-no-dependencies.js: src webpack/webpack.common.js webpack/webpack.nodeps.js @converse/headless node_modules
+dist/converse-no-dependencies.js: src rspack/rspack.common.js rspack/rspack.nodeps.js @converse/headless node_modules
 	npm run nodeps
 
 dist/converse.js:: node_modules
@@ -197,10 +197,10 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 
 @converse/headless: src/headless
 
-src/headless/dist/converse-headless.js: src webpack/webpack.common.js node_modules @converse/headless
+src/headless/dist/converse-headless.js: src rspack/rspack.common.js node_modules @converse/headless
 	npm run headless-dev
 
-src/headless/dist/converse-headless.min.js: src webpack/webpack.common.js node_modules @converse/headless
+src/headless/dist/converse-headless.min.js: src rspack/rspack.common.js node_modules @converse/headless
 	npm run headless
 
 dist:: node_modules src/**/* | dist/website.css dist/website.min.css

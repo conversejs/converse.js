@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-09 15:11+0200\n"
-"PO-Revision-Date: 2024-06-01 20:11+0000\n"
+"PO-Revision-Date: 2025-06-16 10:01+0000\n"
 "Last-Translator: Quentin PAGÈS <quentinantonin@free.fr>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
 "translations/oc/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: dist/converse-no-dependencies.js:15306
 msgid "Could not automatically determine a connection URL"
@@ -624,7 +624,7 @@ msgstr "Messatges novèls"
 
 #: dist/converse-no-dependencies.js:63269
 msgid "Menu"
-msgstr ""
+msgstr "Menú"
 
 #: dist/converse-no-dependencies.js:63660
 #, fuzzy
@@ -648,7 +648,7 @@ msgstr "Servidor alonhat pas trobat"
 
 #: dist/converse-no-dependencies.js:64206
 msgid "Current version"
-msgstr ""
+msgstr "Version actuala"
 
 #: dist/converse-no-dependencies.js:65517
 #: dist/converse-no-dependencies.js:101598
@@ -657,7 +657,7 @@ msgstr "Desconnectat"
 
 #: dist/converse-no-dependencies.js:65518
 msgid "Unavailable"
-msgstr ""
+msgstr "Indisponible"
 
 #: dist/converse-no-dependencies.js:65519
 #: dist/converse-no-dependencies.js:101597
@@ -676,7 +676,7 @@ msgstr "Absent"
 
 #: dist/converse-no-dependencies.js:65521
 msgid "Do not disturb"
-msgstr ""
+msgstr "Destorbar pas"
 
 #: dist/converse-no-dependencies.js:65522
 #: dist/converse-no-dependencies.js:101594
@@ -725,19 +725,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:72704
 msgid "Execute"
-msgstr ""
+msgstr "Executar"
 
 #: dist/converse-no-dependencies.js:72705
 msgid "Previous"
-msgstr ""
+msgstr "Precedent"
 
 #: dist/converse-no-dependencies.js:72706
 msgid "Next"
-msgstr ""
+msgstr "Seguent"
 
 #: dist/converse-no-dependencies.js:72707
 msgid "Complete"
-msgstr ""
+msgstr "Complèt"
 
 #: dist/converse-no-dependencies.js:72998
 #, fuzzy, javascript-format
@@ -789,7 +789,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:73227
 msgid "Occupant Id"
-msgstr ""
+msgstr "ID Ocupant"
 
 #: dist/converse-no-dependencies.js:73343
 #: dist/converse-no-dependencies.js:74055
@@ -1013,7 +1013,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:75832
 msgid "Executing"
-msgstr ""
+msgstr "En execucion"
 
 #: dist/converse-no-dependencies.js:75836
 #: dist/converse-no-dependencies.js:75841
@@ -1084,7 +1084,7 @@ msgstr "Volètz rejónher aquesta sala automaticament a l’aviada ?"
 #: dist/converse-no-dependencies.js:122624
 #: dist/converse-no-dependencies.js:122759
 msgid "Remove"
-msgstr ""
+msgstr "Levar"
 
 #: dist/converse-no-dependencies.js:76713
 #: dist/converse-no-dependencies.js:84390
@@ -1113,7 +1113,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76717
 #: dist/converse-no-dependencies.js:84390
 msgid "Update"
-msgstr ""
+msgstr "Actualizar"
 
 #: dist/converse-no-dependencies.js:76717
 #: dist/converse-no-dependencies.js:104229
@@ -1230,11 +1230,11 @@ msgstr "Tirar"
 
 #: dist/converse-no-dependencies.js:79235
 msgid "Copy"
-msgstr ""
+msgstr "Copiar"
 
 #: dist/converse-no-dependencies.js:79245
 msgid "Quote"
-msgstr ""
+msgstr "Citar"
 
 #: dist/converse-no-dependencies.js:79487
 msgid "Image: "
@@ -1334,7 +1334,7 @@ msgstr "Suprimir aqueste contacte"
 #: dist/converse-no-dependencies.js:84306
 #: dist/converse-no-dependencies.js:123909
 msgid "Accept"
-msgstr ""
+msgstr "Acceptar"
 
 #: dist/converse-no-dependencies.js:84314
 #, fuzzy
@@ -1382,7 +1382,7 @@ msgstr "Vòstre perfil"
 
 #: dist/converse-no-dependencies.js:84384
 msgid "Presence"
-msgstr ""
+msgstr "Preséncia"
 
 #: dist/converse-no-dependencies.js:84386
 #: dist/converse-no-dependencies.js:124179
@@ -1616,11 +1616,11 @@ msgstr "Aquò es un periferic fisable"
 
 #: dist/converse-no-dependencies.js:92799
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 #: dist/converse-no-dependencies.js:92802
 msgid "Connection URL"
-msgstr ""
+msgstr "URL de connexion"
 
 #: dist/converse-no-dependencies.js:92803
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
@@ -1661,7 +1661,7 @@ msgstr "Charraire"
 
 #: dist/converse-no-dependencies.js:93968
 msgid "About Converse"
-msgstr ""
+msgstr "A prepaus de Converse"
 
 #: dist/converse-no-dependencies.js:94674
 msgid "Show details about this chat client"
@@ -1677,7 +1677,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:95116
 msgid "Service"
-msgstr ""
+msgstr "Servici"
 
 #: dist/converse-no-dependencies.js:95127
 #, fuzzy
@@ -1686,15 +1686,15 @@ msgstr "Activitats"
 
 #: dist/converse-no-dependencies.js:95128
 msgid "Type"
-msgstr ""
+msgstr "Tipe"
 
 #: dist/converse-no-dependencies.js:95128
 msgid "Category"
-msgstr ""
+msgstr "Categoria"
 
 #: dist/converse-no-dependencies.js:95132
 msgid "Items"
-msgstr ""
+msgstr "Articles"
 
 #: dist/converse-no-dependencies.js:95139
 #: dist/converse-no-dependencies.js:104936
@@ -1906,7 +1906,7 @@ msgstr "Salas dobèrtas"
 #: dist/converse-no-dependencies.js:101139
 #: dist/converse-no-dependencies.js:107820
 msgid "Success"
-msgstr ""
+msgstr "Succès"
 
 #: dist/converse-no-dependencies.js:101139
 #, fuzzy
@@ -1950,7 +1950,7 @@ msgstr "Participants"
 #: dist/converse-no-dependencies.js:101759
 #: dist/converse-no-dependencies.js:101964
 msgid "Hide"
-msgstr ""
+msgstr "Amagar"
 
 #: dist/converse-no-dependencies.js:101760
 #: dist/converse-no-dependencies.js:125584

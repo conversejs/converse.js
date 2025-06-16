@@ -3,7 +3,7 @@
  */
 import _converse from '../../shared/_converse.js';
 import chatboxes from '../../plugins/chatboxes/api.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import promise_api from '../../shared/api/promise.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
 import { Strophe } from 'strophe.js';
@@ -32,7 +32,7 @@ const rooms = {
      * @param {object} [attrs] attrs The room attributes
      * @returns {Promise<MUC[]|MUC>} Promise which resolves with the Model representing the chat.
      */
-    create (jids, attrs = {}) {
+    create(jids, attrs = {}) {
         attrs = typeof attrs === 'string' ? { 'nick': attrs } : attrs || {};
         if (!attrs.nick && settings.get('muc_nickname_from_jid')) {
             const bare_jid = _converse.session.get('bare_jid');
@@ -43,7 +43,7 @@ const rooms = {
         } else if (typeof jids === 'string') {
             return rooms.get(getJIDFromURI(jids), attrs, true);
         }
-        return Promise.all(jids.map((jid) => /** @type {Promise<MUC>} */(rooms.get(getJIDFromURI(jid), attrs, true))));
+        return Promise.all(jids.map((jid) => /** @type {Promise<MUC>} */ (rooms.get(getJIDFromURI(jid), attrs, true))));
     },
 
     /**
@@ -103,14 +103,14 @@ const rooms = {
      *     }
      * );
      */
-    async open (jids, attrs = {}, force = false) {
+    async open(jids, attrs = {}, force = false) {
         await waitUntil('chatBoxesFetched');
         if (jids === undefined) {
             const err_msg = 'rooms.open: You need to provide at least one JID';
             log.error(err_msg);
             throw new TypeError(err_msg);
         } else if (typeof jids === 'string') {
-            const room = /** @type {MUC} */(await rooms.get(jids, attrs, true));
+            const room = /** @type {MUC} */ (await rooms.get(jids, attrs, true));
             !attrs.hidden && room?.maybeShow(force);
             return room;
         } else {
@@ -142,7 +142,7 @@ const rooms = {
      *     )
      * });
      */
-    async get (jids, attrs = {}, create = false) {
+    async get(jids, attrs = {}, create = false) {
         await waitUntil('chatBoxesFetched');
 
         /** @param {string} jid */

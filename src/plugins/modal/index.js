@@ -12,15 +12,7 @@ import './toasts.js';
 
 converse.plugins.add("converse-modal", {
     initialize() {
-        api.listen.on("disconnect", () => {
-            const container = document.querySelector("#converse-modals");
-            if (container) {
-                container.innerHTML = "";
-            }
-        });
-
         api.listen.on("clearSession", () => api.modal.removeAll());
-
         Object.assign(_converse.exports, { BaseModal, Popover, Toast });
         Object.assign(_converse.api, modal_api);
     },

@@ -32,7 +32,7 @@ declare class ImageDirective extends AsyncDirective {
      * @param {Function} [onLoad] - Callback function to be called once the image has loaded.
      * @param {Function} [onClick] - Callback function to be called once the image has been clicked.
      */
-    onError(src: string, href?: string, onLoad?: Function, onClick?: Function): void;
+    onError(src: string, href?: string, onLoad?: Function, onClick?: Function): string | import("utils/html.js").TemplateResult;
 }
 import { AsyncDirective } from "lit/async-directive.js";
 export {};

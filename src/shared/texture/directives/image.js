@@ -46,6 +46,10 @@ class ImageDirective extends AsyncDirective {
      * @param {Function} [onClick] - Callback function to be called once the image has been clicked.
      */
     onError(src, href, onLoad, onClick) {
+        if (!this.isConnected) {
+            return href ? getHyperlinkTemplate(href) : html`<span>Image failed to load</span>`;
+        }
+
         if (isURLWithImageExtension(src)) {
             href && this.setValue(getHyperlinkTemplate(href));
         } else {
@@ -59,6 +63,7 @@ class ImageDirective extends AsyncDirective {
                 }
             } catch (error) {
                 console.error("Invalid URL:", src);
+                return href ? getHyperlinkTemplate(href) : html`<span>Image failed to load</span>`;
             }
         }
     }

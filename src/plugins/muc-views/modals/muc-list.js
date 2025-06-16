@@ -92,18 +92,24 @@ export default class MUCListModal extends BaseModal {
     }
 
     getModalTitle() {
-        // eslint-disable-line class-methods-use-this
         return __('Query for Groupchats');
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     openRoom(ev) {
         ev.preventDefault();
-        const jid = ev.target.getAttribute('data-room-jid');
-        const name = ev.target.getAttribute('data-room-name');
+        const el = /** @type {Element} */(ev.target);
+        const jid = el.getAttribute('data-room-jid');
+        const name = el.getAttribute('data-room-name');
         this.modal.hide();
-        api.rooms.open(jid, { 'name': name }, true);
+        api.rooms.open(jid, { name }, true);
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     toggleRoomInfo(ev) {
         ev.preventDefault();
         toggleRoomInfo(ev);

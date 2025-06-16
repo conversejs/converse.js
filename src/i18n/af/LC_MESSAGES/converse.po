@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-09 15:11+0200\n"
-"PO-Revision-Date: 2025-06-14 03:01+0000\n"
+"PO-Revision-Date: 2025-06-16 14:35+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -982,7 +982,7 @@ msgstr "Die gekose entiteit ondersteun nie ad-hoc opdragte nie"
 
 #: dist/converse-no-dependencies.js:75729
 msgid "An error occurred while trying to fetch the command form"
-msgstr "A fout het voorgekom tydens die haal van die opgragte vorm."
+msgstr "A fout het voorgekom tydens die haal van die opdragte vorm"
 
 #: dist/converse-no-dependencies.js:75819
 msgid ""
@@ -1379,7 +1379,7 @@ msgstr "Wys minder"
 
 #: dist/converse-no-dependencies.js:85853
 msgid "Message delivery failed."
-msgstr "Aflewering van boodskap het gefaal"
+msgstr "Aflewering van boodskap het gefaal."
 
 #: dist/converse-no-dependencies.js:86485
 msgid "A moderator"
@@ -1753,7 +1753,7 @@ msgstr "Jammer, 'n fout het voorgekom tydens instelling van die rol"
 
 #: dist/converse-no-dependencies.js:99495
 msgid "Change nickname"
-msgstr "Verander u bynaam"
+msgstr "Verander bynaam"
 
 #: dist/converse-no-dependencies.js:99495
 msgid "Enter groupchat"
@@ -2353,7 +2353,7 @@ msgstr "U bediener laat nie die terugstelling van u wagwoord toe nie"
 #: dist/converse-no-dependencies.js:107816
 #: dist/converse-no-dependencies.js:107818
 msgid "You are not allowed to change your password"
-msgstr "U word nie toegelaat om u wagwoord te verander nie."
+msgstr "U word nie toegelaat om u wagwoord te verander nie"
 
 #: dist/converse-no-dependencies.js:107821
 msgid "Your new password has been set"
@@ -2741,11 +2741,11 @@ msgstr "Suksesvol geregistreerd"
 #: dist/converse-no-dependencies.js:119242
 #: dist/converse-no-dependencies.js:119249
 msgid "Registration failed."
-msgstr "Registrasie het gefaal"
+msgstr "Registrasie het gefaal."
 
 #: dist/converse-no-dependencies.js:119242
 msgid "Please try a different username."
-msgstr "Probeer asseblief 'n ander gebruikersnaam"
+msgstr "Probeer asseblief 'n ander gebruikersnaam."
 
 #: dist/converse-no-dependencies.js:119253
 msgid ""
@@ -2959,7 +2959,7 @@ msgstr "Klik om te klets met %1$s (XMPP adres: %2$s)"
 #: dist/converse-no-dependencies.js:122749
 #, javascript-format
 msgid "Click to accept the contact request from %1$s (XMPP address: %2$s)"
-msgstr "Klik om die kontakversoek van %1$s  (XMPP adres: %2$s) te aanvaar"
+msgstr "Klik om die kontakversoek van %1$s (XMPP adres: %2$s) te aanvaar"
 
 #: dist/converse-no-dependencies.js:122750
 #, javascript-format

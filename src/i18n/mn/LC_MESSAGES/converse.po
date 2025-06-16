@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 11.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-09 15:11+0200\n"
-"PO-Revision-Date: 2025-06-14 03:01+0000\n"
+"PO-Revision-Date: 2025-06-16 10:01+0000\n"
 "Last-Translator: PolarisMail <george@polarismail.com>\n"
 "Language-Team: Mongolian <https://hosted.weblate.org/projects/conversejs/"
 "translations/mn/>\n"
@@ -528,37 +528,41 @@ msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
 msgstr ""
+"Энэ групп чатыг ажиллуулж буй хэрэглэгчийн үйлчилгээ хаагдаж байгаа тул та "
+"энэ групп чатаас хасагдлаа."
 
 #: dist/converse-no-dependencies.js:41975
 msgid "You have exited this groupchat due to a technical problem"
-msgstr ""
+msgstr "Техникийн шалтгаанаар та энэ групп чатаас гарсан байна."
 
 #: dist/converse-no-dependencies.js:42754
 msgid "Timeout Error"
-msgstr ""
+msgstr "Холболтын хугацаа хэтэрлээ."
 
 #: dist/converse-no-dependencies.js:42755
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"Вэб холбоосуудыг дуудах хугацаа хэтэрсэн байна. Хуудсыг дахин ачааллан "
+"ханлаж үзнэ үү."
 
 #: dist/converse-no-dependencies.js:45350
 msgid "You are blocked from sending messages."
-msgstr ""
+msgstr "Та мессеж илгээх эрхгүй байна."
 
 #: dist/converse-no-dependencies.js:46800
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Холболтын хугацаа дууслаа."
 
 #: dist/converse-no-dependencies.js:49091
 msgid "Timeout while trying to fetch archived messages."
-msgstr ""
+msgstr "Архивласан мессежүүдийг татах хугацаа хэтэрсэн байна."
 
 #: dist/converse-no-dependencies.js:51689
 #, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
-msgstr ""
+msgstr "%1$s-ийг нэмэхэд алдаа гарлаа."
 
 #: dist/converse-no-dependencies.js:51957
 msgid "This client does not allow presence subscriptions"
@@ -566,70 +570,70 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:53074
 msgid "me"
-msgstr ""
+msgstr "Би"
 
 #: dist/converse-no-dependencies.js:53491
 msgid "Unsaved contacts"
-msgstr ""
+msgstr "Хадгалаагүй харилцагчид"
 
 #: dist/converse-no-dependencies.js:53492
 msgid "My contacts"
-msgstr ""
+msgstr "Миний харилцагчид"
 
 #: dist/converse-no-dependencies.js:53493
 msgid "Pending contacts"
-msgstr ""
+msgstr "Хүлээгдэж буй харилцагчид"
 
 #: dist/converse-no-dependencies.js:53494
 msgid "Contact requests"
-msgstr ""
+msgstr "Харилцагч нэмэх хүсэлтүүд"
 
 #: dist/converse-no-dependencies.js:53495
 msgid "Ungrouped"
-msgstr ""
+msgstr "Бүлэглэгдээгүй"
 
 #: dist/converse-no-dependencies.js:53496
 #: dist/converse-no-dependencies.js:85701
 msgid "New messages"
-msgstr ""
+msgstr "Шинэ мессежүүд"
 
 #: dist/converse-no-dependencies.js:63269
 msgid "Menu"
-msgstr ""
+msgstr "Цэс"
 
 #: dist/converse-no-dependencies.js:63660
 msgid "Click to set a new picture"
-msgstr ""
+msgstr "Шинэ зураг сонгох"
 
 #: dist/converse-no-dependencies.js:63661
 msgid "Clear picture"
-msgstr ""
+msgstr "Зураг устгах"
 
 #: dist/converse-no-dependencies.js:64204
 msgid "Older versions"
-msgstr ""
+msgstr "Хуучин хувилбарууд"
 
 #: dist/converse-no-dependencies.js:64206
 msgid "No older versions found"
-msgstr ""
+msgstr "Өмнөх хувилбар олдсонгүй"
 
 #: dist/converse-no-dependencies.js:64206
 msgid "Current version"
-msgstr ""
+msgstr "Одоогийн хувилбар"
 
 #: dist/converse-no-dependencies.js:65517
 #: dist/converse-no-dependencies.js:101598
 msgid "Offline"
-msgstr ""
+msgstr "Офлайн"
 
 #: dist/converse-no-dependencies.js:65518
 msgid "Unavailable"
-msgstr ""
+msgstr "Идэвхгүй"
 
 #: dist/converse-no-dependencies.js:65519
 #: dist/converse-no-dependencies.js:101597
 msgid "Extended Away"
-msgstr ""
+msgstr "Удаан хугацаанд холбогдоогүй"
 
 #. *
 #. * @param {import('../modals/profile').default} el
@@ -639,22 +643,22 @@ msgstr ""
 #: dist/converse-no-dependencies.js:101596
 #: dist/converse-no-dependencies.js:107970
 msgid "Away"
-msgstr ""
+msgstr "Түр холдсон"
 
 #: dist/converse-no-dependencies.js:65521
 msgid "Do not disturb"
-msgstr ""
+msgstr "Саад болохгүй байна уу"
 
 #: dist/converse-no-dependencies.js:65522
 #: dist/converse-no-dependencies.js:101594
 msgid "Chatty"
-msgstr ""
+msgstr "Яриа хөөрөөтэй"
 
 #: dist/converse-no-dependencies.js:65523
 #: dist/converse-no-dependencies.js:101593
 #: dist/converse-no-dependencies.js:107972
 msgid "Online"
-msgstr ""
+msgstr "Идэвхитэй"
 
 #: dist/converse-no-dependencies.js:67124
 #: dist/converse-no-dependencies.js:67125
@@ -662,7 +666,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:90192
 #: dist/converse-no-dependencies.js:95927
 msgid "Close"
-msgstr ""
+msgstr "Хаах"
 
 #: dist/converse-no-dependencies.js:67959
 #: dist/converse-no-dependencies.js:74878

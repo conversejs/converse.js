@@ -229,7 +229,6 @@ export function rejectPresenceSubscription(jid, message) {
  * @return {boolean}
  */
 export function isUnsavedContact(contact) {
-    const bare_jid = _converse.session.get('bare_jid');
-    const is_self = bare_jid !== contact.get('jid');
+    const is_self = _converse.session.get('bare_jid') === contact.get('jid');
     return !is_self && !contact.get('subscription');
 }

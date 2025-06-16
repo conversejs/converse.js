@@ -3,6 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import '../../plugins/status/index.js';
+import u from '../../utils/index.js';
 import RosterContact from './contact.js';
 import RosterContacts from './contacts.js';
 import _converse from '../../shared/_converse.js';
@@ -12,6 +13,7 @@ import roster_api from './api.js';
 import Presence from './presence.js';
 import Presences from './presences.js';
 import {
+    isUnsavedContact,
     onChatBoxesInitialized,
     onClearSession,
     onPresencesInitialized,
@@ -20,17 +22,16 @@ import {
     unregisterPresenceHandler,
 } from './utils.js';
 
-
 converse.plugins.add('converse-roster', {
     dependencies: ['converse-status'],
 
-    initialize () {
+    initialize() {
         api.settings.extend({
             allow_contact_requests: true,
             auto_subscribe: false,
             enable_roster_versioning: true,
             show_self_in_roster: true,
-            synchronize_availability: true
+            synchronize_availability: true,
         });
 
         api.promises.add([
@@ -43,6 +44,7 @@ converse.plugins.add('converse-roster', {
 
         // API methods only available to plugins
         Object.assign(_converse.api, roster_api);
+        Object.assign(u, { roster: { isUnsavedContact } });
 
         const { __ } = _converse;
         const labels = {
@@ -57,7 +59,7 @@ converse.plugins.add('converse-roster', {
         Object.assign(_converse.labels, labels);
 
         const exports = { Presence, Presences, RosterContact, RosterContacts };
-        Object.assign(_converse, exports);  // XXX DEPRECATED
+        Object.assign(_converse, exports); // XXX DEPRECATED
         Object.assign(_converse.exports, exports);
 
         api.listen.on('beforeTearDown', () => unregisterPresenceHandler());
@@ -68,5 +70,5 @@ converse.plugins.add('converse-roster', {
         api.listen.on('streamResumptionFailed', () => _converse.session.set('roster_cached', false));
 
         api.waitUntil('rosterContactsFetched').then(onRosterContactsFetched);
-    }
+    },
 });

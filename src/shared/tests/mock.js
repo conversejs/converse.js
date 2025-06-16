@@ -660,7 +660,6 @@ const req_names = [
     'Escalus, prince of Verona', 'The Nurse', 'Paris'
 ];
 
-const req_jids = req_names.map((name) => `${name.replace(/ /g, '.').toLowerCase()}@${domain}`);
 
 const pend_names = [
     'Lord Capulet', 'Guard', 'Servant'
@@ -683,6 +682,7 @@ const current_contacts_map = {
     'Friar John': []
 }
 
+
 const map = current_contacts_map;
 const groups_map = {};
 Object.keys(map).forEach(k => {
@@ -694,6 +694,9 @@ Object.keys(map).forEach(k => {
 
 const cur_names = Object.keys(current_contacts_map);
 const num_contacts = req_names.length + pend_names.length + cur_names.length;
+
+const req_jids = req_names.map((name) => `${name.replace(/ /g, '.').toLowerCase()}@${domain}`);
+const cur_jids = cur_names.map((name) => `${name.replace(/ /g, '.').toLowerCase()}@${domain}`);
 
 const groups = {
     'colleagues': 3,
@@ -949,9 +952,9 @@ async function initializedOMEMO(
 }
 
 Object.assign(mock, {
-    bundleIQRequestSent,
     bundleFetched,
     bundleHasBeenPublished,
+    bundleIQRequestSent,
     chatroom_names,
     chatroom_roles,
     checkHeaderToggling,
@@ -961,15 +964,16 @@ Object.assign(mock, {
     createContact,
     createContacts,
     createRequest,
+    cur_jids,
     cur_names,
     current_contacts_map,
     default_muc_features,
     deviceListFetched,
     event,
+    getContactJID,
     groups,
     groups_map,
     initConverse,
-    getContactJID,
     initializedOMEMO,
     num_contacts,
     openAddMUCModal,
@@ -980,8 +984,8 @@ Object.assign(mock, {
     ownDeviceHasBeenPublished,
     pend_names,
     receiveOwnMUCPresence,
-    req_names,
     req_jids,
+    req_names,
     returnMemberLists,
     sendMessage,
     toggleControlBox,

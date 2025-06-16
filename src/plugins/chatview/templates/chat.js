@@ -13,7 +13,6 @@ export default (el) => {
     const show_help_messages = el.model.get('show_help_messages');
     const is_overlayed = api.settings.get('view_mode') === 'overlayed';
     const style = getChatStyle(el.model);
-    const requesting = el.model.contact?.get('requesting');
     return html`
         <div class="flyout box-flyout" style="${style || nothing}">
             ${is_overlayed ? html`<converse-dragresize></converse-dragresize>` : ''}
@@ -24,7 +23,7 @@ export default (el) => {
                           class="chat-head chat-head-chatbox row g-0"
                       ></converse-chat-heading>
                       <div class="chat-body">
-                          ${requesting
+                          ${el.model.contact
                               ? html`<converse-contact-approval-alert .contact="${el.model.contact}">
                                 </converse-contact-approval-alert>`
                               : ''}

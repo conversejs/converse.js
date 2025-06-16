@@ -373,7 +373,7 @@ describe('A chat with a requesting contact', function () {
                 sent_stanzas.filter((s) => s.matches('presence[type="unsubscribed"]')).pop()
             );
             expect(stanza).toEqualStanza(stx`<presence to="${jid}" type="unsubscribed" xmlns="jabber:client"/>`);
-            await u.waitUntil(() => view.querySelector('converse-contact-approval-alert') === null);
+            await u.waitUntil(() => !view.querySelector('converse-contact-approval-alert').childElementCound);
         })
     );
 });

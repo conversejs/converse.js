@@ -32,6 +32,7 @@ import * as url from './url.js';
 const u = {
     muc: null,
     mam: null,
+    roster: null,
 };
 
 /**

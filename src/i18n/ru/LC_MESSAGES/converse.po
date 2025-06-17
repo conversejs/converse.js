@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-16 20:16+0200\n"
-"PO-Revision-Date: 2025-06-04 11:01+0000\n"
-"Last-Translator: JC Brand <jc@opkode.com>\n"
+"PO-Revision-Date: 2025-06-18 02:04+0000\n"
+"Last-Translator: solokot <solokot@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 5.12.1\n"
 
 #: dist/converse-no-dependencies.js:16974
 msgid "Could not automatically determine a connection URL"
@@ -3111,30 +3111,30 @@ msgstr "Синхронизировать контакты"
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128628
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s would like to be your contact"
-msgstr "хочет быть в вашем списке контактов"
+msgstr "%1$s хочет быть в вашим контактом"
 
 #: dist/converse-no-dependencies.js:128630
 msgid "Approve"
-msgstr ""
+msgstr "Одобрить"
 
 #: dist/converse-no-dependencies.js:128632
 msgid "Deny"
-msgstr ""
+msgstr "Отказать"
 
 #. *
 #. * @param {import('../approval-alert').default} el
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128665
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Would you like to add %1$s as a contact?"
-msgstr "Нажмите, чтобы добавить %1$s как контакт"
+msgstr "Добавить %1$s как контакт?"
 
 #: dist/converse-no-dependencies.js:128669
 msgid "Dismiss"
-msgstr ""
+msgstr "Отклонить"
 
 #~ msgid "An error occurred while querying for archived messages."
 #~ msgstr ""

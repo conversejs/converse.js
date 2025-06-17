@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 11.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-16 20:16+0200\n"
-"PO-Revision-Date: 2025-06-16 10:01+0000\n"
+"PO-Revision-Date: 2025-06-18 02:04+0000\n"
 "Last-Translator: PolarisMail <george@polarismail.com>\n"
 "Language-Team: Mongolian <https://hosted.weblate.org/projects/conversejs/"
 "translations/mn/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 5.12.1\n"
 
 #: dist/converse-no-dependencies.js:16974
 msgid "Could not automatically determine a connection URL"
@@ -682,42 +682,42 @@ msgstr "Хаах"
 #: dist/converse-no-dependencies.js:118642
 #: dist/converse-no-dependencies.js:124436
 msgid "Confirm"
-msgstr ""
+msgstr "Баталгаажуулах"
 
 #: dist/converse-no-dependencies.js:69939
 #: dist/converse-no-dependencies.js:74727
 #: dist/converse-no-dependencies.js:121135
 msgid "Cancel"
-msgstr ""
+msgstr "Цуцлах"
 
 #: dist/converse-no-dependencies.js:72733
 msgid "Converse logo"
-msgstr ""
+msgstr "Converse лого"
 
 #: dist/converse-no-dependencies.js:74700
 msgid "Execute"
-msgstr ""
+msgstr "Гүйцэтгэх"
 
 #: dist/converse-no-dependencies.js:74701
 msgid "Previous"
-msgstr ""
+msgstr "Өмнөх"
 
 #: dist/converse-no-dependencies.js:74702
 msgid "Next"
-msgstr ""
+msgstr "Дараагийн"
 
 #: dist/converse-no-dependencies.js:74703
 msgid "Complete"
-msgstr ""
+msgstr "Дуусгах"
 
 #: dist/converse-no-dependencies.js:74992
 #, javascript-format
 msgid "The profile picture of %1$s"
-msgstr ""
+msgstr "%1$s-ийн профайл зураг"
 
 #: dist/converse-no-dependencies.js:75203
 msgid "Add to Contacts"
-msgstr ""
+msgstr "Харилцагчид нэмэх"
 
 #: dist/converse-no-dependencies.js:75217
 #: dist/converse-no-dependencies.js:86409
@@ -726,7 +726,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:110761
 #: dist/converse-no-dependencies.js:122661
 msgid "Nickname"
-msgstr ""
+msgstr "Ник нэр"
 
 #: dist/converse-no-dependencies.js:75217
 #: dist/converse-no-dependencies.js:77327
@@ -738,33 +738,33 @@ msgstr ""
 #: dist/converse-no-dependencies.js:126511
 #: dist/converse-no-dependencies.js:126897
 msgid "XMPP Address"
-msgstr ""
+msgstr "Хэрэглэгчийн хаяг"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:75217
 #: dist/converse-no-dependencies.js:75765
 msgid "Affiliation"
-msgstr ""
+msgstr "Гишүүнчлэл"
 
 #: dist/converse-no-dependencies.js:75219
 #: dist/converse-no-dependencies.js:75769
 #: dist/converse-no-dependencies.js:86410
 #: dist/converse-no-dependencies.js:110762
 msgid "Role"
-msgstr ""
+msgstr "Үүрэг"
 
 #: dist/converse-no-dependencies.js:75221
 msgid "Hats"
-msgstr ""
+msgstr "Оролцооны нэршил"
 
 #: dist/converse-no-dependencies.js:75221
 msgid "Occupant Id"
-msgstr ""
+msgstr "Гишүүний ID"
 
 #: dist/converse-no-dependencies.js:75336
 #: dist/converse-no-dependencies.js:76047
 msgid "Affiliation changed"
-msgstr ""
+msgstr "Гишүүнчлэл өөрчлөгдлөө"
 
 #: dist/converse-no-dependencies.js:75339
 msgid "role changed"
@@ -775,10 +775,12 @@ msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Модераторууд нь бусад хэрэглэгчийн үүргийг өөрчлөх эрхтэй. Гэхдээ админ, "
+"эзэн гишүүнчлэлтэй хэрэглэгчдэд энэ үйлдлийг хийх боломжгүй."
 
 #: dist/converse-no-dependencies.js:75729
 msgid "The default role, implies that you can read and write messages."
-msgstr ""
+msgstr "Үндсэн үүрэг нь мессеж унших, бичих эрхийг агуулдаг."
 
 #: dist/converse-no-dependencies.js:75731
 msgid ""

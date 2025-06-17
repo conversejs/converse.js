@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-16 20:16+0200\n"
-"PO-Revision-Date: 2023-12-21 15:06+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2025-06-18 02:04+0000\n"
+"Last-Translator: Flávio Zarur Lucarelli <painel@lucanet.com.br>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/conversejs/"
 "translations/pt/>\n"
 "Language: pt\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.12.1\n"
 
 #: dist/converse-no-dependencies.js:16974
 msgid "Could not automatically determine a connection URL"
@@ -573,10 +573,10 @@ msgid "Timeout while trying to fetch archived messages."
 msgstr "O tempo esgotou enquanto tentava retrair a mensagem."
 
 #: dist/converse-no-dependencies.js:53541
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
 msgstr ""
-"Desculpe, ocorreu um erro enquanto tentava adicionar %1$s como um contacto."
+"Desculpe, ocorreu um erro enquanto tentava adicionar %1$s como um contato."
 
 #: dist/converse-no-dependencies.js:53809
 msgid "This client does not allow presence subscriptions"
@@ -588,25 +588,24 @@ msgid "me"
 msgstr "Nome"
 
 #: dist/converse-no-dependencies.js:55361
-#, fuzzy
 msgid "Unsaved contacts"
-msgstr "Contactos pendentes"
+msgstr "Contatos não salvos"
 
 #: dist/converse-no-dependencies.js:55362
 msgid "My contacts"
-msgstr "Meus contactos"
+msgstr "Meus contatos"
 
 #: dist/converse-no-dependencies.js:55363
 msgid "Pending contacts"
-msgstr "Contactos pendentes"
+msgstr "Contatos pendentes"
 
 #: dist/converse-no-dependencies.js:55364
 msgid "Contact requests"
-msgstr "Pedidos de contacto"
+msgstr "Pedido de contato"
 
 #: dist/converse-no-dependencies.js:55365
 msgid "Ungrouped"
-msgstr "Desagrupado"
+msgstr "Desagrupados"
 
 #: dist/converse-no-dependencies.js:55366
 #: dist/converse-no-dependencies.js:87748
@@ -1222,15 +1221,14 @@ msgid "Are you sure you want to remove this contact?"
 msgstr "Tem certeza de que deseja remover esse contato?"
 
 #: dist/converse-no-dependencies.js:85308
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
 msgstr ""
-"Desculpe, ocorreu um erro enquanto tentava adicionar %1$s como um contacto."
+"Desculpe, ocorreu um erro enquanto tentava adicionar %1$s como um contato."
 
 #: dist/converse-no-dependencies.js:85340
-#, fuzzy
 msgid "Remove and decline contact request"
-msgstr "Pedidos de contacto"
+msgstr "Remover e recusar solicitação de contato"
 
 #: dist/converse-no-dependencies.js:85341
 #, fuzzy, javascript-format
@@ -1247,19 +1245,17 @@ msgid "Contact request declined and user blocked"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85375
-#, fuzzy
 msgid "Contact request declined"
-msgstr "Pedidos de contacto"
+msgstr "Solicitação de contato recusada"
 
 #: dist/converse-no-dependencies.js:85408
 msgid "Do you want to block this contact, so they cannot send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85449
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
-msgstr ""
-"Desculpe, ocorreu um erro enquanto tentava adicionar %1$s como um contacto."
+msgstr "Desculpe, ocorreu um erro enquanto tentava bloquear %1$s"
 
 #: dist/converse-no-dependencies.js:85482
 msgid "Do you want to unblock this contact, so they can send you messages?"
@@ -1302,7 +1298,7 @@ msgstr "Adicionar um contato"
 
 #: dist/converse-no-dependencies.js:86348
 msgid "Remove as contact"
-msgstr "Remover como contacto"
+msgstr "Remover como contato"
 
 #: dist/converse-no-dependencies.js:86356
 #: dist/converse-no-dependencies.js:126507
@@ -1358,9 +1354,8 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:86436
 #: dist/converse-no-dependencies.js:126778
-#, fuzzy
 msgid "Contact Request"
-msgstr "Pedidos de contacto"
+msgstr "Pedido de Contato"
 
 #: dist/converse-no-dependencies.js:87011
 msgid "Uploading file:"
@@ -2928,9 +2923,8 @@ msgid "Leave this groupchat"
 msgstr "Deixar a sala"
 
 #: dist/converse-no-dependencies.js:123999
-#, fuzzy
 msgid "Click to hide these rooms"
-msgstr "Clique para ocultar estes contactos"
+msgstr "Clique para ocultar estas salas"
 
 #: dist/converse-no-dependencies.js:124052
 msgid "Click to toggle the list of open groupchats"
@@ -3021,9 +3015,8 @@ msgid "Click to add %1$s as a contact"
 msgstr "Clique para remover %1$s como contato"
 
 #: dist/converse-no-dependencies.js:125451
-#, fuzzy
 msgid "Save as contact"
-msgstr "Remover como contacto"
+msgstr "Salvar como contato"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -3045,7 +3038,7 @@ msgstr "Adicionar um contato"
 
 #: dist/converse-no-dependencies.js:126374
 msgid "This contact has already been added"
-msgstr "Este contacto já foi adicionado"
+msgstr "Este contato já foi adicionado"
 
 #: dist/converse-no-dependencies.js:126399
 #, fuzzy
@@ -3138,11 +3131,11 @@ msgstr "Endereço da sala"
 #. ESM default export
 #: dist/converse-no-dependencies.js:127917
 msgid "Click to hide these contacts"
-msgstr "Clique para ocultar estes contactos"
+msgstr "Clique para ocultar estes contatos"
 
 #: dist/converse-no-dependencies.js:127989
 msgid "Filter by contact name"
-msgstr "Filtrar por nome de contacto"
+msgstr "Filtrar por nome de contato"
 
 #: dist/converse-no-dependencies.js:127990
 msgid "Filter by group name"
@@ -3158,7 +3151,7 @@ msgstr "Não lido"
 #. ESM default export
 #: dist/converse-no-dependencies.js:128162
 msgid "Contacts"
-msgstr "Contactos"
+msgstr "Contatos"
 
 #: dist/converse-no-dependencies.js:128163
 msgid "Click to toggle contacts"
@@ -3174,9 +3167,8 @@ msgid "Show block list"
 msgstr "Adicionar aos Contatos"
 
 #: dist/converse-no-dependencies.js:128202
-#, fuzzy
 msgid "Re-sync contacts"
-msgstr "Voltar a sincronizar os meus contactos"
+msgstr "Voltar a sincronizar os meus contatos"
 
 #. *
 #. * @param {import('../approval-alert').default} el

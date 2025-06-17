@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-16 20:16+0200\n"
-"PO-Revision-Date: 2025-06-04 11:01+0000\n"
+"PO-Revision-Date: 2025-06-18 02:04+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 5.12.1\n"
 
 #: dist/converse-no-dependencies.js:16974
 msgid "Could not automatically determine a connection URL"
@@ -3018,30 +3018,30 @@ msgstr "重新同步联系人"
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128628
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s would like to be your contact"
-msgstr "想成为您的联系人"
+msgstr "%1$s 想成为您的联系人"
 
 #: dist/converse-no-dependencies.js:128630
 msgid "Approve"
-msgstr ""
+msgstr "批准"
 
 #: dist/converse-no-dependencies.js:128632
 msgid "Deny"
-msgstr ""
+msgstr "拒绝"
 
 #. *
 #. * @param {import('../approval-alert').default} el
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128665
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Would you like to add %1$s as a contact?"
-msgstr "点击即可添加联系人 %1$s"
+msgstr "是否将 %1$s 添加为联系人？"
 
 #: dist/converse-no-dependencies.js:128669
 msgid "Dismiss"
-msgstr ""
+msgstr "关闭"
 
 #~ msgid "An error occurred while querying for archived messages."
 #~ msgstr "查询归档消息时出错。"

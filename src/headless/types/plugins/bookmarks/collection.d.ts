@@ -4,9 +4,9 @@ declare class Bookmarks extends Collection {
     static checkBookmarksSupport(): Promise<any>;
     constructor();
     get idAttribute(): string;
+    model: typeof Bookmark;
     initialize(): Promise<void>;
     fetched_flag: string;
-    model: typeof Bookmark;
     /**
      * @param {Bookmark} bookmark
      */

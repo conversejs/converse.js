@@ -22,6 +22,11 @@ class Bookmarks extends Collection {
         return 'jid';
     }
 
+    constructor() {
+        super([], { comparator: (/** @type {Bookmark} */ b) => b.getDisplayName().toLowerCase() });
+        this.model = Bookmark;
+    }
+
     async initialize() {
         this.on('add', (bm) =>
             this.openBookmarkedRoom(bm)
@@ -64,11 +69,6 @@ class Bookmarks extends Collection {
         } else {
             return api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', bare_jid);
         }
-    }
-
-    constructor() {
-        super([], { comparator: (/** @type {Bookmark} */ b) => b.get('name').toLowerCase() });
-        this.model = Bookmark;
     }
 
     /**

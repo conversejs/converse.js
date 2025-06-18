@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-16 20:16+0200\n"
-"PO-Revision-Date: 2025-06-04 11:01+0000\n"
+"PO-Revision-Date: 2025-06-19 08:04+0000\n"
 "Last-Translator: fran secs <fransecs@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/conversejs/"
 "translations/ca/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 5.12.1\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: ca\n"
 "Language-Code: ca\n"
@@ -3116,30 +3116,30 @@ msgstr "Tornar a sincronitzar els contactes"
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128628
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s would like to be your contact"
-msgstr "vol ser contacte vostre"
+msgstr "%1$s vol ser contacte vostre"
 
 #: dist/converse-no-dependencies.js:128630
 msgid "Approve"
-msgstr ""
+msgstr "Aprovar"
 
 #: dist/converse-no-dependencies.js:128632
 msgid "Deny"
-msgstr ""
+msgstr "Denegar"
 
 #. *
 #. * @param {import('../approval-alert').default} el
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128665
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Would you like to add %1$s as a contact?"
-msgstr "Feu clic per afegir %1$s com a contacte"
+msgstr "Voleu afegir %1$s com a contacte?"
 
 #: dist/converse-no-dependencies.js:128669
 msgid "Dismiss"
-msgstr ""
+msgstr "Ignorar"
 
 #~ msgid "An error occurred while querying for archived messages."
 #~ msgstr "S'ha produït un error mentre es consultaven els missatges arxivats."

@@ -16,7 +16,7 @@ let locale = 'en';
  * @param {string} preferred_locale
  * @param {string[]} supported_locales
  */
-function isConverseLocale (preferred_locale, supported_locales) {
+function isConverseLocale(preferred_locale, supported_locales) {
     return supported_locales.includes(preferred_locale);
 }
 
@@ -28,7 +28,7 @@ function isConverseLocale (preferred_locale, supported_locales) {
  *   the locale is supported.
  * @returns {string}
  */
-function determineLocale (preferred_locale, isSupportedByLibrary) {
+function determineLocale(preferred_locale, isSupportedByLibrary) {
     if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
         return preferred_locale;
     }
@@ -47,7 +47,7 @@ function determineLocale (preferred_locale, isSupportedByLibrary) {
  * @param {string} locale - The locale to check for
  * @param {Function} available - Returns a boolean indicating whether the locale is supported
  */
-function isLocaleAvailable (locale, available) {
+function isLocaleAvailable(locale, available) {
     if (available(locale)) {
         return locale;
     } else {
@@ -62,7 +62,7 @@ function isLocaleAvailable (locale, available) {
  * Given a locale, return the closest locale returned by dayJS
  * @param {string} locale
  */
-function getDayJSLocale (locale) {
+function getDayJSLocale(locale) {
     const dayjs_locale = locale.toLowerCase().replace('_', '-');
     return dayjs_locale === 'ug' ? 'ug-cn' : dayjs_locale;
 }
@@ -71,7 +71,7 @@ function getDayJSLocale (locale) {
  * Fetch the translations for the given local at the given URL.
  * @returns {Jed}
  */
-async function fetchTranslations () {
+async function fetchTranslations() {
     const dayjs_locale = getDayJSLocale(locale);
 
     if (!isConverseLocale(locale, api.settings.get('locales')) || locale === 'en') {
@@ -84,7 +84,6 @@ async function fetchTranslations () {
     dayjs.locale(determineLocale(dayjs_locale, (l) => dayjs.locale(l)));
     return new Jed(data);
 }
-
 
 /**
  * @namespace i18n

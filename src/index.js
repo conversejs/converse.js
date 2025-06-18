@@ -5,13 +5,17 @@
  */
 import 'shared/styles/index.scss';
 
-import "i18n/index.js";
+import { i18n } from "i18n/index.js";
 import "shared/registry.js";
 import 'shared/components/index.js';
 import { CustomElement } from 'shared/components/element';
 import { VIEW_PLUGINS } from './shared/constants.js';
 import { _converse, converse } from "@converse/headless";
 import "./utils/index.js";
+
+_converse.__ = i18n.__; // DEPRECATED
+Object.assign(converse.env, { i18n });
+Object.assign(_converse.env, { i18n });
 
 /* START: Removable plugins
  * ------------------------

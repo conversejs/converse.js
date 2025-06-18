@@ -155,6 +155,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/rosterview/tests/unsaved-contacts.js", type: 'module' },
       { pattern: "src/shared/modals/tests/user-details-modal.js", type: 'module' },
       { pattern: "src/utils/tests/url.js", type: 'module' },
+      { pattern: "src/i18n/tests/i18n.js", type: 'module' },
 
       // For some reason this test causes issues when its run earlier
       { pattern: "src/headless/tests/persistence.js", type: 'module' },

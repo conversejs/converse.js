@@ -37,7 +37,7 @@ function determineLocale(preferred_locale, isSupportedByLibrary) {
 
     let locale;
     for (let i = 0; i < languages.length && !locale; i++) {
-        locale = isLocaleAvailable(languages[i], isSupportedByLibrary);
+        locale = isLocaleAvailable(languages[i].replace('-', '_'), isSupportedByLibrary);
     }
     return locale || 'en';
 }
@@ -51,7 +51,7 @@ function isLocaleAvailable(locale, available) {
     if (available(locale)) {
         return locale;
     } else {
-        var sublocale = locale.split('-')[0];
+        const sublocale = locale.split('_')[0];
         if (sublocale !== locale && available(sublocale)) {
             return sublocale;
         }
@@ -85,52 +85,52 @@ async function fetchTranslations() {
     return new Jed(data);
 }
 
+function getLocale() {
+    return locale;
+}
+
+/**
+ * @param {string} str - The string to be translated
+ * @param {Array<any>} args
+ */
+function translate(str, args) {
+    if (!jed_instance) {
+        return Jed.sprintf.apply(Jed, arguments);
+    }
+    const t = jed_instance.translate(str);
+    if (arguments.length > 1) {
+        return t.fetch.apply(t, args);
+    } else {
+        return t.fetch();
+    }
+}
+
+async function initialize() {
+    try {
+        const preferred_locale = api.settings.get('i18n');
+        const available_locales = api.settings.get('locales');
+        const isSupportedByLibrary = /** @param {string} pref */ (pref) => isConverseLocale(pref, available_locales);
+        locale = determineLocale(preferred_locale, isSupportedByLibrary);
+        jed_instance = await fetchTranslations();
+    } catch (e) {
+        log.fatal(e.message);
+        locale = 'en';
+    }
+}
+
+export function __(str, ...args) {
+    return i18n.translate(str, args);
+}
+
 /**
  * @namespace i18n
  */
 const i18n = Object.assign(i18nStub, {
-    getLocale() {
-        return locale;
-    },
-
-    /**
-     * @param {string} str - The string to be translated
-     * @param {Array<any>} args
-     */
-    translate(str, args) {
-        if (!jed_instance) {
-            return Jed.sprintf.apply(Jed, arguments);
-        }
-        const t = jed_instance.translate(str);
-        if (arguments.length > 1) {
-            return t.fetch.apply(t, args);
-        } else {
-            return t.fetch();
-        }
-    },
-
-    async initialize() {
-        if (u.isTestEnv()) {
-            locale = 'en';
-        } else {
-            try {
-                const preferred_locale = api.settings.get('i18n');
-                const available_locales = api.settings.get('locales');
-                const isSupportedByLibrary = /** @param {string} pref */ (pref) =>
-                    isConverseLocale(pref, available_locales);
-                locale = determineLocale(preferred_locale, isSupportedByLibrary);
-                jed_instance = await fetchTranslations();
-            } catch (e) {
-                log.fatal(e.message);
-                locale = 'en';
-            }
-        }
-    },
-
-    __(str, ...args) {
-        return i18n.translate(str, args);
-    },
+    __,
+    determineLocale,
+    getLocale,
+    initialize,
+    translate,
 });
 
 export { i18n };
-export const __ = i18n.__;

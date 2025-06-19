@@ -3,19 +3,21 @@
 # This file is distributed under the same license as the Converse.js package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Converse.js 11.0.1\n"
+"Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-19 10:13+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2021-03-05 03:50+0000\n"
+"Last-Translator: Tomáš Obšívač <tomasek@gmail.com>\n"
+"Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
+"translations/cs/>\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 4.5.1-dev\n"
 
 #: dist/converse-no-dependencies.js:16974
 msgid "Could not automatically determine a connection URL"
@@ -24,11 +26,11 @@ msgstr ""
 #: dist/converse-no-dependencies.js:17308
 #: dist/converse-no-dependencies.js:17361
 msgid "An error occurred while connecting to the chat server."
-msgstr ""
+msgstr "Při připojování na chatovací server se vyskytla chyba."
 
 #: dist/converse-no-dependencies.js:17368
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "Vaše XMPP adresa a/nebo heslo je nesprávné. Prosím zkuste to znova."
 
 #: dist/converse-no-dependencies.js:17377
 #, javascript-format
@@ -41,19 +43,20 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:17381
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr ""
+msgstr "XMPP server nenabídl podporovaný autentikační mechanismus"
 
 #: dist/converse-no-dependencies.js:26803
+#, fuzzy
 msgid "Undecryptable OMEMO message"
-msgstr ""
+msgstr "Nezašifrovatelná zpráva OMEMO"
 
 #: dist/converse-no-dependencies.js:26893
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "Omlouváme se, nelze určit URL nahrání."
 
 #: dist/converse-no-dependencies.js:26910
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "Omlouváme se, nelze určit URL nahraného souboru."
 
 #: dist/converse-no-dependencies.js:26986
 #, javascript-format
@@ -61,40 +64,43 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
 "\"%1$s\""
 msgstr ""
+"Omlouváme se, nelze úspěšně nahrát váš soubor. Odpověď vašeho serveru: „%1$s“"
 
 #: dist/converse-no-dependencies.js:26988
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "Omlouváme se, nelze úspěšně nahrát váš soubor."
 
 #: dist/converse-no-dependencies.js:28221
 #: dist/converse-no-dependencies.js:37790
 #, javascript-format
 msgid "%1$s is typing"
-msgstr ""
+msgstr "%1$s píše"
 
 #: dist/converse-no-dependencies.js:28223
 #: dist/converse-no-dependencies.js:37792
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr ""
+msgstr "%1$s přestal/a psát"
 
 #: dist/converse-no-dependencies.js:28225
 #: dist/converse-no-dependencies.js:37794
 #: dist/converse-no-dependencies.js:40307
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr ""
+msgstr "%1$s odešel/la pryč"
 
 #: dist/converse-no-dependencies.js:28607
 #: dist/converse-no-dependencies.js:28625
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "Omlouváme se, vypadá to, že váš server nepodporuje nahrávání souborů."
 
 #: dist/converse-no-dependencies.js:28656
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
 msgstr ""
+"Velikost vašeho serveru, %1$s, přesahuje maximum povolené vaším serverem, "
+"což je %2$s."
 
 #: dist/converse-no-dependencies.js:28656
 #, javascript-format
@@ -102,102 +108,115 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"Velikost vašeho serveru, %1$s, přesahuje maximum povolené vaším serverem, "
+"což je %2$s."
 
 #: dist/converse-no-dependencies.js:29196
 #: dist/converse-no-dependencies.js:35399
 msgid "You're not allowed to retract your message."
-msgstr ""
+msgstr "Nemáte oprávnění odvolat svou zprávu."
 
 #: dist/converse-no-dependencies.js:29198
 #: dist/converse-no-dependencies.js:35403
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr ""
+msgstr "Omlouváme se, při pokusu o odvolání vaší zprávy se něco pokazilo."
 
 #: dist/converse-no-dependencies.js:29203
 msgid "You're not allowed to send a message."
-msgstr ""
+msgstr "Nemáte povolení odeslat zprávu."
 
 #: dist/converse-no-dependencies.js:29205
 #: dist/converse-no-dependencies.js:35412
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr ""
+msgstr "Omlouváme se, při pokusu o odeslání vaší zprávy se vyskytla chyba."
 
 #: dist/converse-no-dependencies.js:30383
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Emotikony"
 
 #: dist/converse-no-dependencies.js:30384
 msgid "People"
-msgstr ""
+msgstr "Lidé"
 
 #: dist/converse-no-dependencies.js:30385
 msgid "Activities"
-msgstr ""
+msgstr "Aktivity"
 
 #: dist/converse-no-dependencies.js:30386
 msgid "Travel"
-msgstr ""
+msgstr "Cestování"
 
 #: dist/converse-no-dependencies.js:30387
 msgid "Objects"
-msgstr ""
+msgstr "Předměty"
 
 #: dist/converse-no-dependencies.js:30388
 msgid "Animals and nature"
-msgstr ""
+msgstr "Zvířata a příroda"
 
 #: dist/converse-no-dependencies.js:30389
 msgid "Food and drink"
-msgstr ""
+msgstr "Jídlo a nápoje"
 
 #: dist/converse-no-dependencies.js:30390
 msgid "Symbols"
-msgstr ""
+msgstr "Symboly"
 
 #: dist/converse-no-dependencies.js:30391
 msgid "Flags"
-msgstr ""
+msgstr "Vlajky"
 
 #: dist/converse-no-dependencies.js:30392
 msgid "Stickers"
-msgstr ""
+msgstr "Samolepky"
 
 #: dist/converse-no-dependencies.js:35401
+#, fuzzy
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
-msgstr ""
+msgstr "Nemáte povolení se registrovat v tomto skupinovém chatu."
 
 #: dist/converse-no-dependencies.js:35408
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr ""
+msgstr "Vaše zpráva nebyla doručena, protože vám nebylo dovoleno odeslat ji."
 
 #: dist/converse-no-dependencies.js:35410
+#, fuzzy
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr ""
+msgstr "Nemáte povolení se registrovat v tomto skupinovém chatu."
 
 #: dist/converse-no-dependencies.js:35753
+#, fuzzy
 msgid "A timeout happened while trying to retract your message."
-msgstr ""
+msgstr "Omlouváme se, při pokusu o odstranění zařízení se vyskytla chyba."
 
 #: dist/converse-no-dependencies.js:36523
+#, fuzzy
 msgid "Sorry, an error happened while running the command."
 msgstr ""
+"Omlouváme se, při pokusu o uložení vašich profilových dat se stala chyba."
 
 #: dist/converse-no-dependencies.js:36523
 #: dist/converse-no-dependencies.js:107195
+#, fuzzy
 msgid "Check your browser's developer console for details."
 msgstr ""
+"Můžete zkontrolovat vývojářskou konzoli vašeho prohlížeče pro jakýkoliv "
+"chybový výstup."
 
 #: dist/converse-no-dependencies.js:36543
 #: dist/converse-no-dependencies.js:36561
+#, fuzzy
 msgid "Error: couldn't find a groupchat participant based on your arguments"
-msgstr ""
+msgstr "Chyba: Nelze najít účastníka skupinového chatu s přezdívkou „%1$s“"
 
 #: dist/converse-no-dependencies.js:36551
+#, fuzzy
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
+"Všichni ostatní účastníci skupinového chatu mohou vidět vaši XMPP adresu"
 
 #: dist/converse-no-dependencies.js:36576
 #, javascript-format
@@ -205,321 +224,338 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
+"Chyba: příkaz „%1$s“ bere dva argumenty, přezdívku uživatele a volitelně "
+"důvod."
 
 #: dist/converse-no-dependencies.js:36661
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr ""
+msgstr "Zakázáno: k této akci nemáte potřebnou příslušnost."
 
 #: dist/converse-no-dependencies.js:36692
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "Zakázáno: k této akci nemáte potřebnou roli."
 
 #: dist/converse-no-dependencies.js:37041
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr ""
+msgstr "Nemáte povolení se registrovat v tomto skupinovém chatu."
 
 #: dist/converse-no-dependencies.js:37043
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
+"Nemáte povolení se registrovat v tomto skupinovém chatu, neboť je pouze pro "
+"členy."
 
 #: dist/converse-no-dependencies.js:37377
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr ""
+msgstr "Téma nastavené uživatelem %1$s"
 
 #: dist/converse-no-dependencies.js:37377
 #, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr ""
+msgstr "Téma smazané uživatelem %1$s"
 
 #: dist/converse-no-dependencies.js:37796
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr ""
+msgstr "%1$s vstoupil/a do skupinového chatu"
 
 #: dist/converse-no-dependencies.js:37798
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr ""
+msgstr "%1$s odešel/la ze skupinového chatu"
 
 #: dist/converse-no-dependencies.js:37800
 #, javascript-format
 msgid "%1$s is now a moderator"
-msgstr ""
+msgstr "%1$s je nyní moderátorem"
 
 #: dist/converse-no-dependencies.js:37802
 #, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr ""
+msgstr "%1$s již není moderátorem"
 
 #: dist/converse-no-dependencies.js:37804
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has been given a voice"
-msgstr ""
+msgstr "%1$s byl/a odtišen/a"
 
 #: dist/converse-no-dependencies.js:37806
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr ""
+msgstr "%1$s byl/a utišen/a"
 
 #: dist/converse-no-dependencies.js:37814
 #, javascript-format
 msgid "%1$s and %2$s"
-msgstr ""
+msgstr "%1$s a %2$s"
 
 #: dist/converse-no-dependencies.js:37817
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s are typing"
-msgstr ""
+msgstr "%1$s píše"
 
 #: dist/converse-no-dependencies.js:37819
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have stopped typing"
-msgstr ""
+msgstr "%1$s přestal/a psát"
 
 #: dist/converse-no-dependencies.js:37821
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have gone away"
-msgstr ""
+msgstr "%1$s odešel/la pryč"
 
 #: dist/converse-no-dependencies.js:37823
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr ""
+msgstr "%1$s vstoupil/a do skupinového chatu"
 
 #: dist/converse-no-dependencies.js:37825
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr ""
+msgstr "%1$s odešel/la ze skupinového chatu"
 
 #: dist/converse-no-dependencies.js:37827
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s are now moderators"
-msgstr ""
+msgstr "%1$s je nyní moderátorem"
 
 #: dist/converse-no-dependencies.js:37829
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s are no longer moderators"
-msgstr ""
+msgstr "%1$s již není moderátorem"
 
 #: dist/converse-no-dependencies.js:37831
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have been given voices"
-msgstr ""
+msgstr "%1$s byl/a odtišen/a"
 
 #: dist/converse-no-dependencies.js:37833
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have been muted"
-msgstr ""
+msgstr "%1$s byl/a utišen/a"
 
 #: dist/converse-no-dependencies.js:38183
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr ""
+msgstr "%1$s byl/a zakázán/a"
 
 #: dist/converse-no-dependencies.js:38183
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr ""
+msgstr "%1$s byl/a zakázán/a"
 
 #: dist/converse-no-dependencies.js:38185
 #, javascript-format
 msgid "%1$s's nickname has changed"
-msgstr ""
+msgstr "Přezdívka uživatele %1$s se změnila"
 
 #: dist/converse-no-dependencies.js:38187
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr ""
+msgstr "%1$s byl/a vyhozen/a"
 
 #: dist/converse-no-dependencies.js:38187
 #, javascript-format
 msgid "%1$s has been kicked out"
-msgstr ""
+msgstr "%1$s byl/a vyhozen/a"
 
 #: dist/converse-no-dependencies.js:38189
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr ""
+msgstr "%1$s byl/a odstraněn/a kvůli změně příslušnosti"
 
 #: dist/converse-no-dependencies.js:38191
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr ""
+msgstr "%1$s byl/a odstraněna, protože není členem"
 
 #: dist/converse-no-dependencies.js:38214
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr ""
+msgstr "%1$s již není administrátorem tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:38219
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr ""
+msgstr "%1$s již není vlastníkem tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:38224
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr ""
+msgstr "%1$s již není na tomto skupinovém chatu zakázán/a"
 
 #: dist/converse-no-dependencies.js:38230
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
-msgstr ""
+msgstr "%1$s již není vlastníkem tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:38236
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s is now a member of this groupchat"
-msgstr ""
+msgstr "%1$s je nyní trvalým členem tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:38242
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr ""
+msgstr "%1$s je nyní %2$s tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:38368
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
+"Přezdívka, kterou jste si vybral/a, je rezervována či aktuálně používána, "
+"prosím vyberte si jinou."
 
 #: dist/converse-no-dependencies.js:38394
+#, fuzzy
 msgid "Password incorrect"
-msgstr ""
+msgstr "Ochráněno heslem"
 
 #: dist/converse-no-dependencies.js:38401
 msgid "You are not on the member list of this groupchat."
-msgstr ""
+msgstr "Nejste na seznamu členů tohoto skupinového chatu."
 
 #: dist/converse-no-dependencies.js:38409
 msgid "You are not allowed to create new groupchats."
-msgstr ""
+msgstr "Nemáte povolení vytvářet nové skupinové chaty."
 
 #: dist/converse-no-dependencies.js:38412
 msgid "Your nickname doesn't conform to this groupchat's policies."
-msgstr ""
+msgstr "Vaše přezdívka nevyhovuje zásadám tohoto skupinového chatu."
 
 #: dist/converse-no-dependencies.js:38427
 msgid "This groupchat does not (yet) exist."
-msgstr ""
+msgstr "Tento skupinový chat (ještě) neexistuje."
 
 #: dist/converse-no-dependencies.js:38430
 msgid "This groupchat has reached its maximum number of participants."
-msgstr ""
+msgstr "Tento skupinový chat dosáhl svého maximálního počtu účastníků."
 
 #: dist/converse-no-dependencies.js:38433
 msgid "Remote server not found"
-msgstr ""
+msgstr "Vzdálený server nenalezen"
 
 #: dist/converse-no-dependencies.js:38436
+#, fuzzy
 msgid "You're not allowed to enter this groupchat"
-msgstr ""
+msgstr "Nemáte povolení se registrovat v tomto skupinovém chatu."
 
 #: dist/converse-no-dependencies.js:38439
+#, fuzzy
 msgid "An error happened while trying to enter this groupchat"
 msgstr ""
+"Omlouváme se, při pokusu o uložení vašich profilových dat se stala chyba."
 
 #: dist/converse-no-dependencies.js:40305
 #, javascript-format
 msgid "%1$s has gone offline"
-msgstr ""
+msgstr "%1$s se odpojil/a"
 
 #: dist/converse-no-dependencies.js:40309
 #, javascript-format
 msgid "%1$s is busy"
-msgstr ""
+msgstr "%1$s je zaneprázdněn/a"
 
 #: dist/converse-no-dependencies.js:40311
 #, javascript-format
 msgid "%1$s is online"
-msgstr ""
+msgstr "%1$s je připojen/a"
 
 #: dist/converse-no-dependencies.js:43777
 msgid "This groupchat is not anonymous"
-msgstr ""
+msgstr "Tento skupinový chat není anonymní"
 
 #: dist/converse-no-dependencies.js:43778
 msgid "This groupchat now shows unavailable members"
-msgstr ""
+msgstr "Tento skupinový chat nyní zobrazuje nedostupné členy"
 
 #: dist/converse-no-dependencies.js:43779
 msgid "This groupchat does not show unavailable members"
-msgstr ""
+msgstr "Tento skupinový chat nezobrazuje nedostupné členy"
 
 #: dist/converse-no-dependencies.js:43780
 msgid "The groupchat configuration has changed"
-msgstr ""
+msgstr "Nastavení skupinového chatu se změnila"
 
 #: dist/converse-no-dependencies.js:43781
 msgid "Groupchat logging is now enabled"
-msgstr ""
+msgstr "Zaznamenávání skupinového chatu je nyní spuštěno"
 
 #: dist/converse-no-dependencies.js:43782
 msgid "Groupchat logging is now disabled"
-msgstr ""
+msgstr "Zaznamenávání skupinového chatu je nyní zastaveno"
 
 #: dist/converse-no-dependencies.js:43783
 msgid "This groupchat is now no longer anonymous"
-msgstr ""
+msgstr "Tento skupinový chat již není anonymní"
 
 #: dist/converse-no-dependencies.js:43784
 msgid "This groupchat is now semi-anonymous"
-msgstr ""
+msgstr "Tento skupinový chat je nyní zčásti anonymní"
 
 #: dist/converse-no-dependencies.js:43785
 msgid "This groupchat is now fully-anonymous"
-msgstr ""
+msgstr "Tento skupinový chat je nyní zcela anonymní"
 
 #: dist/converse-no-dependencies.js:43786
 msgid "A new groupchat has been created"
-msgstr ""
+msgstr "Byl vytvořen nový skupinový chat"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:43788
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr ""
+msgstr "Vaše přezdívka byla automaticky nastavena na %1$s"
 
 #: dist/converse-no-dependencies.js:43789
 msgid "You have been banned from this groupchat"
-msgstr ""
+msgstr "Byl/a jste na tomto skupinovém chatu zakázán/a"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:43791
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr ""
+msgstr "Vaše přezdívka byla změněna na %1$s"
 
 #: dist/converse-no-dependencies.js:43792
 msgid "You have been kicked from this groupchat"
-msgstr ""
+msgstr "Byl/a jste z tohoto skupinového chatu vyhozen/a"
 
 #: dist/converse-no-dependencies.js:43793
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr ""
+"Byl/a jste z tohoto skupinového chatu odebrán/a kvůli změně příslušnosti"
 
 #: dist/converse-no-dependencies.js:43794
+#, fuzzy
 msgid ""
 "You have been removed from this groupchat because it has changed to members-"
 "only and you're not a member"
 msgstr ""
+"Byl/a jste z tohoto skupinového chatu odstraněn/a, protože se skupinový chat "
+"změnil na pouze pro členy a vy nejste členem"
 
 #: dist/converse-no-dependencies.js:43795
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
 msgstr ""
+"Byl/a jste z tohoto skupinového chatu odstraněn/a, protože se služba, která "
+"jej hostuje, vypíná"
 
 #: dist/converse-no-dependencies.js:43796
 msgid "You have exited this groupchat due to a technical problem"
 msgstr ""
+"Byl/a jste z tohoto skupinového chatu odebrán/a kvůli technickému problému"
 
 #: dist/converse-no-dependencies.js:44577
 msgid "Timeout Error"
-msgstr ""
+msgstr "Chyba časového limitu"
 
 #: dist/converse-no-dependencies.js:44578
 msgid ""
@@ -528,74 +564,84 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:47179
+#, fuzzy
 msgid "You are blocked from sending messages."
-msgstr ""
+msgstr "Nemáte povolení odeslat zprávu."
 
 #: dist/converse-no-dependencies.js:48635
 msgid "A timeout occurred"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:50933
+#, fuzzy
 msgid "Timeout while trying to fetch archived messages."
-msgstr ""
+msgstr "Omlouváme se, při pokusu o odstranění zařízení se vyskytla chyba."
 
 #: dist/converse-no-dependencies.js:53541
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
 msgstr ""
+"Omlouváme se při pokusu přidat uživatele %1$s do kontaktů se stala chyba."
 
 #: dist/converse-no-dependencies.js:53809
 msgid "This client does not allow presence subscriptions"
-msgstr ""
+msgstr "Tento klient nedovoluje presenční odběry"
 
 #: dist/converse-no-dependencies.js:54931
+#, fuzzy
 msgid "me"
-msgstr ""
+msgstr "Jméno"
 
 #: dist/converse-no-dependencies.js:55361
+#, fuzzy
 msgid "Unsaved contacts"
-msgstr ""
+msgstr "Čekající kontakty"
 
 #: dist/converse-no-dependencies.js:55362
 msgid "My contacts"
-msgstr ""
+msgstr "Moje kontakty"
 
 #: dist/converse-no-dependencies.js:55363
 msgid "Pending contacts"
-msgstr ""
+msgstr "Čekající kontakty"
 
 #: dist/converse-no-dependencies.js:55364
 msgid "Contact requests"
-msgstr ""
+msgstr "Požadavky o kontakt"
 
 #: dist/converse-no-dependencies.js:55365
 msgid "Ungrouped"
-msgstr ""
+msgstr "Neseskupené"
 
 #: dist/converse-no-dependencies.js:55366
 #: dist/converse-no-dependencies.js:87745
+#, fuzzy
 msgid "New messages"
-msgstr ""
+msgstr "Odstranit zprávy"
 
 #: dist/converse-no-dependencies.js:65233
 msgid "Menu"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:65623
+#, fuzzy
 msgid "Click to set a new picture"
-msgstr ""
+msgstr "Kliknutím obnovíte tento chat"
 
 #: dist/converse-no-dependencies.js:65624
+#, fuzzy
 msgid "Clear picture"
-msgstr ""
+msgstr "Zavřít toto chatovací okno"
 
 #: dist/converse-no-dependencies.js:66168
+#, fuzzy
 msgid "Older versions"
-msgstr ""
+msgstr "Verze zprávy"
 
 #: dist/converse-no-dependencies.js:66170
+#, fuzzy
 msgid "No older versions found"
-msgstr ""
+msgstr "Vzdálený server nenalezen"
 
 #: dist/converse-no-dependencies.js:66170
 msgid "Current version"
@@ -604,7 +650,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:67482
 #: dist/converse-no-dependencies.js:104129
 msgid "Offline"
-msgstr ""
+msgstr "Odpojen/a"
 
 #: dist/converse-no-dependencies.js:67483
 msgid "Unavailable"
@@ -613,7 +659,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:67484
 #: dist/converse-no-dependencies.js:104128
 msgid "Extended Away"
-msgstr ""
+msgstr "Na delší dobu pryč"
 
 #. *
 #. * @param {import('../modals/profile').default} el
@@ -623,7 +669,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:104127
 #: dist/converse-no-dependencies.js:110525
 msgid "Away"
-msgstr ""
+msgstr "Pryč"
 
 #: dist/converse-no-dependencies.js:67486
 msgid "Do not disturb"
@@ -632,13 +678,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:67487
 #: dist/converse-no-dependencies.js:104125
 msgid "Chatty"
-msgstr ""
+msgstr "Hovorný/á"
 
 #: dist/converse-no-dependencies.js:67488
 #: dist/converse-no-dependencies.js:104124
 #: dist/converse-no-dependencies.js:110527
 msgid "Online"
-msgstr ""
+msgstr "Připojen/a"
 
 #: dist/converse-no-dependencies.js:69101
 #: dist/converse-no-dependencies.js:69102
@@ -646,7 +692,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:92235
 #: dist/converse-no-dependencies.js:98445
 msgid "Close"
-msgstr ""
+msgstr "Zavřít"
 
 #: dist/converse-no-dependencies.js:69936
 #: dist/converse-no-dependencies.js:76868
@@ -668,7 +714,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:74724
 #: dist/converse-no-dependencies.js:121132
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušit"
 
 #: dist/converse-no-dependencies.js:72730
 msgid "Converse logo"
@@ -676,7 +722,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:74697
 msgid "Execute"
-msgstr ""
+msgstr "Vykonat"
 
 #: dist/converse-no-dependencies.js:74698
 msgid "Previous"
@@ -691,13 +737,14 @@ msgid "Complete"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:74989
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "The profile picture of %1$s"
-msgstr ""
+msgstr "Váš profil"
 
 #: dist/converse-no-dependencies.js:75200
+#, fuzzy
 msgid "Add to Contacts"
-msgstr ""
+msgstr "Přidat kontakt"
 
 #: dist/converse-no-dependencies.js:75214
 #: dist/converse-no-dependencies.js:86406
@@ -706,7 +753,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:110758
 #: dist/converse-no-dependencies.js:122658
 msgid "Nickname"
-msgstr ""
+msgstr "Přezdívka"
 
 #: dist/converse-no-dependencies.js:75214
 #: dist/converse-no-dependencies.js:77324
@@ -718,7 +765,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:126508
 #: dist/converse-no-dependencies.js:126894
 msgid "XMPP Address"
-msgstr ""
+msgstr "XMPP adresa"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:75214
@@ -731,7 +778,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:86407
 #: dist/converse-no-dependencies.js:110759
 msgid "Role"
-msgstr ""
+msgstr "Role"
 
 #: dist/converse-no-dependencies.js:75218
 msgid "Hats"
@@ -747,8 +794,9 @@ msgid "Affiliation changed"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75336
+#, fuzzy
 msgid "role changed"
-msgstr ""
+msgstr "Otevřít chat"
 
 #: dist/converse-no-dependencies.js:75724
 msgid ""
@@ -794,8 +842,9 @@ msgid "Type here to filter the search results"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75767
+#, fuzzy
 msgid "Show users"
-msgstr ""
+msgstr "Zobrazit více"
 
 #: dist/converse-no-dependencies.js:75768
 msgid ""
@@ -813,47 +862,53 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76049
+#, fuzzy
 msgid "Role changed"
-msgstr ""
+msgstr "Otevřít chat"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:76490
+#, fuzzy
 msgid "Moderator Tools"
-msgstr ""
+msgstr "Moderátor"
 
 #: dist/converse-no-dependencies.js:76816
 #: dist/converse-no-dependencies.js:76818
+#, fuzzy
 msgid "Invitation to a groupchat"
-msgstr ""
+msgstr "Odstranit tento skupinový chat"
 
 #: dist/converse-no-dependencies.js:76816
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has invited you to join the groupchat \"%2$s\""
-msgstr ""
+msgstr "%1$s vás pozval/a do skupinového chatu: %2$s"
 
 #: dist/converse-no-dependencies.js:76818
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
 "%1$s has invited you to join the groupchat \"%2$s\", and left the following "
 "reason: \"%3$s\""
 msgstr ""
+"%1$s vás pozval/a do skupinového chatu: %2$s, a zanechal/a následující "
+"důvod: „%3$s“"
 
 #: dist/converse-no-dependencies.js:76837
+#, fuzzy
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr ""
+msgstr "Opravdu chcete odejít ze skupinového chatu %1$s?"
 
 #: dist/converse-no-dependencies.js:76842
 msgid "Please enter the XMPP address of this groupchat to confirm"
-msgstr ""
+msgstr "Pro potvrzení prosím zadejte XMPP adresu tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:76844
 #: dist/converse-no-dependencies.js:126056
 msgid "name@example.org"
-msgstr ""
+msgstr "jmeno@priklad.cz"
 
 #: dist/converse-no-dependencies.js:76849
 msgid "Optional reason for destroying this groupchat"
-msgstr ""
+msgstr "Nepovinný důvod pro zničení tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:76850
 #: dist/converse-no-dependencies.js:100912
@@ -866,8 +921,9 @@ msgid "Optional XMPP address for a new groupchat that replaces this one"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76855
+#, fuzzy
 msgid "replacement@example.org"
-msgstr ""
+msgstr "jmeno@priklad.cz"
 
 #: dist/converse-no-dependencies.js:77041
 msgid ""
@@ -877,13 +933,13 @@ msgstr ""
 
 #. e.g. Your nickname is "coolguy69"
 #: dist/converse-no-dependencies.js:77177
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Your nickname is \"%1$s\""
-msgstr ""
+msgstr "Vaše přezdívka byla změněna na %1$s"
 
 #: dist/converse-no-dependencies.js:77200
 msgid "Error: invalid number of arguments"
-msgstr ""
+msgstr "Chyba: neplatný počet argumentů"
 
 #. *
 #. * @param {AdHocCommands} el
@@ -901,37 +957,43 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:77322
 msgid "Commands found"
-msgstr ""
+msgstr "Nalezené příkazy"
 
 #: dist/converse-no-dependencies.js:77323
 msgid "List available commands"
-msgstr ""
+msgstr "Vypsat dostupné příkazy"
 
 #: dist/converse-no-dependencies.js:77325
 msgid "No commands found"
-msgstr ""
+msgstr "Nenalezeny žádné příkazy"
 
 #: dist/converse-no-dependencies.js:77641
+#, fuzzy
 msgid "Sorry, an error occurred while looking for commands on that entity."
-msgstr ""
+msgstr "Omlouváme se, při pokusu o odstranění zařízení se vyskytla chyba."
 
 #: dist/converse-no-dependencies.js:77655
 msgid "The specified entity doesn't support ad-hoc commands"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:77718
+#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr ""
+msgstr "Omlouváme se, při pokusu o odstranění zařízení se vyskytla chyba."
 
 #: dist/converse-no-dependencies.js:77808
+#, fuzzy
 msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
 msgstr ""
+"Omlouváme se, při spouštění příkazu se stala chyba. Pro detaily zkontrolujte "
+"vývojářskou konzoli ve vašem prohlížeči."
 
 #: dist/converse-no-dependencies.js:77821
+#, fuzzy
 msgid "Executing"
-msgstr ""
+msgstr "Vykonat"
 
 #: dist/converse-no-dependencies.js:77825
 #: dist/converse-no-dependencies.js:77830
@@ -939,10 +1001,13 @@ msgid "Completed"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:77871
+#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
+"Omlouváme se, při spouštění příkazu se stala chyba. Pro detaily zkontrolujte "
+"vývojářskou konzoli ve vašem prohlížeči."
 
 #: dist/converse-no-dependencies.js:77878
 msgid "Error: unexpected result"
@@ -951,17 +1016,17 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78082
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr ""
+msgstr "Opravdu chcete odstranit záložku „%1$s“?"
 
 #: dist/converse-no-dependencies.js:78149
 msgid "Unbookmark this groupchat"
-msgstr ""
+msgstr "Odstranit tento skupinový chat ze záložek"
 
 #: dist/converse-no-dependencies.js:78150
 #: dist/converse-no-dependencies.js:123464
 #: dist/converse-no-dependencies.js:123985
 msgid "Click to open this groupchat"
-msgstr ""
+msgstr "Kliknutím otevřete tento skupinový chat"
 
 #. *
 #. * @param {import('../bookmarks-list').default} el
@@ -979,21 +1044,21 @@ msgstr ""
 #: dist/converse-no-dependencies.js:104120
 #: dist/converse-no-dependencies.js:127985
 msgid "Filter"
-msgstr ""
+msgstr "Filtrovat"
 
 #: dist/converse-no-dependencies.js:78638
 #: dist/converse-no-dependencies.js:124053
 msgid "Bookmarks"
-msgstr ""
+msgstr "Záložky"
 
 #: dist/converse-no-dependencies.js:78697
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr ""
+msgstr "Záložky"
 
 #: dist/converse-no-dependencies.js:78698
 msgid "Would you like this groupchat to be automatically joined upon startup?"
-msgstr ""
+msgstr "Chcete se k tomuto skupinovému chatu automaticky připojit po startu?"
 
 #: dist/converse-no-dependencies.js:78699
 #: dist/converse-no-dependencies.js:125219
@@ -1008,15 +1073,16 @@ msgstr ""
 #: dist/converse-no-dependencies.js:126059
 #: dist/converse-no-dependencies.js:126507
 msgid "Name"
-msgstr ""
+msgstr "Jméno"
 
 #: dist/converse-no-dependencies.js:78701
 msgid "What should your nickname for this groupchat be?"
-msgstr ""
+msgstr "Jaká bude vaše přezdívka pro tento skupinový chat?"
 
 #: dist/converse-no-dependencies.js:78702
+#, fuzzy
 msgid "Password (for a protected groupchat)"
-msgstr ""
+msgstr "Ochráněno heslem"
 
 #: dist/converse-no-dependencies.js:78703
 msgid ""
@@ -1032,12 +1098,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78704
 #: dist/converse-no-dependencies.js:106767
 msgid "Save"
-msgstr ""
+msgstr "Uložit"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:78999
+#, fuzzy
 msgid "Bookmark"
-msgstr ""
+msgstr "Záložky"
 
 #: dist/converse-no-dependencies.js:80804
 msgid ""
@@ -1054,12 +1121,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:80843
 #: dist/converse-no-dependencies.js:80916
 #: dist/converse-no-dependencies.js:80949
+#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr ""
+msgstr "Opravdu chcete odstranit tento kontakt?"
 
 #: dist/converse-no-dependencies.js:80885
 msgid "A timeout occurred while trying to retract the message"
-msgstr ""
+msgstr "Při pokusu o odvolání zprávy byl překročen časový limit"
 
 #: dist/converse-no-dependencies.js:80886
 #: dist/converse-no-dependencies.js:80890
@@ -1076,55 +1144,63 @@ msgstr ""
 #: dist/converse-no-dependencies.js:114697
 #: dist/converse-no-dependencies.js:118605
 msgid "Error"
-msgstr ""
+msgstr "Chyba"
 
 #: dist/converse-no-dependencies.js:80889
+#, fuzzy
 msgid "Sorry, you're not allowed to retract this message."
-msgstr ""
+msgstr "Nemáte povolení vytvářet nové skupinové chaty."
 
 #: dist/converse-no-dependencies.js:80970
+#, fuzzy
 msgid "You are about to retract this message."
-msgstr ""
+msgstr "Chystáte se tuto zprávu odvolat."
 
 #: dist/converse-no-dependencies.js:80971
+#, fuzzy
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
-msgstr ""
+msgstr "Můžete přidat zprávu vysvětlující důvod odvolání."
 
 #: dist/converse-no-dependencies.js:80982
+#, fuzzy
 msgid "Message Retraction"
-msgstr ""
+msgstr "Verze zprávy"
 
 #: dist/converse-no-dependencies.js:80982
 msgid "Optional reason"
-msgstr ""
+msgstr "Nepovinný důvod"
 
 #: dist/converse-no-dependencies.js:80994
+#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr ""
+msgstr "Nemáte povolení vytvářet nové skupinové chaty."
 
 #: dist/converse-no-dependencies.js:81110
+#, fuzzy
 msgid "Show media"
-msgstr ""
+msgstr "Zobrazit více"
 
 #: dist/converse-no-dependencies.js:81110
+#, fuzzy
 msgid "Hide media"
-msgstr ""
+msgstr "Skrýt téma"
 
 #. * @type {MessageActionAttributes}
 #: dist/converse-no-dependencies.js:81176
+#, fuzzy
 msgid "Cancel Editing"
-msgstr ""
+msgstr "Změnit nastavení"
 
 #: dist/converse-no-dependencies.js:81176
 #: dist/converse-no-dependencies.js:86413
 msgid "Edit"
-msgstr ""
+msgstr "Upravit"
 
 #: dist/converse-no-dependencies.js:81205
 msgid "Retract"
-msgstr ""
+msgstr "Odvolat"
 
 #: dist/converse-no-dependencies.js:81224
 msgid "Copy"
@@ -1136,60 +1212,65 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:81475
 msgid "Image: "
-msgstr ""
+msgstr "Obrázek: "
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:85054
 msgid "Message versions"
-msgstr ""
+msgstr "Verze zprávy"
 
 #: dist/converse-no-dependencies.js:85268
 msgid "Are you sure you want to remove this contact?"
-msgstr ""
+msgstr "Opravdu chcete odstranit tento kontakt?"
 
 #: dist/converse-no-dependencies.js:85305
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
 msgstr ""
+"Omlouváme se při pokusu přidat uživatele %1$s do kontaktů se stala chyba."
 
 #: dist/converse-no-dependencies.js:85337
+#, fuzzy
 msgid "Remove and decline contact request"
-msgstr ""
+msgstr "Požadavky o kontakt"
 
 #: dist/converse-no-dependencies.js:85338
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Are you sure you want to decline the contact request from %1$s?"
-msgstr ""
+msgstr "Opravdu chcete odmítnout tento požadavek o kontakt?"
 
 #: dist/converse-no-dependencies.js:85341
+#, fuzzy
 msgid "Also block this user from sending you further messages"
-msgstr ""
+msgstr "Povolit utišeným uživatelům posílat zprávy"
 
 #: dist/converse-no-dependencies.js:85366
 msgid "Contact request declined and user blocked"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85372
+#, fuzzy
 msgid "Contact request declined"
-msgstr ""
+msgstr "Požadavky o kontakt"
 
 #: dist/converse-no-dependencies.js:85405
 msgid "Do you want to block this contact, so they cannot send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85446
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
 msgstr ""
+"Omlouváme se při pokusu přidat uživatele %1$s do kontaktů se stala chyba."
 
 #: dist/converse-no-dependencies.js:85479
 msgid "Do you want to unblock this contact, so they can send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85511
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
-msgstr ""
+msgstr "Omlouváme se, při pokusu o odeslání vaší zprávy se vyskytla chyba."
 
 #: dist/converse-no-dependencies.js:86307
 msgid "Neither of you receive presence updates"
@@ -1212,16 +1293,18 @@ msgid "Remove from blocklist"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:86329
+#, fuzzy
 msgid "Add to blocklist"
-msgstr ""
+msgstr "Přidat kontakt"
 
 #: dist/converse-no-dependencies.js:86337
+#, fuzzy
 msgid "Add as contact"
-msgstr ""
+msgstr "Přidat kontakt"
 
 #: dist/converse-no-dependencies.js:86345
 msgid "Remove as contact"
-msgstr ""
+msgstr "Odstranit z kontaktů"
 
 #: dist/converse-no-dependencies.js:86353
 #: dist/converse-no-dependencies.js:126504
@@ -1229,29 +1312,31 @@ msgid "Accept"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:86361
+#, fuzzy
 msgid "Decline"
-msgstr ""
+msgstr "Připojen/a"
 
 #: dist/converse-no-dependencies.js:86404
 #: dist/converse-no-dependencies.js:110755
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 #: dist/converse-no-dependencies.js:86405
 #: dist/converse-no-dependencies.js:110756
 msgid "Full Name"
-msgstr ""
+msgstr "Celé jméno"
 
 #: dist/converse-no-dependencies.js:86408
 #: dist/converse-no-dependencies.js:110762
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: dist/converse-no-dependencies.js:86409
 #: dist/converse-no-dependencies.js:126057
 #: dist/converse-no-dependencies.js:126505
+#, fuzzy
 msgid "Groups"
-msgstr ""
+msgstr "Skupiny"
 
 #: dist/converse-no-dependencies.js:86410
 #: dist/converse-no-dependencies.js:126058
@@ -1266,8 +1351,9 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:86412
 #: dist/converse-no-dependencies.js:110765
+#, fuzzy
 msgid "Profile"
-msgstr ""
+msgstr "Váš profil"
 
 #: dist/converse-no-dependencies.js:86431
 msgid "Presence"
@@ -1275,20 +1361,22 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:86433
 #: dist/converse-no-dependencies.js:126775
+#, fuzzy
 msgid "Contact Request"
-msgstr ""
+msgstr "Požadavky o kontakt"
 
 #: dist/converse-no-dependencies.js:87008
 msgid "Uploading file:"
-msgstr ""
+msgstr "Nahrává se soubor:"
 
 #: dist/converse-no-dependencies.js:87081
 msgid "Retry"
-msgstr ""
+msgstr "Opakovat"
 
 #: dist/converse-no-dependencies.js:87883
+#, fuzzy
 msgid "This message has been edited"
-msgstr ""
+msgstr "Tahle zpráva byla upravena"
 
 #. *
 #. * @param {import('../message').default} el
@@ -1296,33 +1384,37 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:87892
 msgid "Show more"
-msgstr ""
+msgstr "Zobrazit více"
 
 #: dist/converse-no-dependencies.js:87894
+#, fuzzy
 msgid "Show less"
-msgstr ""
+msgstr "Zobrazit více"
 
 #: dist/converse-no-dependencies.js:87896
+#, fuzzy
 msgid "Message delivery failed."
-msgstr ""
+msgstr "Daný důvod je: „%1$s“."
 
 #: dist/converse-no-dependencies.js:88528
+#, fuzzy
 msgid "A moderator"
-msgstr ""
+msgstr "Moderátor"
 
 #: dist/converse-no-dependencies.js:88529
 #: dist/converse-no-dependencies.js:88531
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has removed a message"
-msgstr ""
+msgstr "%1$s byl/a odstraněna, protože není členem"
 
 #: dist/converse-no-dependencies.js:88531
+#, fuzzy
 msgid "You have removed a message"
-msgstr ""
+msgstr "Máte nepřečtené zprávy"
 
 #: dist/converse-no-dependencies.js:89744
 msgid "Search results"
-msgstr ""
+msgstr "Výsledky vyhledávání"
 
 #: dist/converse-no-dependencies.js:89773
 msgid "Search"
@@ -1330,71 +1422,77 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:90383
 msgid "Insert emojis"
-msgstr ""
+msgstr "Vložit emoji"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:91050
+#, fuzzy
 msgid "Message characters remaining"
-msgstr ""
+msgstr "Archivace zpráv"
 
 #: dist/converse-no-dependencies.js:91262
+#, fuzzy
 msgid "Send the message"
-msgstr ""
+msgstr "Upravit tuto zprávu"
 
 #: dist/converse-no-dependencies.js:91539
 msgid "Start a call"
-msgstr ""
+msgstr "Začít hovor"
 
 #: dist/converse-no-dependencies.js:91569
 msgid "Choose a file to send"
-msgstr ""
+msgstr "Vyberte soubor k odeslání"
 
 #: dist/converse-no-dependencies.js:91586
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr ""
+msgstr "Kliknutím napíšete jako normální zprávu (bez spoilerů)"
 
 #: dist/converse-no-dependencies.js:91588
 msgid "Click to write your message as a spoiler"
-msgstr ""
+msgstr "Kliknutím napíšete svou zprávu jako spoiler"
 
 #: dist/converse-no-dependencies.js:91788
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "Profilový obrázek uživatele"
 
 #: dist/converse-no-dependencies.js:92124
 #: dist/converse-no-dependencies.js:108497
 #: dist/converse-no-dependencies.js:125228
 msgid "Details"
-msgstr ""
+msgstr "Podrobnosti"
 
 #: dist/converse-no-dependencies.js:92125
+#, fuzzy
 msgid "See more information about this person"
-msgstr ""
+msgstr "Zobrazit více informací o tomto skupinovém chatu"
 
 #: dist/converse-no-dependencies.js:92167
 msgid "Unblock user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92168
+#, fuzzy
 msgid "Are you sure you want to unblock this user?"
-msgstr ""
+msgstr "Opravdu se chcete odhlásit?"
 
 #: dist/converse-no-dependencies.js:92183
 msgid "Unblock this user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92184
+#, fuzzy
 msgid "Allow this user to send you messages"
-msgstr ""
+msgstr "Povolit utišeným uživatelům posílat zprávy"
 
 #: dist/converse-no-dependencies.js:92201
+#, fuzzy
 msgid "Block user"
-msgstr ""
+msgstr "Zobrazit více"
 
 #: dist/converse-no-dependencies.js:92202
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Are you sure you want to prevent %1$s from contacting you further?"
-msgstr ""
+msgstr "Opravdu chcete odstranit tento kontakt?"
 
 #: dist/converse-no-dependencies.js:92220
 msgid "Block this user"
@@ -1405,8 +1503,9 @@ msgid "Prevent this user from sending you any further messages"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92236
+#, fuzzy
 msgid "Close and end this conversation"
-msgstr ""
+msgstr "Zavřít a odejít z tohoto skupinového chatu"
 
 #. ESM default export
 #. *
@@ -1421,54 +1520,56 @@ msgstr ""
 #: dist/converse-no-dependencies.js:102272
 #: dist/converse-no-dependencies.js:103334
 msgid "You have unread messages"
-msgstr ""
+msgstr "Máte nepřečtené zprávy"
 
 #: dist/converse-no-dependencies.js:92483
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr ""
+msgstr "Opravdu chcete vymazat zprávy z téhle konverzace?"
 
 #: dist/converse-no-dependencies.js:92662
 #: dist/converse-no-dependencies.js:101600
 msgid "Hidden message"
-msgstr ""
+msgstr "Skrytá zpráva"
 
 #: dist/converse-no-dependencies.js:92662
 #: dist/converse-no-dependencies.js:101600
 msgid "Message"
-msgstr ""
+msgstr "Zpráva"
 
 #: dist/converse-no-dependencies.js:92663
 #: dist/converse-no-dependencies.js:101601
 msgid "Optional hint"
-msgstr ""
+msgstr "Volitelná nápověda"
 
 #: dist/converse-no-dependencies.js:93172
 msgid "Sorry, the connection has been lost, and your message could not be sent"
 msgstr ""
+"Je nám líto, připojení bylo ztraceno a vaši zprávu nebylo možné odeslat"
 
 #: dist/converse-no-dependencies.js:94759
 msgid "Remove messages"
-msgstr ""
+msgstr "Odstranit zprávy"
 
 #: dist/converse-no-dependencies.js:94760
+#, fuzzy
 msgid "Close this chat"
-msgstr ""
+msgstr "Zavřít toto chatovací okno"
 
 #: dist/converse-no-dependencies.js:94761
 msgid "Write in the third person"
-msgstr ""
+msgstr "Psát ve třetí osobě"
 
 #: dist/converse-no-dependencies.js:94762
 #: dist/converse-no-dependencies.js:106044
 msgid "Show this menu"
-msgstr ""
+msgstr "Zobrazit tohle menu"
 
 #: dist/converse-no-dependencies.js:94984
 #: dist/converse-no-dependencies.js:102713
 #: dist/converse-no-dependencies.js:126368
 #: dist/converse-no-dependencies.js:127165
 msgid "Please enter a valid XMPP address"
-msgstr ""
+msgstr "Prosím zadejte platnou XMPP adresu"
 
 #: dist/converse-no-dependencies.js:95169
 msgid "A big thank you to our sponsors 🙏"
@@ -1482,10 +1583,15 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
+"K vylepšení výkonu ukládáme vaše data do mezipaměti tohoto prohlížeče. Je-li "
+"tohle veřejný počítač, nebo chcete-li, aby byla vaše data po odhlášení "
+"smazána, odškrtněte toto pole. Je důležité, abyste se výslovně odhlásil/a, "
+"jinak nemusí být smazána všechna data v mezipaměti. Mějte prosím na vědomí, "
+"že pokud používáte nedůvěryhodné zařízení, NENÍ podporováno šifrování OMEMO."
 
 #: dist/converse-no-dependencies.js:95323
 msgid "This is a trusted device"
-msgstr ""
+msgstr "Tohle je důvěryhodné zařízení"
 
 #: dist/converse-no-dependencies.js:95324
 msgid "Info"
@@ -1505,19 +1611,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:95333
 msgid "Password"
-msgstr ""
+msgstr "Heslo"
 
 #: dist/converse-no-dependencies.js:95342
 msgid "Log in"
-msgstr ""
+msgstr "Přihlásit"
 
 #: dist/converse-no-dependencies.js:95346
 msgid "Username"
-msgstr ""
+msgstr "Uživatelské jméno"
 
 #: dist/converse-no-dependencies.js:95346
 msgid "user@domain"
-msgstr ""
+msgstr "uživatel@doména"
 
 #: dist/converse-no-dependencies.js:95353
 msgid "Disconnected"
@@ -1525,11 +1631,12 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:95354
 msgid "Click here to log in anonymously"
-msgstr ""
+msgstr "Kliknutím sem se přihlásíte anonymně"
 
 #: dist/converse-no-dependencies.js:95943
+#, fuzzy
 msgid "Chat"
-msgstr ""
+msgstr "Hovorný/á"
 
 #: dist/converse-no-dependencies.js:96489
 msgid "About Converse"
@@ -1537,7 +1644,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:97195
 msgid "Show details about this chat client"
-msgstr ""
+msgstr "Zobrazit detaily o tomto chatovacím klientovi"
 
 #: dist/converse-no-dependencies.js:97635
 msgid "Discover Services"
@@ -1552,8 +1659,9 @@ msgid "Service"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:97648
+#, fuzzy
 msgid "Identities"
-msgstr ""
+msgstr "Aktivity"
 
 #: dist/converse-no-dependencies.js:97649
 msgid "Type"
@@ -1570,49 +1678,56 @@ msgstr ""
 #: dist/converse-no-dependencies.js:97660
 #: dist/converse-no-dependencies.js:107475
 msgid "Features"
-msgstr ""
+msgstr "Vlastnosti"
 
 #: dist/converse-no-dependencies.js:98033
+#, fuzzy
 msgid "No service found with that XMPP address"
-msgstr ""
+msgstr "Adresa skupinového chatu"
 
 #: dist/converse-no-dependencies.js:98040
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Error: %1$s"
-msgstr ""
+msgstr "Chyba"
 
 #: dist/converse-no-dependencies.js:98446
 msgid "Close these announcements"
-msgstr ""
+msgstr "Zavřít tato oznámení"
 
 #: dist/converse-no-dependencies.js:98879
+#, fuzzy
 msgid "Click to open this server message"
-msgstr ""
+msgstr "Kliknutím otevřete tento skupinový chat"
 
 #: dist/converse-no-dependencies.js:98890
 msgid "Announcements"
-msgstr ""
+msgstr "Oznámení"
 
 #: dist/converse-no-dependencies.js:99295
+#, fuzzy
 msgid "Click to load missing messages"
-msgstr ""
+msgstr "Kliknutím otevřete tento skupinový chat"
 
 #: dist/converse-no-dependencies.js:100048
 #: dist/converse-no-dependencies.js:100070
+#, fuzzy
 msgid "Minimize"
-msgstr ""
+msgstr "Zmenšeno"
 
 #: dist/converse-no-dependencies.js:100049
+#, fuzzy
 msgid "Minimize this chat"
-msgstr ""
+msgstr "Zmenšit tohle chatovací okno"
 
 #: dist/converse-no-dependencies.js:100071
+#, fuzzy
 msgid "Minimize this groupchat"
-msgstr ""
+msgstr "Zmenšit tohle chatovací okno"
 
 #: dist/converse-no-dependencies.js:100205
+#, fuzzy
 msgid "hidden"
-msgstr ""
+msgstr "Skryté"
 
 #. *
 #. * @param {import('../minimized-chat').default} el
@@ -1620,127 +1735,138 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:100573
 msgid "Click to restore this chat"
-msgstr ""
+msgstr "Kliknutím obnovíte tento chat"
 
 #. *
 #. * @param {import('../affiliation-form').default} el
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:100910
+#, fuzzy
 msgid "Change affiliation"
-msgstr ""
+msgstr "Změnit příslušnost uživatele na administrátora"
 
 #: dist/converse-no-dependencies.js:100911
 msgid "New affiliation"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:101219
+#, fuzzy
 msgid "Timeout error while trying to set the affiliation"
-msgstr ""
+msgstr "Omlouváme se, při pokusu o obnovení se něco pokazilo"
 
 #: dist/converse-no-dependencies.js:101221
 msgid "Sorry, you're not allowed to make that change"
-msgstr ""
+msgstr "Omlouváme se, nemáte povolení provést tuto změnu"
 
 #: dist/converse-no-dependencies.js:101223
+#, fuzzy
 msgid "Sorry, something went wrong while trying to set the affiliation"
-msgstr ""
+msgstr "Omlouváme se, při pokusu o obnovení se něco pokazilo"
 
 #. *
 #. * @param {import('../role-form').default} el
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:101329
+#, fuzzy
 msgid "Change role"
-msgstr ""
+msgstr "Změnit nastavení"
 
 #: dist/converse-no-dependencies.js:101330
+#, fuzzy
 msgid "New Role"
-msgstr ""
+msgstr "Role"
 
 #: dist/converse-no-dependencies.js:101498
 msgid "You're not allowed to make that change"
-msgstr ""
+msgstr "Nemáte povolení provést tuto změnu"
 
 #: dist/converse-no-dependencies.js:101500
+#, fuzzy
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr ""
+msgstr "Omlouváme se, při pokusu o obnovení se něco pokazilo"
 
 #: dist/converse-no-dependencies.js:102015
+#, fuzzy
 msgid "Change nickname"
-msgstr ""
+msgstr "Změnit svou přezdívku"
 
 #: dist/converse-no-dependencies.js:102015
 msgid "Enter groupchat"
-msgstr ""
+msgstr "Vstoupit do skupinového chatu"
 
 #: dist/converse-no-dependencies.js:102016
+#, fuzzy
 msgid "Choose a nickname to enter"
-msgstr ""
+msgstr "Vyberte soubor k odeslání"
 
 #: dist/converse-no-dependencies.js:102016
 msgid "Please choose your nickname"
-msgstr ""
+msgstr "Prosím vyberte si přezdívku"
 
 #: dist/converse-no-dependencies.js:102274
 msgid "You're not allowed to send messages in this room"
-msgstr ""
+msgstr "V této místnosti nemáte povoleno odesílat zprávy"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:102711
 #: dist/converse-no-dependencies.js:103340
 msgid "Invite"
-msgstr ""
+msgstr "Pozvat"
 
 #: dist/converse-no-dependencies.js:102712
+#, fuzzy
 msgid "user@example.org"
-msgstr ""
+msgstr "jmeno@priklad.cz"
 
 #: dist/converse-no-dependencies.js:102715
+#, fuzzy
 msgid "Optional reason for the invitation"
-msgstr ""
+msgstr "Volitelná nápověda"
 
 #: dist/converse-no-dependencies.js:102826
+#, fuzzy
 msgid "Invite someone to this groupchat"
-msgstr ""
+msgstr "Odstranit tento skupinový chat"
 
 #. * @param {MUCOccupant} o
 #: dist/converse-no-dependencies.js:103082
 #, javascript-format
 msgid "Click to mention %1$s in your message."
-msgstr ""
+msgstr "Kliknutím zmíníte uživatele %1$s ve své zprávě."
 
 #: dist/converse-no-dependencies.js:103093
 msgid "Owner"
-msgstr ""
+msgstr "Vlastník"
 
 #: dist/converse-no-dependencies.js:103097
 msgid "Admin"
-msgstr ""
+msgstr "Administrátor"
 
 #: dist/converse-no-dependencies.js:103101
 msgid "Member"
-msgstr ""
+msgstr "Člen"
 
 #: dist/converse-no-dependencies.js:103105
 msgid "Moderator"
-msgstr ""
+msgstr "Moderátor"
 
 #: dist/converse-no-dependencies.js:103109
 msgid "Visitor"
-msgstr ""
+msgstr "Návštěvník"
 
 #: dist/converse-no-dependencies.js:103169
 msgid "This user is a moderator."
-msgstr ""
+msgstr "Tento uživatel je moderátorem."
 
 #: dist/converse-no-dependencies.js:103170
 msgid "This user can send messages in this groupchat."
-msgstr ""
+msgstr "Tento uživatel může posílat zprávy v tomto skupinovém chatu."
 
 #: dist/converse-no-dependencies.js:103171
 msgid "This user can NOT send messages in this groupchat."
-msgstr ""
+msgstr "Tento uživatel NEMŮŽE posílat zprávy v tomto skupinovém chatu."
 
 #: dist/converse-no-dependencies.js:103336
 msgid ""
@@ -1748,16 +1874,18 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103337
+#, fuzzy
 msgid "Invite this user to join this groupchat"
-msgstr ""
+msgstr "Kdokoliv se k tomuto skupinovému chatu může připojit"
 
 #: dist/converse-no-dependencies.js:103338
 msgid "Open a one-on-one chat with this user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103339
+#, fuzzy
 msgid "Open Chat"
-msgstr ""
+msgstr "Otevřené skupinové chaty"
 
 #: dist/converse-no-dependencies.js:103668
 #: dist/converse-no-dependencies.js:110376
@@ -1765,50 +1893,54 @@ msgid "Success"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103668
+#, fuzzy
 msgid "The user has been invited to join this groupchat"
-msgstr ""
+msgstr "%1$s byl/a na tomto skupinového chatu zakázán/a"
 
 #: dist/converse-no-dependencies.js:104121
+#, fuzzy
 msgid "Filter by name"
-msgstr ""
+msgstr "Filtrovat dle názvu skupiny"
 
 #: dist/converse-no-dependencies.js:104122
 #: dist/converse-no-dependencies.js:127988
 msgid "Filter by status"
-msgstr ""
+msgstr "Filtrovat dle stavu"
 
 #: dist/converse-no-dependencies.js:104123
 #: dist/converse-no-dependencies.js:127989
 msgid "Any"
-msgstr ""
+msgstr "Libovolné"
 
 #: dist/converse-no-dependencies.js:104126
 #: dist/converse-no-dependencies.js:110526
 msgid "Busy"
-msgstr ""
+msgstr "Zaneprázdněn/a"
 
 #. *
 #. * @param {import('../occupants').default} el
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:104288
+#, fuzzy
 msgid "Participant"
-msgstr ""
+msgstr "Účastníci"
 
 #: dist/converse-no-dependencies.js:104288
 #: dist/converse-no-dependencies.js:104495
 msgid "Participants"
-msgstr ""
+msgstr "Účastníci"
 
 #: dist/converse-no-dependencies.js:104289
 #: dist/converse-no-dependencies.js:104493
 msgid "Hide"
-msgstr ""
+msgstr "Skrýt"
 
 #: dist/converse-no-dependencies.js:104290
 #: dist/converse-no-dependencies.js:128176
+#, fuzzy
 msgid "Show filter"
-msgstr ""
+msgstr "Zobrazit více"
 
 #: dist/converse-no-dependencies.js:104291
 #: dist/converse-no-dependencies.js:128177
@@ -1816,57 +1948,63 @@ msgid "Hide filter"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:104293
+#, fuzzy
 msgid "Invite someone"
-msgstr ""
+msgstr "Pozvat"
 
 #: dist/converse-no-dependencies.js:104294
+#, fuzzy
 msgid "Invite someone to join this groupchat"
-msgstr ""
+msgstr "Kdokoliv se k tomuto skupinovému chatu může připojit"
 
 #: dist/converse-no-dependencies.js:104494
+#, fuzzy
 msgid "No participant data found"
-msgstr ""
+msgstr "Účastníci"
 
 #: dist/converse-no-dependencies.js:104496
+#, fuzzy
 msgid "Show details"
-msgstr ""
+msgstr "Zobrazit více"
 
 #: dist/converse-no-dependencies.js:106038
 msgid "Change user's affiliation to admin"
-msgstr ""
+msgstr "Změnit příslušnost uživatele na administrátora"
 
 #: dist/converse-no-dependencies.js:106039
 msgid "Ban user by changing their affiliation to outcast"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:106040
+#, fuzzy
 msgid "Clear the chat area"
-msgstr ""
+msgstr "Zavřít toto chatovací okno"
 
 #: dist/converse-no-dependencies.js:106041
+#, fuzzy
 msgid "Close this groupchat"
-msgstr ""
+msgstr "Odstranit tento skupinový chat"
 
 #: dist/converse-no-dependencies.js:106042
 msgid "Change user role to participant"
-msgstr ""
+msgstr "Změnit roli uživatele na účastníka"
 
 #: dist/converse-no-dependencies.js:106043
 #: dist/converse-no-dependencies.js:108567
 msgid "Remove this groupchat"
-msgstr ""
+msgstr "Odstranit tento skupinový chat"
 
 #: dist/converse-no-dependencies.js:106045
 msgid "Kick user from groupchat"
-msgstr ""
+msgstr "Vyhodit uživatele ze skupinového chatu"
 
 #: dist/converse-no-dependencies.js:106046
 msgid "Write in 3rd person"
-msgstr ""
+msgstr "Psát ve 3. osobě"
 
 #: dist/converse-no-dependencies.js:106047
 msgid "Grant membership to a user"
-msgstr ""
+msgstr "Poskytnout uživateli členství"
 
 #: dist/converse-no-dependencies.js:106048
 msgid "Opens up the moderator tools GUI"
@@ -1874,24 +2012,24 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:106049
 msgid "Remove user's ability to post messages"
-msgstr ""
+msgstr "Odstranit schopnost uživatele posílat zprávy"
 
 #: dist/converse-no-dependencies.js:106050
 #: dist/converse-no-dependencies.js:107796
 msgid "Change your nickname"
-msgstr ""
+msgstr "Změnit svou přezdívku"
 
 #: dist/converse-no-dependencies.js:106051
 msgid "Grant moderator role to user"
-msgstr ""
+msgstr "Udělit uživateli roli moderátora"
 
 #: dist/converse-no-dependencies.js:106052
 msgid "Grant ownership of this groupchat"
-msgstr ""
+msgstr "Udělit vlastnictví tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:106053
 msgid "Register your nickname"
-msgstr ""
+msgstr "Zaregistrovat svou přezdívku"
 
 #: dist/converse-no-dependencies.js:106054
 msgid "Revoke the user's current affiliation"
@@ -1899,343 +2037,368 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:106055
 msgid "Set groupchat subject"
-msgstr ""
+msgstr "Nastavit předmět skupinového chatu"
 
 #: dist/converse-no-dependencies.js:106056
 msgid "Set groupchat subject (alias for /subject)"
-msgstr ""
+msgstr "Nastavit předmět skupinového chatu (alias pro /subject)"
 
 #: dist/converse-no-dependencies.js:106057
 msgid "Allow muted user to post messages"
-msgstr ""
+msgstr "Povolit utišeným uživatelům posílat zprávy"
 
 #: dist/converse-no-dependencies.js:106146
+#, fuzzy
 msgid ""
 "The conversation has moved to a new address. Click the link below to enter."
-msgstr ""
+msgstr "Konverzace se přesunula. Kliknutím níže do ní vstoupíte."
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:106152
 msgid "This groupchat no longer exists"
-msgstr ""
+msgstr "Tento skupinový chat již neexistuje"
 
 #: dist/converse-no-dependencies.js:106153
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "The following reason was given: \"%1$s\""
-msgstr ""
+msgstr "Daný důvod je: „%1$s“."
 
 #: dist/converse-no-dependencies.js:106622
 #, javascript-format
 msgid "This action was done by %1$s."
-msgstr ""
+msgstr "Tuto akci vykonal/a %1$s."
 
 #: dist/converse-no-dependencies.js:106626
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
-msgstr ""
+msgstr "Daný důvod je: „%1$s“."
 
 #: dist/converse-no-dependencies.js:106746
 msgid "Loading configuration form"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:107057
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Configure %1$s"
-msgstr ""
+msgstr "Konfigurovat"
 
 #: dist/converse-no-dependencies.js:107195
+#, fuzzy
 msgid "Sorry, an error occurred while trying to submit the config form."
-msgstr ""
+msgstr "Omlouváme se, při pokusu o odstranění zařízení se vyskytla chyba."
 
 #: dist/converse-no-dependencies.js:107222
+#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
 msgstr ""
+"Omlouváme se, při pokusu o uložení vašich profilových dat se stala chyba."
 
 #: dist/converse-no-dependencies.js:107223
 #: dist/converse-no-dependencies.js:111181
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
+"Můžete zkontrolovat vývojářskou konzoli vašeho prohlížeče pro jakýkoliv "
+"chybový výstup."
 
 #: dist/converse-no-dependencies.js:107458
 msgid "Topic"
-msgstr ""
+msgstr "Téma"
 
 #: dist/converse-no-dependencies.js:107459
 msgid "Topic author"
-msgstr ""
+msgstr "Autor tématu"
 
 #: dist/converse-no-dependencies.js:107471
+#, fuzzy
 msgid "XMPP address"
-msgstr ""
+msgstr "XMPP adresa"
 
 #: dist/converse-no-dependencies.js:107472
 msgid "Message archiving"
-msgstr ""
+msgstr "Archivace zpráv"
 
 #: dist/converse-no-dependencies.js:107473
 msgid "Messages are archived on the server"
-msgstr ""
+msgstr "Na tomto serveru jsou archivovány zprávy"
 
 #: dist/converse-no-dependencies.js:107474
 msgid "Description"
-msgstr ""
+msgstr "Popis"
 
 #: dist/converse-no-dependencies.js:107476
 #: dist/converse-no-dependencies.js:123364
 msgid "Hidden"
-msgstr ""
+msgstr "Skryté"
 
 #: dist/converse-no-dependencies.js:107477
 msgid "This groupchat is not publicly searchable"
-msgstr ""
+msgstr "Tento skupinový chat není veřejně vyhledávatelný"
 
 #: dist/converse-no-dependencies.js:107478
 msgid "This groupchat is restricted to members only"
-msgstr ""
+msgstr "Tento skupinový chat je omezen pouze na členy"
 
 #: dist/converse-no-dependencies.js:107479
 msgid "Members only"
-msgstr ""
+msgstr "Pouze pro členy"
 
 #: dist/converse-no-dependencies.js:107480
 #: dist/converse-no-dependencies.js:123366
 msgid "Moderated"
-msgstr ""
+msgstr "Moderováno"
 
 #: dist/converse-no-dependencies.js:107481
 msgid ""
 "Participants entering this groupchat need to request permission to write"
 msgstr ""
+"Účastníci vstupující do tohoto skupinového chatu si musí vyžádat povolení "
+"psát"
 
 #: dist/converse-no-dependencies.js:107483
 msgid "This groupchat does not require a password upon entry"
-msgstr ""
+msgstr "Tento skupinový chat nevyžaduje při vstupu heslo"
 
 #: dist/converse-no-dependencies.js:107484
 msgid "No password required"
-msgstr ""
+msgstr "Heslo nevyžadováno"
 
 #: dist/converse-no-dependencies.js:107485
 msgid "Not anonymous"
-msgstr ""
+msgstr "Není anonymní"
 
 #: dist/converse-no-dependencies.js:107486
 msgid "All other groupchat participants can see your XMPP address"
 msgstr ""
+"Všichni ostatní účastníci skupinového chatu mohou vidět vaši XMPP adresu"
 
 #: dist/converse-no-dependencies.js:107487
 msgid "Not moderated"
-msgstr ""
+msgstr "Není moderován"
 
 #: dist/converse-no-dependencies.js:107488
 msgid "Participants entering this groupchat can write right away"
-msgstr ""
+msgstr "Účastníci vstupující do tohoto skupinového chatu mohou psát ihned"
 
 #: dist/converse-no-dependencies.js:107489
 msgid "Online users"
-msgstr ""
+msgstr "Připojení uživatelé"
 
 #: dist/converse-no-dependencies.js:107490
 #: dist/converse-no-dependencies.js:123368
 msgid "Open"
-msgstr ""
+msgstr "Otevřené"
 
 #: dist/converse-no-dependencies.js:107491
 msgid "Anyone can join this groupchat"
-msgstr ""
+msgstr "Kdokoliv se k tomuto skupinovému chatu může připojit"
 
 #: dist/converse-no-dependencies.js:107492
 msgid "This groupchat requires a password before entry"
-msgstr ""
+msgstr "Tento skupinový chat vyžaduje před vstupem heslo"
 
 #: dist/converse-no-dependencies.js:107493
 msgid "Password protected"
-msgstr ""
+msgstr "Ochráněno heslem"
 
 #: dist/converse-no-dependencies.js:107494
 msgid "Persistent"
-msgstr ""
+msgstr "Trvalý"
 
 #: dist/converse-no-dependencies.js:107495
 msgid "This groupchat persists even if it's unoccupied"
-msgstr ""
+msgstr "Tento skupinový chat přetrvává, i když na něm nikdo není"
 
 #: dist/converse-no-dependencies.js:107496
 #: dist/converse-no-dependencies.js:123370
 msgid "Public"
-msgstr ""
+msgstr "Veřejné"
 
 #: dist/converse-no-dependencies.js:107497
 msgid "This groupchat is publicly searchable"
-msgstr ""
+msgstr "Tento skupinový chat je veřejně vyhledávatelný"
 
 #: dist/converse-no-dependencies.js:107498
 #: dist/converse-no-dependencies.js:123371
 msgid "Semi-anonymous"
-msgstr ""
+msgstr "Zčásti anonymní"
 
 #: dist/converse-no-dependencies.js:107499
 msgid "Only moderators can see your XMPP address"
-msgstr ""
+msgstr "Pouze moderátoři mohou vidět vaši XMPP adresu"
 
 #: dist/converse-no-dependencies.js:107500
 #: dist/converse-no-dependencies.js:123372
 msgid "Temporary"
-msgstr ""
+msgstr "Dočasné"
 
 #: dist/converse-no-dependencies.js:107501
 msgid "This groupchat will disappear once the last person leaves"
-msgstr ""
+msgstr "Tento skupinový chat zmizí, jakmile poslední osoba odejde"
 
 #: dist/converse-no-dependencies.js:107672
+#, fuzzy
 msgid "Groupchat info"
-msgstr ""
+msgstr "Nalezené skupinové chaty"
 
 #: dist/converse-no-dependencies.js:108090
 msgid "Hide the groupchat topic"
-msgstr ""
+msgstr "Skrýt téma skupinového chatu"
 
 #: dist/converse-no-dependencies.js:108093
 #: dist/converse-no-dependencies.js:123463
 msgid "Show more information on this groupchat"
-msgstr ""
+msgstr "Zobrazit více informací o tomto skupinovém chatu"
 
 #: dist/converse-no-dependencies.js:108498
+#, fuzzy
 msgid "Show more information about this groupchat"
-msgstr ""
+msgstr "Zobrazit více informací o tomto skupinovém chatu"
 
 #: dist/converse-no-dependencies.js:108508
 msgid "Configure"
-msgstr ""
+msgstr "Konfigurovat"
 
 #: dist/converse-no-dependencies.js:108509
 msgid "Configure this groupchat"
-msgstr ""
+msgstr "Nastavit tento skupinový chat"
 
 #: dist/converse-no-dependencies.js:108520
+#, fuzzy
 msgid "Change the nickname you're using in this groupchat"
-msgstr ""
+msgstr "Registrujte si přezdívku pro tento skupinový chat"
 
 #: dist/converse-no-dependencies.js:108531
 msgid "Show topic"
-msgstr ""
+msgstr "Zobrazit téma"
 
 #: dist/converse-no-dependencies.js:108531
 msgid "Hide topic"
-msgstr ""
+msgstr "Skrýt téma"
 
 #: dist/converse-no-dependencies.js:108532
 msgid "Show the topic message in the heading"
-msgstr ""
+msgstr "Zobrazit tematickou zprávu v záhlaví"
 
 #: dist/converse-no-dependencies.js:108532
 msgid "Hide the topic in the heading"
-msgstr ""
+msgstr "Skrýt téma v záhlaví"
 
 #: dist/converse-no-dependencies.js:108542
+#, fuzzy
 msgid "Show participants"
-msgstr ""
+msgstr "Účastníci"
 
 #: dist/converse-no-dependencies.js:108542
+#, fuzzy
 msgid "Hide participants"
-msgstr ""
+msgstr "Účastníci"
 
 #: dist/converse-no-dependencies.js:108543
+#, fuzzy
 msgid "Show the groupchat participants"
-msgstr ""
+msgstr "Účastníci"
 
 #: dist/converse-no-dependencies.js:108543
+#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr ""
+msgstr "Skrýt téma skupinového chatu"
 
 #: dist/converse-no-dependencies.js:108554
+#, fuzzy
 msgid "Moderate"
-msgstr ""
+msgstr "Moderováno"
 
 #: dist/converse-no-dependencies.js:108555
+#, fuzzy
 msgid "Moderate this groupchat"
-msgstr ""
+msgstr "Odejít z tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:108566
+#, fuzzy
 msgid "Destroy"
-msgstr ""
+msgstr "Zničit místnost"
 
 #: dist/converse-no-dependencies.js:108579
 msgid "Leave"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:108580
+#, fuzzy
 msgid "Leave and close this groupchat"
-msgstr ""
+msgstr "Odejít z tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:108589
+#, fuzzy
 msgid "Are you sure you want to leave this groupchat?"
-msgstr ""
+msgstr "Opravdu chcete odejít ze skupinového chatu %1$s?"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:108658
 msgid "This groupchat requires a password"
-msgstr ""
+msgstr "Tento skupinový chat vyžaduje heslo"
 
 #: dist/converse-no-dependencies.js:108659
 msgid "Password: "
-msgstr ""
+msgstr "Heslo: "
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:108660
 #: dist/converse-no-dependencies.js:110067
 msgid "Submit"
-msgstr ""
+msgstr "Odeslat"
 
 #: dist/converse-no-dependencies.js:109777
 msgid "has gone offline"
-msgstr ""
+msgstr "se odpojil/a"
 
 #: dist/converse-no-dependencies.js:109779
 msgid "has gone away"
-msgstr ""
+msgstr "odešel/la pryč"
 
 #: dist/converse-no-dependencies.js:109781
 msgid "is busy"
-msgstr ""
+msgstr "je zaneprázdněn/a"
 
 #: dist/converse-no-dependencies.js:109783
 msgid "has come online"
-msgstr ""
+msgstr "se připojil/a"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:109815
 #: dist/converse-no-dependencies.js:109821
 #, javascript-format
 msgid "Notification from %1$s"
-msgstr ""
+msgstr "Oznámení od uživatele %1$s"
 
 #: dist/converse-no-dependencies.js:109823
 #: dist/converse-no-dependencies.js:109831
 #: dist/converse-no-dependencies.js:109834
 #, javascript-format
 msgid "%1$s says"
-msgstr ""
+msgstr "%1$s říká"
 
 #: dist/converse-no-dependencies.js:109943
 msgid "wants to be your contact"
-msgstr ""
+msgstr "chce být vaším kontaktem"
 
 #: dist/converse-no-dependencies.js:110068
 msgid "The new passwords must match"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:110069
+#, fuzzy
 msgid "New password"
-msgstr ""
+msgstr "Žádné heslo"
 
 #: dist/converse-no-dependencies.js:110070
+#, fuzzy
 msgid "Confirm new password"
-msgstr ""
+msgstr "Žádné heslo"
 
 #: dist/converse-no-dependencies.js:110335
+#, fuzzy
 msgid "Timeout error"
-msgstr ""
+msgstr "Chyba časového limitu"
 
 #: dist/converse-no-dependencies.js:110340
 msgid "Your server does not support password reset"
@@ -2247,8 +2410,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:110368
+#, fuzzy
 msgid "Timeout error while trying to set your password"
-msgstr ""
+msgstr "Omlouváme se, při pokusu o obnovení se něco pokazilo"
 
 #: dist/converse-no-dependencies.js:110370
 msgid "Your server does not allow password reset"
@@ -2256,12 +2420,14 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:110372
 #: dist/converse-no-dependencies.js:110374
+#, fuzzy
 msgid "You are not allowed to change your password"
-msgstr ""
+msgstr "Nemáte povolení vytvářet nové skupinové chaty."
 
 #: dist/converse-no-dependencies.js:110377
+#, fuzzy
 msgid "Your new password has been set"
-msgstr ""
+msgstr "Byl vytvořen nový skupinový chat"
 
 #. *
 #. * @param {import('../modals/profile').default} el
@@ -2269,74 +2435,81 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:110445
 msgid "Log out"
-msgstr ""
+msgstr "Odhlásit"
 
 #: dist/converse-no-dependencies.js:110458
 #: dist/converse-no-dependencies.js:110468
 msgid "online"
-msgstr ""
+msgstr "připojen/a"
 
 #: dist/converse-no-dependencies.js:110460
 msgid "busy"
-msgstr ""
+msgstr "zaneprázdněn/a"
 
 #: dist/converse-no-dependencies.js:110462
 msgid "away for long"
-msgstr ""
+msgstr "pryč na dlouho"
 
 #: dist/converse-no-dependencies.js:110464
 msgid "away"
-msgstr ""
+msgstr "pryč"
 
 #: dist/converse-no-dependencies.js:110466
 msgid "offline"
-msgstr ""
+msgstr "odpojen/a"
 
 #: dist/converse-no-dependencies.js:110528
+#, fuzzy
 msgid "Set status"
-msgstr ""
+msgstr "Vlastní stav"
 
 #: dist/converse-no-dependencies.js:110529
 msgid "Away for long"
-msgstr ""
+msgstr "Pryč na dlouho"
 
 #: dist/converse-no-dependencies.js:110530
 msgid "Personal status message"
-msgstr ""
+msgstr "Osobní stavová zpráva"
 
 #: dist/converse-no-dependencies.js:110539
+#, fuzzy
 msgid "Clear status message"
-msgstr ""
+msgstr "Osobní stavová zpráva"
 
 #: dist/converse-no-dependencies.js:110760
 msgid "Save and close"
-msgstr ""
+msgstr "Uložit a zavřít"
 
 #: dist/converse-no-dependencies.js:110761
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
 msgstr ""
+"Oddělujte více rolí čárkami. Vaše role jsou zobrazeny vedle vašeho jména na "
+"vašich chatových zprávách."
 
 #: dist/converse-no-dependencies.js:110763
 msgid "Status"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:110766
+#, fuzzy
 msgid "Reset Password"
-msgstr ""
+msgstr "Heslo"
 
 #: dist/converse-no-dependencies.js:111128
 msgid "Your Profile"
-msgstr ""
+msgstr "Váš profil"
 
 #: dist/converse-no-dependencies.js:111180
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr ""
+"Omlouváme se, při pokusu o uložení vašich profilových dat se stala chyba."
 
 #: dist/converse-no-dependencies.js:111274
+#, fuzzy
 msgid "Profile updated successfully"
-msgstr ""
+msgstr "Úspěšně zaregistrováno"
 
 #: dist/converse-no-dependencies.js:111307
 msgid "Status updated"
@@ -2344,15 +2517,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:111337
 msgid "Are you sure you want to log out?"
-msgstr ""
+msgstr "Opravdu se chcete odhlásit?"
 
 #: dist/converse-no-dependencies.js:111511
 msgid "About"
-msgstr ""
+msgstr "O nás"
 
 #: dist/converse-no-dependencies.js:111512
 msgid "Commands"
-msgstr ""
+msgstr "Příkazy"
 
 #: dist/converse-no-dependencies.js:111513
 msgid "Services"
@@ -2363,34 +2536,37 @@ msgstr ""
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
+"%1$s Otevřený %2$s chatovací klient pro XMPP vám přináší %3$s Opkode%2$s"
 
 #: dist/converse-no-dependencies.js:111531
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
-msgstr ""
+msgstr "%1$s Přeložte %2$s jej do svého vlastního jazyka"
 
 #: dist/converse-no-dependencies.js:111675
+#, fuzzy
 msgid "Settings"
-msgstr ""
+msgstr "Změnit nastavení"
 
 #: dist/converse-no-dependencies.js:111728
 #, javascript-format
 msgid "I am %1$s"
-msgstr ""
+msgstr "Jsem %1$s"
 
 #: dist/converse-no-dependencies.js:111729
+#, fuzzy
 msgid "Update your profile"
-msgstr ""
+msgstr "Váš profil"
 
 #: dist/converse-no-dependencies.js:111730
 msgid "Click to change your chat status"
-msgstr ""
+msgstr "Kliknutím změníte svůj chatový stav"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:111954
 #, javascript-format
 msgid "Download file \"%1$s\""
-msgstr ""
+msgstr "Stáhnout soubor „%1$s“"
 
 #: dist/converse-no-dependencies.js:113201
 #, javascript-format
@@ -2398,6 +2574,9 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
+"Omlouváme se, nemohli jsme odeslat šifrovanou zprávu, protože %1$s požaduje, "
+"abyste měl/a jeho/její presenční odběr, pokud chcete vidět jeho/její "
+"informace OMEMO"
 
 #: dist/converse-no-dependencies.js:113203
 #, javascript-format
@@ -2405,16 +2584,20 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
+"Omlouváme se, nemohli jsme odeslat šifrovanou zprávu, protože vzdálený "
+"server pro uživatele %1$s nemohl být nalezen"
 
 #: dist/converse-no-dependencies.js:113205
 msgid "Unable to send an encrypted message due to an unexpected error."
-msgstr ""
+msgstr "Kvůli neočekávané chybě nelze odeslat zprávu."
 
 #: dist/converse-no-dependencies.js:113247
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
 msgstr ""
+"Tohle je zpráva zašifrovaná pomocí OMEMO, které, jak se zdá, váš klient "
+"nepodporuje. Více informací najdete na https://conversations.im/omemo"
 
 #: dist/converse-no-dependencies.js:113530
 msgid ""
@@ -2423,14 +2606,15 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:113789
+#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
-msgstr ""
+msgstr "Omlouváme se, kvůli chybě nelze dešifrovat obdrženou právu OMEMO."
 
 #: dist/converse-no-dependencies.js:113861
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
-msgstr ""
+msgstr "Omlouváme se, kvůli chybě nelze dešifrovat obdrženou právu OMEMO."
 
 #: dist/converse-no-dependencies.js:114618
 #, javascript-format
@@ -2438,12 +2622,17 @@ msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
 "will no longer be possible in this grouchat."
 msgstr ""
+"%1$s nejspíš nemá klienta podporujícího OMEMO. Šifrované chatování nebude v "
+"tomto skupinovém chatu již možné."
 
 #: dist/converse-no-dependencies.js:114690
+#, fuzzy
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
 msgstr ""
+"V tomto skupinovém chatu nelze použít šifrování end-to-end, skupinový chat "
+"má buď jistou úroveň anonymity, nebo ne všichni účastníci podporují OMEMO."
 
 #: dist/converse-no-dependencies.js:114694
 #, javascript-format
@@ -2451,14 +2640,17 @@ msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
 msgstr ""
+"Nelze použít šifrování end-to-end, protože %1$s používá klienta, který "
+"nepodporuje OMEMO."
 
 #: dist/converse-no-dependencies.js:114711
 msgid "Messages are being sent in plaintext"
-msgstr ""
+msgstr "Zprávy jsou odesílány v prostém textu"
 
 #: dist/converse-no-dependencies.js:114712
+#, fuzzy
 msgid "Messages are sent encrypted"
-msgstr ""
+msgstr "Zprávy jsou odesílány v prostém textu"
 
 #: dist/converse-no-dependencies.js:114715
 msgid ""
@@ -2471,17 +2663,20 @@ msgid "OMEMO encryption is not supported"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:114741
+#, fuzzy
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
 msgstr ""
+"Omlouváme se, nemůžeme najít žádná zařízení, na které lze poslat zprávu "
+"zašifrovanou pomocí OMEMO."
 
 #: dist/converse-no-dependencies.js:114987
 msgid "Trusted"
-msgstr ""
+msgstr "Důvěryhodné"
 
 #: dist/converse-no-dependencies.js:114988
 msgid "Untrusted"
-msgstr ""
+msgstr "Nedůvěryhodné"
 
 #: dist/converse-no-dependencies.js:114989
 msgid "Choose which devices you trust for OMEMO encrypted communication"
@@ -2493,51 +2688,53 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:115002
 msgid "OMEMO Fingerprints"
-msgstr ""
+msgstr "Otisky OMEMO"
 
 #: dist/converse-no-dependencies.js:115003
+#, fuzzy
 msgid "No OMEMO-enabled devices found"
-msgstr ""
+msgstr "Další zařízení s podporou OMEMO"
 
 #: dist/converse-no-dependencies.js:118237
 msgid "Checkbox for selecting the following fingerprint"
-msgstr ""
+msgstr "Zaškrtnutím políčka vyberete následující otisk"
 
 #: dist/converse-no-dependencies.js:118241
 msgid "Device without a fingerprint"
-msgstr ""
+msgstr "Zařízení bez otisku"
 
 #: dist/converse-no-dependencies.js:118242
+#, fuzzy
 msgid "Checkbox for selecting the following device"
-msgstr ""
+msgstr "Zaškrtnutím políčka vyberete následující otisk"
 
 #: dist/converse-no-dependencies.js:118252
 msgid "Other OMEMO-enabled devices"
-msgstr ""
+msgstr "Další zařízení s podporou OMEMO"
 
 #: dist/converse-no-dependencies.js:118253
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
-msgstr ""
+msgstr "Zaškrtnutím políček vyberete otisky všech ostatních zařízení OMEMO"
 
 #: dist/converse-no-dependencies.js:118254
 msgid "Remove checked devices and close"
-msgstr ""
+msgstr "Odstranit zaškrtnutá zařízení a zavřít"
 
 #: dist/converse-no-dependencies.js:118255
 msgid "Select all"
-msgstr ""
+msgstr "Vybrat vše"
 
 #: dist/converse-no-dependencies.js:118264
 msgid "This device's OMEMO fingerprint"
-msgstr ""
+msgstr "Otisk OMEMO tohoto zařízení"
 
 #: dist/converse-no-dependencies.js:118265
 msgid "Generate new keys and fingerprint"
-msgstr ""
+msgstr "Generovat nové klíče a otisk"
 
 #: dist/converse-no-dependencies.js:118606
 msgid "Sorry, an error occurred while trying to remove the devices."
-msgstr ""
+msgstr "Omlouváme se, při pokusu o odstranění zařízení se vyskytla chyba."
 
 #: dist/converse-no-dependencies.js:118639
 msgid ""
@@ -2545,12 +2742,15 @@ msgid ""
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
+"Opravdu chcete generovat nové klíče OMEMO? Tímto budou odstraněny vaše staré "
+"klíče a všechny dříve zašifrované zprávy již nepůjde na tomto zařízení "
+"dešifrovat."
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:120948
 #: dist/converse-no-dependencies.js:121152
 msgid "Already have a chat account?"
-msgstr ""
+msgstr "Již máte chatovací účet?"
 
 #: dist/converse-no-dependencies.js:120949
 #: dist/converse-no-dependencies.js:121153
@@ -2563,45 +2763,47 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:121010
 msgid "Choose a different provider"
-msgstr ""
+msgstr "Vybrat jiného poskytovatele"
 
 #: dist/converse-no-dependencies.js:121011
 msgid "Account Registration:"
-msgstr ""
+msgstr "Registrace účtu:"
 
 #: dist/converse-no-dependencies.js:121012
 msgid "Register"
-msgstr ""
+msgstr "Registrovat"
 
 #: dist/converse-no-dependencies.js:121145
 msgid "Tip: A list of public XMPP providers is available"
-msgstr ""
+msgstr "Tip: Seznam veřejných poskytovatelů XMPP je dostupný"
 
 #: dist/converse-no-dependencies.js:121146
 msgid "here"
-msgstr ""
+msgstr "zde"
 
 #: dist/converse-no-dependencies.js:121151
 msgid "Fetch registration form"
-msgstr ""
+msgstr "Sehnat registrační formulář"
 
 #: dist/converse-no-dependencies.js:121160
 msgid "Create your account"
-msgstr ""
+msgstr "Vytvořit svůj účet"
 
 #: dist/converse-no-dependencies.js:121161
 msgid "Please enter the XMPP provider to register with:"
-msgstr ""
+msgstr "Prosím zadejte poskytovatele XMPP, se kterým se chcete registrovat:"
 
 #: dist/converse-no-dependencies.js:121560
 msgid "Sorry, we're unable to connect to your chosen provider."
-msgstr ""
+msgstr "Omlouváme se, nelze se připojit k vašemu zvolenému poskytovateli."
 
 #: dist/converse-no-dependencies.js:121572
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
+"Omlouváme se, daný poskytovatel nepodporuje in-band registraci účtu. Prosím "
+"zkuste to s jiným poskytovatelem."
 
 #: dist/converse-no-dependencies.js:121666
 msgid "Invalid connection URL, only HTTPS and WSS accepted"
@@ -2609,42 +2811,46 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:121738
 msgid "Now logging you in"
-msgstr ""
+msgstr "Nyní vás přihlašujeme"
 
 #: dist/converse-no-dependencies.js:121740
 msgid "Registered successfully"
-msgstr ""
+msgstr "Úspěšně zaregistrováno"
 
 #: dist/converse-no-dependencies.js:121829
 #: dist/converse-no-dependencies.js:121836
+#, fuzzy
 msgid "Registration failed."
-msgstr ""
+msgstr "Sehnat registrační formulář"
 
 #: dist/converse-no-dependencies.js:121829
+#, fuzzy
 msgid "Please try a different username."
-msgstr ""
+msgstr "Prosím zadejte platné uživatelské jméno XMPP"
 
 #: dist/converse-no-dependencies.js:121840
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
 msgstr ""
+"Poskytovatel odmítl váš pokus o registraci. Prosím zkontrolujte hodnoty, "
+"které jste zadal/a, kvůli správnosti."
 
 #: dist/converse-no-dependencies.js:122156
 msgid "Create an account"
-msgstr ""
+msgstr "Vytvořte si účet"
 
 #: dist/converse-no-dependencies.js:122157
 msgid "Don't have a chat account?"
-msgstr ""
+msgstr "Nemáte chatovací účet?"
 
 #: dist/converse-no-dependencies.js:122212
 msgid " e.g. conversejs.org"
-msgstr ""
+msgstr " např. conversejs.org"
 
 #: dist/converse-no-dependencies.js:122659
 msgid "This field is required"
-msgstr ""
+msgstr "Toto pole je vyžadováno"
 
 #. *
 #. * @param {import('../add-muc.js').default} el
@@ -2652,23 +2858,25 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:122665
 msgid "Join"
-msgstr ""
+msgstr "Přidat se"
 
 #: dist/converse-no-dependencies.js:122668
 msgid "Groupchat name"
-msgstr ""
+msgstr "Název skupinového chatu"
 
 #: dist/converse-no-dependencies.js:122670
+#, fuzzy
 msgid "Groupchat name or address"
-msgstr ""
+msgstr "Adresa skupinového chatu"
 
 #: dist/converse-no-dependencies.js:123021
 msgid "Enter a new Groupchat"
-msgstr ""
+msgstr "Vstoupit do nového skupinového chatu"
 
 #: dist/converse-no-dependencies.js:123138
+#, fuzzy
 msgid "Invalid groupchat address, it cannot be empty."
-msgstr ""
+msgstr "Tento skupinový chat (ještě) neexistuje."
 
 #: dist/converse-no-dependencies.js:123145
 msgid "Invalid groupchat address, a forward slash is not allowed."
@@ -2690,165 +2898,171 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:123189
 msgid "Groupchat id is invalid."
-msgstr ""
+msgstr "ID skupinového chatu je neplatné."
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:123359
 msgid "Description:"
-msgstr ""
+msgstr "Popis:"
 
 #: dist/converse-no-dependencies.js:123360
+#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr ""
+msgstr "Adresa skupinového chatu"
 
 #: dist/converse-no-dependencies.js:123361
 msgid "Participants:"
-msgstr ""
+msgstr "Účastníci:"
 
 #: dist/converse-no-dependencies.js:123362
 msgid "Features:"
-msgstr ""
+msgstr "Vlastnosti:"
 
 #: dist/converse-no-dependencies.js:123363
 msgid "Requires authentication"
-msgstr ""
+msgstr "Vyžaduje ověření"
 
 #: dist/converse-no-dependencies.js:123365
 msgid "Requires an invitation"
-msgstr ""
+msgstr "Vyžaduje pozvání"
 
 #: dist/converse-no-dependencies.js:123367
 msgid "Non-anonymous"
-msgstr ""
+msgstr "Neanonymní"
 
 #: dist/converse-no-dependencies.js:123369
 msgid "Permanent"
-msgstr ""
+msgstr "Trvalé"
 
 #: dist/converse-no-dependencies.js:123373
 msgid "Unmoderated"
-msgstr ""
+msgstr "Nemoderováno"
 
 #: dist/converse-no-dependencies.js:123458
 msgid "Show groupchats"
-msgstr ""
+msgstr "Zobrazit skupinové chaty"
 
 #: dist/converse-no-dependencies.js:123459
 msgid "Server address"
-msgstr ""
+msgstr "Adresa serveru"
 
 #: dist/converse-no-dependencies.js:123659
 msgid "conference.example.org"
-msgstr ""
+msgstr "conference.priklad.cz"
 
 #: dist/converse-no-dependencies.js:123680
 msgid "Query for Groupchats"
-msgstr ""
+msgstr "Dotaz pro skupinové chaty"
 
 #: dist/converse-no-dependencies.js:123725
 msgid "Groupchats found"
-msgstr ""
+msgstr "Nalezené skupinové chaty"
 
 #: dist/converse-no-dependencies.js:123733
 msgid "No groupchats found"
-msgstr ""
+msgstr "Nenalezeny žádné skupinové chaty"
 
 #: dist/converse-no-dependencies.js:123983
 msgid "Leave this groupchat"
-msgstr ""
+msgstr "Odejít z tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:123996
+#, fuzzy
 msgid "Click to hide these rooms"
-msgstr ""
+msgstr "Kliknutím skryjete tyto kontakty"
 
 #: dist/converse-no-dependencies.js:124049
 msgid "Click to toggle the list of open groupchats"
-msgstr ""
+msgstr "Kliknutím otevřete/zavřete seznam otevřených skupinových chatů"
 
 #: dist/converse-no-dependencies.js:124050
 msgid "Groupchats"
-msgstr ""
+msgstr "Skupinové chaty"
 
 #: dist/converse-no-dependencies.js:124051
 msgid "Query server"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:124052
+#, fuzzy
 msgid "Add groupchat"
-msgstr ""
+msgstr "Přidat nový skupinový chat"
 
 #: dist/converse-no-dependencies.js:124433
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
-msgstr ""
+msgstr "Opravdu chcete odejít ze skupinového chatu %1$s?"
 
 #: dist/converse-no-dependencies.js:125095
 msgid "This contact is busy"
-msgstr ""
+msgstr "Tento kontakt je zaneprázdněn"
 
 #: dist/converse-no-dependencies.js:125096
 msgid "This contact is online"
-msgstr ""
+msgstr "Tento kontakt je připojen"
 
 #: dist/converse-no-dependencies.js:125097
 msgid "This contact is offline"
-msgstr ""
+msgstr "Tento kontakt je odpojen"
 
 #: dist/converse-no-dependencies.js:125098
 msgid "This contact is unavailable"
-msgstr ""
+msgstr "Tento kontakt je nedostupný"
 
 #: dist/converse-no-dependencies.js:125099
 msgid "This contact is away for an extended period"
-msgstr ""
+msgstr "Tento kontakt je na delší dobu pryč"
 
 #: dist/converse-no-dependencies.js:125100
 msgid "This contact is away"
-msgstr ""
+msgstr "Tento kontakt je pryč"
 
 #: dist/converse-no-dependencies.js:125216
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr ""
+msgstr "Kliknutím odstraníte uživatele %1$s z kontaktů"
 
 #: dist/converse-no-dependencies.js:125225
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to show more details about %1$s"
-msgstr ""
+msgstr "Zobrazit více detailů o tomto skupinovém chatu"
 
 #: dist/converse-no-dependencies.js:125253
+#, fuzzy
 msgid "Click to chat with yourself"
-msgstr ""
+msgstr "Kliknutím zmíníte uživatele %1$s ve své zprávě."
 
 #: dist/converse-no-dependencies.js:125253
 #: dist/converse-no-dependencies.js:125345
 #: dist/converse-no-dependencies.js:125457
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to chat with %1$s (XMPP address: %2$s)"
-msgstr ""
+msgstr "Kliknutím začnete chatovat s uživatelem %1$s (JSD: %2$s)"
 
 #: dist/converse-no-dependencies.js:125343
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to accept the contact request from %1$s (XMPP address: %2$s)"
-msgstr ""
+msgstr "Kliknutím přijmete požadavek o kontakt od uživatele %1$s"
 
 #: dist/converse-no-dependencies.js:125344
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to decline the contact request from %1$s (XMPP address: %2$s)"
-msgstr ""
+msgstr "Kliknutím odmítnete požadavek o kontakt od uživatele %1$s"
 
 #: dist/converse-no-dependencies.js:125349
+#, fuzzy
 msgid "Accept as contact"
-msgstr ""
+msgstr "Přidat kontakt"
 
 #: dist/converse-no-dependencies.js:125445
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to add %1$s as a contact"
-msgstr ""
+msgstr "Kliknutím odstraníte uživatele %1$s z kontaktů"
 
 #: dist/converse-no-dependencies.js:125448
+#, fuzzy
 msgid "Save as contact"
-msgstr ""
+msgstr "Odstranit z kontaktů"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2857,27 +3071,30 @@ msgstr ""
 #: dist/converse-no-dependencies.js:126055
 #: dist/converse-no-dependencies.js:128664
 msgid "Add"
-msgstr ""
+msgstr "Přidat"
 
 #: dist/converse-no-dependencies.js:126062
+#, fuzzy
 msgid "Search name or XMPP address"
-msgstr ""
+msgstr "Adresa skupinového chatu"
 
 #: dist/converse-no-dependencies.js:126357
 msgid "Add a Contact"
-msgstr ""
+msgstr "Přidat kontakt"
 
 #: dist/converse-no-dependencies.js:126371
 msgid "This contact has already been added"
-msgstr ""
+msgstr "Tento kontakt byl již přidán"
 
 #: dist/converse-no-dependencies.js:126396
+#, fuzzy
 msgid "Sorry, something went wrong while adding the contact"
-msgstr ""
+msgstr "Omlouváme se, při pokusu o obnovení se něco pokazilo"
 
 #: dist/converse-no-dependencies.js:126405
+#, fuzzy
 msgid "Contact added successfully"
-msgstr ""
+msgstr "Úspěšně zaregistrováno"
 
 #: dist/converse-no-dependencies.js:126437
 msgid ""
@@ -2886,8 +3103,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:126825
+#, fuzzy
 msgid "Sorry, something went wrong while accepting the contact request"
-msgstr ""
+msgstr "Omlouváme se, při pokusu o obnovení se něco pokazilo"
 
 #: dist/converse-no-dependencies.js:126837
 msgid "Successfully accepted the contact request"
@@ -2898,17 +3116,20 @@ msgstr ""
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:126893
+#, fuzzy
 msgid "Start Chat"
-msgstr ""
+msgstr "Začít hovor"
 
 #: dist/converse-no-dependencies.js:127154
 #: dist/converse-no-dependencies.js:128162
+#, fuzzy
 msgid "Start a new chat"
-msgstr ""
+msgstr "Začít hovor"
 
 #: dist/converse-no-dependencies.js:127202
+#, fuzzy
 msgid "Sorry, something went wrong"
-msgstr ""
+msgstr "Omlouváme se, při pokusu o obnovení se něco pokazilo"
 
 #: dist/converse-no-dependencies.js:127344
 #, javascript-format
@@ -2920,24 +3141,28 @@ msgid "Unblock selected users"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127344
+#, fuzzy
 msgid "Filter blocked users"
-msgstr ""
+msgstr "Filtrovat dle stavu"
 
 #: dist/converse-no-dependencies.js:127350
 msgid "clear"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127352
+#, fuzzy
 msgid "Select All"
-msgstr ""
+msgstr "Vybrat vše"
 
 #: dist/converse-no-dependencies.js:127363
+#, fuzzy
 msgid "No blocked XMPP addresses"
-msgstr ""
+msgstr "XMPP adresa"
 
 #: dist/converse-no-dependencies.js:127752
+#, fuzzy
 msgid "Blocklist"
-msgstr ""
+msgstr "Přidat kontakt"
 
 #: dist/converse-no-dependencies.js:127779
 #, javascript-format
@@ -2945,25 +3170,26 @@ msgid "Successfully unblocked %1$s XMPP addresses"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127779
+#, fuzzy
 msgid "Successfully unblocked one XMPP address"
-msgstr ""
+msgstr "Adresa skupinového chatu"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:127914
 msgid "Click to hide these contacts"
-msgstr ""
+msgstr "Kliknutím skryjete tyto kontakty"
 
 #: dist/converse-no-dependencies.js:127986
 msgid "Filter by contact name"
-msgstr ""
+msgstr "Filtrovat dle jména kontaktu"
 
 #: dist/converse-no-dependencies.js:127987
 msgid "Filter by group name"
-msgstr ""
+msgstr "Filtrovat dle názvu skupiny"
 
 #: dist/converse-no-dependencies.js:127990
 msgid "Unread"
-msgstr ""
+msgstr "Nepřečtené"
 
 #. *
 #. * @param {import('../rosterview').default} el
@@ -2971,32 +3197,35 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:128159
 msgid "Contacts"
-msgstr ""
+msgstr "Kontakty"
 
 #: dist/converse-no-dependencies.js:128160
+#, fuzzy
 msgid "Click to toggle contacts"
-msgstr ""
+msgstr "Kliknutím skryjete tyto kontakty"
 
 #: dist/converse-no-dependencies.js:128161
 msgid "Add a contact"
-msgstr ""
+msgstr "Přidat kontakt"
 
 #: dist/converse-no-dependencies.js:128163
+#, fuzzy
 msgid "Show block list"
-msgstr ""
+msgstr "Přidat kontakt"
 
 #: dist/converse-no-dependencies.js:128199
+#, fuzzy
 msgid "Re-sync contacts"
-msgstr ""
+msgstr "Znovu synchronizovat své kontakty"
 
 #. *
 #. * @param {import('../approval-alert').default} el
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128625
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s would like to be your contact"
-msgstr ""
+msgstr "chce být vaším kontaktem"
 
 #: dist/converse-no-dependencies.js:128627
 msgid "Approve"
@@ -3011,10 +3240,305 @@ msgstr ""
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128662
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Would you like to add %1$s as a contact?"
-msgstr ""
+msgstr "Kliknutím odstraníte uživatele %1$s z kontaktů"
 
 #: dist/converse-no-dependencies.js:128666
 msgid "Dismiss"
 msgstr ""
+
+#, fuzzy
+#~ msgid "An error occurred while querying for archived messages."
+#~ msgstr "Omlouváme se, při pokusu o odstranění zařízení se vyskytla chyba."
+
+#~ msgid "Chat Contacts"
+#~ msgstr "Chatové kontakty"
+
+#~ msgid "Toggle chat"
+#~ msgstr "Otevřít chat"
+
+#~ msgid "Change chat status"
+#~ msgstr "Změnit chatový stav"
+
+#, fuzzy
+#~ msgid "Are you sure you want to block this user?"
+#~ msgstr "Opravdu se chcete odhlásit?"
+
+#, javascript-format
+#~ msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
+#~ msgstr "Omlouváme se, nemohli jsme se spojit s XMPP hostem s doménou: %1$s"
+
+#~ msgid "Log in here"
+#~ msgstr "Přihlaste se zde"
+
+#, fuzzy, javascript-format
+#~ msgid "Click to add %1$s to your roster"
+#~ msgstr "Kliknutím zmíníte uživatele %1$s ve své zprávě."
+
+#~ msgid "Sorry, could not find a contact with that name"
+#~ msgstr "Omlouváme se, nelze najít kontakt s tímto jménem"
+
+#~ msgid ""
+#~ "Can't register your nickname in this groupchat, it doesn't support "
+#~ "registration."
+#~ msgstr ""
+#~ "Nelze registrovat vaši přezdívku v tomto skupinovém chatu, protože "
+#~ "nepodporuje registraci."
+
+#~ msgid ""
+#~ "Can't register your nickname in this groupchat, invalid data form "
+#~ "supplied."
+#~ msgstr ""
+#~ "Nelze registrovat vaši přezdívku v tomto skupinovém chatu, protože je "
+#~ "poskytnuta neplatná forma dat."
+
+#~ msgid "Sorry, something went wrong while trying to save your bookmark."
+#~ msgstr "Omlouváme se, při pokusu o uložení vaší záložky se něco pokazilo."
+
+#~ msgid "OK"
+#~ msgstr "OK"
+
+#~ msgid "Bookmark this groupchat"
+#~ msgstr "Přidat tento skupinový chat do záložek"
+
+#~ msgid "The name for this bookmark:"
+#~ msgstr "Název pro tuto záložku:"
+
+#~ msgid "Refresh"
+#~ msgstr "Obnovit"
+
+#, javascript-format
+#~ msgid "Sorry, there was an error while trying to remove %1$s as a contact."
+#~ msgstr ""
+#~ "Omlouváme se, při odstraňování uživatele %1$s z kontaktů se vyskytla "
+#~ "chyba."
+
+#, fuzzy
+#~ msgid "This groupchat is bookmarked"
+#~ msgstr "Tento skupinový chat je moderován"
+
+#~ msgid "name@conference.example.org"
+#~ msgstr "jmeno@conference.priklad.cz"
+
+#~ msgid "Minimized"
+#~ msgstr "Zmenšeno"
+
+#, fuzzy
+#~ msgid "Hide sidebar"
+#~ msgstr "Skrýt téma"
+
+#, javascript-format
+#~ msgid "Groupchat info for %1$s"
+#~ msgstr "Informace o skupinovém chatu %1$s"
+
+#~ msgid "Query for groupchats"
+#~ msgstr "Dotaz pro skupinové chaty"
+
+#, fuzzy
+#~ msgid "Show bookmarked groupchats"
+#~ msgstr "Zobrazit skupinové chaty"
+
+#~ msgid "The connection has dropped, attempting to reconnect."
+#~ msgstr "Spojení bylo přerušeno, pokoušíme se znovu spojit."
+
+#, fuzzy
+#~ msgid "Roles"
+#~ msgstr "Role"
+
+#~ msgid "Hold tight, we're fetching the registration form…"
+#~ msgstr "Vydržte, sháníme registrační formulář…"
+
+#, javascript-format
+#~ msgid ""
+#~ "Something went wrong while establishing a connection with \"%1$s\". Are "
+#~ "you sure it exists?"
+#~ msgstr ""
+#~ "Při navazování spojení s „%1$s“ se něco pokazilo. Jste si jistý/á, že "
+#~ "existuje?"
+
+#, fuzzy
+#~ msgid "Unbookmark"
+#~ msgstr "Záložky"
+
+#~ msgid "Click to toggle the bookmarks list"
+#~ msgstr "Kliknutím otevřete/zavřete seznam záložek"
+
+#~ msgid "Contact name"
+#~ msgstr "Jméno kontaktu"
+
+#~ msgid "Optional nickname"
+#~ msgstr "Volitelná přezdívka"
+
+#~ msgid "The explanation given is: \"%1$s\"."
+#~ msgstr "Dané vysvětlení je: „%1$s“."
+
+#~ msgid "You have been banned from this groupchat."
+#~ msgstr "Byl/a jste na tomto skupinovém chatu zakázán/a."
+
+#~ msgid "Download audio file \"%1$s\""
+#~ msgstr "Stáhnout audiosoubor „%1$s“"
+
+#, fuzzy
+#~ msgid "Download image file \"%1$s\""
+#~ msgstr "Stáhnout obrázek „%1$s“"
+
+#~ msgid "Hide the list of participants"
+#~ msgstr "Skrýt seznam účastníků"
+
+#~ msgid "Groupchat address (JID)"
+#~ msgstr "Název skupinového chatu (JID)"
+
+#, fuzzy
+#~ msgid "Encrypted message received"
+#~ msgstr "Zpráva OMEMO obdržena"
+
+#~ msgid "Your avatar image"
+#~ msgstr "Váš avatarový obrázek"
+
+#~ msgid "XMPP Address (JID)"
+#~ msgstr "XMPP adresa (JID)"
+
+#~ msgid "Groupchat Address (JID):"
+#~ msgstr "Adresa skupinového chatu (JID):"
+
+#~ msgid "No message history available."
+#~ msgstr "Historie zpráv není k dispozici."
+
+#, fuzzy
+#~ msgid "this.model Retraction"
+#~ msgstr "Odvolání zprávy"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Omlouváme se, nemáte oprávnění odvolat tuto zprávu"
+
+#, fuzzy
+#~ msgid "%1$s has exited the room due to a technical issue"
+#~ msgstr "%1$s vstoupil/a do skupinového chatu"
+
+#, fuzzy
+#~ msgid "Show occupants"
+#~ msgstr "Zobrazit skupinové chaty"
+
+#~ msgid "Edit this message"
+#~ msgstr "Upravit tuto zprávu"
+
+#, fuzzy
+#~ msgid "Retract this message"
+#~ msgstr "Upravit tuto zprávu"
+
+#~ msgid "Sorry, an error occurred:"
+#~ msgstr "Omlouváme se, vyskytla se chyba:"
+
+#~ msgid "Clear all messages"
+#~ msgstr "Vymazat všechny zprávy"
+
+#~ msgid "Typing from another device"
+#~ msgstr "Píše z jiného zařízení"
+
+#~ msgid "Stopped typing on the other device"
+#~ msgstr "Přestal/a psát z jiného zařízení"
+
+#~ msgid "Close this chat box"
+#~ msgstr "Zavřít toto chatovací okno"
+
+#~ msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
+#~ msgstr "%1$s odešel/la a znova vstoupil/a do skupinového chatu. „%2$s“"
+
+#~ msgid "%1$s has left and re-entered the groupchat"
+#~ msgstr "%1$s odešel/la a znova vstoupil/a do skupinového chatu"
+
+#~ msgid "%1$s has entered the groupchat. \"%2$s\""
+#~ msgstr "%1$s vstoupil/a do skupinového chatu. „%2$s“"
+
+#~ msgid "%1$s has entered and left the groupchat. \"%2$s\""
+#~ msgstr "%1$s vstoupil/a a odešel/la ze skupinového chatu. „%2$s“"
+
+#~ msgid "%1$s has entered and left the groupchat"
+#~ msgstr "%1$s vstoupil/a a odešel/la ze skupinového chatu"
+
+#~ msgid "%1$s has left the groupchat. \"%2$s\""
+#~ msgstr "%1$s odešel/la ze skupinového chatu. „%2$s“"
+
+#~ msgid "Full Name:"
+#~ msgstr "Celé jméno:"
+
+#~ msgid "XMPP Address:"
+#~ msgstr "XMPP adresa:"
+
+#~ msgid "Nickname:"
+#~ msgstr "Přezdívka:"
+
+#~ msgid "URL:"
+#~ msgstr "URL:"
+
+#~ msgid "Email:"
+#~ msgstr "E-mail:"
+
+#~ msgid "Role:"
+#~ msgstr "Role:"
+
+#~ msgid "password"
+#~ msgstr "heslo"
+
+#~ msgid "this groupchat is restricted to members only"
+#~ msgstr "tento skupinový chat je omezen pouze na členy"
+
+#~ msgid "Download"
+#~ msgstr "Stáhnout"
+
+#~ msgid "Send"
+#~ msgstr "Odeslat"
+
+#~ msgid "Remove this bookmark"
+#~ msgstr "Odstranit tuto záložku"
+
+#~ msgid ""
+#~ "You are about to invite %1$s to the groupchat \"%2$s\". You may "
+#~ "optionally include a message, explaining the reason for the invitation."
+#~ msgstr ""
+#~ "Chystáte se pozvat uživatele %1$s do skupinového chatu „%2$s“. Můžete "
+#~ "volitelně přidat zprávu vysvětlující důvod pozvání."
+
+#~ msgid "Download video file \"%1$s\""
+#~ msgstr "Stáhnout videosoubor „%1$s“"
+
+#~ msgid "%1$s is no longer a permanent member of this groupchat"
+#~ msgstr "%1$s již není trvalým členem tohoto skupinového chatu"
+
+#~ msgid "Ban user from groupchat"
+#~ msgstr "Zakázat uživatele na tomto skupinovém chatu"
+
+#~ msgid "Revoke user's membership"
+#~ msgstr "Zrušit členství uživatele"
+
+#~ msgid "No nickname was specified."
+#~ msgstr "Nebyla určena žádná přezdívka."
+
+#~ msgid "You cannot add yourself as a contact"
+#~ msgstr "Nemůžete přidat sebe sama jako kontakt"
+
+#~ msgid "Error: the groupchat %1$s does not exist."
+#~ msgstr "Chyba: skupinový chat %1$s neexistuje."
+
+#~ msgid "Destroy groupchat"
+#~ msgstr "Zničit skupiinvý chat"
+
+#~ msgid "XMPP Username:"
+#~ msgstr "Uživatelské jméno XMPP:"
+
+#~ msgid "%1$s is now an "
+#~ msgstr "%1$s je nyní "
+
+#~ msgid "This groupchat is not being moderated"
+#~ msgstr "Tento skupinový chat není moderován"
+
+#~ msgid "Jabber ID"
+#~ msgstr "Jabber ID"
+
+#~ msgid "Personal message"
+#~ msgstr "Osobní zpráva"
+
+#~ msgid "Log in with %1$s"
+#~ msgstr "Přihlaste se s %1$s"

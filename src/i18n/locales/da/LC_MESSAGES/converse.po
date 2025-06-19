@@ -3,19 +3,21 @@
 # This file is distributed under the same license as the Converse.js package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Converse.js 11.0.1\n"
+"Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-19 10:13+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2024-06-18 00:30+0000\n"
+"Last-Translator: Caleb <calebj90@gmail.com>\n"
+"Language-Team: Danish <https://hosted.weblate.org/projects/conversejs/"
+"translations/da/>\n"
+"Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: dist/converse-no-dependencies.js:16974
 msgid "Could not automatically determine a connection URL"
@@ -24,11 +26,11 @@ msgstr ""
 #: dist/converse-no-dependencies.js:17308
 #: dist/converse-no-dependencies.js:17361
 msgid "An error occurred while connecting to the chat server."
-msgstr ""
+msgstr "En fejl opstod under forbindelsen til chatserveren."
 
 #: dist/converse-no-dependencies.js:17368
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "Din XMPP-adresse og/eller adgangskode er forkert. Prøv venligst igen."
 
 #: dist/converse-no-dependencies.js:17377
 #, javascript-format
@@ -41,7 +43,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:17381
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr ""
+msgstr "XMPP-serveren tilbød ikke en understøttet godkendelsesmekanisme"
 
 #: dist/converse-no-dependencies.js:26803
 msgid "Undecryptable OMEMO message"
@@ -124,35 +126,35 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:30383
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Smileys og følelser"
 
 #: dist/converse-no-dependencies.js:30384
 msgid "People"
-msgstr ""
+msgstr "Mennesker"
 
 #: dist/converse-no-dependencies.js:30385
 msgid "Activities"
-msgstr ""
+msgstr "Aktiviteter"
 
 #: dist/converse-no-dependencies.js:30386
 msgid "Travel"
-msgstr ""
+msgstr "Rejse"
 
 #: dist/converse-no-dependencies.js:30387
 msgid "Objects"
-msgstr ""
+msgstr "Genstande"
 
 #: dist/converse-no-dependencies.js:30388
 msgid "Animals and nature"
-msgstr ""
+msgstr "Dyr og natur"
 
 #: dist/converse-no-dependencies.js:30389
 msgid "Food and drink"
-msgstr ""
+msgstr "Mad og drikke"
 
 #: dist/converse-no-dependencies.js:30390
 msgid "Symbols"
-msgstr ""
+msgstr "Symboler"
 
 #: dist/converse-no-dependencies.js:30391
 msgid "Flags"
@@ -178,8 +180,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:35753
+#, fuzzy
 msgid "A timeout happened while trying to retract your message."
-msgstr ""
+msgstr "En fejl opstod under forbindelsen til chatserveren."
 
 #: dist/converse-no-dependencies.js:36523
 msgid "Sorry, an error happened while running the command."
@@ -414,8 +417,9 @@ msgid "Remote server not found"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:38436
+#, fuzzy
 msgid "You're not allowed to enter this groupchat"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:38439
 msgid "An error happened while trying to enter this groupchat"
@@ -528,8 +532,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:47179
+#, fuzzy
 msgid "You are blocked from sending messages."
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:48635
 msgid "A timeout occurred"
@@ -540,9 +545,9 @@ msgid "Timeout while trying to fetch archived messages."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:53541
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
-msgstr ""
+msgstr "En fejl opstod under forbindelsen til chatserveren."
 
 #: dist/converse-no-dependencies.js:53809
 msgid "This client does not allow presence subscriptions"
@@ -823,13 +828,14 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:76816
 #: dist/converse-no-dependencies.js:76818
+#, fuzzy
 msgid "Invitation to a groupchat"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:76816
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has invited you to join the groupchat \"%2$s\""
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:76818
 #, javascript-format
@@ -1054,8 +1060,9 @@ msgstr ""
 #: dist/converse-no-dependencies.js:80843
 #: dist/converse-no-dependencies.js:80916
 #: dist/converse-no-dependencies.js:80949
+#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:80885
 msgid "A timeout occurred while trying to retract the message"
@@ -1101,8 +1108,9 @@ msgid "Optional reason"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:80994
+#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:81110
 msgid "Show media"
@@ -1148,22 +1156,24 @@ msgid "Are you sure you want to remove this contact?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85305
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
-msgstr ""
+msgstr "En fejl opstod under forbindelsen til chatserveren."
 
 #: dist/converse-no-dependencies.js:85337
+#, fuzzy
 msgid "Remove and decline contact request"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:85338
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Are you sure you want to decline the contact request from %1$s?"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:85341
+#, fuzzy
 msgid "Also block this user from sending you further messages"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:85366
 msgid "Contact request declined and user blocked"
@@ -1178,18 +1188,18 @@ msgid "Do you want to block this contact, so they cannot send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85446
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
-msgstr ""
+msgstr "En fejl opstod under forbindelsen til chatserveren."
 
 #: dist/converse-no-dependencies.js:85479
 msgid "Do you want to unblock this contact, so they can send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85511
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
-msgstr ""
+msgstr "En fejl opstod under forbindelsen til chatserveren."
 
 #: dist/converse-no-dependencies.js:86307
 msgid "Neither of you receive presence updates"
@@ -1307,8 +1317,9 @@ msgid "Message delivery failed."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:88528
+#, fuzzy
 msgid "A moderator"
-msgstr ""
+msgstr "Moderator"
 
 #: dist/converse-no-dependencies.js:88529
 #: dist/converse-no-dependencies.js:88531
@@ -1376,8 +1387,9 @@ msgid "Unblock user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92168
+#, fuzzy
 msgid "Are you sure you want to unblock this user?"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:92183
 msgid "Unblock this user"
@@ -1392,9 +1404,9 @@ msgid "Block user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92202
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Are you sure you want to prevent %1$s from contacting you further?"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:92220
 msgid "Block this user"
@@ -1552,8 +1564,9 @@ msgid "Service"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:97648
+#, fuzzy
 msgid "Identities"
-msgstr ""
+msgstr "Aktiviteter"
 
 #: dist/converse-no-dependencies.js:97649
 msgid "Type"
@@ -1684,7 +1697,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:102274
 msgid "You're not allowed to send messages in this room"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:102711
@@ -1716,15 +1729,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:103097
 msgid "Admin"
-msgstr ""
+msgstr "Administrator"
 
 #: dist/converse-no-dependencies.js:103101
 msgid "Member"
-msgstr ""
+msgstr "Medlem"
 
 #: dist/converse-no-dependencies.js:103105
 msgid "Moderator"
-msgstr ""
+msgstr "Moderator"
 
 #: dist/converse-no-dependencies.js:103109
 msgid "Visitor"
@@ -1748,8 +1761,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103337
+#, fuzzy
 msgid "Invite this user to join this groupchat"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:103338
 msgid "Open a one-on-one chat with this user"
@@ -1765,8 +1779,9 @@ msgid "Success"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103668
+#, fuzzy
 msgid "The user has been invited to join this groupchat"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:104121
 msgid "Filter by name"
@@ -1948,8 +1963,9 @@ msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:107222
+#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
-msgstr ""
+msgstr "En fejl opstod under forbindelsen til chatserveren."
 
 #: dist/converse-no-dependencies.js:107223
 #: dist/converse-no-dependencies.js:111181
@@ -2256,8 +2272,9 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:110372
 #: dist/converse-no-dependencies.js:110374
+#, fuzzy
 msgid "You are not allowed to change your password"
-msgstr ""
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:110377
 msgid "Your new password has been set"
@@ -3011,10 +3028,14 @@ msgstr ""
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128662
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Would you like to add %1$s as a contact?"
-msgstr ""
+msgstr "En fejl opstod under forbindelsen til chatserveren."
 
 #: dist/converse-no-dependencies.js:128666
 msgid "Dismiss"
 msgstr ""
+
+#, javascript-format
+#~ msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
+#~ msgstr "Beklager, vi kunne ikke forbinde til XMPP-værten med domænet: %1$s"

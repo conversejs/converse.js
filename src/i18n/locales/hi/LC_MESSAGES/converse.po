@@ -3,19 +3,21 @@
 # This file is distributed under the same license as the Converse.js package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Converse.js 11.0.1\n"
+"Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-19 10:13+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2019-01-24 10:04+0000\n"
+"Last-Translator: Chinmay Sharma <infy.chinmaysharma@gmail.com>\n"
+"Language-Team: Hindi <https://hosted.weblate.org/projects/conversejs/"
+"translations/hi/>\n"
+"Language: hi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.4\n"
 
 #: dist/converse-no-dependencies.js:16974
 msgid "Could not automatically determine a connection URL"
@@ -53,30 +55,30 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:26910
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "क्षमाँ करें, फ़ाईल अपलोड करने का यू.आ.एल. समझ नहीं आया।"
 
 #: dist/converse-no-dependencies.js:26986
 #, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
 "\"%1$s\""
-msgstr ""
+msgstr "क्षमाँ करें, आपकी फ़ाईल अपलोड नहीं हो पाई। सर्वर का जवाब: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:26988
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "क्षमाँ करें, आपकी फ़ाईल अपलोड नहीं हो पाई।"
 
 #: dist/converse-no-dependencies.js:28221
 #: dist/converse-no-dependencies.js:37790
 #, javascript-format
 msgid "%1$s is typing"
-msgstr ""
+msgstr "%1$s लिख रहे हैं"
 
 #: dist/converse-no-dependencies.js:28223
 #: dist/converse-no-dependencies.js:37792
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr ""
+msgstr "%1$s लिखते-लिखते रुक गए"
 
 #: dist/converse-no-dependencies.js:28225
 #: dist/converse-no-dependencies.js:37794
@@ -88,7 +90,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:28607
 #: dist/converse-no-dependencies.js:28625
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "क्षमाँ करें, लगता है आपके सर्वर पर फ़ाईल अपलोड की सेवा उपलब्ध नहीं है।"
 
 #: dist/converse-no-dependencies.js:28656
 #, javascript-format
@@ -105,22 +107,26 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:29196
 #: dist/converse-no-dependencies.js:35399
+#, fuzzy
 msgid "You're not allowed to retract your message."
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:29198
 #: dist/converse-no-dependencies.js:35403
+#, fuzzy
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:29203
+#, fuzzy
 msgid "You're not allowed to send a message."
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:29205
 #: dist/converse-no-dependencies.js:35412
+#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:30383
 msgid "Smileys and emotions"
@@ -163,14 +169,16 @@ msgid "Stickers"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:35401
+#, fuzzy
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:35408
+#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:35410
 msgid ""
@@ -178,8 +186,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:35753
+#, fuzzy
 msgid "A timeout happened while trying to retract your message."
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:36523
 msgid "Sorry, an error happened while running the command."
@@ -255,9 +264,9 @@ msgid "%1$s is no longer a moderator"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:37804
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has been given a voice"
-msgstr ""
+msgstr "%1$s को बाहर कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:37806
 #, javascript-format
@@ -270,14 +279,14 @@ msgid "%1$s and %2$s"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:37817
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s are typing"
-msgstr ""
+msgstr "%1$s लिख रहे हैं"
 
 #: dist/converse-no-dependencies.js:37819
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have stopped typing"
-msgstr ""
+msgstr "%1$s लिखते-लिखते रुक गए"
 
 #: dist/converse-no-dependencies.js:37821
 #, javascript-format
@@ -285,14 +294,14 @@ msgid "%1$s have gone away"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:37823
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr ""
+msgstr "आपको इस कमरे से प्रतिबन्धित कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:37825
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr ""
+msgstr "आपको इस कमरे से प्रतिबन्धित कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:37827
 #, javascript-format
@@ -305,24 +314,24 @@ msgid "%1$s are no longer moderators"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:37831
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have been given voices"
-msgstr ""
+msgstr "%1$s को बाहर कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:37833
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have been muted"
-msgstr ""
+msgstr "%1$s को प्रतिबन्धित कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:38183
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr ""
+msgstr "%1$s को प्रतिबन्धित कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:38183
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr ""
+msgstr "%1$s को प्रतिबन्धित कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:38185
 #, javascript-format
@@ -330,14 +339,14 @@ msgid "%1$s's nickname has changed"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:38187
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr ""
+msgstr "%1$s को बाहर कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:38187
 #, javascript-format
 msgid "%1$s has been kicked out"
-msgstr ""
+msgstr "%1$s को बाहर कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:38189
 #, javascript-format
@@ -350,34 +359,34 @@ msgid "%1$s has been removed for not being a member"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:38214
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:38219
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr ""
+msgstr "इस कमरे को खोलने के लिए यहाँ क्लिक करें"
 
 #: dist/converse-no-dependencies.js:38224
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr ""
+msgstr "आपको इस कमरे से प्रतिबन्धित कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:38230
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
-msgstr ""
+msgstr "इस कमरे को खोलने के लिए यहाँ क्लिक करें"
 
 #: dist/converse-no-dependencies.js:38236
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s is now a member of this groupchat"
-msgstr ""
+msgstr "आपको इस कमरे से प्रतिबन्धित कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:38242
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:38368
 msgid ""
@@ -414,12 +423,14 @@ msgid "Remote server not found"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:38436
+#, fuzzy
 msgid "You're not allowed to enter this groupchat"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:38439
+#, fuzzy
 msgid "An error happened while trying to enter this groupchat"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:40305
 #, javascript-format
@@ -429,7 +440,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:40309
 #, javascript-format
 msgid "%1$s is busy"
-msgstr ""
+msgstr "%1$s व्यस्त है"
 
 #: dist/converse-no-dependencies.js:40311
 #, javascript-format
@@ -474,7 +485,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:43786
 msgid "A new groupchat has been created"
-msgstr ""
+msgstr "एक नया कमरा बना दिया गया है"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:43788
@@ -484,7 +495,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:43789
 msgid "You have been banned from this groupchat"
-msgstr ""
+msgstr "आपको इस कमरे से प्रतिबन्धित कर दिया गया है"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:43791
@@ -494,7 +505,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:43792
 msgid "You have been kicked from this groupchat"
-msgstr ""
+msgstr "आपको इस कमरे से बाहर कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:43793
 msgid ""
@@ -528,21 +539,23 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:47179
+#, fuzzy
 msgid "You are blocked from sending messages."
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:48635
 msgid "A timeout occurred"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:50933
+#, fuzzy
 msgid "Timeout while trying to fetch archived messages."
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:53541
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:53809
 msgid "This client does not allow presence subscriptions"
@@ -574,8 +587,9 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:55366
 #: dist/converse-no-dependencies.js:87745
+#, fuzzy
 msgid "New messages"
-msgstr ""
+msgstr "सन्देश हटाएं"
 
 #: dist/converse-no-dependencies.js:65233
 msgid "Menu"
@@ -594,8 +608,9 @@ msgid "Older versions"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:66170
+#, fuzzy
 msgid "No older versions found"
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #: dist/converse-no-dependencies.js:66170
 msgid "Current version"
@@ -668,7 +683,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:74724
 #: dist/converse-no-dependencies.js:121132
 msgid "Cancel"
-msgstr ""
+msgstr "छोड़ें"
 
 #: dist/converse-no-dependencies.js:72730
 msgid "Converse logo"
@@ -794,8 +809,9 @@ msgid "Type here to filter the search results"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75767
+#, fuzzy
 msgid "Show users"
-msgstr ""
+msgstr "और दिखाएं"
 
 #: dist/converse-no-dependencies.js:75768
 msgid ""
@@ -823,13 +839,14 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:76816
 #: dist/converse-no-dependencies.js:76818
+#, fuzzy
 msgid "Invitation to a groupchat"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:76816
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has invited you to join the groupchat \"%2$s\""
-msgstr ""
+msgstr "इस कमरे को खोलने के लिए यहाँ क्लिक करें"
 
 #: dist/converse-no-dependencies.js:76818
 #, javascript-format
@@ -839,8 +856,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76837
+#, fuzzy
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr ""
+msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
 
 #: dist/converse-no-dependencies.js:76842
 msgid "Please enter the XMPP address of this groupchat to confirm"
@@ -852,8 +870,9 @@ msgid "name@example.org"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76849
+#, fuzzy
 msgid "Optional reason for destroying this groupchat"
-msgstr ""
+msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
 
 #: dist/converse-no-dependencies.js:76850
 #: dist/converse-no-dependencies.js:100912
@@ -908,26 +927,30 @@ msgid "List available commands"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:77325
+#, fuzzy
 msgid "No commands found"
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #: dist/converse-no-dependencies.js:77641
+#, fuzzy
 msgid "Sorry, an error occurred while looking for commands on that entity."
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:77655
 msgid "The specified entity doesn't support ad-hoc commands"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:77718
+#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:77808
+#, fuzzy
 msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:77821
 msgid "Executing"
@@ -939,10 +962,11 @@ msgid "Completed"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:77871
+#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:77878
 msgid "Error: unexpected result"
@@ -951,17 +975,17 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78082
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr ""
+msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
 
 #: dist/converse-no-dependencies.js:78149
 msgid "Unbookmark this groupchat"
-msgstr ""
+msgstr "ग्रुप चैट कौ अनबुकमार्क करें"
 
 #: dist/converse-no-dependencies.js:78150
 #: dist/converse-no-dependencies.js:123464
 #: dist/converse-no-dependencies.js:123985
 msgid "Click to open this groupchat"
-msgstr ""
+msgstr "इस कमरे को खोलने के लिए यहाँ क्लिक करें"
 
 #. *
 #. * @param {import('../bookmarks-list').default} el
@@ -984,12 +1008,12 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78638
 #: dist/converse-no-dependencies.js:124053
 msgid "Bookmarks"
-msgstr ""
+msgstr "बुकमार्क"
 
 #: dist/converse-no-dependencies.js:78697
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr ""
+msgstr "बुकमार्क"
 
 #: dist/converse-no-dependencies.js:78698
 msgid "Would you like this groupchat to be automatically joined upon startup?"
@@ -1032,12 +1056,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78704
 #: dist/converse-no-dependencies.js:106767
 msgid "Save"
-msgstr ""
+msgstr "सम्भालें"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:78999
+#, fuzzy
 msgid "Bookmark"
-msgstr ""
+msgstr "बुकमार्क"
 
 #: dist/converse-no-dependencies.js:80804
 msgid ""
@@ -1054,8 +1079,9 @@ msgstr ""
 #: dist/converse-no-dependencies.js:80843
 #: dist/converse-no-dependencies.js:80916
 #: dist/converse-no-dependencies.js:80949
+#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr ""
+msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
 
 #: dist/converse-no-dependencies.js:80885
 msgid "A timeout occurred while trying to retract the message"
@@ -1076,15 +1102,17 @@ msgstr ""
 #: dist/converse-no-dependencies.js:114697
 #: dist/converse-no-dependencies.js:118605
 msgid "Error"
-msgstr ""
+msgstr "दिक्कत"
 
 #: dist/converse-no-dependencies.js:80889
+#, fuzzy
 msgid "Sorry, you're not allowed to retract this message."
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:80970
+#, fuzzy
 msgid "You are about to retract this message."
-msgstr ""
+msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
 
 #: dist/converse-no-dependencies.js:80971
 msgid ""
@@ -1101,12 +1129,14 @@ msgid "Optional reason"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:80994
+#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:81110
+#, fuzzy
 msgid "Show media"
-msgstr ""
+msgstr "और दिखाएं"
 
 #: dist/converse-no-dependencies.js:81110
 msgid "Hide media"
@@ -1114,8 +1144,9 @@ msgstr ""
 
 #. * @type {MessageActionAttributes}
 #: dist/converse-no-dependencies.js:81176
+#, fuzzy
 msgid "Cancel Editing"
-msgstr ""
+msgstr "छोड़ें"
 
 #: dist/converse-no-dependencies.js:81176
 #: dist/converse-no-dependencies.js:86413
@@ -1148,22 +1179,24 @@ msgid "Are you sure you want to remove this contact?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85305
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:85337
+#, fuzzy
 msgid "Remove and decline contact request"
-msgstr ""
+msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
 
 #: dist/converse-no-dependencies.js:85338
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Are you sure you want to decline the contact request from %1$s?"
-msgstr ""
+msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
 
 #: dist/converse-no-dependencies.js:85341
+#, fuzzy
 msgid "Also block this user from sending you further messages"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:85366
 msgid "Contact request declined and user blocked"
@@ -1178,18 +1211,18 @@ msgid "Do you want to block this contact, so they cannot send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85446
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:85479
 msgid "Do you want to unblock this contact, so they can send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85511
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:86307
 msgid "Neither of you receive presence updates"
@@ -1296,11 +1329,12 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:87892
 msgid "Show more"
-msgstr ""
+msgstr "और दिखाएं"
 
 #: dist/converse-no-dependencies.js:87894
+#, fuzzy
 msgid "Show less"
-msgstr ""
+msgstr "और दिखाएं"
 
 #: dist/converse-no-dependencies.js:87896
 msgid "Message delivery failed."
@@ -1312,13 +1346,14 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:88529
 #: dist/converse-no-dependencies.js:88531
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has removed a message"
-msgstr ""
+msgstr "%1$s लिखते-लिखते रुक गए"
 
 #: dist/converse-no-dependencies.js:88531
+#, fuzzy
 msgid "You have removed a message"
-msgstr ""
+msgstr "%1$s लिखते-लिखते रुक गए"
 
 #: dist/converse-no-dependencies.js:89744
 msgid "Search results"
@@ -1330,7 +1365,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:90383
 msgid "Insert emojis"
-msgstr ""
+msgstr "इमोजी डालें"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:91050
@@ -1338,8 +1373,9 @@ msgid "Message characters remaining"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:91262
+#, fuzzy
 msgid "Send the message"
-msgstr ""
+msgstr "सन्देश हटाएं"
 
 #: dist/converse-no-dependencies.js:91539
 msgid "Start a call"
@@ -1347,7 +1383,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:91569
 msgid "Choose a file to send"
-msgstr ""
+msgstr "कोई फ़ाईल भेजें"
 
 #: dist/converse-no-dependencies.js:91586
 msgid "Click to write as a normal (non-spoiler) message"
@@ -1368,33 +1404,37 @@ msgid "Details"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92125
+#, fuzzy
 msgid "See more information about this person"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:92167
 msgid "Unblock user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92168
+#, fuzzy
 msgid "Are you sure you want to unblock this user?"
-msgstr ""
+msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
 
 #: dist/converse-no-dependencies.js:92183
 msgid "Unblock this user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92184
+#, fuzzy
 msgid "Allow this user to send you messages"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:92201
+#, fuzzy
 msgid "Block user"
-msgstr ""
+msgstr "और दिखाएं"
 
 #: dist/converse-no-dependencies.js:92202
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Are you sure you want to prevent %1$s from contacting you further?"
-msgstr ""
+msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
 
 #: dist/converse-no-dependencies.js:92220
 msgid "Block this user"
@@ -1405,8 +1445,9 @@ msgid "Prevent this user from sending you any further messages"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92236
+#, fuzzy
 msgid "Close and end this conversation"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #. ESM default export
 #. *
@@ -1425,7 +1466,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:92483
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr ""
+msgstr "क्या आप वाकई इस वार्तालाप के सन्देश हटाना चाहते हैं?"
 
 #: dist/converse-no-dependencies.js:92662
 #: dist/converse-no-dependencies.js:101600
@@ -1435,7 +1476,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:92662
 #: dist/converse-no-dependencies.js:101600
 msgid "Message"
-msgstr ""
+msgstr "सन्देश"
 
 #: dist/converse-no-dependencies.js:92663
 #: dist/converse-no-dependencies.js:101601
@@ -1448,27 +1489,28 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94759
 msgid "Remove messages"
-msgstr ""
+msgstr "सन्देश हटाएं"
 
 #: dist/converse-no-dependencies.js:94760
+#, fuzzy
 msgid "Close this chat"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:94761
 msgid "Write in the third person"
-msgstr ""
+msgstr "अन्य पुरुष में लिखें"
 
 #: dist/converse-no-dependencies.js:94762
 #: dist/converse-no-dependencies.js:106044
 msgid "Show this menu"
-msgstr ""
+msgstr "यह मेन्यू देखाएं"
 
 #: dist/converse-no-dependencies.js:94984
 #: dist/converse-no-dependencies.js:102713
 #: dist/converse-no-dependencies.js:126368
 #: dist/converse-no-dependencies.js:127165
 msgid "Please enter a valid XMPP address"
-msgstr ""
+msgstr "क्रिपया कोई मान्य एक्स.एम.पी.पी. ऐड्रेस डालें"
 
 #: dist/converse-no-dependencies.js:95169
 msgid "A big thank you to our sponsors 🙏"
@@ -1513,11 +1555,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:95346
 msgid "Username"
-msgstr ""
+msgstr "यूज़रनेम"
 
 #: dist/converse-no-dependencies.js:95346
 msgid "user@domain"
-msgstr ""
+msgstr "यूज़र@डोमेन"
 
 #: dist/converse-no-dependencies.js:95353
 msgid "Disconnected"
@@ -1577,25 +1619,28 @@ msgid "No service found with that XMPP address"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:98040
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Error: %1$s"
-msgstr ""
+msgstr "दिक्कत"
 
 #: dist/converse-no-dependencies.js:98446
+#, fuzzy
 msgid "Close these announcements"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:98879
+#, fuzzy
 msgid "Click to open this server message"
-msgstr ""
+msgstr "इस कमरे को खोलने के लिए यहाँ क्लिक करें"
 
 #: dist/converse-no-dependencies.js:98890
 msgid "Announcements"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:99295
+#, fuzzy
 msgid "Click to load missing messages"
-msgstr ""
+msgstr "इस कमरे को खोलने के लिए यहाँ क्लिक करें"
 
 #: dist/converse-no-dependencies.js:100048
 #: dist/converse-no-dependencies.js:100070
@@ -1603,16 +1648,19 @@ msgid "Minimize"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:100049
+#, fuzzy
 msgid "Minimize this chat"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:100071
+#, fuzzy
 msgid "Minimize this groupchat"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:100205
+#, fuzzy
 msgid "hidden"
-msgstr ""
+msgstr "छिपा हुआ"
 
 #. *
 #. * @param {import('../minimized-chat').default} el
@@ -1635,16 +1683,19 @@ msgid "New affiliation"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:101219
+#, fuzzy
 msgid "Timeout error while trying to set the affiliation"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:101221
+#, fuzzy
 msgid "Sorry, you're not allowed to make that change"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:101223
+#, fuzzy
 msgid "Sorry, something went wrong while trying to set the affiliation"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #. *
 #. * @param {import('../role-form').default} el
@@ -1659,12 +1710,14 @@ msgid "New Role"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:101498
+#, fuzzy
 msgid "You're not allowed to make that change"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:101500
+#, fuzzy
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:102015
 msgid "Change nickname"
@@ -1675,16 +1728,18 @@ msgid "Enter groupchat"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:102016
+#, fuzzy
 msgid "Choose a nickname to enter"
-msgstr ""
+msgstr "कोई फ़ाईल भेजें"
 
 #: dist/converse-no-dependencies.js:102016
 msgid "Please choose your nickname"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:102274
+#, fuzzy
 msgid "You're not allowed to send messages in this room"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:102711
@@ -1701,8 +1756,9 @@ msgid "Optional reason for the invitation"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:102826
+#, fuzzy
 msgid "Invite someone to this groupchat"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #. * @param {MUCOccupant} o
 #: dist/converse-no-dependencies.js:103082
@@ -1748,8 +1804,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103337
+#, fuzzy
 msgid "Invite this user to join this groupchat"
-msgstr ""
+msgstr "इस कमरे को खोलने के लिए यहाँ क्लिक करें"
 
 #: dist/converse-no-dependencies.js:103338
 msgid "Open a one-on-one chat with this user"
@@ -1765,12 +1822,14 @@ msgid "Success"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103668
+#, fuzzy
 msgid "The user has been invited to join this groupchat"
-msgstr ""
+msgstr "इस कमरे को खोलने के लिए यहाँ क्लिक करें"
 
 #: dist/converse-no-dependencies.js:104121
+#, fuzzy
 msgid "Filter by name"
-msgstr ""
+msgstr "आपको इस कमरे से बाहर कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:104122
 #: dist/converse-no-dependencies.js:127988
@@ -1807,8 +1866,9 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:104290
 #: dist/converse-no-dependencies.js:128176
+#, fuzzy
 msgid "Show filter"
-msgstr ""
+msgstr "और दिखाएं"
 
 #: dist/converse-no-dependencies.js:104291
 #: dist/converse-no-dependencies.js:128177
@@ -1816,20 +1876,24 @@ msgid "Hide filter"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:104293
+#, fuzzy
 msgid "Invite someone"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:104294
+#, fuzzy
 msgid "Invite someone to join this groupchat"
-msgstr ""
+msgstr "इस कमरे को खोलने के लिए यहाँ क्लिक करें"
 
 #: dist/converse-no-dependencies.js:104494
+#, fuzzy
 msgid "No participant data found"
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #: dist/converse-no-dependencies.js:104496
+#, fuzzy
 msgid "Show details"
-msgstr ""
+msgstr "और दिखाएं"
 
 #: dist/converse-no-dependencies.js:106038
 msgid "Change user's affiliation to admin"
@@ -1844,8 +1908,9 @@ msgid "Clear the chat area"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:106041
+#, fuzzy
 msgid "Close this groupchat"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:106042
 msgid "Change user role to participant"
@@ -1853,8 +1918,9 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:106043
 #: dist/converse-no-dependencies.js:108567
+#, fuzzy
 msgid "Remove this groupchat"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:106045
 msgid "Kick user from groupchat"
@@ -1890,8 +1956,9 @@ msgid "Grant ownership of this groupchat"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:106053
+#, fuzzy
 msgid "Register your nickname"
-msgstr ""
+msgstr "आपको इस कमरे से बाहर कर दिया गया है"
 
 #: dist/converse-no-dependencies.js:106054
 msgid "Revoke the user's current affiliation"
@@ -1944,12 +2011,14 @@ msgid "Configure %1$s"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:107195
+#, fuzzy
 msgid "Sorry, an error occurred while trying to submit the config form."
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:107222
+#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:107223
 #: dist/converse-no-dependencies.js:111181
@@ -1965,8 +2034,9 @@ msgid "Topic author"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:107471
+#, fuzzy
 msgid "XMPP address"
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #: dist/converse-no-dependencies.js:107472
 msgid "Message archiving"
@@ -1983,7 +2053,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107476
 #: dist/converse-no-dependencies.js:123364
 msgid "Hidden"
-msgstr ""
+msgstr "छिपा हुआ"
 
 #: dist/converse-no-dependencies.js:107477
 msgid "This groupchat is not publicly searchable"
@@ -2088,21 +2158,24 @@ msgid "This groupchat will disappear once the last person leaves"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:107672
+#, fuzzy
 msgid "Groupchat info"
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #: dist/converse-no-dependencies.js:108090
+#, fuzzy
 msgid "Hide the groupchat topic"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:108093
 #: dist/converse-no-dependencies.js:123463
 msgid "Show more information on this groupchat"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:108498
+#, fuzzy
 msgid "Show more information about this groupchat"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:108508
 msgid "Configure"
@@ -2113,12 +2186,14 @@ msgid "Configure this groupchat"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:108520
+#, fuzzy
 msgid "Change the nickname you're using in this groupchat"
-msgstr ""
+msgstr "इस कमरे को खोलने के लिए यहाँ क्लिक करें"
 
 #: dist/converse-no-dependencies.js:108531
+#, fuzzy
 msgid "Show topic"
-msgstr ""
+msgstr "और दिखाएं"
 
 #: dist/converse-no-dependencies.js:108531
 msgid "Hide topic"
@@ -2141,20 +2216,23 @@ msgid "Hide participants"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:108543
+#, fuzzy
 msgid "Show the groupchat participants"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:108543
+#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:108554
 msgid "Moderate"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:108555
+#, fuzzy
 msgid "Moderate this groupchat"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:108566
 msgid "Destroy"
@@ -2165,12 +2243,14 @@ msgid "Leave"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:108580
+#, fuzzy
 msgid "Leave and close this groupchat"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:108589
+#, fuzzy
 msgid "Are you sure you want to leave this groupchat?"
-msgstr ""
+msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:108658
@@ -2247,8 +2327,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:110368
+#, fuzzy
 msgid "Timeout error while trying to set your password"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:110370
 msgid "Your server does not allow password reset"
@@ -2256,12 +2337,14 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:110372
 #: dist/converse-no-dependencies.js:110374
+#, fuzzy
 msgid "You are not allowed to change your password"
-msgstr ""
+msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:110377
+#, fuzzy
 msgid "Your new password has been set"
-msgstr ""
+msgstr "एक नया कमरा बना दिया गया है"
 
 #. *
 #. * @param {import('../modals/profile').default} el
@@ -2305,8 +2388,9 @@ msgid "Personal status message"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:110539
+#, fuzzy
 msgid "Clear status message"
-msgstr ""
+msgstr "सारे सन्देश हटाएं"
 
 #: dist/converse-no-dependencies.js:110760
 msgid "Save and close"
@@ -2652,19 +2736,21 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:122665
 msgid "Join"
-msgstr ""
+msgstr "हिस्सा बनें"
 
 #: dist/converse-no-dependencies.js:122668
+#, fuzzy
 msgid "Groupchat name"
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #: dist/converse-no-dependencies.js:122670
+#, fuzzy
 msgid "Groupchat name or address"
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #: dist/converse-no-dependencies.js:123021
 msgid "Enter a new Groupchat"
-msgstr ""
+msgstr "एक नये कमरे का हिस्सा बनें"
 
 #: dist/converse-no-dependencies.js:123138
 msgid "Invalid groupchat address, it cannot be empty."
@@ -2689,13 +2775,14 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:123189
+#, fuzzy
 msgid "Groupchat id is invalid."
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:123359
 msgid "Description:"
-msgstr ""
+msgstr "विवरण :"
 
 #: dist/converse-no-dependencies.js:123360
 msgid "Groupchat XMPP Address:"
@@ -2746,20 +2833,22 @@ msgid "Query for Groupchats"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:123725
+#, fuzzy
 msgid "Groupchats found"
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #: dist/converse-no-dependencies.js:123733
 msgid "No groupchats found"
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #: dist/converse-no-dependencies.js:123983
 msgid "Leave this groupchat"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:123996
+#, fuzzy
 msgid "Click to hide these rooms"
-msgstr ""
+msgstr "इस कमरे को खोलने के लिए यहाँ क्लिक करें"
 
 #: dist/converse-no-dependencies.js:124049
 msgid "Click to toggle the list of open groupchats"
@@ -2774,8 +2863,9 @@ msgid "Query server"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:124052
+#, fuzzy
 msgid "Add groupchat"
-msgstr ""
+msgstr "इस कमरे को छोड़ें"
 
 #: dist/converse-no-dependencies.js:124433
 #, javascript-format
@@ -2817,8 +2907,9 @@ msgid "Click to show more details about %1$s"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:125253
+#, fuzzy
 msgid "Click to chat with yourself"
-msgstr ""
+msgstr "इस कमरे को खोलने के लिए यहाँ क्लिक करें"
 
 #: dist/converse-no-dependencies.js:125253
 #: dist/converse-no-dependencies.js:125345
@@ -2842,9 +2933,9 @@ msgid "Accept as contact"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:125445
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to add %1$s as a contact"
-msgstr ""
+msgstr "बुकमार्क-सूची खोलें/बंद करें"
 
 #: dist/converse-no-dependencies.js:125448
 msgid "Save as contact"
@@ -2860,8 +2951,9 @@ msgid "Add"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:126062
+#, fuzzy
 msgid "Search name or XMPP address"
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #: dist/converse-no-dependencies.js:126357
 msgid "Add a Contact"
@@ -2872,8 +2964,9 @@ msgid "This contact has already been added"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:126396
+#, fuzzy
 msgid "Sorry, something went wrong while adding the contact"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:126405
 msgid "Contact added successfully"
@@ -2886,8 +2979,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:126825
+#, fuzzy
 msgid "Sorry, something went wrong while accepting the contact request"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:126837
 msgid "Successfully accepted the contact request"
@@ -2903,12 +2997,14 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:127154
 #: dist/converse-no-dependencies.js:128162
+#, fuzzy
 msgid "Start a new chat"
-msgstr ""
+msgstr "एक नये कमरे का हिस्सा बनें"
 
 #: dist/converse-no-dependencies.js:127202
+#, fuzzy
 msgid "Sorry, something went wrong"
-msgstr ""
+msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
 
 #: dist/converse-no-dependencies.js:127344
 #, javascript-format
@@ -2920,8 +3016,9 @@ msgid "Unblock selected users"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127344
+#, fuzzy
 msgid "Filter blocked users"
-msgstr ""
+msgstr "और दिखाएं"
 
 #: dist/converse-no-dependencies.js:127350
 msgid "clear"
@@ -2932,12 +3029,14 @@ msgid "Select All"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127363
+#, fuzzy
 msgid "No blocked XMPP addresses"
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #: dist/converse-no-dependencies.js:127752
+#, fuzzy
 msgid "Blocklist"
-msgstr ""
+msgstr "और दिखाएं"
 
 #: dist/converse-no-dependencies.js:127779
 #, javascript-format
@@ -2945,8 +3044,9 @@ msgid "Successfully unblocked %1$s XMPP addresses"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127779
+#, fuzzy
 msgid "Successfully unblocked one XMPP address"
-msgstr ""
+msgstr "कोई कमरे नहीं मिले"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:127914
@@ -2974,8 +3074,9 @@ msgid "Contacts"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:128160
+#, fuzzy
 msgid "Click to toggle contacts"
-msgstr ""
+msgstr "बुकमार्क-सूची खोलें/बंद करें"
 
 #: dist/converse-no-dependencies.js:128161
 msgid "Add a contact"
@@ -3011,10 +3112,53 @@ msgstr ""
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128662
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Would you like to add %1$s as a contact?"
-msgstr ""
+msgstr "बुकमार्क-सूची खोलें/बंद करें"
 
 #: dist/converse-no-dependencies.js:128666
 msgid "Dismiss"
 msgstr ""
+
+#, fuzzy
+#~ msgid "An error occurred while querying for archived messages."
+#~ msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
+
+#, fuzzy
+#~ msgid "Are you sure you want to block this user?"
+#~ msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
+
+#~ msgid "Sorry, something went wrong while trying to save your bookmark."
+#~ msgstr "क्षमाँ करें, आपका बुकमार्क सम्भालनें में कुछ गड़बड़ हुई।"
+
+#~ msgid "Bookmark this groupchat"
+#~ msgstr "ग्रुप चैट कौ बुकमार्क करें"
+
+#~ msgid "The name for this bookmark:"
+#~ msgstr "इस बुकमार्क का नाम:"
+
+#, fuzzy
+#~ msgid "Show bookmarked groupchats"
+#~ msgstr "ग्रुप चैट कौ अनबुकमार्क करें"
+
+#, fuzzy
+#~ msgid "Unbookmark"
+#~ msgstr "बुकमार्क"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
+
+#~ msgid "Send"
+#~ msgstr "भेजें"
+
+#~ msgid "Remove this bookmark"
+#~ msgstr "यह बुकमार्क हटाएं"
+
+#, fuzzy
+#~ msgid "Error: the groupchat %1$s does not exist."
+#~ msgstr "इस कमरे को छोड़ें"
+
+#, fuzzy
+#~ msgid "%1$s is now an "
+#~ msgstr "%1$s को प्रतिबन्धित कर दिया गया है"

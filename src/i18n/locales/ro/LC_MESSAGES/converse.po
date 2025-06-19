@@ -3,19 +3,22 @@
 # This file is distributed under the same license as the Converse.js package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Converse.js 11.0.1\n"
+"Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-19 10:13+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2024-04-18 22:10+0000\n"
+"Last-Translator: Nicoara Alex <alex.nicoara@yahoo.com>\n"
+"Language-Team: Romanian <https://hosted.weblate.org/projects/conversejs/"
+"translations/ro/>\n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: dist/converse-no-dependencies.js:16974
 msgid "Could not automatically determine a connection URL"
@@ -24,11 +27,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:17308
 #: dist/converse-no-dependencies.js:17361
 msgid "An error occurred while connecting to the chat server."
-msgstr ""
+msgstr "S-a produs o eroare în timpul conectării la serverul de discuții."
 
 #: dist/converse-no-dependencies.js:17368
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr ""
+"Adresa dumneavoastră de XMPP sau parola sunt incorecte. Vă rugăm să "
+"încercați din nou."
 
 #: dist/converse-no-dependencies.js:17377
 #, javascript-format
@@ -41,19 +46,21 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:17381
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr ""
+msgstr "Serverul XMPP nu oferă un mecanism de autentificare acceptat"
 
 #: dist/converse-no-dependencies.js:26803
 msgid "Undecryptable OMEMO message"
-msgstr ""
+msgstr "Mesaj OMEMO nedecriptabil"
 
 #: dist/converse-no-dependencies.js:26893
 msgid "Sorry, could not determine upload URL."
 msgstr ""
+"Ne pare rău, nu am putut determina adresa pentru descărcarea fișierului."
 
 #: dist/converse-no-dependencies.js:26910
 msgid "Sorry, could not determine file upload URL."
 msgstr ""
+"Ne pare rău, nu am putut determina adresa pentru încărcarea fișierului."
 
 #: dist/converse-no-dependencies.js:26986
 #, javascript-format
@@ -61,40 +68,46 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
 "\"%1$s\""
 msgstr ""
+"Ne pare rău, nu am putut încărca fișierul dumneavoastră. Răspunsul "
+"serverului: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:26988
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "Ne pare rău, nu am putut încărca fișierul dumneavoastră."
 
 #: dist/converse-no-dependencies.js:28221
 #: dist/converse-no-dependencies.js:37790
 #, javascript-format
 msgid "%1$s is typing"
-msgstr ""
+msgstr "%1$s tastează"
 
 #: dist/converse-no-dependencies.js:28223
 #: dist/converse-no-dependencies.js:37792
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr ""
+msgstr "%1$s s-a oprit din scris"
 
 #: dist/converse-no-dependencies.js:28225
 #: dist/converse-no-dependencies.js:37794
 #: dist/converse-no-dependencies.js:40307
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr ""
+msgstr "%1$s a plecat"
 
 #: dist/converse-no-dependencies.js:28607
 #: dist/converse-no-dependencies.js:28625
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr ""
+"Ne pare rău, se pare că serverul dumneavoastră nu suportă încărcarea de "
+"fișiere."
 
 #: dist/converse-no-dependencies.js:28656
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
 msgstr ""
+"Dimensiunea fișierului dvs., %1$s, depășește valoarea maximă permisă de "
+"serverul dvs."
 
 #: dist/converse-no-dependencies.js:28656
 #, javascript-format
@@ -102,102 +115,117 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"Dimensiunea fișierului dumneavoastră, %1$s, depășește valoarea maximă "
+"permisă de server, care este %2$s."
 
 #: dist/converse-no-dependencies.js:29196
 #: dist/converse-no-dependencies.js:35399
 msgid "You're not allowed to retract your message."
-msgstr ""
+msgstr "Nu aveți permisiunea să vă retrageți mesajul."
 
 #: dist/converse-no-dependencies.js:29198
 #: dist/converse-no-dependencies.js:35403
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea."
 
 #: dist/converse-no-dependencies.js:29203
 msgid "You're not allowed to send a message."
 msgstr ""
+"Ne pare rău, nu vă este permis să vă înscrieți în acest grup de discuții."
 
 #: dist/converse-no-dependencies.js:29205
 #: dist/converse-no-dependencies.js:35412
 msgid "Sorry, an error occurred while trying to send your message."
 msgstr ""
+"Ne pare rău, ceva a mers prost în timp ce se încerca transmiterea mesajului "
+"dvs."
 
 #: dist/converse-no-dependencies.js:30383
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Zâmbăreți și emoticoane"
 
 #: dist/converse-no-dependencies.js:30384
 msgid "People"
-msgstr ""
+msgstr "Persoane"
 
 #: dist/converse-no-dependencies.js:30385
 msgid "Activities"
-msgstr ""
+msgstr "Activități"
 
 #: dist/converse-no-dependencies.js:30386
 msgid "Travel"
-msgstr ""
+msgstr "Călătorie"
 
 #: dist/converse-no-dependencies.js:30387
 msgid "Objects"
-msgstr ""
+msgstr "Obiecte"
 
 #: dist/converse-no-dependencies.js:30388
 msgid "Animals and nature"
-msgstr ""
+msgstr "Animale și natură"
 
 #: dist/converse-no-dependencies.js:30389
 msgid "Food and drink"
-msgstr ""
+msgstr "Mâncăruri și băuturi"
 
 #: dist/converse-no-dependencies.js:30390
 msgid "Symbols"
-msgstr ""
+msgstr "Simboluri"
 
 #: dist/converse-no-dependencies.js:30391
 msgid "Flags"
-msgstr ""
+msgstr "Steaguri"
 
 #: dist/converse-no-dependencies.js:30392
 msgid "Stickers"
-msgstr ""
+msgstr "Autocolante"
 
 #: dist/converse-no-dependencies.js:35401
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
 msgstr ""
+"Ne pare rău, retragerea dvs. nu a fost livrată fiindcă nu faceți parte din "
+"acest grup de discuții."
 
 #: dist/converse-no-dependencies.js:35408
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
+"Ne pare rău, dar mesajul dvs. nu a fost livrat deoarece nu vi s-a permis să "
+"îl trimiteți."
 
 #: dist/converse-no-dependencies.js:35410
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
 msgstr ""
+"Mesajul dvs. nu a fost livrat deoarece nu sunteți prezent în grupul de chat."
 
 #: dist/converse-no-dependencies.js:35753
+#, fuzzy
 msgid "A timeout happened while trying to retract your message."
-msgstr ""
+msgstr "A apărut o expirare de timp când încercați să vă retrageți mesajul."
 
 #: dist/converse-no-dependencies.js:36523
 msgid "Sorry, an error happened while running the command."
-msgstr ""
+msgstr "Din păcate, s-a produs o eroare în timpul rulării comenzii."
 
 #: dist/converse-no-dependencies.js:36523
 #: dist/converse-no-dependencies.js:107195
 msgid "Check your browser's developer console for details."
-msgstr ""
+msgstr "Pentru detalii verificați consola de dezvoltare a navigatorului dvs."
 
 #: dist/converse-no-dependencies.js:36543
 #: dist/converse-no-dependencies.js:36561
 msgid "Error: couldn't find a groupchat participant based on your arguments"
 msgstr ""
+"Eroare: nu s-a putut găsi un participant în grupul de discuții pe baza "
+"argumentelor dvs"
 
 #: dist/converse-no-dependencies.js:36551
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
+"Eroare: am găsit mai mulți participanți la grupul de discuții pe baza "
+"argumentelor dvs"
 
 #: dist/converse-no-dependencies.js:36576
 #, javascript-format
@@ -205,317 +233,338 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
+"Eroare: comanda %1$s preia doi parametri, pseudonimul utilizatorului și un "
+"element opțional."
 
 #: dist/converse-no-dependencies.js:36661
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr ""
+msgstr "Interzis: nu dețineți rolul potrivit pentru a face acest lucru."
 
 #: dist/converse-no-dependencies.js:36692
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "Interzis: nu aveți autorizația necesară pentru a face acest lucru."
 
 #: dist/converse-no-dependencies.js:37041
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr ""
+msgstr "Nu ai permisiunea să te înregistrezi în acest grup de discuții."
 
 #: dist/converse-no-dependencies.js:37043
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
+"Nu aveți voie să vă înregistrați în acest grup de discuții, deoarece este "
+"doar pentru membri."
 
 #: dist/converse-no-dependencies.js:37377
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr ""
+msgstr "Subiectul este definit de %1$s"
 
 #: dist/converse-no-dependencies.js:37377
 #, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr ""
+msgstr "Subiectul a fost șters de %1$s"
 
 #: dist/converse-no-dependencies.js:37796
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr ""
+msgstr "%1$s a intrat în grupul de discuții"
 
 #: dist/converse-no-dependencies.js:37798
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr ""
+msgstr "%1$s a plecat din grupul de discuții"
 
 #: dist/converse-no-dependencies.js:37800
 #, javascript-format
 msgid "%1$s is now a moderator"
-msgstr ""
+msgstr "%1$s este acum moderator"
 
 #: dist/converse-no-dependencies.js:37802
 #, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr ""
+msgstr "%1$s nu mai este moderator"
 
 #: dist/converse-no-dependencies.js:37804
 #, javascript-format
 msgid "%1$s has been given a voice"
-msgstr ""
+msgstr "%1$s poate vorbi din nou"
 
 #: dist/converse-no-dependencies.js:37806
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr ""
+msgstr "%1$s nu mai poate vorbi"
 
 #: dist/converse-no-dependencies.js:37814
 #, javascript-format
 msgid "%1$s and %2$s"
-msgstr ""
+msgstr "%1$s și %2$s"
 
 #: dist/converse-no-dependencies.js:37817
 #, javascript-format
 msgid "%1$s are typing"
-msgstr ""
+msgstr "%1$s tastează"
 
 #: dist/converse-no-dependencies.js:37819
 #, javascript-format
 msgid "%1$s have stopped typing"
-msgstr ""
+msgstr "%1$s s-a oprit din scris"
 
 #: dist/converse-no-dependencies.js:37821
 #, javascript-format
 msgid "%1$s have gone away"
-msgstr ""
+msgstr "%1$s a plecat"
 
 #: dist/converse-no-dependencies.js:37823
 #, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr ""
+msgstr "%1$s a intrat în grupul de discuții"
 
 #: dist/converse-no-dependencies.js:37825
 #, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr ""
+msgstr "%1$s a părăsit grupul de discuții"
 
 #: dist/converse-no-dependencies.js:37827
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s are now moderators"
-msgstr ""
+msgstr "%1$s este acum moderator"
 
 #: dist/converse-no-dependencies.js:37829
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s are no longer moderators"
-msgstr ""
+msgstr "%1$s nu mai este moderator"
 
 #: dist/converse-no-dependencies.js:37831
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have been given voices"
-msgstr ""
+msgstr "%1$s poate vorbi din nou"
 
 #: dist/converse-no-dependencies.js:37833
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s have been muted"
-msgstr ""
+msgstr "%1$s nu mai poate vorbi"
 
 #: dist/converse-no-dependencies.js:38183
 #, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr ""
+msgstr "%1$s a fost interzis de %2$s"
 
 #: dist/converse-no-dependencies.js:38183
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr ""
+msgstr "%1$s a fost banat"
 
 #: dist/converse-no-dependencies.js:38185
 #, javascript-format
 msgid "%1$s's nickname has changed"
-msgstr ""
+msgstr "Pseudonimul lui %1$s s-a schimbat"
 
 #: dist/converse-no-dependencies.js:38187
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr ""
+msgstr "%1$s a fost exclus de %2$s"
 
 #: dist/converse-no-dependencies.js:38187
 #, javascript-format
 msgid "%1$s has been kicked out"
-msgstr ""
+msgstr "%1$s a fost dat afară"
 
 #: dist/converse-no-dependencies.js:38189
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr ""
+msgstr "%1$s a fost înlăturat din pricina unei schimbări de afiliere"
 
 #: dist/converse-no-dependencies.js:38191
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr ""
+msgstr "%1$s a fost înlăturat pentru că este membru aici"
 
 #: dist/converse-no-dependencies.js:38214
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr ""
+msgstr "%1$s nu mai are rol de administrator în această discuție de grup"
 
 #: dist/converse-no-dependencies.js:38219
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr ""
+msgstr "%1$s nu mai are rol de proprietar în această discuție de grup"
 
 #: dist/converse-no-dependencies.js:38224
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr ""
+msgstr "%1$s nu mai este exclus(ă) din această discuție de grup"
 
 #: dist/converse-no-dependencies.js:38230
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
-msgstr ""
+msgstr "%1$s nu mai are rol de proprietar în această discuție de grup"
 
 #: dist/converse-no-dependencies.js:38236
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s is now a member of this groupchat"
 msgstr ""
+"%1$s este acum un(o) membru(ă) permanent(ă) al acestui grup de discuții"
 
 #: dist/converse-no-dependencies.js:38242
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr ""
+msgstr "%1$s este acum %2$s al acestui grup de discuții"
 
 #: dist/converse-no-dependencies.js:38368
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
+"Pseudonimul pe care l-ați ales este deja rezervat sau aflat în folosință, vă "
+"rugăm să alegeți un altul."
 
 #: dist/converse-no-dependencies.js:38394
 msgid "Password incorrect"
-msgstr ""
+msgstr "Parolă incorectă"
 
 #: dist/converse-no-dependencies.js:38401
 msgid "You are not on the member list of this groupchat."
-msgstr ""
+msgstr "Nu vă aflați pe lista cu membrii a acestui grup de discuții."
 
 #: dist/converse-no-dependencies.js:38409
 msgid "You are not allowed to create new groupchats."
-msgstr ""
+msgstr "Nu aveți permisiunea de a crea noi grupuri de discuții."
 
 #: dist/converse-no-dependencies.js:38412
 msgid "Your nickname doesn't conform to this groupchat's policies."
-msgstr ""
+msgstr "Pseudonimul dvs. nu se conformează regulilor acestui grup de discuții."
 
 #: dist/converse-no-dependencies.js:38427
 msgid "This groupchat does not (yet) exist."
-msgstr ""
+msgstr "Acest grup de discuții nu există (încă)."
 
 #: dist/converse-no-dependencies.js:38430
 msgid "This groupchat has reached its maximum number of participants."
-msgstr ""
+msgstr "Acest grup de discuții ți-a atins numărul maxim de participanți."
 
 #: dist/converse-no-dependencies.js:38433
 msgid "Remote server not found"
-msgstr ""
+msgstr "Serverul la distanță nu a fost găsit"
 
 #: dist/converse-no-dependencies.js:38436
+#, fuzzy
 msgid "You're not allowed to enter this groupchat"
-msgstr ""
+msgstr "Nu ai permisiunea să te înregistrezi în acest grup de discuții."
 
 #: dist/converse-no-dependencies.js:38439
+#, fuzzy
 msgid "An error happened while trying to enter this groupchat"
-msgstr ""
+msgstr "A apărut o expirare de timp când încercați să vă retrageți mesajul."
 
 #: dist/converse-no-dependencies.js:40305
 #, javascript-format
 msgid "%1$s has gone offline"
-msgstr ""
+msgstr "%1$s este deconectat(ă)"
 
 #: dist/converse-no-dependencies.js:40309
 #, javascript-format
 msgid "%1$s is busy"
-msgstr ""
+msgstr "%1$s este ocupat(ă)"
 
 #: dist/converse-no-dependencies.js:40311
 #, javascript-format
 msgid "%1$s is online"
-msgstr ""
+msgstr "%1$s este conectat(ă)"
 
 #: dist/converse-no-dependencies.js:43777
 msgid "This groupchat is not anonymous"
-msgstr ""
+msgstr "Acest grup de discuții nu este anonim"
 
 #: dist/converse-no-dependencies.js:43778
 msgid "This groupchat now shows unavailable members"
-msgstr ""
+msgstr "Acest grup de discuții arată acum membrii indisponibili"
 
 #: dist/converse-no-dependencies.js:43779
 msgid "This groupchat does not show unavailable members"
-msgstr ""
+msgstr "Acest grup de discuții nu arată membrii indisponibili"
 
 #: dist/converse-no-dependencies.js:43780
 msgid "The groupchat configuration has changed"
-msgstr ""
+msgstr "Configurația acestui grup de discuții s-a schimbat"
 
 #: dist/converse-no-dependencies.js:43781
+#, fuzzy
 msgid "Groupchat logging is now enabled"
-msgstr ""
+msgstr "Jurnalul acestui grup de discuții este acum activat"
 
 #: dist/converse-no-dependencies.js:43782
+#, fuzzy
 msgid "Groupchat logging is now disabled"
-msgstr ""
+msgstr "Jurnalul acestui grup de discuții este acum dezactivat"
 
 #: dist/converse-no-dependencies.js:43783
 msgid "This groupchat is now no longer anonymous"
-msgstr ""
+msgstr "De acum încolo acest grup de discuții nu mai este anonim"
 
 #: dist/converse-no-dependencies.js:43784
 msgid "This groupchat is now semi-anonymous"
-msgstr ""
+msgstr "Această discuție de grup de acum este semi-anonimă"
 
 #: dist/converse-no-dependencies.js:43785
 msgid "This groupchat is now fully-anonymous"
-msgstr ""
+msgstr "Această discuție de grup de acum este complet anonimă"
 
 #: dist/converse-no-dependencies.js:43786
 msgid "A new groupchat has been created"
-msgstr ""
+msgstr "O nouă discuție de grup a fost creată"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:43788
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr ""
+msgstr "Pseudonimul dvs. a fost creat în mod automat ca fiind: %1$s"
 
 #: dist/converse-no-dependencies.js:43789
 msgid "You have been banned from this groupchat"
-msgstr ""
+msgstr "Ați fost excluși(se) din această discuție de grup"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:43791
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr ""
+msgstr "Pseudonimul dvs. a fost schimbat în %1$s"
 
 #: dist/converse-no-dependencies.js:43792
 msgid "You have been kicked from this groupchat"
-msgstr ""
+msgstr "Ați fost dați(te) afară din această discuție de grup"
 
 #: dist/converse-no-dependencies.js:43793
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr ""
+"Ați fost eliminați(te) din această discuție de grup din cauza unei schimbări "
+"de afiliere"
 
 #: dist/converse-no-dependencies.js:43794
+#, fuzzy
 msgid ""
 "You have been removed from this groupchat because it has changed to members-"
 "only and you're not a member"
 msgstr ""
+"Ați fost eliminați(te) din această discuție de grup deoarece aceasta s-a "
+"modificat și acceptă doar membrii, iar dumneavoastră nu sunteți unul(a)"
 
 #: dist/converse-no-dependencies.js:43795
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
 msgstr ""
+"Ați fost înlăturați(te) din această discuție de grup pentru ca serviciul "
+"gazdă se oprește"
 
 #: dist/converse-no-dependencies.js:43796
+#, fuzzy
 msgid "You have exited this groupchat due to a technical problem"
 msgstr ""
+"Ați fost eliminați(te) din această discuție de grup din cauza unei schimbări "
+"de afiliere"
 
 #: dist/converse-no-dependencies.js:44577
 msgid "Timeout Error"
@@ -528,41 +577,50 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:47179
+#, fuzzy
 msgid "You are blocked from sending messages."
 msgstr ""
+"Ne pare rău, nu vă este permis să vă înscrieți în acest grup de discuții."
 
 #: dist/converse-no-dependencies.js:48635
 msgid "A timeout occurred"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:50933
+#, fuzzy
 msgid "Timeout while trying to fetch archived messages."
-msgstr ""
+msgstr "S-a produs o eroare în timpul conexiunii la serverul de discuții."
 
 #: dist/converse-no-dependencies.js:53541
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
 msgstr ""
+"Ne pare rău, a apărut o eroare în timp ce se încerca ștergerea lui %1$s din "
+"lista de contacte."
 
 #: dist/converse-no-dependencies.js:53809
 msgid "This client does not allow presence subscriptions"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:54931
+#, fuzzy
 msgid "me"
-msgstr ""
+msgstr "Nume"
 
 #: dist/converse-no-dependencies.js:55361
+#, fuzzy
 msgid "Unsaved contacts"
-msgstr ""
+msgstr "Contacte"
 
 #: dist/converse-no-dependencies.js:55362
+#, fuzzy
 msgid "My contacts"
-msgstr ""
+msgstr "Contacte"
 
 #: dist/converse-no-dependencies.js:55363
+#, fuzzy
 msgid "Pending contacts"
-msgstr ""
+msgstr "Contacte"
 
 #: dist/converse-no-dependencies.js:55364
 msgid "Contact requests"
@@ -574,28 +632,32 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:55366
 #: dist/converse-no-dependencies.js:87745
+#, fuzzy
 msgid "New messages"
-msgstr ""
+msgstr "Eliminați mesajele"
 
 #: dist/converse-no-dependencies.js:65233
 msgid "Menu"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:65623
+#, fuzzy
 msgid "Click to set a new picture"
-msgstr ""
+msgstr "Faceți clic pentru a restabili acestă discuție"
 
 #: dist/converse-no-dependencies.js:65624
+#, fuzzy
 msgid "Clear picture"
-msgstr ""
+msgstr "Închideți această fereastră de chat"
 
 #: dist/converse-no-dependencies.js:66168
 msgid "Older versions"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:66170
+#, fuzzy
 msgid "No older versions found"
-msgstr ""
+msgstr "Serverul la distanță nu a fost găsit"
 
 #: dist/converse-no-dependencies.js:66170
 msgid "Current version"
@@ -646,7 +708,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:92235
 #: dist/converse-no-dependencies.js:98445
 msgid "Close"
-msgstr ""
+msgstr "Închide"
 
 #: dist/converse-no-dependencies.js:69936
 #: dist/converse-no-dependencies.js:76868
@@ -668,7 +730,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:74724
 #: dist/converse-no-dependencies.js:121132
 msgid "Cancel"
-msgstr ""
+msgstr "Anulează"
 
 #: dist/converse-no-dependencies.js:72730
 msgid "Converse logo"
@@ -696,8 +758,9 @@ msgid "The profile picture of %1$s"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75200
+#, fuzzy
 msgid "Add to Contacts"
-msgstr ""
+msgstr "Contacte"
 
 #: dist/converse-no-dependencies.js:75214
 #: dist/converse-no-dependencies.js:86406
@@ -706,7 +769,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:110758
 #: dist/converse-no-dependencies.js:122658
 msgid "Nickname"
-msgstr ""
+msgstr "Pseudonim"
 
 #: dist/converse-no-dependencies.js:75214
 #: dist/converse-no-dependencies.js:77324
@@ -747,8 +810,9 @@ msgid "Affiliation changed"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75336
+#, fuzzy
 msgid "role changed"
-msgstr ""
+msgstr "Comutare discuție"
 
 #: dist/converse-no-dependencies.js:75724
 msgid ""
@@ -794,8 +858,9 @@ msgid "Type here to filter the search results"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75767
+#, fuzzy
 msgid "Show users"
-msgstr ""
+msgstr "Arată mai mult"
 
 #: dist/converse-no-dependencies.js:75768
 msgid ""
@@ -813,23 +878,26 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76049
+#, fuzzy
 msgid "Role changed"
-msgstr ""
+msgstr "Comutare discuție"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:76490
+#, fuzzy
 msgid "Moderator Tools"
-msgstr ""
+msgstr "Moderator"
 
 #: dist/converse-no-dependencies.js:76816
 #: dist/converse-no-dependencies.js:76818
+#, fuzzy
 msgid "Invitation to a groupchat"
-msgstr ""
+msgstr "Părăsiți acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:76816
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has invited you to join the groupchat \"%2$s\""
-msgstr ""
+msgstr "%1$s a intrat în grupul de discuții. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:76818
 #, javascript-format
@@ -839,8 +907,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76837
+#, fuzzy
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr ""
+msgstr "Sunteți sigur că doriți să eliminați acest contact?"
 
 #: dist/converse-no-dependencies.js:76842
 msgid "Please enter the XMPP address of this groupchat to confirm"
@@ -852,8 +921,9 @@ msgid "name@example.org"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76849
+#, fuzzy
 msgid "Optional reason for destroying this groupchat"
-msgstr ""
+msgstr "Sunteți sigur că doriți să eliminați acest contact?"
 
 #: dist/converse-no-dependencies.js:76850
 #: dist/converse-no-dependencies.js:100912
@@ -866,8 +936,9 @@ msgid "Optional XMPP address for a new groupchat that replaces this one"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76855
+#, fuzzy
 msgid "replacement@example.org"
-msgstr ""
+msgstr "chat.exemplu.org"
 
 #: dist/converse-no-dependencies.js:77041
 msgid ""
@@ -877,13 +948,13 @@ msgstr ""
 
 #. e.g. Your nickname is "coolguy69"
 #: dist/converse-no-dependencies.js:77177
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Your nickname is \"%1$s\""
-msgstr ""
+msgstr "Pseudonimul dvs. a fost schimbat în %1$s"
 
 #: dist/converse-no-dependencies.js:77200
 msgid "Error: invalid number of arguments"
-msgstr ""
+msgstr "Eroare: număr nevalid de argumente"
 
 #. *
 #. * @param {AdHocCommands} el
@@ -908,26 +979,30 @@ msgid "List available commands"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:77325
+#, fuzzy
 msgid "No commands found"
-msgstr ""
+msgstr "Nu s-au găsit grupuri de discuții"
 
 #: dist/converse-no-dependencies.js:77641
+#, fuzzy
 msgid "Sorry, an error occurred while looking for commands on that entity."
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #: dist/converse-no-dependencies.js:77655
 msgid "The specified entity doesn't support ad-hoc commands"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:77718
+#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #: dist/converse-no-dependencies.js:77808
+#, fuzzy
 msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #: dist/converse-no-dependencies.js:77821
 msgid "Executing"
@@ -939,10 +1014,11 @@ msgid "Completed"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:77871
+#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #: dist/converse-no-dependencies.js:77878
 msgid "Error: unexpected result"
@@ -951,17 +1027,17 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78082
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr ""
+msgstr "Sunteți sigur că doriți să eliminați semnul de carte \"%1$s\"?"
 
 #: dist/converse-no-dependencies.js:78149
 msgid "Unbookmark this groupchat"
-msgstr ""
+msgstr "Elimină semnul de carte pentru acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:78150
 #: dist/converse-no-dependencies.js:123464
 #: dist/converse-no-dependencies.js:123985
 msgid "Click to open this groupchat"
-msgstr ""
+msgstr "Clicați pentru a deschide acest grup de discuții"
 
 #. *
 #. * @param {import('../bookmarks-list').default} el
@@ -984,16 +1060,17 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78638
 #: dist/converse-no-dependencies.js:124053
 msgid "Bookmarks"
-msgstr ""
+msgstr "Semne de carte"
 
 #: dist/converse-no-dependencies.js:78697
 #, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr ""
+msgstr "Marcaj pentru „%1$s”"
 
 #: dist/converse-no-dependencies.js:78698
 msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr ""
+"Doriți ca la pornire să vă alăturați în mod automat acestui grup de discuții?"
 
 #: dist/converse-no-dependencies.js:78699
 #: dist/converse-no-dependencies.js:125219
@@ -1008,11 +1085,11 @@ msgstr ""
 #: dist/converse-no-dependencies.js:126059
 #: dist/converse-no-dependencies.js:126507
 msgid "Name"
-msgstr ""
+msgstr "Nume"
 
 #: dist/converse-no-dependencies.js:78701
 msgid "What should your nickname for this groupchat be?"
-msgstr ""
+msgstr "Ce nume doriți să aveți în acest grup de discuții?"
 
 #: dist/converse-no-dependencies.js:78702
 msgid "Password (for a protected groupchat)"
@@ -1032,12 +1109,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78704
 #: dist/converse-no-dependencies.js:106767
 msgid "Save"
-msgstr ""
+msgstr "Salvare"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:78999
+#, fuzzy
 msgid "Bookmark"
-msgstr ""
+msgstr "Semne de carte"
 
 #: dist/converse-no-dependencies.js:80804
 msgid ""
@@ -1054,12 +1132,14 @@ msgstr ""
 #: dist/converse-no-dependencies.js:80843
 #: dist/converse-no-dependencies.js:80916
 #: dist/converse-no-dependencies.js:80949
+#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr ""
+msgstr "Sunteți sigur că doriți să eliminați acest contact?"
 
 #: dist/converse-no-dependencies.js:80885
+#, fuzzy
 msgid "A timeout occurred while trying to retract the message"
-msgstr ""
+msgstr "S-a produs o eroare în timpul conexiunii la serverul de discuții."
 
 #: dist/converse-no-dependencies.js:80886
 #: dist/converse-no-dependencies.js:80890
@@ -1076,37 +1156,46 @@ msgstr ""
 #: dist/converse-no-dependencies.js:114697
 #: dist/converse-no-dependencies.js:118605
 msgid "Error"
-msgstr ""
+msgstr "Eroare"
 
 #: dist/converse-no-dependencies.js:80889
+#, fuzzy
 msgid "Sorry, you're not allowed to retract this message."
-msgstr ""
+msgstr "Nu aveți permisiunea de a crea noi grupuri de discuții."
 
 #: dist/converse-no-dependencies.js:80970
+#, fuzzy
 msgid "You are about to retract this message."
-msgstr ""
+msgstr "Aveți mesaje necitite"
 
 #: dist/converse-no-dependencies.js:80971
+#, fuzzy
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
+"Sunteți pe cale să-l/-o invitați pe %1$s în grupul de discuții %2$s. Puteți, "
+"la alegere, să-i trimiteți un mesaj prin care să-i explicați motivul acestei "
+"invitații."
 
 #: dist/converse-no-dependencies.js:80982
 msgid "Message Retraction"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:80982
+#, fuzzy
 msgid "Optional reason"
-msgstr ""
+msgstr "Indiciu opțional"
 
 #: dist/converse-no-dependencies.js:80994
+#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr ""
+msgstr "Nu aveți permisiunea de a crea noi grupuri de discuții."
 
 #: dist/converse-no-dependencies.js:81110
+#, fuzzy
 msgid "Show media"
-msgstr ""
+msgstr "Arată mai mult"
 
 #: dist/converse-no-dependencies.js:81110
 msgid "Hide media"
@@ -1114,8 +1203,9 @@ msgstr ""
 
 #. * @type {MessageActionAttributes}
 #: dist/converse-no-dependencies.js:81176
+#, fuzzy
 msgid "Cancel Editing"
-msgstr ""
+msgstr "Anulează"
 
 #: dist/converse-no-dependencies.js:81176
 #: dist/converse-no-dependencies.js:86413
@@ -1145,25 +1235,29 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:85268
 msgid "Are you sure you want to remove this contact?"
-msgstr ""
+msgstr "Sunteți sigur că doriți să eliminați acest contact?"
 
 #: dist/converse-no-dependencies.js:85305
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
 msgstr ""
+"Ne pare rău, a apărut o eroare în timp ce se încerca ștergerea lui %1$s din "
+"lista de contacte."
 
 #: dist/converse-no-dependencies.js:85337
+#, fuzzy
 msgid "Remove and decline contact request"
-msgstr ""
+msgstr "Sunteți sigur că doriți să eliminați acest contact?"
 
 #: dist/converse-no-dependencies.js:85338
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Are you sure you want to decline the contact request from %1$s?"
-msgstr ""
+msgstr "Sunteți sigur că doriți să eliminați acest contact?"
 
 #: dist/converse-no-dependencies.js:85341
+#, fuzzy
 msgid "Also block this user from sending you further messages"
-msgstr ""
+msgstr "Îngăduie-i utilizatorului \"mut\" să publice mesaje"
 
 #: dist/converse-no-dependencies.js:85366
 msgid "Contact request declined and user blocked"
@@ -1178,18 +1272,22 @@ msgid "Do you want to block this contact, so they cannot send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85446
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
 msgstr ""
+"Ne pare rău, a apărut o eroare în timp ce se încerca ștergerea lui %1$s din "
+"lista de contacte."
 
 #: dist/converse-no-dependencies.js:85479
 msgid "Do you want to unblock this contact, so they can send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85511
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
 msgstr ""
+"Ne pare rău, ceva a mers prost în timp ce se încerca transmiterea mesajului "
+"dvs."
 
 #: dist/converse-no-dependencies.js:86307
 msgid "Neither of you receive presence updates"
@@ -1212,12 +1310,14 @@ msgid "Remove from blocklist"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:86329
+#, fuzzy
 msgid "Add to blocklist"
-msgstr ""
+msgstr "Contacte"
 
 #: dist/converse-no-dependencies.js:86337
+#, fuzzy
 msgid "Add as contact"
-msgstr ""
+msgstr "Contacte"
 
 #: dist/converse-no-dependencies.js:86345
 msgid "Remove as contact"
@@ -1250,8 +1350,9 @@ msgstr ""
 #: dist/converse-no-dependencies.js:86409
 #: dist/converse-no-dependencies.js:126057
 #: dist/converse-no-dependencies.js:126505
+#, fuzzy
 msgid "Groups"
-msgstr ""
+msgstr "Grupuri de discuții"
 
 #: dist/converse-no-dependencies.js:86410
 #: dist/converse-no-dependencies.js:126058
@@ -1287,8 +1388,9 @@ msgid "Retry"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:87883
+#, fuzzy
 msgid "This message has been edited"
-msgstr ""
+msgstr "Acest mesaj a fost editat"
 
 #. *
 #. * @param {import('../message').default} el
@@ -1296,41 +1398,45 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:87892
 msgid "Show more"
-msgstr ""
+msgstr "Arată mai mult"
 
 #: dist/converse-no-dependencies.js:87894
+#, fuzzy
 msgid "Show less"
-msgstr ""
+msgstr "Arată mai mult"
 
 #: dist/converse-no-dependencies.js:87896
+#, fuzzy
 msgid "Message delivery failed."
-msgstr ""
+msgstr "Motivul indicat este: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:88528
+#, fuzzy
 msgid "A moderator"
-msgstr ""
+msgstr "Moderator"
 
 #: dist/converse-no-dependencies.js:88529
 #: dist/converse-no-dependencies.js:88531
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has removed a message"
-msgstr ""
+msgstr "%1$s a fost înlăturat pentru că este membru aici"
 
 #: dist/converse-no-dependencies.js:88531
+#, fuzzy
 msgid "You have removed a message"
-msgstr ""
+msgstr "Aveți mesaje necitite"
 
 #: dist/converse-no-dependencies.js:89744
 msgid "Search results"
-msgstr ""
+msgstr "Rezultatele căutării"
 
 #: dist/converse-no-dependencies.js:89773
 msgid "Search"
-msgstr ""
+msgstr "Caută"
 
 #: dist/converse-no-dependencies.js:90383
 msgid "Insert emojis"
-msgstr ""
+msgstr "Inserare emoticon"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:91050
@@ -1338,24 +1444,25 @@ msgid "Message characters remaining"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:91262
+#, fuzzy
 msgid "Send the message"
-msgstr ""
+msgstr "Editează acest mesaj"
 
 #: dist/converse-no-dependencies.js:91539
 msgid "Start a call"
-msgstr ""
+msgstr "Începe un apel"
 
 #: dist/converse-no-dependencies.js:91569
 msgid "Choose a file to send"
-msgstr ""
+msgstr "Selectați un fișier pentru a fi trimis"
 
 #: dist/converse-no-dependencies.js:91586
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr ""
+msgstr "Faceți click pentru a scrie ca un mesaj normal (nu dezvăluie)"
 
 #: dist/converse-no-dependencies.js:91588
 msgid "Click to write your message as a spoiler"
-msgstr ""
+msgstr "Faceți click pentru a scrie mesajul ca o dezvăluire"
 
 #: dist/converse-no-dependencies.js:91788
 msgid "The User's Profile Image"
@@ -1368,33 +1475,37 @@ msgid "Details"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92125
+#, fuzzy
 msgid "See more information about this person"
-msgstr ""
+msgstr "Arată mai multe informații despre acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:92167
 msgid "Unblock user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92168
+#, fuzzy
 msgid "Are you sure you want to unblock this user?"
-msgstr ""
+msgstr "Sunteți sigur că doriți să eliminați acest contact?"
 
 #: dist/converse-no-dependencies.js:92183
 msgid "Unblock this user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92184
+#, fuzzy
 msgid "Allow this user to send you messages"
-msgstr ""
+msgstr "Îngăduie-i utilizatorului \"mut\" să publice mesaje"
 
 #: dist/converse-no-dependencies.js:92201
+#, fuzzy
 msgid "Block user"
-msgstr ""
+msgstr "Arată mai mult"
 
 #: dist/converse-no-dependencies.js:92202
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Are you sure you want to prevent %1$s from contacting you further?"
-msgstr ""
+msgstr "Sunteți sigur că doriți să eliminați acest contact?"
 
 #: dist/converse-no-dependencies.js:92220
 msgid "Block this user"
@@ -1405,8 +1516,9 @@ msgid "Prevent this user from sending you any further messages"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92236
+#, fuzzy
 msgid "Close and end this conversation"
-msgstr ""
+msgstr "Închideți și plecați din acest grup de discuții"
 
 #. ESM default export
 #. *
@@ -1421,26 +1533,26 @@ msgstr ""
 #: dist/converse-no-dependencies.js:102272
 #: dist/converse-no-dependencies.js:103334
 msgid "You have unread messages"
-msgstr ""
+msgstr "Aveți mesaje necitite"
 
 #: dist/converse-no-dependencies.js:92483
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr ""
+msgstr "Sunteți siguri că doriți să ștergeți mesajele din această conversație?"
 
 #: dist/converse-no-dependencies.js:92662
 #: dist/converse-no-dependencies.js:101600
 msgid "Hidden message"
-msgstr ""
+msgstr "Mesaj ascuns"
 
 #: dist/converse-no-dependencies.js:92662
 #: dist/converse-no-dependencies.js:101600
 msgid "Message"
-msgstr ""
+msgstr "Mesaj"
 
 #: dist/converse-no-dependencies.js:92663
 #: dist/converse-no-dependencies.js:101601
 msgid "Optional hint"
-msgstr ""
+msgstr "Indiciu opțional"
 
 #: dist/converse-no-dependencies.js:93172
 msgid "Sorry, the connection has been lost, and your message could not be sent"
@@ -1448,27 +1560,28 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94759
 msgid "Remove messages"
-msgstr ""
+msgstr "Eliminați mesajele"
 
 #: dist/converse-no-dependencies.js:94760
+#, fuzzy
 msgid "Close this chat"
-msgstr ""
+msgstr "Închideți această fereastră de chat"
 
 #: dist/converse-no-dependencies.js:94761
 msgid "Write in the third person"
-msgstr ""
+msgstr "Scrieți la persoana a treia"
 
 #: dist/converse-no-dependencies.js:94762
 #: dist/converse-no-dependencies.js:106044
 msgid "Show this menu"
-msgstr ""
+msgstr "Arată acest meniu"
 
 #: dist/converse-no-dependencies.js:94984
 #: dist/converse-no-dependencies.js:102713
 #: dist/converse-no-dependencies.js:126368
 #: dist/converse-no-dependencies.js:127165
 msgid "Please enter a valid XMPP address"
-msgstr ""
+msgstr "Vă rugăm să introduceți o adresă XMPP validă"
 
 #: dist/converse-no-dependencies.js:95169
 msgid "A big thank you to our sponsors 🙏"
@@ -1505,7 +1618,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:95333
 msgid "Password"
-msgstr ""
+msgstr "Parolă"
 
 #: dist/converse-no-dependencies.js:95342
 msgid "Log in"
@@ -1513,11 +1626,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:95346
 msgid "Username"
-msgstr ""
+msgstr "Nume de utilizator"
 
 #: dist/converse-no-dependencies.js:95346
 msgid "user@domain"
-msgstr ""
+msgstr "utilizator@domeniu"
 
 #: dist/converse-no-dependencies.js:95353
 msgid "Disconnected"
@@ -1525,11 +1638,12 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:95354
 msgid "Click here to log in anonymously"
-msgstr ""
+msgstr "Faceți click aici pentru a vă autentifica anonim"
 
 #: dist/converse-no-dependencies.js:95943
+#, fuzzy
 msgid "Chat"
-msgstr ""
+msgstr "Deschis"
 
 #: dist/converse-no-dependencies.js:96489
 msgid "About Converse"
@@ -1552,8 +1666,9 @@ msgid "Service"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:97648
+#, fuzzy
 msgid "Identities"
-msgstr ""
+msgstr "Activități"
 
 #: dist/converse-no-dependencies.js:97649
 msgid "Type"
@@ -1577,42 +1692,49 @@ msgid "No service found with that XMPP address"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:98040
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Error: %1$s"
-msgstr ""
+msgstr "Eroare"
 
 #: dist/converse-no-dependencies.js:98446
+#, fuzzy
 msgid "Close these announcements"
-msgstr ""
+msgstr "Părăsiți acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:98879
+#, fuzzy
 msgid "Click to open this server message"
-msgstr ""
+msgstr "Clicați pentru a deschide acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:98890
 msgid "Announcements"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:99295
+#, fuzzy
 msgid "Click to load missing messages"
-msgstr ""
+msgstr "Clicați pentru a deschide acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:100048
 #: dist/converse-no-dependencies.js:100070
+#, fuzzy
 msgid "Minimize"
-msgstr ""
+msgstr "Micșorată"
 
 #: dist/converse-no-dependencies.js:100049
+#, fuzzy
 msgid "Minimize this chat"
-msgstr ""
+msgstr "Micșorează această casetă de discuție"
 
 #: dist/converse-no-dependencies.js:100071
+#, fuzzy
 msgid "Minimize this groupchat"
-msgstr ""
+msgstr "Micșorează această casetă de discuție"
 
 #: dist/converse-no-dependencies.js:100205
+#, fuzzy
 msgid "hidden"
-msgstr ""
+msgstr "Ascuns"
 
 #. *
 #. * @param {import('../minimized-chat').default} el
@@ -1620,31 +1742,35 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:100573
 msgid "Click to restore this chat"
-msgstr ""
+msgstr "Faceți clic pentru a restabili acestă discuție"
 
 #. *
 #. * @param {import('../affiliation-form').default} el
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:100910
+#, fuzzy
 msgid "Change affiliation"
-msgstr ""
+msgstr "Schimbă rolul utilizatorului în cel de admin"
 
 #: dist/converse-no-dependencies.js:100911
 msgid "New affiliation"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:101219
+#, fuzzy
 msgid "Timeout error while trying to set the affiliation"
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #: dist/converse-no-dependencies.js:101221
+#, fuzzy
 msgid "Sorry, you're not allowed to make that change"
-msgstr ""
+msgstr "Nu aveți permisiunea de a crea noi grupuri de discuții."
 
 #: dist/converse-no-dependencies.js:101223
+#, fuzzy
 msgid "Sorry, something went wrong while trying to set the affiliation"
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #. *
 #. * @param {import('../role-form').default} el
@@ -1659,88 +1785,97 @@ msgid "New Role"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:101498
+#, fuzzy
 msgid "You're not allowed to make that change"
-msgstr ""
+msgstr "Nu aveți permisiunea de a crea noi grupuri de discuții."
 
 #: dist/converse-no-dependencies.js:101500
+#, fuzzy
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #: dist/converse-no-dependencies.js:102015
+#, fuzzy
 msgid "Change nickname"
-msgstr ""
+msgstr "Schimbați-vă pseudonimul"
 
 #: dist/converse-no-dependencies.js:102015
 msgid "Enter groupchat"
-msgstr ""
+msgstr "Intrați în grupul de discuții"
 
 #: dist/converse-no-dependencies.js:102016
+#, fuzzy
 msgid "Choose a nickname to enter"
-msgstr ""
+msgstr "Selectați un fișier pentru a fi trimis"
 
 #: dist/converse-no-dependencies.js:102016
 msgid "Please choose your nickname"
-msgstr ""
+msgstr "Vă rugăm, alegeți-vă pseudonimul"
 
 #: dist/converse-no-dependencies.js:102274
+#, fuzzy
 msgid "You're not allowed to send messages in this room"
 msgstr ""
+"Ne pare rău, nu vă este permis să vă înscrieți în acest grup de discuții"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:102711
 #: dist/converse-no-dependencies.js:103340
 msgid "Invite"
-msgstr ""
+msgstr "Invitare"
 
 #: dist/converse-no-dependencies.js:102712
+#, fuzzy
 msgid "user@example.org"
-msgstr ""
+msgstr "chat.exemplu.org"
 
 #: dist/converse-no-dependencies.js:102715
+#, fuzzy
 msgid "Optional reason for the invitation"
-msgstr ""
+msgstr "Indiciu opțional"
 
 #: dist/converse-no-dependencies.js:102826
+#, fuzzy
 msgid "Invite someone to this groupchat"
-msgstr ""
+msgstr "Părăsiți acest grup de discuții"
 
 #. * @param {MUCOccupant} o
 #: dist/converse-no-dependencies.js:103082
 #, javascript-format
 msgid "Click to mention %1$s in your message."
-msgstr ""
+msgstr "Faceți click pentru a menționa %1$s în mesajul dumneavoastră."
 
 #: dist/converse-no-dependencies.js:103093
 msgid "Owner"
-msgstr ""
+msgstr "Proprietar"
 
 #: dist/converse-no-dependencies.js:103097
 msgid "Admin"
-msgstr ""
+msgstr "Administrator"
 
 #: dist/converse-no-dependencies.js:103101
 msgid "Member"
-msgstr ""
+msgstr "Membru"
 
 #: dist/converse-no-dependencies.js:103105
 msgid "Moderator"
-msgstr ""
+msgstr "Moderator"
 
 #: dist/converse-no-dependencies.js:103109
 msgid "Visitor"
-msgstr ""
+msgstr "Vizitator"
 
 #: dist/converse-no-dependencies.js:103169
 msgid "This user is a moderator."
-msgstr ""
+msgstr "Acest utilizator este moderator."
 
 #: dist/converse-no-dependencies.js:103170
 msgid "This user can send messages in this groupchat."
-msgstr ""
+msgstr "Acest utilizator poate trimite mesaje către acest grup de discuții."
 
 #: dist/converse-no-dependencies.js:103171
 msgid "This user can NOT send messages in this groupchat."
-msgstr ""
+msgstr "Acest utilizator NU poate trimite mesaje către acest grup de discuții."
 
 #: dist/converse-no-dependencies.js:103336
 msgid ""
@@ -1748,16 +1883,18 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103337
+#, fuzzy
 msgid "Invite this user to join this groupchat"
-msgstr ""
+msgstr "Clicați pentru a deschide acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:103338
 msgid "Open a one-on-one chat with this user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103339
+#, fuzzy
 msgid "Open Chat"
-msgstr ""
+msgstr "Deschis"
 
 #: dist/converse-no-dependencies.js:103668
 #: dist/converse-no-dependencies.js:110376
@@ -1765,12 +1902,14 @@ msgid "Success"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103668
+#, fuzzy
 msgid "The user has been invited to join this groupchat"
-msgstr ""
+msgstr "%1$s a fost exclus(ă) din această discuție de grup"
 
 #: dist/converse-no-dependencies.js:104121
+#, fuzzy
 msgid "Filter by name"
-msgstr ""
+msgstr "Schimbați-vă pseudonimul"
 
 #: dist/converse-no-dependencies.js:104122
 #: dist/converse-no-dependencies.js:127988
@@ -1792,13 +1931,14 @@ msgstr ""
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:104288
+#, fuzzy
 msgid "Participant"
-msgstr ""
+msgstr "Participanți"
 
 #: dist/converse-no-dependencies.js:104288
 #: dist/converse-no-dependencies.js:104495
 msgid "Participants"
-msgstr ""
+msgstr "Participanți"
 
 #: dist/converse-no-dependencies.js:104289
 #: dist/converse-no-dependencies.js:104493
@@ -1807,8 +1947,9 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:104290
 #: dist/converse-no-dependencies.js:128176
+#, fuzzy
 msgid "Show filter"
-msgstr ""
+msgstr "Arată mai mult"
 
 #: dist/converse-no-dependencies.js:104291
 #: dist/converse-no-dependencies.js:128177
@@ -1816,57 +1957,63 @@ msgid "Hide filter"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:104293
+#, fuzzy
 msgid "Invite someone"
-msgstr ""
+msgstr "Invitare"
 
 #: dist/converse-no-dependencies.js:104294
+#, fuzzy
 msgid "Invite someone to join this groupchat"
-msgstr ""
+msgstr "Clicați pentru a deschide acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:104494
+#, fuzzy
 msgid "No participant data found"
-msgstr ""
+msgstr "Participanți"
 
 #: dist/converse-no-dependencies.js:104496
+#, fuzzy
 msgid "Show details"
-msgstr ""
+msgstr "Arată mai mult"
 
 #: dist/converse-no-dependencies.js:106038
 msgid "Change user's affiliation to admin"
-msgstr ""
+msgstr "Schimbă rolul utilizatorului în cel de admin"
 
 #: dist/converse-no-dependencies.js:106039
 msgid "Ban user by changing their affiliation to outcast"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:106040
+#, fuzzy
 msgid "Clear the chat area"
-msgstr ""
+msgstr "Închideți această fereastră de chat"
 
 #: dist/converse-no-dependencies.js:106041
+#, fuzzy
 msgid "Close this groupchat"
-msgstr ""
+msgstr "Părăsiți acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:106042
 msgid "Change user role to participant"
-msgstr ""
+msgstr "Schimbă rolul utilizatorului în participant"
 
 #: dist/converse-no-dependencies.js:106043
 #: dist/converse-no-dependencies.js:108567
 msgid "Remove this groupchat"
-msgstr ""
+msgstr "Părăsiți acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:106045
 msgid "Kick user from groupchat"
-msgstr ""
+msgstr "Înlătură utilizatorul din acest grup"
 
 #: dist/converse-no-dependencies.js:106046
 msgid "Write in 3rd person"
-msgstr ""
+msgstr "Scrie la persoana a treia"
 
 #: dist/converse-no-dependencies.js:106047
 msgid "Grant membership to a user"
-msgstr ""
+msgstr "Oferă statutul de membru unui utilizator"
 
 #: dist/converse-no-dependencies.js:106048
 msgid "Opens up the moderator tools GUI"
@@ -1874,24 +2021,26 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:106049
 msgid "Remove user's ability to post messages"
-msgstr ""
+msgstr "Înlătură dreptul utilizatorului de a trimite mesaje"
 
 #: dist/converse-no-dependencies.js:106050
 #: dist/converse-no-dependencies.js:107796
 msgid "Change your nickname"
-msgstr ""
+msgstr "Schimbați-vă pseudonimul"
 
 #: dist/converse-no-dependencies.js:106051
 msgid "Grant moderator role to user"
-msgstr ""
+msgstr "Oferă unui utilizator rolul de moderator"
 
 #: dist/converse-no-dependencies.js:106052
 msgid "Grant ownership of this groupchat"
 msgstr ""
+"Oferă unui utilizator statutul de proprietar al acestui grup de discuții"
 
 #: dist/converse-no-dependencies.js:106053
+#, fuzzy
 msgid "Register your nickname"
-msgstr ""
+msgstr "Schimbați-vă pseudonimul"
 
 #: dist/converse-no-dependencies.js:106054
 msgid "Revoke the user's current affiliation"
@@ -1899,15 +2048,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:106055
 msgid "Set groupchat subject"
-msgstr ""
+msgstr "Alege tema acestui grup de discuție"
 
 #: dist/converse-no-dependencies.js:106056
 msgid "Set groupchat subject (alias for /subject)"
-msgstr ""
+msgstr "Definește subiectul acestui grup de discuții (alias pentru /subiect)"
 
 #: dist/converse-no-dependencies.js:106057
 msgid "Allow muted user to post messages"
-msgstr ""
+msgstr "Îngăduie-i utilizatorului \"mut\" să publice mesaje"
 
 #: dist/converse-no-dependencies.js:106146
 msgid ""
@@ -1917,22 +2066,22 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:106152
 msgid "This groupchat no longer exists"
-msgstr ""
+msgstr "Acest grup de discuții nu mai există"
 
 #: dist/converse-no-dependencies.js:106153
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "The following reason was given: \"%1$s\""
-msgstr ""
+msgstr "Motivul indicat este: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:106622
 #, javascript-format
 msgid "This action was done by %1$s."
-msgstr ""
+msgstr "Această acțiune a fost realizată de către %1$s."
 
 #: dist/converse-no-dependencies.js:106626
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
-msgstr ""
+msgstr "Motivul indicat este: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:106746
 msgid "Loading configuration form"
@@ -1944,12 +2093,14 @@ msgid "Configure %1$s"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:107195
+#, fuzzy
 msgid "Sorry, an error occurred while trying to submit the config form."
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #: dist/converse-no-dependencies.js:107222
+#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
-msgstr ""
+msgstr "Din păcate, s-a produs o eroare în timpul rulării comenzii."
 
 #: dist/converse-no-dependencies.js:107223
 #: dist/converse-no-dependencies.js:111181
@@ -1965,8 +2116,9 @@ msgid "Topic author"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:107471
+#, fuzzy
 msgid "XMPP address"
-msgstr ""
+msgstr "Adresa grupului de discuții"
 
 #: dist/converse-no-dependencies.js:107472
 msgid "Message archiving"
@@ -1978,12 +2130,12 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:107474
 msgid "Description"
-msgstr ""
+msgstr "Descriere"
 
 #: dist/converse-no-dependencies.js:107476
 #: dist/converse-no-dependencies.js:123364
 msgid "Hidden"
-msgstr ""
+msgstr "Ascuns"
 
 #: dist/converse-no-dependencies.js:107477
 msgid "This groupchat is not publicly searchable"
@@ -1995,12 +2147,12 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:107479
 msgid "Members only"
-msgstr ""
+msgstr "Doar pentru membrii"
 
 #: dist/converse-no-dependencies.js:107480
 #: dist/converse-no-dependencies.js:123366
 msgid "Moderated"
-msgstr ""
+msgstr "Moderat"
 
 #: dist/converse-no-dependencies.js:107481
 msgid ""
@@ -2013,7 +2165,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:107484
 msgid "No password required"
-msgstr ""
+msgstr "Nu este necesară o parolă"
 
 #: dist/converse-no-dependencies.js:107485
 msgid "Not anonymous"
@@ -2033,12 +2185,12 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:107489
 msgid "Online users"
-msgstr ""
+msgstr "Utilizatori conectați"
 
 #: dist/converse-no-dependencies.js:107490
 #: dist/converse-no-dependencies.js:123368
 msgid "Open"
-msgstr ""
+msgstr "Deschis"
 
 #: dist/converse-no-dependencies.js:107491
 msgid "Anyone can join this groupchat"
@@ -2054,7 +2206,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:107494
 msgid "Persistent"
-msgstr ""
+msgstr "Persistent"
 
 #: dist/converse-no-dependencies.js:107495
 msgid "This groupchat persists even if it's unoccupied"
@@ -2063,7 +2215,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107496
 #: dist/converse-no-dependencies.js:123370
 msgid "Public"
-msgstr ""
+msgstr "Public"
 
 #: dist/converse-no-dependencies.js:107497
 msgid "This groupchat is publicly searchable"
@@ -2072,7 +2224,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107498
 #: dist/converse-no-dependencies.js:123371
 msgid "Semi-anonymous"
-msgstr ""
+msgstr "Semi-anonim"
 
 #: dist/converse-no-dependencies.js:107499
 msgid "Only moderators can see your XMPP address"
@@ -2081,28 +2233,31 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107500
 #: dist/converse-no-dependencies.js:123372
 msgid "Temporary"
-msgstr ""
+msgstr "Temporar"
 
 #: dist/converse-no-dependencies.js:107501
 msgid "This groupchat will disappear once the last person leaves"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:107672
+#, fuzzy
 msgid "Groupchat info"
-msgstr ""
+msgstr "Grupuri de discuții găsite"
 
 #: dist/converse-no-dependencies.js:108090
+#, fuzzy
 msgid "Hide the groupchat topic"
-msgstr ""
+msgstr "Micșorează această casetă de discuție"
 
 #: dist/converse-no-dependencies.js:108093
 #: dist/converse-no-dependencies.js:123463
 msgid "Show more information on this groupchat"
-msgstr ""
+msgstr "Arată mai multe informații despre acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:108498
+#, fuzzy
 msgid "Show more information about this groupchat"
-msgstr ""
+msgstr "Arată mai multe informații despre acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:108508
 msgid "Configure"
@@ -2110,15 +2265,17 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:108509
 msgid "Configure this groupchat"
-msgstr ""
+msgstr "Configurați acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:108520
+#, fuzzy
 msgid "Change the nickname you're using in this groupchat"
-msgstr ""
+msgstr "Înregistrați un pseudonim pentru aceast grup de discuții"
 
 #: dist/converse-no-dependencies.js:108531
+#, fuzzy
 msgid "Show topic"
-msgstr ""
+msgstr "Arată grupurile de discuții"
 
 #: dist/converse-no-dependencies.js:108531
 msgid "Hide topic"
@@ -2133,28 +2290,34 @@ msgid "Hide the topic in the heading"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:108542
+#, fuzzy
 msgid "Show participants"
-msgstr ""
+msgstr "Participanți"
 
 #: dist/converse-no-dependencies.js:108542
+#, fuzzy
 msgid "Hide participants"
-msgstr ""
+msgstr "Participanți"
 
 #: dist/converse-no-dependencies.js:108543
+#, fuzzy
 msgid "Show the groupchat participants"
-msgstr ""
+msgstr "Participanți"
 
 #: dist/converse-no-dependencies.js:108543
+#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr ""
+msgstr "Micșorează această casetă de discuție"
 
 #: dist/converse-no-dependencies.js:108554
+#, fuzzy
 msgid "Moderate"
-msgstr ""
+msgstr "Moderat"
 
 #: dist/converse-no-dependencies.js:108555
+#, fuzzy
 msgid "Moderate this groupchat"
-msgstr ""
+msgstr "Părăsiți acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:108566
 msgid "Destroy"
@@ -2165,69 +2328,72 @@ msgid "Leave"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:108580
+#, fuzzy
 msgid "Leave and close this groupchat"
-msgstr ""
+msgstr "Părăsiți acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:108589
+#, fuzzy
 msgid "Are you sure you want to leave this groupchat?"
-msgstr ""
+msgstr "Sunteți sigur că doriți să eliminați acest contact?"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:108658
 msgid "This groupchat requires a password"
-msgstr ""
+msgstr "Intrarea în acest grup de discuții este pe bază de parolă"
 
 #: dist/converse-no-dependencies.js:108659
 msgid "Password: "
-msgstr ""
+msgstr "Parolă "
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:108660
 #: dist/converse-no-dependencies.js:110067
 msgid "Submit"
-msgstr ""
+msgstr "Trimite"
 
 #: dist/converse-no-dependencies.js:109777
 msgid "has gone offline"
-msgstr ""
+msgstr "s-a deconectat"
 
 #: dist/converse-no-dependencies.js:109779
 msgid "has gone away"
-msgstr ""
+msgstr "a plecat"
 
 #: dist/converse-no-dependencies.js:109781
 msgid "is busy"
-msgstr ""
+msgstr "e ocupat"
 
 #: dist/converse-no-dependencies.js:109783
 msgid "has come online"
-msgstr ""
+msgstr "s-a conectat"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:109815
 #: dist/converse-no-dependencies.js:109821
 #, javascript-format
 msgid "Notification from %1$s"
-msgstr ""
+msgstr "Notificare de la %1$s"
 
 #: dist/converse-no-dependencies.js:109823
 #: dist/converse-no-dependencies.js:109831
 #: dist/converse-no-dependencies.js:109834
 #, javascript-format
 msgid "%1$s says"
-msgstr ""
+msgstr "%1$s spune"
 
 #: dist/converse-no-dependencies.js:109943
 msgid "wants to be your contact"
-msgstr ""
+msgstr "vrea să fie contactul dumneavoastră"
 
 #: dist/converse-no-dependencies.js:110068
 msgid "The new passwords must match"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:110069
+#, fuzzy
 msgid "New password"
-msgstr ""
+msgstr "parolă"
 
 #: dist/converse-no-dependencies.js:110070
 msgid "Confirm new password"
@@ -2247,8 +2413,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:110368
+#, fuzzy
 msgid "Timeout error while trying to set your password"
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #: dist/converse-no-dependencies.js:110370
 msgid "Your server does not allow password reset"
@@ -2256,12 +2423,14 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:110372
 #: dist/converse-no-dependencies.js:110374
+#, fuzzy
 msgid "You are not allowed to change your password"
-msgstr ""
+msgstr "Nu aveți permisiunea de a crea noi grupuri de discuții."
 
 #: dist/converse-no-dependencies.js:110377
+#, fuzzy
 msgid "Your new password has been set"
-msgstr ""
+msgstr "O nouă discuție de grup a fost creată"
 
 #. *
 #. * @param {import('../modals/profile').default} el
@@ -2305,8 +2474,9 @@ msgid "Personal status message"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:110539
+#, fuzzy
 msgid "Clear status message"
-msgstr ""
+msgstr "Șterge toate mesajele"
 
 #: dist/converse-no-dependencies.js:110760
 msgid "Save and close"
@@ -2323,8 +2493,9 @@ msgid "Status"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:110766
+#, fuzzy
 msgid "Reset Password"
-msgstr ""
+msgstr "Parolă"
 
 #: dist/converse-no-dependencies.js:111128
 msgid "Your Profile"
@@ -2384,7 +2555,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:111730
 msgid "Click to change your chat status"
-msgstr ""
+msgstr "Faceți click pentru a vă schimba mesajul de stare"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:111954
@@ -2398,6 +2569,8 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
+"Din păcate nu putem trimite un mesaj criptat pentru că %1$s cere ca dvs. să "
+"fiți abonaț la prezența lor pentru a putea vedea informațiile lor OMEMO"
 
 #: dist/converse-no-dependencies.js:113203
 #, javascript-format
@@ -2405,6 +2578,8 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
+"Ne pare rău, nu putem trimite un mesaj criptat pentru că serverul la "
+"distanță al lui %1$s nu poate fi găsit"
 
 #: dist/converse-no-dependencies.js:113205
 msgid "Unable to send an encrypted message due to an unexpected error."
@@ -2423,14 +2598,15 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:113789
+#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
-msgstr ""
+msgstr "Din păcate, din cauza unei erori nu s-a putut decripta un mesaj OMEMO."
 
 #: dist/converse-no-dependencies.js:113861
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
-msgstr ""
+msgstr "Din păcate, din cauza unei erori nu s-a putut decripta un mesaj OMEMO."
 
 #: dist/converse-no-dependencies.js:114618
 #, javascript-format
@@ -2545,6 +2721,9 @@ msgid ""
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
+"Sunteți sigur că vreți să generați noi chei OMEMO? Acest lucru va șterge "
+"vechile dvs. chei iar toate mesajele criptate anterior nu vor mai putea fi "
+"decriptate pe acest dispozitiv."
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:120948
@@ -2644,7 +2823,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:122659
 msgid "This field is required"
-msgstr ""
+msgstr "Acest câmp este obligatoriu"
 
 #. *
 #. * @param {import('../add-muc.js').default} el
@@ -2656,19 +2835,21 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:122668
 msgid "Groupchat name"
-msgstr ""
+msgstr "Numele grupului de discuții"
 
 #: dist/converse-no-dependencies.js:122670
+#, fuzzy
 msgid "Groupchat name or address"
-msgstr ""
+msgstr "Adresa grupului de discuții"
 
 #: dist/converse-no-dependencies.js:123021
 msgid "Enter a new Groupchat"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:123138
+#, fuzzy
 msgid "Invalid groupchat address, it cannot be empty."
-msgstr ""
+msgstr "Acest grup de discuții nu există (încă)."
 
 #: dist/converse-no-dependencies.js:123145
 msgid "Invalid groupchat address, a forward slash is not allowed."
@@ -2689,93 +2870,97 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:123189
+#, fuzzy
 msgid "Groupchat id is invalid."
-msgstr ""
+msgstr "Jurnalul acestui grup de discuții este acum activat"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:123359
 msgid "Description:"
-msgstr ""
+msgstr "Descriere:"
 
 #: dist/converse-no-dependencies.js:123360
+#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr ""
+msgstr "Adresa grupului de discuții"
 
 #: dist/converse-no-dependencies.js:123361
 msgid "Participants:"
-msgstr ""
+msgstr "Participanți:"
 
 #: dist/converse-no-dependencies.js:123362
 msgid "Features:"
-msgstr ""
+msgstr "Caracteristici:"
 
 #: dist/converse-no-dependencies.js:123363
 msgid "Requires authentication"
-msgstr ""
+msgstr "Este nevoie de autentificare"
 
 #: dist/converse-no-dependencies.js:123365
 msgid "Requires an invitation"
-msgstr ""
+msgstr "Este nevoie de o invitație"
 
 #: dist/converse-no-dependencies.js:123367
 msgid "Non-anonymous"
-msgstr ""
+msgstr "Fără anonimitate"
 
 #: dist/converse-no-dependencies.js:123369
 msgid "Permanent"
-msgstr ""
+msgstr "Permanent"
 
 #: dist/converse-no-dependencies.js:123373
 msgid "Unmoderated"
-msgstr ""
+msgstr "Nemoderat"
 
 #: dist/converse-no-dependencies.js:123458
 msgid "Show groupchats"
-msgstr ""
+msgstr "Arată grupurile de discuții"
 
 #: dist/converse-no-dependencies.js:123459
 msgid "Server address"
-msgstr ""
+msgstr "Adresa serverului"
 
 #: dist/converse-no-dependencies.js:123659
 msgid "conference.example.org"
-msgstr ""
+msgstr "chat.exemplu.org"
 
 #: dist/converse-no-dependencies.js:123680
 msgid "Query for Groupchats"
-msgstr ""
+msgstr "Căutați un grup de discuții"
 
 #: dist/converse-no-dependencies.js:123725
 msgid "Groupchats found"
-msgstr ""
+msgstr "Grupuri de discuții găsite"
 
 #: dist/converse-no-dependencies.js:123733
 msgid "No groupchats found"
-msgstr ""
+msgstr "Nu s-au găsit grupuri de discuții"
 
 #: dist/converse-no-dependencies.js:123983
 msgid "Leave this groupchat"
-msgstr ""
+msgstr "Părăsiți acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:123996
+#, fuzzy
 msgid "Click to hide these rooms"
-msgstr ""
+msgstr "Faceți clic pentru a ascunde aceste contacte"
 
 #: dist/converse-no-dependencies.js:124049
 msgid "Click to toggle the list of open groupchats"
-msgstr ""
+msgstr "Faceți clic pentru a comuta lista de discuții de grup deschise"
 
 #: dist/converse-no-dependencies.js:124050
 msgid "Groupchats"
-msgstr ""
+msgstr "Grupuri de discuții"
 
 #: dist/converse-no-dependencies.js:124051
 msgid "Query server"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:124052
+#, fuzzy
 msgid "Add groupchat"
-msgstr ""
+msgstr "Adăugați un nou grup de discuții"
 
 #: dist/converse-no-dependencies.js:124433
 #, javascript-format
@@ -2809,46 +2994,49 @@ msgstr ""
 #: dist/converse-no-dependencies.js:125216
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr ""
+msgstr "Faceți click pentru a elimina %1$s din lista de persoane de contact"
 
 #: dist/converse-no-dependencies.js:125225
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to show more details about %1$s"
-msgstr ""
+msgstr "Arată mai multe informații despre acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:125253
+#, fuzzy
 msgid "Click to chat with yourself"
-msgstr ""
+msgstr "Faceți clic pentru a discuta cu dvs."
 
 #: dist/converse-no-dependencies.js:125253
 #: dist/converse-no-dependencies.js:125345
 #: dist/converse-no-dependencies.js:125457
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to chat with %1$s (XMPP address: %2$s)"
-msgstr ""
+msgstr "Faceți click pentru a discuta cu %1$s (JID: %2$s)"
 
 #: dist/converse-no-dependencies.js:125343
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to accept the contact request from %1$s (XMPP address: %2$s)"
-msgstr ""
+msgstr "Faceți clic pentru a accepta solicitarea de contact de la %1$s"
 
 #: dist/converse-no-dependencies.js:125344
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to decline the contact request from %1$s (XMPP address: %2$s)"
-msgstr ""
+msgstr "Faceți click pentru a refuza solicitarea de contact de la %1$s"
 
 #: dist/converse-no-dependencies.js:125349
+#, fuzzy
 msgid "Accept as contact"
-msgstr ""
+msgstr "Contacte"
 
 #: dist/converse-no-dependencies.js:125445
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to add %1$s as a contact"
-msgstr ""
+msgstr "Faceți click pentru a elimina %1$s din lista de persoane de contact"
 
 #: dist/converse-no-dependencies.js:125448
+#, fuzzy
 msgid "Save as contact"
-msgstr ""
+msgstr "Contacte"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2860,8 +3048,9 @@ msgid "Add"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:126062
+#, fuzzy
 msgid "Search name or XMPP address"
-msgstr ""
+msgstr "Adresa grupului de discuții"
 
 #: dist/converse-no-dependencies.js:126357
 msgid "Add a Contact"
@@ -2872,8 +3061,9 @@ msgid "This contact has already been added"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:126396
+#, fuzzy
 msgid "Sorry, something went wrong while adding the contact"
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #: dist/converse-no-dependencies.js:126405
 msgid "Contact added successfully"
@@ -2886,8 +3076,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:126825
+#, fuzzy
 msgid "Sorry, something went wrong while accepting the contact request"
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #: dist/converse-no-dependencies.js:126837
 msgid "Successfully accepted the contact request"
@@ -2898,17 +3089,20 @@ msgstr ""
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:126893
+#, fuzzy
 msgid "Start Chat"
-msgstr ""
+msgstr "Începe un apel"
 
 #: dist/converse-no-dependencies.js:127154
 #: dist/converse-no-dependencies.js:128162
+#, fuzzy
 msgid "Start a new chat"
-msgstr ""
+msgstr "Începe un apel"
 
 #: dist/converse-no-dependencies.js:127202
+#, fuzzy
 msgid "Sorry, something went wrong"
-msgstr ""
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #: dist/converse-no-dependencies.js:127344
 #, javascript-format
@@ -2920,8 +3114,9 @@ msgid "Unblock selected users"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127344
+#, fuzzy
 msgid "Filter blocked users"
-msgstr ""
+msgstr "Arată mai mult"
 
 #: dist/converse-no-dependencies.js:127350
 msgid "clear"
@@ -2932,12 +3127,14 @@ msgid "Select All"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127363
+#, fuzzy
 msgid "No blocked XMPP addresses"
-msgstr ""
+msgstr "Adresa grupului de discuții"
 
 #: dist/converse-no-dependencies.js:127752
+#, fuzzy
 msgid "Blocklist"
-msgstr ""
+msgstr "Contacte"
 
 #: dist/converse-no-dependencies.js:127779
 #, javascript-format
@@ -2945,13 +3142,14 @@ msgid "Successfully unblocked %1$s XMPP addresses"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127779
+#, fuzzy
 msgid "Successfully unblocked one XMPP address"
-msgstr ""
+msgstr "Adresa grupului de discuții"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:127914
 msgid "Click to hide these contacts"
-msgstr ""
+msgstr "Faceți clic pentru a ascunde aceste contacte"
 
 #: dist/converse-no-dependencies.js:127986
 msgid "Filter by contact name"
@@ -2974,29 +3172,32 @@ msgid "Contacts"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:128160
+#, fuzzy
 msgid "Click to toggle contacts"
-msgstr ""
+msgstr "Faceți clic pentru a ascunde aceste contacte"
 
 #: dist/converse-no-dependencies.js:128161
 msgid "Add a contact"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:128163
+#, fuzzy
 msgid "Show block list"
-msgstr ""
+msgstr "Contacte"
 
 #: dist/converse-no-dependencies.js:128199
+#, fuzzy
 msgid "Re-sync contacts"
-msgstr ""
+msgstr "Contacte"
 
 #. *
 #. * @param {import('../approval-alert').default} el
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128625
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s would like to be your contact"
-msgstr ""
+msgstr "vrea să fie contactul dumneavoastră"
 
 #: dist/converse-no-dependencies.js:128627
 msgid "Approve"
@@ -3011,10 +3212,218 @@ msgstr ""
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128662
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Would you like to add %1$s as a contact?"
-msgstr ""
+msgstr "Faceți click pentru a elimina %1$s din lista de persoane de contact"
 
 #: dist/converse-no-dependencies.js:128666
 msgid "Dismiss"
 msgstr ""
+
+#, fuzzy
+#~ msgid "An error occurred while querying for archived messages."
+#~ msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
+
+#~ msgid "Chat Contacts"
+#~ msgstr "Contacte"
+
+#~ msgid "Toggle chat"
+#~ msgstr "Comutare discuție"
+
+#, fuzzy
+#~ msgid "Are you sure you want to block this user?"
+#~ msgstr "Sunteți sigur că doriți să eliminați acest contact?"
+
+#, javascript-format
+#~ msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
+#~ msgstr ""
+#~ "Ne pare rău, nu sa putut face conectarea la gazdă XMPP cu domeniu: %1$s"
+
+#, javascript-format
+#~ msgid "Error: timeout while fetching %1s list for MUC %2s"
+#~ msgstr ""
+#~ "Eroare: conexiune expirată în timpul obținerii listei %1s pentru MUC %2s"
+
+#, javascript-format
+#~ msgid "Error: not allowed to fetch %1s list for MUC %2s"
+#~ msgstr "Eroare: nu se permite obținerea listei %1s pentru MUC %2s"
+
+#, fuzzy, javascript-format
+#~ msgid "Click to add %1$s to your roster"
+#~ msgstr "Faceți clic pentru a adăuga %1$s la lista dvs"
+
+#~ msgid "Error: couldn't register new nickname in members only room"
+#~ msgstr ""
+#~ "Eroare: nu s-a putut înregistra o nouă poreclă în camera doar pentru "
+#~ "membri"
+
+#~ msgid ""
+#~ "Can't register your nickname in this groupchat, it doesn't support "
+#~ "registration."
+#~ msgstr ""
+#~ "Nu vă puteți înregistra porecla în acest grup de discuții, nu acceptă "
+#~ "înregistrarea."
+
+#~ msgid ""
+#~ "Can't register your nickname in this groupchat, invalid data form "
+#~ "supplied."
+#~ msgstr ""
+#~ "Nu vă puteți înregistra porecla în acest grup de discuții, formular "
+#~ "invalid de date furnizat."
+
+#~ msgid "Sorry, something went wrong while trying to save your bookmark."
+#~ msgstr ""
+#~ "Ne pare rău, ceva a mers prost în timp ce se încerca salvarea semnului de "
+#~ "carte."
+
+#~ msgid "OK"
+#~ msgstr "OK"
+
+#~ msgid "Bookmark this groupchat"
+#~ msgstr "Pune un semn de carte pentru acest grup de discuții"
+
+#~ msgid "The name for this bookmark:"
+#~ msgstr "Numele acestui semn de carte:"
+
+#~ msgid "Refresh"
+#~ msgstr "Reînprospătează"
+
+#, javascript-format
+#~ msgid "Sorry, there was an error while trying to remove %1$s as a contact."
+#~ msgstr ""
+#~ "Ne pare rău, a apărut o eroare în timp ce se încerca ștergerea lui %1$s "
+#~ "din lista de contacte."
+
+#, fuzzy
+#~ msgid "This groupchat is bookmarked"
+#~ msgstr "Acest grup de discuții nu este anonim"
+
+#~ msgid "name@conference.example.org"
+#~ msgstr "nume@chat.exemplu.org"
+
+#~ msgid "Minimized"
+#~ msgstr "Micșorată"
+
+#, javascript-format
+#~ msgid "Groupchat info for %1$s"
+#~ msgstr "Informații despre grupul de discuții %1$s"
+
+#~ msgid "Query for groupchats"
+#~ msgstr "Căutați un grup de discuții"
+
+#, fuzzy
+#~ msgid "Show bookmarked groupchats"
+#~ msgstr "Arată grupurile de discuții"
+
+#~ msgid "The connection has dropped, attempting to reconnect."
+#~ msgstr "Conexiunea s-a întrerupt, se încearcă reconectarea."
+
+#, fuzzy
+#~ msgid "Unbookmark"
+#~ msgstr "Semne de carte"
+
+#~ msgid "Click to toggle the bookmarks list"
+#~ msgstr "Clicați pentru a activa lista de semne de carte"
+
+#~ msgid "The explanation given is: \"%1$s\"."
+#~ msgstr "Explicația dată este: \"%1$s\"."
+
+#~ msgid "You have been banned from this groupchat."
+#~ msgstr "ați fost banat din acest grup de discuții."
+
+#~ msgid "Hide the list of participants"
+#~ msgstr "Ascunde lista participanților"
+
+#, fuzzy
+#~ msgid "Encrypted message received"
+#~ msgstr "Mesaj OMEMO recepționat"
+
+#~ msgid "Groupchat Address (JID):"
+#~ msgstr "Adresa grupului de discuții (JID):"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Nu aveți permisiunea de a crea noi grupuri de discuții."
+
+#, fuzzy
+#~ msgid "%1$s has exited the room due to a technical issue"
+#~ msgstr "%1$s a intrat în grupul de discuții"
+
+#, fuzzy
+#~ msgid "Show occupants"
+#~ msgstr "Arată grupurile de discuții"
+
+#~ msgid "Edit this message"
+#~ msgstr "Editează acest mesaj"
+
+#~ msgid "Retract this message"
+#~ msgstr "Retractează acest mesaj"
+
+#~ msgid "Sorry, an error occurred:"
+#~ msgstr "Ne pare rău, a apărut o eroare:"
+
+#~ msgid "Typing from another device"
+#~ msgstr "Tastează de pe un alt dispozitiv"
+
+#~ msgid "Stopped typing on the other device"
+#~ msgstr "S-a oprit din scris de pe un alt dispozitiv"
+
+#~ msgid "Close this chat box"
+#~ msgstr "Închideți această fereastră de chat"
+
+#~ msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
+#~ msgstr "%1$s a ieșit și a revenit în grupul de discuții. %2$s"
+
+#~ msgid "%1$s has left and re-entered the groupchat"
+#~ msgstr "%1$s a ieșit și a revenit în grupul de discuții"
+
+#~ msgid "%1$s has entered and left the groupchat. \"%2$s\""
+#~ msgstr "%1$s a venit și a plecat din grupul de discuții. \"%2$s\""
+
+#~ msgid "%1$s has entered and left the groupchat"
+#~ msgstr "%1$s a venit și a plecat din grupul de discuții"
+
+#~ msgid "%1$s has left the groupchat. \"%2$s\""
+#~ msgstr "%1$s a plecat din grupul de discuții. \"%2$s\""
+
+#~ msgid "Full Name:"
+#~ msgstr "Nume intreg:"
+
+#~ msgid "Email:"
+#~ msgstr "Email:"
+
+#~ msgid "Send"
+#~ msgstr "Trimite"
+
+#~ msgid "Remove this bookmark"
+#~ msgstr "Eliminați acest semn de carte"
+
+#~ msgid ""
+#~ "You are about to invite %1$s to the groupchat \"%2$s\". You may "
+#~ "optionally include a message, explaining the reason for the invitation."
+#~ msgstr ""
+#~ "Sunteți pe cale să-l/-o invitați pe %1$s în grupul de discuții %2$s. "
+#~ "Puteți, la alegere, să-i trimiteți un mesaj prin care să-i explicați "
+#~ "motivul acestei invitații."
+
+#~ msgid "%1$s is no longer a permanent member of this groupchat"
+#~ msgstr "%1$s nu mai este membru permanent al acestui grup de discuții"
+
+#~ msgid "Ban user from groupchat"
+#~ msgstr "Banează utilizatorul din acest grup de discuții"
+
+#~ msgid "Revoke user's membership"
+#~ msgstr "Retrage-i utilizatorului calitatea de membru"
+
+#~ msgid "No nickname was specified."
+#~ msgstr "N-a fost menționat nici un pseudonim."
+
+#~ msgid "Error: the groupchat %1$s does not exist."
+#~ msgstr "Eroare: grupul de discuție %1$s nu există."
+
+#, fuzzy
+#~ msgid "Destroy groupchat"
+#~ msgstr "Părăsește această discuție de grup"
+
+#~ msgid "%1$s is now an "
+#~ msgstr "%1$s este acum un(o) "

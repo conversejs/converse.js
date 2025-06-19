@@ -77,7 +77,7 @@ pot: src/i18n/converse.pot
 
 .PHONY: po
 po:
-	find ./src/i18n -maxdepth 1 -mindepth 1 -type d -exec msgmerge {}/LC_MESSAGES/converse.po ./src/i18n/converse.pot -U \;
+	find ./src/i18n/locales -maxdepth 1 -mindepth 1 -type d -exec msgmerge {}/LC_MESSAGES/converse.po ./src/i18n/converse.pot -U \;
 
 ########################################################################
 ## Release management

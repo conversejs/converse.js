@@ -3,19 +3,21 @@
 # This file is distributed under the same license as the Converse.js package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Converse.js 11.0.1\n"
+"Project-Id-Version: Converse.js 7.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-19 10:13+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2024-10-10 21:15+0000\n"
+"Last-Translator: scr22ch <much@genocide.fun>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/conversejs/"
+"translations/el/>\n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: dist/converse-no-dependencies.js:16974
 msgid "Could not automatically determine a connection URL"
@@ -24,11 +26,11 @@ msgstr ""
 #: dist/converse-no-dependencies.js:17308
 #: dist/converse-no-dependencies.js:17361
 msgid "An error occurred while connecting to the chat server."
-msgstr ""
+msgstr "Παρουσιάστηκε σφάλμα κατά τη σύνδεση στον διακομιστή συνομιλίας."
 
 #: dist/converse-no-dependencies.js:17368
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "Ο XMPP χρήστης ή ο κωδικός είναι λάθος. Παρακαλώ δοκιμάστε ξανά."
 
 #: dist/converse-no-dependencies.js:17377
 #, javascript-format
@@ -42,18 +44,22 @@ msgstr ""
 #: dist/converse-no-dependencies.js:17381
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
+"Ο διακομιστής XMPP δεν προσέφερε υποστηριζόμενο μηχανισμό ελέγχου ταυτότητας"
 
 #: dist/converse-no-dependencies.js:26803
 msgid "Undecryptable OMEMO message"
-msgstr ""
+msgstr "Μη αποκρυπτογραφήσιμο μήνυμα OMEMO"
 
 #: dist/converse-no-dependencies.js:26893
 msgid "Sorry, could not determine upload URL."
 msgstr ""
+"Λυπούμαστε, δεν ήταν δυνατός ο προσδιορισμός της διεύθυνσης URL μεταφόρτωσης."
 
 #: dist/converse-no-dependencies.js:26910
 msgid "Sorry, could not determine file upload URL."
 msgstr ""
+"Λυπούμαστε, δεν ήταν δυνατός ο προσδιορισμός της διεύθυνσης URL μεταφόρτωσης "
+"αρχείου."
 
 #: dist/converse-no-dependencies.js:26986
 #, javascript-format
@@ -61,40 +67,46 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
 "\"%1$s\""
 msgstr ""
+"Λυπούμαστε, δεν ήταν δυνατή η επιτυχής μεταφόρτωση του αρχείου σας. Η "
+"απάντηση του διακομιστή σας: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:26988
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "Λυπούμαστε, δεν ήταν δυνατή η επιτυχής μεταφόρτωση του αρχείου σας."
 
 #: dist/converse-no-dependencies.js:28221
 #: dist/converse-no-dependencies.js:37790
 #, javascript-format
 msgid "%1$s is typing"
-msgstr ""
+msgstr "Ο/Η%1$s πληκτρολογεί"
 
 #: dist/converse-no-dependencies.js:28223
 #: dist/converse-no-dependencies.js:37792
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr ""
+msgstr "Ο/Η %1$s σταμάτησε να πληκτρολογεί"
 
 #: dist/converse-no-dependencies.js:28225
 #: dist/converse-no-dependencies.js:37794
 #: dist/converse-no-dependencies.js:40307
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr ""
+msgstr "Ο/Η %1$s έχει απομακρυνθεί"
 
 #: dist/converse-no-dependencies.js:28607
 #: dist/converse-no-dependencies.js:28625
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr ""
+"Λυπούμαστε, φαίνεται ότι η μεταφόρτωση αρχείων δεν υποστηρίζεται από τον "
+"διακομιστή σας."
 
 #: dist/converse-no-dependencies.js:28656
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
 msgstr ""
+"Το μέγεθος του αρχείου σας, %1$s, υπερβαίνει το μέγιστο επιτρεπόμενο από τον "
+"διακομιστή σας."
 
 #: dist/converse-no-dependencies.js:28656
 #, javascript-format
@@ -102,102 +114,120 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"Το μέγεθος του αρχείου σας, %1$s, υπερβαίνει το μέγιστο επιτρεπόμενο από τον "
+"διακομιστή σας, το οποίο είναι %2$s."
 
 #: dist/converse-no-dependencies.js:29196
 #: dist/converse-no-dependencies.js:35399
 msgid "You're not allowed to retract your message."
-msgstr ""
+msgstr "Δεν επιτρέπεται να αποσύρετε το μήνυμά σας."
 
 #: dist/converse-no-dependencies.js:29198
 #: dist/converse-no-dependencies.js:35403
 msgid "Sorry, an error occurred while trying to retract your message."
 msgstr ""
+"Λυπούμαστε, παρουσιάστηκε σφάλμα κατά την προσπάθεια απόσυρσης του μηνύματός "
+"σας."
 
 #: dist/converse-no-dependencies.js:29203
 msgid "You're not allowed to send a message."
-msgstr ""
+msgstr "Δεν επιτρέπεται να στείλετε μήνυμα."
 
 #: dist/converse-no-dependencies.js:29205
 #: dist/converse-no-dependencies.js:35412
 msgid "Sorry, an error occurred while trying to send your message."
 msgstr ""
+"Λυπούμαστε, παρουσιάστηκε σφάλμα κατά την προσπάθεια αποστολής του μηνύματός "
+"σας."
 
 #: dist/converse-no-dependencies.js:30383
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Χαμόγελα και συναισθήματα"
 
 #: dist/converse-no-dependencies.js:30384
 msgid "People"
-msgstr ""
+msgstr "Άνθρωποι"
 
 #: dist/converse-no-dependencies.js:30385
 msgid "Activities"
-msgstr ""
+msgstr "Δραστηριότητες"
 
 #: dist/converse-no-dependencies.js:30386
 msgid "Travel"
-msgstr ""
+msgstr "Ταξίδια"
 
 #: dist/converse-no-dependencies.js:30387
 msgid "Objects"
-msgstr ""
+msgstr "Αντικείμενα"
 
 #: dist/converse-no-dependencies.js:30388
 msgid "Animals and nature"
-msgstr ""
+msgstr "Ζώα και φύση"
 
 #: dist/converse-no-dependencies.js:30389
 msgid "Food and drink"
-msgstr ""
+msgstr "Φαγητό και ποτό"
 
 #: dist/converse-no-dependencies.js:30390
 msgid "Symbols"
-msgstr ""
+msgstr "Σύμβολα"
 
 #: dist/converse-no-dependencies.js:30391
 msgid "Flags"
-msgstr ""
+msgstr "Σημαίες"
 
 #: dist/converse-no-dependencies.js:30392
 msgid "Stickers"
-msgstr ""
+msgstr "Αυτοκόλλητα"
 
 #: dist/converse-no-dependencies.js:35401
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
 msgstr ""
+"Η απόσυρσή σας δεν παραδόθηκε επειδή δεν είστε παρόντες στην ομαδική "
+"συνομιλία."
 
 #: dist/converse-no-dependencies.js:35408
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
+"Το μήνυμά σας δεν παραδόθηκε επειδή δεν σας επιτρεπόταν να το στείλετε."
 
 #: dist/converse-no-dependencies.js:35410
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
 msgstr ""
+"Το μήνυμά σας δεν παραδόθηκε επειδή δεν είστε παρόντες στην ομαδική "
+"συνομιλία."
 
 #: dist/converse-no-dependencies.js:35753
+#, fuzzy
 msgid "A timeout happened while trying to retract your message."
-msgstr ""
+msgstr "Έληξε το χρονικό όριο κατά την προσπάθεια απόσυρσης του μηνύματός σας."
 
 #: dist/converse-no-dependencies.js:36523
 msgid "Sorry, an error happened while running the command."
-msgstr ""
+msgstr "Λυπούμαστε, παρουσιάστηκε σφάλμα κατά την εκτέλεση της εντολής."
 
 #: dist/converse-no-dependencies.js:36523
 #: dist/converse-no-dependencies.js:107195
 msgid "Check your browser's developer console for details."
 msgstr ""
+"Ελέγξτε την κονσόλα προγραμματιστή του προγράμματος περιήγησής σας για "
+"λεπτομέρειες."
 
 #: dist/converse-no-dependencies.js:36543
 #: dist/converse-no-dependencies.js:36561
 msgid "Error: couldn't find a groupchat participant based on your arguments"
 msgstr ""
+"Σφάλμα: δεν ήταν δυνατή η εύρεση ενός συμμετέχοντος ομαδικής συνομιλίας με "
+"βάση τα ορίσματά σας"
 
 #: dist/converse-no-dependencies.js:36551
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
+"Σφάλμα: βρέθηκε πολλαπλός συμμετέχων ομαδικής συνομιλίας με βάση τα ορίσματά "
+"σας"
 
 #: dist/converse-no-dependencies.js:36576
 #, javascript-format
@@ -205,397 +235,422 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
+"Σφάλμα: η εντολή \"%1$s\" λαμβάνει δύο ορίσματα, το ψευδώνυμο του χρήστη και "
+"προαιρετικά έναν λόγο."
 
 #: dist/converse-no-dependencies.js:36661
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr ""
+msgstr "Απαγορεύεται: δεν έχετε την απαραίτητη υπαγωγή για να το κάνετε αυτό."
 
 #: dist/converse-no-dependencies.js:36692
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "Απαγορεύεται: δεν έχετε τον απαραίτητο ρόλο για να το κάνετε αυτό."
 
 #: dist/converse-no-dependencies.js:37041
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr ""
+msgstr "Δεν επιτρέπεται να εγγραφείτε σε αυτήν την ομαδική συνομιλία."
 
 #: dist/converse-no-dependencies.js:37043
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
+"Δεν επιτρέπεται να εγγραφείτε σε αυτήν την ομαδική συνομιλία επειδή είναι "
+"μόνο για μέλη."
 
 #: dist/converse-no-dependencies.js:37377
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr ""
+msgstr "Το θέμα ορίστηκε από τον/την %1$s"
 
 #: dist/converse-no-dependencies.js:37377
 #, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr ""
+msgstr "Το θέμα εκκαθαρίστηκε από τον/την %1$s"
 
 #: dist/converse-no-dependencies.js:37796
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr ""
+msgstr "Ο/Η %1$s εισήλθε στην ομαδική συνομιλία"
 
 #: dist/converse-no-dependencies.js:37798
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr ""
+msgstr "Ο/Η %1$s αποχώρησε από την ομαδική συνομιλία"
 
 #: dist/converse-no-dependencies.js:37800
 #, javascript-format
 msgid "%1$s is now a moderator"
-msgstr ""
+msgstr "Ο/Η %1$s είναι πλέον συντονιστής"
 
 #: dist/converse-no-dependencies.js:37802
 #, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr ""
+msgstr "Ο/Η %1$s δεν είναι πλέον συντονιστής"
 
 #: dist/converse-no-dependencies.js:37804
 #, javascript-format
 msgid "%1$s has been given a voice"
-msgstr ""
+msgstr "Ο/Η %1$s έχει αποκτήσει φωνή"
 
 #: dist/converse-no-dependencies.js:37806
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr ""
+msgstr "Ο/Η %1$s έχει τεθεί σε σίγαση"
 
 #: dist/converse-no-dependencies.js:37814
 #, javascript-format
 msgid "%1$s and %2$s"
-msgstr ""
+msgstr "%1$s και %2$s"
 
 #: dist/converse-no-dependencies.js:37817
 #, javascript-format
 msgid "%1$s are typing"
-msgstr ""
+msgstr "Οι %1$s πληκτρολογούν"
 
 #: dist/converse-no-dependencies.js:37819
 #, javascript-format
 msgid "%1$s have stopped typing"
-msgstr ""
+msgstr "Οι %1$s σταμάτησαν να πληκτρολογούν"
 
 #: dist/converse-no-dependencies.js:37821
 #, javascript-format
 msgid "%1$s have gone away"
-msgstr ""
+msgstr "Οι %1$s έχουν απομακρυνθεί"
 
 #: dist/converse-no-dependencies.js:37823
 #, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr ""
+msgstr "Οι %1$s εισήλθαν στην ομαδική συνομιλία"
 
 #: dist/converse-no-dependencies.js:37825
 #, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr ""
+msgstr "Οι %1$s αποχώρησαν από την ομαδική συνομιλία"
 
 #: dist/converse-no-dependencies.js:37827
 #, javascript-format
 msgid "%1$s are now moderators"
-msgstr ""
+msgstr "Οι %1$s είναι πλέον συντονιστές"
 
 #: dist/converse-no-dependencies.js:37829
 #, javascript-format
 msgid "%1$s are no longer moderators"
-msgstr ""
+msgstr "Οι %1$s δεν είναι πλέον συντονιστές"
 
 #: dist/converse-no-dependencies.js:37831
 #, javascript-format
 msgid "%1$s have been given voices"
-msgstr ""
+msgstr "Δώθηκαν φωνές στους %1$s"
 
 #: dist/converse-no-dependencies.js:37833
 #, javascript-format
 msgid "%1$s have been muted"
-msgstr ""
+msgstr "Οι %1$s έχουν τεθεί σε σίγαση"
 
 #: dist/converse-no-dependencies.js:38183
 #, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr ""
+msgstr "Ο/Η %1$s έχουν αποκλειστεί από τον/την %2$s"
 
 #: dist/converse-no-dependencies.js:38183
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr ""
+msgstr "Ο/Η %1$s έχει αποκλειστεί"
 
 #: dist/converse-no-dependencies.js:38185
 #, javascript-format
 msgid "%1$s's nickname has changed"
-msgstr ""
+msgstr "Το ψευδώνυμο του %1$s άλλαξε"
 
 #: dist/converse-no-dependencies.js:38187
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr ""
+msgstr "Ο/Η %1$s έχει αποβληθεί από τον/την %2$s"
 
 #: dist/converse-no-dependencies.js:38187
 #, javascript-format
 msgid "%1$s has been kicked out"
-msgstr ""
+msgstr "Ο/Η %1$s έχει αποβληθεί"
 
 #: dist/converse-no-dependencies.js:38189
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr ""
+msgstr "Ο/Η %1$s αφαιρέθηκε λόγω αλλαγής υπαγωγής"
 
 #: dist/converse-no-dependencies.js:38191
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr ""
+msgstr "Ο/Η %1$s έχει αφαιρεθεί επειδή δεν είναι μέλος"
 
 #: dist/converse-no-dependencies.js:38214
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr ""
+msgstr "Ο/Η %1$s δεν είναι πλέον διαχειριστής αυτής της ομαδικής συνομιλίας"
 
 #: dist/converse-no-dependencies.js:38219
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr ""
+msgstr "Ο/Η %1$s δεν είναι πλέον κάτοχος αυτής της ομαδικής συνομιλίας"
 
 #: dist/converse-no-dependencies.js:38224
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
 msgstr ""
+"Ο/Η %1$s δεν είναι πλέον αποκλεισμέν-ος/η από αυτήν την ομαδική συνομιλία"
 
 #: dist/converse-no-dependencies.js:38230
 #, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
-msgstr ""
+msgstr "Ο/Η %1$s δεν είναι πλέον μέλος αυτής της ομαδικής συνομιλίας"
 
 #: dist/converse-no-dependencies.js:38236
 #, javascript-format
 msgid "%1$s is now a member of this groupchat"
-msgstr ""
+msgstr "Ο/Η %1$s είναι πλέον μέλος αυτής της ομαδικής συνομιλίας"
 
 #: dist/converse-no-dependencies.js:38242
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr ""
+msgstr "Ο/Η %1$s είναι πλέον %2$s αυτής της ομαδικής συνομιλίας"
 
 #: dist/converse-no-dependencies.js:38368
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
+"Το ψευδώνυμο που επιλέξατε είναι δεσμευμένο ή χρησιμοποιείται αυτήν τη "
+"στιγμή, επιλέξτε διαφορετικό."
 
 #: dist/converse-no-dependencies.js:38394
 msgid "Password incorrect"
-msgstr ""
+msgstr "Λάθος κωδικός"
 
 #: dist/converse-no-dependencies.js:38401
 msgid "You are not on the member list of this groupchat."
-msgstr ""
+msgstr "Δεν είστε στη λίστα μελών αυτής της ομαδικής συνομιλίας."
 
 #: dist/converse-no-dependencies.js:38409
 msgid "You are not allowed to create new groupchats."
-msgstr ""
+msgstr "Δεν επιτρέπεται να δημιουργήσετε νέες ομαδικές συνομιλίες."
 
 #: dist/converse-no-dependencies.js:38412
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr ""
+"Το ψευδώνυμό σας δεν συμμορφώνεται με τις πολιτικές αυτής της ομαδικής "
+"συνομιλίας."
 
 #: dist/converse-no-dependencies.js:38427
 msgid "This groupchat does not (yet) exist."
-msgstr ""
+msgstr "Αυτή η ομαδική συνομιλία δεν υπάρχει (ακόμα)."
 
 #: dist/converse-no-dependencies.js:38430
 msgid "This groupchat has reached its maximum number of participants."
-msgstr ""
+msgstr "Αυτή η ομαδική συνομιλία έχει φτάσει τον μέγιστο αριθμό συμμετεχόντων."
 
 #: dist/converse-no-dependencies.js:38433
 msgid "Remote server not found"
-msgstr ""
+msgstr "Ο απομακρυσμένος διακομιστής δεν βρέθηκε"
 
 #: dist/converse-no-dependencies.js:38436
 msgid "You're not allowed to enter this groupchat"
-msgstr ""
+msgstr "Δεν σας επιτρέπεται η είσοδος σε αυτήν την ομαδική συνομιλία"
 
 #: dist/converse-no-dependencies.js:38439
 msgid "An error happened while trying to enter this groupchat"
 msgstr ""
+"Παρουσιάστηκε σφάλμα κατά την προσπάθεια εισόδου σε αυτήν την ομαδική "
+"συνομιλία"
 
 #: dist/converse-no-dependencies.js:40305
 #, javascript-format
 msgid "%1$s has gone offline"
-msgstr ""
+msgstr "Ο/Η %1$s είναι εκτός σύνδεσης"
 
 #: dist/converse-no-dependencies.js:40309
 #, javascript-format
 msgid "%1$s is busy"
-msgstr ""
+msgstr "Ο/Η %1$s είναι απασχολημέν-ος/η"
 
 #: dist/converse-no-dependencies.js:40311
 #, javascript-format
 msgid "%1$s is online"
-msgstr ""
+msgstr "Ο/Η %1$s είναι συνδεδεμέν-ος/η"
 
 #: dist/converse-no-dependencies.js:43777
 msgid "This groupchat is not anonymous"
-msgstr ""
+msgstr "Αυτή η ομαδική συνομιλία δεν είναι ανώνυμη"
 
 #: dist/converse-no-dependencies.js:43778
 msgid "This groupchat now shows unavailable members"
-msgstr ""
+msgstr "Αυτή η ομαδική συνομιλία εμφανίζει πλέον μη διαθέσιμα μέλη"
 
 #: dist/converse-no-dependencies.js:43779
 msgid "This groupchat does not show unavailable members"
-msgstr ""
+msgstr "Αυτή η ομαδική συνομιλία δεν εμφανίζει μη διαθέσιμα μέλη"
 
 #: dist/converse-no-dependencies.js:43780
 msgid "The groupchat configuration has changed"
-msgstr ""
+msgstr "Η διαμόρφωση ομαδικής συνομιλίας άλλαξε"
 
 #: dist/converse-no-dependencies.js:43781
 msgid "Groupchat logging is now enabled"
-msgstr ""
+msgstr "Η καταγραφή ομαδικής συνομιλίας είναι πλέον ενεργοποιημένη"
 
 #: dist/converse-no-dependencies.js:43782
 msgid "Groupchat logging is now disabled"
-msgstr ""
+msgstr "Η καταγραφή ομαδικής συνομιλίας είναι πλέον απενεργοποιημένη"
 
 #: dist/converse-no-dependencies.js:43783
 msgid "This groupchat is now no longer anonymous"
-msgstr ""
+msgstr "Αυτή η ομαδική συνομιλία δεν είναι πλέον ανώνυμη"
 
 #: dist/converse-no-dependencies.js:43784
 msgid "This groupchat is now semi-anonymous"
-msgstr ""
+msgstr "Αυτή η ομαδική συνομιλία είναι πλέον ημι-ανώνυμη"
 
 #: dist/converse-no-dependencies.js:43785
 msgid "This groupchat is now fully-anonymous"
-msgstr ""
+msgstr "Αυτή η ομαδική συνομιλία είναι πλέον πλήρως ανώνυμη"
 
 #: dist/converse-no-dependencies.js:43786
 msgid "A new groupchat has been created"
-msgstr ""
+msgstr "Μια νέα ομαδική συνομιλία δημιουργήθηκε"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:43788
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr ""
+msgstr "Το ψευδώνυμό σας έχει οριστεί αυτόματα σε %1$s"
 
 #: dist/converse-no-dependencies.js:43789
 msgid "You have been banned from this groupchat"
-msgstr ""
+msgstr "Έχετε αποκλειστεί από αυτήν την ομαδική συνομιλία"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:43791
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr ""
+msgstr "Το ψευδώνυμό σας έχει αλλάξει σε %1$s"
 
 #: dist/converse-no-dependencies.js:43792
 msgid "You have been kicked from this groupchat"
-msgstr ""
+msgstr "Έχετε αποβληθεί από αυτήν την ομαδική συνομιλία"
 
 #: dist/converse-no-dependencies.js:43793
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
-msgstr ""
+msgstr "Έχετε αφαιρεθεί από αυτήν την ομαδική συνομιλία λόγω αλλαγής υπαγωγής"
 
 #: dist/converse-no-dependencies.js:43794
+#, fuzzy
 msgid ""
 "You have been removed from this groupchat because it has changed to members-"
 "only and you're not a member"
 msgstr ""
+"Έχετε αφαιρεθεί από αυτήν την ομαδική συνομιλία επειδή έχει αλλάξει σε "
+"ομαδική συνομιλία μόνο για μέλη και δεν είστε μέλος"
 
 #: dist/converse-no-dependencies.js:43795
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
 msgstr ""
+"Έχετε αφαιρεθεί από αυτήν την ομαδική συνομιλία επειδή η υπηρεσία που τη "
+"φιλοξενεί τερματίζεται"
 
 #: dist/converse-no-dependencies.js:43796
 msgid "You have exited this groupchat due to a technical problem"
-msgstr ""
+msgstr "Έχετε βγει από αυτήν την ομαδική συνομιλία λόγω τεχνικού προβλήματος"
 
 #: dist/converse-no-dependencies.js:44577
 msgid "Timeout Error"
-msgstr ""
+msgstr "Σφάλμα λήξης χρονικού ορίου"
 
 #: dist/converse-no-dependencies.js:44578
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"Ο διακομιστής δεν επέστρεψε τους σελιδοδείκτες σας εντός του επιτρεπόμενου "
+"χρόνου. Μπορείτε να φορτώσετε ξανά τη σελίδα για να τα ζητήσετε ξανά."
 
 #: dist/converse-no-dependencies.js:47179
+#, fuzzy
 msgid "You are blocked from sending messages."
-msgstr ""
+msgstr "Δεν επιτρέπεται να στείλετε μήνυμα."
 
 #: dist/converse-no-dependencies.js:48635
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Σημειώθηκε υπέρβαση χρόνου"
 
 #: dist/converse-no-dependencies.js:50933
 msgid "Timeout while trying to fetch archived messages."
 msgstr ""
+"Λήξη χρονικού ορίου κατά την προσπάθεια ανάκτησης αρχειοθετημένων μηνυμάτων."
 
 #: dist/converse-no-dependencies.js:53541
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
 msgstr ""
+"Λυπούμαστε, παρουσιάστηκε σφάλμα κατά την προσπάθεια προσθήκης του/της %1$s "
+"ως επαφής."
 
 #: dist/converse-no-dependencies.js:53809
 msgid "This client does not allow presence subscriptions"
-msgstr ""
+msgstr "Αυτός ο πελάτης δεν επιτρέπει συνδρομές παρουσίας"
 
 #: dist/converse-no-dependencies.js:54931
 msgid "me"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:55361
+#, fuzzy
 msgid "Unsaved contacts"
-msgstr ""
+msgstr "Επαφές σε εκκρεμότητα"
 
 #: dist/converse-no-dependencies.js:55362
 msgid "My contacts"
-msgstr ""
+msgstr "Οι επαφές μου"
 
 #: dist/converse-no-dependencies.js:55363
 msgid "Pending contacts"
-msgstr ""
+msgstr "Επαφές σε εκκρεμότητα"
 
 #: dist/converse-no-dependencies.js:55364
 msgid "Contact requests"
-msgstr ""
+msgstr "Αιτήματα επαφής"
 
 #: dist/converse-no-dependencies.js:55365
 msgid "Ungrouped"
-msgstr ""
+msgstr "Χωρίς ομαδοποίηση"
 
 #: dist/converse-no-dependencies.js:55366
 #: dist/converse-no-dependencies.js:87745
 msgid "New messages"
-msgstr ""
+msgstr "Νέα μηνύματα"
 
 #: dist/converse-no-dependencies.js:65233
 msgid "Menu"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:65623
+#, fuzzy
 msgid "Click to set a new picture"
-msgstr ""
+msgstr "Επιλέχτε για επαναφορά της συνομιλίας"
 
 #: dist/converse-no-dependencies.js:65624
+#, fuzzy
 msgid "Clear picture"
-msgstr ""
+msgstr "Καθαρισμός της περιοχής της συνομιλίας"
 
 #: dist/converse-no-dependencies.js:66168
 msgid "Older versions"
-msgstr ""
+msgstr "Παλαιότερες εκδόσεις"
 
 #: dist/converse-no-dependencies.js:66170
 msgid "No older versions found"
-msgstr ""
+msgstr "Δεν βρέθηκαν παλαιότερες εκδόσεις"
 
 #: dist/converse-no-dependencies.js:66170
 msgid "Current version"
@@ -646,7 +701,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:92235
 #: dist/converse-no-dependencies.js:98445
 msgid "Close"
-msgstr ""
+msgstr "Κλείσιμο"
 
 #: dist/converse-no-dependencies.js:69936
 #: dist/converse-no-dependencies.js:76868
@@ -662,13 +717,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:118639
 #: dist/converse-no-dependencies.js:124433
 msgid "Confirm"
-msgstr ""
+msgstr "Επιβεβαίωση"
 
 #: dist/converse-no-dependencies.js:69936
 #: dist/converse-no-dependencies.js:74724
 #: dist/converse-no-dependencies.js:121132
 msgid "Cancel"
-msgstr ""
+msgstr "Ακύρωση"
 
 #: dist/converse-no-dependencies.js:72730
 msgid "Converse logo"
@@ -676,19 +731,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:74697
 msgid "Execute"
-msgstr ""
+msgstr "Εκτέλεση"
 
 #: dist/converse-no-dependencies.js:74698
 msgid "Previous"
-msgstr ""
+msgstr "Προηγούμενο"
 
 #: dist/converse-no-dependencies.js:74699
 msgid "Next"
-msgstr ""
+msgstr "Επόμενο"
 
 #: dist/converse-no-dependencies.js:74700
 msgid "Complete"
-msgstr ""
+msgstr "Ολοκληρωμένο"
 
 #: dist/converse-no-dependencies.js:74989
 #, javascript-format
@@ -697,7 +752,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:75200
 msgid "Add to Contacts"
-msgstr ""
+msgstr "Προσθήκη επαφής"
 
 #: dist/converse-no-dependencies.js:75214
 #: dist/converse-no-dependencies.js:86406
@@ -706,7 +761,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:110758
 #: dist/converse-no-dependencies.js:122658
 msgid "Nickname"
-msgstr ""
+msgstr "Ψευδώνυμο"
 
 #: dist/converse-no-dependencies.js:75214
 #: dist/converse-no-dependencies.js:77324
@@ -718,84 +773,96 @@ msgstr ""
 #: dist/converse-no-dependencies.js:126508
 #: dist/converse-no-dependencies.js:126894
 msgid "XMPP Address"
-msgstr ""
+msgstr "Διεύθυνση XMPP"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:75214
 #: dist/converse-no-dependencies.js:75762
 msgid "Affiliation"
-msgstr ""
+msgstr "Υπαγωγή"
 
 #: dist/converse-no-dependencies.js:75216
 #: dist/converse-no-dependencies.js:75766
 #: dist/converse-no-dependencies.js:86407
 #: dist/converse-no-dependencies.js:110759
 msgid "Role"
-msgstr ""
+msgstr "Ρόλος"
 
 #: dist/converse-no-dependencies.js:75218
 msgid "Hats"
-msgstr ""
+msgstr "Καπέλα"
 
 #: dist/converse-no-dependencies.js:75218
 msgid "Occupant Id"
-msgstr ""
+msgstr "Αναγνωριστικό κατόχου"
 
 #: dist/converse-no-dependencies.js:75333
 #: dist/converse-no-dependencies.js:76044
 msgid "Affiliation changed"
-msgstr ""
+msgstr "Τα χαρακτηριστικά του χρήστη άλλαξαν"
 
 #: dist/converse-no-dependencies.js:75336
 msgid "role changed"
-msgstr ""
+msgstr "Ο ρόλος άλλαξε"
 
 #: dist/converse-no-dependencies.js:75724
 msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Οι Συντονιστές είναι χρήστες με προνόμια που μπορουν να αλλάζουν ρόλους σε "
+"άλλους χρήστες ( εκτός των Διαχειριστών και των Ιδιοκτητών)."
 
 #: dist/converse-no-dependencies.js:75726
 msgid "The default role, implies that you can read and write messages."
 msgstr ""
+"Ο προεπιλεγμένος ρόλος, εχει δικαίωμα να διαβάζει και να γράφει μηνύματα."
 
 #: dist/converse-no-dependencies.js:75728
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
+"Οι επισκέπτες δεν επιτρέπεται να γράφουν μυνήματα σε ενα συντονιζόμενο "
+"δωμάτιο συζήτησης."
 
 #: dist/converse-no-dependencies.js:75733
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
+"Ιδιοκτήτης ειναί το πιο υψηλό χαρακτηριστικό. Οι Ιδιοκτήτες μπορούν να "
+"αλλάζουν ρόλους και χαρακτηριστικά σε όλους τους άλλους χρήστες."
 
 #: dist/converse-no-dependencies.js:75735
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
+"Ο Διαχειριστής είναι ο 2ος υψηλότερος χαρακτηρισμός. Οι Διαχειριστές μπορούν "
+"να αλλάξουν ρόλους και χαρακρηριστικά σε όλους τους άλλους χρήστες, εκτός "
+"των Ιδιοκτητών."
 
 #: dist/converse-no-dependencies.js:75737
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
 msgstr ""
+"Για να αποκλέισετε έναν χρήστη, θα πρέπει να του αποδώσετε το χαρακτηριστικό "
+"\"outcast\"."
 
 #: dist/converse-no-dependencies.js:75763
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "Δεν βρέθηκαν χρήστες με αυτήν την ιδιότητα."
 
 #: dist/converse-no-dependencies.js:75764
 msgid "No users with that role found."
-msgstr ""
+msgstr "Δεν βρέθηκαν χρήστες με αυτόν τον ρόλο."
 
 #: dist/converse-no-dependencies.js:75765
 msgid "Type here to filter the search results"
-msgstr ""
+msgstr "Πληκτρολογήστε για να φιλτράρετε τα αποτελέσματα"
 
 #: dist/converse-no-dependencies.js:75767
 msgid "Show users"
-msgstr ""
+msgstr "Εμφάνιση χρηστών"
 
 #: dist/converse-no-dependencies.js:75768
 msgid ""
@@ -804,6 +871,11 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"Οι ρόλοι αποδίδονται σε χρήστες ώστε να τους δώσουν ή να τους αφαιρέσουν "
+"συγκεκριμένες δυνατότητες σε μια ομαδικη συζήτηση. Αποδίδονται είτε "
+"προσωρινά είτε απορρέουν από τα χαρακτηριστικα ενός λογαριασμού. Ένας ρόλος "
+"που δεν είναι μόνιμος, είναι ενεργός για όσο διάστημα ο χρήστης συμμετέχει "
+"στην συζήτηση."
 
 #: dist/converse-no-dependencies.js:75769
 msgid ""
@@ -814,29 +886,32 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:76049
 msgid "Role changed"
-msgstr ""
+msgstr "Ο ρόλος άλλαξε"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:76490
 msgid "Moderator Tools"
-msgstr ""
+msgstr "Εργαλεία Συντονιστών"
 
 #: dist/converse-no-dependencies.js:76816
 #: dist/converse-no-dependencies.js:76818
+#, fuzzy
 msgid "Invitation to a groupchat"
-msgstr ""
+msgstr "Προσκάλεστε κάποιον σε αυτήν την συνομιλία"
 
 #: dist/converse-no-dependencies.js:76816
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has invited you to join the groupchat \"%2$s\""
-msgstr ""
+msgstr "Ο/Η %1$s σας προσκάλεσε να συμμετάσχετε σε μια ομαδική συνομιλία: %2$s"
 
 #: dist/converse-no-dependencies.js:76818
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
 "%1$s has invited you to join the groupchat \"%2$s\", and left the following "
 "reason: \"%3$s\""
 msgstr ""
+"Ο/Η %1$s σας προσκάλεσε να συμμετάσχετε σε μια ομαδική συνομιλία: %2$s, και "
+"άφησε τον ακόλουθο λόγο: \"%3$s\""
 
 #: dist/converse-no-dependencies.js:76837
 msgid "Are you sure you want to destroy this groupchat?"
@@ -859,7 +934,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:100912
 #: dist/converse-no-dependencies.js:101331
 msgid "Reason"
-msgstr ""
+msgstr "Αιτία"
 
 #: dist/converse-no-dependencies.js:76854
 msgid "Optional XMPP address for a new groupchat that replaces this one"
@@ -921,7 +996,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:77718
 msgid "An error occurred while trying to fetch the command form"
-msgstr ""
+msgstr "Παρουσιάστηκε σφάλμα κατά την προσπάθεια λήψης της φόρμας εντολής"
 
 #: dist/converse-no-dependencies.js:77808
 msgid ""
@@ -930,8 +1005,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:77821
+#, fuzzy
 msgid "Executing"
-msgstr ""
+msgstr "Εκτέλεση"
 
 #: dist/converse-no-dependencies.js:77825
 #: dist/converse-no-dependencies.js:77830
@@ -939,10 +1015,11 @@ msgid "Completed"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:77871
+#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
-msgstr ""
+msgstr "Παρουσιάστηκε σφάλμα κατά τη σύνδεση στον διακομιστή συνομιλίας."
 
 #: dist/converse-no-dependencies.js:77878
 msgid "Error: unexpected result"
@@ -951,17 +1028,17 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78082
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr ""
+msgstr "Είστε βέβαιοι ότι θέλετε να αφαιρέσετε τον σελιδοδείκτη \"%1$s\";"
 
 #: dist/converse-no-dependencies.js:78149
 msgid "Unbookmark this groupchat"
-msgstr ""
+msgstr "Κατάργηση σελιδοδείκτη αυτής της ομαδικής συνομιλίας"
 
 #: dist/converse-no-dependencies.js:78150
 #: dist/converse-no-dependencies.js:123464
 #: dist/converse-no-dependencies.js:123985
 msgid "Click to open this groupchat"
-msgstr ""
+msgstr "Κάντε κλικ για να ανοίξετε αυτήν την ομαδική συνομιλία"
 
 #. *
 #. * @param {import('../bookmarks-list').default} el
@@ -984,22 +1061,24 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78638
 #: dist/converse-no-dependencies.js:124053
 msgid "Bookmarks"
-msgstr ""
+msgstr "Σελιδοδείκτες"
 
 #: dist/converse-no-dependencies.js:78697
 #, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr ""
+msgstr "Σελιδοδείκτης για \"%1$s\""
 
 #: dist/converse-no-dependencies.js:78698
 msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr ""
+"Θα θέλατε να συμμετέχετε σε αυτή την ομαδική συνομιλία αυτόματα κατά την "
+"εκκίνηση;"
 
 #: dist/converse-no-dependencies.js:78699
 #: dist/converse-no-dependencies.js:125219
 #: dist/converse-no-dependencies.js:125353
 msgid "Remove"
-msgstr ""
+msgstr "Αφαίρεση"
 
 #: dist/converse-no-dependencies.js:78700
 #: dist/converse-no-dependencies.js:86437
@@ -1013,6 +1092,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78701
 msgid "What should your nickname for this groupchat be?"
 msgstr ""
+"Ποιο θα πρέπει να είναι το ψευδώνυμό σας για αυτήν την ομαδική συνομιλία;"
 
 #: dist/converse-no-dependencies.js:78702
 msgid "Password (for a protected groupchat)"
@@ -1027,22 +1107,23 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78704
 #: dist/converse-no-dependencies.js:86437
 msgid "Update"
-msgstr ""
+msgstr "Ενημέρωση"
 
 #: dist/converse-no-dependencies.js:78704
 #: dist/converse-no-dependencies.js:106767
 msgid "Save"
-msgstr ""
+msgstr "Αποθήκευση"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:78999
 msgid "Bookmark"
-msgstr ""
+msgstr "Σελιδοδείκτης"
 
 #: dist/converse-no-dependencies.js:80804
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr ""
+"Έχετε ένα μη απεσταλμένο μήνυμα που θα χαθεί αν συνεχίσετε. Είσαι σίγουροι?"
 
 #: dist/converse-no-dependencies.js:80841
 #: dist/converse-no-dependencies.js:80910
@@ -1050,16 +1131,19 @@ msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
 msgstr ""
+"Λάβετε υπόψη ότι άλλα προγράμματα-πελάτες XMPP/Jabber (και διακομιστές) "
+"ενδέχεται να μην υποστηρίζουν ακόμη αποσύρσεις και ότι αυτό το μήνυμα "
+"ενδέχεται να μην αφαιρεθεί παντού."
 
 #: dist/converse-no-dependencies.js:80843
 #: dist/converse-no-dependencies.js:80916
 #: dist/converse-no-dependencies.js:80949
 msgid "Are you sure you want to retract this message?"
-msgstr ""
+msgstr "Είστε βέβαιοι ότι θέλετε να αποσύρετε αυτό το μήνυμα;"
 
 #: dist/converse-no-dependencies.js:80885
 msgid "A timeout occurred while trying to retract the message"
-msgstr ""
+msgstr "Λήξη χρονικού ορίου κατά την προσπάθεια απόσυρσης του μηνύματος"
 
 #: dist/converse-no-dependencies.js:80886
 #: dist/converse-no-dependencies.js:80890
@@ -1076,55 +1160,57 @@ msgstr ""
 #: dist/converse-no-dependencies.js:114697
 #: dist/converse-no-dependencies.js:118605
 msgid "Error"
-msgstr ""
+msgstr "Σφάλμα"
 
 #: dist/converse-no-dependencies.js:80889
 msgid "Sorry, you're not allowed to retract this message."
-msgstr ""
+msgstr "Λυπούμαστε, δεν επιτρέπεται να αποσύρετε αυτό το μήνυμα."
 
 #: dist/converse-no-dependencies.js:80970
 msgid "You are about to retract this message."
-msgstr ""
+msgstr "Πρόκειται να αποσύρετε αυτό το μήνυμα."
 
 #: dist/converse-no-dependencies.js:80971
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
+"Μπορείτε προαιρετικά να συμπεριλάβετε ένα μήνυμα, που να εξηγεί τον λόγο της "
+"απόσυρσης."
 
 #: dist/converse-no-dependencies.js:80982
 msgid "Message Retraction"
-msgstr ""
+msgstr "Απόσυρση μηνύματος"
 
 #: dist/converse-no-dependencies.js:80982
 msgid "Optional reason"
-msgstr ""
+msgstr "Προαιρετικός λόγος"
 
 #: dist/converse-no-dependencies.js:80994
 msgid "Sorry, you're not allowed to retract this message"
-msgstr ""
+msgstr "Λυπούμαστε, δεν επιτρέπεται να αποσύρετε αυτό το μήνυμα"
 
 #: dist/converse-no-dependencies.js:81110
 msgid "Show media"
-msgstr ""
+msgstr "Εμφάνιση πολυμέσων"
 
 #: dist/converse-no-dependencies.js:81110
 msgid "Hide media"
-msgstr ""
+msgstr "Απόκρυψη πολυμέσων"
 
 #. * @type {MessageActionAttributes}
 #: dist/converse-no-dependencies.js:81176
 msgid "Cancel Editing"
-msgstr ""
+msgstr "Ακύρωση επεξεργασίας"
 
 #: dist/converse-no-dependencies.js:81176
 #: dist/converse-no-dependencies.js:86413
 msgid "Edit"
-msgstr ""
+msgstr "Επεξεργασία"
 
 #: dist/converse-no-dependencies.js:81205
 msgid "Retract"
-msgstr ""
+msgstr "Απόσυρση"
 
 #: dist/converse-no-dependencies.js:81224
 msgid "Copy"
@@ -1136,60 +1222,69 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:81475
 msgid "Image: "
-msgstr ""
+msgstr "Εικόνα: "
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:85054
 msgid "Message versions"
-msgstr ""
+msgstr "Εκδόσεις μηνυμάτων"
 
 #: dist/converse-no-dependencies.js:85268
 msgid "Are you sure you want to remove this contact?"
-msgstr ""
+msgstr "Είστε βέβαιοι ότι θέλετε να καταργήσετε αυτήν την επαφή;"
 
 #: dist/converse-no-dependencies.js:85305
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
 msgstr ""
+"Λυπούμαστε, παρουσιάστηκε σφάλμα κατά την προσπάθεια προσθήκης του/της %1$s "
+"ως επαφής."
 
 #: dist/converse-no-dependencies.js:85337
+#, fuzzy
 msgid "Remove and decline contact request"
-msgstr ""
+msgstr "Αιτήματα επαφής"
 
 #: dist/converse-no-dependencies.js:85338
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Are you sure you want to decline the contact request from %1$s?"
-msgstr ""
+msgstr "Είστε βέβαιοι ότι θέλετε να καταργήσετε αυτήν την επαφή;"
 
 #: dist/converse-no-dependencies.js:85341
+#, fuzzy
 msgid "Also block this user from sending you further messages"
-msgstr ""
+msgstr "Δεν επιτρέπεται να στείλετε μήνυμα."
 
 #: dist/converse-no-dependencies.js:85366
 msgid "Contact request declined and user blocked"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85372
+#, fuzzy
 msgid "Contact request declined"
-msgstr ""
+msgstr "Αιτήματα επαφής"
 
 #: dist/converse-no-dependencies.js:85405
 msgid "Do you want to block this contact, so they cannot send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85446
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
 msgstr ""
+"Λυπούμαστε, παρουσιάστηκε σφάλμα κατά την προσπάθεια προσθήκης του/της %1$s "
+"ως επαφής."
 
 #: dist/converse-no-dependencies.js:85479
 msgid "Do you want to unblock this contact, so they can send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:85511
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
 msgstr ""
+"Λυπούμαστε, παρουσιάστηκε σφάλμα κατά την προσπάθεια αποστολής του μηνύματός "
+"σας."
 
 #: dist/converse-no-dependencies.js:86307
 msgid "Neither of you receive presence updates"
@@ -1212,16 +1307,18 @@ msgid "Remove from blocklist"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:86329
+#, fuzzy
 msgid "Add to blocklist"
-msgstr ""
+msgstr "Προσθήκη επαφής"
 
 #: dist/converse-no-dependencies.js:86337
+#, fuzzy
 msgid "Add as contact"
-msgstr ""
+msgstr "Προσθήκη επαφής"
 
 #: dist/converse-no-dependencies.js:86345
 msgid "Remove as contact"
-msgstr ""
+msgstr "Κατάργηση επαφής"
 
 #: dist/converse-no-dependencies.js:86353
 #: dist/converse-no-dependencies.js:126504
@@ -1235,17 +1332,17 @@ msgstr ""
 #: dist/converse-no-dependencies.js:86404
 #: dist/converse-no-dependencies.js:110755
 msgid "Email"
-msgstr ""
+msgstr "Ηλεκτρονικό ταχυδρομείο"
 
 #: dist/converse-no-dependencies.js:86405
 #: dist/converse-no-dependencies.js:110756
 msgid "Full Name"
-msgstr ""
+msgstr "Πλήρες όνομα"
 
 #: dist/converse-no-dependencies.js:86408
 #: dist/converse-no-dependencies.js:110762
 msgid "URL"
-msgstr ""
+msgstr "Διαδικτυακός Σύνδεσμος"
 
 #: dist/converse-no-dependencies.js:86409
 #: dist/converse-no-dependencies.js:126057
@@ -1275,20 +1372,22 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:86433
 #: dist/converse-no-dependencies.js:126775
+#, fuzzy
 msgid "Contact Request"
-msgstr ""
+msgstr "Αιτήματα επαφής"
 
 #: dist/converse-no-dependencies.js:87008
 msgid "Uploading file:"
-msgstr ""
+msgstr "Μεταφόρτωση αρχείου:"
 
 #: dist/converse-no-dependencies.js:87081
 msgid "Retry"
-msgstr ""
+msgstr "Επανάληψη"
 
 #: dist/converse-no-dependencies.js:87883
+#, fuzzy
 msgid "This message has been edited"
-msgstr ""
+msgstr "Αυτό το μήνυμα έχει επεξεργαστεί"
 
 #. *
 #. * @param {import('../message').default} el
@@ -1296,105 +1395,111 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:87892
 msgid "Show more"
-msgstr ""
+msgstr "Εμφάνιση περισσότερων"
 
 #: dist/converse-no-dependencies.js:87894
 msgid "Show less"
-msgstr ""
+msgstr "Εμφάνιση λιγότερων"
 
 #: dist/converse-no-dependencies.js:87896
+#, fuzzy
 msgid "Message delivery failed."
-msgstr ""
+msgstr "Εκδόσεις μηνυμάτων"
 
 #: dist/converse-no-dependencies.js:88528
+#, fuzzy
 msgid "A moderator"
-msgstr ""
+msgstr "Συντονιστής"
 
 #: dist/converse-no-dependencies.js:88529
 #: dist/converse-no-dependencies.js:88531
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has removed a message"
-msgstr ""
+msgstr "Ο/Η %1$s έχει αφαιρέσει αυτό το μήνυμα"
 
 #: dist/converse-no-dependencies.js:88531
+#, fuzzy
 msgid "You have removed a message"
-msgstr ""
+msgstr "Έχετε μη αναγνωσμένα μηνύματα"
 
 #: dist/converse-no-dependencies.js:89744
 msgid "Search results"
-msgstr ""
+msgstr "Αποτελέσματα αναζήτησης"
 
 #: dist/converse-no-dependencies.js:89773
 msgid "Search"
-msgstr ""
+msgstr "Αναζήτηση"
 
 #: dist/converse-no-dependencies.js:90383
 msgid "Insert emojis"
-msgstr ""
+msgstr "Εισαγωγή εικονιδίων"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:91050
 msgid "Message characters remaining"
-msgstr ""
+msgstr "Υπολειπόμενοι χαρακτήρες μηνύματος"
 
 #: dist/converse-no-dependencies.js:91262
 msgid "Send the message"
-msgstr ""
+msgstr "Αποστολή του μηνύματος"
 
 #: dist/converse-no-dependencies.js:91539
 msgid "Start a call"
-msgstr ""
+msgstr "Έναρξη μιας κλήσης"
 
 #: dist/converse-no-dependencies.js:91569
 msgid "Choose a file to send"
-msgstr ""
+msgstr "Επιλέξτε ένα αρχείο προς αποστολή"
 
 #: dist/converse-no-dependencies.js:91586
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr ""
+msgstr "Κάντε κλικ για να γράψετε κανονικό μήνυμα (χωρίς διαρροές - spoiler)"
 
 #: dist/converse-no-dependencies.js:91588
 msgid "Click to write your message as a spoiler"
-msgstr ""
+msgstr "Επιλέχτε για να γράψετε το μήνυμά σας ως μήνυμα με διαρροές - spoiler"
 
 #: dist/converse-no-dependencies.js:91788
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "Η εικόνα προφίλ χρήστη"
 
 #: dist/converse-no-dependencies.js:92124
 #: dist/converse-no-dependencies.js:108497
 #: dist/converse-no-dependencies.js:125228
 msgid "Details"
-msgstr ""
+msgstr "Λεπτομέριες"
 
 #: dist/converse-no-dependencies.js:92125
 msgid "See more information about this person"
-msgstr ""
+msgstr "Δείτε περισσότερες πληροφορίες για αυτό το άτομο"
 
 #: dist/converse-no-dependencies.js:92167
 msgid "Unblock user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92168
+#, fuzzy
 msgid "Are you sure you want to unblock this user?"
-msgstr ""
+msgstr "Είστε βέβαιοι ότι θέλετε να αποσύρετε αυτό το μήνυμα;"
 
 #: dist/converse-no-dependencies.js:92183
 msgid "Unblock this user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:92184
+#, fuzzy
 msgid "Allow this user to send you messages"
-msgstr ""
+msgstr "Δεν επιτρέπεται να στείλετε μήνυμα."
 
 #: dist/converse-no-dependencies.js:92201
+#, fuzzy
 msgid "Block user"
-msgstr ""
+msgstr "Εμφάνιση χρηστών"
 
 #: dist/converse-no-dependencies.js:92202
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Are you sure you want to prevent %1$s from contacting you further?"
-msgstr ""
+msgstr "Είστε βέβαιοι ότι θέλετε να καταργήσετε αυτήν την επαφή;"
 
 #: dist/converse-no-dependencies.js:92220
 msgid "Block this user"
@@ -1406,7 +1511,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:92236
 msgid "Close and end this conversation"
-msgstr ""
+msgstr "Κλείσιμο και τερματισμός αυτής της συνομιλίας"
 
 #. ESM default export
 #. *
@@ -1421,54 +1526,55 @@ msgstr ""
 #: dist/converse-no-dependencies.js:102272
 #: dist/converse-no-dependencies.js:103334
 msgid "You have unread messages"
-msgstr ""
+msgstr "Έχετε μη αναγνωσμένα μηνύματα"
 
 #: dist/converse-no-dependencies.js:92483
 msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr ""
+"Είστε βέβαιοι ότι θέλετε να διαγράψετε τα μηνύματα από αυτήν τη συνομιλία;"
 
 #: dist/converse-no-dependencies.js:92662
 #: dist/converse-no-dependencies.js:101600
 msgid "Hidden message"
-msgstr ""
+msgstr "Κρυφό μήνυμα"
 
 #: dist/converse-no-dependencies.js:92662
 #: dist/converse-no-dependencies.js:101600
 msgid "Message"
-msgstr ""
+msgstr "Μήνυμα"
 
 #: dist/converse-no-dependencies.js:92663
 #: dist/converse-no-dependencies.js:101601
 msgid "Optional hint"
-msgstr ""
+msgstr "Προαιρετική βοήθεια"
 
 #: dist/converse-no-dependencies.js:93172
 msgid "Sorry, the connection has been lost, and your message could not be sent"
-msgstr ""
+msgstr "Λυπάμαι, ησύνδηση διακόπηκε, και το μήνυμά σας δεν στάλθηκε"
 
 #: dist/converse-no-dependencies.js:94759
 msgid "Remove messages"
-msgstr ""
+msgstr "Απαλοιφή μυνημάτων"
 
 #: dist/converse-no-dependencies.js:94760
 msgid "Close this chat"
-msgstr ""
+msgstr "Κλείσιμο συνομιλίας"
 
 #: dist/converse-no-dependencies.js:94761
 msgid "Write in the third person"
-msgstr ""
+msgstr "Γράψτε σε τρίτο πρόσωπο"
 
 #: dist/converse-no-dependencies.js:94762
 #: dist/converse-no-dependencies.js:106044
 msgid "Show this menu"
-msgstr ""
+msgstr "Εμφάνιση μενού"
 
 #: dist/converse-no-dependencies.js:94984
 #: dist/converse-no-dependencies.js:102713
 #: dist/converse-no-dependencies.js:126368
 #: dist/converse-no-dependencies.js:127165
 msgid "Please enter a valid XMPP address"
-msgstr ""
+msgstr "Παρακαλώ εισάγετε μια έγκυρη XMPP διεύθηνση"
 
 #: dist/converse-no-dependencies.js:95169
 msgid "A big thank you to our sponsors 🙏"
@@ -1482,10 +1588,16 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
+"Για καλύτερη απόδοση, αποθηκεύουμε τα δεδομένα σας στον browser. Καθαρίστε "
+"αυτή την επιλογή, εάν χρησιμοποιείτε κάποιο δημόσιο υπολογιστή, ή εάν θέλετε "
+"τα δεδομένα σας να διαγραφούν μόλις αποσυνδεθείτε. Είναι σημαντικό να "
+"επιλέξετε 'αποσύνδεση', πριν κλείσετε αλλιώς ίσως να μην διαγραφούν ολά σας "
+"τα δεδομένα. Σημειώστε, ότι όταν χρησιμοποιείτε μια 'μη έμπιστη' συσκευή, η "
+"OMEMO κωδικοποίηση ΔΕΝ θα είναι διαθέσιμη."
 
 #: dist/converse-no-dependencies.js:95323
 msgid "This is a trusted device"
-msgstr ""
+msgstr "Έμπιστη συσκευή"
 
 #: dist/converse-no-dependencies.js:95324
 msgid "Info"
@@ -1505,7 +1617,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:95333
 msgid "Password"
-msgstr ""
+msgstr "Συνθηματικό"
 
 #: dist/converse-no-dependencies.js:95342
 msgid "Log in"
@@ -1521,15 +1633,16 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:95353
 msgid "Disconnected"
-msgstr ""
+msgstr "Αποσυνδέθηκε"
 
 #: dist/converse-no-dependencies.js:95354
 msgid "Click here to log in anonymously"
-msgstr ""
+msgstr "Επιλέχτε εδώ για να συνδεθείτε ανώνυμα"
 
 #: dist/converse-no-dependencies.js:95943
+#, fuzzy
 msgid "Chat"
-msgstr ""
+msgstr "Ανοιχτό"
 
 #: dist/converse-no-dependencies.js:96489
 msgid "About Converse"
@@ -1552,8 +1665,9 @@ msgid "Service"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:97648
+#, fuzzy
 msgid "Identities"
-msgstr ""
+msgstr "Δραστηριότητες"
 
 #: dist/converse-no-dependencies.js:97649
 msgid "Type"
@@ -1577,9 +1691,9 @@ msgid "No service found with that XMPP address"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:98040
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Error: %1$s"
-msgstr ""
+msgstr "Σφάλμα"
 
 #: dist/converse-no-dependencies.js:98446
 msgid "Close these announcements"
@@ -1600,19 +1714,20 @@ msgstr ""
 #: dist/converse-no-dependencies.js:100048
 #: dist/converse-no-dependencies.js:100070
 msgid "Minimize"
-msgstr ""
+msgstr "Ελαχιστοποίηση"
 
 #: dist/converse-no-dependencies.js:100049
 msgid "Minimize this chat"
-msgstr ""
+msgstr "Ελαχιστοποίηση συνομιλίας"
 
 #: dist/converse-no-dependencies.js:100071
 msgid "Minimize this groupchat"
-msgstr ""
+msgstr "Ελαχιστοποίηση ομαδικής συνομιλίας"
 
 #: dist/converse-no-dependencies.js:100205
+#, fuzzy
 msgid "hidden"
-msgstr ""
+msgstr "Κρυφό"
 
 #. *
 #. * @param {import('../minimized-chat').default} el
@@ -1620,7 +1735,7 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:100573
 msgid "Click to restore this chat"
-msgstr ""
+msgstr "Επιλέχτε για επαναφορά της συνομιλίας"
 
 #. *
 #. * @param {import('../affiliation-form').default} el
@@ -1628,23 +1743,25 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:100910
 msgid "Change affiliation"
-msgstr ""
+msgstr "Αλλαγή χαρακτηριστικών"
 
 #: dist/converse-no-dependencies.js:100911
 msgid "New affiliation"
-msgstr ""
+msgstr "Νέα ιδιότητα"
 
 #: dist/converse-no-dependencies.js:101219
 msgid "Timeout error while trying to set the affiliation"
-msgstr ""
+msgstr "Υπέρβαση χρόνου κατά την διάρκεια καθορισμού ιδιοτήτων"
 
 #: dist/converse-no-dependencies.js:101221
 msgid "Sorry, you're not allowed to make that change"
-msgstr ""
+msgstr "Λυπάμε, δεν επιτρέπεται να κάνατε αυτήν την αλλαγή"
 
 #: dist/converse-no-dependencies.js:101223
 msgid "Sorry, something went wrong while trying to set the affiliation"
 msgstr ""
+"Λυπάμαι, συνέβη κάποιο λαθόςκατα την διάρκεια καθορισμού χαρακτηριστικών του "
+"χρήστη"
 
 #. *
 #. * @param {import('../role-form').default} el
@@ -1652,19 +1769,19 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:101329
 msgid "Change role"
-msgstr ""
+msgstr "Αλλαγή ρόλου"
 
 #: dist/converse-no-dependencies.js:101330
 msgid "New Role"
-msgstr ""
+msgstr "Νέος ρόλος"
 
 #: dist/converse-no-dependencies.js:101498
 msgid "You're not allowed to make that change"
-msgstr ""
+msgstr "Δεν επιτρέπεται να κάνετε αυτήν την αλλαγή"
 
 #: dist/converse-no-dependencies.js:101500
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr ""
+msgstr "Λυπάμαι, συνέβη κάποιο λαθόςκατα την διάρκεια καθορισμού ρόλου"
 
 #: dist/converse-no-dependencies.js:102015
 msgid "Change nickname"
@@ -1672,15 +1789,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:102015
 msgid "Enter groupchat"
-msgstr ""
+msgstr "Είσοδος στη συνομιλία"
 
 #: dist/converse-no-dependencies.js:102016
 msgid "Choose a nickname to enter"
-msgstr ""
+msgstr "Επιλέχτε ένα ψευδόνυμο για εισαγωγή"
 
 #: dist/converse-no-dependencies.js:102016
 msgid "Please choose your nickname"
-msgstr ""
+msgstr "Παρακαλώ επιλέχτε το ψευδόνυμό σας"
 
 #: dist/converse-no-dependencies.js:102274
 msgid "You're not allowed to send messages in this room"
@@ -1690,57 +1807,58 @@ msgstr ""
 #: dist/converse-no-dependencies.js:102711
 #: dist/converse-no-dependencies.js:103340
 msgid "Invite"
-msgstr ""
+msgstr "Πρόσκληση"
 
 #: dist/converse-no-dependencies.js:102712
 msgid "user@example.org"
-msgstr ""
+msgstr "user@example.org"
 
 #: dist/converse-no-dependencies.js:102715
 msgid "Optional reason for the invitation"
-msgstr ""
+msgstr "Προαιρετικός λόγος για την πρόσκληση"
 
 #: dist/converse-no-dependencies.js:102826
 msgid "Invite someone to this groupchat"
-msgstr ""
+msgstr "Προσκάλεστε κάποιον σε αυτήν την συνομιλία"
 
 #. * @param {MUCOccupant} o
 #: dist/converse-no-dependencies.js:103082
 #, javascript-format
 msgid "Click to mention %1$s in your message."
-msgstr ""
+msgstr "Επιλέχτε για να αναφέρετε τον/την %1$s στο μυνημά σας."
 
 #: dist/converse-no-dependencies.js:103093
 msgid "Owner"
-msgstr ""
+msgstr "Ιδιοκτήτης"
 
 #: dist/converse-no-dependencies.js:103097
 msgid "Admin"
-msgstr ""
+msgstr "Διαχειριστής"
 
 #: dist/converse-no-dependencies.js:103101
 msgid "Member"
-msgstr ""
+msgstr "Μέλος"
 
 #: dist/converse-no-dependencies.js:103105
 msgid "Moderator"
-msgstr ""
+msgstr "Συντονιστής"
 
 #: dist/converse-no-dependencies.js:103109
 msgid "Visitor"
-msgstr ""
+msgstr "Επισκέπτης"
 
 #: dist/converse-no-dependencies.js:103169
 msgid "This user is a moderator."
-msgstr ""
+msgstr "Αυτός ο χρήστης είναι Συντονιστής."
 
 #: dist/converse-no-dependencies.js:103170
 msgid "This user can send messages in this groupchat."
-msgstr ""
+msgstr "Αυτός ο χρήστης μπορεί να αποστέλει μηνύματα σε αυτήν την συνομιλία."
 
 #: dist/converse-no-dependencies.js:103171
 msgid "This user can NOT send messages in this groupchat."
 msgstr ""
+"Αυτός ο χρήστης ΔΕΝ μπορεί να αποστέλει μηνύματα σε αυτήν την συνομιλία."
 
 #: dist/converse-no-dependencies.js:103336
 msgid ""
@@ -1748,16 +1866,18 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103337
+#, fuzzy
 msgid "Invite this user to join this groupchat"
-msgstr ""
+msgstr "Προσκάλεστε κάποιον σε αυτήν την συνομιλία"
 
 #: dist/converse-no-dependencies.js:103338
 msgid "Open a one-on-one chat with this user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103339
+#, fuzzy
 msgid "Open Chat"
-msgstr ""
+msgstr "Ανοιχτό"
 
 #: dist/converse-no-dependencies.js:103668
 #: dist/converse-no-dependencies.js:110376
@@ -1765,8 +1885,9 @@ msgid "Success"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:103668
+#, fuzzy
 msgid "The user has been invited to join this groupchat"
-msgstr ""
+msgstr "Έχετε αποκλειστεί από αυτήν την ομαδική συνομιλία"
 
 #: dist/converse-no-dependencies.js:104121
 msgid "Filter by name"
@@ -1793,22 +1914,23 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:104288
 msgid "Participant"
-msgstr ""
+msgstr "Συμμετεχόντας"
 
 #: dist/converse-no-dependencies.js:104288
 #: dist/converse-no-dependencies.js:104495
 msgid "Participants"
-msgstr ""
+msgstr "Συμμετέχοντες"
 
 #: dist/converse-no-dependencies.js:104289
 #: dist/converse-no-dependencies.js:104493
 msgid "Hide"
-msgstr ""
+msgstr "Απόκρυψη"
 
 #: dist/converse-no-dependencies.js:104290
 #: dist/converse-no-dependencies.js:128176
+#, fuzzy
 msgid "Show filter"
-msgstr ""
+msgstr "Εμφάνιση λιγότερων"
 
 #: dist/converse-no-dependencies.js:104291
 #: dist/converse-no-dependencies.js:128177
@@ -1816,40 +1938,43 @@ msgid "Hide filter"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:104293
+#, fuzzy
 msgid "Invite someone"
-msgstr ""
+msgstr "Προσκάλεστε κάποιον σε αυτήν την συνομιλία"
 
 #: dist/converse-no-dependencies.js:104294
 msgid "Invite someone to join this groupchat"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:104494
+#, fuzzy
 msgid "No participant data found"
-msgstr ""
+msgstr "Εμφάνιση συμμετεχόντων"
 
 #: dist/converse-no-dependencies.js:104496
+#, fuzzy
 msgid "Show details"
-msgstr ""
+msgstr "Εμφάνιση λιγότερων"
 
 #: dist/converse-no-dependencies.js:106038
 msgid "Change user's affiliation to admin"
-msgstr ""
+msgstr "Αλλαγή χαρακτηρισμού χρήστη ως Διαχειριστή"
 
 #: dist/converse-no-dependencies.js:106039
 msgid "Ban user by changing their affiliation to outcast"
-msgstr ""
+msgstr "Απόκλεισε τον χρήστη αλλάζοντας τον χαρακτηρισμό του ως outcast"
 
 #: dist/converse-no-dependencies.js:106040
 msgid "Clear the chat area"
-msgstr ""
+msgstr "Καθαρισμός της περιοχής της συνομιλίας"
 
 #: dist/converse-no-dependencies.js:106041
 msgid "Close this groupchat"
-msgstr ""
+msgstr "Κλείσιμο συνομιλίας"
 
 #: dist/converse-no-dependencies.js:106042
 msgid "Change user role to participant"
-msgstr ""
+msgstr "Άλλαξε τον ρόλο του χρήστη σε συμμετέχοντα"
 
 #: dist/converse-no-dependencies.js:106043
 #: dist/converse-no-dependencies.js:108567
@@ -1948,8 +2073,9 @@ msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:107222
+#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
-msgstr ""
+msgstr "Λυπούμαστε, παρουσιάστηκε σφάλμα κατά την εκτέλεση της εντολής."
 
 #: dist/converse-no-dependencies.js:107223
 #: dist/converse-no-dependencies.js:111181
@@ -1958,11 +2084,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:107458
 msgid "Topic"
-msgstr ""
+msgstr "Θέμα"
 
 #: dist/converse-no-dependencies.js:107459
 msgid "Topic author"
-msgstr ""
+msgstr "Συντάκτης θέματος"
 
 #: dist/converse-no-dependencies.js:107471
 msgid "XMPP address"
@@ -1983,7 +2109,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107476
 #: dist/converse-no-dependencies.js:123364
 msgid "Hidden"
-msgstr ""
+msgstr "Κρυφό"
 
 #: dist/converse-no-dependencies.js:107477
 msgid "This groupchat is not publicly searchable"
@@ -2000,7 +2126,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107480
 #: dist/converse-no-dependencies.js:123366
 msgid "Moderated"
-msgstr ""
+msgstr "Συντονιζόμενο"
 
 #: dist/converse-no-dependencies.js:107481
 msgid ""
@@ -2038,7 +2164,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107490
 #: dist/converse-no-dependencies.js:123368
 msgid "Open"
-msgstr ""
+msgstr "Ανοιχτό"
 
 #: dist/converse-no-dependencies.js:107491
 msgid "Anyone can join this groupchat"
@@ -2063,7 +2189,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107496
 #: dist/converse-no-dependencies.js:123370
 msgid "Public"
-msgstr ""
+msgstr "Δημόσιο"
 
 #: dist/converse-no-dependencies.js:107497
 msgid "This groupchat is publicly searchable"
@@ -2072,7 +2198,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107498
 #: dist/converse-no-dependencies.js:123371
 msgid "Semi-anonymous"
-msgstr ""
+msgstr "Ημί-ανώνυμο"
 
 #: dist/converse-no-dependencies.js:107499
 msgid "Only moderators can see your XMPP address"
@@ -2081,19 +2207,20 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107500
 #: dist/converse-no-dependencies.js:123372
 msgid "Temporary"
-msgstr ""
+msgstr "Προσωρινό"
 
 #: dist/converse-no-dependencies.js:107501
 msgid "This groupchat will disappear once the last person leaves"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:107672
+#, fuzzy
 msgid "Groupchat info"
-msgstr ""
+msgstr "Συνομιλίες που βρέθηκαν"
 
 #: dist/converse-no-dependencies.js:108090
 msgid "Hide the groupchat topic"
-msgstr ""
+msgstr "Απόκρυψη του θέματος της συνομιλίας"
 
 #: dist/converse-no-dependencies.js:108093
 #: dist/converse-no-dependencies.js:123463
@@ -2134,19 +2261,21 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:108542
 msgid "Show participants"
-msgstr ""
+msgstr "Εμφάνιση συμμετεχόντων"
 
 #: dist/converse-no-dependencies.js:108542
 msgid "Hide participants"
-msgstr ""
+msgstr "Απόκρυψη συμμετεχόντων"
 
 #: dist/converse-no-dependencies.js:108543
+#, fuzzy
 msgid "Show the groupchat participants"
-msgstr ""
+msgstr "Εμφάνιση συμμετεχόντων"
 
 #: dist/converse-no-dependencies.js:108543
+#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr ""
+msgstr "Απόκρυψη του θέματος της συνομιλίας"
 
 #: dist/converse-no-dependencies.js:108554
 msgid "Moderate"
@@ -2175,17 +2304,17 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:108658
 msgid "This groupchat requires a password"
-msgstr ""
+msgstr "Αυτή η συνομιλία απαιτεί συνθηματικό"
 
 #: dist/converse-no-dependencies.js:108659
 msgid "Password: "
-msgstr ""
+msgstr "Συνθηματικό: "
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:108660
 #: dist/converse-no-dependencies.js:110067
 msgid "Submit"
-msgstr ""
+msgstr "Υποβολή"
 
 #: dist/converse-no-dependencies.js:109777
 msgid "has gone offline"
@@ -2235,7 +2364,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:110335
 msgid "Timeout error"
-msgstr ""
+msgstr "Υπέρβαση χρόνου"
 
 #: dist/converse-no-dependencies.js:110340
 msgid "Your server does not support password reset"
@@ -2248,7 +2377,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:110368
 msgid "Timeout error while trying to set your password"
-msgstr ""
+msgstr "Υπέρβαση χρόνου κατά την αλλαγή συνθηματικού"
 
 #: dist/converse-no-dependencies.js:110370
 msgid "Your server does not allow password reset"
@@ -2257,11 +2386,11 @@ msgstr ""
 #: dist/converse-no-dependencies.js:110372
 #: dist/converse-no-dependencies.js:110374
 msgid "You are not allowed to change your password"
-msgstr ""
+msgstr "Δεν επιτρέπεται να αλλάξετε το συνθηματικό σας"
 
 #: dist/converse-no-dependencies.js:110377
 msgid "Your new password has been set"
-msgstr ""
+msgstr "Το νέο συνθηματικό τέθηκε σε εφαρμογή"
 
 #. *
 #. * @param {import('../modals/profile').default} el
@@ -2305,8 +2434,9 @@ msgid "Personal status message"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:110539
+#, fuzzy
 msgid "Clear status message"
-msgstr ""
+msgstr "Καθαρισμός της περιοχής της συνομιλίας"
 
 #: dist/converse-no-dependencies.js:110760
 msgid "Save and close"
@@ -2390,7 +2520,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:111954
 #, javascript-format
 msgid "Download file \"%1$s\""
-msgstr ""
+msgstr "Λήψη αρχείου \"%1$s\""
 
 #: dist/converse-no-dependencies.js:113201
 #, javascript-format
@@ -2477,11 +2607,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:114987
 msgid "Trusted"
-msgstr ""
+msgstr "Έμπιστος"
 
 #: dist/converse-no-dependencies.js:114988
 msgid "Untrusted"
-msgstr ""
+msgstr "Αναξιόπιστος"
 
 #: dist/converse-no-dependencies.js:114989
 msgid "Choose which devices you trust for OMEMO encrypted communication"
@@ -2497,7 +2627,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:115003
 msgid "No OMEMO-enabled devices found"
-msgstr ""
+msgstr "Δεν βρέθηκαν ενεργές OMEMO συσκευές"
 
 #: dist/converse-no-dependencies.js:118237
 msgid "Checkbox for selecting the following fingerprint"
@@ -2550,7 +2680,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:120948
 #: dist/converse-no-dependencies.js:121152
 msgid "Already have a chat account?"
-msgstr ""
+msgstr "Έχετε ήδη κάποιον λογαριασμό ;"
 
 #: dist/converse-no-dependencies.js:120949
 #: dist/converse-no-dependencies.js:121153
@@ -2563,15 +2693,15 @@ msgstr ""
 #. ESM default export
 #: dist/converse-no-dependencies.js:121010
 msgid "Choose a different provider"
-msgstr ""
+msgstr "Επιλέχτε άλλον πάροχο"
 
 #: dist/converse-no-dependencies.js:121011
 msgid "Account Registration:"
-msgstr ""
+msgstr "Δημιουργία λογαριασμού:"
 
 #: dist/converse-no-dependencies.js:121012
 msgid "Register"
-msgstr ""
+msgstr "Eγγραφή"
 
 #: dist/converse-no-dependencies.js:121145
 msgid "Tip: A list of public XMPP providers is available"
@@ -2644,7 +2774,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:122659
 msgid "This field is required"
-msgstr ""
+msgstr "Αυτό το πεδίο είναι υποχρεωτικό"
 
 #. *
 #. * @param {import('../add-muc.js').default} el
@@ -2656,19 +2786,21 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:122668
 msgid "Groupchat name"
-msgstr ""
+msgstr "Τίτλος συνομιλίας"
 
 #: dist/converse-no-dependencies.js:122670
+#, fuzzy
 msgid "Groupchat name or address"
-msgstr ""
+msgstr "Διεύθηνση συνομιλίας"
 
 #: dist/converse-no-dependencies.js:123021
 msgid "Enter a new Groupchat"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:123138
+#, fuzzy
 msgid "Invalid groupchat address, it cannot be empty."
-msgstr ""
+msgstr "Αυτή η ομαδική συνομιλία δεν υπάρχει (ακόμα)."
 
 #: dist/converse-no-dependencies.js:123145
 msgid "Invalid groupchat address, a forward slash is not allowed."
@@ -2690,12 +2822,12 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:123189
 msgid "Groupchat id is invalid."
-msgstr ""
+msgstr "Το αναγνωριστικό της συνομιλίας δεν είναι έγκυρο."
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:123359
 msgid "Description:"
-msgstr ""
+msgstr "Περιγραφή:"
 
 #: dist/converse-no-dependencies.js:123360
 msgid "Groupchat XMPP Address:"
@@ -2703,7 +2835,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:123361
 msgid "Participants:"
-msgstr ""
+msgstr "Συμμετέχοντες:"
 
 #: dist/converse-no-dependencies.js:123362
 msgid "Features:"
@@ -2711,31 +2843,31 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:123363
 msgid "Requires authentication"
-msgstr ""
+msgstr "Απαιτήτε πιστοποίηση"
 
 #: dist/converse-no-dependencies.js:123365
 msgid "Requires an invitation"
-msgstr ""
+msgstr "Απαιτήτε πρόσκληση"
 
 #: dist/converse-no-dependencies.js:123367
 msgid "Non-anonymous"
-msgstr ""
+msgstr "Μή-ανώνυμο"
 
 #: dist/converse-no-dependencies.js:123369
 msgid "Permanent"
-msgstr ""
+msgstr "Μόνιμο"
 
 #: dist/converse-no-dependencies.js:123373
 msgid "Unmoderated"
-msgstr ""
+msgstr "Μή συντονιζόμενο"
 
 #: dist/converse-no-dependencies.js:123458
 msgid "Show groupchats"
-msgstr ""
+msgstr "Εμφάνιση συνομιλιών"
 
 #: dist/converse-no-dependencies.js:123459
 msgid "Server address"
-msgstr ""
+msgstr "Διεύθηνση διακομιστή"
 
 #: dist/converse-no-dependencies.js:123659
 msgid "conference.example.org"
@@ -2747,19 +2879,20 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:123725
 msgid "Groupchats found"
-msgstr ""
+msgstr "Συνομιλίες που βρέθηκαν"
 
 #: dist/converse-no-dependencies.js:123733
 msgid "No groupchats found"
-msgstr ""
+msgstr "Δεν βρέθηκαν συνομιλίες"
 
 #: dist/converse-no-dependencies.js:123983
 msgid "Leave this groupchat"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:123996
+#, fuzzy
 msgid "Click to hide these rooms"
-msgstr ""
+msgstr "Επιλέχτε για απόκρυψη αυτών των επαφών"
 
 #: dist/converse-no-dependencies.js:124049
 msgid "Click to toggle the list of open groupchats"
@@ -2774,8 +2907,9 @@ msgid "Query server"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:124052
+#, fuzzy
 msgid "Add groupchat"
-msgstr ""
+msgstr "Είσοδος στη συνομιλία"
 
 #: dist/converse-no-dependencies.js:124433
 #, javascript-format
@@ -2812,13 +2946,14 @@ msgid "Click to remove %1$s as a contact"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:125225
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to show more details about %1$s"
-msgstr ""
+msgstr "Επιλέχτε για επαναφορά της συνομιλίας"
 
 #: dist/converse-no-dependencies.js:125253
+#, fuzzy
 msgid "Click to chat with yourself"
-msgstr ""
+msgstr "Επιλέχτε για να αναφέρετε τον/την %1$s στο μυνημά σας."
 
 #: dist/converse-no-dependencies.js:125253
 #: dist/converse-no-dependencies.js:125345
@@ -2838,17 +2973,19 @@ msgid "Click to decline the contact request from %1$s (XMPP address: %2$s)"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:125349
+#, fuzzy
 msgid "Accept as contact"
-msgstr ""
+msgstr "Κατάργηση επαφής"
 
 #: dist/converse-no-dependencies.js:125445
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Click to add %1$s as a contact"
-msgstr ""
+msgstr "Επιλέχτε για να αναφέρετε τον/την %1$s στο μυνημά σας."
 
 #: dist/converse-no-dependencies.js:125448
+#, fuzzy
 msgid "Save as contact"
-msgstr ""
+msgstr "Κατάργηση επαφής"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2860,8 +2997,9 @@ msgid "Add"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:126062
+#, fuzzy
 msgid "Search name or XMPP address"
-msgstr ""
+msgstr "Διεύθηνση συνομιλίας"
 
 #: dist/converse-no-dependencies.js:126357
 msgid "Add a Contact"
@@ -2872,12 +3010,14 @@ msgid "This contact has already been added"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:126396
+#, fuzzy
 msgid "Sorry, something went wrong while adding the contact"
-msgstr ""
+msgstr "Λυπάμαι, συνέβη κάποιο λαθόςκατα την διάρκεια καθορισμού ρόλου"
 
 #: dist/converse-no-dependencies.js:126405
+#, fuzzy
 msgid "Contact added successfully"
-msgstr ""
+msgstr "Αιτήματα επαφής"
 
 #: dist/converse-no-dependencies.js:126437
 msgid ""
@@ -2886,8 +3026,9 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:126825
+#, fuzzy
 msgid "Sorry, something went wrong while accepting the contact request"
-msgstr ""
+msgstr "Λυπάμαι, συνέβη κάποιο λαθόςκατα την διάρκεια καθορισμού ρόλου"
 
 #: dist/converse-no-dependencies.js:126837
 msgid "Successfully accepted the contact request"
@@ -2898,17 +3039,20 @@ msgstr ""
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:126893
+#, fuzzy
 msgid "Start Chat"
-msgstr ""
+msgstr "Έναρξη μιας κλήσης"
 
 #: dist/converse-no-dependencies.js:127154
 #: dist/converse-no-dependencies.js:128162
+#, fuzzy
 msgid "Start a new chat"
-msgstr ""
+msgstr "Έναρξη μιας κλήσης"
 
 #: dist/converse-no-dependencies.js:127202
+#, fuzzy
 msgid "Sorry, something went wrong"
-msgstr ""
+msgstr "Λυπούμαστε, κάτι πήγε στραβά κατά την προσπάθεια ανανέωσης"
 
 #: dist/converse-no-dependencies.js:127344
 #, javascript-format
@@ -2920,8 +3064,9 @@ msgid "Unblock selected users"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127344
+#, fuzzy
 msgid "Filter blocked users"
-msgstr ""
+msgstr "Εμφάνιση χρηστών"
 
 #: dist/converse-no-dependencies.js:127350
 msgid "clear"
@@ -2936,8 +3081,9 @@ msgid "No blocked XMPP addresses"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127752
+#, fuzzy
 msgid "Blocklist"
-msgstr ""
+msgstr "Προσθήκη επαφής"
 
 #: dist/converse-no-dependencies.js:127779
 #, javascript-format
@@ -2945,13 +3091,14 @@ msgid "Successfully unblocked %1$s XMPP addresses"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127779
+#, fuzzy
 msgid "Successfully unblocked one XMPP address"
-msgstr ""
+msgstr "Διεύθηνση συνομιλίας"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:127914
 msgid "Click to hide these contacts"
-msgstr ""
+msgstr "Επιλέχτε για απόκρυψη αυτών των επαφών"
 
 #: dist/converse-no-dependencies.js:127986
 msgid "Filter by contact name"
@@ -2975,19 +3122,21 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:128160
 msgid "Click to toggle contacts"
-msgstr ""
+msgstr "Επιλέχτε για εναλλαγή λίστας επαφών"
 
 #: dist/converse-no-dependencies.js:128161
 msgid "Add a contact"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:128163
+#, fuzzy
 msgid "Show block list"
-msgstr ""
+msgstr "Προσθήκη επαφής"
 
 #: dist/converse-no-dependencies.js:128199
+#, fuzzy
 msgid "Re-sync contacts"
-msgstr ""
+msgstr "Οι επαφές μου"
 
 #. *
 #. * @param {import('../approval-alert').default} el
@@ -3011,10 +3160,107 @@ msgstr ""
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128662
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Would you like to add %1$s as a contact?"
-msgstr ""
+msgstr "Επιλέχτε για να αναφέρετε τον/την %1$s στο μυνημά σας."
 
 #: dist/converse-no-dependencies.js:128666
 msgid "Dismiss"
 msgstr ""
+
+#~ msgid "An error occurred while querying for archived messages."
+#~ msgstr "Προέκυψε σφάλμα κατά την αναζήτηση αρχειοθετημένων μηνυμάτων."
+
+#~ msgid "Chat Contacts"
+#~ msgstr "Επαφές συνομιλίας"
+
+#~ msgid "Toggle chat"
+#~ msgstr "Εναλλαγή συνομιλίας"
+
+#, fuzzy
+#~ msgid "Are you sure you want to block this user?"
+#~ msgstr "Είστε βέβαιοι ότι θέλετε να αποσύρετε αυτό το μήνυμα;"
+
+#, javascript-format
+#~ msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
+#~ msgstr "Λυπούμαστε, δεν ήταν δυνατή η XMPP σύνδεση με %1$s"
+
+#, javascript-format
+#~ msgid "Error: timeout while fetching %1s list for MUC %2s"
+#~ msgstr ""
+#~ "Σφάλμα: λήξη χρονικού ορίου κατά την ανάκτηση της λίστας %1s για το MUC "
+#~ "%2s"
+
+#, javascript-format
+#~ msgid "Error: not allowed to fetch %1s list for MUC %2s"
+#~ msgstr "Σφάλμα: δεν επιτρέπεται η ανάκτηση της λίστας %1s για το MUC %2s"
+
+#~ msgid "Log in here"
+#~ msgstr "Είσοδος"
+
+#~ msgid "Error: couldn't register new nickname in members only room"
+#~ msgstr ""
+#~ "Σφάλμα: δεν ήταν δυνατή η εγγραφή νέου ψευδώνυμου στην αίθουσα μόνο για "
+#~ "μέλη"
+
+#~ msgid ""
+#~ "Can't register your nickname in this groupchat, it doesn't support "
+#~ "registration."
+#~ msgstr ""
+#~ "Δεν μπορείτε να καταχωρίσετε το ψευδώνυμό σας σε αυτήν την ομαδική "
+#~ "συνομιλία, δεν υποστηρίζει εγγραφή."
+
+#~ msgid ""
+#~ "Can't register your nickname in this groupchat, invalid data form "
+#~ "supplied."
+#~ msgstr ""
+#~ "Δεν μπορείτε να καταχωρήσετε το ψευδώνυμό σας σε αυτή την ομαδική "
+#~ "συνομιλία, η φόρμα δεδομένων δεν είναι έγκυρη."
+
+#~ msgid "Sorry, something went wrong while trying to save your bookmark."
+#~ msgstr ""
+#~ "Λυπούμαστε, κάτι πήγε στραβά κατά την προσπάθεια αποθήκευσης του "
+#~ "σελιδοδείκτη σας."
+
+#~ msgid "OK"
+#~ msgstr "Εντάξει"
+
+#~ msgid "Bookmark this groupchat"
+#~ msgstr "Προσθέστε σελιδοδείκτη σε αυτήν την ομαδική συνομιλία"
+
+#~ msgid "The name for this bookmark:"
+#~ msgstr "Το όνομα αυτού του σελιδοδείκτη:"
+
+#~ msgid "Refresh"
+#~ msgstr "Ανανέωση"
+
+#, javascript-format
+#~ msgid "Sorry, there was an error while trying to remove %1$s as a contact."
+#~ msgstr ""
+#~ "Λυπούμαστε, προέκυψε σφάλμα κατά την προσπάθεια αφαίρεσης του/της %1$s ως "
+#~ "επαφή."
+
+#~ msgid "This groupchat is bookmarked"
+#~ msgstr "Ο σελιδοδείκτης της συνομιλίας αποθηκεύτηκε"
+
+#~ msgid "Minimized"
+#~ msgstr "Ελαχιστοποιημένο"
+
+#, fuzzy
+#~ msgid "Hide sidebar"
+#~ msgstr "Απόκρυψη πολυμέσων"
+
+#~ msgid "Show bookmarked groupchats"
+#~ msgstr "Εμφάνιση σελιδοδεικτών ομαδικών συνομιλιών"
+
+#~ msgid "The connection has dropped, attempting to reconnect."
+#~ msgstr "Η σύνδεση έχει διακοπεί, επιχειρείται επανασύνδεση."
+
+#~ msgid "Roles"
+#~ msgstr "Ρόλοι"
+
+#~ msgid "Hold tight, we're fetching the registration form…"
+#~ msgstr "Περιμένετε, δημιουργεία της φόρμας εγγραφής…"
+
+#~ msgid "Unbookmark"
+#~ msgstr "Κατάργηση σελιδοδείκτη"

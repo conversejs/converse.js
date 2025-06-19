@@ -77,6 +77,7 @@ export const DEFAULT_SETTINGS = {
         'it',
         'ja',
         'lt',
+        'mn',
         'mr',
         'nb',
         'nl',

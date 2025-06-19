@@ -7,13 +7,12 @@ Translations
 ============
 
 Converse supports localization of its user interface and date formats. As
-of writing, 17 languages are supported.
+of writing, 46 languages are supported.
 
-The translations of Converse can be found in the `locale
-<https://github.com/jcbrand/converse.js/tree/master/locale>`_ directory.
+The translations of Converse can be found in the `src/i18n <https://github.com/conversejs/converse.js/tree/master/src/i18n/>`_ directory.
 
 Translations of Converse are very welcome. You can add translations either
-manually by editing the ``.po`` files in the above-mentioned ``locale``
+manually by editing the ``.po`` files in the ``src/i18n/locales``
 directory, or through the web at `weblate <https://hosted.weblate.org/projects/conversejs/#languages>`_.
 
 As of version 3.3.0, Converse no longer automatically bundles translations
@@ -38,22 +37,23 @@ manually in a checkout of the Converse source repository.
 
 These tasks are documented below.
 
-Updating the translations template (.pot file)
-----------------------------------------------
+Updating the global translations template (.pot file)
+-----------------------------------------------------
 
 The gettext `.pot` file located in
-`./locale/converse.pot <https://github.com/jcbrand/converse.js/blob/master/locale/converse.pot>`_
+`./locale/converse.pot <https://github.com/conversejs/converse.js/blob/master/src/i18n/converse.pot>`_
 is the template containing all translations and from which for each language an individual PO
 file is generated.
 
 The `.pot` file contains all translateable strings extracted from Converse.
 
-To make a user-facing string translateable, wrap it in the double underscore helper
+To make a user-facing string is translateable, wrap it in the double underscore helper
 function like so:
 
 .. code-block:: javascript
 
-    __('This string will be translated at runtime');
+    const { __ } = _converse.i18n.env;
+    const str = __('This string will be translated at runtime');
 
 After adding the string, you'll need to regenerate the POT file:
 
@@ -71,8 +71,8 @@ translated into, do the following
 
 ::
 
-    mkdir -p ./locale/pl/LC_MESSAGES
-    msginit -i ./locale/converse.pot -o ./locale/pl/LC_MESSAGES/converse.po -l pl
+    mkdir -p ./src/i18n/locales/pl/LC_MESSAGES
+    msginit -i ./src/i18n/converse.pot -o ./src/i18n/locales/pl/LC_MESSAGES/converse.po -l pl
 
 Please make sure to add the following attributes at the top of the file (under
 *Content-Transfer-Encoding*). They are required as configuration settings for Jed,
@@ -94,7 +94,7 @@ You can update the `.po` file for a specific language by doing the following:
 
 ::
 
-    msgmerge ./locale/de/LC_MESSAGES/converse.po ./locale/converse.pot -U
+    msgmerge ./src/i18n/locales/de/LC_MESSAGES/converse.po ./src/i18n/converse.pot -U
 
 To do this for ALL languages, run:
 
@@ -104,61 +104,3 @@ To do this for ALL languages, run:
 
 The resulting `.po` file is then what gets translated.
 
-Generating a JSON file from a translations file
------------------------------------------------
-
-Unfortunately `Jed <http://slexaxton.github.io/Jed>`_, which we use for
-translations in Converse cannot use the `.po` files directly. We have
-to generate from it a file in JSON format and then put that in a `.js` file
-for the specific language.
-
-To generate JSON from a PO file, you'll need po2json for node.js. Run the
-following command to install it (npm being the node.js package manager):
-
-::
-
-    npm install po2json
-
-You can then convert the translations into JSON format:
-
-::
-
-    po2json -p -f jed -d converse locale/de/LC_MESSAGES/converse.po locale/de/LC_MESSAGES/converse.json
-
-To do this for ALL languages, run:
-
-::
-
-    make po2json
-
-
-.. note::
-    If you are adding translations for a new language that is not already supported,
-    you'll have to add the language path in main.js and make one more edit in ./src/locales.js
-    to make sure the language is loaded by require.js.
-
-
-Making sure the JSON file will get loaded
-------------------------------------------
-
-Finally, make sure that the language code is added to the list of default
-values for the ``locales`` config setting.
-
-This is done in ``src/converse-core.js``.
-
-Look for the following section:
-
-.. code-block:: javascript
-
-        // Default configuration values
-        // ----------------------------
-        this.default_settings = {
-            // ... Omitted for brevity
-            locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
-            locales: [
-                'af', 'ar', 'bg', 'ca', 'de', 'es', 'en', 'fr', 'he',
-                'hu', 'id', 'it', 'ja', 'nb', 'nl',
-                'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
-            ],
-            // ... Omitted for brevity
-        };

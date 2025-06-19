@@ -1,4 +1,8 @@
-export function __(str: any, ...args: any[]): any;
+/**
+ * @param {string} str
+ * @param {...(string|number)} args
+ */
+export function __(str: string, ...args: (string | number)[]): any;
 /**
  * @namespace i18n
  */
@@ -14,11 +18,11 @@ import { i18n as i18nStub } from '@converse/headless';
  * Determines which locale is supported by the user's system as well
  * as by the relevant library (e.g. converse.js or dayjs).
  * @param {string} preferred_locale
- * @param {Function} isSupportedByLibrary - Returns a boolean indicating whether
+ * @param {(locale: string) => boolean} isSupportedByLibrary - Returns a boolean indicating whether
  *   the locale is supported.
  * @returns {string}
  */
-declare function determineLocale(preferred_locale: string, isSupportedByLibrary: Function): string;
+declare function determineLocale(preferred_locale: string, isSupportedByLibrary: (locale: string) => boolean): string;
 declare function getLocale(): string;
 declare function initialize(): Promise<void>;
 /**

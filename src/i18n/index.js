@@ -5,7 +5,7 @@
  * @description This is the internationalization module
  */
 import Jed from 'jed';
-import { api, converse, log, u, i18n as i18nStub } from '@converse/headless';
+import { api, converse, log, i18n as i18nStub } from '@converse/headless';
 
 const { dayjs } = converse.env;
 
@@ -24,7 +24,7 @@ function isConverseLocale(preferred_locale, supported_locales) {
  * Determines which locale is supported by the user's system as well
  * as by the relevant library (e.g. converse.js or dayjs).
  * @param {string} preferred_locale
- * @param {Function} isSupportedByLibrary - Returns a boolean indicating whether
+ * @param {(locale: string) => boolean} isSupportedByLibrary - Returns a boolean indicating whether
  *   the locale is supported.
  * @returns {string}
  */
@@ -45,7 +45,7 @@ function determineLocale(preferred_locale, isSupportedByLibrary) {
 /**
  * Check whether the locale or sub locale (e.g. en-US, en) is supported.
  * @param {string} locale - The locale to check for
- * @param {Function} available - Returns a boolean indicating whether the locale is supported
+ * @param {(locale: string) => boolean} available - Returns a boolean indicating whether the locale is supported
  */
 function isLocaleAvailable(locale, available) {
     if (available(locale)) {
@@ -118,6 +118,10 @@ async function initialize() {
     }
 }
 
+/**
+ * @param {string} str
+ * @param {...(string|number)} args
+ */
 export function __(str, ...args) {
     return i18n.translate(str, args);
 }

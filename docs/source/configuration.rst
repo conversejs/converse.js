@@ -1887,25 +1887,26 @@ Based on the OGP metadata Converse will render a URL preview (also known as an
   the ``show_images_inline``, ``embed_audio`` and ``embed_videos`` settings.
 
 
-reuse_scram_keys
-----------------
+reuse_keys
+----------
 
 * Default: ``true``
 
 Most XMPP servers enable the Salted Challenge Response Authentication Mechanism
-or SCRAM for short. This allows the user and the server to mutually
-authenticate *without* the need to transmit the user's password in plaintext.
+or SCRAM for short. Newer servers also support Fast Authentication Streamlining Tokens.
+These allow the user and the server to mutually authenticate *without* the need
+to transmit the user's password in plaintext.
 
 Assuming the server does not alter the user's password or the
-storage parameters, we can authenticate with the same SCRAM key multiple times.
+storage parameters, we can authenticate with the same key multiple times.
 
 This opens an opportunity: we can store the user's login credentials in the
 browser without storing the sensitive plaintext password, or the
 need to set up complicated third party backends, like OAuth.
 
-Enabling this option will let Converse save a user's SCRAM keys upon successful
+Enabling this option will let Converse save a user's keys upon successful
 login, and next time Converse is loaded the user will be automatically logged in
-with those SCRAM keys.
+with those keys.
 
 
 .. _`roomconfig_whitelist`:

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-19 10:13+0200\n"
-"PO-Revision-Date: 2025-06-06 10:44+0000\n"
-"Last-Translator: JC Brand <jc@opkode.com>\n"
+"PO-Revision-Date: 2025-06-22 09:01+0000\n"
+"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 5.13-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1675,7 +1675,7 @@ msgstr "Kategorie"
 
 #: dist/converse-no-dependencies.js:97653
 msgid "Items"
-msgstr ""
+msgstr "Elemente"
 
 #: dist/converse-no-dependencies.js:97660
 #: dist/converse-no-dependencies.js:107475
@@ -1683,14 +1683,13 @@ msgid "Features"
 msgstr "Funktionen"
 
 #: dist/converse-no-dependencies.js:98033
-#, fuzzy
 msgid "No service found with that XMPP address"
-msgstr "Gruppenchat-XMPP-Adresse"
+msgstr "Kein Dienst mit dieser XMPP-Adresse gefunden"
 
 #: dist/converse-no-dependencies.js:98040
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: %1$s"
-msgstr "Fehler"
+msgstr "Fehler: %1$s"
 
 #: dist/converse-no-dependencies.js:98446
 msgid "Close these announcements"
@@ -2421,9 +2420,8 @@ msgid "offline"
 msgstr "abgemeldet"
 
 #: dist/converse-no-dependencies.js:110528
-#, fuzzy
 msgid "Set status"
-msgstr "Statusnachricht"
+msgstr "Status festlegen"
 
 #: dist/converse-no-dependencies.js:110529
 msgid "Away for long"
@@ -2434,9 +2432,8 @@ msgid "Personal status message"
 msgstr "Persönliche Statusnachricht"
 
 #: dist/converse-no-dependencies.js:110539
-#, fuzzy
 msgid "Clear status message"
-msgstr "Persönliche Statusnachricht"
+msgstr "Statusnachricht löschen"
 
 #: dist/converse-no-dependencies.js:110760
 msgid "Save and close"
@@ -2451,7 +2448,6 @@ msgstr ""
 "neben Ihrem Namen."
 
 #: dist/converse-no-dependencies.js:110763
-#, fuzzy
 msgid "Status"
 msgstr "Status"
 
@@ -2468,13 +2464,12 @@ msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "Leider ist beim Speichern Ihrer Profildaten ein Fehler aufgetreten."
 
 #: dist/converse-no-dependencies.js:111274
-#, fuzzy
 msgid "Profile updated successfully"
-msgstr "Registrierung erfolgreich"
+msgstr "Profil erfolgreich aktualisiert"
 
 #: dist/converse-no-dependencies.js:111307
 msgid "Status updated"
-msgstr ""
+msgstr "Status aktualisiert"
 
 #: dist/converse-no-dependencies.js:111337
 msgid "Are you sure you want to log out?"
@@ -2489,9 +2484,8 @@ msgid "Commands"
 msgstr "Befehle"
 
 #: dist/converse-no-dependencies.js:111513
-#, fuzzy
 msgid "Services"
-msgstr "Server:"
+msgstr "Dienste"
 
 #: dist/converse-no-dependencies.js:111530
 #, javascript-format
@@ -2516,9 +2510,8 @@ msgid "I am %1$s"
 msgstr "Ich bin %1$s"
 
 #: dist/converse-no-dependencies.js:111729
-#, fuzzy
 msgid "Update your profile"
-msgstr "Ihr Profil"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:111730
 msgid "Click to change your chat status"
@@ -3025,9 +3018,8 @@ msgstr ""
 "Hier klicken, um die Kontaktanfrage von %1$s (XMPP-Adresse: %2$s) abzulehnen"
 
 #: dist/converse-no-dependencies.js:125349
-#, fuzzy
 msgid "Accept as contact"
-msgstr "Kontakt hinzufügen"
+msgstr "Als Kontakt aufnehmen"
 
 #: dist/converse-no-dependencies.js:125445
 #, javascript-format
@@ -3035,9 +3027,8 @@ msgid "Click to add %1$s as a contact"
 msgstr "Klicken, um %1$s als Kontakt hinzuzufügen"
 
 #: dist/converse-no-dependencies.js:125448
-#, fuzzy
 msgid "Save as contact"
-msgstr "Kontakt entfernen"
+msgstr "Als Kontakt speichern"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -3066,9 +3057,8 @@ msgid "Sorry, something went wrong while adding the contact"
 msgstr "Leider ist bei der Festlegung der Rolle etwas schief gelaufen"
 
 #: dist/converse-no-dependencies.js:126405
-#, fuzzy
 msgid "Contact added successfully"
-msgstr "Registrierung erfolgreich"
+msgstr "Kontakt erfolgreich hinzugefügt"
 
 #: dist/converse-no-dependencies.js:126437
 msgid ""
@@ -3124,7 +3114,6 @@ msgid "clear"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127352
-#, fuzzy
 msgid "Select All"
 msgstr "Alle auswählen"
 
@@ -3201,11 +3190,11 @@ msgstr "möchte Ihr Kontakt sein"
 
 #: dist/converse-no-dependencies.js:128627
 msgid "Approve"
-msgstr ""
+msgstr "Genehmigen"
 
 #: dist/converse-no-dependencies.js:128629
 msgid "Deny"
-msgstr ""
+msgstr "Verweigern"
 
 #. *
 #. * @param {import('../approval-alert').default} el
@@ -3218,7 +3207,7 @@ msgstr "Klicken, um %1$s als Kontakt hinzuzufügen"
 
 #: dist/converse-no-dependencies.js:128666
 msgid "Dismiss"
-msgstr ""
+msgstr "Verwerfen"
 
 #~ msgid "An error occurred while querying for archived messages."
 #~ msgstr ""

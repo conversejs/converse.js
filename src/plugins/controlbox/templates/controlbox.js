@@ -36,7 +36,7 @@ function whenNotConnected(el) {
 export default (el) => {
     const style = getChatStyle(el.model);
     return html`<div class="flyout box-flyout" style="${style || nothing}">
-        <converse-dragresize></converse-dragresize>
+        ${api.settings.get('view_mode') === 'overlayed' ? html`<converse-dragresize></converse-dragresize>` : ''}
         ${el.model.get('connected')
             ? html`<converse-user-profile></converse-user-profile>
                   <div class="controlbox-pane">

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-19 10:13+0200\n"
-"PO-Revision-Date: 2025-06-22 09:01+0000\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
+"PO-Revision-Date: 2025-06-25 07:01+0000\n"
+"Last-Translator: nautilusx <translate@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
 "Language: de\n"
@@ -1241,8 +1241,8 @@ msgstr "Möchten Sie diesen Kontakt wirklich entfernen?"
 #, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
 msgstr ""
-"Beim Versuch, %1$s als Kontakt zu entfernen, ist leider ein Fehler "
-"aufgetreten."
+"Entschuldigung, beim Versuch, %1$s als Kontakt zu entfernen, ist ein Fehler "
+"aufgetreten"
 
 #: dist/converse-no-dependencies.js:85337
 msgid "Remove and decline contact request"
@@ -1276,7 +1276,9 @@ msgstr ""
 #: dist/converse-no-dependencies.js:85446
 #, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
-msgstr "Beim Versuch, %1$s zu sperren, ist leider ein Fehler aufgetreten."
+msgstr ""
+"Entschuldigung, beim Versuch, %1$s zu sperren, ist leider ein Fehler "
+"aufgetreten"
 
 #: dist/converse-no-dependencies.js:85479
 msgid "Do you want to unblock this contact, so they can send you messages?"
@@ -1287,7 +1289,9 @@ msgstr ""
 #: dist/converse-no-dependencies.js:85511
 #, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
-msgstr "Beim Versuch, %1$s zu entsperren, ist leider ein Fehler aufgetreten."
+msgstr ""
+"Entschuldigung, beim Versuch, %1$s zu entsperren, ist leider ein Fehler "
+"aufgetreten"
 
 #: dist/converse-no-dependencies.js:86307
 msgid "Neither of you receive presence updates"
@@ -2511,7 +2515,7 @@ msgstr "Ich bin %1$s"
 
 #: dist/converse-no-dependencies.js:111729
 msgid "Update your profile"
-msgstr ""
+msgstr "Ihr Profil aktualisieren"
 
 #: dist/converse-no-dependencies.js:111730
 msgid "Click to change your chat status"
@@ -2989,9 +2993,9 @@ msgid "Click to remove %1$s as a contact"
 msgstr "Hier klicken, um %1$s als Kontakt zu entfernen"
 
 #: dist/converse-no-dependencies.js:125225
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to show more details about %1$s"
-msgstr "Mehr Information über diesen Gruppenchat anzeigen"
+msgstr "Klicken Sie, um mehr Details über %1$s anzuzeigen"
 
 #: dist/converse-no-dependencies.js:125253
 msgid "Click to chat with yourself"
@@ -3052,9 +3056,8 @@ msgid "This contact has already been added"
 msgstr "Dieser Kontakt wurde bereits hinzugefügt"
 
 #: dist/converse-no-dependencies.js:126396
-#, fuzzy
 msgid "Sorry, something went wrong while adding the contact"
-msgstr "Leider ist bei der Festlegung der Rolle etwas schief gelaufen"
+msgstr "Entschuldigung, beim Hinzufügen des Kontakts ist etwas schief gegangen"
 
 #: dist/converse-no-dependencies.js:126405
 msgid "Contact added successfully"
@@ -3069,13 +3072,13 @@ msgstr ""
 "Format „Name <benutzer@beispiel.org>“."
 
 #: dist/converse-no-dependencies.js:126825
-#, fuzzy
 msgid "Sorry, something went wrong while accepting the contact request"
-msgstr "Leider ist bei der Festlegung der Rolle etwas schief gelaufen"
+msgstr ""
+"Entschuldigung, bei der Annahme der Kontaktanfrage ist etwas schief gelaufen"
 
 #: dist/converse-no-dependencies.js:126837
 msgid "Successfully accepted the contact request"
-msgstr ""
+msgstr "Kontaktanfrage wurde erfolgreich angenommen"
 
 #. *
 #. * @param {import('../new-chat.js').default} el
@@ -3097,45 +3100,40 @@ msgstr "Leider ist etwas schief gelaufen"
 #: dist/converse-no-dependencies.js:127344
 #, javascript-format
 msgid "%1$s blocked users shown"
-msgstr ""
+msgstr "%1$s gesperrte Nutzer angezeigt"
 
 #: dist/converse-no-dependencies.js:127344
-#, fuzzy
 msgid "Unblock selected users"
-msgstr "Diesen Nutzer entsperren"
+msgstr "Ausgewählte Nutzer entsperren"
 
 #: dist/converse-no-dependencies.js:127344
-#, fuzzy
 msgid "Filter blocked users"
-msgstr "Nutzer entsperren"
+msgstr "Gesperrte Nutzer filtern"
 
 #: dist/converse-no-dependencies.js:127350
 msgid "clear"
-msgstr ""
+msgstr "Löschen"
 
 #: dist/converse-no-dependencies.js:127352
 msgid "Select All"
 msgstr "Alle auswählen"
 
 #: dist/converse-no-dependencies.js:127363
-#, fuzzy
 msgid "No blocked XMPP addresses"
-msgstr "XMPP-Adresse"
+msgstr "Keine gesperrten XMPP-Adressen"
 
 #: dist/converse-no-dependencies.js:127752
-#, fuzzy
 msgid "Blocklist"
-msgstr "Zur Sperrliste hinzufügen"
+msgstr "Sperrliste"
 
 #: dist/converse-no-dependencies.js:127779
 #, javascript-format
 msgid "Successfully unblocked %1$s XMPP addresses"
-msgstr ""
+msgstr "%1$s XMPP-Adressen erfolgreich entsperrt"
 
 #: dist/converse-no-dependencies.js:127779
-#, fuzzy
 msgid "Successfully unblocked one XMPP address"
-msgstr "Namen oder XMPP-Adresse suchen"
+msgstr "Eine XMPP-Adresse erfolgreich entsperrt"
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:127914
@@ -3171,9 +3169,8 @@ msgid "Add a contact"
 msgstr "Kontakt hinzufügen"
 
 #: dist/converse-no-dependencies.js:128163
-#, fuzzy
 msgid "Show block list"
-msgstr "Zur Sperrliste hinzufügen"
+msgstr "Sperrliste anzeigen"
 
 #: dist/converse-no-dependencies.js:128199
 msgid "Re-sync contacts"
@@ -3184,9 +3181,9 @@ msgstr "Kontakte neu synchronisieren"
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128625
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s would like to be your contact"
-msgstr "möchte Ihr Kontakt sein"
+msgstr "%1$s möchte Ihr Kontakt sein"
 
 #: dist/converse-no-dependencies.js:128627
 msgid "Approve"
@@ -3201,9 +3198,9 @@ msgstr "Verweigern"
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:128662
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Would you like to add %1$s as a contact?"
-msgstr "Klicken, um %1$s als Kontakt hinzuzufügen"
+msgstr "Möchten Sie %1$s als Kontakt hinzufügen?"
 
 #: dist/converse-no-dependencies.js:128666
 msgid "Dismiss"

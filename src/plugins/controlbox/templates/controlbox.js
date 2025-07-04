@@ -36,16 +36,19 @@ function whenNotConnected(el) {
 export default (el) => {
     const style = getChatStyle(el.model);
     return html`<div class="flyout box-flyout" style="${style || nothing}">
-        <converse-dragresize></converse-dragresize>
-        ${el.model.get('connected')
-            ? html`<converse-user-profile></converse-user-profile>
-                  <div class="controlbox-pane">
-                      <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
-                      <div id="chatrooms" class="controlbox-section"><converse-rooms-list></converse-rooms-list></div>
-                      ${api.settings.get('authentication') === ANONYMOUS
-                          ? ''
-                          : html`<div id="converse-roster" class="controlbox-section"><converse-roster /></div>`}
-                  </div>`
-            : whenNotConnected(el)}
-    </div>`;
+            <converse-dragresize></converse-dragresize>
+            ${el.model.get('connected')
+                ? html`<converse-user-profile></converse-user-profile>
+                      <div class="controlbox-pane">
+                          <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
+                          <div id="chatrooms" class="controlbox-section">
+                              <converse-rooms-list></converse-rooms-list>
+                          </div>
+                          ${api.settings.get('authentication') === ANONYMOUS
+                              ? ''
+                              : html`<div id="converse-roster" class="controlbox-section"><converse-roster /></div>`}
+                      </div>`
+                : whenNotConnected(el)}
+        </div>
+        ${api.settings.get('view_mode') === 'fullscreen' ? html`<converse-split-resize></converse-split-resize>` : ''}`;
 };

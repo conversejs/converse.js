@@ -30,6 +30,7 @@ class ConverseBackground extends CustomElement {
 
     setThemeAttributes () {
         const theme = getTheme();
+        this.classList.forEach((name) => name.startsWith('theme-') && this.classList.remove(name));
         this.classList.add(`theme-${theme}`);
         this.setAttribute('data-converse-theme', theme);
         this.setAttribute('data-bs-theme', theme);

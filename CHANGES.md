@@ -7,6 +7,7 @@
 ## 14.0.0-beta.2 (2026-06-18)
 
 - Remove `client-compress` and use browser APIs
+- fix: Prior theme CSS class is not removed when changing the theme dynamically.
 
 ## 14.0.0-beta.1 (2026-06-18)
 

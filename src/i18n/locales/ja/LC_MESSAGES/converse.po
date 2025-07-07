@@ -2899,12 +2899,11 @@ msgstr "クリックして %1$s を連絡先から削除"
 #: dist/converse-no-dependencies.js:125225
 #, javascript-format
 msgid "Click to show more details about %1$s"
-msgstr "%1$s についての詳細を見るにはクリック"
+msgstr "クリックして、%1$s についての詳細を見る"
 
 #: dist/converse-no-dependencies.js:125253
-#, fuzzy
 msgid "Click to chat with yourself"
-msgstr "クリックして、%1$s を名簿に追加します"
+msgstr "クリックして、自分自身とチャット"
 
 #: dist/converse-no-dependencies.js:125253
 #: dist/converse-no-dependencies.js:125345
@@ -2924,9 +2923,8 @@ msgid "Click to decline the contact request from %1$s (XMPP address: %2$s)"
 msgstr "クリックして %1$s (XMPP アドレス: %2$s) からの申込を拒否"
 
 #: dist/converse-no-dependencies.js:125349
-#, fuzzy
 msgid "Accept as contact"
-msgstr "連絡先を追加"
+msgstr "相手先として受諾"
 
 #: dist/converse-no-dependencies.js:125445
 #, fuzzy, javascript-format
@@ -2934,9 +2932,8 @@ msgid "Click to add %1$s as a contact"
 msgstr "クリックして %1$s を連絡先から削除"
 
 #: dist/converse-no-dependencies.js:125448
-#, fuzzy
 msgid "Save as contact"
-msgstr "連絡先を削除"
+msgstr "相手先として保存"
 
 #. *
 #. * @param {import('../add-contact.js').default} el
@@ -2948,9 +2945,8 @@ msgid "Add"
 msgstr "追加"
 
 #: dist/converse-no-dependencies.js:126062
-#, fuzzy
 msgid "Search name or XMPP address"
-msgstr "グループチャットアドレス"
+msgstr "名前か XMPP アドレスを検索"
 
 #: dist/converse-no-dependencies.js:126357
 msgid "Add a Contact"
@@ -2961,20 +2957,19 @@ msgid "This contact has already been added"
 msgstr "この連絡先は既に追加済みです"
 
 #: dist/converse-no-dependencies.js:126396
-#, fuzzy
 msgid "Sorry, something went wrong while adding the contact"
-msgstr "役の設定に失敗したようです"
+msgstr "相手先を追加する際に失敗したようです"
 
 #: dist/converse-no-dependencies.js:126405
-#, fuzzy
 msgid "Contact added successfully"
-msgstr "登録に成功しました"
+msgstr "相手先の追加に成功しました"
 
 #: dist/converse-no-dependencies.js:126437
 msgid ""
 "Invalid value for the name and XMPP address. Please use the format \"Name "
 "<username@example.org>\"."
-msgstr ""
+msgstr "名前と XMPP アドレスが正しくありません。\"Name <username@example.org>\" "
+"の形式にしてください。"
 
 #: dist/converse-no-dependencies.js:126825
 #, fuzzy
@@ -2990,20 +2985,17 @@ msgstr ""
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:126893
-#, fuzzy
 msgid "Start Chat"
-msgstr "呼び出す"
+msgstr "チャットを開始"
 
 #: dist/converse-no-dependencies.js:127154
 #: dist/converse-no-dependencies.js:128162
-#, fuzzy
 msgid "Start a new chat"
-msgstr "呼び出す"
+msgstr "新しいチャットを開始"
 
 #: dist/converse-no-dependencies.js:127202
-#, fuzzy
 msgid "Sorry, something went wrong"
-msgstr "復元に失敗したようです"
+msgstr "何か問題が発生しました"
 
 #: dist/converse-no-dependencies.js:127344
 #, javascript-format

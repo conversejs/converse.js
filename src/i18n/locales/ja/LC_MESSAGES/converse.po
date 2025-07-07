@@ -2958,7 +2958,7 @@ msgstr "この連絡先は既に追加済みです"
 
 #: dist/converse-no-dependencies.js:126396
 msgid "Sorry, something went wrong while adding the contact"
-msgstr "相手先を追加する際に失敗したようです"
+msgstr "相手先を追加する際に何か問題が発生しました"
 
 #: dist/converse-no-dependencies.js:126405
 msgid "Contact added successfully"
@@ -3013,12 +3013,11 @@ msgstr "ステータスで絞り込み"
 
 #: dist/converse-no-dependencies.js:127350
 msgid "clear"
-msgstr ""
+msgstr "消去"
 
 #: dist/converse-no-dependencies.js:127352
-#, fuzzy
 msgid "Select All"
-msgstr "すべてを選択"
+msgstr "すべて選択"
 
 #: dist/converse-no-dependencies.js:127363
 #, fuzzy
@@ -3093,11 +3092,11 @@ msgstr "は連絡先登録を要求しています"
 
 #: dist/converse-no-dependencies.js:128627
 msgid "Approve"
-msgstr ""
+msgstr "承認"
 
 #: dist/converse-no-dependencies.js:128629
 msgid "Deny"
-msgstr ""
+msgstr "拒否"
 
 #. *
 #. * @param {import('../approval-alert').default} el
@@ -3110,7 +3109,7 @@ msgstr "クリックして %1$s を連絡先から削除"
 
 #: dist/converse-no-dependencies.js:128666
 msgid "Dismiss"
-msgstr ""
+msgstr "却下"
 
 #~ msgid "An error occurred while querying for archived messages."
 #~ msgstr "アーカイブメッセージの取得中にエラーが発生しました。"

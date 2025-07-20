@@ -31,18 +31,20 @@ class QRCodeComponent extends CustomElement {
 
     render() {
         const nCount = this.#qr_code.getModuleCount();
+        const quietZone = 4;
+        const totalCount = nCount + 2 * quietZone;
         const rects = [];
 
         for (let row = 0; row < nCount; row++) {
             for (let col = 0; col < nCount; col++) {
                 if (this.#qr_code.isDark(row, col)) {
-                    rects.push(svg`<use x="${row}" y="${col}" href="#template"></use>`);
+                    rects.push(svg`<use x="${row + quietZone}" y="${col + quietZone}" href="#template"></use>`);
                 }
             }
         }
 
         return svg`
-            <svg viewBox="0 0 ${nCount} ${nCount}" width="${this.width}" height="${this.height}" fill="${this.colorLight}">
+            <svg viewBox="0 0 ${totalCount} ${totalCount}" width="${this.width}" height="${this.height}" fill="${this.colorLight}">
                 <rect fill="${this.colorLight}" width="100%" height="100%"></rect>
                 <rect fill="${this.colorDark}" width="1" height="1" id="template"></rect>
                 ${rects}

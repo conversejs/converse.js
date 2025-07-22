@@ -318,5 +318,12 @@
         <xmpp:since>8.0.0</xmpp:since>
       </xmpp:SupportedXep>
     </implements>
+	<implements>
+		<xmpp:SupportedXep>
+			<xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0483.html"/>
+			<xmpp:since>11.0.1</xmpp:since>			
+			<xmpp:note xml:lang='en'>Provided by the 'Online Meetings (olmeet)' plugin</xmpp:note>
+		</xmpp:SupportedXep>
+	</implements>	
   </Project>
 </rdf:RDF>

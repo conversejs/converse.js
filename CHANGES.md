@@ -6,6 +6,7 @@
 - Add approval banner in chats with requesting contacts or unsaved contacts
 - Some fixes regarding manually resized chats in `overlayed` view mode.
 - Replace webpack with [rspack](https://rspack.rs)
+- Registration: Use https://providers.xmpp.net instead of https://compliance.conversations.im
 
 ## 11.0.1 (2025-06-09)
 

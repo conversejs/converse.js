@@ -17,7 +17,9 @@
         "types": "./types/index.d.ts",
         "default": "./dist/converse.js"
       }
-    }
+    },
+    "./dist/*": "./dist/*",
+    "./shared/*": "./src/shared/*"
   },
   "types": "./src/types/index.d.ts",
   "main": "./src/index.js",

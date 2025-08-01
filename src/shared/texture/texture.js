@@ -314,7 +314,7 @@ export class Texture extends String {
          * @param {Texture} text - A {@link Texture } instance. You
          *  can call {@link Texture#addTemplateResult } on it in order to
          *  add TemplateResult objects meant to render rich parts of the message.
-         * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });
+         * @example _converse.api.listen.on('beforeMessageBodyTransformed', (texture) => { ... });
          */
         await api.trigger("beforeMessageBodyTransformed", this, { synchronous: true });
 
@@ -334,7 +334,7 @@ export class Texture extends String {
          * @param { Texture } text - A {@link Texture } instance. You
          *  can call {@link Texture#addTemplateResult} on it in order to
          *  add TemplateResult objects meant to render rich parts of the message.
-         * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
+         * @example _converse.api.listen.on('afterMessageBodyTransformed', (texture) => { ... });
          */
         await api.trigger("afterMessageBodyTransformed", this, { synchronous: true });
 

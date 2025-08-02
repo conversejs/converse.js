@@ -21,6 +21,19 @@ For example, the following XMPP servers have plugins available:
 * **Prosody**: `mod_conversejs <https://modules.prosody.im/mod_conversejs.html>`_
 * **ejabberd**: `mod_conversejs <https://docs.ejabberd.im/admin/configuration/modules/#mod-conversejs>`_
 
+.. warning::
+    When configuring one of these plugins in production, ensure that they use a specific version of the conversjs resources to avoid breaking changes.
+
+For instance, this will configure ejabberd's, mod-conversejs to fetch a specific version instead of whichever is the latest one.
+
+.. code-block:: yml
+    
+    mod_conversejs:
+      # Replace 11.0.1 with your desired version
+      conversejs_css: https://cdn.conversejs.org/11.0.1/dist/converse.min.css
+      conversejs_script: https://cdn.conversejs.org/11.0.1/dist/converse.min.js
+
+
 Option 2: Self-hosting
 ======================
 
@@ -39,7 +52,7 @@ To use it, add these lines to your HTML page's ``<head>`` section:
 
 .. code-block:: html
 
-    <!-- Replace 10.1.5 with your desired version -->
+    <!-- Replace 11.0.1 with your desired version -->
     <link rel="stylesheet" href="https://cdn.conversejs.org/11.0.1/dist/converse.min.css">
     <script src="https://cdn.conversejs.org/11.0.1/dist/converse.min.js" charset="utf-8"></script>
 

@@ -22,7 +22,7 @@ For example, the following XMPP servers have plugins available:
 * **ejabberd**: `mod_conversejs <https://docs.ejabberd.im/admin/configuration/modules/#mod-conversejs>`_
 
 .. warning::
-    When configuring one of these plugins in production, ensure that they use a specific version of the conversjs resources to avoid breaking changes.
+    When configuring one of these plugins in production, it's good practice to use a specific version of the Converse resources to avoid breaking changes.
 
 For instance, this will configure ejabberd's, mod-conversejs to fetch a specific version instead of whichever is the latest one.
 

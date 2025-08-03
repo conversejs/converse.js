@@ -61,7 +61,7 @@
     "serve": "http-server -c-1",
     "serve-tls": "http-server -S -C certs/chat.example.org.crt -K certs/chat.example.org.key",
     "devserver": "npx rspack serve --config rspack/rspack.serve.js",
-    "watch": "rspack build --watch --config rspack/rspack.build.js --mode=development",
+    "watch": "npm run devserver",
     "types": "tsc -p ./src/log/tsconfig.json && tsc -p ./src/headless/tsconfig.json && tsc",
     "check:types": "tsc --noEmit"
   },

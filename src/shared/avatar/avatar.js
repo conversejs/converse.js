@@ -2,14 +2,18 @@ import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 import { api } from '@converse/headless';
 import { __ } from 'i18n';
-import { CustomElement } from 'shared/components/element.js';
+import { ObservableElement } from 'shared/components/observable.js';
 import tplAvatar from './templates/avatar.js';
 
 import './avatar.scss';
 
-export default class Avatar extends CustomElement {
+export default class Avatar extends ObservableElement {
+    /**
+     * @typedef {import('shared/components/types').ObservableProperty} ObservableProperty
+     */
     static get properties() {
         return {
+            ...super.properties,
             model: { type: Object },
             pickerdata: { type: Object },
             name: { type: String },
@@ -26,6 +30,7 @@ export default class Avatar extends CustomElement {
         this.width = 36;
         this.height = 36;
         this.name = '';
+        this.observable = /** @type {ObservableProperty} */ ("once");
     }
 
     render() {
@@ -57,12 +62,15 @@ export default class Avatar extends CustomElement {
             height: ${this.height}px;
             font: ${this.width / 2}px Arial;
             line-height: ${this.height}px;`;
+        const style = this.isVisible ? until(this.model.getAvatarStyle(css), default_bg_css + css) : default_bg_css + css;
 
-        const author_style = this.model.getAvatarStyle(css);
-        return html`<div class="avatar-initials" style="${until(author_style, default_bg_css + css)}"
-            aria-label="${this.name}">
-                ${this.getInitials(this.name)}
+        return html`<div class="avatar-initials" style="${style}" aria-label="${this.name}">
+            ${this.getInitials(this.name)}
         </div>`;
+    }
+
+    onVisibilityChanged() {
+        this.requestUpdate();
     }
 
     /**

@@ -2,6 +2,10 @@ import { __ } from 'i18n';
 import { html } from 'lit';
 
 export default el => {
+
+      if (el._converse?.authentication === 'external') {
+        return html``;
+    }
     const i18n_submit = __('Submit');
     const i18n_passwords_must_match = __('The new passwords must match');
     const i18n_new_password = __('New password');

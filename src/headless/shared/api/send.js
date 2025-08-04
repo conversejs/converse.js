@@ -19,6 +19,7 @@ export default {
     send(stanza) {
         const { api } = _converse;
         if (!api.connection.connected()) {
+            // TODO: queue unsent messages and send once we're connected again
             log.warn("Not sending stanza because we're not connected!");
             log.warn(Strophe.serialize(stanza));
             return;

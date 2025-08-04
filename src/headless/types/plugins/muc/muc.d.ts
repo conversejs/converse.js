@@ -539,9 +539,10 @@ declare class MUC extends MUC_base {
      * Refresh the disco identity, features and fields for this {@link MUC}.
      * *features* are stored on the features {@link Model} attribute on this {@link MUC}.
      * *fields* are stored on the config {@link Model} attribute on this {@link MUC}.
+     * @param {import('@converse/headless/plugins/disco/types').DiscoInfoOptions} [options]
      * @returns {Promise}
      */
-    refreshDiscoInfo(): Promise<any>;
+    refreshDiscoInfo(options?: import("@converse/headless/plugins/disco/types").DiscoInfoOptions): Promise<any>;
     /**
      * Fetch the *extended* MUC info from the server and cache it locally
      * https://xmpp.org/extensions/xep-0045.html#disco-roominfo

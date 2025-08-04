@@ -152,9 +152,10 @@ export default {
          * @method api.disco.info
          * @param {string} jid The Jabber ID of the entity to query
          * @param {string} [node] A specific node identifier associated with the JID
+         * @param {import('./types').DiscoInfoOptions} [options]
          * @returns {promise} Promise which resolves once we have a result from the server.
          */
-        info(jid, node) {
+        info(jid, node, options) {
             const attrs = { xmlns: Strophe.NS.DISCO_INFO };
             if (node) {
                 attrs.node = node;
@@ -164,7 +165,7 @@ export default {
                 'to': jid,
                 'type': 'get',
             }).c('query', attrs);
-            return api.sendIQ(info);
+            return api.sendIQ(info, options?.timeout);
         },
 
         /**
@@ -381,11 +382,12 @@ export default {
          * disco entity by refetching them from the server
          * @method api.disco.refresh
          * @param {string} jid The JID of the entity whose features are refreshed.
+         * @param {import('./types').DiscoInfoOptions} [options]
          * @returns {Promise} A promise which resolves once the features have been refreshed
          * @example
          * await api.disco.refresh('room@conference.example.org');
          */
-        async refresh(jid) {
+        async refresh(jid, options) {
             if (!jid) throw new TypeError('api.disco.refresh: You need to provide an entity JID');
 
             await api.waitUntil('discoInitialized');
@@ -400,10 +402,10 @@ export default {
                 if (!entity.waitUntilItemsFetched.isPending) {
                     entity.waitUntilItemsFetched = getOpenPromise();
                 }
-                entity.queryInfo();
+                entity.queryInfo(options);
             } else {
                 // Create it if it doesn't exist
-                entity = await api.disco.entities.create({ jid }, { ignore_cache: true });
+                entity = await api.disco.entities.create({ jid }, { ignore_cache: true, timeout: options.timeout });
             }
             return entity.waitUntilItemsFetched;
         },

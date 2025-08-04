@@ -102,9 +102,12 @@ class DiscoEntity extends Model {
         api.trigger('discoExtensionFieldDiscovered', field);
     }
 
+    /**
+     * @param {import('./types').FetchEntityFeaturesOptions} options
+     */
     async fetchFeatures(options) {
         if (options.ignore_cache) {
-            await this.queryInfo();
+            await this.queryInfo(options);
         } else {
             const store_id = this.features.browserStorage.name;
 
@@ -144,10 +147,13 @@ class DiscoEntity extends Model {
         }
     }
 
-    async queryInfo() {
+    /**
+     * @param {import('./types').DiscoInfoOptions} [options]
+     */
+    async queryInfo(options) {
         let stanza;
         try {
-            stanza = await api.disco.info(this.get('jid'), null);
+            stanza = await api.disco.info(this.get('jid'), null, options);
         } catch (iq) {
             if (u.isElement(iq)) {
                 const e = await parseErrorStanza(iq);

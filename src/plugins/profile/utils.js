@@ -27,6 +27,7 @@ export function getPrettyStatus(stat) {
 export function shouldShowPasswordResetForm() {
     const conn = _converse.api.connection.get();
     const mechanism = conn._sasl_mechanism;
+ console.log('🔍 SASL Mechanism:', mechanism?.mechname, mechanism);
     if (
         mechanism.mechname === 'EXTERNAL' ||
         mechanism.mechname === 'ANONYMOUS' ||

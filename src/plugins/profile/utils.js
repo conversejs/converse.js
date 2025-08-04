@@ -26,16 +26,18 @@ export function getPrettyStatus(stat) {
  */
 export function shouldShowPasswordResetForm() {
     const conn = _converse.api.connection.get();
-    const mechanism = conn._sasl_mechanism;
- console.log('🔍 SASL Mechanism:', mechanism?.mechname, mechanism);
-    if (
-        mechanism.mechname === 'EXTERNAL' ||
-        mechanism.mechname === 'ANONYMOUS' ||
-        mechanism.mechname === 'X-OAUTH2' ||
-        mechanism.mechname === 'OAUTHBEARER'
-    ) {
+    const mechanism = conn?._sasl_mechanism;
+
+    console.log('🔍 SASL Mechanism:', mechanism?.mechname, mechanism);
+
+    if (!mechanism?.mechname) {
+        // Fallback: no mechanism detected
         return false;
     }
-    return true;
+
+    const externalMechs = ['EXTERNAL', 'ANONYMOUS', 'X-OAUTH2', 'OAUTHBEARER'];
+
+    return !externalMechs.includes(mechanism.mechname.toUpperCase());
 }
+
 

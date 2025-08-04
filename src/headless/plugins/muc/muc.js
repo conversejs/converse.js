@@ -50,6 +50,8 @@ import MUCSession from './session';
 
 const { u, stx } = converse.env;
 
+const DISCO_INFO_TIMEOUT_ON_JOIN = 5000;
+
 /**
  * Represents a groupchat conversation.
  */
@@ -192,7 +194,9 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         // Set this early, so we don't rejoin in onHiddenChange
         this.session.save('connection_status', ROOMSTATUS.CONNECTING);
 
-        const is_new = (await this.refreshDiscoInfo()) instanceof ItemNotFoundError;
+        const result = await this.refreshDiscoInfo({ timeout: DISCO_INFO_TIMEOUT_ON_JOIN });
+        const is_new = result instanceof ItemNotFoundError;
+
         nick = await this.getAndPersistNickname(nick);
         if (!nick) {
             safeSave(this.session, { 'connection_status': ROOMSTATUS.NICKNAME_REQUIRED });
@@ -1254,10 +1258,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * Refresh the disco identity, features and fields for this {@link MUC}.
      * *features* are stored on the features {@link Model} attribute on this {@link MUC}.
      * *fields* are stored on the config {@link Model} attribute on this {@link MUC}.
+     * @param {import('@converse/headless/plugins/disco/types').DiscoInfoOptions} [options]
      * @returns {Promise}
      */
-    async refreshDiscoInfo() {
-        const result = await api.disco.refresh(this.get('jid'));
+    async refreshDiscoInfo(options) {
+        const result = await api.disco.refresh(this.get('jid'), options);
         if (result instanceof StanzaError) {
             return result;
         }
@@ -1738,7 +1743,8 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             <iq to="${this.get('jid')}" type="get" xmlns="jabber:client">
                 <query xmlns="${Strophe.NS.DISCO_INFO}" node="x-roomuser-item"/>
             </iq>`;
-        const result = await api.sendIQ(stanza, null, false);
+
+        const result = await api.sendIQ(stanza, DISCO_INFO_TIMEOUT_ON_JOIN, false);
         if (u.isErrorObject(result)) {
             throw result;
         }

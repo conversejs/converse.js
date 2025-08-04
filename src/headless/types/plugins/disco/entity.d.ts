@@ -46,8 +46,14 @@ declare class DiscoEntity extends Model {
     getFeature(feature: string): Promise<this>;
     onFeatureAdded(feature: any): void;
     onFieldAdded(field: any): void;
-    fetchFeatures(options: any): Promise<void>;
-    queryInfo(): Promise<void>;
+    /**
+     * @param {import('./types').FetchEntityFeaturesOptions} options
+     */
+    fetchFeatures(options: import("./types").FetchEntityFeaturesOptions): Promise<void>;
+    /**
+     * @param {import('./types').DiscoInfoOptions} [options]
+     */
+    queryInfo(options?: import("./types").DiscoInfoOptions): Promise<void>;
     /**
      * @param {Element} stanza
      */

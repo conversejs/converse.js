@@ -7,7 +7,7 @@
 - Some fixes regarding manually resized chats in `overlayed` view mode.
 - Replace webpack with [rspack](https://rspack.rs)
 - Registration: Use https://providers.xmpp.net instead of https://compliance.conversations.im
-
+- Fix: Hide reset password tab for external authentication mechanisms. (#3779)
 ## 11.0.1 (2025-06-09)
 
 - #2938: Add a service discovery browser

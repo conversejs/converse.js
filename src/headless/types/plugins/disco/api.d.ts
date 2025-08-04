@@ -65,9 +65,10 @@ declare namespace _default {
          * @method api.disco.info
          * @param {string} jid The Jabber ID of the entity to query
          * @param {string} [node] A specific node identifier associated with the JID
+         * @param {import('./types').DiscoInfoOptions} [options]
          * @returns {promise} Promise which resolves once we have a result from the server.
          */
-        export function info(jid: string, node?: string): Promise<any>;
+        export function info(jid: string, node?: string, options?: import("./types").DiscoInfoOptions): Promise<any>;
         /**
          * Query for items associated with an XMPP entity
          *
@@ -190,11 +191,12 @@ declare namespace _default {
          * disco entity by refetching them from the server
          * @method api.disco.refresh
          * @param {string} jid The JID of the entity whose features are refreshed.
+         * @param {import('./types').DiscoInfoOptions} [options]
          * @returns {Promise} A promise which resolves once the features have been refreshed
          * @example
          * await api.disco.refresh('room@conference.example.org');
          */
-        export function refresh(jid: string): Promise<any>;
+        export function refresh(jid: string, options?: import("./types").DiscoInfoOptions): Promise<any>;
         /**
          * Return all the features associated with a disco entity
          *

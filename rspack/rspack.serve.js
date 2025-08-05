@@ -19,6 +19,7 @@ module.exports = merge(common, {
         allowedHosts: ['localhost'],
         devMiddleware: {
             publicPath: '/dist/',
+            writeToDisk: true,
         },
     },
     watchOptions: {

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Converse</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Converse XMPP/Jabber Chat" />
+    <meta name="author" content="JC Brand" />
+    <meta name="keywords" content="xmpp chat webchat converse.js" />
+    <link rel="manifest" href="./manifest.json">
+    <link rel="shortcut icon" type="image/ico" href="images/favicon.ico"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="dist/converse.css" />
+    <!-- Modern browsers will execute this -->
+    <script type="module">
+        (async () => {
+            try {
+                // Feature detection
+                if (typeof window.Promise === 'undefined' ||
+                    typeof window.WeakMap === 'undefined') {
+                    throw new Error('Browser lacks required features');
+                }
+
+                const { default: converse } = await import('./dist/converse.esm.js');
+
+                converse.plugins.add('converse-debug', {
+                    initialize () {
+                        // Expose for debugging but warn about direct usage
+                        if (window._converse) {
+                            console.warn('_converse already exists on window');
+                        }
+                        Object.defineProperty(window, '_converse', {
+                            get: () => this._converse,
+                            configurable: true // Allows tests to redefine
+                        });
+                    }
+                });
+
+                await converse.initialize({
+                    theme: 'nordic',
+                    dark_theme: 'dracula',
+                    auto_away: 300,
+                    loglevel: 'debug',
+                    show_background: true,
+                    message_archiving: 'always',
+                    muc_show_logs_before_join: true,
+                    notify_all_room_messages: ['discuss@conference.conversejs.org'],
+                    fetch_url_headers: true,
+                    whitelisted_plugins: ['converse-debug'],
+                    bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+                    show_controlbox_by_default: true,
+                    // view_mode: 'overlayed',
+                    // websocket_url: 'wss://conversejs.org/xmpp-websocket',
+                    // websocket_url: 'ws://chat.example.org:5380/xmpp-websocket',
+                    // connection_options: { worker: '/dist/shared-connection-worker.js' }
+                });
+            } catch (error) {
+                console.error('Failed to load Converse.js ESM:', error);
+                document.getElementById('fallback-script').hidden = false;
+            }
+        })();
+    </script>
+
+    <!-- Older browsers will execute this -->
+    <script nomodule id="fallback-script" hidden>
+        console.warn('Using legacy CJS build due to lack of module support');
+        document.write('<script src="dist/converse.js"><\/script>');
+    </script>
+
+    <!-- Error display -->
+    <div id="load-error" style="display:none; padding:1em; background:#fcc; margin:1em">
+        <h2>Loading Error</h2>
+        <p>Failed to load Converse.js. Please try:</p>
+        <ul>
+            <li>Using a modern browser (Chrome, Firefox, Edge, Safari)</li>
+            <li>Checking console for errors</li>
+        </ul>
+    </div>
+    <script>
+        window.addEventListener('error', () => {
+            document.getElementById('load-error').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

@@ -1,4 +1,7 @@
-export default class Avatar extends CustomElement {
+export default class Avatar extends ObservableElement {
+    /**
+     * @typedef {import('shared/components/types').ObservableProperty} ObservableProperty
+     */
     static get properties(): {
         model: {
             type: ObjectConstructor;
@@ -18,18 +21,24 @@ export default class Avatar extends CustomElement {
         nonce: {
             type: StringConstructor;
         };
+        observable: {
+            type: StringConstructor;
+        };
+        intersectionRatio: {
+            type: NumberConstructor;
+        };
     };
-    model: any;
     pickerdata: any;
     width: number;
     height: number;
     name: string;
     render(): import("lit-html").TemplateResult<1> | "";
+    onVisibilityChanged(): void;
     /**
      * @param {string} name
      * @returns {string}
      */
     getInitials(name: string): string;
 }
-import { CustomElement } from 'shared/components/element.js';
+import { ObservableElement } from 'shared/components/observable.js';
 //# sourceMappingURL=avatar.d.ts.map

@@ -2,7 +2,6 @@
   "name": "converse.js",
   "version": "11.0.1",
   "description": "Browser based XMPP chat client",
-  "browser": "dist/converse.js",
   "workspaces": [
     "src/headless",
     "src/log"
@@ -11,7 +10,7 @@
     ".": {
       "import": {
         "types": "./src/types/index.d.ts",
-        "default": "./src/index.js"
+        "default": "./dist/converse.esm.js"
       },
       "require": {
         "types": "./types/index.d.ts",
@@ -22,8 +21,9 @@
     "./shared/*": "./src/shared/*"
   },
   "types": "./src/types/index.d.ts",
-  "main": "./src/index.js",
-  "module": "./src/index.js",
+  "browser": "dist/converse.js",
+  "main": "dist/converse.js",
+  "module": "dist/converse.esm.js",
   "files": [
     "CHANGES.md",
     "LICENSE.txt",

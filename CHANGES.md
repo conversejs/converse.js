@@ -7,6 +7,7 @@
 - Some fixes regarding manually resized chats in `overlayed` view mode.
 - Replace webpack with [rspack](https://rspack.rs)
 - Registration: Use https://providers.xmpp.net instead of https://compliance.conversations.im
+- Load avatar data over HTTP if available in vCard EXTVAL
 
 ## 11.0.1 (2025-06-09)
 

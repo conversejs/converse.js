@@ -10,7 +10,13 @@ module.exports = function(config) {
     files: [
       { pattern: 'dist/*.js.map', included: false },
       { pattern: 'dist/*.css.map', included: false },
-      { pattern: "dist/emojis.js", served: true },
+      {
+        pattern: "dist/emoji.json",
+        watched: false,
+        included: false,
+        served: true,
+        type: 'json'
+      },
       "src/shared/tests/tests.css",
       "dist/converse.js",
       "dist/converse.css",
@@ -162,6 +168,7 @@ module.exports = function(config) {
     ],
 
     proxies: {
+      "/dist/emoji.json": "/base/dist/emoji.json",
       "/dist/images/custom_emojis/": "/base/dist/images/custom_emojis/",
       "/images/logo/": "/base/dist/images/logo/"
     },

@@ -88,6 +88,7 @@ const plugins = [
             { from: 'logo/conversejs-gold-gradient.svg', to: 'images/logo' },
             { from: 'src/shared/styles/webfonts', to: 'webfonts' },
             { from: 'manifest.json', to: 'manifest.json' },
+            { from: 'src/headless/plugins/emoji/emoji.json', to: 'emoji.json' },
         ],
     }),
 ];
@@ -103,10 +104,6 @@ module.exports = [
         },
         output: {
             filename: '[name].js',
-            library: {
-                type: 'umd',
-                name: 'converse'
-            }
         },
     }),
     // ESM Build
@@ -118,7 +115,8 @@ module.exports = [
             'converse.min': path.resolve(__dirname, '../src/entry.js'),
         },
         experiments: {
-            outputModule: true
+            outputModule: true,
+            topLevelAwait: true,
         },
         output: {
             filename: '[name].esm.js',

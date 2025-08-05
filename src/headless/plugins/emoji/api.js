@@ -11,11 +11,21 @@ const emojis = {
      * @method api.emojis.initialize
      * @returns {Promise}
      */
-    async initialize () {
+    async initialize() {
         if (!converse.emojis.initialized) {
             converse.emojis.initialized = true;
 
-            const module = await import(/*webpackChunkName: "emojis" */ './emoji.json');
+            let json;
+            try {
+                const path = api.settings.get('assets_path');
+                const response = await fetch(`${path}/emoji.json`);
+                if (!response.ok) throw new Error('Failed to fetch emoji.json');
+                json = await response.json();
+            } catch (e) {
+                console.error('Failed to load emoji.json:', e);
+                json = {};
+            }
+
             /**
              * *Hook* which allows plugins to modify emojis definition.
              *
@@ -37,24 +47,20 @@ const emojis = {
              *      return json;
              *  });
              */
-            const json = await api.hook('loadEmojis', {}, module.default);
+            json = await api.hook('loadEmojis', {}, json);
             converse.emojis.json = json;
 
-            converse.emojis.by_sn = Object.keys(json).reduce(
-                (result, cat) => Object.assign(result, json[cat]),
-                {}
-            );
+            converse.emojis.by_sn = Object.keys(json).reduce((result, cat) => Object.assign(result, json[cat]), {});
             converse.emojis.list = Object.values(converse.emojis.by_sn);
             converse.emojis.list.sort((a, b) => (a.sn < b.sn ? -1 : a.sn > b.sn ? 1 : 0));
             converse.emojis.shortnames = converse.emojis.list.map((m) => m.sn);
-            const getShortNames = () =>
-                converse.emojis.shortnames.map((s) => s.replace(/[+]/g, '\\$&')).join('|');
+            const getShortNames = () => converse.emojis.shortnames.map((s) => s.replace(/[+]/g, '\\$&')).join('|');
             converse.emojis.shortnames_regex = new RegExp(getShortNames(), 'gi');
             converse.emojis.initialized_promise.resolve();
         }
         return converse.emojis.initialized_promise;
     },
-}
+};
 
 const emojis_api = { emojis };
 

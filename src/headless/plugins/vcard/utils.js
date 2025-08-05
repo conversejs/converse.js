@@ -39,13 +39,14 @@ export function createStanza(type, jid, vcard_el) {
  * @param {MUCOccupant} occupant
  */
 export function onOccupantAvatarChanged(occupant) {
+    const url = occupant.get('image_url');
     const hash = occupant.get('image_hash');
     const vcards = [];
     if (occupant.get('jid')) {
         vcards.push(_converse.state.vcards.get(occupant.get('jid')));
     }
     vcards.push(_converse.state.vcards.get(occupant.get('from')));
-    vcards.forEach((v) => hash && v && v?.get('image_hash') !== hash && api.vcard.update(v, true));
+    vcards.forEach((v) => hash && v && (v?.get('image_url') !== url || v?.get('image_hash') !== hash) && api.vcard.update(v, true));
 }
 
 /**

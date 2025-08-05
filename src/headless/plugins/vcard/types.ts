@@ -10,6 +10,7 @@ export interface VCardResult {
     image?: string;
     image_hash?: string;
     image_type?: string;
+    image_url?: string;
     nickname?: string;
     role?: string;
     stanza: Element;
@@ -25,6 +26,7 @@ export type VCardData = {
     role?: string;
     email?: string;
     url?: string;
+    image_url?: string;
     image_type?: string;
     image?: string;
 };

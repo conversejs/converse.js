@@ -5,7 +5,12 @@ import { html, nothing } from 'lit';
  * @param {string} image_type
  */
 const getImgHref = (image, image_type) => {
-    return image.startsWith('data:') ? image : `data:${image_type};base64,${image}`;
+    if (image.startsWith('https:') || image.startsWith('data:')) {
+        return image;
+    }
+    else {
+        return `data:${image_type};base64,${image}`;
+    }
 };
 
 export default (o) => {

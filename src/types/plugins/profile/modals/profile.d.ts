@@ -56,5 +56,5 @@ export default class ProfileModal extends BaseModal {
     logOut(ev: MouseEvent): Promise<void>;
 }
 import BaseModal from 'plugins/modal/modal.js';
-import { Model } from '@converse/skeletor';
+import { Model } from '@converse/headless';
 //# sourceMappingURL=profile.d.ts.map

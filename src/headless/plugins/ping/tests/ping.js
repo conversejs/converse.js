@@ -1,7 +1,7 @@
-/*global mock, converse */
+/*global converse */
+import mock from "../../../tests/mock.js";
 
-const Strophe = converse.env.Strophe;
-const u = converse.env.utils;
+const { Strophe, u } = converse.env;
 
 
 describe("XMPP Ping", function () {

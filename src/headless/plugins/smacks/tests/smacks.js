@@ -1,11 +1,7 @@
-/*global mock, converse */
+/* global converse */
+import mock from "../../../tests/mock.js";
 
-const { stx } = converse.env;
-const $iq = converse.env.$iq;
-const $msg = converse.env.$msg;
-const Strophe = converse.env.Strophe;
-const sizzle = converse.env.sizzle;
-const u = converse.env.utils;
+const { stx, $msg, Strophe, sizzle, u } = converse.env;
 
 describe("XEP-0198 Stream Management", function () {
 
@@ -42,7 +38,7 @@ describe("XEP-0198 Stream Management", function () {
         );
 
         let IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-        await u.waitUntil(() => IQ_stanzas.length === 5);
+        await u.waitUntil(() => IQ_stanzas.length === 4);
 
         const disco_iq = IQ_stanzas[0];
         expect(disco_iq).toEqualStanza(stx`
@@ -55,26 +51,22 @@ describe("XEP-0198 Stream Management", function () {
         await mock.waitForRoster(_converse, 'current', 1);
 
         expect(IQ_stanzas[2]).toEqualStanza(stx`
-            <iq from="romeo@montague.lit" id="${IQ_stanzas[2].getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">
-            <pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
-
-        expect(IQ_stanzas[3]).toEqualStanza(stx`
-            <iq from="romeo@montague.lit/orchard" id="${IQ_stanzas[3].getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">
+            <iq from="romeo@montague.lit/orchard" id="${IQ_stanzas[2].getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">
                 <query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
-        expect(IQ_stanzas[4]).toEqualStanza(stx`
-            <iq from="romeo@montague.lit/orchard" id="${IQ_stanzas[4].getAttribute('id')}" type="set" xmlns="jabber:client">
+        expect(IQ_stanzas[3]).toEqualStanza(stx`
+            <iq from="romeo@montague.lit/orchard" id="${IQ_stanzas[3].getAttribute('id')}" type="set" xmlns="jabber:client">
                 <enable xmlns="urn:xmpp:carbons:2"/></iq>`);
 
         await u.waitUntil(() => sent_stanzas.filter(s => (s.nodeName === 'presence')).length);
 
-        expect(sent_stanzas.filter(s => (s.nodeName === 'r')).length).toBe(3);
-        expect(_converse.session.get('unacked_stanzas').length).toBe(6);
+        expect(sent_stanzas.filter(s => (s.nodeName === 'r')).length).toBe(2);
+        expect(_converse.session.get('unacked_stanzas').length).toBe(5);
 
         // test handling of acks
         let ack = stx`<a xmlns="urn:xmpp:sm:3" h="2"/>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(ack));
-        expect(_converse.session.get('unacked_stanzas').length).toBe(4);
+        expect(_converse.session.get('unacked_stanzas').length).toBe(3);
 
         // test handling of ack requests
         let r = stx`<r xmlns="urn:xmpp:sm:3"/>`;
@@ -96,14 +88,13 @@ describe("XEP-0198 Stream Management", function () {
 
         ack = stx`<a xmlns="urn:xmpp:sm:3" h="2"/>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(ack));
-        expect(_converse.session.get('unacked_stanzas').length).toBe(4);
+        expect(_converse.session.get('unacked_stanzas').length).toBe(3);
 
         expect(_converse.session.get('unacked_stanzas')[0]).toBe(Strophe.serialize(IQ_stanzas[2]));
         expect(_converse.session.get('unacked_stanzas')[1]).toBe(Strophe.serialize(IQ_stanzas[3]));
-        expect(_converse.session.get('unacked_stanzas')[2]).toBe(Strophe.serialize(IQ_stanzas[4]));
-        expect(_converse.session.get('unacked_stanzas')[3]).toBe(
+        expect(_converse.session.get('unacked_stanzas')[2]).toBe(
             `<presence xmlns="jabber:client"><priority>0</priority><x xmlns="vcard-temp:x:update"/>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="t7NrIuCRhg80cJKAq33v3LKogjI=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`);
 
         r = stx`<r xmlns="urn:xmpp:sm:3"/>`;
@@ -129,7 +120,7 @@ describe("XEP-0198 Stream Management", function () {
         expect(_converse.session.get('smacks_enabled')).toBe(true);
 
         await new Promise(resolve => _converse.api.listen.once('reconnected', resolve));
-        await u.waitUntil(() => IQ_stanzas.length === 3);
+        await u.waitUntil(() => IQ_stanzas.length === 2);
 
         // Test that unacked stanzas get resent out
         let iq = IQ_stanzas.pop();
@@ -142,14 +133,6 @@ describe("XEP-0198 Stream Management", function () {
         expect(iq).toEqualStanza(stx`
             <iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">
                 <query xmlns="http://jabber.org/protocol/disco#info"/>
-            </iq>`);
-
-        iq = IQ_stanzas.pop();
-        expect(iq).toEqualStanza(stx`
-            <iq from="romeo@montague.lit" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">
-                <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                    <items node="eu.siacs.conversations.axolotl.devicelist"/>
-                </pubsub>
             </iq>`);
 
         expect(IQ_stanzas.filter(iq => sizzle('query[xmlns="jabber:iq:roster"]', iq).pop()).length).toBe(0);

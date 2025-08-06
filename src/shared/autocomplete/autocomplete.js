@@ -5,8 +5,7 @@
  */
 
 import { render, html } from 'lit';
-import { EventEmitter } from '@converse/skeletor';
-import { converse, u } from '@converse/headless';
+import { converse, u, EventEmitter } from '@converse/headless';
 import Suggestion from './suggestion.js';
 import { helpers, getAutoCompleteItem, FILTER_CONTAINS, SORT_BY_QUERY_POSITION } from './utils.js';
 

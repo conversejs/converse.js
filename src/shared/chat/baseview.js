@@ -16,7 +16,7 @@ export default class BaseChatView extends CustomElement {
     constructor() {
         super();
         this.jid = /** @type {string} */ null;
-        this.model = /** @type {import('@converse/skeletor').Model} */ null;
+        this.model = /** @type {import('@converse/headless').Model} */ null;
         this.viewportMediaQuery = window.matchMedia(`(max-width: ${MOBILE_CUTOFF}px)`);
         this.renderOnViewportChange = () => this.requestUpdate();
     }

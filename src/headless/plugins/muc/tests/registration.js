@@ -1,6 +1,7 @@
-/*global mock, converse */
+/*global converse */
+import mock from "../../../tests/mock.js";
 
-const { $iq, Strophe, sizzle, u } = converse.env;
+const { Strophe, sizzle, u } = converse.env;
 
 describe("Groupchats", function () {
     beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));

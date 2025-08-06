@@ -4,6 +4,13 @@
  */
 export function isElement(el: unknown): boolean;
 /**
+ * Given two XML or HTML elements, determine if they're equal
+ * @param {Element} actual
+ * @param {Element} expected
+ * @returns {Boolean}
+ */
+export function isEqualNode(actual: Element, expected: Element): boolean;
+/**
  * @param {Element | typeof Strophe.Builder} stanza
  * @param {string} name
  * @returns {boolean}

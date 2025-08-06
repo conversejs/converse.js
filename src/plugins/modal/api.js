@@ -1,7 +1,6 @@
 import './alert.js';
 import Confirm from './confirm.js';
-import { Model } from '@converse/skeletor';
-import { api } from '@converse/headless';
+import { api, Model } from '@converse/headless';
 
 let modals = [];
 let modals_map = {};

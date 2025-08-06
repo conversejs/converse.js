@@ -1,6 +1,3 @@
-/**
- * @typedef {import('@converse/skeletor').Model} Model
- */
 import { _converse, api, converse, u, constants } from '@converse/headless';
 import { __ } from 'i18n';
 import 'plugins/muc-views/modals/muc-details.js';
@@ -38,12 +35,12 @@ export class RoomsList extends CustomElement {
         return tplRoomslist(this);
     }
 
-    /** @param {Model} model */
+    /** @param {import('@converse/headless').Model} model */
     renderIfChatRoom(model) {
         u.muc.isChatRoom(model) && this.requestUpdate();
     }
 
-    /** @param {Model} model */
+    /** @param {import('@converse/headless').Model} model */
     renderIfRelevantChange(model) {
         const attrs = ['bookmarked', 'hidden', 'name', 'num_unread', 'num_unread_general', 'has_activity'];
         const changed = model.changed || {};

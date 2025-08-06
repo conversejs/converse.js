@@ -1,4 +1,4 @@
-/*global mock */
+import mock from "../tests/mock.js";
 
 const container = {};
 

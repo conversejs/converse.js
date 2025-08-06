@@ -1,3 +1,5 @@
+/* global converse */
+import mock from "../../../tests/mock.js";
 const { sizzle, stx, u } = converse.env;
 
 describe("A chat room", function () {

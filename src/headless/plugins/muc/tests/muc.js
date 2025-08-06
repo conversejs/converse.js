@@ -1,4 +1,5 @@
-/*global mock, converse */
+/*global converse */
+import mock from "../../../tests/mock.js";
 
 const { Strophe, sizzle, stx, u } = converse.env;
 
@@ -58,7 +59,7 @@ describe("Groupchats", function () {
                 <presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="${muc_jid}/romeo" xmlns="jabber:client">
                     <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <show>away</show>
-                    <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
+                    <c hash="sha-1" node="https://conversejs.org" ver="t7NrIuCRhg80cJKAq33v3LKogjI=" xmlns="http://jabber.org/protocol/caps"/>
                 </presence>`);
 
             expect(muc.getOwnOccupant().get('show')).toBe('away');
@@ -73,7 +74,7 @@ describe("Groupchats", function () {
                     <show>xa</show>
                     <priority>0</priority>
                     <x xmlns="vcard-temp:x:update"/>
-                    <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
+                    <c hash="sha-1" node="https://conversejs.org" ver="t7NrIuCRhg80cJKAq33v3LKogjI=" xmlns="http://jabber.org/protocol/caps"/>
                 </presence>`)
 
             profile.set({ show: 'dnd', status_message: 'Do not disturb' });
@@ -88,7 +89,7 @@ describe("Groupchats", function () {
                     <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <show>dnd</show>
                     <status>Do not disturb</status>
-                    <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
+                    <c hash="sha-1" node="https://conversejs.org" ver="t7NrIuCRhg80cJKAq33v3LKogjI=" xmlns="http://jabber.org/protocol/caps"/>
                 </presence>`);
 
             expect(muc2.getOwnOccupant().get('show')).toBe('dnd');
@@ -144,7 +145,7 @@ describe("Groupchats", function () {
             expect(Strophe.serialize(pres)).toBe(
                 `<presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="coven@chat.shakespeare.lit/romeo" xmlns="jabber:client">`+
                     `<x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="t7NrIuCRhg80cJKAq33v3LKogjI=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`);
         }));
     });

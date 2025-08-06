@@ -53,7 +53,8 @@
     "directory": "src/headless"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "karma start karma.conf.js",
+    "types": "tsc -p tsconfig.json"
   },
   "bugs": {
     "url": "https://github.com/conversejs/converse.js/issues"

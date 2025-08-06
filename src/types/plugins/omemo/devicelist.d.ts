@@ -39,5 +39,5 @@ declare class DeviceList extends Model {
      */
     removeOwnDevices(device_ids: string[]): Promise<any>;
 }
-import { Model } from "@converse/skeletor";
+import { Model } from "@converse/headless";
 //# sourceMappingURL=devicelist.d.ts.map

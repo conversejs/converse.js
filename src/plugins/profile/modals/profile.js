@@ -1,6 +1,5 @@
 import { html } from 'lit';
-import { Model } from '@converse/skeletor';
-import { _converse, api, log } from '@converse/headless';
+import { _converse, api, log, Model } from '@converse/headless';
 import { __ } from 'i18n';
 import BaseModal from 'plugins/modal/modal.js';
 import { compressImage } from 'utils/file.js';

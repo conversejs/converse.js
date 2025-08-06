@@ -2,10 +2,10 @@ export class RoomsList extends CustomElement {
     initialize(): void;
     model: RoomsListModel;
     render(): import("lit-html").TemplateResult<1>;
-    /** @param {Model} model */
-    renderIfChatRoom(model: Model): void;
-    /** @param {Model} model */
-    renderIfRelevantChange(model: Model): void;
+    /** @param {import('@converse/headless').Model} model */
+    renderIfChatRoom(model: import("@converse/headless").Model): void;
+    /** @param {import('@converse/headless').Model} model */
+    renderIfRelevantChange(model: import("@converse/headless").Model): void;
     /** @returns {import('@converse/headless').MUC[]} */
     getRoomsToShow(): import("@converse/headless").MUC[];
     /** @param {Event} ev */
@@ -20,7 +20,6 @@ export class RoomsList extends CustomElement {
      */
     toggleDomainList(ev: Event, domain: string): void;
 }
-export type Model = import("@converse/skeletor").Model;
 import { CustomElement } from 'shared/components/element.js';
 import RoomsListModel from './model.js';
 //# sourceMappingURL=view.d.ts.map

@@ -1,5 +1,4 @@
-import { Model } from '@converse/skeletor';
-import { _converse, api, converse, constants } from "@converse/headless";
+import { _converse, api, converse, constants, Model } from "@converse/headless";
 
 const { Strophe } = converse.env;
 const { OPENED } = constants;

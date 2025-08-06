@@ -5,7 +5,6 @@
  * @typedef {import('lit').TemplateResult} TemplateResult
  */
 import { render } from 'lit';
-import { Builder, Stanza } from 'strophe.js';
 import { api, converse, log, u } from '@converse/headless';
 import tplDateInput from 'templates/form_date.js';
 import tplFormCaptcha from '../templates/form_captcha.js';
@@ -18,34 +17,10 @@ import tplFormUrl from '../templates/form_url.js';
 import tplFormUsername from '../templates/form_username.js';
 import tplHyperlink from 'templates/hyperlink.js';
 
-const { sizzle, Strophe, dayjs } = converse.env;
+const { sizzle, dayjs } = converse.env;
 const { isValidURL } = u;
 
 const APPROVED_URL_PROTOCOLS = ['http:', 'https:', 'xmpp:', 'mailto:'];
-
-const EMPTY_TEXT_REGEX = /\s*\n\s*/;
-
-/**
- * @param {Element|Builder|Stanza} el
- */
-function stripEmptyTextNodes (el) {
-    if (el instanceof Builder || el instanceof Stanza) {
-        el = el.tree();
-    }
-
-    let n;
-    const text_nodes = [];
-    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, (node) => {
-        if (node.parentElement.nodeName.toLowerCase() === 'body') {
-            return NodeFilter.FILTER_REJECT;
-        }
-        return NodeFilter.FILTER_ACCEPT;
-    });
-    while (n = walker.nextNode()) text_nodes.push(n);
-    text_nodes.forEach((n) => EMPTY_TEXT_REGEX.test(/** @type {Text} */(n).data) && n.parentElement.removeChild(n))
-
-    return el;
-}
 
 /**
  * @param {string} name
@@ -56,47 +31,6 @@ function getAutoCompleteProperty (name, options) {
         'muc#roomconfig_lang': 'language',
         'muc#roomconfig_roomsecret': options?.new_password ? 'new-password' : 'current-password'
     }[name];
-}
-
-/**
- * Given two XML or HTML elements, determine if they're equal
- * @param {Element} actual
- * @param {Element} expected
- * @returns {Boolean}
- */
-function isEqualNode (actual, expected) {
-    if (!u.isElement(actual)) throw new Error('Element being compared must be an Element!');
-
-    actual = stripEmptyTextNodes(actual);
-    expected = stripEmptyTextNodes(expected);
-
-    let isEqual = actual.isEqualNode(expected);
-
-    if (!isEqual) {
-        // XXX: This is a hack.
-        // When creating two XML elements, one via DOMParser, and one via
-        // createElementNS (or createElement), then "isEqualNode" doesn't match.
-        //
-        // For example, in the following code `isEqual` is false:
-        // ------------------------------------------------------
-        // const a = document.createElementNS('foo', 'div');
-        // a.setAttribute('xmlns', 'foo');
-        //
-        // const b = (new DOMParser()).parseFromString('<div xmlns="foo"></div>', 'text/xml').firstElementChild;
-        // const isEqual = a.isEqualNode(div); //  false
-        //
-        // The workaround here is to serialize both elements to string and then use
-        // DOMParser again for both (via xmlHtmlNode).
-        //
-        // This is not efficient, but currently this is only being used in tests.
-        //
-        const { xmlHtmlNode } = Strophe;
-        const actual_string = Strophe.serialize(actual);
-        const expected_string = Strophe.serialize(expected);
-        isEqual =
-            actual_string === expected_string || xmlHtmlNode(actual_string).isEqualNode(xmlHtmlNode(expected_string));
-    }
-    return isEqual;
 }
 
 /**
@@ -544,7 +478,6 @@ Object.assign(u, {
     getRootElement,
     hasClass,
     hideElement,
-    isEqualNode,
     isInDOM,
     isVisible,
     nextUntil,

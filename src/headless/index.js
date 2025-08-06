@@ -8,6 +8,9 @@ import { _converse, api, constants as shared_constants, i18n, parsers } from './
 import u from './utils/index.js';
 import converse from './shared/api/public.js';
 
+export { Collection, EventEmitter, Model } from '@converse/skeletor';
+export { Builder, Stanza } from 'strophe.js';
+
 import BaseMessage from './shared/message.js';
 export { BaseMessage };
 
@@ -53,5 +56,7 @@ Object.assign(_converse.constants, constants);
 
 import * as errors from './shared/errors.js';
 export { api, converse, _converse, i18n, log, u, constants, parsers, errors };
+
+window['converse'] = converse;
 
 export default converse;

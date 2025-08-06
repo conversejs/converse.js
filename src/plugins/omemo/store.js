@@ -1,9 +1,8 @@
 /**
  * @typedef {module:plugins-omemo-index.WindowWithLibsignal} WindowWithLibsignal
  */
-import { Model } from "@converse/skeletor";
 import { generateDeviceID } from "./utils.js";
-import { _converse, api, converse, log } from "@converse/headless";
+import { _converse, api, converse, log, Model } from "@converse/headless";
 
 const { Strophe, stx, u } = converse.env;
 

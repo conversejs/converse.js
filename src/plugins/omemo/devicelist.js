@@ -1,6 +1,5 @@
-import { Model } from "@converse/skeletor";
 import { getOpenPromise } from "@converse/openpromise";
-import { _converse, api, converse, errors, log, parsers, u } from "@converse/headless";
+import { _converse, api, converse, errors, log, parsers, u, Model } from "@converse/headless";
 
 const { Strophe, stx, sizzle } = converse.env;
 

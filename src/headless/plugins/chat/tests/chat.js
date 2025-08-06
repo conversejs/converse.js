@@ -1,5 +1,5 @@
-
-/* global mock, converse */
+/* global converse */
+import mock from "../../../tests/mock.js";
 
 describe("A ChatBox", function() {
 

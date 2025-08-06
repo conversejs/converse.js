@@ -1,5 +1,5 @@
 import { LitElement } from 'lit';
-import { EventEmitter } from '@converse/skeletor';
+import { EventEmitter } from '@converse/headless';
 
 export class CustomElement extends EventEmitter(LitElement) {
     constructor() {

@@ -26,7 +26,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('converse-chat-message').length === 2);
         await u.waitUntil(() => view.querySelector('converse-chat-message:last-child .chat-msg__text')?.textContent === 'This message will be new');
         const last_msg_el = view.querySelector('converse-chat-message:last-child');
-        expect(last_msg_el.firstElementChild?.textContent).toBe('New messages');
+        expect(last_msg_el.firstElementChild?.textContent.trim()).toBe('New messages');
     }));
 
 

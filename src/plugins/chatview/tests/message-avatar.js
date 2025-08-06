@@ -24,7 +24,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
         let el = view.querySelector('converse-chat-message converse-avatar .avatar-initials');
-        expect(el.textContent).toBe('RM');
+        expect(el.textContent.trim()).toBe('RM');
         expect(getComputedStyle(el).backgroundColor).toBe('rgb(198, 84, 0)');
 
         // Test messages from other user
@@ -43,14 +43,14 @@ describe("A Chat Message", function () {
         el = view.querySelector(
             `converse-chat-message div[data-from="${contact_jid}"] converse-avatar .avatar-initials`
         );
-        expect(el.textContent).toBe('M');
+        expect(el.textContent.trim()).toBe('M');
         expect(getComputedStyle(el).backgroundColor).toBe('rgb(195, 0, 249)');
 
         // Change contact nickname and see that it reflects
         const contact = await api.contacts.get(contact_jid);
         contact.set('nickname', 'Wizzard');
 
-        await u.waitUntil(() => el.textContent === 'W');
+        await u.waitUntil(() => el.textContent.trim() === 'W');
 
         // Change own nickname and see that it reflects
         const own_jid = _converse.session.get('jid');

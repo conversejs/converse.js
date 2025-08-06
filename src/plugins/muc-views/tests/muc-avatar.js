@@ -12,7 +12,7 @@ describe('Groupchats', () => {
 
                 const view = _converse.chatboxviews.get(muc_jid);
                 const avatar = view.querySelector('.chat-head converse-avatar .avatar-initials');
-                expect(avatar.textContent).toBe('L');
+                expect(avatar.textContent.trim()).toBe('L');
                 expect(getComputedStyle(avatar).backgroundColor).toBe('rgb(0, 135, 113)');
 
                 // eslint-disable-next-line max-len
@@ -103,7 +103,7 @@ describe('Groupchats', () => {
                     );
 
                     const initials_el = avatar_el.querySelector('.avatar-initials');
-                    expect(initials_el.textContent).toBe('AC');
+                    expect(initials_el.textContent.trim()).toBe('AC');
                     await u.waitUntil(() => getComputedStyle(initials_el).backgroundColor === 'rgb(75, 103, 255)');
                     avatar_el.click();
 
@@ -112,28 +112,28 @@ describe('Groupchats', () => {
 
                     const modal_avatar_el = modal.querySelector('converse-avatar');
                     const modal_initials_el = modal_avatar_el.querySelector('.avatar-initials');
-                    expect(modal_initials_el.textContent).toBe('AC');
+                    expect(modal_initials_el.textContent.trim()).toBe('AC');
                     expect(getComputedStyle(modal_initials_el).backgroundColor).toBe('rgb(75, 103, 255)');
 
                     let els = modal.querySelectorAll('p.room-info');
                     expect(els[0].textContent).toBe('Name: A Dark Cave');
 
-                    expect(els[1].querySelector('strong').textContent).toBe('XMPP address:');
+                    expect(els[1].querySelector('strong').textContent.trim()).toBe('XMPP address:');
                     expect(els[1].querySelector('converse-texture').textContent.trim()).toBe(
                         'xmpp:coven@chat.shakespeare.lit?join'
                     );
                     expect(els[2].querySelector('strong').textContent).toBe('Description:');
-                    expect(els[2].querySelector('converse-texture').textContent).toBe('This is the description');
+                    expect(els[2].querySelector('converse-texture').textContent.trim()).toBe('This is the description');
 
                     expect(els[3].textContent).toBe('Online users: 1');
                     const features_list = modal.querySelector('.features-list');
-                    expect(features_list.textContent.replace(/(\n|\s{2,})/g, '')).toBe(
+                    expect(features_list.textContent.replace(/(\n|\s{2,})/g, '').trim()).toBe(
                         'Password protected - This groupchat requires a password before entry' +
                         'Hidden - This groupchat is not publicly searchable' +
                         'Open - Anyone can join this groupchat' +
                         'Temporary - This groupchat will disappear once the last person leaves ' +
                         'Not anonymous - All other groupchat participants can see your XMPP address' +
-                        'Not moderated - Participants entering this groupchat can write right away '
+                        'Not moderated - Participants entering this groupchat can write right away'
                     );
                     presence = stx`
                         <presence to="romeo@montague.lit/_converse.js-29092160"
@@ -154,13 +154,13 @@ describe('Groupchats', () => {
 
                     els = modal.querySelectorAll('p.room-info');
                     expect(els[0].textContent).toBe('Name: A Dark Cave');
-                    expect(els[1].querySelector('strong').textContent).toBe('XMPP address:');
+                    expect(els[1].querySelector('strong').textContent.trim()).toBe('XMPP address:');
                     expect(els[1].querySelector('converse-texture').textContent.trim()).toBe(
                         'xmpp:coven@chat.shakespeare.lit?join'
                     );
-                    expect(els[2].querySelector('strong').textContent).toBe('Description:');
-                    expect(els[2].querySelector('converse-texture').textContent).toBe('This is the description');
-                    expect(els[3].querySelector('strong').textContent).toBe('Topic:');
+                    expect(els[2].querySelector('strong').textContent.trim()).toBe('Description:');
+                    expect(els[2].querySelector('converse-texture').textContent.trim()).toBe('This is the description');
+                    expect(els[3].querySelector('strong').textContent.trim()).toBe('Topic:');
                     await u.waitUntil(
                         () => els[3].querySelector('converse-texture').textContent === 'Hatching dark plots'
                     );

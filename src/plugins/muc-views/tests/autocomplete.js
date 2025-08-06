@@ -52,23 +52,23 @@ describe("The nickname autocomplete feature", function () {
 
         const first_child = view.querySelector('.suggestion-box__results li:first-child');
         const first_child_avatar = first_child.querySelector('converse-avatar');
-        expect(first_child_avatar.textContent).toBe('D');
-        expect(first_child.textContent).toBe('D dick');
+        expect(first_child_avatar.textContent.trim()).toBe('D');
+        expect(first_child.textContent.trim()).toBe('D dick');
 
         const second_child = view.querySelector('.suggestion-box__results li:nth-child(2)');
         const second_child_avatar = second_child.querySelector('converse-avatar');
-        expect(second_child_avatar.textContent).toBe('H');
-        expect(second_child.textContent).toBe('H harry');
+        expect(second_child_avatar.textContent.trim()).toBe('H');
+        expect(second_child.textContent.trim()).toBe('H harry');
 
         const third_child = view.querySelector('.suggestion-box__results li:nth-child(3)');
         const third_child_avatar = third_child.querySelector('converse-avatar');
-        expect(third_child_avatar.textContent).toBe('J');
-        expect(third_child.textContent).toBe('J jane');
+        expect(third_child_avatar.textContent.trim()).toBe('J');
+        expect(third_child.textContent.trim()).toBe('J jane');
 
         const fourth_child = view.querySelector('.suggestion-box__results li:nth-child(4)');
         const fourth_child_avatar = fourth_child.querySelector('converse-avatar');
-        expect(fourth_child_avatar.textContent).toBe('T');
-        expect(fourth_child.textContent).toBe('T tom');
+        expect(fourth_child_avatar.textContent.trim()).toBe('T');
+        expect(fourth_child.textContent.trim()).toBe('T tom');
     }));
 
     it("shows all autocompletion options when the user presses @ right after a new line",
@@ -120,23 +120,23 @@ describe("The nickname autocomplete feature", function () {
         await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 4);
         const first_child = view.querySelector('.suggestion-box__results li:first-child');
         const first_child_avatar = first_child.querySelector('converse-avatar');
-        expect(first_child_avatar.textContent).toBe('D');
-        expect(first_child.textContent).toBe('D dick');
+        expect(first_child_avatar.textContent.trim()).toBe('D');
+        expect(first_child.textContent.trim()).toBe('D dick');
 
         const second_child = view.querySelector('.suggestion-box__results li:nth-child(2)');
         const second_child_avatar = second_child.querySelector('converse-avatar');
-        expect(second_child_avatar.textContent).toBe('H');
-        expect(second_child.textContent).toBe('H harry');
+        expect(second_child_avatar.textContent.trim()).toBe('H');
+        expect(second_child.textContent.trim()).toBe('H harry');
 
         const third_child = view.querySelector('.suggestion-box__results li:nth-child(3)');
         const third_child_avatar = third_child.querySelector('converse-avatar');
-        expect(third_child_avatar.textContent).toBe('J');
-        expect(third_child.textContent).toBe('J jane');
+        expect(third_child_avatar.textContent.trim()).toBe('J');
+        expect(third_child.textContent.trim()).toBe('J jane');
 
         const fourth_child = view.querySelector('.suggestion-box__results li:nth-child(4)');
         const fourth_child_avatar = fourth_child.querySelector('converse-avatar');
-        expect(fourth_child_avatar.textContent).toBe('T');
-        expect(fourth_child.textContent).toBe('T tom');
+        expect(fourth_child_avatar.textContent.trim()).toBe('T');
+        expect(fourth_child.textContent.trim()).toBe('T tom');
     }));
 
     it("shows all autocompletion options when the user presses @ right after an allowed character",
@@ -190,23 +190,23 @@ describe("The nickname autocomplete feature", function () {
         await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 4);
         const first_child = view.querySelector('.suggestion-box__results li:first-child');
         const first_child_avatar = first_child.querySelector('converse-avatar');
-        expect(first_child_avatar.textContent).toBe('D');
-        expect(first_child.textContent).toBe('D dick');
+        expect(first_child_avatar.textContent.trim()).toBe('D');
+        expect(first_child.textContent.trim()).toBe('D dick');
 
         const second_child = view.querySelector('.suggestion-box__results li:nth-child(2)');
         const second_child_avatar = second_child.querySelector('converse-avatar');
-        expect(second_child_avatar.textContent).toBe('H');
-        expect(second_child.textContent).toBe('H harry');
+        expect(second_child_avatar.textContent.trim()).toBe('H');
+        expect(second_child.textContent.trim()).toBe('H harry');
 
         const third_child = view.querySelector('.suggestion-box__results li:nth-child(3)');
         const third_child_avatar = third_child.querySelector('converse-avatar');
-        expect(third_child_avatar.textContent).toBe('J');
-        expect(third_child.textContent).toBe('J jane');
+        expect(third_child_avatar.textContent.trim()).toBe('J');
+        expect(third_child.textContent.trim()).toBe('J jane');
 
         const fourth_child = view.querySelector('.suggestion-box__results li:nth-child(4)');
         const fourth_child_avatar = fourth_child.querySelector('converse-avatar');
-        expect(fourth_child_avatar.textContent).toBe('T');
-        expect(fourth_child.textContent).toBe('T tom');
+        expect(fourth_child_avatar.textContent.trim()).toBe('T');
+        expect(fourth_child.textContent.trim()).toBe('T tom');
     }));
 
     it("should order by query index position and length", mock.initConverse(

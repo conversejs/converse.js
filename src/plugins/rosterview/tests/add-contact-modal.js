@@ -79,7 +79,7 @@ describe("The 'Add Contact' widget", function () {
         await u.waitUntil(() => modal.querySelector('.suggestion-box li'), 1000);
         expect(modal.querySelectorAll('.suggestion-box li').length).toBe(1);
         const suggestion = modal.querySelector('.suggestion-box li');
-        expect(suggestion.textContent).toBe('Marty McFly <marty@mcfly.net>');
+        expect(suggestion.textContent.trim()).toBe('Marty McFly <marty@mcfly.net>');
 
         const el = u.ancestor(suggestion, 'converse-autocomplete');
         el.auto_complete.select(suggestion);

@@ -1831,7 +1831,7 @@ describe("Groupchats", function () {
             let features_shown = Array.from(features_list.children).map((e) => e.textContent);
             expect(features_shown.length).toBe(5);
 
-            expect(features_shown.join(' ')).toBe(
+            expect(features_shown.join(' ').trim()).toBe(
                 'Password protected - This groupchat requires a password before entry '+
                 'Open - Anyone can join this groupchat '+
                 'Temporary - This groupchat will disappear once the last person leaves '+

@@ -66,7 +66,7 @@ describe("Ad-hoc commands", function () {
         </iq>`));
 
         const heading = await u.waitUntil(() => adhoc_form.querySelector('.list-group-item.active'));
-        expect(heading.textContent).toBe('Commands found:');
+        expect(heading.textContent.trim()).toBe('Commands found:');
 
         const items = adhoc_form.querySelectorAll('.list-group-item:not(.active)');
         expect(items.length).toBe(7);
@@ -181,7 +181,7 @@ describe("Ad-hoc commands", function () {
         </iq>`));
 
         const heading = await u.waitUntil(() => adhoc_form.querySelector('.list-group-item.active'));
-        expect(heading.textContent).toBe('Commands found:');
+        expect(heading.textContent.trim()).toBe('Commands found:');
 
         const items = adhoc_form.querySelectorAll('.list-group-item:not(.active)');
         expect(items.length).toBe(1);
@@ -222,7 +222,7 @@ describe("Ad-hoc commands", function () {
         const form = await u.waitUntil(() => adhoc_form.querySelector('form form'));
         const alert = form.querySelector('div.alert');
         expect(u.isVisible(alert)).toBe(true);
-        expect(alert.textContent).toBe(uptime_text);
+        expect(alert.textContent.trim()).toBe(uptime_text);
 
         const inputs = form.querySelectorAll('input[type="button"]');
         expect(inputs.length).toBe(0);
@@ -271,7 +271,7 @@ describe("Ad-hoc commands", function () {
         </iq>`));
 
         const heading = await u.waitUntil(() => adhoc_form.querySelector('.list-group-item.active'));
-        expect(heading.textContent).toBe('Commands found:');
+        expect(heading.textContent.trim()).toBe('Commands found:');
 
         const items = adhoc_form.querySelectorAll('.list-group-item:not(.active)');
         expect(items.length).toBe(1);
@@ -396,7 +396,7 @@ describe("Ad-hoc commands", function () {
         </iq>`));
 
         const heading = await u.waitUntil(() => adhoc_form.querySelector('.list-group-item.active'));
-        expect(heading.textContent).toBe('Commands found:');
+        expect(heading.textContent.trim()).toBe('Commands found:');
 
         const items = adhoc_form.querySelectorAll('.list-group-item:not(.active)');
         expect(items.length).toBe(1);

@@ -163,12 +163,12 @@ describe("A groupchat shown in the groupchats list", function () {
         expect(avatar_el).toBeDefined();
 
         let initials_el = rooms_list.querySelector('converse-avatar .avatar-initials');
-        expect(initials_el.textContent).toBe('C');
+        expect(initials_el.textContent.trim()).toBe('C');
         expect(getComputedStyle(initials_el).backgroundColor).toBe('rgb(75, 103, 255)');
 
         const muc_el = _converse.chatboxviews.get(muc_jid);
         let muc_initials_el = muc_el.querySelector('converse-muc-heading converse-avatar .avatar-initials');
-        expect(muc_initials_el.textContent).toBe(initials_el.textContent);
+        expect(muc_initials_el.textContent.trim()).toBe(initials_el.textContent);
         expect(getComputedStyle(muc_initials_el).backgroundColor).toBe(getComputedStyle(initials_el).backgroundColor);
 
         // Change MUC name
@@ -243,11 +243,11 @@ describe("A groupchat shown in the groupchats list", function () {
         await u.waitUntil(() => new Promise(success => muc_el.model.features.on('change', success)));
 
         initials_el = rooms_list.querySelector('converse-avatar .avatar-initials');
-        expect(initials_el.textContent).toBe('NN');
+        expect(initials_el.textContent.trim()).toBe('NN');
         expect(getComputedStyle(initials_el).backgroundColor).toBe('rgb(75, 103, 255)');
 
         muc_initials_el = muc_el.querySelector('converse-muc-heading converse-avatar .avatar-initials');
-        expect(muc_initials_el.textContent).toBe(initials_el.textContent);
+        expect(muc_initials_el.textContent.trim()).toBe(initials_el.textContent);
         expect(getComputedStyle(muc_initials_el).backgroundColor).toBe(getComputedStyle(initials_el).backgroundColor);
 
         // Change MUC avatar and check that it reflects

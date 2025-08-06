@@ -43,14 +43,14 @@ class ChatBoxes extends Collection {
         const bare_jid = _converse.session.get('bare_jid');
         initStorage(this, `converse.chatboxes-${bare_jid}`);
         this.fetch({
-            'add': true,
-            'success': (c) => this.onChatBoxesFetched(c),
+            add: true,
+            success: (c) => this.onChatBoxesFetched(c),
         });
     }
 
     /**
-     * @param {object} attrs
-     * @param {object} options
+     * @param {import('./types').CreateModelAttributes} attrs
+     * @param {import('@converse/skeletor/src/types/model.js').ModelOptions} options
      */
     createModel(attrs, options) {
         if (!attrs.type) {

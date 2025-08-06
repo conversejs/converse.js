@@ -25,3 +25,5 @@ export type MediaURLMetadata = MediaURLIndexes & {
     is_image?: boolean;
     is_video?: boolean;
 };
+
+export type StorageType = 'persistent' | 'session';

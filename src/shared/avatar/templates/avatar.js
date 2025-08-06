@@ -2,9 +2,9 @@ import { html, nothing } from 'lit';
 
 /**
  * @param {string} image
- * @param {string} image_type
+ * @param {string} [image_type]
  */
-const getImgHref = (image, image_type) => {
+function getImgHref(image, image_type) {
     if (image.startsWith('https:') || image.startsWith('data:')) {
         return image;
     }

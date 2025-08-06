@@ -42,7 +42,7 @@ export default class Avatar extends CustomElement {
             image = this.model?.vcard?.get('image');
         }
 
-        if (image_type && (image_url || image || data_uri)) {
+        if ((image_type && (image || data_uri)) || (image_url)) {
             return tplAvatar({
                 classes: this.getAttribute('class'),
                 height: this.height,

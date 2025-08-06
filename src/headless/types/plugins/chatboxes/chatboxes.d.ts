@@ -17,10 +17,10 @@ declare class ChatBoxes extends Collection {
      */
     onConnected(reconnecting: boolean): void;
     /**
-     * @param {object} attrs
-     * @param {object} options
+     * @param {import('./types').CreateModelAttributes} attrs
+     * @param {import('@converse/skeletor/src/types/model.js').ModelOptions} options
      */
-    createModel(attrs: object, options: object): any;
+    createModel(attrs: import("./types").CreateModelAttributes, options: import("@converse/skeletor/src/types/model.js").ModelOptions): any;
 }
 import { Collection } from '@converse/skeletor';
 //# sourceMappingURL=chatboxes.d.ts.map

@@ -43,9 +43,9 @@ declare const _default: {
     firstCharToUpperCase(text: string): string;
     getLongestSubstring(string: string, candidates: string[]): string;
     isString(s: any): boolean;
-    getDefaultStore(): "session" | "persistent";
-    createStore(id: any, store: any): any;
-    initStorage(model: any, id: any, type: any): void;
+    getDefaultStorageType(): import("./types.js").StorageType;
+    createStore(id: string, type: import("./types.js").StorageType): any;
+    initStorage(model: import("@converse/skeletor").Model | import("@converse/skeletor").Collection, id: string, type?: import("./types.js").StorageType): void;
     isErrorStanza(stanza: Element): boolean;
     isForbiddenError(stanza: Element): boolean;
     isServiceUnavailableError(stanza: Element): boolean;
@@ -129,8 +129,8 @@ declare function shouldCreateMessage(attrs: any): any;
  * @param {boolean} [cancelable]
  */
 declare function triggerEvent(el: Element, name: string, type?: string, bubbles?: boolean, cancelable?: boolean): void;
+import { Model } from '@converse/skeletor';
 import * as session from './session.js';
 import * as promise from './promise.js';
-import { Model } from '@converse/skeletor';
 import * as init from './init.js';
 //# sourceMappingURL=index.d.ts.map

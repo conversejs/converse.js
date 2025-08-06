@@ -13,7 +13,7 @@
         "default": "./dist/converse.esm.js"
       },
       "require": {
-        "types": "./types/index.d.ts",
+        "types": "./src/types/index.d.ts",
         "default": "./dist/converse.js"
       }
     },

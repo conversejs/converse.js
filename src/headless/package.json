@@ -12,17 +12,18 @@
     ".": {
       "import": {
         "types": "./types/index.d.ts",
-        "default": "./index.js"
+        "default": "./dist/converse-headless.esm.js"
       },
       "require": {
         "types": "./types/index.d.ts",
-        "default": "./dist/headless.js"
+        "default": "./dist/converse-headless.js"
       }
-    }
+    },
+    "./dist/*": "./dist/*"
   },
-  "main": "./index.js",
+  "main": "./dist/converse-headless.js",
   "types": "./types/index.d.ts",
-  "module": "./index.js",
+  "module": "./dist/converse-headless.esm.js",
   "files": [
     "README.md",
     "dist/",

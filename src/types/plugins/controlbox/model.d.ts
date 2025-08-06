@@ -24,5 +24,5 @@ declare class ControlBox extends Model {
     maybeShow(force?: boolean): any;
     onReconnection(): void;
 }
-import { Model } from '@converse/skeletor';
+import { Model } from '@converse/headless';
 //# sourceMappingURL=model.d.ts.map

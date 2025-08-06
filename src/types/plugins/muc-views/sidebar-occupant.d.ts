@@ -23,6 +23,6 @@ export default class MUCOccupantListItem extends ObservableElement {
     onOccupantClicked(ev: MouseEvent, occupant: import("@converse/headless/types/plugins/muc/occupant.js").default): void;
 }
 import { ObservableElement } from "shared/components/observable.js";
-import { Model } from "@converse/skeletor";
+import { Model } from "@converse/headless";
 import { MUC } from "@converse/headless";
 //# sourceMappingURL=sidebar-occupant.d.ts.map

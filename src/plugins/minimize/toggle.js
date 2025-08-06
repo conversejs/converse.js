@@ -1,4 +1,4 @@
-import { Model } from '@converse/skeletor';
+import { Model } from '@converse/headless';
 
 class MinimizedChatsToggle extends Model {
     defaults () { // eslint-disable-line class-methods-use-this

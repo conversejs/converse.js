@@ -1,6 +1,6 @@
-/* global mock, converse */
-const { Strophe, sizzle, stx, u } = converse.env;
-
+/* global converse */
+import mock from "../../../tests/mock.js";
+const { sizzle, stx, u } = converse.env;
 
 describe("A bookmark", function () {
 
@@ -216,14 +216,13 @@ describe("A bookmark", function () {
 
             await mock.waitForMUCDiscoInfo(_converse, jid);
             await mock.waitForReservedNick(_converse, jid, '');
-            await u.waitUntil(() => state.chatboxes.length === 2);
+            await u.waitUntil(() => state.chatboxes.length === 1);
 
             bookmarks.remove(model);
-            await u.waitUntil(() => state.chatboxes.length === 1);
+            await u.waitUntil(() => state.chatboxes.length === 0);
         }));
 
         it("has autojoin set to false upon leaving", mock.initConverse([], {}, async function (_converse) {
-            const { u } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
 

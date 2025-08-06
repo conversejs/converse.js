@@ -1,4 +1,6 @@
-/*global mock, converse */
+/*global converse */
+import mock from "../../../tests/mock.js";
+
 const { Strophe, u, stx } = converse.env;
 
 describe("A MUC occupant", function () {

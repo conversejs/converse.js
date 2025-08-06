@@ -16,6 +16,8 @@ import * as errors from './shared/errors.js';
 import { constants as shared_constants } from './shared/index.js';
 import * as muc_constants from './plugins/muc/constants.js';
 export { BaseMessage, ModelWithMessages, api, converse, _converse, i18n, log, u, parsers, errors };
+export { Collection, EventEmitter, Model } from "@converse/skeletor";
+export { Builder, Stanza } from "strophe.js";
 export { Bookmark, Bookmarks } from "./plugins/bookmarks/index.js";
 export { ChatBox, Message, Messages } from "./plugins/chat/index.js";
 export { MUCMessage, MUCMessages, MUC, MUCOccupant, MUCOccupants } from "./plugins/muc/index.js";

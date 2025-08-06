@@ -103,15 +103,15 @@ export function initOMEMO(reconnecting: boolean): Promise<void>;
 export function getOMEMOToolbarButton(toolbar_el: import("shared/chat/toolbar").ChatToolbar, buttons: Array<import("lit").TemplateResult>): import("lit-html").TemplateResult<1 | 2 | 3>[];
 /**
  * @param {MUC|ChatBox} chat
- * @param {{ message: BaseMessage, stanza: import('strophe.js').Builder }} data
- * @return {Promise<{ message: BaseMessage, stanza: import('strophe.js').Builder }>}
+ * @param {{ message: BaseMessage, stanza: import('@converse/headless').Builder }} data
+ * @return {Promise<{ message: BaseMessage, stanza: import('@converse/headless').Builder }>}
  */
 export function createOMEMOMessageStanza(chat: MUC | ChatBox, data: {
     message: BaseMessage;
-    stanza: import("strophe.js").Builder;
+    stanza: import("@converse/headless").Builder;
 }): Promise<{
     message: BaseMessage;
-    stanza: import("strophe.js").Builder;
+    stanza: import("@converse/headless").Builder;
 }>;
 export namespace omemo {
     export { decryptMessage };

@@ -1,4 +1,7 @@
-/* global mock, converse */
+/* global converse */
+import mock from "../../../tests/mock.js";
+
+const { u } = converse.env;
 
 describe("The \"chats\" API", function() {
 
@@ -6,9 +9,6 @@ describe("The \"chats\" API", function() {
             ['rosterInitialized', 'chatBoxesInitialized'], {},
             async (_converse) => {
 
-        const u = converse.env.utils;
-
-        await mock.openControlBox(_converse);
         await mock.waitForRoster(_converse, 'current', 2);
 
         // Test on chat that doesn't exist.
@@ -20,7 +20,7 @@ describe("The \"chats\" API", function() {
         // Test on chat that's not open
         chat = await _converse.api.chats.get(jid);
         expect(chat === null).toBeTruthy();
-        expect(_converse.chatboxes.length).toBe(1);
+        expect(_converse.chatboxes.length).toBe(0);
 
         // Test for one JID
         chat = await _converse.api.chats.open(jid);
@@ -29,7 +29,7 @@ describe("The \"chats\" API", function() {
 
         // Test for multiple JIDs
         await mock.openChatBoxFor(_converse, jid2);
-        await u.waitUntil(() => _converse.chatboxes.length == 3);
+        await u.waitUntil(() => _converse.chatboxes.length == 2);
         const list = await _converse.api.chats.get([jid, jid2]);
         expect(Array.isArray(list)).toBeTruthy();
         expect(list[0].get('box_id')).toBe(`box-${jid}`);
@@ -39,7 +39,6 @@ describe("The \"chats\" API", function() {
     it("has a method 'open' which opens and returns a promise that resolves to a chat model", mock.initConverse(
             ['chatBoxesInitialized'], {}, async (_converse) => {
 
-        await mock.openControlBox(_converse);
         await mock.waitForRoster(_converse, 'current', 2);
 
         const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';

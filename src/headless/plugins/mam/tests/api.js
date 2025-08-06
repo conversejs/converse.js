@@ -1,9 +1,9 @@
-/*global mock, converse */
+/*global converse */
+import mock from "../../../tests/mock.js";
+
 const { stx } = converse.env;
 const dayjs = converse.env.dayjs;
 const Strophe = converse.env.Strophe;
-const $iq = converse.env.$iq;
-const $msg = converse.env.$msg;
 const u = converse.env.utils;
 const sizzle = converse.env.sizzle;
 

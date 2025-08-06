@@ -85,6 +85,7 @@ declare const _default: {
     savedLoginInfo(jid: string): Promise<Model>;
     safeSave(model: Model, attributes: any, options: any): void;
     isElement(el: unknown): boolean;
+    isEqualNode(actual: Element, expected: Element): boolean;
     isTagEqual(stanza: Element | typeof import("strophe.js").Builder, name: string): boolean;
     stringToElement(s: string): Element;
     queryChildren(el: HTMLElement, selector: string): ChildNode[];

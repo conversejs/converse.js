@@ -4,9 +4,9 @@ export function isMobileViewport(): boolean;
  */
 export function getChatStyle(model: import("@converse/headless/types/shared/chatbox").default): string;
 /**
- * @param {Model} model
+ * @param {import('@converse/headless').Model} model
  */
-export function getUnreadMsgsDisplay(model: Model): any;
+export function getUnreadMsgsDisplay(model: import("@converse/headless").Model): any;
 /**
  * @param {Promise<HeadingButtonAttributes>|HeadingButtonAttributes} promise_or_data
  * @returns {Promise<TemplateResult|''>}
@@ -90,6 +90,5 @@ export type EmojiMarkupOptions = {
 export type HeadingButtonAttributes = import("plugins/chatview/types").HeadingButtonAttributes;
 export type Message = import("@converse/headless").Message;
 export type MUCMessage = import("@converse/headless").MUCMessage;
-export type Model = import("@converse/skeletor").Model;
 export type TemplateResult = import("lit").TemplateResult;
 //# sourceMappingURL=utils.d.ts.map

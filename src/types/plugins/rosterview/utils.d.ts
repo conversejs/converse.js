@@ -36,15 +36,15 @@ export function isContactFiltered(contact: RosterContact | Profile, groupname: s
 /**
  * @param {RosterContact} contact
  * @param {string} groupname
- * @param {Model} model
+ * @param {import('@converse/headless').Model} model
  * @returns {boolean}
  */
-export function shouldShowContact(contact: RosterContact, groupname: string, model: Model): boolean;
+export function shouldShowContact(contact: RosterContact, groupname: string, model: import("@converse/headless").Model): boolean;
 /**
  * @param {string} group
- * @param {Model} model
+ * @param {import('@converse/headless').Model} model
  */
-export function shouldShowGroup(group: string, model: Model): boolean;
+export function shouldShowGroup(group: string, model: import("@converse/headless").Model): boolean;
 /**
  * Populates a contacts map with the given contact, categorizing it into appropriate groups.
  * @param {import('./types').ContactsMap} contacts_map
@@ -69,7 +69,6 @@ export function getJIDsAutoCompleteList(): any[];
  * @param {string} query
  */
 export function getNamesAutoCompleteList(query: string): Promise<any[]>;
-export type Model = import("@converse/skeletor").Model;
 export type RosterContact = import("@converse/headless").RosterContact;
 export type RosterContacts = import("@converse/headless").RosterContacts;
 import { Profile } from '@converse/headless';

@@ -1,18 +1,18 @@
-/*global mock */
-
+import { initConverse } from "../../../tests/mock.js";
 
 describe("The \"settings\" API", function () {
     it("has methods 'get' and 'set' to set configuration settings",
-            mock.initConverse(null, {'play_sounds': true}, (_converse) => {
+            initConverse(null, { loglevel: 'debug' }, (_converse) => {
 
         const { api } = _converse;
 
         expect(Object.keys(api.settings)).toEqual(["extend", "get", "set", "listen"]);
-        expect(api.settings.get("play_sounds")).toBe(true);
-        api.settings.set("play_sounds", false);
-        expect(api.settings.get("play_sounds")).toBe(false);
-        api.settings.set({"play_sounds": true});
-        expect(api.settings.get("play_sounds")).toBe(true);
+        expect(api.settings.get("loglevel")).toBe('debug');
+        api.settings.set("loglevel", 'warn');
+        expect(api.settings.get("loglevel")).toBe('warn');
+        api.settings.set({"loglevel": 'error'});
+        expect(api.settings.get("loglevel")).toBe('error');
+
         // Only whitelisted settings allowed.
         expect(typeof api.settings.get("non_existing")).toBe("undefined");
         api.settings.set("non_existing", true);
@@ -20,7 +20,7 @@ describe("The \"settings\" API", function () {
     }));
 
     it("extended via settings.extend don't override settings passed in via converse.initialize",
-            mock.initConverse([], {'emoji_categories': {"travel": ":rocket:"}}, (_converse) => {
+            initConverse([], {'emoji_categories': {"travel": ":rocket:"}}, (_converse) => {
 
         expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
 
@@ -33,7 +33,7 @@ describe("The \"settings\" API", function () {
     }));
 
     it("only overrides the passed in properties",
-            mock.initConverse([],
+            initConverse([],
             {
                 'root': document.createElement('div').attachShadow({ 'mode': 'open' }),
                 'emoji_categories': { 'travel': ':rocket:' },
@@ -60,7 +60,7 @@ describe("Configuration settings", function () {
     describe("when set", function () {
 
         it("will trigger a change event for which listeners can be registered",
-                mock.initConverse([], {}, function (_converse) {
+                initConverse([], {}, function (_converse) {
 
             const { api } = _converse;
             let changed;
@@ -68,24 +68,28 @@ describe("Configuration settings", function () {
                 changed = o;
             }
             api.settings.listen.on('change', callback);
-            api.settings.set('allowed_image_domains', ['conversejs.org']);
-            expect(changed).toEqual({'allowed_image_domains': ['conversejs.org']});
 
-            api.settings.set('allowed_image_domains', ['conversejs.org', 'opkode.com']);
-            expect(changed).toEqual({'allowed_image_domains': ['conversejs.org', 'opkode.com']});
+            expect(api.settings.get('allow_non_roster_messaging')).toBe(true);
+
+            api.settings.set('allow_non_roster_messaging', false);
+            expect(changed).toEqual({ allow_non_roster_messaging: false });
+
+            api.settings.set('allow_non_roster_messaging', true);
+            expect(changed).toEqual({ allow_non_roster_messaging: true });
 
             api.settings.listen.not('change', callback);
 
-            api.settings.set('allowed_image_domains', ['conversejs.org', 'opkode.com', 'inverse.chat']);
-            expect(changed).toEqual({'allowed_image_domains': ['conversejs.org', 'opkode.com']});
+            api.settings.set('allow_non_roster_messaging', false );
+            expect(changed).toEqual({ allow_non_roster_messaging: true });
 
-            api.settings.listen.on('change:allowed_image_domains', callback);
+            api.settings.listen.on('change:clear_cache_on_logout', callback);
 
-            api.settings.set('allowed_video_domains', ['inverse.chat']);
-            expect(changed).toEqual({'allowed_image_domains': ['conversejs.org', 'opkode.com']});
+            expect(api.settings.get('clear_cache_on_logout')).toBe(false);
+            api.settings.set('clear_cache_on_logout', true);
+            expect(changed).toEqual(true);
 
-            api.settings.set('allowed_image_domains', ['inverse.chat']);
-            expect(changed).toEqual(['inverse.chat']);
+            api.settings.set('clear_cache_on_logout', false);
+            expect(changed).toEqual(false);
         }));
     });
 });

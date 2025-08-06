@@ -1,5 +1,4 @@
-import { Model } from "@converse/skeletor";
-import { MUC, _converse, api } from "@converse/headless";
+import { _converse, api, MUC, Model } from "@converse/headless";
 import { ObservableElement } from "shared/components/observable.js";
 import tplMUCOccupant from "./templates/occupant.js";
 import "./occupant-bottom-panel.js";

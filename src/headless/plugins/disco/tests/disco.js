@@ -1,6 +1,7 @@
-/*global mock, converse */
+/*global converse */
+import mock from "../../../tests/mock.js";
 
-const { u, $iq, stx } = converse.env;
+const { u, stx } = converse.env;
 
 describe("Service Discovery", function () {
 

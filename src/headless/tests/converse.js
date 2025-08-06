@@ -1,4 +1,5 @@
 /* global mock, converse */
+import mock from "../tests/mock.js";
 
 const { Strophe } = converse.env;
 

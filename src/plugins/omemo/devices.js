@@ -1,4 +1,4 @@
-import { Collection } from "@converse/skeletor";
+import { Collection } from "@converse/headless";
 import Device from "./device.js";
 
 class Devices extends Collection {

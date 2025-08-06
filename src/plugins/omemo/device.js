@@ -1,5 +1,4 @@
-import { Model } from "@converse/skeletor";
-import { _converse, api, converse, log, u } from "@converse/headless";
+import { _converse, api, converse, log, u, Model } from "@converse/headless";
 import { IQError } from "shared/errors.js";
 import { UNDECIDED } from "./consts.js";
 import { parseBundle } from "./utils.js";

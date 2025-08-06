@@ -1013,8 +1013,8 @@ function encryptKey(key_and_tag, device) {
 
 /**
  * @param {MUC|ChatBox} chat
- * @param {{ message: BaseMessage, stanza: import('strophe.js').Builder }} data
- * @return {Promise<{ message: BaseMessage, stanza: import('strophe.js').Builder }>}
+ * @param {{ message: BaseMessage, stanza: import('@converse/headless').Builder }} data
+ * @return {Promise<{ message: BaseMessage, stanza: import('@converse/headless').Builder }>}
  */
 export async function createOMEMOMessageStanza(chat, data) {
     let { stanza } = data;

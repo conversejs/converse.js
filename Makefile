@@ -242,10 +242,15 @@ eslint: node_modules
 	npm run lint
 
 .PHONY: check
-check: eslint | dist/converse.js dist/converse.css
+check: eslint | src/headless/dist/converse-headless.js dist/converse.js dist/converse.css
 	npm run types
 	make check-git-clean
-	npm run test -- $(ARGS)
+	cd src/headless && npm run test -- --single-run
+	npm run test -- --single-run
+
+.PHONY: test-headless
+test-headless:
+	cd src/headless && npm run test -- $(ARGS)
 
 .PHONY: test
 test:

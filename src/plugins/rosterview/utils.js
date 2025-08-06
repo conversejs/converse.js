@@ -1,5 +1,4 @@
 /**
- * @typedef {import('@converse/skeletor').Model} Model
  * @typedef {import('@converse/headless').RosterContact} RosterContact
  * @typedef {import('@converse/headless').RosterContacts} RosterContacts
  */
@@ -197,7 +196,7 @@ export function isContactFiltered(contact, groupname) {
 /**
  * @param {RosterContact} contact
  * @param {string} groupname
- * @param {Model} model
+ * @param {import('@converse/headless').Model} model
  * @returns {boolean}
  */
 export function shouldShowContact(contact, groupname, model) {
@@ -220,7 +219,7 @@ export function shouldShowContact(contact, groupname, model) {
 
 /**
  * @param {string} group
- * @param {Model} model
+ * @param {import('@converse/headless').Model} model
  */
 export function shouldShowGroup(group, model) {
     if (!model.get('filter_visible')) return true;

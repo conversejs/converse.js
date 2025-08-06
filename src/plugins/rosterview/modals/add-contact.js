@@ -1,8 +1,9 @@
-import { Strophe } from 'strophe.js';
-import { _converse, api, log } from '@converse/headless';
+import { _converse, converse, api, log } from '@converse/headless';
 import BaseModal from 'plugins/modal/modal.js';
 import tplAddContactModal from './templates/add-contact.js';
 import { __ } from 'i18n';
+
+const { Strophe } = converse.env;
 
 import './styles/add-contact.scss';
 

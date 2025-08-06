@@ -1,4 +1,5 @@
-/*global mock, converse */
+/* global converse */
+import mock from "../../../tests/mock.js";
 
 // See: https://xmpp.org/rfcs/rfc3921.html
 
@@ -7,7 +8,6 @@ describe("A received presence stanza", function () {
     it("has its priority taken into account",
         mock.initConverse([], {}, async (_converse) => {
 
-        mock.openControlBox(_converse);
         await mock.waitForRoster(_converse, 'current');
         const contact_jid = mock.cur_names[8].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const contact = await _converse.api.contacts.get(contact_jid);

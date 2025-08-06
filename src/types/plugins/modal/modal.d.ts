@@ -56,6 +56,6 @@ declare class BaseModal extends CustomElement {
     #private;
 }
 import { CustomElement } from 'shared/components/element.js';
-import { Model } from '@converse/skeletor';
+import { Model } from '@converse/headless';
 import Modal from 'bootstrap/js/src/modal.js';
 //# sourceMappingURL=modal.d.ts.map

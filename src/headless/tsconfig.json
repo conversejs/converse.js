@@ -4,6 +4,7 @@
   ],
   "exclude": [
       "**/tests/*",
+      "karma.conf.js",
       "dist/",
       "types/"
   ],

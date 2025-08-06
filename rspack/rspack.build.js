@@ -5,8 +5,13 @@ const common = require('../rspack/rspack.common.js');
 
 const sharedConfig = {
     mode: 'production',
+    entry: {
+        'converse': path.resolve(__dirname, '../src/entry.js'),
+        'converse.min': path.resolve(__dirname, '../src/entry.js'),
+    },
     optimization: {
         minimize: true,
+        moduleIds: 'named', // Helps with debugging
         minimizer: [
             new rspack.SwcJsMinimizerRspackPlugin({
                 minimizerOptions: {
@@ -98,10 +103,6 @@ module.exports = [
     merge(common, {
         ...sharedConfig,
         plugins,
-        entry: {
-            'converse': path.resolve(__dirname, '../src/entry.js'),
-            'converse.min': path.resolve(__dirname, '../src/entry.js'),
-        },
         output: {
             filename: '[name].js',
         },
@@ -110,10 +111,6 @@ module.exports = [
     merge(common, {
         ...sharedConfig,
         plugins,
-        entry: {
-            'converse': path.resolve(__dirname, '../src/entry.js'),
-            'converse.min': path.resolve(__dirname, '../src/entry.js'),
-        },
         experiments: {
             outputModule: true,
             topLevelAwait: true,
@@ -121,8 +118,8 @@ module.exports = [
         output: {
             filename: '[name].esm.js',
             library: {
-                type: 'module'
-            }
+                type: 'module',
+            },
         },
-    })
+    }),
 ];

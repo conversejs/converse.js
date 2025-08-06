@@ -154,7 +154,7 @@ declare class RosterContact extends RosterContact_base {
     setPresence(): Promise<void>;
     presence: any;
     getStatus(): any;
-    openChat(): void;
+    openChat(): Promise<any>;
     /**
      * @param {import('./types').ContactDisplayNameOptions} [options]
      * @returns {string}

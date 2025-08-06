@@ -1,5 +1,4 @@
-import { Model } from '@converse/skeletor';
-import { _converse, api, u, constants } from "@converse/headless";
+import { _converse, api, u, constants, Model } from "@converse/headless";
 import { CustomElement } from 'shared/components/element.js';
 import { slideIn, slideOut } from 'utils/html.js';
 import tplRoster from "./templates/roster.js";

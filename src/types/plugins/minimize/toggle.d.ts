@@ -4,5 +4,5 @@ declare class MinimizedChatsToggle extends Model {
         collapsed: boolean;
     };
 }
-import { Model } from '@converse/skeletor';
+import { Model } from '@converse/headless';
 //# sourceMappingURL=toggle.d.ts.map

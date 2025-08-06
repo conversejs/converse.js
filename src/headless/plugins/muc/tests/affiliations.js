@@ -1,5 +1,7 @@
-/*global mock, converse */
-const { stx, Strophe } = converse.env;
+/*global converse */
+import mock from "../../../tests/mock.js";
+
+const { stx } = converse.env;
 
 describe('The MUC Affiliations API', function () {
 

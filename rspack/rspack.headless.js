@@ -2,20 +2,10 @@ const path = require('path');
 const { merge } = require('webpack-merge');
 const common = require('../rspack/rspack.common.js');
 
-module.exports = merge(common, {
+const sharedConfig = {
     entry: {
         'converse-headless': '@converse/headless',
         'converse-headless.min': '@converse/headless',
-    },
-    output: {
-        path: path.resolve(__dirname, '../src/headless/dist'),
-        filename: '[name].js',
-        chunkFilename: '[name].js',
-        globalObject: 'this',
-        library: {
-            name: 'converse',
-            type: 'umd',
-        },
     },
     mode: 'production',
     module: {
@@ -34,4 +24,37 @@ module.exports = merge(common, {
             },
         ],
     },
-});
+};
+
+module.exports = [
+    // CJS Build
+    merge(common, {
+        ...sharedConfig,
+        output: {
+            path: path.resolve(__dirname, '../src/headless/dist'),
+            filename: '[name].js',
+            chunkFilename: '[name].js',
+            globalObject: 'this',
+            library: {
+                name: 'converse',
+                type: 'umd',
+            },
+        },
+    }),
+    // ESM Build
+    merge(common, {
+        ...sharedConfig,
+        experiments: {
+            outputModule: true,
+            topLevelAwait: true,
+        },
+        output: {
+            path: path.resolve(__dirname, '../src/headless/dist'),
+            filename: '[name].esm.js',
+            chunkFilename: '[name].esm.js',
+            library: {
+                type: 'module'
+            }
+        },
+    })
+];

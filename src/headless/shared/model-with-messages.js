@@ -275,7 +275,7 @@ export default function ModelWithMessages(BaseModel) {
          *  chat.sendMessage({'body': 'hello world'});
          */
         async sendMessage(attrs) {
-            await converse.emojis?.initialized_promise;
+            await api.emojis.initialize();
 
             if (!this.canPostMessages()) {
                 log.warn('sendMessage was called but canPostMessages is false');

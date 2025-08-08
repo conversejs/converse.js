@@ -67,13 +67,11 @@ certs:
 
 GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=src/i18n/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=11.0.1 dist/converse-no-dependencies.js -c
 
-src/i18n/converse.pot: dist/converse-no-dependencies.js
+.PHONY: pot
+pot: dist/converse-no-dependencies.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
 	rm dist/converse-no-dependencies.js
 	rm dist/tmp.css
-
-.PHONY: pot
-pot: src/i18n/converse.pot
 
 .PHONY: po
 po:

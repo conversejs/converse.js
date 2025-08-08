@@ -2,6 +2,7 @@
 
 ## 12.0.0 (Unreleased)
 
+- #3581: src/i18n/converse.pot changes after make dist making git archive dirty
 - #3700: Fix exception that occurs when optional cp attribute is missing
 - #3730 QR Code is not valid
 - Add approval banner in chats with requesting contacts or unsaved contacts

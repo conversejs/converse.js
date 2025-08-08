@@ -50,7 +50,7 @@ import MUCSession from './session';
 
 const { u, stx } = converse.env;
 
-const DISCO_INFO_TIMEOUT_ON_JOIN = 5000;
+const DISCO_INFO_TIMEOUT_ON_JOIN = 30000;
 
 /**
  * Represents a groupchat conversation.

@@ -32,5 +32,5 @@ export function sendChatState(jid: string, chat_state: import("./types").ChatSta
  * @param {import('../shared/message').default} message - The message which we're retracting.
  * @param {string} retraction_id - Unique ID for the retraction message
  */
-export function sendRetractionMessage(jid: string, message: import("../shared/message").default<any>, retraction_id: string): any;
+export function sendRetractionMessage(jid: string, message: import("../shared/message").default, retraction_id: string): any;
 //# sourceMappingURL=actions.d.ts.map

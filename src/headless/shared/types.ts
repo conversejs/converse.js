@@ -1,9 +1,16 @@
-import { Collection, Model } from "@converse/skeletor";
-import { getOpenPromise } from "@converse/openpromise";
+import { Builder } from 'strophe.js';
+import { Collection, Model } from '@converse/skeletor';
+import { getOpenPromise } from '@converse/openpromise';
+import BaseMessage from './message.js';
+
+export type MessageAndStanza = {
+    message: BaseMessage; // The message object from which the stanza is created and which gets persisted to storage.
+    stanza: Builder; // The stanza that will be sent out, as a Strophe.Builder object.
+};
 
 export type ReplaceableOpenPromise = ReturnType<typeof getOpenPromise> & {
     replace?: boolean;
-}
+};
 
 export type ModelAttributes = Record<string, any>;
 
@@ -32,6 +39,7 @@ type EncryptionPayloadAttrs = {
     key?: string;
     prekey?: boolean;
     device_id: string;
+    payload?: string;
 };
 
 export type RetractionAttrs = {
@@ -70,19 +78,19 @@ export type XFormCaptchaURI = {
     data: string;
 };
 
-type XFormListTypes = "list-single" | "list-multi";
-type XFormJIDTypes = "jid-single" | "jid-multi";
-type XFormTextTypes = "text-multi" | "text-private" | "text-single";
-type XFormDateTypes = "date" | "datetime";
+type XFormListTypes = 'list-single' | 'list-multi';
+type XFormJIDTypes = 'jid-single' | 'jid-multi';
+type XFormTextTypes = 'text-multi' | 'text-private' | 'text-single';
+type XFormDateTypes = 'date' | 'datetime';
 type XFormFieldTypes =
     | XFormListTypes
     | XFormJIDTypes
     | XFormTextTypes
     | XFormDateTypes
-    | "fixed"
-    | "boolean"
-    | "url"
-    | "hidden";
+    | 'fixed'
+    | 'boolean'
+    | 'url'
+    | 'hidden';
 
 export type XFormField = {
     var: string;
@@ -97,7 +105,7 @@ export type XFormField = {
     readonly: boolean;
 };
 
-export type XFormResponseType = "result" | "form";
+export type XFormResponseType = 'result' | 'form';
 
 export type XForm = {
     type: XFormResponseType;
@@ -121,30 +129,30 @@ export type ErrorExtra = Record<string, string>;
 
 // https://datatracker.ietf.org/doc/html/rfc6120#section-8.3
 export type ErrorName =
-    | "bad-request"
-    | "conflict"
-    | "feature-not-implemented"
-    | "forbidden"
-    | "gone"
-    | "internal-server-error"
-    | "item-not-found"
-    | "jid-malformed"
-    | "not-acceptable"
-    | "not-allowed"
-    | "not-authorized"
-    | "payment-required"
-    | "recipient-unavailable"
-    | "redirect"
-    | "registration-required"
-    | "remote-server-not-found"
-    | "remote-server-timeout"
-    | "resource-constraint"
-    | "service-unavailable"
-    | "subscription-required"
-    | "undefined-condition"
-    | "unexpected-request";
+    | 'bad-request'
+    | 'conflict'
+    | 'feature-not-implemented'
+    | 'forbidden'
+    | 'gone'
+    | 'internal-server-error'
+    | 'item-not-found'
+    | 'jid-malformed'
+    | 'not-acceptable'
+    | 'not-allowed'
+    | 'not-authorized'
+    | 'payment-required'
+    | 'recipient-unavailable'
+    | 'redirect'
+    | 'registration-required'
+    | 'remote-server-not-found'
+    | 'remote-server-timeout'
+    | 'resource-constraint'
+    | 'service-unavailable'
+    | 'subscription-required'
+    | 'undefined-condition'
+    | 'unexpected-request';
 
-export type ErrorType = "auth" | "cancel" | "continue" | "modify" | "wait";
+export type ErrorType = 'auth' | 'cancel' | 'continue' | 'modify' | 'wait';
 
 // Represents a XEP-0372 reference
 export type Reference = {
@@ -200,7 +208,7 @@ export type MessageAttributes = EncryptionAttrs &
         replace_id: string; // The `id` attribute of a XEP-0308 <replace> element
         retracted: string; // An ISO8601 string recording the time that the message was retracted
         retracted_id: string; // The `id` attribute of a XEP-424 <retracted> element
-        sender: "me" | "them"; // Whether the message was sent by the current user or someone else
+        sender: 'me' | 'them'; // Whether the message was sent by the current user or someone else
         spoiler_hint: string; //  The XEP-0382 spoiler hint
         stanza_id: string; // The XEP-0359 Stanza ID. Note: the key is actualy `stanza_id ${by_jid}` and there can be multiple.
         subject: string; // The <subject> element value
@@ -217,5 +225,5 @@ export type FileUploadMessageAttributes = {
     upload: 'success' | 'failure';
 };
 
-export type MessageMarkerType = "displayed" | "received" | "acknowledged";
-export type ChatStateType = "active" | "composing" | "paused" | "inactive" | "gone";
+export type MessageMarkerType = 'displayed' | 'received' | 'acknowledged';
+export type ChatStateType = 'active' | 'composing' | 'paused' | 'inactive' | 'gone';

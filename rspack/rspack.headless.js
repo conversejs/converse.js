@@ -18,6 +18,7 @@ const sharedConfig = {
     },
     plugins,
     mode: 'production',
+    devtool: 'source-map',
     module: {
         rules: [
             {

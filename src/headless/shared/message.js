@@ -1,20 +1,16 @@
-import dayjs from "dayjs";
-import sizzle from "sizzle";
-import { Strophe, $iq } from "strophe.js";
-import { Model } from "@converse/skeletor";
-import log from "@converse/log";
-import _converse from "../shared/_converse.js";
-import api from "../shared/api/index.js";
-import { SUCCESS, FAILURE } from "../shared/constants.js";
-import ColorAwareModel from "../shared/color.js";
-import ModelWithContact from "../shared/model-with-contact.js";
-import ModelWithVCard from "../shared/model-with-vcard";
-import { getUniqueId } from "../utils/index.js";
+import dayjs from 'dayjs';
+import sizzle from 'sizzle';
+import { Strophe, $iq } from 'strophe.js';
+import { Model } from '@converse/skeletor';
+import log from '@converse/log';
+import _converse from '../shared/_converse.js';
+import api from '../shared/api/index.js';
+import { SUCCESS, FAILURE } from '../shared/constants.js';
+import ColorAwareModel from '../shared/color.js';
+import ModelWithContact from '../shared/model-with-contact.js';
+import ModelWithVCard from '../shared/model-with-vcard';
+import { getUniqueId } from '../utils/index.js';
 
-/**
- * @template {import('./types').ModelExtender} T
- * @param {T} BaseModel
- */
 class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     defaults() {
         return {
@@ -57,7 +53,7 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
             // fails for some reason.
             // TODO: This is likely fixable by setting `wait` when
             // creating messages. See the wait-for-messages branch.
-            this.validationError = "Empty message";
+            this.validationError = 'Empty message';
             this.safeDestroy();
             return false;
         }
@@ -81,7 +77,7 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
         }
         const is_ephemeral = this.isEphemeral();
         if (is_ephemeral) {
-            const timeout = typeof is_ephemeral === "number" ? is_ephemeral : 10000;
+            const timeout = typeof is_ephemeral === 'number' ? is_ephemeral : 10000;
             this.ephemeral_timer = setTimeout(() => this.safeDestroy(), timeout);
         }
     }
@@ -92,7 +88,7 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
      * @returns {boolean}
      */
     isEphemeral() {
-        return this.get("is_ephemeral");
+        return this.get('is_ephemeral');
     }
 
     /**
@@ -104,14 +100,14 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
         if (!text) {
             return false;
         }
-        return text.startsWith("/me ");
+        return text.startsWith('/me ');
     }
 
     /**
      * @returns {boolean}
      */
     isRetracted() {
-        return this.get("retracted") || this.get("moderated") === "retracted";
+        return this.get('retracted') || this.get('moderated') === 'retracted';
     }
 
     /**
@@ -133,18 +129,18 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
         if (prev_model === null) {
             return false;
         }
-        const date = dayjs(this.get("time"));
+        const date = dayjs(this.get('time'));
         return (
-            this.get("from") === prev_model.get("from") &&
+            this.get('from') === prev_model.get('from') &&
             !this.isRetracted() &&
             !prev_model.isRetracted() &&
             !this.isMeCommand() &&
             !prev_model.isMeCommand() &&
-            !!this.get("is_encrypted") === !!prev_model.get("is_encrypted") &&
-            this.get("type") === prev_model.get("type") &&
-            this.get("type") !== "info" &&
-            date.isBefore(dayjs(prev_model.get("time")).add(10, "minutes")) &&
-            (this.get("type") === "groupchat" ? this.get("occupant_id") === prev_model.get("occupant_id") : true)
+            !!this.get('is_encrypted') === !!prev_model.get('is_encrypted') &&
+            this.get('type') === prev_model.get('type') &&
+            this.get('type') !== 'info' &&
+            date.isBefore(dayjs(prev_model.get('time')).add(10, 'minutes')) &&
+            (this.get('type') === 'groupchat' ? this.get('occupant_id') === prev_model.get('occupant_id') : true)
         );
     }
 
@@ -153,19 +149,19 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
      * @returns { Boolean }
      */
     mayBeRetracted() {
-        const is_own_message = this.get("sender") === "me";
-        const not_canceled = this.get("error_type") !== "cancel";
-        return is_own_message && not_canceled && ["all", "own"].includes(api.settings.get("allow_message_retraction"));
+        const is_own_message = this.get('sender') === 'me';
+        const not_canceled = this.get('error_type') !== 'cancel';
+        return is_own_message && not_canceled && ['all', 'own'].includes(api.settings.get('allow_message_retraction'));
     }
 
     getMessageText() {
-        if (this.get("is_encrypted")) {
+        if (this.get('is_encrypted')) {
             const { __ } = _converse;
-            return this.get("plaintext") || this.get("body") || __("Undecryptable OMEMO message");
-        } else if (["groupchat", "chat", "normal"].includes(this.get("type"))) {
-            return this.get("body");
+            return this.get('plaintext') || this.get('body') || __('Undecryptable OMEMO message');
+        } else if (['groupchat', 'chat', 'normal'].includes(this.get('type'))) {
+            return this.get('body');
         } else {
-            return this.get("message");
+            return this.get('message');
         }
     }
 
@@ -174,17 +170,17 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
      * https://xmpp.org/extensions/xep-0363.html#request
      */
     sendSlotRequestStanza() {
-        if (!this.file) return Promise.reject(new Error("file is undefined"));
+        if (!this.file) return Promise.reject(new Error('file is undefined'));
 
         const iq = $iq({
-            "from": _converse.session.get("jid"),
-            "to": this.get("slot_request_url"),
-            "type": "get",
-        }).c("request", {
-            "xmlns": Strophe.NS.HTTPUPLOAD,
-            "filename": this.file.name,
-            "size": this.file.size,
-            "content-type": this.file.type,
+            'from': _converse.session.get('jid'),
+            'to': this.get('slot_request_url'),
+            'type': 'get',
+        }).c('request', {
+            'xmlns': Strophe.NS.HTTPUPLOAD,
+            'filename': this.file.name,
+            'size': this.file.size,
+            'content-type': this.file.type,
         });
         return api.sendIQ(iq);
     }
@@ -199,8 +195,8 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
         // to be manually set via document.cookie, so we're leaving it out here.
         return {
             headers: headers
-                .map((h) => ({ "name": h.getAttribute("name"), "value": h.textContent }))
-                .filter((h) => ["Authorization", "Expires"].includes(h.name)),
+                .map((h) => ({ 'name': h.getAttribute('name'), 'value': h.textContent }))
+                .filter((h) => ['Authorization', 'Expires'].includes(h.name)),
         };
     }
 
@@ -213,22 +209,22 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
             log.error(e);
             return this.save({
                 is_ephemeral: true,
-                message: __("Sorry, could not determine upload URL."),
-                type: "error",
+                message: __('Sorry, could not determine upload URL.'),
+                type: 'error',
             });
         }
         const slot = sizzle(`slot[xmlns="${Strophe.NS.HTTPUPLOAD}"]`, stanza).pop();
         if (slot) {
             this.upload_metadata = this.getUploadRequestMetadata(stanza);
             this.save({
-                get: slot.querySelector("get").getAttribute("url"),
-                put: slot.querySelector("put").getAttribute("url"),
+                get: slot.querySelector('get').getAttribute('url'),
+                put: slot.querySelector('put').getAttribute('url'),
             });
         } else {
             return this.save({
                 is_ephemeral: true,
-                message: __("Sorry, could not determine file upload URL."),
-                type: "error",
+                message: __('Sorry, could not determine file upload URL.'),
+                type: 'error',
             });
         }
     }
@@ -238,12 +234,12 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
 
         xhr.onreadystatechange = async (event) => {
             if (xhr.readyState === XMLHttpRequest.DONE) {
-                log.info("Status: " + xhr.status);
+                log.info('Status: ' + xhr.status);
                 if (xhr.status === 200 || xhr.status === 201) {
                     let attrs = {
-                        body: this.get("get"),
-                        message: this.get("get"),
-                        oob_url: this.get("get"),
+                        body: this.get('get'),
+                        message: this.get('get'),
+                        oob_url: this.get('get'),
                         upload: SUCCESS,
                     };
                     /**
@@ -251,7 +247,7 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
                      * saved on the message once a file has been uploaded.
                      * @event _converse#afterFileUploaded
                      */
-                    attrs = await api.hook("afterFileUploaded", this, attrs);
+                    attrs = await api.hook('afterFileUploaded', this, attrs);
                     this.save(attrs);
                 } else {
                     log.error(event);
@@ -261,10 +257,10 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
         };
 
         xhr.upload.addEventListener(
-            "progress",
+            'progress',
             (evt) => {
                 if (evt.lengthComputable) {
-                    this.set("progress", evt.loaded / evt.total);
+                    this.set('progress', evt.loaded / evt.total);
                 }
             },
             false
@@ -279,17 +275,17 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
                     xhr.responseText
                 );
             } else {
-                message = __("Sorry, could not succesfully upload your file.");
+                message = __('Sorry, could not succesfully upload your file.');
             }
             this.save({
                 is_ephemeral: true,
                 message,
-                type: "error",
+                type: 'error',
                 upload: FAILURE,
             });
         };
-        xhr.open("PUT", this.get("put"), true);
-        xhr.setRequestHeader("Content-type", this.file.type);
+        xhr.open('PUT', this.get('put'), true);
+        xhr.setRequestHeader('Content-type', this.file.type);
         this.upload_metadata.headers?.forEach((h) => xhr.setRequestHeader(h.name, h.value));
         xhr.send(this.file);
     }

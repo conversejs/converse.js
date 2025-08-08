@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
-import log from "@converse/log";
+import log from '@converse/log';
 
 dayjs.extend(advancedFormat);
 
@@ -30,6 +30,7 @@ import './plugins/chatboxes/index.js';
 import './plugins/disco/index.js'; // XEP-0030 Service discovery
 import './plugins/adhoc/index.js'; // XEP-0050 Ad Hoc Commands
 import './plugins/headlines/index.js'; // Support for headline messages
+export { Device, Devices, DeviceList, DeviceLists } from './plugins/omemo/index.js'; // Support for headline messages
 
 // XEP-0313 Message Archive Management
 export { MAMPlaceholderMessage } from './plugins/mam/index.js';
@@ -49,8 +50,9 @@ export { VCard, VCards } from './plugins/vcard/index.js'; // XEP-0054 VCard-temp
 // ---------------------------
 // END: Removable components
 
+import * as omemo_constants from './plugins/omemo/constants.js';
 import * as muc_constants from './plugins/muc/constants.js';
-const constants = Object.assign({}, shared_constants, muc_constants);
+const constants = Object.assign({}, shared_constants, muc_constants, omemo_constants);
 
 Object.assign(_converse.constants, constants);
 

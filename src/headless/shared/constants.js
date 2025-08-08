@@ -143,6 +143,7 @@ export const CORE_PLUGINS = [
     'converse-smacks',
     'converse-status',
     'converse-vcard',
+    'converse-omemo',
 ];
 
 export const CHAT_STATES = ['active', 'composing', 'gone', 'inactive', 'paused'];

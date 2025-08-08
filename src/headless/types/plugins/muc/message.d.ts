@@ -1,6 +1,5 @@
 export default MUCMessage;
-declare class MUCMessage extends BaseMessage<any> {
-    constructor(models?: import("@converse/skeletor").Model[], options?: object);
+declare class MUCMessage extends BaseMessage {
     get occupants(): any;
     getDisplayName(): any;
     /**

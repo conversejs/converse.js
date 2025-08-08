@@ -213,11 +213,7 @@ declare const BaseMessage_base: {
         propertyIsEnumerable(v: PropertyKey): boolean;
     };
 } & typeof Model;
-/**
- * @template {import('./types').ModelExtender} T
- * @param {T} BaseModel
- */
-declare class BaseMessage<T extends import("./types").ModelExtender> extends BaseMessage_base {
+declare class BaseMessage extends BaseMessage_base {
     /**
      * @param {Model[]} [models]
      * @param {object} [options]
@@ -293,5 +289,5 @@ declare class BaseMessage<T extends import("./types").ModelExtender> extends Bas
     };
     uploadFile(): void;
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=message.d.ts.map

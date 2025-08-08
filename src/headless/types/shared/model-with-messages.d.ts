@@ -46,12 +46,12 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @param {MessageAttributes} attrs
          * @returns {object}
          */
-        getUpdatedMessageAttributes(message: import("./message").default<any>, attrs: import("./types").MessageAttributes): object;
+        getUpdatedMessageAttributes(message: import("./message").default, attrs: import("./types").MessageAttributes): object;
         /**
          * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
          */
-        updateMessage(message: import("./message").default<any>, attrs: import("./types").MessageAttributes): void;
+        updateMessage(message: import("./message").default, attrs: import("./types").MessageAttributes): void;
         /**
          * Determines whether the given attributes of an incoming message
          * represent a XEP-0308 correction and, if so, handles it appropriately.
@@ -60,7 +60,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @returns {Promise<BaseMessage|void>} Returns the corrected
          *  message or `undefined` if not applicable.
          */
-        handleCorrection(attrs: import("./types").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): Promise<import("./message").default<any> | void>;
+        handleCorrection(attrs: import("./types").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): Promise<import("./message").default | void>;
         /**
          * Queue an incoming `chat` message stanza for processing.
          * @param {MessageAttributes} attrs - A promise which resolves to the message attributes
@@ -80,12 +80,12 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          *  const chat = api.chats.get('buddy1@example.org');
          *  chat.sendMessage({'body': 'hello world'});
          */
-        sendMessage(attrs?: any): Promise<import("./message").default<any>>;
+        sendMessage(attrs?: any): Promise<import("./message").default>;
         /**
          * Retract one of your messages in this chat
          * @param {BaseMessage} message - The message which we're retracting.
          */
-        retractOwnMessage(message: import("./message").default<any>): void;
+        retractOwnMessage(message: import("./message").default): void;
         /**
          * @param {File[]} files'
          */
@@ -114,15 +114,15 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         /**
          * @param {BaseMessage} message
          */
-        onMessageAdded(message: import("./message").default<any>): void;
+        onMessageAdded(message: import("./message").default): void;
         /**
          * @param {BaseMessage} message
          */
-        onMessageUploadChanged(message: import("./message").default<any>): Promise<void>;
+        onMessageUploadChanged(message: import("./message").default): Promise<void>;
         /**
          * @param {BaseMessage} message
          */
-        onMessageCorrecting(message: import("./message").default<any>): void;
+        onMessageCorrecting(message: import("./message").default): void;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
         /**
@@ -139,11 +139,11 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @param {BaseMessage} _message
          * @returns {boolean}
          */
-        isChatMessage(_message: import("./message").default<any>): boolean;
+        isChatMessage(_message: import("./message").default): boolean;
         /** @returns {BaseMessage} */
-        getOldestMessage(): import("./message").default<any>;
+        getOldestMessage(): import("./message").default;
         /** @returns {BaseMessage} */
-        getMostRecentMessage(): import("./message").default<any>;
+        getMostRecentMessage(): import("./message").default;
         /**
          * Given an error `<message>` stanza's attributes, find the saved message model which is
          * referenced by that error.
@@ -159,7 +159,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          *  message, as returned by {@link parseMessage}
          * @returns {BaseMessage|null}
          */
-        findDanglingRetraction(attrs: object): import("./message").default<any> | null;
+        findDanglingRetraction(attrs: object): import("./message").default | null;
         /**
          * Returns an already cached message (if it exists) based on the
          * passed in attributes map.
@@ -167,7 +167,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          *  message, as returned by {@link parseMessage}
          * @returns {BaseMessage}
          */
-        getDuplicateMessage(attrs: object): import("./message").default<any>;
+        getDuplicateMessage(attrs: object): import("./message").default;
         /**
          * @param {object} attrs - Attributes representing a received
          */
@@ -193,18 +193,18 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @param {boolean} [force=false] - Whether a marker should be sent for the
          *  message, even if it didn't include a `markable` element.
          */
-        sendMarkerForMessage(msg: import("./message").default<any>, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
+        sendMarkerForMessage(msg: import("./message").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         /**
          * Given a newly received {@link BaseMessage} instance,
          * update the unread counter if necessary.
          * @param {BaseMessage} message
          */
-        handleUnreadMessage(message: import("./message").default<any>): void;
+        handleUnreadMessage(message: import("./message").default): void;
         /**
          * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
          */
-        getErrorAttributesForMessage(message: import("./message").default<any>, attrs: import("./types").MessageAttributes): Promise<any>;
+        getErrorAttributesForMessage(message: import("./message").default, attrs: import("./types").MessageAttributes): Promise<any>;
         /**
          * @param {Element} stanza
          */
@@ -212,7 +212,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         /**
          * @param {BaseMessage} message
          */
-        incrementUnreadMsgsCounter(message: import("./message").default<any>): void;
+        incrementUnreadMsgsCounter(message: import("./message").default): void;
         clearUnreadMsgCounter(): void;
         /**
          * Handles message retraction based on the passed in attributes.
@@ -231,7 +231,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @method ChatBox#createMessageStanza
          * @param {BaseMessage} message - The message object
          */
-        createMessageStanza(message: import("./message").default<any>): Promise<any>;
+        createMessageStanza(message: import("./message").default): Promise<any>;
         /**
          * Prunes the message history to ensure it does not exceed the maximum
          * number of messages specified in the settings.

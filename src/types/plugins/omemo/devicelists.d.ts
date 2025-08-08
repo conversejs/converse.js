@@ -1,8 +1,0 @@
-export default DeviceLists;
-declare class DeviceLists extends Collection {
-    constructor();
-    model: typeof DeviceList;
-}
-import { Collection } from "@converse/headless";
-import DeviceList from "./devicelist.js";
-//# sourceMappingURL=devicelists.d.ts.map

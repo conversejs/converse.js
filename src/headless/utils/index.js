@@ -23,7 +23,7 @@ import * as url from './url.js';
 
 /**
  * @typedef {Record<string, Function>} CommonUtils
- * @typedef {Record<'muc'|'mam', CommonUtils>} PluginUtils
+ * @typedef {Record<'muc'|'mam'|'omemo'|'roster', CommonUtils>} PluginUtils
  *
  * The utils object
  * @namespace u
@@ -33,6 +33,7 @@ const u = {
     muc: null,
     mam: null,
     roster: null,
+    omemo: null,
 };
 
 /**

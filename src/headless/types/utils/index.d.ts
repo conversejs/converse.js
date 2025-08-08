@@ -8,7 +8,7 @@ export function isEmptyMessage(attrs: any): boolean;
  * inserted before the mentioned nicknames.
  * @param {import('../shared/message').default} message
  */
-export function prefixMentions(message: import("../shared/message").default<any>): any;
+export function prefixMentions(message: import("../shared/message").default): any;
 export function getRandomInt(max: any): number;
 /**
  * @param {string} [suffix]
@@ -112,7 +112,7 @@ export type CommonUtils = Record<string, Function>;
 /**
  * The utils object
  */
-export type PluginUtils = Record<"muc" | "mam", CommonUtils>;
+export type PluginUtils = Record<"muc" | "mam" | "omemo" | "roster", CommonUtils>;
 /**
  * Call the callback once all the events have been triggered
  * @param { Array } events: An array of objects, with keys `object` and

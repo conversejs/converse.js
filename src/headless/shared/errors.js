@@ -1,5 +1,28 @@
 export class MethodNotImplementedError extends Error {}
 
+export class UserFacingError extends Error {
+    /**
+     * @param {string} message
+     */
+    constructor (message) {
+        super(message);
+        this.name = 'UserFacingError';
+        this.user_facing = true;
+    }
+}
+
+export class IQError extends Error {
+    /**
+     * @param {string} message
+     * @param {Element} iq
+     */
+    constructor (message, iq) {
+        super(message);
+        this.name = 'IQError';
+        this.iq = iq;
+    }
+}
+
 /**
  * Custom error for indicating timeouts
  * @namespace converse.env

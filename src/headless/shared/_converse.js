@@ -59,7 +59,7 @@ const DEPRECATED_ATTRS = {
  * @global
  * @namespace _converse
  */
-class ConversePrivateGlobal extends EventEmitter(Object) {
+export class ConversePrivateGlobal extends EventEmitter(Object) {
 
     constructor () {
         super();

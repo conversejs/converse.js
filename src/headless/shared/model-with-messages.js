@@ -34,7 +34,6 @@ export default function ModelWithMessages(BaseModel) {
      * @typedef {import('../plugins/muc/parsers').MUCMessageAttributes} MUCMessageAttributes
      * @typedef {import('../shared/types').MessageAttributes} MessageAttributes
      * @typedef {import('./message').default} BaseMessage
-     * @typedef {import('strophe.js').Builder} Builder
      */
 
     return class ModelWithMessages extends BaseModel {
@@ -963,15 +962,8 @@ export default function ModelWithMessages(BaseModel) {
             /**
              * *Hook* which allows plugins to update an outgoing message stanza
              * @event _converse#createMessageStanza
-             * @param {ChatBox|MUC} chat - The chat from
-             *      which this message stanza is being sent.
-             * @param {Object} data - BaseMessage data
-             * @param {BaseMessage} data.message
-             *      The message object from which the stanza is created and which gets persisted to storage.
-             * @param {Builder} data.stanza
-             *      The stanza that will be sent out, as a Strophe.Builder object.
-             *      You can use the Strophe.Builder functions to extend the stanza.
-             *      See http://strophe.im/strophejs/doc/1.4.3/files/strophe-umd-js.html#Strophe.Builder.Functions
+             * @param {ChatBox|MUC} chat - The chat from which this message stanza is being sent.
+             * @param {import('./types').MessageAndStanza} data - BaseMessage data
              */
             const data = await api.hook('createMessageStanza', this, { message, stanza });
             return data.stanza;

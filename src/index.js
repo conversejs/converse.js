@@ -33,7 +33,7 @@ import "./plugins/minimize/index.js";       // Allows chat boxes to be minimized
 import "./plugins/muc-views/index.js";      // Views related to MUC
 import "./plugins/notifications/index.js";
 import "./plugins/profile/index.js";
-import "./plugins/omemo/index.js";
+import "./plugins/omemo-views/index.js";
 import "./plugins/push/index.js";           // XEP-0357 Push Notifications
 import "./plugins/register/index.js";       // XEP-0077 In-band registration
 import "./plugins/roomslist/index.js";      // Show currently open chat rooms

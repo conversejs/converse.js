@@ -10,6 +10,7 @@ module.exports = function(config) {
     files: [
       { pattern: 'dist/*.js.map', included: false },
       { pattern: 'dist/*.css.map', included: false },
+      { pattern: 'src/headless/dist/*.js.map', included: false },
       {
         pattern: "dist/emoji.json",
         watched: false,
@@ -57,7 +58,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/minimize/tests/*.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/*.js", type: 'module' },
       { pattern: "src/plugins/notifications/tests/*.js", type: 'module' },
-      { pattern: "src/plugins/omemo/tests/*.js", type: 'module' },
+      { pattern: "src/plugins/omemo-views/tests/*.js", type: 'module' },
       { pattern: "src/plugins/profile/tests/*.js", type: 'module' },
       { pattern: "src/plugins/push/tests/*.js", type: 'module' },
       { pattern: "src/plugins/register/tests/*.js", type: 'module' },

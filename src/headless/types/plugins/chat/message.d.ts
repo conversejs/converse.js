@@ -6,8 +6,7 @@ export default Message;
  * @memberOf _converse
  * @example const msg = new Message({'message': 'hello world!'});
  */
-declare class Message extends BaseMessage<any> {
-    constructor(models?: import("@converse/skeletor").Model[], options?: object);
+declare class Message extends BaseMessage {
     initialize(): Promise<void>;
     initialized: Promise<any> & {
         isResolved: boolean;

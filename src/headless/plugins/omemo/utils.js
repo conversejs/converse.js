@@ -96,7 +96,7 @@ export function registerPEPPushHandler() {
             return true;
         },
         null,
-        'message',
+        'message'
     );
 }
 
@@ -329,10 +329,13 @@ async function getBundlesAndBuildSessions(chatbox) {
     // Fetch bundles if necessary
     await Promise.all(devices.map(/** @param {Device} d */ (d) => d.getBundle()));
 
-    const sessions = devices
-        .filter(/** @param {Device} d */ (d) => d)
-        .map(/** @param {Device} d */ (d) => getSession(d));
-    await Promise.all(sessions);
+    const sessions = await Promise.all(
+        devices.map(
+            /** @param {Device} [d] */ (d) => {
+                return (d && getSession(d)) || null;
+            }
+        )
+    );
 
     if (sessions.includes(null)) {
         // We couldn't build a session for certain devices.

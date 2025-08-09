@@ -90,6 +90,12 @@ export default {
                 const fp = generateFingerprint(device);
                 await omemo_store.publishBundle();
                 await devicelist.publishDevices();
+
+                // Remove all existing sessions.
+                // We'll need to create new sessions (i.e. send out a new PreKeyWhisperMessage)
+                // when sending messages.
+                await omemo_store.removeAllSessions();
+
                 return fp;
             },
         },

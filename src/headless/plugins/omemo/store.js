@@ -199,9 +199,9 @@ class OMEMOStore extends Model {
     }
 
     /**
-     * @param {string} identifier
+     * @param {string} [identifier='']
      */
-    removeAllSessions(identifier) {
+    removeAllSessions(identifier='') {
         const keys = Object.keys(this.attributes).filter((key) =>
             key.startsWith('session' + identifier) ? key : false
         );

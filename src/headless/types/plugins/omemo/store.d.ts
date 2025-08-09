@@ -72,9 +72,9 @@ declare class OMEMOStore extends Model {
      */
     removeSession(identifier: string): Promise<false | Awaited<this>>;
     /**
-     * @param {string} identifier
+     * @param {string} [identifier='']
      */
-    removeAllSessions(identifier: string): Promise<void>;
+    removeAllSessions(identifier?: string): Promise<void>;
     publishBundle(): any;
     generateMissingPreKeys(): Promise<void>;
     /**

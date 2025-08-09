@@ -4,7 +4,8 @@
 
 - #3581: src/i18n/converse.pot changes after make dist making git archive dirty
 - #3700: Fix exception that occurs when optional cp attribute is missing
-- #3730 QR Code is not valid
+- #3730: QR Code doesn't work on dark backgrounds
+- #3769: Don't restrict OMEMO PEP push messages to type `headline`
 - Add approval banner in chats with requesting contacts or unsaved contacts
 - Some fixes regarding manually resized chats in `overlayed` view mode.
 - Replace webpack with [rspack](https://rspack.rs)

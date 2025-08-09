@@ -97,7 +97,6 @@ export function registerPEPPushHandler() {
         },
         null,
         'message',
-        'headline'
     );
 }
 

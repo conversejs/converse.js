@@ -74,13 +74,14 @@ function tplDeviceList(el) {
  * @param {import('../profile').Profile} el
  */
 export default (el) => {
-    const i18n_fingerprint = __("This device's OMEMO fingerprint");
+    const i18n_device = __("This device");
+    const i18n_fingerprint_label = __("OMEMO fingerprint");
     const i18n_generate = __("Generate new keys and fingerprint");
     const fingerprint = el?.current_device?.get("bundle").fingerprint;
-    return html` <form class="converse-form fingerprint-removal" @submit=${el.removeSelectedFingerprints}>
+    return html`<form class="converse-form fingerprint-removal" @submit=${el.removeSelectedFingerprints}>
         <ul class="list-group fingerprints">
-            <li class="list-group-item active">${i18n_fingerprint}</li>
-            <li class="list-group-item">${fingerprint ? tplFingerprint(el) : spinner()}</li>
+            <li class="list-group-item active">${i18n_device}</li>
+            <li class="list-group-item"><div class="fw-bold pb-1">${i18n_fingerprint_label}:</div> ${fingerprint ? tplFingerprint(el) : spinner()}</li>
             <li class="list-group-item p-4">
                 ${fingerprint
                     ? html`<converse-qr-code
@@ -88,6 +89,10 @@ export default (el) => {
                           text="${formatFingerprintForQRCode(fingerprint)}"
                       ></converse-qr-code>`
                     : ""}
+            </li>
+            <li class="list-group-item">
+                <span class="fw-bold">${__("Device ID")}:</span>
+                <span class="ms-2">${el?.current_device?.get("id") || ""}</span>
             </li>
         </ul>
         <div class="pb-3">

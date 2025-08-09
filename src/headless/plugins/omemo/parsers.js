@@ -94,7 +94,7 @@ async function decryptWhisperMessage(attrs) {
     try {
         const key_and_tag = await session_cipher.decryptWhisperMessage(key, 'binary');
         const plaintext = await handleDecryptedWhisperMessage(attrs, key_and_tag);
-        return Object.assign(attrs, { 'plaintext': plaintext });
+        return Object.assign(attrs, { plaintext });
     } catch (e) {
         log.error(`${e.name} ${e.message}`);
         return Object.assign(attrs, getDecryptionErrorAttributes(e));

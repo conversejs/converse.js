@@ -86,10 +86,10 @@ export default {
                 // Generate new device bundle and publish
                 // https://xmpp.org/extensions/attic/xep-0384-0.3.0.html#usecases-announcing
                 await omemo_store.generateBundle();
-                await devicelist.publishDevices();
                 const device = devicelist.devices.get(omemo_store.get('device_id'));
                 const fp = generateFingerprint(device);
                 await omemo_store.publishBundle();
+                await devicelist.publishDevices();
                 return fp;
             },
         },

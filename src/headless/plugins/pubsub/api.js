@@ -42,7 +42,7 @@ export default {
                         from="${full_jid}"
                         type="get"
                         to="${entity_jid}">
-                    <pubsub xmlns="${Strophe.NS.PUBSUB}"><configure node="${node}"/></pubsub>
+                    <pubsub xmlns="${Strophe.NS.PUBSUB}#owner"><configure node="${node}"/></pubsub>
                     </iq>`;
 
                 let response;

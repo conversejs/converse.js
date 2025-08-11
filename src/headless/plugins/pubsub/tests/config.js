@@ -353,20 +353,20 @@ describe('The pubsub API', function () {
                             <configure node="princely_musings">
                             <x xmlns="jabber:x:data" type="submit">
                                 <field var="FORM_TYPE" type="hidden"><value>http://jabber.org/protocol/pubsub#nodeconfig</value></field>
-                                <field var="title"><value/></field>
-                                <field var="deliver_notifications"><value>true</value></field>
-                                <field var="deliver_payloads"><value>true</value></field>
-                                <field var="notify_config"><value>false</value></field>
-                                <field var="notify_delete"><value>false</value></field>
-                                <field var="notify_retract"><value>false</value></field>
-                                <field var="notify_sub"><value>false</value></field>
-                                <field var="persist_items"><value>true</value></field>
-                                <field var="max_items"><value>10</value></field>
-                                <field var="item_expire"><value>604800</value></field>
-                                <field var="subscribe"><value>true</value></field>
-                                <field var="publish_model"><value/></field>
-                                <field var="purge_offline"><value>false</value></field>
-                                <field var="access_model"><value>whitelist</value></field>
+                                <field var="pubsub#title"><value/></field>
+                                <field var="pubsub#deliver_notifications"><value>true</value></field>
+                                <field var="pubsub#deliver_payloads"><value>true</value></field>
+                                <field var="pubsub#notify_config"><value>false</value></field>
+                                <field var="pubsub#notify_delete"><value>false</value></field>
+                                <field var="pubsub#notify_retract"><value>false</value></field>
+                                <field var="pubsub#notify_sub"><value>false</value></field>
+                                <field var="pubsub#persist_items"><value>true</value></field>
+                                <field var="pubsub#max_items"><value>10</value></field>
+                                <field var="pubsub#item_expire"><value>604800</value></field>
+                                <field var="pubsub#subscribe"><value>true</value></field>
+                                <field var="pubsub#publish_model"><value/></field>
+                                <field var="pubsub#purge_offline"><value>false</value></field>
+                                <field var="pubsub#access_model"><value>whitelist</value></field>
                             </x>
                             </configure>
                         </pubsub>
@@ -568,7 +568,7 @@ describe('The pubsub API', function () {
                             <configure node="princely_musings">
                             <x xmlns="jabber:x:data" type="submit">
                                 <field var="FORM_TYPE" type="hidden"><value>http://jabber.org/protocol/pubsub#nodeconfig</value></field>
-                                <field var="access_model"><value>whitelist</value></field>
+                                <field var="pubsub#access_model"><value>whitelist</value></field>
                             </x>
                             </configure>
                         </pubsub>

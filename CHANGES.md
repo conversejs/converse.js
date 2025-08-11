@@ -7,6 +7,7 @@
 - #3730: QR Code doesn't work on dark backgrounds
 - #3769: Don't restrict OMEMO PEP push messages to type `headline`
 - #3791: Fetching pubsub node configuration fails
+- #3792: Node reconfiguration attempt uses incorrect field names
 - Add approval banner in chats with requesting contacts or unsaved contacts
 - Some fixes regarding manually resized chats in `overlayed` view mode.
 - Replace webpack with [rspack](https://rspack.rs)

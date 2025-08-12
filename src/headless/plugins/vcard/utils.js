@@ -158,7 +158,8 @@ export async function fetchVCard(jid) {
     try {
         iq = await api.sendIQ(createStanza('get', to));
     } catch (error) {
-        const { message: error_msg } = (isElement(error) ? await parseErrorStanza(error) : error) ?? {};
+        const parsed_error = isElement(error) ? await parseErrorStanza(error) : error;
+        const error_msg = parsed_error?.message;
         return {
             jid,
             stanza: isElement(error) ? error : null, // TODO: remove?

@@ -1,8 +1,11 @@
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+
 import log from '@converse/log';
 
 dayjs.extend(advancedFormat);
+dayjs.extend(localizedFormat);
 
 import { _converse, api, constants as shared_constants, i18n, parsers } from './shared/index.js';
 import u from './utils/index.js';

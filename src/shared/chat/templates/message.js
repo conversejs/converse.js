@@ -27,7 +27,11 @@ export default (el) => {
     const contact = el.model.occupant || el.model.contact;
     const author_style = getAuthorStyle(contact);
     const format = api.settings.get('time_format');
-    const pretty_time = dayjs(edited || time).format(format);
+
+    const dayjs_time = dayjs(edited || time);
+    const pretty_time = dayjs_time.format(format);
+    const pretty_date = dayjs_time.format('llll');
+
     const hats = getHats(el.model);
     const username = el.model.getDisplayName();
 
@@ -77,7 +81,7 @@ export default (el) => {
                               >
                           </span>
                           ${hats.map((h) => html`<span class="badge badge-secondary">${h.title}</span>`)}
-                          <time timestamp="${edited || time}" class="chat-msg__time">${pretty_time}</time>
+                          <time title="${pretty_date}" timestamp="${edited || time}" class="chat-msg__time">${pretty_time}</time>
                           ${el.model.get('is_encrypted')
                               ? html`<converse-icon class="fa fa-lock" size="1.1em"></converse-icon>`
                               : ''}
@@ -91,7 +95,7 @@ export default (el) => {
                 >
                     <div class="chat-msg__message">
                         ${is_action
-                            ? html`<time timestamp="${edited || time}" class="chat-msg__time">${pretty_time}</time>
+                            ? html`<time title="${pretty_date}" timestamp="${edited || time}" class="chat-msg__time">${pretty_time}</time>
                                   ${is_me_message
                                       ? html`<span class="chat-msg__author" style="${author_style}"
                                                 >${is_me_message ? '**' : ''}${username}</span

@@ -1,9 +1,9 @@
 import { html } from "lit";
-import { api } from "@converse/headless";
+import { api, u } from "@converse/headless";
 import tplSpinner from "templates/spinner.js";
 import { CustomElement } from "../components/element.js";
 import { onScrolledDown } from "./utils.js";
-import "./message-history";
+import "./message-history.js";
 
 import "./styles/chat-content.scss";
 
@@ -23,11 +23,11 @@ export default class ChatContent extends CustomElement {
         this.scroll_debounce = null;
 
         // Index of the top message in the virtualized list window.
-        // If all messages are shown, this value is equal to zero.
+        // If all messages from the top are shown, this value is equal to zero.
         this.window_top = 0;
 
         // Index of the bottom message in the virtualized list window.
-        // If all messages are shown, this value is equal to the total minus one.
+        // If all messages from the bottom are shown, this value is equal to the total minus one.
         this.window_bottom = 0;
 
         this.scrollHandler = /** @param {Event} ev */ (ev) => {
@@ -52,11 +52,13 @@ export default class ChatContent extends CustomElement {
 
     async initialize() {
         await this.model.initialized;
+        await this.model.messages.fetched;
+
         this.listenTo(this.model.messages, "add", () => this.#onNumMessagesChanged());
         this.listenTo(this.model.messages, "remove", () => this.#onNumMessagesChanged());
         this.listenTo(this.model.messages, "reset", () => this.#onNumMessagesChanged());
         this.listenTo(this.model.messages, "change", () => this.requestUpdate());
-        this.listenTo(this.model.messages, "rendered", () => this.requestUpdate());
+        this.listenTo(this.model.messages, "rendered", () => u.debounce(() => this.requestUpdate(), 50));
         this.listenTo(this.model, "historyPruned", () => this.#setWindow());
         this.listenTo(this.model.notifications, "change", () => this.requestUpdate());
         this.listenTo(this.model.ui, "change", () => this.requestUpdate());
@@ -121,8 +123,7 @@ export default class ChatContent extends CustomElement {
     }
 
     /**
-     * Scroll event handler, which sets new window bounds based on whether the
-     * scrollbar is at the top or bottom, or otherwise based on which
+     * Sets new window bounds based on whether the scrollbar is at the top or bottom, or otherwise based on which
      * messages are visible within the scrollable area.
      */
     #setWindow() {

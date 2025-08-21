@@ -1,9 +1,8 @@
 import { html, nothing } from 'lit';
-import { _converse, api, converse, constants } from '@converse/headless';
+import { _converse, api, converse } from '@converse/headless';
 import { getChatStyle } from 'shared/chat/utils.js';
 
 const { Strophe } = converse.env;
-const { ANONYMOUS } = constants;
 
 /**
  * @param {import('../controlbox').default} el
@@ -41,17 +40,12 @@ function whenNotConnected(el) {
  */
 export default (el) => {
     const style = getChatStyle(el.model);
+    const { renderControlbox } = api.apps.getActive();
     return html`<div class="flyout box-flyout" style="${style || nothing}">
         ${api.settings.get('view_mode') === 'overlayed' ? html`<converse-dragresize></converse-dragresize>` : ''}
         ${el.model.get('connected')
             ? html`<converse-user-profile></converse-user-profile>
-                  <div class="controlbox-pane">
-                      <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
-                      <div id="chatrooms" class="controlbox-section"><converse-rooms-list></converse-rooms-list></div>
-                      ${api.settings.get('authentication') === ANONYMOUS
-                          ? ''
-                          : html`<div id="converse-roster" class="controlbox-section"><converse-roster /></div>`}
-                  </div>`
+                  <div class="controlbox-pane">${renderControlbox()}</div>`
             : whenNotConnected(el)}
     </div>`;
 };

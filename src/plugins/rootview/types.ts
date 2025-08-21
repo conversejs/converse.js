@@ -2,6 +2,7 @@ import { TemplateResult } from 'lit';
 
 export type App = {
     name: string;
-    render: TemplateResult;
+    render: () => TemplateResult;
+    renderControlbox?: () => TemplateResult;
     active: boolean;
 };

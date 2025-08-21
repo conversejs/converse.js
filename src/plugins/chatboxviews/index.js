@@ -3,7 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { html } from 'lit';
-import { _converse, api, converse } from '@converse/headless';
+import { _converse, api, constants, converse } from '@converse/headless';
 import './view.js';
 import ChatBoxViews from './container.js';
 import { calculateViewportHeightUnit } from './utils.js';
@@ -32,16 +32,18 @@ converse.plugins.add('converse-chatboxviews', {
                     class="converse-chatboxes row justify-content-start g-0 ${extra_classes.join(' ')}"
                 ></converse-chats>`;
             },
+            renderControlbox: () => html`
+                <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
+                <div id="chatrooms" class="controlbox-section">
+                    <converse-rooms-list></converse-rooms-list>
+                </div>
+                ${api.settings.get('authentication') === constants.ANONYMOUS
+                    ? ''
+                    : html`<div id="converse-roster" class="controlbox-section">
+                          <converse-roster />
+                      </div>`}
+            `,
             active: true,
-        });
-
-        // TODO: move to own plugin
-        api.apps.add({
-            name: 'todo',
-            render: () => {
-                return html`<p>hello world: todo</p>`;
-            },
-            active: false,
         });
 
         // TODO: move to own plugin

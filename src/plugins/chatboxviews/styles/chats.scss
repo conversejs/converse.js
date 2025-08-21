@@ -3,6 +3,21 @@
 @import 'bootstrap/scss/mixins';
 
 .conversejs {
+    &.converse-fullscreen {
+        converse-app-container {
+            display: flex;
+            justify-content: flex-start;
+            height: 100%;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            left: 0;
+        }
+    }
+}
+
+
+.conversejs {
     converse-chats {
         &.converse-overlayed {
             > .row {
@@ -18,14 +33,9 @@
 
         &.converse-fullscreen {
             flex-wrap: nowrap;
-        }
-
-        &.converse-fullscreen {
             &.converse-chatboxes {
-                position: fixed;
-                bottom: 0;
-                right: 0;
-                left: 0;
+                width: 100%;
+                position: sticky;
             }
         }
 

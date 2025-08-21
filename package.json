@@ -52,6 +52,8 @@
     "build:website-min-css": "npm run build:website-css && npx clean-css-cli dist/website.css > dist/website.min.css",
     "lint": "eslint src/**/*.js",
     "test": "karma start karma.conf",
+    "test:headless": "cd src/headless && karma start karma.conf.js",
+    "test:all": "npm run test:headless -- --single-run && npm run test -- --single-run",
     "cdn": "ASSET_PATH=https://cdn.conversejs.org/dist/ npm run build",
     "clean": "rm -rf node_modules dist *.zip src/headless/dist src/headless/node_modules",
     "dev": "rspack build --config rspack/rspack.build.js --mode=development",

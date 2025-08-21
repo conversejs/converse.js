@@ -1,13 +1,15 @@
 {
   "include": [
-      "src/**/*"
+      "src/**/*.js",
+      "src/**/*.ts"
   ],
   "exclude": [
-      "src/types/*",
-      "src/**/tests/*",
+      "**/dist/**/*",
+      "src/**/tests/**/*",
       "src/headless/",
       "src/log/",
-      "src/website.js"
+      "src/types/**/*",
+      "src/website.js",
   ],
   "compilerOptions": {
     "target": "es2022",

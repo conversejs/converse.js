@@ -1,12 +1,14 @@
 {
   "include": [
-      "**/*"
+      "**/*.js",
+      "**/*.ts",
   ],
   "exclude": [
+      "**/*.js.map",
+      "**/dist/**/*",
       "**/tests/*",
       "karma.conf.js",
-      "dist/",
-      "types/"
+      "types/**/*",
   ],
   "compilerOptions": {
     "target": "es2016",

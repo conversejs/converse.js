@@ -50,3 +50,17 @@ project-root/
 - Preferred docs location and navigation entry.
 - Official config keys for theme selection.
 - Best practice for variables and component overrides.
+
+## Where does this page belong?
+- This draft lives under `docs/`. Maintainers may prefer another folder or filename.
+
+## Selecting a theme (placeholder until maintainers confirm)
+- If an official config key exists, document it here.
+- Otherwise describe how to load theme assets at startup.
+
+## Verification checklist (quick)
+- [ ] App loads without errors
+- [ ] Overridden button uses brand color
+- [ ] Before/after screenshots captured
+
+> Note: This is intentionally minimal to reduce review time. We will expand once maintainers confirm details.

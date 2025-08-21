@@ -64,3 +64,10 @@ project-root/
 - [ ] Before/after screenshots captured
 
 > Note: This is intentionally minimal to reduce review time. We will expand once maintainers confirm details.
+
+
+## Verification
+
+- Locally verified the docs build.
+- Added a minimal checklist to ensure theme variables and overrides render as expected.
+- Please advise if you prefer a different heading/section.

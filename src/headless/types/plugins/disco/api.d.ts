@@ -80,6 +80,14 @@ declare namespace _default {
         export function items(jid: string, node?: string): Promise<any>;
         export namespace entities {
             /**
+             * Finds the first entity advertising a given feature.
+             *
+             * @method api.disco.entities.find
+             * @param {string} feature The feature var to search for.
+             * @returns {Promise<DiscoEntity|null>} The matching DiscoEntity instance or null if not found.
+             */
+            function find(feature: string): Promise<import("./entity").default | null>;
+            /**
              * Get the corresponding `DiscoEntity` instance.
              *
              * @method api.disco.entities.get

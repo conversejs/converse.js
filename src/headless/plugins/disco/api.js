@@ -2,7 +2,7 @@ import { getOpenPromise } from '@converse/openpromise';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import log from "@converse/log";
+import log from '@converse/log';
 
 const { Strophe, $iq } = converse.env;
 
@@ -198,6 +198,36 @@ export default {
          */
         entities: {
             /**
+             * Finds the first entity advertising a given feature.
+             *
+             * @method api.disco.entities.find
+             * @param {string} feature The feature var to search for.
+             * @returns {Promise<DiscoEntity|null>} The matching DiscoEntity instance or null if not found.
+             */
+            async find(feature) {
+                const bare = _converse.session.get('bare_jid');
+                const bare_entity = await api.disco.entities.get(bare);
+                if (bare_entity && (await bare_entity.getFeature(feature))) {
+                    return bare_entity;
+                }
+
+                const domain = Strophe.getDomainFromJid(bare);
+                const domain_entity = await api.disco.entities.get(domain);
+                if (domain_entity && (await domain_entity.getFeature(feature))) {
+                    return domain_entity;
+                }
+
+                const items = await api.disco.entities.items(domain);
+                for (const entity of items) {
+                    const jid = entity.get('jid');
+                    if (await api.disco.features.has(feature, jid)) {
+                        return api.disco.entities.get(jid);
+                    }
+                }
+                return null;
+            },
+
+            /**
              * Get the corresponding `DiscoEntity` instance.
              *
              * @method api.disco.entities.get
@@ -302,10 +332,7 @@ export default {
 
                 const items = await api.disco.entities.items(jid);
 
-                const promises = [
-                    entity.getFeature(feature),
-                    ...items.map((i) => i.getFeature(feature)),
-                ];
+                const promises = [entity.getFeature(feature), ...items.map((i) => i.getFeature(feature))];
                 const result = await Promise.all(promises);
                 return result.filter((f) => f instanceof Object);
             },

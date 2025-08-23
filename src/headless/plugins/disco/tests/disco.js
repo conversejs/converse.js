@@ -1,7 +1,7 @@
 /*global converse */
 import mock from "../../../tests/mock.js";
 
-const { u, stx } = converse.env;
+const { u, stx, Strophe } = converse.env;
 
 describe("Service Discovery", function () {
 
@@ -108,7 +108,6 @@ describe("Service Discovery", function () {
                 ['discoInitialized'], {},
                 function (_converse) {
 
-            const { Strophe } = converse.env;
             spyOn(_converse.api, "trigger").and.callThrough();
             _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
             expect(_converse.api.trigger).toHaveBeenCalled();
@@ -116,5 +115,67 @@ describe("Service Discovery", function () {
             expect(last_call.args[0]).toBe('serviceDiscovered');
             expect(last_call.args[1].get('var')).toBe(Strophe.NS.MAM);
         }));
+    });
+
+    describe('api.disco.entities.find', function () {
+        it(
+            "returns our own JID's entity if the bare JID advertises the desired feature",
+            mock.initConverse([], {}, async function (_converse) {
+                const bare = _converse.session.get('bare_jid');
+                await mock.waitUntilDiscoConfirmed(_converse, bare, [], ['feature1']);
+                const result = await _converse.api.disco.entities.find('feature1');
+                expect(result.get('jid')).toBe(bare);
+            })
+        );
+
+        it(
+            'returns the domain entity if bare JID does not advertise but domain does',
+            mock.initConverse([], {}, async function (_converse) {
+                const bare = _converse.session.get('bare_jid');
+                const domain = Strophe.getDomainFromJid(bare);
+                await mock.waitUntilDiscoConfirmed(_converse, bare, [], []);
+                await mock.waitUntilDiscoConfirmed(_converse, domain, [], ['feature2']);
+                const result = await _converse.api.disco.entities.find('feature2');
+                expect(result.get('jid')).toBe(domain);
+            })
+        );
+
+        it(
+            'returns first matching item entity if neither bare nor domain advertises but an item does',
+            mock.initConverse([], {}, async function (_converse) {
+                const bare = _converse.session.get('bare_jid');
+                const domain = Strophe.getDomainFromJid(bare);
+                await mock.waitUntilDiscoConfirmed(_converse, bare, [], []);
+                await mock.waitUntilDiscoConfirmed(
+                    _converse,
+                    domain,
+                    [{ 'category': 'server', 'type': 'IM' }],
+                    ['http://jabber.org/protocol/disco#items']
+                );
+                await mock.waitUntilDiscoConfirmed(_converse, domain, [], [], ['a@b', 'c@d'], 'items');
+                await mock.waitUntilDiscoConfirmed(_converse, 'a@b', [], []);
+                await mock.waitUntilDiscoConfirmed(_converse, 'c@d', [], ['feature3']);
+                const result = await _converse.api.disco.entities.find('feature3');
+                expect(result.get('jid')).toBe('c@d');
+            })
+        );
+
+        it(
+            'returns null if no entity matches',
+            mock.initConverse([], {}, async function (_converse) {
+                const bare = _converse.session.get('bare_jid');
+                const domain = Strophe.getDomainFromJid(bare);
+                await mock.waitUntilDiscoConfirmed(_converse, bare, [], []);
+                await mock.waitUntilDiscoConfirmed(
+                    _converse,
+                    domain,
+                    [{ 'category': 'server', 'type': 'IM' }],
+                    ['http://jabber.org/protocol/disco#items']
+                );
+                await mock.waitUntilDiscoConfirmed(_converse, domain, [], [], [], 'items');
+                const result = await _converse.api.disco.entities.find('feature4');
+                expect(result).toBeNull();
+            })
+        );
     });
 });

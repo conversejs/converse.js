@@ -84,9 +84,10 @@ declare namespace _default {
              *
              * @method api.disco.entities.find
              * @param {string} feature The feature var to search for.
-             * @returns {Promise<DiscoEntity|null>} The matching DiscoEntity instance or null if not found.
+             * @param {string} [jid] The entity JID whose subtree to search. If omitted, own bare JID and domain are queried.
+             * @returns {Promise<DiscoEntity[]>} An array of matching DiscoEntity instances.
              */
-            function find(feature: string): Promise<import("./entity").default | null>;
+            function find(feature: string, jid?: string): Promise<import("./entity").default[]>;
             /**
              * Get the corresponding `DiscoEntity` instance.
              *

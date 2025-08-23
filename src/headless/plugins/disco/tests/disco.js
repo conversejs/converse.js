@@ -186,8 +186,8 @@ describe("Service Discovery", function () {
                 const results = await _converse.api.disco.entities.find('feature');
                 expect(Array.isArray(results)).toBe(true);
                 expect(results.length).toBe(4);
-                expect(results[0].get('jid')).toBe(domain);
-                expect(results[1].get('jid')).toBe(bare);
+                expect(results[0].get('jid')).toBe(bare);
+                expect(results[1].get('jid')).toBe(domain);
                 expect(results[2].get('jid')).toBe('a@b');
                 expect(results[3].get('jid')).toBe('c@d');
             })
@@ -209,6 +209,31 @@ describe("Service Discovery", function () {
                 const results = await _converse.api.disco.entities.find('feature4');
                 expect(Array.isArray(results)).toBe(true);
                 expect(results.length).toBe(0);
+            })
+        );
+
+        it(
+            'searches only under the provided JID subtree',
+            mock.initConverse([], {}, async function (_converse) {
+                const bare = _converse.session.get('bare_jid');
+                const domain = Strophe.getDomainFromJid(bare);
+                // domain items: a@b supports featureX, c@d does not
+                await mock.waitUntilDiscoConfirmed(
+                    _converse,
+                    domain,
+                    [{ 'category': 'server', 'type': 'IM' }],
+                    ['http://jabber.org/protocol/disco#items']
+                );
+                await mock.waitUntilDiscoConfirmed(_converse, domain, [], [], ['a@b', 'c@d'], 'items');
+                await mock.waitUntilDiscoConfirmed(_converse, 'a@b', [], ['featureX']);
+                await mock.waitUntilDiscoConfirmed(_converse, 'c@d', [], []);
+                const resultsForAB = await _converse.api.disco.entities.find('featureX', 'a@b');
+                expect(Array.isArray(resultsForAB)).toBe(true);
+                expect(resultsForAB.length).toBe(1);
+                expect(resultsForAB[0].get('jid')).toBe('a@b');
+                const resultsForCD = await _converse.api.disco.entities.find('featureX', 'c@d');
+                expect(Array.isArray(resultsForCD)).toBe(true);
+                expect(resultsForCD.length).toBe(0);
             })
         );
     });

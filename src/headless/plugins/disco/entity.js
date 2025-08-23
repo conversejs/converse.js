@@ -192,7 +192,7 @@ class DiscoEntity extends Model {
             const jid = item.getAttribute('jid');
             let entity = _converse.state.disco_entities.get(jid);
             if (entity) {
-                const parent_jids = entity.get('parent_jids');
+                const parent_jids = entity.get('parent_jids') || [];
                 entity.set({ parent_jids: [...parent_jids, this.get('jid')] });
             } else {
                 entity = api.disco.entities.create({

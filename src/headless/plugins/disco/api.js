@@ -202,20 +202,39 @@ export default {
              *
              * @method api.disco.entities.find
              * @param {string} feature The feature var to search for.
-             * @returns {Promise<DiscoEntity|null>} The matching DiscoEntity instance or null if not found.
+             * @param {string} [jid] The entity JID whose subtree to search. If omitted, own bare JID and domain are queried.
+             * @returns {Promise<DiscoEntity[]>} An array of matching DiscoEntity instances.
              */
-            async find(feature) {
+            async find(feature, jid) {
                 await api.waitUntil('discoInitialized');
                 const disco_entities = /** @type {DiscoEntities} */ (_converse.state.disco_entities);
                 if (!disco_entities) {
                     return [];
                 }
-                const checks = disco_entities.map(async (entity) => {
+                let candidates = [];
+                if (jid) {
+                    const entity = await api.disco.entities.get(jid, true);
+                    if (entity) candidates.push(entity);
+                    const items = await api.disco.entities.items(jid);
+                    candidates.push(...items);
+                } else {
+                    const bare = _converse.session.get('bare_jid');
+                    const bare_entity = await api.disco.entities.get(bare, true);
+                    if (bare_entity) candidates.push(bare_entity);
+                    const domain = Strophe.getDomainFromJid(bare);
+                    const domain_entity = await api.disco.entities.get(domain, true);
+                    if (domain_entity) candidates.push(domain_entity);
+                    const items = await api.disco.entities.items(domain);
+                    candidates.push(...items);
+                }
+                // Deduplicate by JID
+                const unique = Array.from(new Map(candidates.map(e => [e.get('jid'), e])).values());
+                const checks = unique.map(async (entity) => {
                     const has = await entity.getFeature(feature);
                     return has ? entity : null;
                 });
                 const results = await Promise.all(checks);
-                return results.filter((e) => e instanceof Object);
+                return results.filter(e => e);
             },
 
             /**
@@ -254,10 +273,12 @@ export default {
              */
             async items(jid) {
                 const entity = await api.disco.entities.get(jid);
-                await entity.waitUntilItemsFetched;
-
-                const disco_entities = /** @type {DiscoEntities} */ (_converse.state.disco_entities);
-                return disco_entities.filter((e) => e.get('parent_jids')?.includes(jid));
+                if (entity) {
+                    await entity.waitUntilItemsFetched;
+                    const disco_entities = /** @type {DiscoEntities} */ (_converse.state.disco_entities);
+                    return disco_entities.filter((e) => e.get('parent_jids')?.includes(jid));
+                }
+                return [];
             },
 
             /**

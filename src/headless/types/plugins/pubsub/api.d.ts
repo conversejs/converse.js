@@ -34,6 +34,24 @@ declare namespace _default {
          * @returns {Promise<void|Element>}
          */
         function publish(jid: string, node: string, item: import("strophe.js").Builder | import("strophe.js").Stanza | (import("strophe.js").Builder | import("strophe.js").Stanza)[], options: import("./types").PubSubConfigOptions, strict_options?: boolean): Promise<void | Element>;
+        /**
+         * Subscribes the local user to a PubSub node.
+         *
+         * @method _converse.api.pubsub.subscribe
+         * @param {string} jid - PubSub service JID.
+         * @param {string} node - The node to subscribe to
+         * @returns {Promise<void>}
+         */
+        function subscribe(jid: string, node: string): Promise<void>;
+        /**
+         * Unsubscribes the local user from a PubSub node.
+         *
+         * @method _converse.api.pubsub.unsubscribe
+         * @param {string} jid - The PubSub service JID
+         * @param {string} node - The node to unsubscribe from
+         * @returns {Promise<void>}
+         */
+        function unsubscribe(jid: string, node: string): Promise<void>;
     }
 }
 export default _default;

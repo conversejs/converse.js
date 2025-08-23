@@ -17,7 +17,12 @@ describe('Groupchats', function () {
                 mock.createRequest(
                     _converse,
                     stx`
-            <message xmlns="jabber:client" type="groupchat" id="1" to="${_converse.jid}" xml:lang="en" from="${muc_jid}/juliet">
+            <message xmlns="jabber:client"
+                        type="groupchat"
+                        id="1"
+                        to="${_converse.jid}"
+                        xml:lang="en"
+                        from="${muc_jid}/juliet">
                 <body>Romeo oh romeo</body>
             </message>`,
                 ),
@@ -30,9 +35,14 @@ describe('Groupchats', function () {
                 mock.createRequest(
                     _converse,
                     stx`
-            <message xmlns="jabber:client" type="groupchat" id="2" to="${_converse.jid}" xml:lang="en" from="${muc_jid}/juliet">
-                <body>Wherefore art though?</body>
-            </message>`,
+                    <message xmlns="jabber:client"
+                            type="groupchat"
+                            id="2"
+                            to="${_converse.jid}"
+                            xml:lang="en"
+                            from="${muc_jid}/juliet">
+                        <body>Wherefore art though?</body>
+                    </message>`,
                 ),
             );
 

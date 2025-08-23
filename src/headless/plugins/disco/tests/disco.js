@@ -119,29 +119,35 @@ describe("Service Discovery", function () {
 
     describe('api.disco.entities.find', function () {
         it(
-            "returns our own JID's entity if the bare JID advertises the desired feature",
+            "returns our own JID's entity",
             mock.initConverse([], {}, async function (_converse) {
                 const bare = _converse.session.get('bare_jid');
+                const domain = Strophe.getDomainFromJid(bare);
                 await mock.waitUntilDiscoConfirmed(_converse, bare, [], ['feature1']);
-                const result = await _converse.api.disco.entities.find('feature1');
-                expect(result.get('jid')).toBe(bare);
+                await mock.waitUntilDiscoConfirmed(_converse, domain, [], ['feature2']);
+                const results = await _converse.api.disco.entities.find('feature1');
+                expect(Array.isArray(results)).toBe(true);
+                expect(results.length).toBe(1);
+                expect(results[0].get('jid')).toBe(bare);
             })
         );
 
         it(
-            'returns the domain entity if bare JID does not advertise but domain does',
+            'returns the domain entity',
             mock.initConverse([], {}, async function (_converse) {
                 const bare = _converse.session.get('bare_jid');
                 const domain = Strophe.getDomainFromJid(bare);
                 await mock.waitUntilDiscoConfirmed(_converse, bare, [], []);
                 await mock.waitUntilDiscoConfirmed(_converse, domain, [], ['feature2']);
-                const result = await _converse.api.disco.entities.find('feature2');
-                expect(result.get('jid')).toBe(domain);
+                const results = await _converse.api.disco.entities.find('feature2');
+                expect(Array.isArray(results)).toBe(true);
+                expect(results.length).toBe(1);
+                expect(results[0].get('jid')).toBe(domain);
             })
         );
 
         it(
-            'returns first matching item entity if neither bare nor domain advertises but an item does',
+            'returns a matching item entity',
             mock.initConverse([], {}, async function (_converse) {
                 const bare = _converse.session.get('bare_jid');
                 const domain = Strophe.getDomainFromJid(bare);
@@ -155,8 +161,35 @@ describe("Service Discovery", function () {
                 await mock.waitUntilDiscoConfirmed(_converse, domain, [], [], ['a@b', 'c@d'], 'items');
                 await mock.waitUntilDiscoConfirmed(_converse, 'a@b', [], []);
                 await mock.waitUntilDiscoConfirmed(_converse, 'c@d', [], ['feature3']);
-                const result = await _converse.api.disco.entities.find('feature3');
-                expect(result.get('jid')).toBe('c@d');
+                const results = await _converse.api.disco.entities.find('feature3');
+                expect(Array.isArray(results)).toBe(true);
+                expect(results.length).toBe(1);
+                expect(results[0].get('jid')).toBe('c@d');
+            })
+        );
+
+        it(
+            'returns multiple matching entities',
+            mock.initConverse([], {}, async function (_converse) {
+                const bare = _converse.session.get('bare_jid');
+                const domain = Strophe.getDomainFromJid(bare);
+                await mock.waitUntilDiscoConfirmed(_converse, bare, [], ['feature']);
+                await mock.waitUntilDiscoConfirmed(
+                    _converse,
+                    domain,
+                    [{ 'category': 'server', 'type': 'IM' }],
+                    ['http://jabber.org/protocol/disco#items', 'feature']
+                );
+                await mock.waitUntilDiscoConfirmed(_converse, domain, [], [], ['a@b', 'c@d'], 'items');
+                await mock.waitUntilDiscoConfirmed(_converse, 'a@b', [], ['feature']);
+                await mock.waitUntilDiscoConfirmed(_converse, 'c@d', [], ['feature']);
+                const results = await _converse.api.disco.entities.find('feature');
+                expect(Array.isArray(results)).toBe(true);
+                expect(results.length).toBe(4);
+                expect(results[0].get('jid')).toBe(domain);
+                expect(results[1].get('jid')).toBe(bare);
+                expect(results[2].get('jid')).toBe('a@b');
+                expect(results[3].get('jid')).toBe('c@d');
             })
         );
 
@@ -173,8 +206,9 @@ describe("Service Discovery", function () {
                     ['http://jabber.org/protocol/disco#items']
                 );
                 await mock.waitUntilDiscoConfirmed(_converse, domain, [], [], [], 'items');
-                const result = await _converse.api.disco.entities.find('feature4');
-                expect(result).toBeNull();
+                const results = await _converse.api.disco.entities.find('feature4');
+                expect(Array.isArray(results)).toBe(true);
+                expect(results.length).toBe(0);
             })
         );
     });

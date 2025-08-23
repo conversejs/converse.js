@@ -205,26 +205,17 @@ export default {
              * @returns {Promise<DiscoEntity|null>} The matching DiscoEntity instance or null if not found.
              */
             async find(feature) {
-                const bare = _converse.session.get('bare_jid');
-                const bare_entity = await api.disco.entities.get(bare);
-                if (bare_entity && (await bare_entity.getFeature(feature))) {
-                    return bare_entity;
+                await api.waitUntil('discoInitialized');
+                const disco_entities = /** @type {DiscoEntities} */ (_converse.state.disco_entities);
+                if (!disco_entities) {
+                    return [];
                 }
-
-                const domain = Strophe.getDomainFromJid(bare);
-                const domain_entity = await api.disco.entities.get(domain);
-                if (domain_entity && (await domain_entity.getFeature(feature))) {
-                    return domain_entity;
-                }
-
-                const items = await api.disco.entities.items(domain);
-                for (const entity of items) {
-                    const jid = entity.get('jid');
-                    if (await api.disco.features.has(feature, jid)) {
-                        return api.disco.entities.get(jid);
-                    }
-                }
-                return null;
+                const checks = disco_entities.map(async (entity) => {
+                    const has = await entity.getFeature(feature);
+                    return has ? entity : null;
+                });
+                const results = await Promise.all(checks);
+                return results.filter((e) => e instanceof Object);
             },
 
             /**

@@ -1,16 +1,6 @@
-import { api } from '@converse/headless';
+import { _converse, api } from '@converse/headless';
 
 const apps = new Map();
-
-function setCurrentAppInactive() {
-    const currentApp = apps_api.apps.getActive();
-    if (currentApp) {
-        apps.set(currentApp.name, {
-            ...currentApp,
-            active: false,
-        });
-    }
-}
 
 const apps_api = {
     apps: {
@@ -19,7 +9,6 @@ const apps_api = {
          */
         add(app) {
             if (!app.name) throw new Error("Can't add app without a name");
-            if (app.active) setCurrentAppInactive();
             apps.set(app.name, app);
         },
 
@@ -27,7 +16,9 @@ const apps_api = {
          * @returns {import('./types').App}
          */
         getActive() {
-            return Array.from(apps.values()).find((app) => app.active);
+            const name = _converse.state.session.get('active_app') ?? 'chat';
+            const apps_array = Array.from(apps.values());
+            return apps_array.find((app) => app.name === name) || apps_array[0];
         },
 
         /**
@@ -35,11 +26,7 @@ const apps_api = {
          */
         switch(name) {
             if (apps.has(name)) {
-                setCurrentAppInactive();
-                apps.set(name, {
-                    ...apps.get(name),
-                    active: true,
-                });
+                _converse.state.session.save('active_app', name);
                 const app = apps.get(name);
                 /**
                  * Triggered when switching to a different app

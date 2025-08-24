@@ -43,7 +43,6 @@ converse.plugins.add('converse-chatboxviews', {
                           <converse-roster />
                       </div>`}
             `,
-            active: true,
         });
 
         // TODO: move to own plugin

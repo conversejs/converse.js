@@ -5,17 +5,6 @@ import tplAppSwitcher from './templates/app-switcher.js';
 import './styles/app-switcher.scss';
 
 export default class AppSwitcher extends CustomElement {
-    static get properties() {
-        return {
-            _activeApp: { type: String },
-        };
-    }
-
-    constructor() {
-        super();
-        this._activeApp = 'chat';
-    }
-
     initialize() {
         api.listen.on('appSwitch', () => this.requestUpdate());
     }

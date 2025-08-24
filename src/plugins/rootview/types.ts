@@ -4,5 +4,4 @@ export type App = {
     name: string;
     render: () => TemplateResult;
     renderControlbox?: () => TemplateResult;
-    active: boolean;
 };

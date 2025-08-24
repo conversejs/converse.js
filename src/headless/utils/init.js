@@ -221,7 +221,6 @@ export async function initSession(_converse, jid) {
         // Set `active` flag to false when the tab gets reloaded
         window.addEventListener(getUnloadEvent(), () => safeSave(_converse.session, { active: false }));
 
-
         /**
          * Triggered once the user's session has been initialized. The session is a
          * cache which stores information about the user's current session.

@@ -1,8 +1,8 @@
 import { i18n } from 'i18n';
 import { _converse, api } from '@converse/headless';
-import tplRoot from "./templates/root.js";
 import { CustomElement } from 'shared/components/element.js';
 import { getTheme } from './utils.js';
+import tplRoot from "./templates/root.js";
 
 import './styles/root.scss';
 

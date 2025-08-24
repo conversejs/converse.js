@@ -75,13 +75,10 @@ class DiscoBrowser extends CustomElement {
             }
         }
         const features = entity.features?.map((f) => f.get('var')) || [];
-        const identities = entity.identities || [];
-        const item_jids = entity.get('items') || [];
-        const items = await Promise.all(item_jids.map(/** @param {string} jid */ (jid) => api.disco.entities.get(jid)));
         return {
             features: features.toSorted?.() || features,
-            identities,
-            items,
+            identities: entity.identities || [],
+            items: await api.disco.entities.items(entity_jid),
         };
     }
 }

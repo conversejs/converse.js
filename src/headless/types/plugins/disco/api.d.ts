@@ -99,13 +99,14 @@ declare namespace _default {
              */
             function get(jid: string, create?: boolean): Promise<import("./entity").default | import("./entities").default | undefined>;
             /**
-             * Return any disco items advertised on this entity
+             * Return the disco items advertised on this entity
              *
              * @method api.disco.entities.items
              * @param {string} jid - The Jabber ID of the entity for which we want to fetch items
+             * @returns {Promise<DiscoEntity[]>}
              * @example api.disco.entities.items(jid);
              */
-            function items(jid: string): Promise<any>;
+            function items(jid: string): Promise<import("./entity").default[]>;
             /**
              * Create a new  disco entity. It's identity and features
              * will automatically be fetched from cache or from the

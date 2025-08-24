@@ -208,33 +208,35 @@ export default {
             async find(feature, jid) {
                 await api.waitUntil('discoInitialized');
                 const disco_entities = /** @type {DiscoEntities} */ (_converse.state.disco_entities);
-                if (!disco_entities) {
-                    return [];
-                }
-                let candidates = [];
+                if (!disco_entities) return [];
+
+                const candidates = [];
                 if (jid) {
                     const entity = await api.disco.entities.get(jid, true);
-                    if (entity) candidates.push(entity);
-                    const items = await api.disco.entities.items(jid);
-                    candidates.push(...items);
+                    if (entity) {
+                        const items = await api.disco.entities.items(jid);
+                        candidates.push(entity, ...items);
+                    }
                 } else {
-                    const bare = _converse.session.get('bare_jid');
-                    const bare_entity = await api.disco.entities.get(bare, true);
+                    const bare_jid = _converse.session.get('bare_jid');
+                    const bare_entity = await api.disco.entities.get(bare_jid, true);
                     if (bare_entity) candidates.push(bare_entity);
-                    const domain = Strophe.getDomainFromJid(bare);
+
+                    const domain = Strophe.getDomainFromJid(bare_jid);
                     const domain_entity = await api.disco.entities.get(domain, true);
-                    if (domain_entity) candidates.push(domain_entity);
-                    const items = await api.disco.entities.items(domain);
-                    candidates.push(...items);
+                    if (domain_entity) {
+                        const items = await api.disco.entities.items(domain);
+                        candidates.push(domain_entity, ...items);
+                    }
                 }
-                // Deduplicate by JID
-                const unique = Array.from(new Map(candidates.map(e => [e.get('jid'), e])).values());
+
+                const unique = Array.from(new Map(candidates.map((e) => [e.get('jid'), e])).values());
                 const checks = unique.map(async (entity) => {
                     const has = await entity.getFeature(feature);
                     return has ? entity : null;
                 });
                 const results = await Promise.all(checks);
-                return results.filter(e => e);
+                return results.filter((e) => e);
             },
 
             /**
@@ -265,18 +267,20 @@ export default {
             },
 
             /**
-             * Return any disco items advertised on this entity
+             * Return the disco items advertised on this entity
              *
              * @method api.disco.entities.items
              * @param {string} jid - The Jabber ID of the entity for which we want to fetch items
+             * @returns {Promise<DiscoEntity[]>}
              * @example api.disco.entities.items(jid);
              */
             async items(jid) {
                 const entity = await api.disco.entities.get(jid);
                 if (entity) {
                     await entity.waitUntilItemsFetched;
-                    const disco_entities = /** @type {DiscoEntities} */ (_converse.state.disco_entities);
-                    return disco_entities.filter((e) => e.get('parent_jids')?.includes(jid));
+
+                    const item_jids = entity.get('items') || [];
+                    return Promise.all(item_jids.map(/** @param {string} jid */ (jid) => api.disco.entities.get(jid)));
                 }
                 return [];
             },
@@ -343,7 +347,6 @@ export default {
                 }
 
                 const items = await api.disco.entities.items(jid);
-
                 const promises = [entity.getFeature(feature), ...items.map((i) => i.getFeature(feature))];
                 const result = await Promise.all(promises);
                 return result.filter((f) => f instanceof Object);

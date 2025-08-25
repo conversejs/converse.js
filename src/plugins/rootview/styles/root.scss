@@ -3,6 +3,7 @@ converse-root {
     &.converse-overlayed {
         bottom: 0;
         left: 0;
+        right: 0;
         padding-inline-start: env(safe-area-inset-left);
         padding-inline-end: env(safe-area-inset-right);
         position: fixed;

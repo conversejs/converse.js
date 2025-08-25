@@ -164,14 +164,8 @@
 }
 
 .conversejs {
-    converse-app-chat {
+    .converse-app {
         &.converse-overlayed {
-            display: flex;
-            flex-direction: row-reverse;
-            .flyout {
-                border: 0;
-            }
-
             .toggle-controlbox {
                 background-color: var(--controlbox-color);
                 color: var(--button-text-color);
@@ -192,15 +186,6 @@
                 }
             }
 
-            .brand-heading {
-                padding-inline-start: 1em;
-                width: 100%;
-            }
-
-            .converse-svg-logo {
-                margin-right: 0.1em;
-                height: 1em;
-            }
         }
 
         &.converse-embedded,
@@ -306,30 +291,7 @@
     .conversejs {
         &.converse-fullscreen,
         &.converse-overlayed {
-            left: 0;
-            right: 0;
-            padding-inline-start: env(safe-area-inset-left);
-            padding-inline-end: env(safe-area-inset-right);
-
-            .converse-chatboxes {
-                margin: 0 !important;
-                flex-direction: row !important;
-                justify-content: space-between;
-
-                .converse-chatroom {
-                    font-size: 14px;
-                }
-
-                .chatbox {
-                    .box-flyout {
-                        left: 0;
-                        bottom: 0;
-                        border-radius: 0;
-                        width: 100vw !important;
-                        height: var(--fullpage-chat-height);
-                    }
-                }
-
+            .converse-app {
                 #controlbox {
                     margin-inline-start: 0;
                     width: 100vw !important;

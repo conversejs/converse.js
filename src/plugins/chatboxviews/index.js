@@ -29,7 +29,7 @@ converse.plugins.add('converse-chatboxviews', {
                 const extra_classes = api.settings.get('singleton') ? ['converse-singleton'] : [];
                 extra_classes.push(`converse-${api.settings.get('view_mode')}`);
                 return html`<converse-app-chat
-                    class="converse-app converse-chatboxes row justify-content-start g-0 ${extra_classes.join(' ')}"
+                    class="converse-app row justify-content-start g-0 ${extra_classes.join(' ')}"
                 ></converse-app-chat>`;
             },
             renderControlbox: () => html`

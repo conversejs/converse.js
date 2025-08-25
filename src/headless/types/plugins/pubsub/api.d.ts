@@ -35,6 +35,14 @@ declare namespace _default {
          */
         function publish(jid: string, node: string, item: import("strophe.js").Builder | import("strophe.js").Stanza | (import("strophe.js").Builder | import("strophe.js").Stanza)[], options: import("./types").PubSubConfigOptions, strict_options?: boolean): Promise<void | Element>;
         /**
+         * Creates a PubSub node at a given service
+         * @param {string} jid - The PubSub service JID
+         * @param {string} node - The node to create
+         * @param {PubSubConfigOptions} config The configuration options
+         * @returns {Promise<void>}
+         */
+        function create(jid: string, node: string, config: import("./types").PubSubConfigOptions): Promise<void>;
+        /**
          * Subscribes the local user to a PubSub node.
          *
          * @method _converse.api.pubsub.subscribe

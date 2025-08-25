@@ -81,7 +81,7 @@ export default {
                         <configure node="${node}">
                             <x xmlns="${Strophe.NS.XFORM}" type="submit">
                                 <field var="FORM_TYPE" type="hidden">
-                                    <value>${Strophe.NS.PUBSUB}#nodeconfig</value>
+                                    <value>${Strophe.NS.PUBSUB}#node_config</value>
                                 </field>
                                 ${Object.entries(new_config).map(([k, v]) => stx`<field var="pubsub#${k}"><value>${v}</value></field>`)}
                             </x>
@@ -199,6 +199,36 @@ export default {
                 }
             }
         },
+
+        /**
+         * Creates a PubSub node at a given service
+         * @param {string} jid - The PubSub service JID
+         * @param {string} node - The node to create
+         * @param {PubSubConfigOptions} config The configuration options
+         * @returns {Promise<void>}
+         */
+        async create(jid, node, config) {
+            const own_jid = _converse.state.session.get('jid');
+            const iq = stx`
+                <iq xmlns="jabber:client"
+                    type="set"
+                    from="${own_jid}"
+                    to="${jid}">
+                    <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                        <create node="${node}"/>
+                        <configure>
+                            <x xmlns="${Strophe.NS.XFORM}" type="submit">
+                                <field var="FORM_TYPE" type="hidden">
+                                    <value>${Strophe.NS.PUBSUB}#node_config</value>
+                                </field>
+                                ${Object.entries(config).map(([k, v]) => stx`<field var="pubsub#${k}"><value>${v}</value></field>`)}
+                            </x>
+                        </configure>
+                    </pubsub>
+                </iq>`;
+            return await api.sendIQ(iq);
+        },
+
         /**
          * Subscribes the local user to a PubSub node.
          *
@@ -216,7 +246,7 @@ export default {
                     <subscribe node="${node}" jid="${own_jid}"/>
                   </pubsub>
                 </iq>`;
-            await api.sendIQ(iq);
+            return await api.sendIQ(iq);
         },
 
         /**

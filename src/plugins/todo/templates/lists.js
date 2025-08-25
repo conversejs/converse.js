@@ -1,5 +1,6 @@
 import { html } from 'lit';
 import { api, constants } from '@converse/headless';
+import '../modals/add-todo-modal.js';
 import { __ } from 'i18n';
 
 /**
@@ -13,12 +14,15 @@ export default (el) => {
     const is_closed = el.model.get('toggle_state') === constants.CLOSED;
 
     const btns = [
-        html`<a class="dropdown-item show-add-todo-modal" role="button"
-                @click="${(ev) => api.modal.show('converse-add-muc-modal', { 'model': el.model }, ev)}"
-                data-toggle="modal"
-                data-target="#add-todo-modal">
-                    <converse-icon class="fa fa-plus" size="1em"></converse-icon>
-                    ${i18n_title_new_todo}
+        html`<a
+            class="dropdown-item show-add-todo-modal"
+            role="button"
+            @click="${(ev) => api.modal.show('converse-add-todo-modal', { 'model': el.model }, ev)}"
+            data-toggle="modal"
+            data-target="#add-todo-modal"
+        >
+            <converse-icon class="fa fa-plus" size="1em"></converse-icon>
+            ${i18n_title_new_todo}
         </a>`,
     ];
 

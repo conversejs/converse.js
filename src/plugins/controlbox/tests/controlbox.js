@@ -47,7 +47,7 @@ describe("The Controlbox", function () {
             const chatview = _converse.chatboxviews.get(sender_jid);
             minimize(chatview.model);
 
-            const el = document.querySelector('converse-chats');
+            const el = document.querySelector('converse-app-chat');
             expect(el.querySelector('.restore-chat .message-count') === null).toBeTruthy();
             const rosterview = document.querySelector('converse-roster');
             expect(rosterview.querySelector('.msgs-indicator') === null).toBeTruthy();

@@ -6,7 +6,11 @@ converse.plugins.add('converse-app-todo', {
         api.apps.add({
             name: 'todo',
             render: () => {
-                return html`<converse-app-todo></converse-app-todo>`;
+                const extra_classes = api.settings.get('singleton') ? ['converse-singleton'] : [];
+                extra_classes.push(`converse-${api.settings.get('view_mode')}`);
+                return html`<converse-app-todo
+                    class="converse-chatboxes row justify-content-start g-0 ${extra_classes.join(' ')}"
+                ></converse-app-todo>`;
             },
             renderControlbox: () => {
                 return html`<converse-todo-lists></converse-todo-lists>`;

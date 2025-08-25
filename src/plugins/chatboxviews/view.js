@@ -3,7 +3,7 @@ import { CustomElement } from 'shared/components/element.js';
 import tplChats from './templates/chats.js';
 
 
-class ConverseChats extends CustomElement {
+class ChatApp extends CustomElement {
 
     initialize () {
         this.model = _converse.state.chatboxes;
@@ -39,4 +39,4 @@ class ConverseChats extends CustomElement {
     }
 }
 
-api.elements.define('converse-chats', ConverseChats);
+api.elements.define('converse-app-chat', ChatApp);

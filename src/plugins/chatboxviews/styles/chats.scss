@@ -2,62 +2,6 @@
 @import 'bootstrap/scss/variables';
 @import 'bootstrap/scss/mixins';
 
-.conversejs {
-    &.converse-fullscreen {
-        converse-app-container {
-            display: flex;
-            justify-content: flex-start;
-            height: 100%;
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            left: 0;
-        }
-    }
-}
-
-
-.conversejs {
-    converse-app-chat {
-        &.converse-overlayed {
-            > .row {
-                flex-direction: row-reverse;
-            }
-            &.converse-chatboxes {
-                z-index: 1031; // One more than bootstrap navbar
-                position: fixed;
-                bottom: 0;
-                right: 0;
-            }
-        }
-
-        &.converse-fullscreen {
-            flex-wrap: nowrap;
-            &.converse-chatboxes {
-                width: 100%;
-                position: sticky;
-            }
-        }
-
-        &.converse-embedded {
-            bottom: auto;
-            height: 100%; // When embedded, it fills the containing element
-            position: relative;
-            right: auto;
-            width: 100%;
-
-            &.converse-chatboxes {
-                z-index: 1031; // One more than bootstrap navbar
-                position: inherit;
-                flex-wrap: nowrap;
-                bottom: auto;
-                height: 100%;
-                width: 100%;
-            }
-        }
-    }
-}
-
 @include media-breakpoint-down(sm) {
     .conversejs {
         converse-app-chat {

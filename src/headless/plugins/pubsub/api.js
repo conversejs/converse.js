@@ -204,7 +204,7 @@ export default {
          * Creates a PubSub node at a given service
          * @param {string} jid - The PubSub service JID
          * @param {string} node - The node to create
-         * @param {PubSubConfigOptions} config The configuration options
+         * @param {PubSubConfigOptions} [config] The configuration options
          * @returns {Promise<void>}
          */
         async create(jid, node, config) {
@@ -216,14 +216,19 @@ export default {
                     to="${jid}">
                     <pubsub xmlns="http://jabber.org/protocol/pubsub">
                         <create node="${node}"/>
-                        <configure>
+                        ${
+                            config
+                                ? stx`
+                            <configure>
                             <x xmlns="${Strophe.NS.XFORM}" type="submit">
                                 <field var="FORM_TYPE" type="hidden">
                                     <value>${Strophe.NS.PUBSUB}#node_config</value>
                                 </field>
                                 ${Object.entries(config).map(([k, v]) => stx`<field var="pubsub#${k}"><value>${v}</value></field>`)}
                             </x>
-                        </configure>
+                            </configure>`
+                                : ''
+                        }
                     </pubsub>
                 </iq>`;
             return await api.sendIQ(iq);

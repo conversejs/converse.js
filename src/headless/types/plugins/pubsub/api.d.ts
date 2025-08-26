@@ -53,13 +53,20 @@ declare namespace _default {
         function subscribe(jid: string, node: string): Promise<void>;
         /**
          * Unsubscribes the local user from a PubSub node.
-         *
          * @method _converse.api.pubsub.unsubscribe
          * @param {string} jid - The PubSub service JID
          * @param {string} node - The node to unsubscribe from
          * @returns {Promise<void>}
          */
         function unsubscribe(jid: string, node: string): Promise<void>;
+        /**
+         * Retrieves the subscriptions for the local user.
+         * @method _converse.api.pubsub.subscriptions
+         * @param {string} [jid] - The PubSub service JID.
+         * @param {string} [node] - The node to retrieve subscriptions from.
+         * @returns {Promise<import('./types').PubSubSubscription[]>}
+         */
+        function subscriptions(jid?: string, node?: string): Promise<import("./types").PubSubSubscription[]>;
     }
 }
 export default _default;

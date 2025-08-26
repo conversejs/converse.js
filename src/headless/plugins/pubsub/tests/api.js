@@ -120,4 +120,50 @@ describe('pubsub subscribe/unsubscribe API', function () {
             await createPromise;
         })
     );
+
+    it(
+        'retrieves correct IQ for retrieve subscriptions',
+        mock.initConverse([], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api, state } = _converse;
+            const service = 'pubsub.example.org';
+            const bare_jid = state.session.get('jid');
+            const subscriptionsPromise = api.pubsub.subscriptions(service);
+            const stanza = api.connection
+                .get()
+                .sent_stanzas.filter((iq) => iq.querySelector('pubsub subscriptions'))
+                .pop();
+            expect(stanza).toEqualStanza(stx`
+                <iq type="get"
+                    from="${bare_jid}"
+                    to="${service}"
+                    xmlns="jabber:client"
+                    id="${stanza.getAttribute('id')}">
+                  <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <subscriptions/>
+                  </pubsub>
+                </iq>`);
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(stx`
+                <iq type="result"
+                    xmlns="jabber:client"
+                    from="${service}"
+                    to="${bare_jid}"
+                    id="${stanza.getAttribute('id')}">
+                  <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <subscriptions>
+                      <subscription node="node1" jid="${bare_jid}" subscription="subscribed"/>
+                      <subscription node="node2" jid="${bare_jid}" subscription="unconfigured" subid="sid1"/>
+                    </subscriptions>
+                  </pubsub>
+                </iq>
+            `)
+            );
+            const subs = await subscriptionsPromise;
+            expect(subs).toEqual([
+                { node: 'node1', jid: bare_jid, subscription: 'subscribed', subid: undefined },
+                { node: 'node2', jid: bare_jid, subscription: 'unconfigured', subid: 'sid1' },
+            ]);
+        })
+    );
 });

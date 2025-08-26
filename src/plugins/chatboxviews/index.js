@@ -2,25 +2,57 @@
  * @copyright 2024, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { _converse, api, converse } from '@converse/headless';
+import { html } from 'lit';
+import { _converse, api, constants, converse } from '@converse/headless';
 import './view.js';
 import ChatBoxViews from './container.js';
 import { calculateViewportHeightUnit } from './utils.js';
+import '../rootview/index.js';
 
 import './styles/chats.scss';
 
-
 converse.plugins.add('converse-chatboxviews', {
-    dependencies: ['converse-chatboxes', 'converse-vcard'],
+    dependencies: ['converse-rootview', 'converse-chatboxes', 'converse-vcard'],
 
-    initialize () {
+    initialize() {
         api.promises.add(['chatBoxViewsInitialized']);
 
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        api.settings.extend({ 'animate': true });
+        api.settings.extend({ animate: true });
+
+        api.apps.add({
+            name: 'chat',
+            render: () => {
+                const extra_classes = api.settings.get('singleton') ? ['converse-singleton'] : [];
+                extra_classes.push(`converse-${api.settings.get('view_mode')}`);
+                return html`<converse-app-chat
+                    class="converse-app row justify-content-start g-0 ${extra_classes.join(' ')}"
+                ></converse-app-chat>`;
+            },
+            renderControlbox: () => html`
+                <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
+                <div id="chatrooms" class="controlbox-section">
+                    <converse-rooms-list></converse-rooms-list>
+                </div>
+                ${api.settings.get('authentication') === constants.ANONYMOUS
+                    ? ''
+                    : html`<div id="converse-roster" class="controlbox-section">
+                          <converse-roster />
+                      </div>`}
+            `,
+        });
+
+        // TODO: move to own plugin
+        api.apps.add({
+            name: 'timetracker',
+            render: () => {
+                return html`<p>hello world: timetracker</p>`;
+            },
+            active: false,
+        });
 
         const chatboxviews = new ChatBoxViews();
         Object.assign(_converse, { chatboxviews }); // XXX DEPRECATED
@@ -53,14 +85,14 @@ converse.plugins.add('converse-chatboxviews', {
              * @example
              * converse.insertInto(document.querySelector('#converse-container'));
              */
-            insertInto (container) {
+            insertInto(container) {
                 const el = chatboxviews.el;
                 if (el && !container.contains(el)) {
                     container.insertAdjacentElement('afterbegin', el);
                 } else if (!el) {
                     throw new Error('Cannot insert non-existing #conversejs element into the DOM');
                 }
-            }
+            },
         });
-    }
+    },
 });

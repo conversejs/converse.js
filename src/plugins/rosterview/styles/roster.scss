@@ -1,6 +1,11 @@
 .conversejs {
-
     #controlbox {
+        .collapsed {
+            height: 0 !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+        }
+
         .open-contacts-toggle, .open-contacts-toggle .fa {
             color: var(--chat-color) !important;
             &:hover {

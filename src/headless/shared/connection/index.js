@@ -20,6 +20,10 @@ Strophe.Status.RECONNECTING = i + 1;
  */
 export class Connection extends Strophe.Connection {
 
+    /**
+     * @param {string} service - The BOSH or WebSocket service URL.
+     * @param {import('strophe.js/src/types/connection').ConnectionOptions} options
+     */
     constructor (service, options) {
         super(service, options);
         // For new sessions, we need to send out a presence stanza to notify
@@ -215,6 +219,7 @@ export class Connection extends Strophe.Connection {
         const { api } = _converse;
 
         delete this.reconnecting;
+
         this.flush(); // Solves problem of returned PubSub BOSH response not received by browser
         await setUserJID(this.jid);
 

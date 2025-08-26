@@ -59,6 +59,8 @@
 
     --converse-info: var(--info-color);
     --converse-info-rgb: var(--info-color-rgb);
+    --converse-link-color: var(--link-color) !important;
+    --converse-link-hover-color: var(--link-color-hover) !important;
     --converse-success: var(--success-color);
     --converse-success-rgb: var(--success-color-rgb);
     --converse-danger: var(--danger-color);

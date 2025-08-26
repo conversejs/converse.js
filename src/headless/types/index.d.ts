@@ -21,6 +21,7 @@ export { Collection, EventEmitter, Model } from "@converse/skeletor";
 export { Builder, Stanza } from "strophe.js";
 export { Bookmark, Bookmarks } from "./plugins/bookmarks/index.js";
 export { ChatBox, Message, Messages } from "./plugins/chat/index.js";
+export { DiscoEntity, DiscoEntities } from "./plugins/disco/index.js";
 export { Device, Devices, DeviceList, DeviceLists } from "./plugins/omemo/index.js";
 export { MUCMessage, MUCMessages, MUC, MUCOccupant, MUCOccupants } from "./plugins/muc/index.js";
 export { RosterContact, RosterContacts, RosterFilter, Presence, Presences } from "./plugins/roster/index.js";

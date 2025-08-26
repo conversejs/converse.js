@@ -5,7 +5,7 @@
 import converse from '../../shared/api/public.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import { parseErrorStanza } from '../../shared/parsers.js';
 import { parseStanzaForPubSubConfig } from './parsers.js';
 
@@ -81,7 +81,7 @@ export default {
                         <configure node="${node}">
                             <x xmlns="${Strophe.NS.XFORM}" type="submit">
                                 <field var="FORM_TYPE" type="hidden">
-                                    <value>${Strophe.NS.PUBSUB}#nodeconfig</value>
+                                    <value>${Strophe.NS.PUBSUB}#node_config</value>
                                 </field>
                                 ${Object.entries(new_config).map(([k, v]) => stx`<field var="pubsub#${k}"><value>${v}</value></field>`)}
                             </x>
@@ -176,7 +176,8 @@ export default {
                 const e = await parseErrorStanza(iq);
                 if (
                     e.name === 'conflict' &&
-                    /** @type {import('shared/errors').StanzaError} */(e).extra[Strophe.NS.PUBSUB_ERROR] === 'precondition-not-met'
+                    /** @type {import('shared/errors').StanzaError} */ (e).extra[Strophe.NS.PUBSUB_ERROR] ===
+                        'precondition-not-met'
                 ) {
                     // Manually configure the node if we can't set it via publish-options
                     await api.pubsub.config.set(entity_jid, node, options);
@@ -197,6 +198,118 @@ export default {
                     throw iq;
                 }
             }
+        },
+
+        /**
+         * Creates a PubSub node at a given service
+         * @param {string} jid - The PubSub service JID
+         * @param {string} node - The node to create
+         * @param {PubSubConfigOptions} [config] The configuration options
+         * @returns {Promise<void>}
+         */
+        async create(jid, node, config) {
+            const own_jid = _converse.state.session.get('jid');
+            const iq = stx`
+                <iq xmlns="jabber:client"
+                    type="set"
+                    from="${own_jid}"
+                    to="${jid}">
+                    <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                        <create node="${node}"/>
+                        ${
+                            config
+                                ? stx`
+                            <configure>
+                            <x xmlns="${Strophe.NS.XFORM}" type="submit">
+                                <field var="FORM_TYPE" type="hidden">
+                                    <value>${Strophe.NS.PUBSUB}#node_config</value>
+                                </field>
+                                ${Object.entries(config).map(([k, v]) => stx`<field var="pubsub#${k}"><value>${v}</value></field>`)}
+                            </x>
+                            </configure>`
+                                : ''
+                        }
+                    </pubsub>
+                </iq>`;
+            return await api.sendIQ(iq);
+        },
+
+        /**
+         * Subscribes the local user to a PubSub node.
+         *
+         * @method _converse.api.pubsub.subscribe
+         * @param {string} jid - PubSub service JID.
+         * @param {string} node - The node to subscribe to
+         * @returns {Promise<void>}
+         */
+        async subscribe(jid, node) {
+            const service = jid || (await api.disco.entities.find('http://jabber.org/protocol/pubsub'));
+            const own_jid = _converse.session.get('jid');
+            const iq = stx`
+                <iq type="set" from="${own_jid}" to="${service}" xmlns="jabber:client">
+                  <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <subscribe node="${node}" jid="${own_jid}"/>
+                  </pubsub>
+                </iq>`;
+            return await api.sendIQ(iq);
+        },
+
+        /**
+         * Unsubscribes the local user from a PubSub node.
+         * @method _converse.api.pubsub.unsubscribe
+         * @param {string} jid - The PubSub service JID
+         * @param {string} node - The node to unsubscribe from
+         * @returns {Promise<void>}
+         */
+        async unsubscribe(jid, node) {
+            const own_jid = _converse.session.get('jid');
+            const iq = stx`
+                <iq type="set" from="${own_jid}" to="${jid}" xmlns="jabber:client">
+                  <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <unsubscribe node="${node}" jid="${own_jid}"/>
+                  </pubsub>
+                </iq>`;
+            await api.sendIQ(iq);
+        },
+
+        /**
+         * Retrieves the subscriptions for the local user.
+         * @method _converse.api.pubsub.subscriptions
+         * @param {string} [jid] - The PubSub service JID.
+         * @param {string} [node] - The node to retrieve subscriptions from.
+         * @returns {Promise<import('./types').PubSubSubscription[]>}
+         */
+        async subscriptions(jid, node) {
+            const service = jid || (await api.disco.entities.find(Strophe.NS.PUBSUB));
+            const own_jid = _converse.session.get('bare_jid');
+            const iq = stx`
+                <iq xmlns="jabber:client"
+                    type="get"
+                    from="${own_jid}"
+                    to="${service}">
+                  <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <subscriptions${node ? ` node="${node}"` : ''}/>
+                  </pubsub>
+                </iq>`;
+
+            let response;
+            try {
+                response = await api.sendIQ(iq);
+            } catch (e) {
+                log.warn(e);
+                return [];
+            }
+
+            const subs_el = response.querySelector('pubsub subscriptions');
+            if (!subs_el) return [];
+
+            const subs = Array.from(subs_el.querySelectorAll('subscription')).map((el) => ({
+                node: el.getAttribute('node'),
+                jid: el.getAttribute('jid'),
+                subscription: el.getAttribute('subscription'),
+                subid: el.hasAttribute('subid') ? el.getAttribute('subid') : undefined,
+            }));
+            return subs;
         },
     },
 };

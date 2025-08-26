@@ -5,7 +5,7 @@
 Software Style Guide
 ====================
 
-Most of the style guide recommendations here come from Douglas Crockford's book
+Many of the style guide recommendations here come from Douglas Crockford's book
 `JavaScript, the good parts <http://shop.oreilly.com/product/9780596517748.do>`_
 
 Tabs or spaces?

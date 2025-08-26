@@ -1,5 +1,8 @@
 export default class DropdownBase extends CustomElement {
-    firstUpdated(changed: any): void;
+    /**
+     * @param {import('lit').PropertyValues} [changed]
+     */
+    firstUpdated(changed?: import("lit").PropertyValues): void;
     menu: Element;
     button: HTMLButtonElement;
     dropdown: BootstrapDropdown;

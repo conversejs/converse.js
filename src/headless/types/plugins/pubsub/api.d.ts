@@ -34,6 +34,39 @@ declare namespace _default {
          * @returns {Promise<void|Element>}
          */
         function publish(jid: string, node: string, item: import("strophe.js").Builder | import("strophe.js").Stanza | (import("strophe.js").Builder | import("strophe.js").Stanza)[], options: import("./types").PubSubConfigOptions, strict_options?: boolean): Promise<void | Element>;
+        /**
+         * Creates a PubSub node at a given service
+         * @param {string} jid - The PubSub service JID
+         * @param {string} node - The node to create
+         * @param {PubSubConfigOptions} [config] The configuration options
+         * @returns {Promise<void>}
+         */
+        function create(jid: string, node: string, config?: import("./types").PubSubConfigOptions): Promise<void>;
+        /**
+         * Subscribes the local user to a PubSub node.
+         *
+         * @method _converse.api.pubsub.subscribe
+         * @param {string} jid - PubSub service JID.
+         * @param {string} node - The node to subscribe to
+         * @returns {Promise<void>}
+         */
+        function subscribe(jid: string, node: string): Promise<void>;
+        /**
+         * Unsubscribes the local user from a PubSub node.
+         * @method _converse.api.pubsub.unsubscribe
+         * @param {string} jid - The PubSub service JID
+         * @param {string} node - The node to unsubscribe from
+         * @returns {Promise<void>}
+         */
+        function unsubscribe(jid: string, node: string): Promise<void>;
+        /**
+         * Retrieves the subscriptions for the local user.
+         * @method _converse.api.pubsub.subscriptions
+         * @param {string} [jid] - The PubSub service JID.
+         * @param {string} [node] - The node to retrieve subscriptions from.
+         * @returns {Promise<import('./types').PubSubSubscription[]>}
+         */
+        function subscriptions(jid?: string, node?: string): Promise<import("./types").PubSubSubscription[]>;
     }
 }
 export default _default;

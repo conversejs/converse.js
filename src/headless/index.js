@@ -30,7 +30,7 @@ import './plugins/bosh/index.js'; // XEP-0206 BOSH
 import './plugins/caps/index.js'; // XEP-0115 Entity Capabilities
 export { ChatBox, Message, Messages } from './plugins/chat/index.js'; // RFC-6121 Instant messaging
 import './plugins/chatboxes/index.js';
-import './plugins/disco/index.js'; // XEP-0030 Service discovery
+export { DiscoEntity, DiscoEntities } from './plugins/disco/index.js'; // XEP-0030 Service discovery
 import './plugins/adhoc/index.js'; // XEP-0050 Ad Hoc Commands
 import './plugins/headlines/index.js'; // Support for headline messages
 export { Device, Devices, DeviceList, DeviceLists } from './plugins/omemo/index.js'; // Support for headline messages

@@ -79,7 +79,7 @@ export class ConversePrivateGlobal extends ConversePrivateGlobal_base {
      */
     state: any;
     initSession(): void;
-    session: Model;
+    session: any;
     /**
      * Translate the given string based on the current locale.
      * @method __

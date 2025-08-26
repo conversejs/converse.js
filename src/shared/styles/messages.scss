@@ -349,7 +349,7 @@
         }
     }
 
-    converse-chats {
+    converse-app-chat {
         &.converse-overlayed {
             .message {
                 &.chat-msg {
@@ -365,7 +365,7 @@
 }
 
 @media screen and (max-width: 767px) {
-    converse-chats:not(.converse-embedded) {
+    converse-app-chat:not(.converse-embedded) {
         .message {
             &.chat-msg {
                 .chat-msg__author {

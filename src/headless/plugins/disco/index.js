@@ -19,6 +19,8 @@ import {
 
 const { Strophe } = converse.env;
 
+export { DiscoEntity, DiscoEntities };
+
 /**
  * @typedef {Object} DiscoState
  * @property {Array} _identities

@@ -66,13 +66,25 @@ export default class AddTodoModal extends BaseModal {
             return;
         }
 
+        const service_jid = entities[0].get('jid');
+        const node = `${Strophe.NS.TODO}/${u.getUniqueId()}`;
+
         try {
-            await api.pubsub.create(entities[0].get('jid'), `${Strophe.NS.TODO}/${u.getUniqueId()}`, { title: name });
+            await api.pubsub.create(service_jid, node, { title: name });
         } catch (e) {
             const err = await parsers.parseErrorStanza(e);
-            this.alert(__('Sorry, an error occurred: %s', err.message), 'danger');
+            this.alert(__('Sorry, an error occurred while trying to create the todo list: %s', err.message), 'danger');
             return;
         }
+
+        try {
+            await api.pubsub.subscribe(service_jid, node);
+        } catch (e) {
+            const err = await parsers.parseErrorStanza(e);
+            this.alert(__('Sorry, an error occurred while trying to subscribe to updates %s', err.message), 'danger');
+            return;
+        }
+
         form.reset();
         this.modal.hide();
     }

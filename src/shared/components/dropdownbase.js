@@ -3,6 +3,9 @@ import EventHandler from "bootstrap/js/src/dom/event-handler.js";
 import { CustomElement } from "./element.js";
 
 export default class DropdownBase extends CustomElement {
+    /**
+     * @param {import('lit').PropertyValues} [changed]
+     */
     firstUpdated(changed) {
         super.firstUpdated(changed);
         this.menu = this.querySelector(".dropdown-menu");

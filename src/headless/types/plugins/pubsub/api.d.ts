@@ -38,10 +38,10 @@ declare namespace _default {
          * Creates a PubSub node at a given service
          * @param {string} jid - The PubSub service JID
          * @param {string} node - The node to create
-         * @param {PubSubConfigOptions} config The configuration options
+         * @param {PubSubConfigOptions} [config] The configuration options
          * @returns {Promise<void>}
          */
-        function create(jid: string, node: string, config: import("./types").PubSubConfigOptions): Promise<void>;
+        function create(jid: string, node: string, config?: import("./types").PubSubConfigOptions): Promise<void>;
         /**
          * Subscribes the local user to a PubSub node.
          *

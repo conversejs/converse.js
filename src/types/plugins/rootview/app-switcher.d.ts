@@ -1,10 +1,4 @@
 export default class AppSwitcher extends CustomElement {
-    static get properties(): {
-        _activeApp: {
-            type: StringConstructor;
-        };
-    };
-    _activeApp: string;
     initialize(): void;
     render(): import("lit-html").TemplateResult<1>;
     /**

@@ -40,3 +40,10 @@ export type PubSubConfigOptions = {
     // Specify the semantic type of payload data to be provided at this node.
     type?: string;
 };
+
+export type PubSubSubscription = {
+    node: string;
+    jid: string;
+    subscription: 'subscribed'|'unconfigured';
+    subid?: string;
+};

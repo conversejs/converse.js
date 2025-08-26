@@ -251,7 +251,6 @@ export default {
 
         /**
          * Unsubscribes the local user from a PubSub node.
-         *
          * @method _converse.api.pubsub.unsubscribe
          * @param {string} jid - The PubSub service JID
          * @param {string} node - The node to unsubscribe from
@@ -266,6 +265,38 @@ export default {
                   </pubsub>
                 </iq>`;
             await api.sendIQ(iq);
+        },
+
+        /**
+         * Retrieves the subscriptions for the local user.
+         * @method _converse.api.pubsub.subscriptions
+         * @param {string} [jid] - The PubSub service JID.
+         * @param {string} [node] - The node to retrieve subscriptions from.
+         * @returns {Promise<import('./types').PubSubSubscription[]>}
+         */
+        async subscriptions(jid, node) {
+            const service = jid || (await api.disco.entities.find(Strophe.NS.PUBSUB));
+            const own_jid = _converse.session.get('jid');
+            const iq = stx`
+                <iq xmlns="jabber:client"
+                    type="get"
+                    from="${own_jid}"
+                    to="${service}">
+                  <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <subscriptions${node ? ` node="${node}"` : ''}/>
+                  </pubsub>
+                </iq>`;
+            const response = await api.sendIQ(iq);
+            const subs_el = response.querySelector('pubsub subscriptions');
+            if (!subs_el) return [];
+
+            const subs = Array.from(subs_el.querySelectorAll('subscription')).map((el) => ({
+                node: el.getAttribute('node'),
+                jid: el.getAttribute('jid'),
+                subscription: el.getAttribute('subscription'),
+                subid: el.hasAttribute('subid') ? el.getAttribute('subid') : undefined,
+            }));
+            return subs;
         },
     },
 };

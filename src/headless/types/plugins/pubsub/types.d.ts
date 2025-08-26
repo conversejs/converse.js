@@ -21,4 +21,10 @@ export type PubSubConfigOptions = {
     title?: string;
     type?: string;
 };
+export type PubSubSubscription = {
+    node: string;
+    jid: string;
+    subscription: 'subscribed' | 'unconfigured';
+    subid?: string;
+};
 //# sourceMappingURL=types.d.ts.map

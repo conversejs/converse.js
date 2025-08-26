@@ -244,7 +244,7 @@ class Bookmarks extends Collection {
     async setBookmarksFromStanza(stanza) {
         const bookmarks = await parseStanzaForBookmarks(stanza);
         bookmarks.forEach(
-            /** @param {import('./types.js').BookmarkAttrs} attrs */
+            /** @param {import('./types.ts').BookmarkAttrs} attrs */
             (attrs) => {
                 const bookmark = this.get(attrs.jid);
                 bookmark ? bookmark.save(attrs) : this.create(attrs);

@@ -281,7 +281,7 @@ export default {
          */
         async subscriptions(jid, node) {
             const service = jid || (await api.disco.entities.find(Strophe.NS.PUBSUB));
-            const own_jid = _converse.session.get('jid');
+            const own_jid = _converse.session.get('bare_jid');
             const iq = stx`
                 <iq xmlns="jabber:client"
                     type="get"
@@ -291,7 +291,15 @@ export default {
                     <subscriptions${node ? ` node="${node}"` : ''}/>
                   </pubsub>
                 </iq>`;
-            const response = await api.sendIQ(iq);
+
+            let response;
+            try {
+                response = await api.sendIQ(iq);
+            } catch (e) {
+                log.warn(e);
+                return [];
+            }
+
             const subs_el = response.querySelector('pubsub subscriptions');
             if (!subs_el) return [];
 

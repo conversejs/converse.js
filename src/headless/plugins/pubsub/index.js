@@ -6,7 +6,10 @@
 import _converse from '../../shared/_converse.js';
 import converse from '../../shared/api/public.js';
 import pubsub_api from './api.js';
+import { default as PubSubNode } from './node.js';
+import { default as PubSubNodes } from './nodes.js';
 import '../disco/index.js';
+
 
 const { Strophe, sizzle } = converse.env;
 
@@ -18,6 +21,18 @@ converse.plugins.add('converse-pubsub', {
     initialize() {
         const { api } = _converse;
         Object.assign(_converse.api, pubsub_api);
+        Object.assign(_converse.exports, { PubSubNodes });
+
+        api.listen.on('connected', () => {
+            const pubsub_nodes = new _converse.exports.PubSubNodes();
+            Object.assign(_converse.state, { pubsub_nodes });
+            /**
+             * @event _converse#pubSubNodesInitialized
+             * @example _converse.api.listen.on('pubSubInitialized', () => { ... });
+             * @example _converse.api.waitUntil('pubSubInitialized').then(() => { ... });
+             */
+            api.trigger('pubSubNodesInitialized');
+        });
 
         api.listen.on(
             'parseErrorStanza',
@@ -38,3 +53,5 @@ converse.plugins.add('converse-pubsub', {
         );
     },
 });
+
+export { PubSubNode, PubSubNodes };

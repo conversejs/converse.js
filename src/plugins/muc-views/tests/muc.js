@@ -1822,7 +1822,7 @@ describe("Groupchats", function () {
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
             const view = _converse.chatboxviews.get(muc_jid);
 
-            const info_el = view.querySelector(".show-muc-details-modal");
+            const info_el = await u.waitUntil(() => view.querySelector(".show-muc-details-modal"));
             info_el.click();
             let modal = _converse.api.modal.get('converse-muc-details-modal');
             await u.waitUntil(() => u.isVisible(modal), 1000);

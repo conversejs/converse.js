@@ -57,7 +57,7 @@ describe("Groupchats", function () {
             let pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
             expect(pres).toEqualStanza(stx`
                 <presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="${muc_jid}/romeo" xmlns="jabber:client">
-                    <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
+                    <x xmlns="http://jabber.org/protocol/muc"/>
                     <show>away</show>
                     <c hash="sha-1" node="https://conversejs.org" ver="t7NrIuCRhg80cJKAq33v3LKogjI=" xmlns="http://jabber.org/protocol/caps"/>
                 </presence>`);
@@ -86,7 +86,7 @@ describe("Groupchats", function () {
             pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
             expect(pres).toEqualStanza(stx`
                 <presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="${muc2_jid}/romeo" xmlns="jabber:client">
-                    <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
+                    <x xmlns="http://jabber.org/protocol/muc"/>
                     <show>dnd</show>
                     <status>Do not disturb</status>
                     <c hash="sha-1" node="https://conversejs.org" ver="t7NrIuCRhg80cJKAq33v3LKogjI=" xmlns="http://jabber.org/protocol/caps"/>
@@ -142,11 +142,11 @@ describe("Groupchats", function () {
 
             const pres = await u.waitUntil(
                 () => sent_stanzas.slice(index).filter(s => s.nodeName === 'presence').pop());
-            expect(Strophe.serialize(pres)).toBe(
-                `<presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="coven@chat.shakespeare.lit/romeo" xmlns="jabber:client">`+
-                    `<x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="t7NrIuCRhg80cJKAq33v3LKogjI=" xmlns="http://jabber.org/protocol/caps"/>`+
-                `</presence>`);
+            expect(pres).toEqualStanza(stx`
+                <presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="coven@chat.shakespeare.lit/romeo" xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc"/>
+                    <c hash="sha-1" node="https://conversejs.org" ver="t7NrIuCRhg80cJKAq33v3LKogjI=" xmlns="http://jabber.org/protocol/caps"/>
+                </presence>`);
         }));
     });
 });

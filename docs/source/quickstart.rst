@@ -30,8 +30,8 @@ For instance, this will configure ejabberd's, mod-conversejs to fetch a specific
     
     mod_conversejs:
       # Replace 11.0.1 with your desired version
-      conversejs_css: https://cdn.conversejs.org/11.0.1/dist/converse.min.css
-      conversejs_script: https://cdn.conversejs.org/11.0.1/dist/converse.min.js
+      conversejs_css: https://cdn.conversejs.org/12.0.0/dist/converse.min.css
+      conversejs_script: https://cdn.conversejs.org/12.0.0/dist/converse.min.js
 
 
 Option 2: Self-hosting
@@ -53,8 +53,8 @@ To use it, add these lines to your HTML page's ``<head>`` section:
 .. code-block:: html
 
     <!-- Replace 11.0.1 with your desired version -->
-    <link rel="stylesheet" href="https://cdn.conversejs.org/11.0.1/dist/converse.min.css">
-    <script src="https://cdn.conversejs.org/11.0.1/dist/converse.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="https://cdn.conversejs.org/12.0.0/dist/converse.min.css">
+    <script src="https://cdn.conversejs.org/12.0.0/dist/converse.min.js" charset="utf-8"></script>
 
 .. warning::
     Always specify a version number in production to avoid breaking changes.

@@ -1,19 +1,32 @@
 # Changelog
 
-## 12.0.0 (Unreleased)
+## 12.0.0 (2025-08-28)
 
-- #3581: src/i18n/converse.pot changes after make dist making git archive dirty
+- #3581: Don't unnecessarily regenerate pot and po files
 - #3700: Fix exception that occurs when optional cp attribute is missing
+- #3714: Don't include `maxstanzas` if no value is available
+- #3719, #3770: Handle `connection._sasl_mechanism` not being defined
 - #3730: QR Code doesn't work on dark backgrounds
-- #3769: Don't restrict OMEMO PEP push messages to type `headline`
+- #3764: Create an ESM build for @converse/headless
+- #3769: Various OMEMO fixes
 - #3791: Fetching pubsub node configuration fails
 - #3792: Node reconfiguration attempt uses incorrect field names
 - Add approval banner in chats with requesting contacts or unsaved contacts
-- Some fixes regarding manually resized chats in `overlayed` view mode.
-- Replace webpack with [rspack](https://rspack.rs)
-- Registration: Use https://providers.xmpp.net instead of https://compliance.conversations.im
+- Add mongolian as a language option
+- Breaking: `Strophe.shims` has been removed. Instead, just use the globals.
 - Create ESM builds of converse.js and converse-headless.js
+- Moved `jsdom` and `ws` from optionalDependencies to peerDependencies
+- New API method `api.disco.entities.find` to return all entities that implement a specific feature.
+- Regional locales weren't being applied.
+- Registration: Use https://providers.xmpp.net instead of https://compliance.conversations.im
+- Replace webpack with [rspack](https://rspack.rs)
 - Set up a test runner for @converse/headless so that the headless tests use the headless build
+- Show approval alert in chats with unsaved contacts
+- Some fixes regarding manually resized chats in `overlayed` view mode.
+- Update controlbox to not show logo, navbar and version while connecting
+- Updated translations
+- bugfix: Don't show closed MUCs in the rooms list
+- bugfix: dragresize resistance not applied
 
 ## 11.0.1 (2025-06-09)
 

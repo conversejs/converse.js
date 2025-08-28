@@ -357,7 +357,7 @@ describe("A MUC", function () {
 
             const connection = api.connection.get();
             const sent_stanzas = connection.sent_stanzas;
-            await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
+            await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence' && s.getAttribute('to').startsWith(muc_jid)).pop());
 
             const { IQ_stanzas } = api.connection.get();
 
@@ -381,15 +381,13 @@ describe("A MUC", function () {
 
             await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
-            let sent_stanza = await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
+            let sent_stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence' && s.getAttribute('to').startsWith(muc_jid)).pop());
             expect(sent_stanza).toEqualStanza(stx`
                 <presence id="${sent_stanza.getAttribute('id')}"
                         from="${connection.jid}"
                         to="${muc_jid}/romeo-2"
                         xmlns="jabber:client">
-                    <x xmlns="http://jabber.org/protocol/muc">
-                        <history maxstanzas="0"/>
-                    </x>
+                    <x xmlns="http://jabber.org/protocol/muc"/>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
                         ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s="/>
                 </presence>`);
@@ -413,15 +411,13 @@ describe("A MUC", function () {
 
             await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
-            sent_stanza = await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
+            sent_stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence' && s.getAttribute('to').startsWith(muc_jid)).pop());
             expect(sent_stanza).toEqualStanza(stx`
                 <presence id="${sent_stanza.getAttribute('id')}"
                         from="${connection.jid}"
                         to="${muc_jid}/romeo-3"
                         xmlns="jabber:client">
-                    <x xmlns="http://jabber.org/protocol/muc">
-                        <history maxstanzas="0"/>
-                    </x>
+                    <x xmlns="http://jabber.org/protocol/muc"/>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
                         ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s="/>
                 </presence>`);
@@ -445,15 +441,13 @@ describe("A MUC", function () {
 
             await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
-            sent_stanza = await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
+            sent_stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence' && s.getAttribute('to').startsWith(muc_jid)).pop());
             expect(sent_stanza).toEqualStanza(stx`
                 <presence id="${sent_stanza.getAttribute('id')}"
                         from="${connection.jid}"
                         to="${muc_jid}/romeo-4"
                         xmlns="jabber:client">
-                    <x xmlns="http://jabber.org/protocol/muc">
-                        <history maxstanzas="0"/>
-                    </x>
+                    <x xmlns="http://jabber.org/protocol/muc"/>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
                         ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s="/>
                 </presence>`);

@@ -34,7 +34,7 @@ declare class DiscoBrowser extends CustomElement {
     } | {
         features: any;
         identities: any;
-        items: any[];
+        items: any;
         error?: undefined;
     }>;
 }

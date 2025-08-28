@@ -196,7 +196,7 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 @converse/headless: src/headless
 
 src/headless/dist/converse-headless.js: src rspack/rspack.common.js node_modules @converse/headless
-	npm run headless-dev
+	npm run dev:headless
 
 src/headless/dist/converse-headless.min.js: src rspack/rspack.common.js node_modules @converse/headless
 	npm run headless

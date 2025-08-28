@@ -224,7 +224,8 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @param {boolean} is_new
      */
     async constructJoinPresence(password, is_new) {
-        const maxstanzas = is_new || this.features.get('mam_enabled') ? 0 : api.settings.get('muc_history_max_stanzas');
+        const exclude_maxstanzas = is_new || this.features.get('mam_enabled');
+        const maxstanzas = exclude_maxstanzas ? 0 : api.settings.get('muc_history_max_stanzas');
         password = password || this.get('password');
 
         const { profile } = _converse.state;
@@ -236,7 +237,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                       from="${api.connection.get().jid}"
                       to="${this.getRoomJIDAndNick()}">
                 <x xmlns="${Strophe.NS.MUC}">
-                    <history maxstanzas="${maxstanzas}"/>
+                    ${maxstanzas ? stx`<history maxstanzas="${maxstanzas}"/>` : ''}
                     ${password ? stx`<password>${password}</password>` : ''}
                 </x>
                 ${PRES_SHOW_VALUES.includes(show) ? stx`<show>${show}</show>` : ''}

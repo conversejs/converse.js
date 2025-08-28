@@ -10,7 +10,7 @@ export const chatroom_names = [
     'Dirk Theissen',
     'Felix Hofmann',
     'Ka Lek',
-    'Anne Ebersbacher'
+    'Anne Ebersbacher',
 ];
 
 export const default_muc_features = [
@@ -246,9 +246,13 @@ export async function receiveOwnMUCPresence(
     role = 'moderator',
     features = []
 ) {
-    const { u, sizzle } = window.converse.env;
+    const { u } = window.converse.env;
     const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-    await u.waitUntil(() => sent_stanzas.filter((iq) => sizzle('presence history', iq).length).pop());
+    await u.waitUntil(
+        () =>
+            sent_stanzas.filter((s) => s.nodeName === 'presence' && s.getAttribute('to') === `${muc_jid}/${nick}`)
+                .length
+    );
 
     _converse.api.connection.get()._dataRecv(
         createRequest(stx`

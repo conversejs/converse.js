@@ -18,6 +18,7 @@ const sharedConfig = {
                     minify: true,
                     mangle: true,
                     compress: {
+                        drop_debugger: process.env.DROP_DEBUGGER === 'true',
                         passes: 2,
                     },
                     format: {

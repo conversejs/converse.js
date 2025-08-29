@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-28 17:19+0200\n"
-"PO-Revision-Date: 2025-06-18 02:04+0000\n"
+"POT-Creation-Date: 2025-06-19 10:13+0200\n"
+"PO-Revision-Date: 2025-08-30 06:01+0000\n"
 "Last-Translator: \"Mr. EddX\" <mreddx@chatrix.one>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/bg/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.1\n"
+"X-Generator: Weblate 5.13.1-dev\n"
 
 #: dist/converse-no-dependencies.js:42699
 msgid "A timeout occurred"
@@ -3129,10 +3129,10 @@ msgstr "Повторна синхронизация на контакти"
 #. * @param {import('../approval-alert').default} el
 #.
 #. ESM default export
-#: dist/converse-no-dependencies.js:146719
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:128625
+#, javascript-format
 msgid "%1$s would like to be your contact"
-msgstr "иска да се свърже с вас"
+msgstr "%1$s би желал да бъде ваш контакт"
 
 #: dist/converse-no-dependencies.js:146721
 msgid "Approve"
@@ -3146,10 +3146,10 @@ msgstr "Откажи"
 #. * @param {import('../approval-alert').default} el
 #.
 #. ESM default export
-#: dist/converse-no-dependencies.js:146756
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:128662
+#, javascript-format
 msgid "Would you like to add %1$s as a contact?"
-msgstr "Изберете, за да добавите %1$s като контакт"
+msgstr "Желаете ли да добавите %1$s като контакт?"
 
 #: dist/converse-no-dependencies.js:146760
 msgid "Dismiss"

@@ -84,6 +84,10 @@ module.exports = [
                     publicPath: '/dist/',
                 },
                 {
+                    directory: path.resolve(__dirname, '../dist/locales.esm'),
+                    publicPath: '/dist/locales/',
+                },
+                {
                     directory: path.resolve(__dirname, '../src/headless/dist'),
                     publicPath: '/src/headless/dist/',
                 },

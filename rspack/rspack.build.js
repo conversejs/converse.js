@@ -3,7 +3,7 @@ const path = require('path');
 const { merge } = require('webpack-merge');
 const common = require('../rspack/rspack.common.js');
 
-const sharedConfig = {
+module.exports = merge(common, {
     mode: 'production',
     entry: {
         'converse': path.resolve(__dirname, '../src/entry.js'),
@@ -71,56 +71,32 @@ const sharedConfig = {
             },
         ],
     },
-};
-
-const plugins = [
-    new rspack.CssExtractRspackPlugin({
-        filename: '../dist/converse.min.css',
-    }),
-    new rspack.CssExtractRspackPlugin({
-        filename: '../dist/converse.css',
-    }),
-    new rspack.CopyRspackPlugin({
-        patterns: [
-            { from: 'node_modules/strophe.js/src/shared-connection-worker.js', to: 'shared-connection-worker.js' },
-            { from: 'sounds', to: 'sounds' },
-            { from: 'images/favicon.ico', to: 'images/favicon.ico' },
-            { from: 'images/custom_emojis', to: 'images/custom_emojis' },
-            { from: 'logo/conversejs-filled-192.png', to: 'images/logo' },
-            { from: 'logo/conversejs-filled-512.png', to: 'images/logo' },
-            { from: 'logo/conversejs-filled-192.svg', to: 'images/logo' },
-            { from: 'logo/conversejs-filled-512.svg', to: 'images/logo' },
-            { from: 'logo/conversejs-filled.svg', to: 'images/logo' },
-            { from: 'logo/conversejs-gold-gradient.svg', to: 'images/logo' },
-            { from: 'src/shared/styles/webfonts', to: 'webfonts' },
-            { from: 'manifest.json', to: 'manifest.json' },
-            { from: 'src/headless/plugins/emoji/emoji.json', to: 'emoji.json' },
-        ],
-    }),
-];
-
-module.exports = [
-    // CJS Build
-    merge(common, {
-        ...sharedConfig,
-        plugins,
-        output: {
-            filename: '[name].js',
-        },
-    }),
-    // ESM Build
-    merge(common, {
-        ...sharedConfig,
-        plugins,
-        experiments: {
-            outputModule: true,
-            topLevelAwait: true,
-        },
-        output: {
-            filename: '[name].esm.js',
-            library: {
-                type: 'module',
-            },
-        },
-    }),
-];
+    plugins: [
+        new rspack.CssExtractRspackPlugin({
+            filename: '../dist/converse.min.css',
+        }),
+        new rspack.CssExtractRspackPlugin({
+            filename: '../dist/converse.css',
+        }),
+        new rspack.CopyRspackPlugin({
+            patterns: [
+                {
+                    from: 'node_modules/strophe.js/src/shared-connection-worker.js',
+                    to: 'shared-connection-worker.js',
+                },
+                { from: 'sounds', to: 'sounds' },
+                { from: 'images/favicon.ico', to: 'images/favicon.ico' },
+                { from: 'images/custom_emojis', to: 'images/custom_emojis' },
+                { from: 'logo/conversejs-filled-192.png', to: 'images/logo' },
+                { from: 'logo/conversejs-filled-512.png', to: 'images/logo' },
+                { from: 'logo/conversejs-filled-192.svg', to: 'images/logo' },
+                { from: 'logo/conversejs-filled-512.svg', to: 'images/logo' },
+                { from: 'logo/conversejs-filled.svg', to: 'images/logo' },
+                { from: 'logo/conversejs-gold-gradient.svg', to: 'images/logo' },
+                { from: 'src/shared/styles/webfonts', to: 'webfonts' },
+                { from: 'manifest.json', to: 'manifest.json' },
+                { from: 'src/headless/plugins/emoji/emoji.json', to: 'emoji.json' },
+            ],
+        }),
+    ]
+});

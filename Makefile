@@ -199,20 +199,10 @@ src/headless/dist/converse-headless.js: src rspack/rspack.common.js node_modules
 	npm run dev:headless
 
 src/headless/dist/converse-headless.min.js: src rspack/rspack.common.js node_modules @converse/headless
-	npm run headless
+	npm run build:headless
 
 dist:: node_modules src/**/* | dist/website.css dist/website.min.css
-	npm run headless
-	# Ideally this should just be `npm run build`.
-	# The additional steps are necessary to properly generate JSON chunk files
-	# from the .po files. The nodeps config uses preset-env with IE11.
-	# Somehow this is necessary.
-	npm run nodeps
-	$(eval TMPD := $(shell mktemp -d))
-	mv dist/locales $(TMPD) && \
-	npm run build && \
-	mv $(TMPD)/locales/*-po.js dist/locales/ && \
-	rm -rf $(TMPD)
+	npm run build
 
 .PHONY: install
 install:: dist

@@ -40,7 +40,7 @@ describe('MUC presence history element', function () {
             );
             expect(sent_stanza).toEqualStanza(stx`
               <presence to="${muc2_jid}/${nick}" xmlns="jabber:client" id="${sent_stanza.getAttribute('id')}" from="${jid}">
-                <x xmlns="http://jabber.org/protocol/muc"/>
+                <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                 <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org" ver="t7NrIuCRhg80cJKAq33v3LKogjI="/>
               </presence>`);
         })

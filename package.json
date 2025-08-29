@@ -55,7 +55,7 @@
     "build:website-min-css": "npm run build:website-css && npx clean-css-cli dist/website.css > dist/website.min.css",
     "cdn": "ASSET_PATH=https://cdn.conversejs.org/dist/ npm run build",
     "clean": "rm -rf node_modules dist *.zip src/headless/dist src/headless/node_modules",
-    "dev": "DROP_DEBUGGER=false rspack build --config rspack/rspack.build.js --mode=development",
+    "dev": "DROP_DEBUGGER=false npm run dev:headless && rspack build --config rspack/rspack.build.cjs.js --mode=development",
     "dev:headless": "DROP_DEBUGGER=false rspack build --config rspack/rspack.headless.js --mode=development",
     "devserver": "npm run dev:headless && npx rspack serve --config rspack/rspack.serve.js",
     "lint": "eslint src/**/*.js",
@@ -69,7 +69,7 @@
     "types:check": "tsc --noEmit",
     "watch": "concurrently \"npm run watch:headless\" \"npm run watch:main\"",
     "watch:headless": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.headless.js --mode=development",
-    "watch:main": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.build.js --mode=development"
+    "watch:main": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.build.cjs.js --mode=development"
   },
   "repository": {
     "type": "git",

@@ -334,7 +334,7 @@ describe("A MUC", function () {
                         to="romeo@montague.lit/pda"
                         type="error"
                         xmlns="jabber:client">
-                    <x xmlns="http://jabber.org/protocol/muc"/>
+                    <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <error by="${muc_jid}" type="cancel">
                         <conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                     </error>
@@ -387,7 +387,7 @@ describe("A MUC", function () {
                         from="${connection.jid}"
                         to="${muc_jid}/romeo-2"
                         xmlns="jabber:client">
-                    <x xmlns="http://jabber.org/protocol/muc"/>
+                    <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
                         ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s="/>
                 </presence>`);
@@ -402,7 +402,7 @@ describe("A MUC", function () {
                         id="${u.getUniqueId()}"
                         to="romeo@montague.lit/pda"
                         type="error">
-                    <x xmlns="http://jabber.org/protocol/muc"/>
+                    <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <error by="${muc_jid}" type="cancel">
                         <conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                     </error>
@@ -417,7 +417,7 @@ describe("A MUC", function () {
                         from="${connection.jid}"
                         to="${muc_jid}/romeo-3"
                         xmlns="jabber:client">
-                    <x xmlns="http://jabber.org/protocol/muc"/>
+                    <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
                         ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s="/>
                 </presence>`);
@@ -447,7 +447,7 @@ describe("A MUC", function () {
                         from="${connection.jid}"
                         to="${muc_jid}/romeo-4"
                         xmlns="jabber:client">
-                    <x xmlns="http://jabber.org/protocol/muc"/>
+                    <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
                         ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s="/>
                 </presence>`);

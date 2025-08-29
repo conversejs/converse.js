@@ -272,6 +272,7 @@ describe("Bookmarks", function () {
                 id="${sent_stanza.getAttribute('id')}"
                 to="${autojoin_muc}/JC">
             <x xmlns="http://jabber.org/protocol/muc">
+                <history maxstanzas="0"/>
                 <password>secret</password>
             </x>
             <c xmlns="http://jabber.org/protocol/caps"

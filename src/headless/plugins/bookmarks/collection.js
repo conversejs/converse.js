@@ -37,8 +37,14 @@ class Bookmarks extends Collection {
         this.on('change:autojoin', this.onAutoJoinChanged, this);
         this.on(
             'remove',
-            /** @param {Bookmark} bookmark */
-            (_, bookmark) => this.sendBookmarkStanza(bookmark),
+            /** @param {Bookmark} bookmarks */
+            async (bookmark, bookmarks) => {
+                const bare_jid = _converse.session.get('bare_jid');
+                const sourceBookmark = (await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid))
+                    ? bookmark
+                    : bookmarks;
+                this.removeBookmarkStanza(sourceBookmark)
+            },
             this
         );
 
@@ -125,6 +131,36 @@ class Bookmarks extends Collection {
         if (send_stanza) {
             this.sendBookmarkStanza(bookmark).catch((iq) => this.onBookmarkError(iq));
         }
+    }
+
+    /**
+     * @param {Bookmark} bookmark
+     * @returns {Promise<void|Element>}
+     */
+    async removeBookmarkStanza (bookmark) {
+        const bare_jid = _converse.session.get('bare_jid');
+
+        const node = (await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid))
+            ? Strophe.NS.BOOKMARKS2
+            : Strophe.NS.BOOKMARKS;
+
+        if (node === Strophe.NS.BOOKMARKS2) {
+
+            const retractItem = stx`
+                <item id="${bookmark.get('jid')}">
+                    <remove/>
+                </item>`;
+
+            return api.pubsub.publish(
+                null,                         
+                node,        
+                retractItem,
+                { persist_items: true }       
+            );
+
+        }
+
+        return this.sendBookmarkStanza(bookmark);
     }
 
     /**

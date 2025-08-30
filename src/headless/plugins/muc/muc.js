@@ -1281,6 +1281,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             this.save({ name: identity.get('name') });
         } else {
             log.error(`No identity or name found for ${this.get('jid')}`);
+            this.save({ name: this.get('jid') });
         }
         await this.getDiscoInfoFields();
         await this.getDiscoInfoFeatures();

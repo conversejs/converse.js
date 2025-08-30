@@ -25,6 +25,11 @@ declare class Bookmarks extends Collection {
      */
     setBookmark(attrs: import("./types").BookmarkAttrs, create?: boolean, options?: object): void;
     /**
+     * @param {Bookmark} bookmark
+     * @returns {Promise<void|Element>}
+     */
+    removeBookmarkStanza(bookmark: Bookmark): Promise<void | Element>;
+    /**
      * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
      * @param {Bookmark} bookmark
      * @returns {Stanza|Stanza[]}

@@ -5,7 +5,7 @@ import _converse from '../_converse.js';
 import presence_api from './presence.js';
 import connection_api from '../connection/api.js';
 import { replacePromise } from '../../utils/session.js';
-import { attemptNonPreboundSession, setUserJID } from '../../utils/init.js';
+import { attemptNonPreboundSession, setUserJID, savedLoginInfo } from '../../utils/init.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { user_settings_api } from '../settings/user/api.js';
 import { LOGOUT } from '../constants.js';
@@ -108,8 +108,15 @@ const api = {
                 // Recreate all the promises
                 Object.keys(_converse.promises).forEach((p) => replacePromise(_converse, p));
 
-                // Remove the session JID, otherwise the user would just be logged
+                // Remove the session JID/keys, otherwise the user would just be logged
                 // in again upon reload. See #2759
+                const jid = localStorage.getItem("conversejs-session-jid");
+                if (jid) {
+                    savedLoginInfo(jid).then((login_info) => {
+                        // XXX TODO: is there a cleaner call? .remove()? .clear()?
+                        login_info.save({ fast: null, scram_keys: null });
+                    })
+                }
                 localStorage.removeItem('conversejs-session-jid');
 
                 /**

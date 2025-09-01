@@ -32,8 +32,7 @@ export async function parseVCardResultStanza(iq) {
             image_type,
             image_hash: u.arrayBufferToHex(ab),
         });
-    }
-    else if (image_url) {
+    } else if (image_url) {
         Object.assign(result, {
             image_url,
         });

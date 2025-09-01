@@ -46,7 +46,11 @@ export function onOccupantAvatarChanged(occupant) {
         vcards.push(_converse.state.vcards.get(occupant.get('jid')));
     }
     vcards.push(_converse.state.vcards.get(occupant.get('from')));
-    vcards.forEach((v) => (hash || url) && v && (v?.get('image_hash') !== hash || v?.get('image_url') !== url) && api.vcard.update(v, true));
+    vcards.filter((v) => v).forEach((v) => {
+        if (hash && v.get('image_hash') !== hash || url && v.get('image_url') !== url) {
+            api.vcard.update(v, true);
+        }
+    });
 }
 
 /**

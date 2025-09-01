@@ -7,8 +7,7 @@ import { html, nothing } from 'lit';
 function getImgHref(image, image_type) {
     if (image.startsWith('https:') || image.startsWith('data:')) {
         return image;
-    }
-    else {
+    } else {
         return `data:${image_type};base64,${image}`;
     }
 };

@@ -3,11 +3,11 @@ declare namespace _default {
         /**
          * Send out a presence stanza
          * @method _converse.api.user.presence.send
-         * @param {import('../../plugins/status/types').presence_attrs} [attrs]
+         * @param {import('../../plugins/status/types').PresenceAttrs} [attrs]
          * @param {Array<Element>|Array<Builder>|Element|Builder} [nodes]
          *  Nodes(s) to be added as child nodes of the `presence` XML element.
          */
-        function send(attrs?: import("../../plugins/status/types").presence_attrs, nodes?: Array<Element> | Array<Builder> | Element | Builder): Promise<void>;
+        function send(attrs?: import("../../plugins/status/types").PresenceAttrs, nodes?: Array<Element> | Array<Builder> | Element | Builder): Promise<void>;
     }
 }
 export default _default;

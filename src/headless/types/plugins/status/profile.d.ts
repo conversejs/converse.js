@@ -145,9 +145,9 @@ export default class Profile extends Profile_base {
         groups: any[];
     };
     /**
-     * @return {import('./types').connection_status}
+     * @return {import('./types').ConnectionStatus}
      */
-    getStatus(): import("./types").connection_status;
+    getStatus(): import("./types").ConnectionStatus;
     /**
      * @param {string|Object} key
      * @param {string|Object} [val]
@@ -162,10 +162,10 @@ export default class Profile extends Profile_base {
     getNickname(): any;
     /**
      * Constructs a presence stanza
-     * @param {import('./types').presence_attrs} [attrs={}]
+     * @param {import('./types').PresenceAttrs} [attrs={}]
      * @returns {Promise<Stanza>}
      */
-    constructPresence(attrs?: import("./types").presence_attrs): Promise<any>;
+    constructPresence(attrs?: import("./types").PresenceAttrs): Promise<any>;
 }
 import { Model } from '@converse/skeletor';
 export {};

@@ -36,7 +36,7 @@ declare namespace api {
              * @method _converse.api.user.jid
              * @returns {string} The current user's full JID (Jabber ID)
              * @example _converse.api.user.jid())
-             */).presence_attrs, nodes?: Array<Element> | Array<Builder> | Element | Builder): Promise<void>;
+             */).PresenceAttrs, nodes?: Array<Element> | Array<Builder> | Element | Builder): Promise<void>;
         };
         settings: {
             getModel(): Promise<Model>;

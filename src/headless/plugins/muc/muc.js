@@ -2079,7 +2079,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
     /**
      * Sends a status update presence (i.e. based on the `<show>` element)
-     * @param {import("../status/types").presence_attrs} attrs
+     * @param {import("../status/types").PresenceAttrs} attrs
      * @param {Element[]|Builder[]|Element|Builder} [child_nodes]
      *  Nodes(s) to be added as child nodes of the `presence` XML element.
      */

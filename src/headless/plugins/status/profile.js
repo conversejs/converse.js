@@ -4,7 +4,6 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import ModelWithVCard from '../../shared/model-with-vcard';
 import ColorAwareModel from '../../shared/color.js';
-import { isIdle, getIdleSeconds } from './utils.js';
 
 const { Stanza, Strophe, stx } = converse.env;
 
@@ -19,7 +18,7 @@ export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
     }
 
     /**
-     * @return {import('./types').connection_status}
+     * @return {import('./types').ConnectionStatus}
      */
     getStatus () {
         const presence  = this.get('presence');
@@ -80,7 +79,7 @@ export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
 
     /**
      * Constructs a presence stanza
-     * @param {import('./types').presence_attrs} [attrs={}]
+     * @param {import('./types').PresenceAttrs} [attrs={}]
      * @returns {Promise<Stanza>}
      */
     async constructPresence(attrs = {}) {
@@ -91,11 +90,12 @@ export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
         const include_nick = type === 'subscribe';
         const nick = include_nick ? profile.getNickname() : null;
         const priority = api.settings.get('priority');
+        const { idle: is_idle, seconds: idle_seconds } = api.user.idle.get();
 
         let idle_since;
-        if (isIdle()) {
+        if (is_idle) {
             idle_since = new Date();
-            idle_since.setSeconds(idle_since.getSeconds() - getIdleSeconds());
+            idle_since.setSeconds(idle_since.getSeconds() - idle_seconds);
         }
 
         const presence = stx`

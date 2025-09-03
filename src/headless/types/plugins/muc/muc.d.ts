@@ -770,11 +770,11 @@ declare class MUC extends MUC_base {
     isJoined(): Promise<boolean>;
     /**
      * Sends a status update presence (i.e. based on the `<show>` element)
-     * @param {import("../status/types").presence_attrs} attrs
+     * @param {import("../status/types").PresenceAttrs} attrs
      * @param {Element[]|Builder[]|Element|Builder} [child_nodes]
      *  Nodes(s) to be added as child nodes of the `presence` XML element.
      */
-    sendStatusPresence(attrs: import("../status/types").presence_attrs, child_nodes?: Element[] | import("strophe.js").Builder[] | Element | import("strophe.js").Builder): Promise<void>;
+    sendStatusPresence(attrs: import("../status/types").PresenceAttrs, child_nodes?: Element[] | import("strophe.js").Builder[] | Element | import("strophe.js").Builder): Promise<void>;
     /**
      * Check whether we're still joined and re-join if not
      */

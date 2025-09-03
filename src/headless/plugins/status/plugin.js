@@ -4,51 +4,20 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import status_api from './api.js';
 import { shouldClearCache } from '../../utils/session.js';
-import {
-    initStatus,
-    onEverySecond,
-    onUserActivity,
-    registerIntervalHandler,
-    tearDown,
-    sendCSI
-} from './utils.js';
-
-const { Strophe } = converse.env;
-
-Strophe.addNamespace('IDLE', 'urn:xmpp:idle:1');
-
+import { initStatus } from './utils.js';
 
 converse.plugins.add('converse-status', {
-
-    initialize () {
-
-        api.settings.extend({
-            auto_away: 0, // Seconds after which user status is set to 'away'
-            auto_xa: 0, // Seconds after which user status is set to 'xa'
-            csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
-            idle_presence_timeout: 300, // Seconds after which an idle presence is sent
-            priority: 0,
-        });
+    initialize() {
+        api.settings.extend({ priority: 0 });
         api.promises.add(['statusInitialized']);
 
         const exports = {
             XMPPStatus: Profile, // Deprecated
             Profile,
-            onUserActivity,
-            onEverySecond,
-            sendCSI,
-            registerIntervalHandler
         };
         Object.assign(_converse, exports); // Deprecated
         Object.assign(_converse.exports, exports);
         Object.assign(_converse.api.user, status_api);
-
-        if (api.settings.get("idle_presence_timeout") > 0) {
-            api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.IDLE));
-        }
-
-        api.listen.on('presencesInitialized', (reconnecting) => (!reconnecting && registerIntervalHandler()));
-        api.listen.on('beforeTearDown', tearDown);
 
         api.listen.on('clearSession', () => {
             if (shouldClearCache(_converse) && _converse.state.profile) {
@@ -61,5 +30,5 @@ converse.plugins.add('converse-status', {
 
         api.listen.on('connected', () => initStatus(false));
         api.listen.on('reconnected', () => initStatus(true));
-    }
+    },
 });

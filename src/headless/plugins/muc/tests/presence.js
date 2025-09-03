@@ -26,7 +26,7 @@ describe('MUC presence history element', function () {
                 <x xmlns="http://jabber.org/protocol/muc">
                   <history maxstanzas="5"/>
                 </x>
-                <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org" ver="t7NrIuCRhg80cJKAq33v3LKogjI="/>
+                <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org" ver="1T0pIfIxYO645OaT9gpXVXOvb9s="/>
               </presence>`);
 
             api.settings.set('muc_history_max_stanzas', 0);
@@ -41,7 +41,7 @@ describe('MUC presence history element', function () {
             expect(sent_stanza).toEqualStanza(stx`
               <presence to="${muc2_jid}/${nick}" xmlns="jabber:client" id="${sent_stanza.getAttribute('id')}" from="${jid}">
                 <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
-                <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org" ver="t7NrIuCRhg80cJKAq33v3LKogjI="/>
+                <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org" ver="1T0pIfIxYO645OaT9gpXVXOvb9s="/>
               </presence>`);
         })
     );

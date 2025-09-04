@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.1 (Unreleased)
+
+- Load avatar data over HTTP if available in vCard EXTVAL
+
 ## 12.0.0 (2025-08-28)
 
 - #3581: Don't unnecessarily regenerate pot and po files

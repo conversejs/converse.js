@@ -87,7 +87,7 @@ class Bookmarks extends Collection {
 
     fetchBookmarks() {
         const deferred = getOpenPromise();
-        if (window.sessionStorage.getItem(this.fetched_flag)) {
+        if (_converse.state.session.get(this.fetched_flag)) {
             this.fetch({
                 success: () => deferred.resolve(),
                 error: () => deferred.resolve(),
@@ -258,7 +258,7 @@ class Bookmarks extends Collection {
      */
     async onBookmarksReceived(deferred, iq) {
         await this.setBookmarksFromStanza(iq);
-        window.sessionStorage.setItem(this.fetched_flag, 'true');
+        _converse.state.session.set(this.fetched_flag, true);
         if (deferred !== undefined) {
             return deferred.resolve();
         }
@@ -284,7 +284,7 @@ class Bookmarks extends Collection {
             const e = await parseErrorStanza(iq);
             if (e instanceof errors.ItemNotFoundError) {
                 // Not an exception, the user simply doesn't have any bookmarks.
-                window.sessionStorage.setItem(this.fetched_flag, 'true');
+                _converse.state.session.set(this.fetched_flag, true);
                 deferred?.resolve();
             } else {
                 log.error('Error while fetching bookmarks');

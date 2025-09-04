@@ -34,10 +34,10 @@ declare namespace _default {
     namespace idle {
         /**
          * @method _converse.api.user.idle.get
-         * @returns {Promise<import('./types').IdleStatus>}
+         * @returns {import('./types').IdleStatus}
          * @example _converse.api.user.idle.get();
          */
-        function get(): Promise<import("./types").IdleStatus>;
+        function get(): import("./types").IdleStatus;
         /**
          * @method _converse.api.user.idle.set
          * @param {import('./types').IdleStatus} status

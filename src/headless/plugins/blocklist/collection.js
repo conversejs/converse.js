@@ -54,7 +54,7 @@ class Blocklist extends Collection {
 
     fetchBlocklist() {
         const deferred = getOpenPromise();
-        if (window.sessionStorage.getItem(this.fetched_flag)) {
+        if (_converse.state.session.get(this.fetched_flag)) {
             this.fetch({
                 success: () => deferred.resolve(),
                 error: () => deferred.resolve(),
@@ -93,7 +93,7 @@ class Blocklist extends Collection {
             blocked ? blocked.save({ jid }) : this.create({ jid });
         });
 
-        window.sessionStorage.setItem(this.fetched_flag, 'true');
+        _converse.state.session.set(this.fetched_flag, true);
         if (deferred !== undefined) {
             return deferred.resolve();
         }

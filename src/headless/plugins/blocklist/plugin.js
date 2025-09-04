@@ -102,7 +102,7 @@ converse.plugins.add("converse-blocklist", {
             const { state } = _converse;
             if (state.blocklist) {
                 state.blocklist.clearStore({ "silent": true });
-                window.sessionStorage.removeItem(state.blocklist.fetched_flag);
+                state.session.set(state.blocklist.fetched_flag, undefined);
                 delete state.blocklist;
             }
         });

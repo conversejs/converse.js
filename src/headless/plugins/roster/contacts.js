@@ -111,7 +111,7 @@ class RosterContacts extends Collection {
 
         if (_converse.session.get('roster_cached')) {
             /**
-             * The contacts roster has been retrieved from the local cache (`sessionStorage`).
+             * The contacts roster has been retrieved from the local cache
              * @event _converse#cachedRoster
              * @type {RosterContacts}
              * @example _converse.api.listen.on('cachedRoster', (items) => { ... });
@@ -332,7 +332,7 @@ class RosterContacts extends Collection {
         /**
          * When the roster has been received from the XMPP server.
          * See also the `cachedRoster` event further up, which gets called instead of
-         * `roster` if its already in `sessionStorage`.
+         * `roster` if its already in the cache.
          * @event _converse#roster
          * @type {Element}
          * @example _converse.api.listen.on('roster', iq => { ... });

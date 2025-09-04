@@ -68,9 +68,9 @@ converse.plugins.add('converse-disco', {
             }
         });
 
-        // All disco entities stored in sessionStorage and are refetched
+        // All disco entities stored in the cache and are refetched
         // upon login or reconnection and then stored with new ids, so to
-        // avoid sessionStorage filling up, we remove them.
+        // avoid the cache from filling up, we remove them.
         api.listen.on('will-reconnect', clearSession);
         api.listen.on('clearSession', clearSession);
     }

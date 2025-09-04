@@ -126,8 +126,8 @@ converse.plugins.add('converse-bookmarks', {
         api.listen.on('clearSession', () => {
             const { state } = _converse;
             if (state.bookmarks) {
-                state.bookmarks.clearStore({ 'silent': true });
-                window.sessionStorage.removeItem(state.bookmarks.fetched_flag);
+                state.bookmarks.clearStore({ silent: true });
+                _converse.state.session.set(this.fetched_flag, undefined);
                 delete state.bookmarks;
             }
         });

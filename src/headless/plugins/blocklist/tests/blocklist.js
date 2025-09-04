@@ -6,13 +6,14 @@ const { u, stx } = converse.env;
 describe('A blocklist', function () {
     beforeEach(() => {
         jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza });
-        window.sessionStorage.removeItem('converse.blocklist-romeo@montague.lit-fetched');
     });
 
     it(
         'is automatically fetched from the server once the user logs in',
         mock.initConverse(['discoInitialized'], {}, async function (_converse) {
-            const { api } = _converse;
+            const { api, state } = _converse;
+            state.session.set('converse.blocklist-romeo@montague.lit-fetched', undefined);
+
             await mock.waitUntilDiscoConfirmed(
                 _converse,
                 _converse.domain,
@@ -50,7 +51,9 @@ describe('A blocklist', function () {
     it(
         'is updated when the server sends IQ stanzas',
         mock.initConverse(['discoInitialized'], {}, async function (_converse) {
-            const { api, domain } = _converse;
+            const { api, domain, state } = _converse;
+            state.session.set('converse.blocklist-romeo@montague.lit-fetched', undefined);
+
             await mock.waitUntilDiscoConfirmed(
                 _converse,
                 domain,
@@ -115,7 +118,9 @@ describe('A blocklist', function () {
     it(
         'can be updated via the api',
         mock.initConverse(['discoInitialized'], {}, async function (_converse) {
-            const { api, domain } = _converse;
+            const { api, domain, state } = _converse;
+            state.session.set('converse.blocklist-romeo@montague.lit-fetched', undefined);
+
             await mock.waitUntilDiscoConfirmed(
                 _converse,
                 domain,
@@ -192,7 +197,9 @@ describe('A Chat Message', function () {
     it(
         "will show an error message if it's rejected due to being banned",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
-            const { api } = _converse;
+            const { api, state } = _converse;
+            state.session.set('converse.blocklist-romeo@montague.lit-fetched', undefined);
+
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             const chat = await api.chats.open(sender_jid);

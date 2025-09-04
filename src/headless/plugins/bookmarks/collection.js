@@ -38,7 +38,9 @@ class Bookmarks extends Collection {
         this.on(
             'remove',
             /** @param {Bookmark} bookmark */
-            (_, bookmark) => this.sendBookmarkStanza(bookmark),
+            (bookmark, _) =>
+                this.removeBookmark(bookmark)
+                    .catch((e) => log.fatal(e)),
             this
         );
 
@@ -180,6 +182,28 @@ class Bookmarks extends Collection {
             send_last_published_item: 'never',
             access_model: 'whitelist',
         });
+    }
+
+    /**
+     * @param {Bookmark} bookmark
+     * @returns {Promise<void|Element>}
+     */
+    async removeBookmark(bookmark) {
+        const bare_jid = _converse.session.get('bare_jid');
+        const node = (await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid))
+            ? Strophe.NS.BOOKMARKS2
+            : Strophe.NS.BOOKMARKS;
+        const stanza = stx`
+            <iq xmlns="jabber:client"
+                from="${bare_jid}"
+                type="set">
+                <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <retract node="${node}">
+                        <item id="${bookmark.get('jid')}"/>
+                    </retract>
+                </pubsub>
+            </iq>`;
+       await api.sendIQ(stanza);
     }
 
     /**

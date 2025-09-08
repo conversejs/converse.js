@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-19 10:13+0200\n"
-"PO-Revision-Date: 2025-09-08 16:46+0000\n"
+"PO-Revision-Date: 2025-09-09 17:01+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:16974
 msgid "Could not automatically determine a connection URL"
-msgstr "Impossible de déterminer l’adresse connexion automatiquement"
+msgstr "Impossible de déterminer l’adresse de connexion automatiquement"
 
 #: dist/converse-no-dependencies.js:17308
 #: dist/converse-no-dependencies.js:17361
@@ -36,8 +36,7 @@ msgstr "Une erreur est survenue lors de la connexion au serveur de discussion."
 #: dist/converse-no-dependencies.js:17368
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr ""
-"Votre adresse XMPP et/ou votre mot de passe sont/est incorrect(s). Veuillez "
-"réessayer."
+"Votre adresse XMPP ou votre mot de passe sont incorrects. Veuillez réessayer."
 
 #: dist/converse-no-dependencies.js:17377
 #, javascript-format

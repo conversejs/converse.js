@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-19 10:13+0200\n"
-"PO-Revision-Date: 2025-09-08 16:40+0000\n"
+"PO-Revision-Date: 2025-09-08 16:46+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -1710,7 +1710,7 @@ msgstr "Réduire cette discussion"
 
 #: dist/converse-no-dependencies.js:100071
 msgid "Minimize this groupchat"
-msgstr "Réduire ce groupe de discussion"
+msgstr "Réduire ce salon"
 
 #: dist/converse-no-dependencies.js:100205
 msgid "hidden"
@@ -1806,7 +1806,7 @@ msgstr "Raison facultative pour l’invitation"
 
 #: dist/converse-no-dependencies.js:102826
 msgid "Invite someone to this groupchat"
-msgstr "Inviter quelqu’un à ce groupe de discussion"
+msgstr "Inviter quelqu’un à ce salon"
 
 #. * @param {MUCOccupant} o
 #: dist/converse-no-dependencies.js:103082
@@ -1951,7 +1951,7 @@ msgstr "Fermer cette fenêtre de discussion"
 
 #: dist/converse-no-dependencies.js:106041
 msgid "Close this groupchat"
-msgstr "Fermer ce groupe de discussion"
+msgstr "Fermer ce salon"
 
 #: dist/converse-no-dependencies.js:106042
 msgid "Change user role to participant"
@@ -2208,7 +2208,7 @@ msgstr "Information du salon"
 
 #: dist/converse-no-dependencies.js:108090
 msgid "Hide the groupchat topic"
-msgstr "Masquer le sujet de la discussion de groupe"
+msgstr "Masquer le sujet du salon"
 
 #: dist/converse-no-dependencies.js:108093
 #: dist/converse-no-dependencies.js:123463
@@ -2572,7 +2572,7 @@ msgid ""
 "will no longer be possible in this grouchat."
 msgstr ""
 "%1$s ne semble pas avoir un client qui supporte OMEMO. Le chiffrement ne "
-"sera plus possible dans ce groupe de discussion."
+"sera plus possible dans ce salon."
 
 #: dist/converse-no-dependencies.js:114690
 msgid ""
@@ -2850,7 +2850,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:123189
 msgid "Groupchat id is invalid."
-msgstr "L’identifiant du groupe de discussion est invalide."
+msgstr "L’identifiant de ce salon est invalide."
 
 #. ESM default export
 #: dist/converse-no-dependencies.js:123359

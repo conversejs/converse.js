@@ -52,7 +52,7 @@ Restrict access to private code/data
     malicious plugins could be registered under their names.
 
 Additional measures
-=====================
+===================
 
 Besides the measures mentioned above, integrators and hosts can also take
 further security precautions.

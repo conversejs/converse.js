@@ -78,7 +78,7 @@ If this directory does NOT exist, something must have gone wrong.
 Double-check the output of ``make watch`` to see if there are any errors
 listed.
 
-For support, you can ask in our chatroom: `dicuss@conference.conversejs.org <xmpp:discuss@conference.conversejs.org>`_.
+For support, you can ask in our chatroom: `discuss@conference.conversejs.org <xmpp:discuss@conference.conversejs.org>`_.
 
 If you don't have an XMPP client installed, follow this link to
 `conversejs.org <https://conversejs.org/fullscreen#converse/room?jid=discuss@conference.conversejs.org>`_

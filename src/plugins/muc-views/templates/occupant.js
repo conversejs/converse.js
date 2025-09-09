@@ -17,7 +17,7 @@ let badges_definitions; // will be initialized at first call (to be sure that th
 
 /**
  * Inits badges definitions.
- * For short labels, it will use the label first letter. If there is ambigous short labels, it will try to add up to 4 letters.
+ * For short labels, it will use the label first letter. If there is ambiguous short labels, it will try to add up to 4 letters.
  * Letters will be uppercase.
  */
 function initBadgesDefinitions() {

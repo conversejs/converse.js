@@ -324,7 +324,7 @@ describe("A sent groupchat message", function () {
                     </presence>`))
             });
 
-            // Test that we don't match @nick in email adresses.
+            // Test that we don't match @nick in email addresses.
             let [text, references] = view.model.parseTextForReferences('contact contact@NotAnAdress.eu');
             expect(references.length).toBe(0);
             expect(text).toBe('contact contact@NotAnAdress.eu');

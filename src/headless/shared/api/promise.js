@@ -10,7 +10,7 @@ export default {
      *
      * Some of these events are also available as [ES2015 Promises](http://es6-features.org/#PromiseUsage)
      * although not all of them could logically act as promises, since some events
-     * might be fired multpile times whereas promises are to be resolved (or
+     * might be fired multiple times whereas promises are to be resolved (or
      * rejected) only once.
      *
      * Events which are also promises include:

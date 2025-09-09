@@ -87,7 +87,7 @@ export function convertASCII2Emoji (str) {
     // Replace ASCII smileys
     return str.replace(ASCII_REPLACE_REGEX, (entire, _, m2, m3) => {
         if( (typeof m3 === 'undefined') || (m3 === '') || (!(u.unescapeHTML(m3) in ASCII_LIST)) ) {
-            // if the ascii doesnt exist just return the entire match
+            // if the ascii doesn't exist just return the entire match
             return entire;
         }
         m3 = u.unescapeHTML(m3);
@@ -180,7 +180,7 @@ function shortnamesToUnicode (str) {
  * Determines whether the passed in string is just a single emoji shortname;
  * @namespace u
  * @method u.isOnlyEmojis
- * @param { String } text - A string which migh be just an emoji shortname
+ * @param { String } text - A string which might be just an emoji shortname
  * @returns { Boolean }
  */
 export function isOnlyEmojis (text) {

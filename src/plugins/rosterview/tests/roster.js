@@ -183,7 +183,7 @@ describe("The Contacts Roster", function () {
                         <group>Friends</group>
                     </item>
                     <item jid="lord.capulet@example.net" name="Lord Capulet" subscription="none">
-                        <group>Acquaintences</group>
+                        <group>Acquaintances</group>
                     </item>
                 </query>
             </iq>
@@ -240,7 +240,7 @@ describe("The Contacts Roster", function () {
                         <group>Friends</group>
                     </item>
                     <item jid="lord.capulet@example.net" name="Lord Capulet" subscription="from">
-                        <group>Acquaintences</group>
+                        <group>Acquaintances</group>
                     </item>
                 </query>
             </iq>
@@ -275,7 +275,7 @@ describe("The Contacts Roster", function () {
         expect(visible_groups.length).toBe(4);
         expect(visible_groups[0].textContent.trim()).toBe('Colleagues');
         expect(visible_groups[1].textContent.trim()).toBe('Family');
-        expect(visible_groups[2].textContent.trim()).toBe('friends & acquaintences');
+        expect(visible_groups[2].textContent.trim()).toBe('friends & acquaintances');
         expect(visible_groups[3].textContent.trim()).toBe('ænemies');
 
         _converse.roster.create({
@@ -290,7 +290,7 @@ describe("The Contacts Roster", function () {
         expect(visible_groups.length).toBe(5);
         expect(visible_groups[0].textContent.trim()).toBe('Colleagues');
         expect(visible_groups[1].textContent.trim()).toBe('Family');
-        expect(visible_groups[2].textContent.trim()).toBe('friends & acquaintences');
+        expect(visible_groups[2].textContent.trim()).toBe('friends & acquaintances');
         expect(visible_groups[3].textContent.trim()).toBe('newgroup');
         expect(visible_groups[4].textContent.trim()).toBe('ænemies');
         expect(roster.querySelectorAll('.roster-group').length).toBe(5);
@@ -347,7 +347,7 @@ describe("The Contacts Roster", function () {
             // Only one foster group is still visible
             expect(sizzle('.roster-group', roster).filter(u.isVisible).length).toBe(1);
             const visible_group = sizzle('.roster-group', roster).filter(u.isVisible).pop();
-            expect(visible_group.querySelector('a.group-toggle').textContent.trim()).toBe('friends & acquaintences');
+            expect(visible_group.querySelector('a.group-toggle').textContent.trim()).toBe('friends & acquaintances');
 
             filter = rosterview.querySelector('.items-filter');
             filter.value = "j";
@@ -359,7 +359,7 @@ describe("The Contacts Roster", function () {
 
             let visible_groups = sizzle('.roster-group', roster).filter(u.isVisible).map(el => el.querySelector('a.group-toggle'));
             expect(visible_groups.length).toBe(2);
-            expect(visible_groups[0].textContent.trim()).toBe('friends & acquaintences');
+            expect(visible_groups[0].textContent.trim()).toBe('friends & acquaintances');
             expect(visible_groups[1].textContent.trim()).toBe('Ungrouped');
 
             filter = rosterview.querySelector('.items-filter');
@@ -485,7 +485,7 @@ describe("The Contacts Roster", function () {
 
             await u.waitUntil(() => sizzle('li', roster).filter(u.isVisible).pop().querySelector('.contact-name').textContent.trim() === 'Friar Laurence', 900);
             const ul = sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).pop();
-            expect(ul.parentElement.firstElementChild.textContent.trim()).toBe('friends & acquaintences');
+            expect(ul.parentElement.firstElementChild.textContent.trim()).toBe('friends & acquaintances');
             expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(1);
         }));
     });
@@ -510,7 +510,7 @@ describe("The Contacts Roster", function () {
                 "Contact requests",
                 "Colleagues",
                 "Family",
-                "friends & acquaintences",
+                "friends & acquaintances",
                 "ænemies",
                 "Ungrouped",
                 "Pending contacts",
@@ -528,7 +528,7 @@ describe("The Contacts Roster", function () {
                 "Contact requests",
                 "Colleagues",
                 "Family",
-                "friends & acquaintences",
+                "friends & acquaintances",
                 "ænemies",
                 "Ungrouped",
                 "Pending contacts",
@@ -545,7 +545,7 @@ describe("The Contacts Roster", function () {
                 "Contact requests",
                 "Colleagues",
                 "Family",
-                "friends & acquaintences",
+                "friends & acquaintances",
                 "ænemies",
                 "Ungrouped",
                 "Pending contacts",
@@ -567,7 +567,7 @@ describe("The Contacts Roster", function () {
                 "Contact requests",
                 "Colleagues",
                 "Family",
-                "friends & acquaintences",
+                "friends & acquaintances",
                 "ænemies",
                 "Ungrouped",
                 "Pending contacts",
@@ -659,7 +659,7 @@ describe("The Contacts Roster", function () {
             let i=0, j=0;
             const groups = {
                 'Colleagues': 3,
-                'friends & acquaintences': 3,
+                'friends & acquaintances': 3,
                 'Ungrouped': 2
             };
             Object.keys(groups).forEach(function (name) {
@@ -1059,7 +1059,7 @@ describe("The Contacts Roster", function () {
             const roster = rosterview;
             const groups = roster.querySelectorAll('.roster-group');
             const groupnames = Array.from(groups).map(g => g.getAttribute('data-group'));
-            expect(groupnames.join(' ')).toBe("Colleagues Family friends & acquaintences ænemies Ungrouped");
+            expect(groupnames.join(' ')).toBe("Colleagues Family friends & acquaintances ænemies Ungrouped");
             for (let i=0; i<mock.cur_names.length; i++) {
                 const jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 _converse.roster.get(jid).presence.set('show', 'online');
@@ -1085,7 +1085,7 @@ describe("The Contacts Roster", function () {
             const roster = rosterview;
             const groups = roster.querySelectorAll('.roster-group');
             const groupnames = Array.from(groups).map(g => g.getAttribute('data-group'));
-            expect(groupnames.join(' ')).toBe("Colleagues Family friends & acquaintences ænemies Ungrouped");
+            expect(groupnames.join(' ')).toBe("Colleagues Family friends & acquaintances ænemies Ungrouped");
             for (let i=0; i<mock.cur_names.length; i++) {
                 const jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 _converse.roster.get(jid).presence.set('show', 'dnd');
@@ -1111,7 +1111,7 @@ describe("The Contacts Roster", function () {
             const roster = rosterview;
             const groups = roster.querySelectorAll('.roster-group');
             const groupnames = Array.from(groups).map(g => g.getAttribute('data-group'));
-            expect(groupnames.join(' ')).toBe("Colleagues Family friends & acquaintences ænemies Ungrouped");
+            expect(groupnames.join(' ')).toBe("Colleagues Family friends & acquaintances ænemies Ungrouped");
             for (let i=0; i<mock.cur_names.length; i++) {
                 const jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 _converse.roster.get(jid).presence.set('show', 'away');
@@ -1137,7 +1137,7 @@ describe("The Contacts Roster", function () {
             const roster = rosterview;
             const groups = roster.querySelectorAll('.roster-group');
             const groupnames = Array.from(groups).map(g => g.getAttribute('data-group'));
-            expect(groupnames.join(' ')).toBe("Colleagues Family friends & acquaintences ænemies Ungrouped");
+            expect(groupnames.join(' ')).toBe("Colleagues Family friends & acquaintances ænemies Ungrouped");
             for (let i=0; i<mock.cur_names.length; i++) {
                 const jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 _converse.roster.get(jid).presence.set('show', 'xa');
@@ -1163,7 +1163,7 @@ describe("The Contacts Roster", function () {
             const roster = rosterview;
             const groups = roster.querySelectorAll('.roster-group');
             const groupnames = Array.from(groups).map(g => g.getAttribute('data-group'));
-            expect(groupnames.join(' ')).toBe("Colleagues Family friends & acquaintences ænemies Ungrouped");
+            expect(groupnames.join(' ')).toBe("Colleagues Family friends & acquaintances ænemies Ungrouped");
             for (let i=0; i<mock.cur_names.length; i++) {
                 const jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 _converse.roster.get(jid).presence.set('show', 'unavailable');
@@ -1212,7 +1212,7 @@ describe("The Contacts Roster", function () {
             const roster = rosterview;
             const groups = roster.querySelectorAll('.roster-group');
             const groupnames = Array.from(groups).map(g => g.getAttribute('data-group'));
-            expect(groupnames.join(' ')).toBe("Colleagues Family friends & acquaintences ænemies Ungrouped");
+            expect(groupnames.join(' ')).toBe("Colleagues Family friends & acquaintances ænemies Ungrouped");
 
             const group = groups[0];
             const els = Array.from(group.querySelectorAll('.current-xmpp-contact'));
@@ -1233,7 +1233,7 @@ describe("The Contacts Roster", function () {
                     expect(status_classes.join(" ")).toBe("online online away xa xa xa");
                     expect(subscription_classes.join(" ")).toBe("both both both both both both");
 
-                } else if (groupname === "friends & acquaintences") {
+                } else if (groupname === "friends & acquaintances") {
                     const statuses = els.map(e => e.getAttribute('data-status'));
                     const subscription_classes = els.map(e => e.classList[4]);
                     const status_classes = els.map(e => e.classList[5]);

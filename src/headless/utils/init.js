@@ -162,7 +162,7 @@ function saveJIDtoSession(_converse, jid) {
         domain,
         // We use the `active` flag to determine whether we should use the values from sessionStorage.
         // When "cloning" a tab (e.g. via middle-click), the `active` flag will be set and we'll create
-        // a new empty user session, otherwise it'll be false and we can re-use the user session.
+        // a new empty user session, otherwise it'll be false and we can reuse the user session.
         // When the tab is reloaded, the `active` flag is set to `false`.
         "active": true,
     });
@@ -379,7 +379,7 @@ export async function attemptNonPreboundSession(credentials, automatic) {
         const jid = _converse.session.get("jid");
         // XXX: If EITHER ``keepalive`` or ``auto_login`` is ``true`` and
         // ``authentication`` is set to ``login``, then Converse will try to log the user in,
-        // since we don't have a way to distinguish between wether we're
+        // since we don't have a way to distinguish between whether we're
         // restoring a previous session (``keepalive``) or whether we're
         // automatically setting up a new session (``auto_login``).
         // So we can't do the check (!automatic || _converse.api.settings.get("auto_login")) here.

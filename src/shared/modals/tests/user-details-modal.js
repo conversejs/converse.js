@@ -26,7 +26,7 @@ describe('The User Details Modal', function () {
             expect(name_input.value).toBe('Mercutio');
 
             const groups_input = modal.querySelector('input[name="groups"]');
-            expect(groups_input.value).toBe('Colleagues,friends & acquaintences');
+            expect(groups_input.value).toBe('Colleagues,friends & acquaintances');
 
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             while (sent_stanzas.length) sent_stanzas.pop();

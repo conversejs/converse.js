@@ -119,7 +119,7 @@ Lets say the domain under which you host Converse is *example.org:80*,
 but the domain of your connection manager or the domain of
 your HTTP file server (for `XEP-0363 HTTP File Upload <https://xmpp.org/extensions/xep-0363.html>`_)
 is at a different domain, either a different port like *example.org:5280* or a
-different name like *elsehwere.org*.
+different name like *elsewhere.org*.
 
 In such a situation the same-origin security policy of the browser comes into force.
 For security purposes a browser does not by default allow a website to

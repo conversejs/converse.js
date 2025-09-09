@@ -206,7 +206,7 @@ export default class SplitResize extends CustomElement {
         // Actually adjust the size.
         this.adjust(offset);
 
-        // Call the drag callback continously. Don't do anything too intensive
+        // Call the drag callback continuously. Don't do anything too intensive
         // in pair callback.
         this.getOption(options, 'onDrag', NOOP)(this.getSizes());
     }
@@ -297,7 +297,7 @@ export default class SplitResize extends CustomElement {
             );
             const elementMinSize = this.minSizes[i] + elementGutterSize;
 
-            // If element is too smal, increase excess pixels by the difference
+            // If element is too small, increase excess pixels by the difference
             // and mark that it has no pixels to spare
             if (pixelSize < elementMinSize) {
                 excessPixels += elementMinSize - pixelSize;

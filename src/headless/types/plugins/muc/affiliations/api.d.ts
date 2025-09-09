@@ -1,7 +1,7 @@
 declare namespace _default {
     namespace affiliations {
         /**
-         * Set the given affliation for the given JIDs in the specified MUCs
+         * Set the given affiliation for the given JIDs in the specified MUCs
          * @typedef {Object} User
          * @property {string} User.jid - The JID of the user whose affiliation will change
          * @property {Array} User.affiliation - The new affiliation for this user

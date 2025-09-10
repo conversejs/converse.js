@@ -40,12 +40,17 @@ export function createStanza(type, jid, vcard_el) {
  */
 export function onOccupantAvatarChanged(occupant) {
     const hash = occupant.get('image_hash');
+    const url = occupant.get('image_url');
     const vcards = [];
     if (occupant.get('jid')) {
         vcards.push(_converse.state.vcards.get(occupant.get('jid')));
     }
     vcards.push(_converse.state.vcards.get(occupant.get('from')));
-    vcards.forEach((v) => hash && v && v?.get('image_hash') !== hash && api.vcard.update(v, true));
+    vcards.filter((v) => v).forEach((v) => {
+        if (hash && v.get('image_hash') !== hash || url && v.get('image_url') !== url) {
+            api.vcard.update(v, true);
+        }
+    });
 }
 
 /**

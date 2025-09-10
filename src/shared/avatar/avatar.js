@@ -29,6 +29,7 @@ export default class Avatar extends CustomElement {
     }
 
     render() {
+        let image_url;
         let image_type;
         let image;
         let data_uri;
@@ -36,16 +37,17 @@ export default class Avatar extends CustomElement {
             image_type = this.pickerdata.image_type;
             data_uri = this.pickerdata.data_uri;
         } else {
+            image_url = this.model?.vcard?.get('image_url');
             image_type = this.model?.vcard?.get('image_type');
             image = this.model?.vcard?.get('image');
         }
 
-        if (image_type && (image || data_uri)) {
+        if ((image_type && (image || data_uri)) || (image_url)) {
             return tplAvatar({
                 classes: this.getAttribute('class'),
                 height: this.height,
                 width: this.width,
-                image: data_uri || `data:${image_type};base64,${image}`,
+                image: image_url || data_uri || `data:${image_type};base64,${image}`,
                 image_type,
                 alt_text: __('The profile picture of %1$s', this.name),
             });

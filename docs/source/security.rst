@@ -51,8 +51,8 @@ Restrict access to private code/data
     the omitted plugins should also be removed from the whitelist, otherwise
     malicious plugins could be registered under their names.
 
-Addititional measures
-=====================
+Additional measures
+===================
 
 Besides the measures mentioned above, integrators and hosts can also take
 further security precautions.

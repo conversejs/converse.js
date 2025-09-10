@@ -10,7 +10,7 @@ const cache = new Map();
  * @returns {Promise<string>}
  */
 export async function colorize(s) {
-    // We cache results in `cache`, to avoid unecessary computing (as it can be called very often)
+    // We cache results in `cache`, to avoid unnecessary computing (as it can be called very often)
     const v = cache.get(s);
     if (v) return v;
 

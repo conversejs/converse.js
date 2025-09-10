@@ -64,7 +64,7 @@ describe("Groupchats", function () {
             const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
             expect(csntext.trim()).toEqual("nicky has entered the groupchat");
 
-            // An instant room is created by saving the default configuratoin.
+            // An instant room is created by saving the default configuration.
             const selector = `query[xmlns="${Strophe.NS.MUC_OWNER}"]`;
             IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const iq = await u.waitUntil(() => IQ_stanzas.filter((s) => sizzle(selector, s).length).pop());
@@ -1763,7 +1763,7 @@ describe("Groupchats", function () {
                     `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                 )).pop());
 
-            // Check that the groupchat queried for the feautures.
+            // Check that the groupchat queried for the features.
             expect(stanza).toEqualStanza(stx`
                 <iq from="romeo@montague.lit/orchard"
                         id="${stanza.getAttribute("id")}"

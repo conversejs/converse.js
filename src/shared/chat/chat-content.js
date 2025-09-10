@@ -117,7 +117,7 @@ export default class ChatContent extends CustomElement {
              */
             api.trigger("chatBoxScrolledUp", el);
         }
-        if (this.model.get("scolled") !== scrolled) {
+        if (this.model.get("scrolled") !== scrolled) {
             this.model.ui.set({ scrolled });
         }
     }

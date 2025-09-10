@@ -261,7 +261,7 @@ declare class BaseMessage extends BaseMessage_base {
      */
     isFollowup(): boolean;
     /**
-     * Determines whether this messsage may be retracted by the current user.
+     * Determines whether this message may be retracted by the current user.
      * @returns { Boolean }
      */
     mayBeRetracted(): boolean;

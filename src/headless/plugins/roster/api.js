@@ -74,7 +74,7 @@ export default {
          * @param {boolean} [persist=true] - Whether the contact should be persisted to the user's roster.
          * @param {boolean} [subscribe=true] - Whether we should subscribe to the contacts presence updates.
          * @param {string} [message=''] - An optional message to include with the presence subscription
-         * @param {boolean} subscribe - Whether a presense subscription should
+         * @param {boolean} subscribe - Whether a presence subscription should
          *      be sent out to the contact being added.
          * @returns {Promise<RosterContact>}
          * @example

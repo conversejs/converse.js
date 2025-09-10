@@ -550,7 +550,7 @@ as follows:
 
 Our plugin was able to add data to the payload without requiring any kind of
 knowledge from ``hookTriggerExample`` about ``hookListenerExample`` and
-without any kind of coupling betwee the code.
+without any kind of coupling between the code.
 
 A good example of a real-world hook in Converse, is the
 `getMessageActionButtons <https://conversejs.org/docs/html/api/-_converse.html#event:getMessageActionButtons>`_

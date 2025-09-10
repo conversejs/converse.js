@@ -156,7 +156,7 @@ Moderating chatrooms
 Here are the different commands that may be used to moderate a chatroom:
 
 +------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| Event Type | When is it triggered?                                                                        | Example (substitue $nickname with an actual user's nickname)  |
+| Event Type | When is it triggered?                                                                        | Example (substitute $nickname with an actual user's nickname)  |
 +============+==============================================================================================+===============================================================+
 | **ban**    | Ban a user from the chatroom. They will not be able to join again.                           | /ban $nickname                                                |
 +------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+

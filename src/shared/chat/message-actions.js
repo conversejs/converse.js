@@ -100,7 +100,7 @@ class MessageActions extends CustomElement {
     async onMessageEditButtonClicked (ev) {
         ev.preventDefault();
         const currently_correcting = this.model.collection.findWhere('correcting');
-        // TODO: Use state intead of DOM querying
+        // TODO: Use state instead of DOM querying
         // Then this code can also be put on the model
         const unsent_text = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea')?.value;
         if (unsent_text && (!currently_correcting || currently_correcting.getMessageText() !== unsent_text)) {

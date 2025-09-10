@@ -47,19 +47,19 @@ jasmine.toEqualStanza = function toEqualStanza() {
 export const domain = 'montague.lit';
 
 export const current_contacts_map = {
-    'Mercutio': ['Colleagues', 'friends & acquaintences'],
-    'Juliet Capulet': ['friends & acquaintences'],
+    'Mercutio': ['Colleagues', 'friends & acquaintances'],
+    'Juliet Capulet': ['friends & acquaintances'],
     'Lady Montague': ['Colleagues', 'Family'],
     'Lord Montague': ['Family'],
-    'Friar Laurence': ['friends & acquaintences'],
-    'Tybalt': ['friends & acquaintences'],
+    'Friar Laurence': ['friends & acquaintances'],
+    'Tybalt': ['friends & acquaintances'],
     'Lady Capulet': ['ænemies'],
-    'Benviolo': ['friends & acquaintences'],
+    'Benviolo': ['friends & acquaintances'],
     'Balthasar': ['Colleagues'],
     'Peter': ['Colleagues'],
     'Abram': ['Colleagues'],
     'Sampson': ['Colleagues'],
-    'Gregory': ['friends & acquaintences'],
+    'Gregory': ['friends & acquaintances'],
     'Potpan': [],
     'Friar John': [],
 };

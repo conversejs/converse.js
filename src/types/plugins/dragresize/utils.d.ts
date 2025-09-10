@@ -1,7 +1,7 @@
 export function registerGlobalEventHandlers(): void;
 export function unregisterGlobalEventHandlers(): void;
 /**
- * This function registers mousedown and mouseup events hadlers to
+ * This function registers mousedown and mouseup events handlers to
  * all iframes in the DOM when converse UI resizing events are called
  * to prevent mouse drag stutter effect which is bad user experience.
  * @param {Element} e - dragging node element.

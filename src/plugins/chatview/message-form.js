@@ -106,32 +106,7 @@ export default class MessageForm extends CustomElement {
             ev.stopPropagation();
             ev.preventDefault();
             this.model.sendFiles(Array.from(ev.clipboardData.files));
-            return;
         }
-
-        const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea'));
-        if (!textarea) {
-            log.error('onPaste: could not find textarea to paste in to!');
-            return;
-        }
-
-        ev.preventDefault();
-        ev.stopPropagation();
-
-        const draft = textarea.value ?? '';
-        const pasted_text = ev.clipboardData.getData('text/plain');
-        const cursor_pos = textarea.selectionStart;
-
-        // Insert text at cursor position
-        const before = draft.substring(0, cursor_pos);
-        const after = draft.substring(textarea.selectionEnd);
-        const separator = before.endsWith(' ') || before.length === 0 ? '' : ' ';
-        const end_separator = after.startsWith(' ') || after.length === 0 ? '' : ' ';
-        this.model.save({ draft: `${before}${separator}${pasted_text}${end_separator}${after}` });
-
-        // Set cursor position after the pasted text
-        const new_pos = before.length + separator.length + pasted_text.length + end_separator.length;
-        setTimeout(() => textarea.setSelectionRange(new_pos, new_pos), 0);
     }
 
     /**

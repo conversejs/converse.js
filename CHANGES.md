@@ -1,5 +1,9 @@
 # Changelog
 
+## Next release
+
+- #3830: The message textarea blocks undo of the pasted text
+
 ## 12.0.0 (2025-08-28)
 
 - #3581: Don't unnecessarily regenerate pot and po files

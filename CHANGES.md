@@ -2,6 +2,7 @@
 
 ## Next release
 
+- #3829: Rich text from LibreOffice Calc is sent as screenshots
 - #3830: The message textarea blocks undo of the pasted text
 
 ## 12.0.0 (2025-08-28)

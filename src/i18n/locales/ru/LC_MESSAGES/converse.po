@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-19 10:13+0200\n"
-"PO-Revision-Date: 2025-08-30 06:01+0000\n"
-"Last-Translator: solokot <solokot@gmail.com>\n"
+"PO-Revision-Date: 2025-09-20 22:02+0000\n"
+"Last-Translator: Yurt Page <yurtpage+weblate@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.13.1-dev\n"
+"X-Generator: Weblate 5.14-dev\n"
 
 #: dist/converse-no-dependencies.js:42699
 msgid "A timeout occurred"
@@ -1699,7 +1699,7 @@ msgstr "Элементы"
 #: dist/converse-no-dependencies.js:119685
 #: dist/converse-no-dependencies.js:129493
 msgid "Features"
-msgstr "Особенности"
+msgstr "Возможности"
 
 #: dist/converse-no-dependencies.js:120058
 msgid "No service found with that XMPP address"
@@ -2417,7 +2417,7 @@ msgstr "занят"
 
 #: dist/converse-no-dependencies.js:132480
 msgid "away for long"
-msgstr "отошёл надолго"
+msgstr "недоступен"
 
 #: dist/converse-no-dependencies.js:132482
 msgid "away"
@@ -2433,7 +2433,7 @@ msgstr "Установить статус"
 
 #: dist/converse-no-dependencies.js:132557
 msgid "Away for long"
-msgstr "Давно отсутствует"
+msgstr "Далеко надолго"
 
 #: dist/converse-no-dependencies.js:132558
 msgid "Personal status message"
@@ -2507,7 +2507,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:133558
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
-msgstr "%1$s переведите %2$s это на свой родной язык"
+msgstr "Помогите улучшить %1$s перевод на свой родной язык %2$s"
 
 #: dist/converse-no-dependencies.js:133702
 msgid "Settings"
@@ -2930,7 +2930,7 @@ msgstr "Недоступен"
 
 #: dist/converse-no-dependencies.js:143194
 msgid "This contact is away for an extended period"
-msgstr "Надолго отошёл"
+msgstr "Этот контакт отсутствует надолго"
 
 #: dist/converse-no-dependencies.js:143195
 msgid "This contact is away"

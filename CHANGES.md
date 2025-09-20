@@ -3,6 +3,7 @@
 ## Next release
 
 - #3830: The message textarea blocks undo of the pasted text
+- #3852: Share XMPP address with web link on https://xmpp.link
 
 ## 12.0.0 (2025-08-28)
 

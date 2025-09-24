@@ -176,7 +176,7 @@ Thanks to everyone who has supported this project over the years through donatio
 
 <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center;">
   <a href="https://bairesdev.com/sponsoring-open-source-projects/?utm_source=conversejs" target="_blank" rel="noopener">
-    <img alt="BairesDev" src="https://raw.githubusercontent.com/conversejs/media/main/logos/bairesdev-primary.png" width="200">
+    <img alt="BairesDev" src="https://raw.githubusercontent.com/conversejs/media/main/logos/BairesDev_logo-orange.png" width="200">
   </a>
   <a href="https://blokt.com?utm_source=conversejs" target="_blank" rel="noopener">
     <img alt="Blokt Crypto & Privacy" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/blokt.png" width="200">

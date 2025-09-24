@@ -233,7 +233,7 @@ export function tplUserDetailsModal(el) {
                     : ''}
                 <div class="row mb-2">
                     <div class="col-sm-4"><label>${i18n_address}:</label></div>
-                    <div class="col-sm-8"><a href="xmpp:${o.jid}">${o.jid}</a></div>
+                    <div class="col-sm-8"><a href="xmpp:${o.jid}">${o.jid}</a> <a href="https://xmpp.link/#${o.jid}">web</a></div>
                 </div>
 
                 ${contact

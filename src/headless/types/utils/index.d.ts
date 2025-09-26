@@ -39,7 +39,6 @@ declare const _default: {
         media_urls?: import("./types.js").MediaURLMetadata[];
     }>;
     getMediaURLs(arr: Array<import("./types.js").MediaURLMetadata>, text: string): import("./types.js").MediaURLMetadata[];
-    addMediaURLsOffset(arr: Array<import("./types.js").MediaURLMetadata>, text: string, offset?: number): import("./types.js").MediaURLMetadata[];
     firstCharToUpperCase(text: string): string;
     getLongestSubstring(string: string, candidates: string[]): string;
     isString(s: any): boolean;

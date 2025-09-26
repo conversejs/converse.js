@@ -85,10 +85,4 @@ export function getMediaURLsMetadata(text: string, offset?: number): Promise<{
  * @returns {import("./types").MediaURLMetadata[]}
  */
 export function getMediaURLs(arr: Array<import("./types").MediaURLMetadata>, text: string): import("./types").MediaURLMetadata[];
-/**
- * @param {Array<import("./types").MediaURLMetadata>} arr
- * @param {string} text
- * @returns {import("./types").MediaURLMetadata[]}
- */
-export function addMediaURLsOffset(arr: Array<import("./types").MediaURLMetadata>, text: string, offset?: number): import("./types").MediaURLMetadata[];
 //# sourceMappingURL=url.d.ts.map

@@ -22,7 +22,6 @@ declare const _default: {
         media_urls?: import("headless/types/utils/types.js").MediaURLMetadata[];
     }>;
     getMediaURLs(arr: Array<import("headless/types/utils/types.js").MediaURLMetadata>, text: string): import("headless/types/utils/types.js").MediaURLMetadata[];
-    addMediaURLsOffset(arr: Array<import("headless/types/utils/types.js").MediaURLMetadata>, text: string, offset?: number): import("headless/types/utils/types.js").MediaURLMetadata[];
     firstCharToUpperCase(text: string): string;
     getLongestSubstring(string: string, candidates: string[]): string;
     isString(s: any): boolean;
@@ -135,7 +134,6 @@ declare const _default: {
             media_urls?: import("headless/types/utils/types.js").MediaURLMetadata[];
         }>;
         getMediaURLs(arr: Array<import("headless/types/utils/types.js").MediaURLMetadata>, text: string): import("headless/types/utils/types.js").MediaURLMetadata[];
-        addMediaURLsOffset(arr: Array<import("headless/types/utils/types.js").MediaURLMetadata>, text: string, offset?: number): import("headless/types/utils/types.js").MediaURLMetadata[];
         firstCharToUpperCase(text: string): string;
         getLongestSubstring(string: string, candidates: string[]): string;
         isString(s: any): boolean;

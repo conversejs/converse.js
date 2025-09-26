@@ -1,5 +1,5 @@
-import { html } from "lit";
-import { u } from "@converse/headless";
+import { html } from 'lit';
+import { getURL } from '../utils.js';
 
 /**
  * @param {string} song_id - The ID of the song to embed.
@@ -8,7 +8,7 @@ import { u } from "@converse/headless";
  * @returns {import('lit').TemplateResult}
  */
 export default (song_id, url, hide_url) => {
-    const { hostname } = u.getURL(url);
+    const { hostname } = getURL(url);
     return html`<figure>
         <iframe
             style="border-radius:12px"
@@ -20,6 +20,6 @@ export default (song_id, url, hide_url) => {
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"
         ></iframe>
-        ${hide_url ? "" : html`<a target="_blank" rel="noopener" title="${url}" href="${url}">${hostname}</a>`}
+        ${hide_url ? '' : html`<a target="_blank" rel="noopener" title="${url}" href="${url}">${hostname}</a>`}
     </figure>`;
 };

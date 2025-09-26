@@ -24,7 +24,7 @@ export function getDirectiveTemplate(d: string, text: string, offset: number, op
  */
 export class Texture extends String {
     /**
-     * @typedef {import('@converse/headless/types/utils/types').MediaURLMetadata} MediaURLMetadata
+     * @typedef {import('./types.ts').MediaURLMetadata} MediaURLMetadata
      */
     /**
      * Create a new {@link Texture} instance.
@@ -63,7 +63,7 @@ export class Texture extends String {
         embed_audio?: boolean;
         embed_videos?: boolean;
         mentions?: any[];
-        media_urls?: import("@converse/headless/types/utils/types").MediaURLMetadata[];
+        media_urls?: import("./types.ts").MediaURLMetadata[];
         show_images?: boolean;
         show_me_message?: boolean;
         onImgClick?: Function;
@@ -73,7 +73,7 @@ export class Texture extends String {
     embed_audio: boolean;
     embed_videos: boolean;
     mentions: any[];
-    media_urls: import("@converse/headless/types/utils/types").MediaURLMetadata[];
+    media_urls: import("./types.ts").MediaURLMetadata[];
     nick: string;
     offset: number;
     onImgClick: Function;
@@ -84,7 +84,7 @@ export class Texture extends String {
         embed_audio?: boolean;
         embed_videos?: boolean;
         mentions?: any[];
-        media_urls?: import("@converse/headless/types/utils/types").MediaURLMetadata[];
+        media_urls?: import("./types.ts").MediaURLMetadata[];
         show_images?: boolean;
         show_me_message?: boolean;
         onImgClick?: Function;
@@ -106,7 +106,7 @@ export class Texture extends String {
      * @param {MediaURLMetadata} url_obj
      * @returns {Promise<string|import('lit').TemplateResult>}
      */
-    addHyperlinkTemplate(url_obj: import("@converse/headless/types/utils/types").MediaURLMetadata): Promise<string | import("lit").TemplateResult>;
+    addHyperlinkTemplate(url_obj: import("./types.ts").MediaURLMetadata): Promise<string | import("lit").TemplateResult>;
     /**
      * Look for `http` URIs and return templates that render them as URL links
      * @param {string} text

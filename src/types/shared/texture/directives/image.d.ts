@@ -34,6 +34,6 @@ declare class ImageDirective extends AsyncDirective {
      */
     onError(src: string, href?: string, onLoad?: Function, onClick?: Function): string | import("utils/html.js").TemplateResult;
 }
-import { AsyncDirective } from "lit/async-directive.js";
+import { AsyncDirective } from 'lit/async-directive.js';
 export {};
 //# sourceMappingURL=image.d.ts.map

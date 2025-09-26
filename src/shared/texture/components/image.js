@@ -1,10 +1,9 @@
-import { api, u } from "@converse/headless";
-import { CustomElement } from "shared/components/element";
-import tplGif from "shared/texture/templates/gif.js";
-import { shouldRenderMediaFromURL, filterQueryParamsFromURL  } from "utils/url.js";
-import tplImage from "../templates/image.js";
-
-const { isGIFURL } = u;
+import { api } from '@converse/headless';
+import { CustomElement } from 'shared/components/element';
+import tplGif from 'shared/texture/templates/gif.js';
+import { shouldRenderMediaFromURL, filterQueryParamsFromURL } from 'utils/url.js';
+import tplImage from '../templates/image.js';
+import { isGIFURL } from '../utils.js';
 
 export default class Image extends CustomElement {
     static get properties() {
@@ -25,17 +24,17 @@ export default class Image extends CustomElement {
     }
 
     render() {
-        if (isGIFURL(this.src) && shouldRenderMediaFromURL(this.src, "image")) {
+        if (isGIFURL(this.src) && shouldRenderMediaFromURL(this.src, 'image')) {
             return tplGif(filterQueryParamsFromURL(this.src), true);
         } else {
             return tplImage({
-                "src": filterQueryParamsFromURL(this.src),
-                "href": this.href,
-                "onClick": this.onImgClick,
-                "onLoad": this.onImgLoad,
+                'src': filterQueryParamsFromURL(this.src),
+                'href': this.href,
+                'onClick': this.onImgClick,
+                'onLoad': this.onImgLoad,
             });
         }
     }
 }
 
-api.elements.define("converse-image", Image);
+api.elements.define('converse-image', Image);

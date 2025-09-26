@@ -1,10 +1,8 @@
-import { html } from "lit";
-import { AsyncDirective } from "lit/async-directive.js";
-import { directive } from "lit/directive.js";
-import { u } from "@converse/headless";
-import { getHyperlinkTemplate } from "utils/html.js";
-
-const { isURLWithImageExtension } = u;
+import { html } from 'lit';
+import { AsyncDirective } from 'lit/async-directive.js';
+import { directive } from 'lit/directive.js';
+import { getHyperlinkTemplate } from 'utils/html.js';
+import { isURLWithImageExtension } from '../utils';
 
 class ImageDirective extends AsyncDirective {
     /**
@@ -55,14 +53,14 @@ class ImageDirective extends AsyncDirective {
         } else {
             try {
                 const url = new URL(src);
-                const filename = url.pathname.split("/").pop();
+                const filename = url.pathname.split('/').pop();
                 if (filename) {
                     const new_filename = `${filename}.png`;
                     url.pathname = url.pathname.replace(filename, new_filename);
                     this.setValue(renderImage(url.toString(), href, onLoad, onClick));
                 }
             } catch (error) {
-                console.error("Invalid URL:", src);
+                console.error('Invalid URL:', src);
                 return href ? getHyperlinkTemplate(href) : html`<span>Image failed to load</span>`;
             }
         }

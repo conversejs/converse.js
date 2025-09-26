@@ -279,25 +279,3 @@ export function getMediaURLs(arr, text) {
         })
         .filter((o) => o);
 }
-
-/**
- * @param {Array<import("./types").MediaURLMetadata>} arr
- * @param {string} text
- * @returns {import("./types").MediaURLMetadata[]}
- */
-export function addMediaURLsOffset(arr, text, offset = 0) {
-    return arr
-        .map((o) => {
-            const start = o.start - offset;
-            const end = o.end - offset;
-            if (start < 0 || start >= text.length) {
-                return null;
-            }
-            return Object.assign({}, o, {
-                start,
-                end,
-                url: text.substring(o.start-offset, o.end-offset), // BBB
-            });
-        })
-        .filter((o) => o);
-}

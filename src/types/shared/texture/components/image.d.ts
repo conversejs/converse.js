@@ -16,5 +16,5 @@ export default class Image extends CustomElement {
     onImgLoad: any;
     render(): import("lit-html").TemplateResult<1>;
 }
-import { CustomElement } from "shared/components/element";
+import { CustomElement } from 'shared/components/element';
 //# sourceMappingURL=image.d.ts.map

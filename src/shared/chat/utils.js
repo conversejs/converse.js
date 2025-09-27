@@ -7,6 +7,7 @@
 import { api, converse } from '@converse/headless';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
+import { __ } from 'i18n';
 import { MOBILE_CUTOFF } from 'shared/constants.js';
 import tplNewDay from './templates/new-day.js';
 
@@ -15,6 +16,68 @@ const { convertASCII2Emoji, getShortnameReferences, getCodePointReferences } = u
 
 export function isMobileViewport() {
     return window.innerWidth <= MOBILE_CUTOFF;
+}
+
+/**
+ * Get the translatable day name for a given dayjs object
+ * @param {import('dayjs').Dayjs} day_date
+ * @returns {string}
+ */
+function getTranslatableDayName(day_date) {
+    const dayOfWeek = day_date.day(); // 0 = Sunday, 1 = Monday, etc.
+    const dayNames = [
+        __('Sunday'),
+        __('Monday'),
+        __('Tuesday'),
+        __('Wednesday'),
+        __('Thursday'),
+        __('Friday'),
+        __('Saturday')
+    ];
+    return dayNames[dayOfWeek];
+}
+
+/**
+ * Get the translatable month name for a given dayjs object
+ * @param {import('dayjs').Dayjs} day_date
+ * @returns {string}
+ */
+function getTranslatableMonthName(day_date) {
+    const month = day_date.month(); // 0 = January, 1 = February, etc.
+    const monthNames = [
+        __('Jan'),
+        __('Feb'),
+        __('Mar'),
+        __('Apr'),
+        __('May'),
+        __('Jun'),
+        __('Jul'),
+        __('Aug'),
+        __('Sep'),
+        __('Oct'),
+        __('Nov'),
+        __('Dec')
+    ];
+    return monthNames[month];
+}
+
+/**
+ * Get the translatable ordinal suffix for a day number
+ * @param {number} day
+ * @returns {string}
+ */
+function getTranslatableOrdinal(day) {
+    // For most languages, we'll just return the number without suffix
+    // English-specific ordinal logic can be handled in the English locale
+    if (day >= 11 && day <= 13) {
+        return day + __('th');
+    }
+    switch (day % 10) {
+        case 1: return day + __('st');
+        case 2: return day + __('nd');
+        case 3: return day + __('rd');
+        default: return day + __('th');
+    }
 }
 
 /**
@@ -120,10 +183,16 @@ export function getDayIndicator(message) {
     const prev_message = messages[idx - 1];
     if (!prev_message || dayjs(message.get('time')).isAfter(dayjs(prev_message.get('time')), 'day')) {
         const day_date = dayjs(message.get('time')).startOf('day');
+        const translatable_day_name = getTranslatableDayName(day_date);
+        const translatable_month_name = getTranslatableMonthName(day_date);
+        const day_number = day_date.date();
+        const translatable_day_ordinal = getTranslatableOrdinal(day_number);
+        const year = day_date.year();
+
         return tplNewDay({
             'type': 'date',
             'time': day_date.toISOString(),
-            'datestring': day_date.format('dddd MMM Do YYYY'),
+            'datestring': `${translatable_day_name} ${translatable_month_name} ${translatable_day_ordinal} ${year}`,
         });
     }
 }

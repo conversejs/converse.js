@@ -30,6 +30,20 @@ npm run serve -- -p 8008
 
 You can then open http://localhost:8008/dev.html in your browser to access Converse.
 
+### Docker Setup
+
+Build and run with Docker:
+
+```bash
+# Build the image
+docker build -t converse-js .
+
+# Run with custom HTML file
+docker run -d -p 8080:80 -v $(pwd)/custom.html:/usr/share/nginx/html/custom.html converse-js
+```
+
+Access at http://localhost:8080. Modify `custom.html` to customize the interface.
+
 See our [quickstart guide](https://conversejs.org/docs/html/quickstart.html) for more details.
 
 ## Screenshots

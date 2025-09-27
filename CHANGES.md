@@ -2,6 +2,8 @@
 
 ## Next release
 
+- Fix modal Close button translation not being applied correctly
+- Update Docker configuration for improved development setup
 - #3829: Rich text from LibreOffice Calc is sent as screenshots
 - #3830: The message textarea blocks undo of the pasted text
 

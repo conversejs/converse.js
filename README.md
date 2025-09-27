@@ -39,6 +39,7 @@ Build and run with Docker:
 docker build -t converse-js .
 
 # Run with custom HTML file
+cp fullscreen.html custom.html
 docker run -d -p 8080:80 -v $(pwd)/custom.html:/usr/share/nginx/html/custom.html converse-js
 ```
 

@@ -16,6 +16,7 @@
 - #3769: Various OMEMO fixes
 - #3791: Fetching pubsub node configuration fails
 - #3792: Node reconfiguration attempt uses incorrect field names
+- Adding support for protocol handler
 - Fix documentation formatting in security.rst
 - Add approval banner in chats with requesting contacts or unsaved contacts
 - Add mongolian as a language option

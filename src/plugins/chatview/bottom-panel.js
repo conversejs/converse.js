@@ -3,7 +3,8 @@
  * @typedef {import('shared/chat/emoji-dropdown.js').default} EmojiDropdown
  * @typedef {import('./message-form.js').default} MessageForm
  */
-import { _converse, api } from '@converse/headless';
+import { api } from '@converse/headless';
+import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import tplBottomPanel from './templates/bottom-panel.js';
 import { clearMessages } from './utils.js';
@@ -35,6 +36,7 @@ export default class ChatBottomPanel extends CustomElement {
         await this.model.initialized;
         this.listenTo(this.model, 'change:num_unread', () => this.requestUpdate());
         this.listenTo(this.model, 'emoji-picker-autocomplete', this.autocompleteInPicker);
+        this.listenTo(this.model, 'startVoiceRecording', () => this.showVoiceRecorder());
 
         this.addEventListener('emojipickerblur', () =>
             /** @type {HTMLElement} */ (this.querySelector('.chat-textarea')).focus()
@@ -46,7 +48,73 @@ export default class ChatBottomPanel extends CustomElement {
         return tplBottomPanel({
             'model': this.model,
             'viewUnreadMessages': (ev) => this.viewUnreadMessages(ev),
+            'show_voice_recorder': this.model.get('show_voice_recorder') || false,
+            'handleRecordingCompleted': (e) => this.handleRecordingCompleted(e),
+            'hideVoiceRecorder': () => this.hideVoiceRecorder(),
         });
+    }
+
+    showVoiceRecorder() {
+        this.model.set('show_voice_recorder', true);
+        this.requestUpdate();
+        
+        // Esperar a que se renderice y luego enfocar
+        setTimeout(() => {
+            const recorder = /** @type {HTMLElement} */ (this.querySelector('converse-audio-recorder'));
+            if (recorder) {
+                recorder.focus();
+            }
+        }, 100);
+    }
+
+    hideVoiceRecorder() {
+        this.model.set('show_voice_recorder', false);
+        this.requestUpdate();
+    }
+
+    async handleRecordingCompleted(event) {
+        const { audioBlob, duration } = event.detail;
+        
+        try {
+            // Crear archivo de audio
+            if (!api.voice_messages || !api.voice_messages.createAudioFile) {
+                throw new Error('API de mensajes de voz no disponible');
+            }
+            
+            const file = api.voice_messages.createAudioFile(audioBlob);
+            
+            // Anunciar a lectores de pantalla
+            if (api.accessibility && api.accessibility.announce) {
+                api.accessibility.announce(
+                    __('Enviando mensaje de voz de %1$s segundos', Math.round(duration)),
+                    'polite'
+                );
+            }
+            
+            // Enviar usando el método del modelo
+            await this.model.sendFiles([file]);
+            
+            // Ocultar el grabador
+            this.hideVoiceRecorder();
+            
+            // Confirmar envío
+            if (api.accessibility && api.accessibility.announce) {
+                api.accessibility.announce(
+                    __('Mensaje de voz enviado correctamente'),
+                    'assertive'
+                );
+            }
+        } catch (error) {
+            console.error('Error al enviar mensaje de voz:', error);
+            
+            // Anunciar error
+            if (api.accessibility && api.accessibility.announce) {
+                api.accessibility.announce(
+                    __('Error al enviar mensaje de voz: %1$s', error.message),
+                    'assertive'
+                );
+            }
+        }
     }
 
     viewUnreadMessages(ev) {

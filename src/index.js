@@ -21,6 +21,7 @@ Object.assign(_converse.env, { i18n });
  * ------------------------
  * Any of the following plugin imports may be removed if the plugin is not needed
  */
+import "./plugins/accessibility/index.js";  // Accessibility features for screen readers and keyboard navigation
 import "./plugins/modal/index.js";
 import "./plugins/adhoc-views/index.js";    // Views for XEP-0050 Ad-Hoc commands
 import "./plugins/bookmark-views/index.js"; // Views for XEP-0048 Bookmarks
@@ -42,6 +43,7 @@ import "./plugins/rosterview/index.js";
 import "./plugins/singleton/index.js";
 import "./plugins/dragresize/index.js";     // Allows chat boxes to be resized by dragging them
 import "./plugins/fullscreen/index.js";
+import "./plugins/voice-messages/index.js"; // Voice message recording and playback with accessibility
 /* END: Removable components */
 
 _converse.exports.CustomElement = CustomElement;

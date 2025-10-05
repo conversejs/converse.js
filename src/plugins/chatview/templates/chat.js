@@ -5,16 +5,20 @@ import { getChatStyle } from 'shared/chat/utils';
 
 const { CHATROOMS_TYPE } = constants;
 
-/**
- * @param {import('../chat').default} el
- */
 export default (el) => {
     const help_messages = el.getHelpMessages();
     const show_help_messages = el.model.get('show_help_messages');
     const is_overlayed = api.settings.get('view_mode') === 'overlayed';
     const style = getChatStyle(el.model);
+    const contact_name = el.model.getDisplayName?.() || el.model.get('jid');
+    
     return html`
-        <div class="flyout box-flyout" style="${style || nothing}">
+        <div 
+            class="flyout box-flyout" 
+            style="${style || nothing}"
+            role="complementary"
+            aria-label="${__('Chat con %1$s', contact_name)}"
+        >
             ${is_overlayed ? html`<converse-dragresize></converse-dragresize>` : ''}
             ${el.model
                 ? html`
@@ -30,6 +34,10 @@ export default (el) => {
                           <div
                               class="chat-content ${el.model.get('show_send_button') ? 'chat-content-sendbutton' : ''}"
                               aria-live="polite"
+                              aria-relevant="additions"
+                              aria-atomic="false"
+                              role="log"
+                              aria-label="${__('Historial de mensajes')}"
                           >
                               <converse-chat-content .model="${el.model}"></converse-chat-content>
                               ${show_help_messages
@@ -44,7 +52,12 @@ export default (el) => {
                                     </div>`
                                   : ''}
                           </div>
-                          <converse-chat-bottom-panel .model="${el.model}" class="bottom-panel">
+                          <converse-chat-bottom-panel 
+                              .model="${el.model}" 
+                              class="bottom-panel"
+                              role="form"
+                              aria-label="${__('Formulario de composición de mensajes')}"
+                          >
                           </converse-chat-bottom-panel>
                       </div>
                   `

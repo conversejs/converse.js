@@ -22,7 +22,16 @@ export function routeToChat (event) {
         return;
     }
     event?.preventDefault();
-    const jid = location.hash.split('=').pop();
+    let jid = location.hash.split('=').pop();
+    // decodeURIComponent is needed in case the JID contains special characters
+    // that were URL-encoded, e.g. `user%40domain` instead of `user@domain`.
+    jid = decodeURIComponent(jid);
+
+    // Remove xmpp: prefix if present
+    if (jid.startsWith('xmpp:')) {
+        jid = jid.slice(5);
+    }
+    
     if (!u.isValidJID(jid)) {
         return log.warn(`Invalid JID "${jid}" provided in URL fragment`);
     }

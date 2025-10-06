@@ -65,6 +65,14 @@ converse.plugins.add('converse-chatview', {
         Object.assign(_converse, exports); // DEPRECATED
         Object.assign(_converse.exports, exports);
 
+        if ('registerProtocolHandler' in navigator) {
+        try {
+            const handlerUrl = `${window.location.origin}${window.location.pathname}#converse/chat?jid=%s`;
+            navigator.registerProtocolHandler('xmpp', handlerUrl);
+        } catch (error) {
+            console.warn('Failed to register protocol handler:', error);
+        }
+    }
         api.listen.on('connected', () => api.disco.own.features.add(Strophe.NS.SPOILER));
         api.listen.on('chatBoxClosed', (model) => clearHistory(model.get('jid')));
     }

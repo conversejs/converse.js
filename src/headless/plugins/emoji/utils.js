@@ -1,4 +1,5 @@
 import { ASCII_REPLACE_REGEX, CODEPOINTS_REGEX } from './regexes.js';
+import { unescapeHTML } from '../../utils/html.js';
 import converse from '../../shared/api/public.js';
 
 const { u } = converse.env;
@@ -86,11 +87,11 @@ function convert (unicode) {
 export function convertASCII2Emoji (str) {
     // Replace ASCII smileys
     return str.replace(ASCII_REPLACE_REGEX, (entire, _, m2, m3) => {
-        if( (typeof m3 === 'undefined') || (m3 === '') || (!(u.unescapeHTML(m3) in ASCII_LIST)) ) {
+        if( (typeof m3 === 'undefined') || (m3 === '') || (!(unescapeHTML(m3) in ASCII_LIST)) ) {
             // if the ascii doesn't exist just return the entire match
             return entire;
         }
-        m3 = u.unescapeHTML(m3);
+        m3 = unescapeHTML(m3);
         const unicode = ASCII_LIST[m3].toUpperCase();
         return m2+convert(unicode);
     });

@@ -111,7 +111,7 @@ export async function routeToQueryAction(event) {
                 break;
 
             default:
-                log.warn(`Unsupported XEP-0147 action: "${action}"`);
+                log.warn(`routeToQueryAction: Unsupported XEP-0147 action: "${action}"`);
                 await api.chats.open(jid);
         }
     } catch (error) {

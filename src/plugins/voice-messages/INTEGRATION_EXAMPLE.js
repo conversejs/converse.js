@@ -1,24 +1,24 @@
 /**
- * Ejemplo de integración del plugin de mensajes de voz
+ * Voice messages plugin integration example
  * 
- * Este archivo muestra cómo integrar el componente de grabación
- * en la interfaz de chat y el reproductor en los mensajes.
+ * This file shows how to integrate the recording component
+ * in the chat interface and the player in messages.
  */
 
 // =============================================================================
-// 1. AGREGAR BOTÓN DE GRABACIÓN AL TOOLBAR
+// 1. ADD RECORDING BUTTON TO TOOLBAR
 // =============================================================================
 
 /**
- * En src/plugins/chatview/templates/toolbar.js o similar
- * Agregar el botón de micrófono junto a los otros botones del toolbar
+ * In src/plugins/chatview/templates/toolbar.js or similar
+ * Add the microphone button alongside the other toolbar buttons
  */
 
 import { html } from 'lit';
 import { __ } from 'i18n';
 
 export const tplVoiceMessageButton = (o) => {
-    // Solo mostrar si está habilitado y soportado
+    // Only show if enabled and supported
     if (!o.enable_voice_messages || !o.voice_messages_supported) {
         return '';
     }
@@ -27,8 +27,8 @@ export const tplVoiceMessageButton = (o) => {
         <button
             type="button"
             class="btn btn-toolbar voice-message-button"
-            title="${__('Grabar mensaje de voz')} (Alt+Shift+V)"
-            aria-label="${__('Grabar mensaje de voz')}"
+            title="${__('Record voice message')} (Alt+Shift+V)"
+            aria-label="${__('Record voice message')}"
             @click=${o.startVoiceRecording}
         >
             <converse-icon
@@ -39,27 +39,27 @@ export const tplVoiceMessageButton = (o) => {
     `;
 };
 
-// En el template del toolbar principal, agregar:
+// In the main toolbar template, add:
 export const tplToolbar = (o) => html`
-    <div class="chat-toolbar" role="toolbar" aria-label="${__('Barra de herramientas del chat')}">
-        <!-- ... otros botones ... -->
+    <div class="chat-toolbar" role="toolbar" aria-label="${__('Chat toolbar')}">
+        <!-- ... other buttons ... -->
         
         ${o.show_send_button ? tplSendButton(o) : ''}
         ${o.show_emoji_button ? tplEmojiButton(o) : ''}
-        ${tplVoiceMessageButton(o)}  <!-- NUEVO -->
+        ${tplVoiceMessageButton(o)}  <!-- NEW -->
         
-        <!-- ... más botones ... -->
+        <!-- ... more buttons ... -->
     </div>
 `;
 
 
 // =============================================================================
-// 2. AGREGAR EL GRABADOR EN LA VISTA DEL CHAT
+// 2. ADD THE RECORDER IN THE CHAT VIEW
 // =============================================================================
 
 /**
- * En el ChatView o ChatBoxView
- * Mostrar el grabador cuando el usuario presiona el botón
+ * In the ChatView or ChatBoxView
+ * Show the recorder when the user presses the button
  */
 
 import AudioRecorder from '../voice-messages/audio-recorder.js';
@@ -72,26 +72,26 @@ class ChatBoxView extends ElementView {
     }
     
     /**
-     * Muestra el componente de grabación
+     * Shows the recording component
      */
     showVoiceRecorder () {
-        // Crear el grabador si no existe
+        // Create the recorder if it doesn't exist
         if (!this.voice_recorder) {
             this.voice_recorder = document.createElement('converse-audio-recorder');
             this.voice_recorder.maxDuration = api.settings.get('max_voice_message_duration');
             this.voice_recorder.bitrate = api.settings.get('voice_message_bitrate');
             
-            // Escuchar el evento de grabación completada
+            // Listen to recording completed event
             this.voice_recorder.addEventListener('recording-stopped', (e) => {
                 this.handleRecordingCompleted(e.detail);
             });
             
-            // Escuchar cancelación
+            // Listen to cancellation
             this.voice_recorder.addEventListener('recording-cancelled', () => {
                 this.hideVoiceRecorder();
             });
             
-            // Agregar al DOM (por ejemplo, en el área de mensajes)
+            // Add to DOM (for example, in the messages area)
             const messagesArea = this.querySelector('.chat-content');
             if (messagesArea) {
                 messagesArea.insertBefore(
@@ -101,13 +101,13 @@ class ChatBoxView extends ElementView {
             }
         }
         
-        // Hacer visible y dar foco
+        // Make visible and focus
         this.voice_recorder.style.display = 'block';
         this.voice_recorder.focus();
     }
     
     /**
-     * Oculta el grabador
+     * Hides the recorder
      */
     hideVoiceRecorder () {
         if (this.voice_recorder) {
@@ -116,30 +116,30 @@ class ChatBoxView extends ElementView {
     }
     
     /**
-     * Maneja el audio grabado
+     * Handles the recorded audio
      */
     async handleRecordingCompleted ({ audioBlob, duration }) {
         try {
-            // Enviar el mensaje de voz
+            // Send the voice message
             await this.model.sendVoiceMessage(audioBlob, duration);
             
-            // Ocultar el grabador
+            // Hide the recorder
             this.hideVoiceRecorder();
             
-            // Anunciar éxito
+            // Announce success
             if (api.accessibility) {
                 api.accessibility.announce(
-                    __('Mensaje de voz enviado correctamente'),
+                    __('Voice message sent successfully'),
                     'assertive'
                 );
             }
         } catch (error) {
-            console.error('Error al enviar mensaje de voz:', error);
+            console.error('Error sending voice message:', error);
             
-            // Anunciar error
+            // Announce error
             if (api.accessibility) {
                 api.accessibility.announce(
-                    __('Error al enviar mensaje de voz'),
+                    __('Error sending voice message'),
                     'assertive'
                 );
             }
@@ -147,11 +147,11 @@ class ChatBoxView extends ElementView {
     }
     
     /**
-     * Template helpers para el toolbar
+     * Template helpers for the toolbar
      */
     getToolbarOptions () {
         return {
-            // ... opciones existentes ...
+            // ... existing options ...
             enable_voice_messages: api.settings.get('enable_voice_messages'),
             voice_messages_supported: api.voice_messages?.isSupported(),
             startVoiceRecording: () => this.model.startVoiceRecording()
@@ -161,36 +161,36 @@ class ChatBoxView extends ElementView {
 
 
 // =============================================================================
-// 3. RENDERIZAR EL REPRODUCTOR EN MENSAJES
+// 3. RENDER THE PLAYER IN MESSAGES
 // =============================================================================
 
 /**
- * En src/shared/chat/templates/message.js
- * Detectar mensajes de voz y usar el reproductor
+ * In src/shared/chat/templates/message.js
+ * Detect voice messages and use the player
  */
 
 import { html } from 'lit';
 import { __ } from 'i18n';
 
 /**
- * Template para mensaje de voz
+ * Template for voice message
  */
 export const tplVoiceMessage = (o) => {
     const oob_url = o.model.get('oob_url');
     const duration = o.model.get('voice_message_duration');
-    const sender = o.model.get('sender') === 'me' ? __('Tú') : o.model.getDisplayName();
+    const sender = o.model.get('sender') === 'me' ? __('You') : o.model.getDisplayName();
     
     return html`
         <div class="message-voice">
             <converse-audio-player
                 src="${oob_url}"
-                title="${__('Mensaje de voz de %1$s', sender)}"
+                title="${__('Voice message from %1$s', sender)}"
             ></converse-audio-player>
             
             ${duration ? html`
                 <div class="voice-message-meta">
                     <span class="voice-duration">
-                        ${__('Duración')}: ${api.voice_messages.formatDuration(duration)}
+                        ${__('Duration')}: ${api.voice_messages.formatDuration(duration)}
                     </span>
                 </div>
             ` : ''}
@@ -199,7 +199,7 @@ export const tplVoiceMessage = (o) => {
 };
 
 /**
- * En el template principal del mensaje, agregar condición
+ * In the main message template, add condition
  */
 export const tplMessage = (o) => {
     const is_voice = api.voice_messages?.isVoiceMessage(o.model);
@@ -215,12 +215,12 @@ export const tplMessage = (o) => {
                 <!-- Avatar, sender, etc. -->
                 ${tplMessageHeader(o)}
                 
-                <!-- Contenido del mensaje -->
+                <!-- Message content -->
                 <div class="message-content">
                     ${is_voice ? tplVoiceMessage(o) : tplMessageText(o)}
                 </div>
                 
-                <!-- Timestamp, acciones, etc. -->
+                <!-- Timestamp, actions, etc. -->
                 ${tplMessageFooter(o)}
             </div>
         </article>
@@ -229,45 +229,45 @@ export const tplMessage = (o) => {
 
 
 // =============================================================================
-// 4. AGREGAR METADATA A MENSAJES DE VOZ
+// 4. ADD METADATA TO VOICE MESSAGES
 // =============================================================================
 
 /**
- * En el modelo del ChatBox
- * Marcar mensajes de voz cuando se envíen
+ * In the ChatBox model
+ * Mark voice messages when sent
  */
 
 class ChatBox extends Model {
     
     /**
-     * Envía un mensaje de voz
+     * Sends a voice message
      */
     async sendVoiceMessage (audioBlob, duration) {
         try {
-            // Crear archivo
+            // Create file
             const file = api.voice_messages.createAudioFile(audioBlob);
             
-            // Crear mensaje stub para mostrar inmediatamente
+            // Create stub message to show immediately
             const message = this.messages.create({
                 'from': _converse.bare_jid,
                 'fullname': _converse.xmppstatus.get('fullname'),
                 'sender': 'me',
                 'time': (new Date()).toISOString(),
-                'message': __('Enviando mensaje de voz...'),
+                'message': __('Sending voice message...'),
                 'is_voice_message': true,
                 'voice_message_duration': duration,
                 'type': 'chat'
             });
             
-            // Enviar archivo
+            // Send file
             await this.sendFiles([file]);
             
-            // Actualizar mensaje con la URL una vez subido
-            // (esto lo maneja el handler de XEP-0363)
+            // Update message with URL once uploaded
+            // (this is handled by XEP-0363 handler)
             
             return message;
         } catch (error) {
-            console.error('Error al enviar mensaje de voz:', error);
+            console.error('Error sending voice message:', error);
             throw error;
         }
     }
@@ -275,32 +275,32 @@ class ChatBox extends Model {
 
 
 // =============================================================================
-// 5. CONFIGURACIÓN EN CONVERSE.INITIALIZE
+// 5. CONFIGURATION IN CONVERSE.INITIALIZE
 // =============================================================================
 
 /**
- * Configuración recomendada al inicializar Converse
+ * Recommended configuration when initializing Converse
  */
 
 converse.initialize({
-    // ... configuración existente ...
+    // ... existing configuration ...
     
-    // Habilitar plugin de accesibilidad (requerido)
+    // Enable accessibility plugin (required)
     enable_accessibility: true,
     
-    // Habilitar mensajes de voz
+    // Enable voice messages
     enable_voice_messages: true,
     
-    // Duración máxima: 5 minutos
+    // Maximum duration: 5 minutes
     max_voice_message_duration: 300,
     
-    // Calidad de audio: 128 kbps
+    // Audio quality: 128 kbps
     voice_message_bitrate: 128000,
     
-    // Formato preferido (se autodetecta el mejor soportado)
+    // Preferred format (best supported is auto-detected)
     voice_message_mime_type: 'audio/webm;codecs=opus',
     
-    // Atajos de teclado
+    // Keyboard shortcuts
     voice_message_shortcuts: {
         start_recording: 'Alt+Shift+V',
         stop_recording: 'Escape',
@@ -313,24 +313,24 @@ converse.initialize({
 
 
 // =============================================================================
-// 6. DETECTAR MENSAJES DE VOZ ENTRANTES
+// 6. DETECT INCOMING VOICE MESSAGES
 // =============================================================================
 
 /**
- * En el handler de mensajes entrantes
- * Detectar y marcar mensajes de voz
+ * In the incoming messages handler
+ * Detect and mark voice messages
  */
 
 api.listen.on('messageAdded', (message) => {
-    // Verificar si es un mensaje de voz por el OOB
+    // Check if it's a voice message by OOB
     if (api.voice_messages.isVoiceMessage(message)) {
         message.set('is_voice_message', true);
         
-        // Anunciar a usuarios de lectores de pantalla
+        // Announce to screen reader users
         if (api.accessibility) {
             const sender = message.getDisplayName();
             api.accessibility.announce(
-                __('Mensaje de voz recibido de %1$s', sender),
+                __('Voice message received from %1$s', sender),
                 'polite'
             );
         }
@@ -339,84 +339,84 @@ api.listen.on('messageAdded', (message) => {
 
 
 // =============================================================================
-// 7. EJEMPLO DE USO PROGRAMÁTICO
+// 7. PROGRAMMATIC USAGE EXAMPLE
 // =============================================================================
 
 /**
- * Grabar y enviar mensaje de voz programáticamente
+ * Record and send voice message programmatically
  */
 async function sendProgrammaticVoiceMessage () {
-    // Obtener el chatbox actual
-    const jid = 'usuario@ejemplo.com';
+    // Get the current chatbox
+    const jid = 'user@example.com';
     const chatbox = await api.chats.get(jid);
     
-    // Crear el grabador
+    // Create the recorder
     const recorder = document.createElement('converse-audio-recorder');
-    recorder.maxDuration = 60; // 1 minuto
+    recorder.maxDuration = 60; // 1 minute
     
-    // Escuchar el resultado
+    // Listen for result
     recorder.addEventListener('recording-stopped', async (e) => {
         const { audioBlob, duration } = e.detail;
         
         try {
             await chatbox.sendVoiceMessage(audioBlob, duration);
-            console.log('Mensaje de voz enviado');
+            console.log('Voice message sent');
         } catch (error) {
             console.error('Error:', error);
         }
     });
     
-    // Agregar al DOM temporalmente
+    // Add to DOM temporarily
     document.body.appendChild(recorder);
 }
 
 /**
- * Reproducir un mensaje de voz programáticamente
+ * Play a voice message programmatically
  */
 function playVoiceMessage (messageModel) {
     const oob_url = messageModel.get('oob_url');
     
     if (!oob_url) {
-        console.error('No hay URL de audio en el mensaje');
+        console.error('No audio URL in message');
         return;
     }
     
-    // Crear el reproductor
+    // Create the player
     const player = document.createElement('converse-audio-player');
     player.src = oob_url;
-    player.title = 'Mensaje de voz';
+    player.title = 'Voice message';
     
-    // Escuchar eventos
+    // Listen for events
     player.addEventListener('ended', () => {
-        console.log('Reproducción finalizada');
+        console.log('Playback finished');
     });
     
-    // Agregar al DOM
+    // Add to DOM
     const container = document.getElementById('audio-container');
     container.appendChild(player);
 }
 
 /**
- * Verificar soporte antes de mostrar UI
+ * Check support before showing UI
  */
 function checkVoiceMessageSupport () {
     if (!api.voice_messages.isSupported()) {
-        console.warn('Mensajes de voz no soportados en este navegador');
+        console.warn('Voice messages not supported in this browser');
         
-        // Ocultar botones de grabación
+        // Hide recording buttons
         document.querySelectorAll('.voice-message-button').forEach(btn => {
             btn.style.display = 'none';
         });
         
-        // Mostrar mensaje al usuario
-        alert(__('Tu navegador no soporta grabación de audio. ' +
-                 'Actualiza a una versión más reciente.'));
+        // Show message to user
+        alert(__('Your browser does not support audio recording. ' +
+                 'Please update to a newer version.'));
         
         return false;
     }
     
-    // Mostrar formatos soportados en consola
-    console.log('Formatos de audio soportados:',
+    // Show supported formats in console
+    console.log('Supported audio formats:',
         api.voice_messages.getSupportedMimeTypes());
     
     return true;
@@ -424,20 +424,20 @@ function checkVoiceMessageSupport () {
 
 
 // =============================================================================
-// 8. ESTILOS PERSONALIZADOS (OPCIONAL)
+// 8. CUSTOM STYLES (OPTIONAL)
 // =============================================================================
 
 /**
- * Personalizar los estilos de los componentes
- * En tu archivo CSS/SCSS principal
+ * Customize component styles
+ * In your main CSS/SCSS file
  */
 
 /*
 .audio-recorder {
-    // Cambiar color de fondo
+    // Change background color
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     
-    // Personalizar indicador de grabación
+    // Customize recording indicator
     .recording-indicator {
         background-color: #ff0000;
         box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
@@ -445,10 +445,10 @@ function checkVoiceMessageSupport () {
 }
 
 .audio-player {
-    // Estilo compacto
+    // Compact style
     padding: 0.5rem;
     
-    // Personalizar botones
+    // Customize buttons
     .btn-player {
         background: #667eea;
         color: white;
@@ -460,7 +460,7 @@ function checkVoiceMessageSupport () {
     }
 }
 
-// Tema oscuro
+// Dark theme
 @media (prefers-color-scheme: dark) {
     .audio-recorder,
     .audio-player {

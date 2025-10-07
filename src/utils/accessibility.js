@@ -1,18 +1,18 @@
 /**
  * @module accessibility
  * @description Utilidades para mejorar la accesibilidad de Converse.js
- * Funciones para lectores de pantalla, gestión de foco y navegación por teclado
+ * Functions for screen readers, focus management and keyboard navigation
  */
 
 import { api } from '@converse/headless';
 
 /**
- * Región ARIA live para anunciar mensajes a lectores de pantalla
+ * ARIA live region to announce messages to screen readers
  */
 let liveRegion = null;
 
 /**
- * Inicializa la región ARIA live para anuncios
+ * Initializes the ARIA live region for announcements
  */
 export function initLiveRegion() {
     if (!liveRegion) {
@@ -47,11 +47,11 @@ export function announceToScreenReader(message, priority = 'polite', delay = 100
     // Limpiar el contenido previo
     region.textContent = '';
     
-    // Anunciar después de un pequeño delay para asegurar que el lector de pantalla lo detecte
+    // Announce after a small delay to ensure the screen reader detects it
     setTimeout(() => {
         region.textContent = message;
         
-        // Limpiar después de 5 segundos
+        // Clear after 5 seconds
         setTimeout(() => {
             if (region.textContent === message) {
                 region.textContent = '';
@@ -64,7 +64,7 @@ export function announceToScreenReader(message, priority = 'polite', delay = 100
  * Mueve el foco a un elemento de forma accesible
  * @param {HTMLElement} element - Elemento al que mover el foco
  * @param {Object} [options] - Opciones adicionales
- * @param {boolean} [options.preventScroll=false] - Prevenir scroll automático
+ * @param {boolean} [options.preventScroll=false] - Prevent automatic scroll
  * @param {string} [options.announce] - Mensaje opcional a anunciar
  */
 export function moveFocusTo(element, options = {}) {
@@ -110,7 +110,7 @@ export function getFocusableElements(container) {
         '[contenteditable="true"]'
     ].join(', ');
     
-    return Array.from(container.querySelectorAll(selector))
+    return /** @type {HTMLElement[]} */ (Array.from(container.querySelectorAll(selector)))
         .filter(el => {
             // Excluir elementos ocultos
             const htmlEl = /** @type {HTMLElement} */ (el);
@@ -122,9 +122,9 @@ export function getFocusableElements(container) {
 }
 
 /**
- * Crea un trap de foco para modales y diálogos
+ * Creates a focus trap for modals and dialogs
  * @param {HTMLElement} container - Contenedor donde atrapar el foco
- * @returns {Function} Función para liberar el trap
+ * @returns {Function} Function to release the trap
  */
 export function trapFocus(container) {
     const focusableElements = getFocusableElements(container);
@@ -156,14 +156,14 @@ export function trapFocus(container) {
     // Mover foco al primer elemento
     firstElement.focus();
     
-    // Retornar función para liberar el trap
+    // Return function to release the trap
     return () => {
         container.removeEventListener('keydown', handleKeyDown);
     };
 }
 
 /**
- * Genera un ID único para asociaciones ARIA
+ * Generates a unique ID for ARIA associations
  * @param {string} prefix - Prefijo para el ID
  * @returns {string}
  */
@@ -172,12 +172,12 @@ export function generateAriaId(prefix = 'aria') {
 }
 
 /**
- * Maneja la navegación por teclado en una lista
+ * Handles keyboard navigation in a list
  * @param {KeyboardEvent} event
  * @param {HTMLElement[]} items - Lista de elementos
- * @param {number} currentIndex - Índice actual
+ * @param {number} currentIndex - Current index
  * @param {Object} [options] - Opciones
- * @returns {number|null} Nuevo índice o null si no cambió
+ * @returns {number|null} New index or null if no change
  */
 export function handleListNavigation(event, items, currentIndex, options = {}) {
     const {
@@ -250,7 +250,7 @@ export function getAccessibleTimeDescription(timestamp) {
     if (diffMins < 1) return 'hace un momento';
     if (diffMins < 60) return `hace ${diffMins} minuto${diffMins > 1 ? 's' : ''}`;
     if (diffHours < 24) return `hace ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
-    if (diffDays < 7) return `hace ${diffDays} día${diffDays > 1 ? 's' : ''}`;
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
     
     return time.toLocaleDateString('es-ES', { 
         weekday: 'long', 
@@ -263,7 +263,7 @@ export function getAccessibleTimeDescription(timestamp) {
 }
 
 /**
- * Crea una descripción accesible para un mensaje
+ * Creates an accessible description for a message
  * @param {Object} message - Objeto del mensaje
  * @returns {string}
  */
@@ -287,7 +287,7 @@ export function announceNewMessage(message, isCurrentChat = false) {
     const preview = message.body ? message.body.substring(0, 100) : '';
     
     if (isCurrentChat) {
-        // Chat actual - anuncio más detallado
+        // Current chat - more detailed announcement
         announceToScreenReader(
             `Nuevo mensaje de ${sender}: ${preview}`,
             'polite'
@@ -308,7 +308,7 @@ export function announceNewMessage(message, isCurrentChat = false) {
  */
 export function announceStatusChange(status, userName = 'Usuario') {
     const statusMessages = {
-        'online': 'en línea',
+        'online': 'online',
         'away': 'ausente',
         'dnd': 'no molestar',
         'offline': 'desconectado',
@@ -316,13 +316,13 @@ export function announceStatusChange(status, userName = 'Usuario') {
     };
     
     const statusText = statusMessages[status] || status;
-    announceToScreenReader(`${userName} está ${statusText}`);
+    announceToScreenReader(`${userName} is ${statusText}`);
 }
 
 /**
  * Configura atajos de teclado accesibles
  * @param {Object} shortcuts - Objeto con atajos {key: handler}
- * @returns {Function} Función para desregistrar los atajos
+ * @returns {Function} Function to unregister the shortcuts
  */
 export function registerKeyboardShortcuts(shortcuts) {
     const handleKeyDown = (event) => {
@@ -348,7 +348,7 @@ export function registerKeyboardShortcuts(shortcuts) {
 }
 
 /**
- * Obtiene la representación de tecla para atajos
+ * Gets the key representation for shortcuts
  * @param {KeyboardEvent} event
  * @returns {string}
  */
@@ -364,7 +364,7 @@ function getShortcutKey(event) {
 }
 
 /**
- * Verifica si el modo de alto contraste está activado
+ * Verifies if high contrast mode is enabled
  * @returns {boolean}
  */
 export function isHighContrastMode() {

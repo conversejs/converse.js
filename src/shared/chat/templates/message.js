@@ -43,7 +43,7 @@ export default (el) => {
     // Note: it can happen that the contact has not the vcard attribute but the message has.
     const avatar_model = contact?.vcard ? contact : el.model;
 
-    const ariaLabel = `${username}, ${is_me_message ? 'mensaje de acción' : 'mensaje'}, ${pretty_time}${el.model.get('is_encrypted') ? ', cifrado' : ''}`;
+    const ariaLabel = `${username}, ${is_me_message ? 'action message' : 'message'}, ${pretty_time}${el.model.get('is_encrypted') ? ', encrypted' : ''}`;
     
     return html`${is_first_unread
             ? html`<div class="message separator" role="separator" aria-label="${i18n_new_messages}">
@@ -68,7 +68,7 @@ export default (el) => {
                 ? html`<a 
                       class="show-msg-author-modal" 
                       @click=${el.showUserModal}
-                      aria-label="${__('Ver perfil de %1$s', username)}"
+                      aria-label="${__('View %1$s profile', username)}"
                       role="button"
                       tabindex="0"
                   >
@@ -92,7 +92,7 @@ export default (el) => {
                                   class="show-msg-author-modal" 
                                   @click=${el.showUserModal} 
                                   style="${author_style}"
-                                  aria-label="${__('Autor: %1$s', username)}"
+                                  aria-label="${__('Author: %1$s', username)}"
                                   role="button"
                                   tabindex="0"
                               >${username}</a>
@@ -102,13 +102,13 @@ export default (el) => {
                               title="${pretty_date}" 
                               timestamp="${edited || time}" 
                               class="chat-msg__time"
-                              aria-label="${__('Enviado %1$s', pretty_time)}"
+                              aria-label="${__('Sent %1$s', pretty_time)}"
                           >${pretty_time}</time>
                           ${el.model.get('is_encrypted')
                               ? html`<converse-icon 
                                   class="fa fa-lock" 
                                   size="1.1em"
-                                  aria-label="${__('Mensaje cifrado')}"
+                                  aria-label="${__('Encrypted message')}"
                                   role="img"
                               ></converse-icon>`
                               : ''}
@@ -120,7 +120,7 @@ export default (el) => {
                         ? 'chat-msg__body--received'
                         : ''} ${el.model.get('is_delayed') ? 'chat-msg__body--delayed' : ''}"
                     role="region"
-                    aria-label="${__('Contenido del mensaje')}"
+                    aria-label="${__('Message content')}"
                 >
                     <div class="chat-msg__message">
                         ${is_action
@@ -136,7 +136,7 @@ export default (el) => {
                     <converse-message-actions
                         .model=${el.model}
                         ?is_retracted=${is_retracted}
-                        aria-label="${__('Acciones del mensaje')}"
+                        aria-label="${__('Message actions')}"
                         role="toolbar"
                     ></converse-message-actions>
                 </div>

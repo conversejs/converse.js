@@ -137,7 +137,7 @@ export class ChatToolbar extends CustomElement {
             return '';
         }
 
-        // Verificar si el navegador soporta grabación de audio
+        // Check if browser supports audio recording
         const is_supported = !!(
             navigator.mediaDevices &&
             navigator.mediaDevices.getUserMedia &&
@@ -224,7 +224,7 @@ export class ChatToolbar extends CustomElement {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
         
-        // Emitir evento para iniciar grabación
+        // Emit event to start recording
         this.model.trigger('startVoiceRecording');
         
         /**

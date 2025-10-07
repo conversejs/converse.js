@@ -56,11 +56,11 @@ export default class ScreenReaderAnnouncer extends CustomElement {
         this.message = '';
         this.priority = priority;
         
-        // Después de un breve delay, establecer el nuevo mensaje
+        // After a brief delay, set the new message
         requestAnimationFrame(() => {
             this.message = text;
             
-            // Limpiar después de 5 segundos
+            // Clear after 5 seconds
             this._clearTimer = setTimeout(() => {
                 this.message = '';
             }, 5000);

@@ -40,7 +40,7 @@ export default class KeyboardShortcutsModal extends BaseModal {
                     </div>
                     <div class="modal-body">
                         <p class="text-muted">
-                            ${__('Use estos atajos de teclado para navegar más rápidamente por la aplicación.')}
+                            ${__('Use these keyboard shortcuts to navigate the application more quickly.')}
                         </p>
                         
                         ${Object.keys(grouped).map(context => html`
@@ -101,7 +101,7 @@ export default class KeyboardShortcutsModal extends BaseModal {
     }
     
     formatShortcutKey(key) {
-        // Reemplazar símbolos con representaciones más legibles
+        // Replace symbols with more readable representations
         return key
             .replace(/\+/g, ' + ')
             .replace('Alt', '⎇ Alt')

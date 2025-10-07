@@ -33,10 +33,7 @@ export default (el) => {
                               : ''}
                           <div
                               class="chat-content ${el.model.get('show_send_button') ? 'chat-content-sendbutton' : ''}"
-                              aria-live="polite"
-                              aria-relevant="additions"
-                              aria-atomic="false"
-                              role="log"
+                              role="region"
                               aria-label="${__('Historial de mensajes')}"
                           >
                               <converse-chat-content .model="${el.model}"></converse-chat-content>
@@ -56,7 +53,7 @@ export default (el) => {
                               .model="${el.model}" 
                               class="bottom-panel"
                               role="form"
-                              aria-label="${__('Formulario de composición de mensajes')}"
+                              aria-label="${__('Message composition form')}"
                           >
                           </converse-chat-bottom-panel>
                       </div>

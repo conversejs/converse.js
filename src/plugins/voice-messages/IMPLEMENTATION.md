@@ -1,110 +1,110 @@
-# Resumen de Implementación: Mensajes de Voz Accesibles
+# Implementation Summary: Accessible Voice Messages
 
-## 📋 Archivos Creados
+## 📋 Created Files
 
-### Componentes Principales
+### Main Components
 
-1. **audio-recorder.js** (600+ líneas)
-   - Componente web personalizado para grabar audio
-   - Estados: idle, requesting, recording, paused, processing, error
-   - MediaRecorder API con detección automática de formato
-   - Temporizador en tiempo real y visualización de forma de onda
-   - Accesibilidad completa con ARIA y teclado
+1. **audio-recorder.js** (600+ lines)
+   - Custom web component for audio recording
+   - States: idle, requesting, recording, paused, processing, error
+   - MediaRecorder API with automatic format detection
+   - Real-time timer and waveform visualization
+   - Full accessibility with ARIA and keyboard
 
-2. **audio-player.js** (440+ líneas)
-   - Componente web personalizado para reproducir audio
-   - Controles completos: play/pause, seek, speed, volume
-   - Barra de progreso con ARIA slider
-   - Atajos de teclado (Space, k, j, l, flechas, Home/End)
-   - Visualización de tiempo y progreso
+2. **audio-player.js** (440+ lines)
+   - Custom web component for audio playback
+   - Complete controls: play/pause, seek, speed, volume
+   - Progress bar with ARIA slider
+   - Keyboard shortcuts (Space, k, j, l, arrows, Home/End)
+   - Time and progress display
 
-3. **index.js** (290+ líneas)
-   - Plugin principal de Converse.js
-   - API pública para mensajes de voz
-   - Configuración y detección de capacidades
-   - Integración con el sistema de archivos existente
-   - Registro de componentes y shortcuts
+3. **index.js** (290+ lines)
+   - Main Converse.js plugin
+   - Public API for voice messages
+   - Configuration and capability detection
+   - Integration with existing file system
+   - Component and shortcuts registration
 
-### Estilos
+### Styles
 
-4. **audio-recorder.scss** (300+ líneas)
-   - Estilos para todos los estados del grabador
-   - Animaciones de forma de onda y pulsación
-   - Estilos de alto contraste
-   - Responsive y reduced-motion
+4. **audio-recorder.scss** (300+ lines)
+   - Styles for all recorder states
+   - Waveform and pulse animations
+   - High contrast styles
+   - Responsive and reduced-motion
 
-5. **audio-player.scss** (320+ líneas)
-   - Estilos para reproductor y controles
-   - Barra de progreso personalizada
-   - Dropdown de velocidad
-   - Alto contraste y responsive
+5. **audio-player.scss** (320+ lines)
+   - Styles for player and controls
+   - Custom progress bar
+   - Speed dropdown
+   - High contrast and responsive
 
-### Documentación
+### Documentation
 
-6. **README.md** (500+ líneas)
-   - Guía completa de uso e instalación
-   - Referencia de API
-   - Ejemplos de código
-   - Guía de accesibilidad
-   - Solución de problemas
+6. **README.md** (500+ lines)
+   - Complete usage and installation guide
+   - API reference
+   - Code examples
+   - Accessibility guide
+   - Troubleshooting
 
-## ✅ Características Implementadas
+## ✅ Implemented Features
 
-### Grabación de Audio
-- ✅ Solicitud de permisos de micrófono
-- ✅ Grabación con pausa/reanudación
-- ✅ Límite de duración configurable
-- ✅ Temporizador en tiempo real
-- ✅ Visualización de forma de onda animada
-- ✅ Detección automática del mejor formato (opus/webm preferido)
-- ✅ Cancelación de grabación
-- ✅ Procesamiento y envío automático
+### Audio Recording
+- ✅ Microphone permission request
+- ✅ Recording with pause/resume
+- ✅ Configurable duration limit
+- ✅ Real-time timer
+- ✅ Animated waveform visualization
+- ✅ Automatic detection of best format (opus/webm preferred)
+- ✅ Recording cancellation
+- ✅ Automatic processing and sending
 
-### Reproducción de Audio
-- ✅ Play/pause con indicador visual
-- ✅ Barra de progreso con seek
-- ✅ Control de velocidad (0.5x - 2x)
-- ✅ Salto adelante/atrás (5 y 10 segundos)
-- ✅ Visualización de tiempo actual/total
-- ✅ Botón de descarga
-- ✅ Detección y manejo de errores
+### Audio Playback
+- ✅ Play/pause with visual indicator
+- ✅ Progress bar with seek
+- ✅ Speed control (0.5x - 2x)
+- ✅ Skip forward/backward (5 and 10 seconds)
+- ✅ Current/total time display
+- ✅ Download button
+- ✅ Error detection and handling
 
-### Accesibilidad ♿
-- ✅ ARIA completo (roles, labels, estados, live regions)
-- ✅ Navegación por teclado (15+ atajos)
-- ✅ Anuncios a lectores de pantalla en cada acción
-- ✅ Indicadores de foco visibles
-- ✅ Controles con tamaño mínimo 44x44px (táctil)
-- ✅ Alto contraste automático
-- ✅ Respeta prefers-reduced-motion
-- ✅ Mensajes descriptivos en español
+### Accessibility ♿
+- ✅ Complete ARIA (roles, labels, states, live regions)
+- ✅ Keyboard navigation (15+ shortcuts)
+- ✅ Screen reader announcements for each action
+- ✅ Visible focus indicators
+- ✅ Controls with minimum 44x44px size (touch)
+- ✅ Automatic high contrast
+- ✅ Respects prefers-reduced-motion
+- ✅ Descriptive messages
 
-### Integración
-- ✅ Compatible con sistema de archivos XEP-0363
-- ✅ Detección automática de mensajes de voz
-- ✅ API pública documentada
-- ✅ Configuración flexible
-- ✅ Eventos personalizados
-- ✅ Compatible con plugin de accesibilidad
+### Integration
+- ✅ Compatible with XEP-0363 file system
+- ✅ Automatic voice message detection
+- ✅ Documented public API
+- ✅ Flexible configuration
+- ✅ Custom events
+- ✅ Compatible with accessibility plugin
 
-## 🎹 Atajos de Teclado
+## 🎹 Keyboard Shortcuts
 
-### Globales
-- `Alt+Shift+V` - Iniciar grabación
+### Global
+- `Alt+Shift+V` - Start recording
 
-### Durante Grabación
-- `Space` - Pausar/reanudar
-- `Enter` - Detener y enviar
-- `Escape` - Cancelar
+### During Recording
+- `Space` - Pause/resume
+- `Enter` - Stop and send
+- `Escape` - Cancel
 
-### Durante Reproducción
-- `Space` o `k` - Play/pause
-- `←/→` - Retroceder/adelantar 5s
-- `j/l` - Retroceder/adelantar 10s
-- `Home/End` - Inicio/final
-- `↑/↓` - Velocidad +/-
+### During Playback
+- `Space` or `k` - Play/pause
+- `←/→` - Rewind/forward 5s
+- `j/l` - Rewind/forward 10s
+- `Home/End` - Start/end
+- `↑/↓` - Speed +/-
 
-## 🔧 Configuración
+## 🔧 Configuration
 
 ```javascript
 converse.initialize({
@@ -123,99 +123,99 @@ converse.initialize({
 });
 ```
 
-## 📊 API Pública
+## 📊 Public API
 
 ```javascript
-// Verificar soporte
+// Check support
 converse.api.voice_messages.isSupported()
 
-// Obtener formatos soportados
+// Get supported formats
 converse.api.voice_messages.getSupportedMimeTypes()
 
-// Obtener mejor formato
+// Get best format
 converse.api.voice_messages.getBestMimeType()
 
-// Crear archivo de audio
+// Create audio file
 converse.api.voice_messages.createAudioFile(blob, filename)
 
-// Enviar mensaje de voz
+// Send voice message
 converse.api.voice_messages.send(chatbox, audioBlob, duration)
 
-// Detectar mensaje de voz
+// Detect voice message
 converse.api.voice_messages.isVoiceMessage(message)
 
-// Formatear duración
+// Format duration
 converse.api.voice_messages.formatDuration(seconds)
 ```
 
-## 🌐 Compatibilidad
+## 🌐 Compatibility
 
-| Navegador | Versión | Estado |
-|-----------|---------|--------|
-| Chrome | 49+ | ✅ Completo |
-| Firefox | 25+ | ✅ Completo |
-| Safari | 14.1+ | ✅ Completo |
-| Edge | 79+ | ✅ Completo |
-| Opera | 36+ | ✅ Completo |
+| Browser | Version | Status |
+|---------|---------|--------|
+| Chrome | 49+ | ✅ Complete |
+| Firefox | 25+ | ✅ Complete |
+| Safari | 14.1+ | ✅ Complete |
+| Edge | 79+ | ✅ Complete |
+| Opera | 36+ | ✅ Complete |
 
-### Formatos de Audio (en orden de preferencia)
-1. audio/webm;codecs=opus ⭐ (mejor compresión)
+### Audio Formats (in order of preference)
+1. audio/webm;codecs=opus ⭐ (best compression)
 2. audio/ogg;codecs=opus
 3. audio/webm
 4. audio/ogg
 5. audio/mp4
 6. audio/mpeg
 
-## 🚀 Siguientes Pasos
+## 🚀 Next Steps
 
-### Integración con UI
-1. Agregar botón de micrófono en toolbar de chat
-2. Actualizar template de mensajes para usar el reproductor
-3. Agregar indicador visual en mensajes de voz
+### UI Integration
+1. Add microphone button in chat toolbar
+2. Update message template to use player
+3. Add visual indicator in voice messages
 
 ### Testing
-1. Tests unitarios para API
-2. Tests de componentes con Lit
-3. Tests de accesibilidad con axe
-4. Tests de integración con Converse.js
+1. Unit tests for API
+2. Component tests with Lit
+3. Accessibility tests with axe
+4. Integration tests with Converse.js
 
-### Mejoras Futuras
-1. Transcripción automática (Web Speech API)
-2. Reducción de ruido
-3. Efectos de audio
-4. Modo compacto del reproductor
-5. Historial de mensajes de voz
-6. Estadísticas de uso
+### Future Improvements
+1. Automatic transcription (Web Speech API)
+2. Noise reduction
+3. Audio effects
+4. Compact player mode
+5. Voice message history
+6. Usage statistics
 
-## 📝 Notas Técnicas
+## 📝 Technical Notes
 
-### Decisiones de Diseño
+### Design Decisions
 
-1. **Web Components**: Se usaron custom elements nativos para máxima compatibilidad
-2. **Lit HTML**: Framework ligero ya usado en Converse.js
-3. **MediaRecorder API**: Estándar nativo del navegador
-4. **ARIA 1.2**: Última versión del estándar de accesibilidad
-5. **SCSS**: Preprocesador CSS con variables y anidación
+1. **Web Components**: Native custom elements used for maximum compatibility
+2. **Lit HTML**: Lightweight framework already used in Converse.js
+3. **MediaRecorder API**: Native browser standard
+4. **ARIA 1.2**: Latest accessibility standard version
+5. **SCSS**: CSS preprocessor with variables and nesting
 
-### Consideraciones de Seguridad
+### Security Considerations
 
-- HTTPS requerido para acceso al micrófono
-- Permisos explícitos solicitados
-- No se graba sin consentimiento del usuario
-- Audio procesado localmente (no enviado a servidores externos)
-- Compatible con políticas de privacidad GDPR
+- HTTPS required for microphone access
+- Explicit permissions requested
+- No recording without user consent
+- Audio processed locally (not sent to external servers)
+- Compatible with GDPR privacy policies
 
-### Consideraciones de Performance
+### Performance Considerations
 
-- Lazy loading de componentes
-- Debounce en análisis de forma de onda
-- RequestAnimationFrame para animaciones
-- Límite de duración para evitar archivos grandes
-- Compresión de audio con opus
+- Component lazy loading
+- Debounce in waveform analysis
+- RequestAnimationFrame for animations
+- Duration limit to avoid large files
+- Audio compression with opus
 
-### Accesibilidad - Conformidad
+### Accessibility - Compliance
 
-El plugin cumple con:
+The plugin complies with:
 - ✅ WCAG 2.1 Level AA
 - ✅ ARIA 1.2 
 - ✅ Section 508
@@ -223,37 +223,37 @@ El plugin cumple con:
 - ✅ Keyboard Navigation
 - ✅ Screen Reader Support (NVDA, JAWS, VoiceOver)
 
-## 🐛 Errores Conocidos
+## 🐛 Known Issues
 
-Los únicos errores restantes son warnings de TypeScript en `index.js`:
-- Importaciones de tipos del core de Converse.js (no afectan funcionalidad)
-- Extensión de prototipos de Message y ChatBox (esperado en plugins)
-- Variable `_e` no usada en catch block (estándar de linting)
+The only remaining errors are TypeScript warnings in `index.js`:
+- Type imports from Converse.js core (do not affect functionality)
+- Message and ChatBox prototype extension (expected in plugins)
+- Unused `_e` variable in catch block (linting standard)
 
-Estos no afectan la funcionalidad del plugin y son comunes en plugins de Converse.js.
+These do not affect the plugin's functionality and are common in Converse.js plugins.
 
-## 🎓 Para Desarrolladores
+## 🎓 For Developers
 
-### Estructura del Código
+### Code Structure
 
 ```
 voice-messages/
-├── index.js              # Plugin principal
-├── audio-recorder.js     # Componente de grabación
-├── audio-player.js       # Componente de reproducción
-├── README.md            # Documentación
+├── index.js              # Main plugin
+├── audio-recorder.js     # Recording component
+├── audio-player.js       # Playback component
+├── README.md            # Documentation
 └── styles/
     ├── audio-recorder.scss
     └── audio-player.scss
 ```
 
-### Eventos Personalizados
+### Custom Events
 
 **AudioRecorder:**
 - `recording-started`
 - `recording-paused`
 - `recording-resumed`
-- `recording-stopped` (incluye audioBlob y duration)
+- `recording-stopped` (includes audioBlob and duration)
 - `recording-cancelled`
 - `recording-error`
 
@@ -263,18 +263,18 @@ voice-messages/
 - `ended`
 - `error`
 
-### Extensibilidad
+### Extensibility
 
-El plugin está diseñado para ser extensible:
-- API pública bien documentada
-- Eventos personalizados
-- Estilos con variables CSS
-- Configuración flexible
-- Hooks para personalización
+The plugin is designed to be extensible:
+- Well-documented public API
+- Custom events
+- Styles with CSS variables
+- Flexible configuration
+- Hooks for customization
 
-## 📚 Recursos
+## 📚 Resources
 
-- [MediaRecorder API](https://developer.mozilla.org/es/docs/Web/API/MediaRecorder)
+- [MediaRecorder API](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder)
 - [ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
 - [WCAG 2.1](https://www.w3.org/WAI/WCAG21/quickref/)
 - [Lit HTML](https://lit.dev/)
@@ -282,4 +282,4 @@ El plugin está diseñado para ser extensible:
 
 ---
 
-**Desarrollado con ❤️ para usuarios con discapacidad visual**
+**Developed with ❤️ for users with visual disabilities**

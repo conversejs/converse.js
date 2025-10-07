@@ -1,5 +1,5 @@
 /**
- * Panel de configuración de accesibilidad para el modal de ajustes
+ * Accessibility configuration panel for the settings modal
  */
 import { CustomElement } from 'shared/components/element.js';
 import { api } from '@converse/headless';
@@ -44,7 +44,7 @@ export default class AccessibilitySettings extends CustomElement {
         return html`
             <div class="accessibility-settings">
                 <div class="settings-header">
-                    <h3>${__('Configuración de Accesibilidad')}</h3>
+                    <h3>${__('Accessibility Settings')}</h3>
                     <p class="text-muted">
                         ${__('Personaliza las opciones de accesibilidad para mejorar tu experiencia')}
                     </p>
@@ -102,7 +102,7 @@ export default class AccessibilitySettings extends CustomElement {
                         <label class="form-check-label" for="enable_keyboard_shortcuts">
                             <strong>${__('Habilitar atajos de teclado')}</strong>
                             <small class="form-text text-muted">
-                                ${__('Navega rápidamente usando el teclado (Alt+Shift+M, Alt+Shift+C, etc.)')}
+                                ${__('Navigate quickly using the keyboard (Alt+Shift+M, Alt+Shift+C, etc.)')}
                             </small>
                         </label>
                     </div>
@@ -186,7 +186,7 @@ export default class AccessibilitySettings extends CustomElement {
                         <label class="form-check-label" for="focus_on_new_message">
                             <strong>${__('Enfocar mensajes nuevos')}</strong>
                             <small class="form-text text-muted">
-                                ${__('Mueve el foco automáticamente a mensajes nuevos')}
+                                ${__('Automatically move focus to new messages')}
                             </small>
                         </label>
                     </div>
@@ -214,11 +214,11 @@ export default class AccessibilitySettings extends CustomElement {
                     ${this.settings.enable_voice_messages ? html`
                         <div class="voice-messages-info">
                             <small class="form-text text-muted">
-                                <strong>${__('Atajos durante grabación:')}</strong><br/>
+                                <strong>${__('Shortcuts during recording:')}</strong><br/>
                                 • Space: ${__('Pausar/reanudar')}<br/>
                                 • Enter: ${__('Detener y enviar')}<br/>
                                 • Escape: ${__('Cancelar')}<br/><br/>
-                                <strong>${__('Atajos durante reproducción:')}</strong><br/>
+                                <strong>${__('Shortcuts during playback:')}</strong><br/>
                                 • k: ${__('Play/pause')}<br/>
                                 • j/l: ${__('Retroceder/adelantar 10s')}<br/>
                                 • ←/→: ${__('Retroceder/adelantar 5s')}
@@ -246,7 +246,7 @@ export default class AccessibilitySettings extends CustomElement {
             this.settings[key] = value;
             this.requestUpdate();
             
-            // Aplicar cambios específicos
+            // Apply specific changes
             if (key === 'high_contrast_mode') {
                 this.toggleHighContrast(value);
             }
@@ -265,7 +265,7 @@ export default class AccessibilitySettings extends CustomElement {
             localStorage.setItem(`converse-${key}`, JSON.stringify(value));
             
         } catch (error) {
-            console.error('Error al actualizar configuración:', error);
+            console.error('Error updating configuration:', error);
         }
     }
 

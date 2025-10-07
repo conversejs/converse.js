@@ -19,7 +19,7 @@ converse.plugins.add('converse-voice-messages', {
     initialize () {
         const _converse = this._converse;
 
-        // Configuración del plugin
+        // Plugin configuration
         api.settings.extend({
             /**
              * Habilita o deshabilita los mensajes de voz
@@ -28,7 +28,7 @@ converse.plugins.add('converse-voice-messages', {
             enable_voice_messages: true,
 
             /**
-             * Duración máxima de grabación en segundos
+             * Maximum recording duration in seconds
              * @type {number}
              */
             max_voice_message_duration: 300, // 5 minutos
@@ -37,7 +37,7 @@ converse.plugins.add('converse-voice-messages', {
              * Calidad de audio (bits por segundo)
              * @type {number}
              */
-            voice_message_bitrate: 128000, // 128 kbps
+            voice_message_bitrate: 96000, // 96 kbps
 
             /**
              * Formato de audio preferido
@@ -68,7 +68,7 @@ converse.plugins.add('converse-voice-messages', {
         }
 
         /**
-         * Verifica si el navegador soporta grabación de audio
+         * Checks if the browser supports audio recording
          * @returns {boolean}
          */
         api.voice_messages = api.voice_messages || {};
@@ -140,7 +140,7 @@ converse.plugins.add('converse-voice-messages', {
          * Envia un mensaje de voz a un chat
          * @param {Object} chatbox - El modelo del chatbox
          * @param {Blob} audioBlob - Blob de audio grabado
-         * @param {number} duration - Duración en segundos
+         * @param {number} duration - Duration in seconds
          */
         api.voice_messages.send = async function (chatbox, audioBlob, duration) {
             if (!chatbox || !audioBlob) {
@@ -162,7 +162,7 @@ converse.plugins.add('converse-voice-messages', {
                 // Enviar usando el sistema de archivos existente
                 await chatbox.sendFiles([file]);
 
-                // Confirmar envío
+                // Confirm send
                 if (api.accessibility) {
                     api.accessibility.announce(
                         __('Mensaje de voz enviado correctamente'),
@@ -202,7 +202,7 @@ converse.plugins.add('converse-voice-messages', {
         };
 
         /**
-         * Formatea la duración en formato MM:SS
+         * Formats duration in MM:SS format
          * @param {number} seconds - Segundos
          * @returns {string}
          */
@@ -229,7 +229,7 @@ converse.plugins.add('converse-voice-messages', {
                 },
 
                 /**
-                 * Obtiene la duración del mensaje de voz
+                 * Gets the voice message duration
                  * @returns {number|null}
                  */
                 getVoiceMessageDuration () {
@@ -243,7 +243,7 @@ converse.plugins.add('converse-voice-messages', {
         if (ChatBox) {
             Object.assign(ChatBox.prototype, {
                 /**
-                 * Inicia la grabación de un mensaje de voz
+                 * Starts recording a voice message
                  */
                 startVoiceRecording () {
                     // Emitir evento para que la vista muestre el grabador
@@ -266,11 +266,11 @@ converse.plugins.add('converse-voice-messages', {
 
             const shortcuts = api.settings.get('voice_message_shortcuts');
 
-            // Atajo para iniciar grabación (Alt+Shift+V)
+            // Shortcut to start recording (Alt+Shift+V)
             if (shortcuts.start_recording && api.accessibility && api.accessibility.registerShortcut) {
                 api.accessibility.registerShortcut({
                     keys: shortcuts.start_recording,
-                    description: __('Iniciar grabación de mensaje de voz'),
+                    description: __('Start voice message recording'),
                     category: 'chat',
                     handler: () => {
                         const chatview = _converse.chatboxviews.get(_converse.chatboxes.getChatBox());
@@ -284,7 +284,7 @@ converse.plugins.add('converse-voice-messages', {
             }
         });
 
-        // Información de diagnóstico
+        // Diagnostic information
         console.info('Voice Messages Plugin initialized', {
             enabled: api.settings.get('enable_voice_messages'),
             supported: api.voice_messages.isSupported(),

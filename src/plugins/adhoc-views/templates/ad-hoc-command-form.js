@@ -72,7 +72,16 @@ export default (el, command) => {
                     ${command.type === 'result' ? tplReportedTable(command) : ''}
                     ${command.fields?.map(f => xFormField2TemplateResult(f), { domain: command.jid }) ?? ''}
                 </fieldset>
-                ${command.actions?.length
+                ${command.status === 'completed'
+                    ? html` <fieldset>
+                          <input
+                              type="button"
+                              class="btn btn-secondary button-cancel"
+                              value="${__('Close')}"
+                              @click=${(ev) => el.cancel(ev)}
+                          />
+                      </fieldset>`
+                    : command.actions?.length
                     ? html` <fieldset>
                           ${command.actions?.map(
                               (action) =>

@@ -13,7 +13,7 @@ import 'shared/components/icons.js';
 import './styles/audio-recorder.scss';
 
 /**
- * Estados de la grabación
+ * Recording states
  */
 const RecordingState = {
     IDLE: 'idle',
@@ -25,7 +25,7 @@ const RecordingState = {
 };
 
 /**
- * Componente de grabación de audio accesible
+ * Accessible audio recording component
  */
 export default class AudioRecorder extends CustomElement {
     
@@ -100,7 +100,7 @@ export default class AudioRecorder extends CustomElement {
                     type="button"
                     class="btn btn-primary btn-record"
                     @click=${this.startRecording}
-                    aria-label="${__('Iniciar grabación de mensaje de voz')}"
+                    aria-label="${__('Start recording voice message')}"
                     title="${__('Grabar mensaje de voz (Alt+Shift+V)')}"
                 >
                     <converse-icon 
@@ -121,10 +121,10 @@ export default class AudioRecorder extends CustomElement {
         return html`
             <div class="recorder-requesting">
                 <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">${__('Solicitando permiso de micrófono...')}</span>
+                    <span class="visually-hidden">${__('Requesting microphone permission...')}</span>
                 </div>
                 <p class="recorder-message" aria-live="polite">
-                    ${__('Solicitando acceso al micrófono...')}
+                    ${__('Requesting microphone access...')}
                 </p>
             </div>
         `;
@@ -134,7 +134,7 @@ export default class AudioRecorder extends CustomElement {
         const formattedDuration = this.formatDuration(this.duration);
         
         return html`
-            <div class="recorder-active" role="group" aria-label="${__('Grabación en progreso')}">
+            <div class="recorder-active" role="group" aria-label="${__('Recording in progress')}">
                 <div class="recorder-status">
                     <span 
                         class="recording-indicator pulsing" 
@@ -150,12 +150,12 @@ export default class AudioRecorder extends CustomElement {
                     </span>
                 </div>
                 
-                <div class="recorder-controls" role="toolbar" aria-label="${__('Controles de grabación')}">
+                <div class="recorder-controls" role="toolbar" aria-label="${__('Recording controls')}">
                     <button
                         type="button"
                         class="btn btn-secondary btn-pause"
                         @click=${this.pauseRecording}
-                        aria-label="${__('Pausar grabación')}"
+                        aria-label="${__('Pause recording')}"
                         title="${__('Pausar (Espacio)')}"
                     >
                         <converse-icon 
@@ -169,7 +169,7 @@ export default class AudioRecorder extends CustomElement {
                         type="button"
                         class="btn btn-danger btn-stop"
                         @click=${this.stopRecording}
-                        aria-label="${__('Detener y enviar grabación')}"
+                        aria-label="${__('Stop and send recording')}"
                         title="${__('Detener (Enter)')}"
                     >
                         <converse-icon 
@@ -183,7 +183,7 @@ export default class AudioRecorder extends CustomElement {
                         type="button"
                         class="btn btn-outline-danger btn-cancel"
                         @click=${this.cancelRecording}
-                        aria-label="${__('Cancelar y descartar grabación')}"
+                        aria-label="${__('Cancel and discard recording')}"
                         title="${__('Cancelar (Escape)')}"
                     >
                         <converse-icon 
@@ -205,18 +205,18 @@ export default class AudioRecorder extends CustomElement {
         const formattedDuration = this.formatDuration(this.duration);
         
         return html`
-            <div class="recorder-paused" role="group" aria-label="${__('Grabación pausada')}">
+            <div class="recorder-paused" role="group" aria-label="${__('Recording paused')}">
                 <div class="recorder-status">
                     <span class="paused-indicator" aria-label="${__('Pausado')}" role="status"></span>
                     <span class="recording-duration">${formattedDuration}</span>
                 </div>
                 
-                <div class="recorder-controls" role="toolbar" aria-label="${__('Controles de grabación')}">
+                <div class="recorder-controls" role="toolbar" aria-label="${__('Recording controls')}">
                     <button
                         type="button"
                         class="btn btn-primary btn-resume"
                         @click=${this.resumeRecording}
-                        aria-label="${__('Reanudar grabación')}"
+                        aria-label="${__('Resume recording')}"
                         title="${__('Reanudar (Espacio)')}"
                     >
                         <converse-icon 
@@ -243,7 +243,7 @@ export default class AudioRecorder extends CustomElement {
                         type="button"
                         class="btn btn-outline-danger btn-cancel"
                         @click=${this.cancelRecording}
-                        aria-label="${__('Cancelar grabación')}"
+                        aria-label="${__('Cancel recording')}"
                     >
                         <converse-icon 
                             class="fa fa-times" 
@@ -291,7 +291,7 @@ export default class AudioRecorder extends CustomElement {
     }
 
     renderWaveform() {
-        // Visualización simple de forma de onda
+        // Simple waveform visualization
         const bars = Array(20).fill(0).map(() => {
             const height = Math.random() * 100;
             return html`
@@ -304,19 +304,19 @@ export default class AudioRecorder extends CustomElement {
         return html`<div class="waveform-container">${bars}</div>`;
     }
 
-    // ===== Métodos de grabación =====
+    // ===== Recording methods =====
 
     checkBrowserSupport() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             this.state = RecordingState.ERROR;
-            this.error_message = __('Tu navegador no soporta grabación de audio');
+            this.error_message = __('Your browser does not support audio recording');
             announceToScreenReader(this.error_message, 'assertive');
         }
     }
 
     async startRecording() {
         this.state = RecordingState.REQUESTING;
-        announceToScreenReader(__('Solicitando acceso al micrófono'), 'polite');
+        announceToScreenReader(__('Requesting microphone access'), 'polite');
 
         try {
             this.stream = await navigator.mediaDevices.getUserMedia({ 
@@ -352,7 +352,7 @@ export default class AudioRecorder extends CustomElement {
             this.startTime = Date.now();
             this.startTimer();
 
-            announceToScreenReader(__('Grabación iniciada'), 'assertive');
+            announceToScreenReader(__('Recording started'), 'assertive');
 
             // Configurar listener de teclado
             document.addEventListener('keydown', this.handleRecordingKeyboard);
@@ -367,7 +367,7 @@ export default class AudioRecorder extends CustomElement {
             this.mediaRecorder.pause();
             this.stopTimer();
             this.state = RecordingState.PAUSED;
-            announceToScreenReader(__('Grabación pausada'), 'polite');
+            announceToScreenReader(__('Recording paused'), 'polite');
         }
     }
 
@@ -376,7 +376,7 @@ export default class AudioRecorder extends CustomElement {
             this.mediaRecorder.resume();
             this.startTimer();
             this.state = RecordingState.RECORDING;
-            announceToScreenReader(__('Grabación reanudada'), 'polite');
+            announceToScreenReader(__('Recording resumed'), 'polite');
         }
     }
 
@@ -396,7 +396,7 @@ export default class AudioRecorder extends CustomElement {
         this.cleanup();
         this.state = RecordingState.IDLE;
         this.duration = 0;
-        announceToScreenReader(__('Grabación cancelada'), 'polite');
+        announceToScreenReader(__('Recording cancelled'), 'polite');
         
         document.removeEventListener('keydown', this.handleRecordingKeyboard);
     }
@@ -418,7 +418,7 @@ export default class AudioRecorder extends CustomElement {
             }));
 
             announceToScreenReader(
-                __('Grabación completada, enviando mensaje...'), 
+                __('Recording completed, sending message...'), 
                 'polite'
             );
 
@@ -516,11 +516,11 @@ export default class AudioRecorder extends CustomElement {
 
     getPermissionErrorMessage(error) {
         if (error.name === 'NotAllowedError') {
-            return __('Permiso de micrófono denegado. Por favor, habilite el acceso al micrófono en la configuración del navegador.');
+            return __('Microphone permission denied. Please enable microphone access in browser settings.');
         } else if (error.name === 'NotFoundError') {
-            return __('No se encontró ningún micrófono. Por favor, conecte un micrófono y vuelva a intentar.');
+            return __('No microphone found. Please connect a microphone and try again.');
         } else {
-            return __('Error al acceder al micrófono: %1$s', error.message);
+            return __('Error accessing microphone: %1$s', error.message);
         }
     }
 

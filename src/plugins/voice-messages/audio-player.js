@@ -80,8 +80,8 @@ export default class AudioPlayer extends CustomElement {
                     style="display: none;"
                 ></audio>
 
-                <div class="player-controls" role="toolbar" aria-label="${__('Controles de reproducción')}">
-                    <!-- Botón play/pause -->
+                <div class="player-controls" role="toolbar" aria-label="${__('Playback controls')}">
+                    <!-- Play/pause button -->
                     <button
                         type="button"
                         class="btn btn-player btn-play-pause"
@@ -110,7 +110,7 @@ export default class AudioPlayer extends CustomElement {
                             .value="${this.currentTime}"
                             @input=${this.onSeek}
                             @change=${this.onSeekEnd}
-                            aria-label="${__('Posición de reproducción')}"
+                            aria-label="${__('Playback position')}"
                             aria-valuemin="0"
                             aria-valuemax="${this.duration}"
                             aria-valuenow="${this.currentTime}"
@@ -130,19 +130,19 @@ export default class AudioPlayer extends CustomElement {
                             ${this.formatTime(this.currentTime)}
                         </span>
                         <span class="time-separator">/</span>
-                        <span class="time-total" aria-label="${__('Duración total')}">
+                        <span class="time-total" aria-label="${__('Total duration')}">
                             ${this.formatTime(this.duration)}
                         </span>
                     </div>
 
-                    <!-- Velocidad de reproducción -->
+                    <!-- Playback speed -->
                     <div class="dropdown player-speed-control">
                         <button
                             type="button"
                             class="btn btn-player btn-speed"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
-                            aria-label="${__('Velocidad de reproducción: %1$sx', this.playbackRate)}"
+                            aria-label="${__('Playback speed: %1$sx', this.playbackRate)}"
                             title="${__('Cambiar velocidad')}"
                         >
                             ${this.playbackRate}x
@@ -165,7 +165,7 @@ export default class AudioPlayer extends CustomElement {
                         </ul>
                     </div>
 
-                    <!-- Botón de descarga -->
+                    <!-- Download button -->
                     <a
                         href="${this.src}"
                         download="${this.title || 'voice-message.webm'}"
@@ -216,7 +216,7 @@ export default class AudioPlayer extends CustomElement {
         return html`<div class="waveform-container">${bars}</div>`;
     }
 
-    // ===== Métodos de reproducción =====
+    // ===== Playback methods =====
 
     initAudioElement() {
         this.updateComplete.then(() => {
@@ -265,7 +265,7 @@ export default class AudioPlayer extends CustomElement {
     onSeekEnd(event) {
         const time = parseFloat(event.target.value);
         announceToScreenReader(
-            __('Posición: %1$s', this.formatTime(time)),
+            __('Position: %1$s', this.formatTime(time)),
             'polite'
         );
     }
@@ -325,7 +325,7 @@ export default class AudioPlayer extends CustomElement {
         if (this.audioElement) {
             this.audioElement.currentTime = 0;
         }
-        announceToScreenReader(__('Reproducción finalizada'), 'polite');
+        announceToScreenReader(__('Playback finished'), 'polite');
     }
 
     onError(event) {
@@ -371,7 +371,7 @@ export default class AudioPlayer extends CustomElement {
     }
 
     handleKeyboard = (event) => {
-        // Solo procesar si el foco está en el reproductor
+        // Only process if focus is on the player
         if (!this.contains(document.activeElement)) {
             return;
         }

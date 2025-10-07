@@ -91,13 +91,13 @@ export default class ChatBottomPanel extends CustomElement {
                 );
             }
             
-            // Enviar usando el método del modelo
+            // Send using the model's method
             await this.model.sendFiles([file]);
             
             // Ocultar el grabador
             this.hideVoiceRecorder();
             
-            // Confirmar envío
+            // Confirm send
             if (api.accessibility && api.accessibility.announce) {
                 api.accessibility.announce(
                     __('Mensaje de voz enviado correctamente'),

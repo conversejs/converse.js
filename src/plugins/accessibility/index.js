@@ -23,7 +23,7 @@ converse.plugins.add('converse-accessibility', {
     dependencies: ['converse-chatboxes', 'converse-roster', 'converse-muc'],
     
     initialize() {
-        // Configuración del plugin
+        // Plugin configuration
         api.settings.extend({
             /**
              * Habilita funciones de accesibilidad mejoradas
@@ -44,7 +44,7 @@ converse.plugins.add('converse-accessibility', {
             enable_screen_reader_announcements: true,
             
             /**
-             * Anunciar nuevos mensajes automáticamente
+             * Announce new messages automatically
              * @type {boolean}
              */
             announce_new_messages: true,
@@ -62,7 +62,7 @@ converse.plugins.add('converse-accessibility', {
             high_contrast_mode: 'auto'
         });
         
-        // Inicializar solo si está habilitado
+        // Initialize only if enabled
         api.listen.on('connected', () => {
             if (api.settings.get('enable_accessibility')) {
                 initializeAccessibility();
@@ -84,7 +84,7 @@ function initializeAccessibility() {
     // Inicializar API de accesibilidad
     initAccessibilityAPI();
     
-    // Inicializar región live
+    // Initialize live region
     initLiveRegion();
     
     // Inicializar atajos de teclado
@@ -100,7 +100,7 @@ function initializeAccessibility() {
     // Aplicar mejoras de alto contraste si es necesario
     applyHighContrastMode();
     
-    // Anunciar que la aplicación está lista
+    // Announce that the application is ready
     announceToScreenReader(
         __('Converse.js cargado. Presione Alt+Shift+H para ver los atajos de teclado disponibles.'),
         'polite',
@@ -175,7 +175,7 @@ function applyHighContrastMode() {
     const mode = api.settings.get('high_contrast_mode');
     
     if (mode === 'auto') {
-        // Detectar si el sistema está en modo de alto contraste
+        // Detect if the system is in high contrast mode
         const mediaQuery = window.matchMedia('(prefers-contrast: high)');
         
         if (mediaQuery.matches) {
@@ -197,10 +197,10 @@ function applyHighContrastMode() {
 export function showKeyboardShortcutsModal() {
     const shortcuts = [
         { key: 'Alt+Shift+H', description: __('Mostrar/ocultar esta ayuda'), context: __('Global') },
-        { key: 'Alt+Shift+C', description: __('Enfocar área de composición'), context: __('Global') },
+        { key: 'Alt+Shift+C', description: __('Focus composition area'), context: __('Global') },
         { key: 'Alt+Shift+L', description: __('Enfocar lista de chats'), context: __('Global') },
-        { key: 'Alt+Shift+M', description: __('Ir al último mensaje'), context: __('Global') },
-        { key: 'Alt+Shift+N', description: __('Siguiente chat no leído'), context: __('Global') },
+        { key: 'Alt+Shift+M', description: __('Go to last message'), context: __('Global') },
+        { key: 'Alt+Shift+N', description: __('Next unread chat'), context: __('Global') },
         { key: 'Alt+Shift+S', description: __('Buscar contactos'), context: __('Global') },
         { key: 'Escape', description: __('Cerrar modal'), context: __('Global') },
         { key: 'Ctrl+Enter', description: __('Enviar mensaje'), context: __('Compositor') },

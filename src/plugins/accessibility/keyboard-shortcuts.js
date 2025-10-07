@@ -1,6 +1,6 @@
 /**
  * @module accessibility/keyboard-shortcuts
- * @description Sistema de atajos de teclado para mejorar la navegación accesible
+ * @description Keyboard shortcut system to improve accessible navigation
  */
 
 import { api, _converse, constants } from '@converse/headless';
@@ -11,8 +11,8 @@ const { KEYCODES } = constants;
 
 /**
  * @typedef {Object} KeyboardShortcut
- * @property {string} key - Combinación de teclas
- * @property {string} description - Descripción del atajo
+ * @property {string} key - Key combination
+ * @property {string} description - Shortcut description
  * @property {Function} handler - Manejador del atajo
  * @property {string} [context] - Contexto donde aplica el atajo
  */
@@ -47,7 +47,7 @@ export function initDefaultShortcuts() {
 
     registerShortcut({
         key: 'Alt+Shift+C',
-        description: __('Enfocar el área de composición de mensajes'),
+        description: __('Focus message composition area'),
         handler: focusMessageComposer
     });
 
@@ -59,13 +59,13 @@ export function initDefaultShortcuts() {
 
     registerShortcut({
         key: 'Alt+Shift+M',
-        description: __('Enfocar el último mensaje'),
+        description: __('Focus last message'),
         handler: focusLastMessage
     });
 
     registerShortcut({
         key: 'Alt+Shift+N',
-        description: __('Ir al siguiente chat con mensajes no leídos'),
+        description: __('Go to next chat with unread messages'),
         handler: focusNextUnreadChat
     });
 
@@ -83,7 +83,7 @@ export function initDefaultShortcuts() {
 
     registerShortcut({
         key: 'Escape',
-        description: __('Cerrar modal o diálogo abierto'),
+        description: __('Close modal or open dialog'),
         handler: closeCurrentModal
     });
 
@@ -109,24 +109,24 @@ export function initDefaultShortcuts() {
         handler: triggerFileUpload
     });
 
-    // Atajos para navegación en mensajes
+    // Shortcuts for message navigation
     registerShortcut({
         key: 'Alt+ArrowUp',
-        description: __('Mensaje anterior'),
+        description: __('Previous message'),
         context: 'chat-messages',
         handler: focusPreviousMessage
     });
 
     registerShortcut({
         key: 'Alt+ArrowDown',
-        description: __('Mensaje siguiente'),
+        description: __('Next message'),
         context: 'chat-messages',
         handler: focusNextMessage
     });
 
     registerShortcut({
         key: 'Alt+Shift+R',
-        description: __('Responder al mensaje enfocado'),
+        description: __('Reply to focused message'),
         context: 'chat-messages',
         handler: replyToMessage
     });
@@ -167,7 +167,7 @@ export function unregisterShortcut(key, context) {
  * @param {KeyboardEvent} event
  */
 export function handleKeyboardEvent(event) {
-    // Ignorar si estamos en un campo de texto (excepto para atajos específicos)
+    // Ignore if we are in a text field (except for specific shortcuts)
     const target = /** @type {HTMLElement} */ (event.target);
     const isTextField = ['INPUT', 'TEXTAREA'].includes(target.tagName);
     
@@ -240,7 +240,7 @@ function getCurrentContext(element) {
     return null;
 }
 
-// ===== Implementación de handlers =====
+// ===== Handler implementation =====
 
 /**
  * Muestra el modal de ayuda de atajos
@@ -292,14 +292,14 @@ function closeKeyboardShortcutsHelp() {
 function focusMessageComposer() {
     const activeChat = getActiveChat();
     if (!activeChat) {
-        announceToScreenReader(__('No hay un chat activo'));
+        announceToScreenReader(__('No active chat'));
         return;
     }
     
-    const textarea = activeChat.querySelector('.chat-textarea');
+    const textarea = /** @type {HTMLElement} */ (activeChat.querySelector('.chat-textarea'));
     if (textarea) {
         moveFocusTo(textarea, { 
-            announce: __('Área de composición de mensajes enfocada') 
+            announce: __('Message composition area focused') 
         });
     }
 }
@@ -310,19 +310,19 @@ function focusMessageComposer() {
 function focusChatList() {
     const chatList = document.querySelector('#converse-roster');
     if (chatList) {
-        const firstChat = chatList.querySelector('.list-item');
+        const firstChat = /** @type {HTMLElement} */ (chatList.querySelector('.list-item'));
         if (firstChat) {
             moveFocusTo(firstChat, {
-                announce: __('Lista de chats enfocada')
+                announce: __('Chat list focused')
             });
         }
     } else {
-        announceToScreenReader(__('Lista de chats no disponible'));
+        announceToScreenReader(__('Chat list not available'));
     }
 }
 
 /**
- * Enfoca el último mensaje
+ * Focuses the last message
  */
 function focusLastMessage() {
     const activeChat = getActiveChat();
@@ -330,30 +330,30 @@ function focusLastMessage() {
     
     const messages = activeChat.querySelectorAll('.chat-msg');
     if (messages.length > 0) {
-        const lastMessage = messages[messages.length - 1];
+        const lastMessage = /** @type {HTMLElement} */ (messages[messages.length - 1]);
         moveFocusTo(lastMessage, {
-            announce: __('Último mensaje enfocado')
+            announce: __('Last message focused')
         });
     }
 }
 
 /**
- * Va al siguiente chat con mensajes no leídos
+ * Goes to the next chat with unread messages
  */
 function focusNextUnreadChat() {
-    const chats = Array.from(document.querySelectorAll('.list-item.unread-msgs'));
+    const chats = /** @type {HTMLElement[]} */ (Array.from(document.querySelectorAll('.list-item.unread-msgs')));
     
     if (chats.length === 0) {
-        announceToScreenReader(__('No hay chats con mensajes no leídos'));
+        announceToScreenReader(__('No chats with unread messages'));
         return;
     }
     
     const currentFocus = document.activeElement;
-    const currentIndex = chats.indexOf(currentFocus);
+    const currentIndex = chats.indexOf(/** @type {HTMLElement} */ (currentFocus));
     const nextIndex = (currentIndex + 1) % chats.length;
     
     moveFocusTo(chats[nextIndex], {
-        announce: __('Chat con mensajes no leídos')
+        announce: __('Chat with unread messages')
     });
     
     // Abrir el chat
@@ -364,31 +364,31 @@ function focusNextUnreadChat() {
  * Va al chat anterior
  */
 function focusPreviousChat() {
-    const chats = Array.from(document.querySelectorAll('.list-item'));
+    const chats = /** @type {HTMLElement[]} */ (Array.from(document.querySelectorAll('.list-item')));
     
     if (chats.length === 0) return;
     
     const currentFocus = document.activeElement;
-    const currentIndex = chats.indexOf(currentFocus);
+    const currentIndex = chats.indexOf(/** @type {HTMLElement} */ (currentFocus));
     const prevIndex = currentIndex > 0 ? currentIndex - 1 : chats.length - 1;
     
     moveFocusTo(chats[prevIndex]);
 }
 
 /**
- * Enfoca el campo de búsqueda de contactos
+ * Focuses the contact search field
  */
 function focusContactSearch() {
-    const searchField = document.querySelector('.roster-filter');
+    const searchField = /** @type {HTMLElement} */ (document.querySelector('.roster-filter'));
     if (searchField) {
         moveFocusTo(searchField, {
-            announce: __('Búsqueda de contactos')
+            announce: __('Contact search')
         });
     }
 }
 
 /**
- * Cierra el modal o diálogo actual
+ * Closes the current modal or dialog
  * @param {KeyboardEvent} event
  */
 function closeCurrentModal(event) {
@@ -396,12 +396,12 @@ function closeCurrentModal(event) {
     if (modal) {
         event.preventDefault();
         api.modal.close();
-        announceToScreenReader(__('Diálogo cerrado'));
+        announceToScreenReader(__('Dialog closed'));
     }
 }
 
 /**
- * Envía el mensaje actual
+ * Sends the current message
  */
 function sendMessage() {
     const activeChat = getActiveChat();
@@ -409,7 +409,7 @@ function sendMessage() {
     
     const form = activeChat.querySelector('.sendXMPPMessage');
     if (form) {
-        const submitBtn = form.querySelector('[type="submit"]');
+        const submitBtn = /** @type {HTMLElement} */ (form.querySelector('[type="submit"]'));
         submitBtn?.click();
     }
 }
@@ -421,7 +421,7 @@ function toggleEmojiPicker() {
     const activeChat = getActiveChat();
     if (!activeChat) return;
     
-    const emojiButton = activeChat.querySelector('.toggle-emojis');
+    const emojiButton = /** @type {HTMLElement} */ (activeChat.querySelector('.toggle-emojis'));
     if (emojiButton) {
         emojiButton.click();
         announceToScreenReader(__('Selector de emoji'));
@@ -435,7 +435,7 @@ function triggerFileUpload() {
     const activeChat = getActiveChat();
     if (!activeChat) return;
     
-    const fileInput = activeChat.querySelector('input[type="file"]');
+    const fileInput = /** @type {HTMLInputElement} */ (activeChat.querySelector('input[type="file"]'));
     if (fileInput) {
         fileInput.click();
         announceToScreenReader(__('Selector de archivo'));
@@ -452,9 +452,22 @@ function focusPreviousMessage() {
         return;
     }
     
-    const prevMessage = currentMessage.previousElementSibling;
-    if (prevMessage && prevMessage.classList.contains('chat-msg')) {
+    // Buscar todos los mensajes en el historial
+    const messageHistory = currentMessage.closest('converse-message-history');
+    if (!messageHistory) return;
+    
+    const messages = /** @type {HTMLElement[]} */ (Array.from(messageHistory.querySelectorAll('.chat-msg')));
+    const currentIndex = messages.indexOf(/** @type {HTMLElement} */ (currentMessage));
+    
+    if (currentIndex > 0) {
+        const prevMessage = messages[currentIndex - 1];
         moveFocusTo(prevMessage);
+        
+        // Anunciar el mensaje
+        const ariaLabel = prevMessage.getAttribute('aria-label');
+        if (ariaLabel) {
+            announceToScreenReader(ariaLabel, 'polite', 100);
+        }
     }
 }
 
@@ -465,9 +478,22 @@ function focusNextMessage() {
     const currentMessage = document.activeElement?.closest('.chat-msg');
     if (!currentMessage) return;
     
-    const nextMessage = currentMessage.nextElementSibling;
-    if (nextMessage && nextMessage.classList.contains('chat-msg')) {
+    // Buscar todos los mensajes en el historial
+    const messageHistory = currentMessage.closest('converse-message-history');
+    if (!messageHistory) return;
+    
+    const messages = /** @type {HTMLElement[]} */ (Array.from(messageHistory.querySelectorAll('.chat-msg')));
+    const currentIndex = messages.indexOf(/** @type {HTMLElement} */ (currentMessage));
+    
+    if (currentIndex < messages.length - 1) {
+        const nextMessage = messages[currentIndex + 1];
         moveFocusTo(nextMessage);
+        
+        // Anunciar el mensaje
+        const ariaLabel = nextMessage.getAttribute('aria-label');
+        if (ariaLabel) {
+            announceToScreenReader(ariaLabel, 'polite', 100);
+        }
     }
 }
 
@@ -478,7 +504,7 @@ function replyToMessage() {
     const currentMessage = document.activeElement?.closest('.chat-msg');
     if (!currentMessage) return;
     
-    const quoteButton = currentMessage.querySelector('.chat-msg__action-quote');
+    const quoteButton = /** @type {HTMLElement} */ (currentMessage.querySelector('.chat-msg__action-quote'));
     if (quoteButton) {
         quoteButton.click();
         announceToScreenReader(__('Respondiendo al mensaje'));
@@ -500,7 +526,7 @@ export function initKeyboardShortcuts() {
     initDefaultShortcuts();
     document.addEventListener('keydown', handleKeyboardEvent);
     
-    // Anunciar que los atajos están disponibles
+    // Announce that shortcuts are available
     announceToScreenReader(
         __('Atajos de teclado habilitados. Presione Alt+Shift+H para ver la ayuda'),
         'polite',

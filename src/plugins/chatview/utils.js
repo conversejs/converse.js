@@ -97,7 +97,7 @@ export async function routeToQueryAction(event) {
 
         const action = queryParams.get('action');
         if (!action) {
-            log.debug(`No action specified, opening chat for "${jid}"`);
+            log.debug(`routeToQueryAction: No action specified, opening chat for "${jid}"`);
             return api.chats.open(jid);
         }
 

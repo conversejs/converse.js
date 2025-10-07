@@ -92,7 +92,7 @@ export async function routeToQueryAction(event) {
 
         const { jid, queryParams } = parseXMPPURI(uri);
         if (!u.isValidJID(jid)) {
-            return log.warn(`Invalid JID: "${jid}"`);
+            return log.warn(`routeToQueryAction: Invalid JID: "${jid}"`);
         }
 
         const action = queryParams.get('action');

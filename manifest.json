@@ -30,7 +30,7 @@
   "protocol_handlers": [
     {
       "protocol": "xmpp",
-      "url": "/dev?jid=%s"
+      "url": "/?uri=%s"
     }
   ]
 }

@@ -173,7 +173,6 @@ async function handleMessageAction(jid, params) {
  * Handles the `action=add-roster` case.
  */
 async function handleRosterAction(jid, params) {
-    await api.waitUntil('connected');
     await api.waitUntil('rosterContactsFetched');
 
     const name = params.get('name') || jid.split('@')[0];

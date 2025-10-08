@@ -74,6 +74,7 @@ declare const _default: {
     queryChildren(el: HTMLElement, selector: string): ChildNode[];
     siblingIndex(el: Element): number;
     decodeHTMLEntities(str: string): string;
+    unescapeHTML(string: string): string;
     getSelectValues(select: HTMLSelectElement): string[];
     webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
     getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;
@@ -186,6 +187,7 @@ declare const _default: {
         queryChildren(el: HTMLElement, selector: string): ChildNode[];
         siblingIndex(el: Element): number;
         decodeHTMLEntities(str: string): string;
+        unescapeHTML(string: string): string;
         getSelectValues(select: HTMLSelectElement): string[];
         webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
         getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;

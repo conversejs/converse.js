@@ -144,7 +144,7 @@ function setupScreenReaderAnnouncements() {
     
     // Anunciar cuando se une/sale alguien de una sala
     api.listen.on('chatRoomPresence', (data) => {
-        const { presence, room } = data;
+        const { presence } = data;
         const from = presence.getAttribute('from');
         const nick = presence.querySelector('nick')?.textContent;
         const type = presence.getAttribute('type');

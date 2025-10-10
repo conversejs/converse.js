@@ -343,8 +343,11 @@ export default class AudioRecorder extends CustomElement {
                 this.processRecording();
             };
 
-            this.mediaRecorder.onerror = (error) => {
-                this.handleError(__('Error al grabar audio: %1$s', error.message));
+            this.mediaRecorder.onerror = (event) => {
+                // @ts-ignore - MediaRecorderErrorEvent tiene la propiedad error
+                const error = /** @type {MediaRecorderErrorEvent} */ (event).error || event;
+                const message = error?.message || String(error);
+                this.handleError(__('Error al grabar audio: %1$s', message));
             };
 
             this.mediaRecorder.start();

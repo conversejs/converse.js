@@ -3,11 +3,9 @@
  * @description Keyboard shortcut system to improve accessible navigation
  */
 
-import { api, _converse, constants } from '@converse/headless';
+import { api, _converse } from '@converse/headless';
 import { __ } from 'i18n';
 import { announceToScreenReader, moveFocusTo } from '../../utils/accessibility.js';
-
-const { KEYCODES } = constants;
 
 /**
  * @typedef {Object} KeyboardShortcut

@@ -22,6 +22,7 @@ export default class AdHocCommands extends CustomElement {
             fetching: { type: Boolean },
             showform: { type: String },
             view: { type: String },
+            note: { type: String },
         };
     }
 
@@ -30,6 +31,7 @@ export default class AdHocCommands extends CustomElement {
         this.view = 'choose-service';
         this.fetching = false;
         this.showform = '';
+        this.note = '';
         this.commands = /** @type {AdHocCommandUIProps[]} */ ([]);
     }
 

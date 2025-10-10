@@ -217,46 +217,46 @@ converse.plugins.add('converse-voice-messages', {
         // Extender el modelo de mensajes para soportar metadata de voz
         const Message = _converse.Message;
         if (Message) {
-            Object.assign(Message.prototype, {
-                /**
-                 * Marca el mensaje como mensaje de voz
-                 */
-                setAsVoiceMessage (duration) {
-                    this.set({
-                        'is_voice_message': true,
-                        'voice_message_duration': duration
-                    });
-                },
+            const originalPrototype = Message.prototype;
+            
+            /**
+             * Marca el mensaje como mensaje de voz
+             */
+            originalPrototype.setAsVoiceMessage = function (duration) {
+                this.save({
+                    'is_voice_message': true,
+                    'voice_message_duration': duration
+                });
+            };
 
-                /**
-                 * Gets the voice message duration
-                 * @returns {number|null}
-                 */
-                getVoiceMessageDuration () {
-                    return this.get('voice_message_duration') || null;
-                }
-            });
+            /**
+             * Gets the voice message duration
+             * @returns {number|null}
+             */
+            originalPrototype.getVoiceMessageDuration = function () {
+                return this.get('voice_message_duration') || null;
+            };
         }
 
         // Agregar comando de chat para grabar mensajes de voz
         const ChatBox = _converse.ChatBox;
         if (ChatBox) {
-            Object.assign(ChatBox.prototype, {
-                /**
-                 * Starts recording a voice message
-                 */
-                startVoiceRecording () {
-                    // Emitir evento para que la vista muestre el grabador
-                    this.trigger('startVoiceRecording');
-                },
+            const originalPrototype = ChatBox.prototype;
+            
+            /**
+             * Starts recording a voice message
+             */
+            originalPrototype.startVoiceRecording = function () {
+                // Emitir evento para que la vista muestre el grabador
+                this.trigger('startVoiceRecording');
+            };
 
-                /**
-                 * Envia un mensaje de voz grabado
-                 */
-                async sendVoiceMessage (audioBlob, duration) {
-                    return await api.voice_messages.send(this, audioBlob, duration);
-                }
-            });
+            /**
+             * Envia un mensaje de voz grabado
+             */
+            originalPrototype.sendVoiceMessage = async function (audioBlob, duration) {
+                return await api.voice_messages.send(this, audioBlob, duration);
+            };
         }
 
         // Registrar atajos de teclado globales

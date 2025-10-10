@@ -1,6 +1,10 @@
 /**
  * Voice messages plugin integration example
  * 
+ * ⚠️ IMPORTANT: This is a DOCUMENTATION/EXAMPLE file, not executable code.
+ * It is excluded from TypeScript compilation (see tsconfig.json).
+ * The code snippets here are meant to show integration patterns.
+ * 
  * This file shows how to integrate the recording component
  * in the chat interface and the player in messages.
  */

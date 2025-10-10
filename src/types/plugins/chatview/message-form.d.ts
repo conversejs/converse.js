@@ -5,6 +5,7 @@ export default class MessageForm extends CustomElement {
         };
     };
     model: any;
+    shiftDown: boolean;
     initialize(): Promise<void>;
     handleEmojiSelection: ({ detail }: CustomEvent) => void;
     render(): import("lit-html").TemplateResult<1>;

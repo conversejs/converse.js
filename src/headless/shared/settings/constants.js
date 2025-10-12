@@ -6,7 +6,7 @@
  * @property {String} [assets_path='/dist']
  * @property {('login'|'prebind'|'anonymous'|'external')} [authentication='login']
  * @property {Boolean} [auto_login=false] - Currently only used in connection with anonymous login
- * @property {Boolean} [reuse_scram_keys=true] - Save SCRAM keys after login to allow for future auto login
+ * @property {Boolean} [reuse_keys=true] - Save SCRAM/FAST keys after login to allow for future auto login
  * @property {Boolean} [auto_reconnect=true]
  * @property {Array<String>} [blacklisted_plugins]
  * @property {Boolean} [clear_cache_on_logout=false]
@@ -50,7 +50,7 @@ export const DEFAULT_SETTINGS = {
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
     i18n: undefined,
     jid: undefined,
-    reuse_scram_keys: true,
+    reuse_keys: true,
     keepalive: true,
     loglevel: 'info',
     locales: [

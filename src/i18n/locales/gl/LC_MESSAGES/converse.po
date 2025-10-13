@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-08 15:09+0200\n"
-"PO-Revision-Date: 2025-06-19 08:04+0000\n"
+"PO-Revision-Date: 2025-10-13 11:57+0000\n"
 "Last-Translator: \"josé m.\" <correoxm@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.1\n"
+"X-Generator: Weblate 5.14-dev\n"
 
 #: dist/converse-no-dependencies.js:42934
 msgid "A timeout occurred"
@@ -632,14 +632,13 @@ msgid "Sorry, could not determine file upload URL."
 msgstr "Lamentámolo, non se determinou o URL de subida do ficheiro."
 
 #: dist/converse-no-dependencies.js:68520
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Sorry, could not successfully upload your file. Your server’s response: "
 "\"%1$s\""
 msgstr "Lamentámolo, non se subeu o ficheiro. A resposta do servidor: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:68522
-#, fuzzy
 msgid "Sorry, could not successfully upload your file."
 msgstr "Lamentámolo, non se subeu o ficheiro."
 
@@ -2574,9 +2573,8 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:135004
 #: dist/converse-no-dependencies.js:138308
-#, fuzzy
 msgid "Device ID"
-msgstr "Servizo"
+msgstr "ID do servizo"
 
 #. *
 #. * @param {import('../fingerprints').Fingerprints} el
@@ -2592,7 +2590,7 @@ msgstr "Non se atoparon dispositivos con OMEMO activado"
 
 #: dist/converse-no-dependencies.js:135015
 msgid "Show inactive devices"
-msgstr ""
+msgstr "Mostrar dispositivos inactivos"
 
 #: dist/converse-no-dependencies.js:138277
 msgid "Checkbox for selecting the following fingerprint"
@@ -2625,14 +2623,12 @@ msgid "Select all"
 msgstr "Escoller todo"
 
 #: dist/converse-no-dependencies.js:138304
-#, fuzzy
 msgid "This device"
-msgstr "Este é un dispositivo de confianza"
+msgstr "Este dispositivo"
 
 #: dist/converse-no-dependencies.js:138305
-#, fuzzy
 msgid "OMEMO fingerprint"
-msgstr "Impresións dixitais OMEMO"
+msgstr "Impresión dixital OMEMO"
 
 #: dist/converse-no-dependencies.js:138306
 msgid "Generate new keys and fingerprint"

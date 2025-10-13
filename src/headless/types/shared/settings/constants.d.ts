@@ -63,7 +63,7 @@ export type ConfigurationSettings = {
     i18n?: string;
     jid?: string;
     keepalive?: boolean;
-    loglevel?: ("debug" | "info" | "error");
+    loglevel?: ("debug" | "info" | "eror");
     locales?: Array<string>;
     nickname?: string;
     password?: string;

@@ -41,5 +41,12 @@ export function siblingIndex(el: Element): number;
  * @return {string}
  */
 export function decodeHTMLEntities(str: string): string;
+/**
+ * Helper method that replace HTML-escaped symbols with equivalent characters
+ * (e.g. transform occurrences of '&amp;' to '&')
+ * @param {string} string - a String containing the HTML-escaped symbols.
+ * @return {string}
+ */
+export function unescapeHTML(string: string): string;
 import { Strophe } from 'strophe.js';
 //# sourceMappingURL=html.d.ts.map

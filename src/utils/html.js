@@ -199,17 +199,6 @@ function nextUntil (el, selector) {
 }
 
 /**
- * Helper method that replace HTML-escaped symbols with equivalent characters
- * (e.g. transform occurrences of '&amp;' to '&')
- * @param {String} string - a String containing the HTML-escaped symbols.
- */
-function unescapeHTML (string) {
-    var div = document.createElement('div');
-    div.innerHTML = string;
-    return div.innerText;
-}
-
-/**
  * @param {string} string
  */
 function escapeHTML (string) {
@@ -486,7 +475,6 @@ Object.assign(u, {
     showElement,
     slideIn,
     slideOut,
-    unescapeHTML,
     xFormField2TemplateResult,
 });
 

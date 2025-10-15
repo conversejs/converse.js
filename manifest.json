@@ -30,7 +30,7 @@
   "protocol_handlers": [
     {
       "protocol": "xmpp",
-      "url": "/?uri=%s"
+      "url": "#converse/action?uri=%s"
     }
   ]
 }

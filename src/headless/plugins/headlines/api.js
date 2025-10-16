@@ -45,7 +45,7 @@ export default {
 
             if (jids === undefined) {
                 const chats = await api.chatboxes.get();
-                return chats.filter(c => (c.get('type') === HEADLINES_TYPE));
+                return chats?.filter(c => (c.get('type') === HEADLINES_TYPE)) ?? [];
             } else if (typeof jids === 'string') {
                 return _get(jids);
             }

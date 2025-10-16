@@ -138,7 +138,6 @@
     "@converse/log": "file:src/log",
     "bootstrap": "^5.3.3",
     "client-compress": "^2.2.2",
-    "dayjs": "^1.11.8",
     "dompurify": "^3.0.8",
     "favico.js-slevomat": "^0.3.11",
     "gifuct-js": "^2.1.2",

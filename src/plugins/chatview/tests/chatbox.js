@@ -365,12 +365,12 @@ describe("Chatboxes", function () {
                     await mock.openControlBox(_converse);
                     const rosterview = document.querySelector('converse-roster');
                     u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
-                    spyOn(api.connection.get(), 'send');
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const model = _converse.chatboxes.get(contact_jid);
                     expect(model.get('chat_state')).toBe('active');
-                    expect(api.connection.get().send).toHaveBeenCalled();
-                    const stanza = api.connection.get().send.calls.argsFor(0)[0];
+
+                    const sent_stanzas = api.connection.get().sent_stanzas;
+                    const stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.querySelector('active')).pop());
                     expect(stanza.getAttribute('to')).toBe(contact_jid);
                     expect(stanza.childNodes.length).toBe(3);
                     expect(stanza.childNodes[0].tagName).toBe('active');

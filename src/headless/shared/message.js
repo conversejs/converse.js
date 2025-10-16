@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import sizzle from 'sizzle';
 import { Strophe, $iq } from 'strophe.js';
 import { Model } from '@converse/skeletor';
@@ -10,6 +9,9 @@ import ColorAwareModel from '../shared/color.js';
 import ModelWithContact from '../shared/model-with-contact.js';
 import ModelWithVCard from '../shared/model-with-vcard';
 import { getUniqueId } from '../utils/index.js';
+import converse from './api/public.js';
+
+const { dayjs } = converse.env;
 
 class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     defaults() {

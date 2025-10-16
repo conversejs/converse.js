@@ -1,15 +1,14 @@
+import sizzle from "sizzle";
+import { Strophe, Stanza } from 'strophe.js';
+import log from "@converse/log";
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import dayjs from 'dayjs';
-import log from "@converse/log";
-import sizzle from "sizzle";
 import { RSM } from '../../shared/rsm.js';
-import { Strophe, Stanza } from 'strophe.js';
 import { TimeoutError } from '../../shared/errors.js';
 
 const { NS } = Strophe;
-const { stx, u } = converse.env;
+const { dayjs, stx, u } = converse.env;
 
 
 export default {

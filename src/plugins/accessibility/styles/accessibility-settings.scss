@@ -1,0 +1,211 @@
+/**
+ * Estilos para el panel de configuración de accesibilidad
+ */
+
+.accessibility-settings {
+    padding: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.settings-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color, #dee2e6);
+    
+    h3 {
+        margin: 0 0 0.5rem 0;
+        color: var(--text-color, #333);
+        font-size: 1.5rem;
+    }
+    
+    .text-muted {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+}
+
+.settings-section {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--chat-background-color, #f8f9fa);
+    border-radius: 8px;
+    
+    h4 {
+        margin: 0 0 1rem 0;
+        color: var(--primary-color, #0066cc);
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    .form-check {
+        margin-bottom: 1.25rem;
+        padding: 0.75rem;
+        background: var(--message-background, #fff);
+        border-radius: 6px;
+        border: 1px solid var(--border-color, #dee2e6);
+        transition: all 0.2s ease;
+        
+        &:hover {
+            border-color: var(--primary-color, #0066cc);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+    
+    .form-check-input {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-top: 0.125rem;
+        cursor: pointer;
+        
+        &:focus {
+            border-color: var(--primary-color, #0066cc);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.25);
+        }
+        
+        &:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+    }
+    
+    .form-check-label {
+        display: block;
+        cursor: pointer;
+        padding-left: 0.5rem;
+        
+        strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: var(--text-color, #333);
+            font-size: 0.95rem;
+        }
+        
+        .form-text {
+            display: block;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin: 0;
+        }
+    }
+}
+
+.keyboard-shortcuts-info,
+.voice-messages-info {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--message-background, #fff);
+    border-left: 3px solid var(--primary-color, #0066cc);
+    border-radius: 4px;
+    
+    .btn {
+        margin-top: 0.5rem;
+    }
+    
+    .form-text {
+        margin: 0;
+        line-height: 1.6;
+    }
+}
+
+.settings-footer {
+    margin-top: 2rem;
+    
+    .alert {
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 0;
+        
+        strong {
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+    }
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+    .accessibility-settings {
+        .settings-section {
+            background: rgba(255, 255, 255, 0.05);
+            
+            .form-check {
+                background: rgba(0, 0, 0, 0.2);
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+        
+        .keyboard-shortcuts-info,
+        .voice-messages-info {
+            background: rgba(0, 0, 0, 0.2);
+        }
+    }
+}
+
+/* Modo de alto contraste */
+body.converse-high-contrast {
+    .accessibility-settings {
+        .settings-section {
+            border: 2px solid #000;
+            
+            .form-check {
+                border: 2px solid #000;
+                
+                &:hover {
+                    border-color: #0066cc;
+                    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.3);
+                }
+            }
+        }
+        
+        .form-check-input {
+            border: 2px solid #000;
+            
+            &:checked {
+                background-color: #0066cc;
+                border-color: #0066cc;
+            }
+        }
+        
+        .keyboard-shortcuts-info,
+        .voice-messages-info {
+            border: 2px solid #000;
+        }
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .accessibility-settings {
+        padding: 1rem;
+    }
+    
+    .settings-header {
+        h3 {
+            font-size: 1.25rem;
+        }
+    }
+    
+    .settings-section {
+        padding: 0.75rem;
+        
+        h4 {
+            font-size: 1rem;
+        }
+        
+        .form-check {
+            padding: 0.5rem;
+        }
+    }
+}
+
+/* Animaciones reducidas */
+@media (prefers-reduced-motion: reduce) {
+    .settings-section .form-check {
+        transition: none;
+    }
+}

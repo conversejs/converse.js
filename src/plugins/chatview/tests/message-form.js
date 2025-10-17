@@ -3,94 +3,90 @@ const { sizzle, u } = converse.env;
 
 describe('A message form', function () {
     it(
-        'can have text pasted into it with automatic space handling',
+        'pastes files.',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
-
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             const textarea = view.querySelector('textarea.chat-textarea');
 
-            // Helper function to simulate paste with automatic space handling
-            function simulatePaste(text, cursorStart, cursorEnd, pastedText) {
-                textarea.value = text;
-                textarea.selectionStart = cursorStart;
-                textarea.selectionEnd = cursorEnd || cursorStart;
+            const clipboardData = new DataTransfer();
+            clipboardData.items.add(new File(['test'], 'test.txt', { type: 'text/plain' }));
 
-                // Create a paste event with clipboard data
-                const pasteEvent = new Event('paste', { bubbles: true, cancelable: true });
-                Object.defineProperty(pasteEvent, 'clipboardData', {
-                    value: {
-                        files: [],
-                        getData: () => pastedText,
-                    },
-                });
+            // Create a paste event with clipboard data
+            const pasteEvent = new ClipboardEvent('paste', {
+                bubbles: true,
+                cancelable: true,
+                clipboardData,
+            });
 
-                // Dispatch the paste event
-                textarea.dispatchEvent(pasteEvent);
+            // Dispatch the paste event
+            textarea.dispatchEvent(pasteEvent);
+            expect(pasteEvent.defaultPrevented).toBe(true);
+        }),
+    );
 
-                // Simulate the paste behavior with automatic space handling
-                const startPos = textarea.selectionStart;
-                const endPos = textarea.selectionEnd;
-                const textBeforeSelection = textarea.value.substring(0, startPos);
-                const textAfterSelection = textarea.value.substring(endPos);
+    it(
+        'does not paste file if shift is pressed',
+        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            const textarea = view.querySelector('textarea.chat-textarea');
 
-                // Add space before pasted text if needed
-                let resultText = textBeforeSelection;
-                if (resultText.length > 0 && !resultText.endsWith(' ') && pastedText.length > 0) {
-                    resultText += ' ';
-                }
+            const keyDownEvent = new KeyboardEvent('keydown', {
+                key: 'Shift',
+            });
 
-                // Add pasted text
-                resultText += pastedText;
+            textarea.dispatchEvent(keyDownEvent);
 
-                // Add space after pasted text if needed
-                if (pastedText.length > 0 && textAfterSelection.length > 0 && !textAfterSelection.startsWith(' ')) {
-                    resultText += ' ';
-                }
+            const clipboardData = new DataTransfer();
+            clipboardData.items.add(new File(['test'], 'test.txt', { type: 'text/plain' }));
 
-                resultText += textAfterSelection;
-                textarea.value = resultText;
+            // Create a paste event with clipboard data
+            const pasteEvent = new ClipboardEvent('paste', {
+                bubbles: true,
+                cancelable: true,
+                clipboardData,
+            });
 
-                // Update cursor position after paste
-                const newCursorPos = resultText.length - textAfterSelection.length;
-                textarea.selectionStart = textarea.selectionEnd = newCursorPos;
+            // Dispatch the paste event
+            textarea.dispatchEvent(pasteEvent);
 
-                return resultText;
-            }
+            const keyUpEvent = new KeyboardEvent('keyup', {
+                key: 'Shift',
+            });
 
-            // Test case 1: Paste at the beginning
-            let result = simulatePaste('Hello world', 0, 0, 'PASTED');
-            expect(result).toBe('PASTED Hello world');
+            textarea.dispatchEvent(keyUpEvent);
 
-            // Test case 2: Paste in the middle (no space before cursor)
-            result = simulatePaste('Helloworld', 5, 5, 'PASTED');
-            expect(result).toBe('Hello PASTED world');
+            expect(pasteEvent.defaultPrevented).toBe(false);
+        }),
+    );
 
-            // Test case 3: Paste in the middle (space already exists before cursor)
-            result = simulatePaste('Hello world', 6, 6, 'PASTED');
-            expect(result).toBe('Hello PASTED world');
+    it(
+        'allows native paste if no files',
+        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            const textarea = view.querySelector('textarea.chat-textarea');
 
-            // Test case 4: Paste at the end
-            result = simulatePaste('Hello world', 11, 11, 'PASTED');
-            expect(result).toBe('Hello world PASTED');
+            const clipboardData = new DataTransfer();
+            clipboardData.setData('text/plain', 'Hello');
 
-            // Test case 5: Paste with text selection (should replace selected text with spaces)
-            result = simulatePaste('Hello world', 6, 11, 'PASTED');
-            expect(result).toBe('Hello PASTED');
+            // Create a paste event with clipboard data
+            const pasteEvent = new ClipboardEvent('paste', {
+                bubbles: true,
+                cancelable: true,
+                clipboardData,
+            });
 
-            // Test case 6: Paste with empty string
-            result = simulatePaste('Hello world', 5, 5, '');
-            expect(result).toBe('Hello world');
-
-            // Test case 7: Paste into empty textarea
-            result = simulatePaste('', 0, 0, 'PASTED');
-            expect(result).toBe('PASTED');
-
-            // Test case 8: Paste with space in the pasted text
-            result = simulatePaste('Hello world', 5, 5, 'PASTED TEXT');
-            expect(result).toBe('Hello PASTED TEXT world');
-        })
+            // Dispatch the paste event
+            textarea.dispatchEvent(pasteEvent);
+            expect(pasteEvent.defaultPrevented).toBe(false);
+        }),
     );
 });

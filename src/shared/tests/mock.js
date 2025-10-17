@@ -263,7 +263,7 @@ const cur_jids = cur_names.map((name) => `${name.replace(/ /g, '.').toLowerCase(
 
 const groups = {
     'colleagues': 3,
-    'friends & acquaintences': 3,
+    'friends & acquaintances': 3,
     'Family': 4,
     'ænemies': 3,
     'Ungrouped': 2

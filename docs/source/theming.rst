@@ -87,7 +87,7 @@ theme file that sets the various CSS variables (as described above).
 For other CSS-related changes, you can make a specific
 CSS rule with that matches the element you want to change.
 
-Sometimes it might however be neccessary to modify the core CSS files from
+Sometimes it might however be necessary to modify the core CSS files from
 Converse, for example if you're developing new features or fixing styling bugs.
 
 The CSS files are generated from `Sass <http://sass-lang.com>`_ files that end in ``.scss`` and

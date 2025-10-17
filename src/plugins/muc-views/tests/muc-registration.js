@@ -4,7 +4,7 @@ const { Strophe, sizzle, u, stx } = converse.env;
 
 describe("Chatrooms", function () {
 
-    describe("The /register commmand", function () {
+    describe("The /register command", function () {
 
         it("allows you to register your nickname in a room",
                 mock.initConverse(['chatBoxesFetched'], {'auto_register_muc_nickname': true},

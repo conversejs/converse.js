@@ -2,18 +2,18 @@
  * @module:headless-shared-parsers
  */
 import sizzle from 'sizzle';
-import _converse from './_converse.js';
-import api from './api/index.js';
-import dayjs from 'dayjs';
-import log from "@converse/log";
 import { Strophe } from 'strophe.js';
+import log from "@converse/log";
 import { decodeHTMLEntities } from '../utils/html.js';
 import { getAttributes } from '../utils/stanza.js';
 import { rejectMessage } from './actions.js';
 import { XFORM_TYPE_MAP,  XFORM_VALIDATE_TYPE_MAP } from './constants.js';
 import * as errors from './errors.js';
+import _converse from './_converse.js';
+import api from './api/index.js';
+import converse from './api/public.js';
 
-
+const { dayjs } = converse.env;
 const { NS } = Strophe;
 
 /**

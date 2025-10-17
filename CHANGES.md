@@ -1,5 +1,12 @@
 # Changelog
 
+## Next release
+
+- #3824: Dates and times are not translated 
+- #3829: Rich text from LibreOffice Calc is sent as screenshots
+- #3830: The message textarea blocks undo of the pasted text
+- #3863: Shift `unescapeHTML` helper function (used to set `isOnlyEmoji` on a message) to converse-headless
+
 ## 12.0.0 (2025-08-28)
 
 - #3581: Don't unnecessarily regenerate pot and po files
@@ -11,6 +18,7 @@
 - #3769: Various OMEMO fixes
 - #3791: Fetching pubsub node configuration fails
 - #3792: Node reconfiguration attempt uses incorrect field names
+- Fix documentation formatting in security.rst
 - Add approval banner in chats with requesting contacts or unsaved contacts
 - Add mongolian as a language option
 - Breaking: `Strophe.shims` has been removed. Instead, just use the globals.
@@ -34,7 +42,7 @@
 - #2938: Add a service discovery browser
 - #3672: Images not rendering
 - #3676: Flyout box is not positioned correctly on mobile devices in "overlayed" mode
-- #3689: Chat view not accesible for certain widths in "fullscreen" mode
+- #3689: Chat view not accessible for certain widths in "fullscreen" mode
 - Remove modal from the DOM when it's closed
 - Fix login form style for `classic` theme
 - Fix css for the `headlines` feed
@@ -205,7 +213,7 @@ Adding more types of chats:
 ## 10.1.2 (2023-02-17)
 
 - #1490: Busy-loop when fetching registration form fails
-- #1556: Can't switch to registration form afrer logout
+- #1556: Can't switch to registration form after logout
 - #3137: Various UI/UX bugfixes regarding the registration form
 - XEP-0437: Room Activity Indicators (RAI) optimizations
 
@@ -374,7 +382,7 @@ Instead, use `api.settings.get` and `api.settings.set`.
 - Add support for pausing Gif images
 - Add limited support for XEP-0316 MUC notifications
 
-### New configuration setings
+### New configuration settings
 
 - [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
 - [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave)
@@ -494,7 +502,7 @@ Soon we'll deprecate the latter, so prepare now.
 - #2300: Fix message reorder issue after message correction.
 - #2304: Custom emojis (stickers) images not shown
 - #2307: BootstrapModal is not accessible to plugins
-- #2308: Allow getHats method to be overriden in the `overrides` object in plugins.
+- #2308: Allow getHats method to be overridden in the `overrides` object in plugins.
 - #2321: When Converse runs inside a browser extension, enable browser sync and local storage for persistent storage
 - #1250: Change favicon color when unread messages
 - Updated translations: de, es, fi, fr, gl, hu, nb_NO, oc, pl, pt, pt_BR, ru, tr, uk, zh
@@ -548,7 +556,7 @@ Soon we'll deprecate the latter, so prepare now.
   instances. Still working out a wire protocol for compatibility with other clients.
   To add custom emojis, edit the `emojis.json` file.
 
-- #129: Add support for [XEP-0156: Disovering Alternative XMPP Connection Methods](https://xmpp.org/extensions/xep-0156.html). Only XML is supported for now.
+- #129: Add support for [XEP-0156: Discovering Alternative XMPP Connection Methods](https://xmpp.org/extensions/xep-0156.html). Only XML is supported for now.
 - #1105: Support for storing persistent data in IndexedDB
 - #1253: Show contacts with unread messages at the top of the roster
 - #1322 Display occupants’ avatars in the occupants list
@@ -858,7 +866,7 @@ version 1.7.0 and below. You're advised to stay on Converse version 4.1.2 until 
 - #1268 Switch from SASS variables to CSS custom properties
 - #1278 Replace the default avatar with a SVG version
 - #1288 Add CSS classes to differentiate between incoming and outgoing messages
-- #1305 added value 'all' for 'show_desktop_notifications' to notifiy even if converse.js is open
+- #1305 added value 'all' for 'show_desktop_notifications' to notify even if converse.js is open
 - #1306 added option `notification_delay`
 - #1312 Error `unrecognized expression` in Safari
 - #1316 show version info in login dialog
@@ -1225,7 +1233,7 @@ version 1.7.0 and below. You're advised to stay on Converse version 4.1.2 until 
 - It wasn't possible to add or remove bookmarks via the "Open Rooms" list.
 - #879 Text in links are converted to smileys leading to non-clickable links.
 - #899: Only touch `stamp-npm` if `npm install` was successful
-- #902 `make build` dependends on non-existing files
+- #902 `make build` depends on non-existing files
 
 ## 3.1.1 (2017-07-12)
 
@@ -1304,7 +1312,7 @@ More info here: https://github.com/LeaVerou/awesomplete/pull/17082
 ## 3.0.1 (2017-04-04)
 
 - Bugfix. Endless spinner when trying to log in after rendering the registration form. [jcbrand]
-- #585 Duplicate contact created due to JID case sensivity [saganshul]
+- #585 Duplicate contact created due to JID case sensitivity [saganshul]
 - #628 Fixes the bug in displaying chat status during private chat. [saganshul]
 - #628 Changes the message displayed while typing from a different resource of the same user. [smitbose]
 - #675 Time format made configurable.
@@ -1601,7 +1609,7 @@ More info here: https://github.com/LeaVerou/awesomplete/pull/17082
 - #487 Empty the resources array when the resource is null [rlanvin]
 - #534 Updated Russian translation [LaconicTranslator]
 - #555 The status restored from sessionStorage is never updated [jcbrand]
-- #559 Remove reconnection timer once connected succesfully [m0cs]
+- #559 Remove reconnection timer once connected successfully [m0cs]
 
 ## 0.10.0 (2015-11-05)
 
@@ -1677,7 +1685,7 @@ More info here: https://github.com/LeaVerou/awesomplete/pull/17082
 
 - Add the ability to log in automatically. [jcbrand]
 - Remove `type=email` from JID field in login form. Resulting validation error confuses people. [jcbrand]
-- Add Ukranian translations [Andriy Kopystyansky]
+- Add Ukrainian translations [Andriy Kopystyansky]
 - #244 Add the ability to log in anonymously. [jcbrand]
 - #344 Enable the path to the sound files to be configured [thierrytiti and jcbrand]
 - #370 Unable to register a new user to ejabberd 2.1.11. [gbonvehi]

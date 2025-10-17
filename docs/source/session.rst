@@ -183,7 +183,7 @@ which does the above. You'd have to `configure Converse.js to use SASL-EXTERNAL 
 and then set up Prosody with that plugin. (Note, I haven't yet tested this setup personally).
 
 This is however not a cross-platform solution and won't work for hosters who
-want to support all or multple XMPP servers.
+want to support all or multiple XMPP servers.
 
 Storing the password in localStorage
 ------------------------------------

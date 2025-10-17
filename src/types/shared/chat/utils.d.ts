@@ -65,7 +65,7 @@ export function addEmojisMarkup(text: string, options: object): string[];
  *
  * @namespace u
  * @method u.shortnamesToEmojis
- * @param {String} str - String containg the shortname(s)
+ * @param {String} str - String containing the shortname(s)
  * @param {Object} options
  * @param {Boolean} options.unicode_only - Whether emojis are rendered as
  *  unicode codepoints. If so, the returned result will be an array

@@ -598,7 +598,7 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * Used by sub-classes to indicate wether a message is a chat
+         * Used by sub-classes to indicate whether a message is a chat
          * message, as opposed to error or info messages.
          * @param {BaseMessage} _message
          * @returns {boolean}

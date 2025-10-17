@@ -33,7 +33,7 @@ class MUCMessage extends BaseMessage {
     }
 
     /**
-     * Determines whether this messsage may be moderated,
+     * Determines whether this message may be moderated,
      * based on configuration settings and server support.
      * @method _converse.ChatRoomMessages#mayBeModerated
      * @returns {Promise<boolean>}

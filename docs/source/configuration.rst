@@ -326,7 +326,7 @@ auto_fill_history_gaps
 
 * Default:  ``true``
 
-Determins whether Converse automatically fills gaps in the chat history.
+Determines whether Converse automatically fills gaps in the chat history.
 If set to false, a placeholder appears which can be clicked to fetch the
 missing messages.
 
@@ -401,7 +401,7 @@ in to their XMPP account.
   log the user in.
 
   If `authentication`_ set to ``login`` the situation is much more
-  ambiguous, since we don't have a way to distinguish between wether we're
+  ambiguous, since we don't have a way to distinguish between whether we're
   restoring a previous session (``keepalive``) or whether we're
   automatically setting up a new session (``auto_login``).
 
@@ -440,7 +440,7 @@ unexpectedly.
 
 This option works best when you have `authentication`_ set to ``prebind`` and have
 also specified a ``prebind_url`` URL, from where Converse can fetch the BOSH
-tokens. In this case, Converse will automaticallly reconnect when the
+tokens. In this case, Converse will automatically reconnect when the
 connection drops but also reestablish earlier lost connections (due to
 network outages, closing your laptop etc.).
 
@@ -643,7 +643,7 @@ chatstate_notification_blacklist
 A list of JIDs to be ignored when showing desktop notifications of changed chat states.
 
 Some user's clients routinely connect and disconnect (likely on mobile) and
-each time a chat state notificaion is received (``online`` when connecting and
+each time a chat state notification is received (``online`` when connecting and
 then ``offline`` when disconnecting).
 
 When desktop notifications are turned on (see `show-desktop-notifications`_),
@@ -1461,7 +1461,7 @@ muc_roomid_policy_hint
 
 * Default: ``null``
 
-This option can be used in conjuction with `muc_roomid_policy`_ in order to give
+This option can be used in conjunction with `muc_roomid_policy`_ in order to give
 a written explanation of the imposed room id policy. You can use the html-tags
 ``<br>``, ``<b>``, and ``<em>`` to allow some basic styling.
 
@@ -1514,7 +1514,7 @@ to build the list of desired info messages that will be shown:
 
 By default all info messages are shown.
 
-The behaviour of this setting is whitelisting, so if it is overriden all the desired
+The behaviour of this setting is whitelisting, so if it is overridden all the desired
 events must be specified.
 
 If an empty list is provided, no info message will be displayed at all.
@@ -1734,7 +1734,7 @@ The URL path at which these resources are loaded is normally set by the ``public
 setting of Webpack but this means that it's hardcoded to a particular value at
 compile time.
 
-This configuration seting allows this value to be set at runtime as well.
+This configuration setting allows this value to be set at runtime as well.
 
 .. _persistent-store:
 
@@ -2012,7 +2012,7 @@ show_background
 
 * Default: ``true``
 
-Wether a background with the Converse logo should be shown.
+Whether a background with the Converse logo should be shown.
 
 
 show_chat_state_notifications
@@ -2177,7 +2177,7 @@ sounds_path
 * Default: ``${assets_path}/sounds/``
 
 This option only makes sense in conjunction with the `play_sounds`_ option and
-specifies the URL of the sound files to be played (exluding the file names
+specifies the URL of the sound files to be played (excluding the file names
 themselves).
 
 In order to support all browsers we need both an MP3 and an Ogg file. Make sure
@@ -2262,7 +2262,7 @@ colorize_username
 
 * Default: ``false``
 
-Wether nicknames should be colorized, in compliance with `XEP-0392: Consistent Color Generation <https://xmpp.org/extensions/xep-0392.html>`_.
+Whether nicknames should be colorized, in compliance with `XEP-0392: Consistent Color Generation <https://xmpp.org/extensions/xep-0392.html>`_.
 
 time_format
 -----------

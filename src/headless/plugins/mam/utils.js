@@ -44,7 +44,7 @@ export async function onMAMError(e, iq) {
  * currently not supported in converse.js.
  *
  * Per JID preferences will be set in chat boxes, so it'll
- * probbaly be handled elsewhere in any case.
+ * probably be handled elsewhere in any case.
  *
  * @param {Element} iq
  * @param {Model} feature

@@ -21,7 +21,7 @@ class Suggestion extends String {
         this.data = data;
     }
 
-    get lenth() {
+    get length() {
         return this.label.length;
     }
 

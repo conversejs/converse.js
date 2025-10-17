@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import sizzle from 'sizzle';
 import { Strophe, $iq } from 'strophe.js';
 import { Model } from '@converse/skeletor';
@@ -10,6 +9,9 @@ import ColorAwareModel from '../shared/color.js';
 import ModelWithContact from '../shared/model-with-contact.js';
 import ModelWithVCard from '../shared/model-with-vcard';
 import { getUniqueId } from '../utils/index.js';
+import converse from './api/public.js';
+
+const { dayjs } = converse.env;
 
 class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     defaults() {
@@ -145,7 +147,7 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
     }
 
     /**
-     * Determines whether this messsage may be retracted by the current user.
+     * Determines whether this message may be retracted by the current user.
      * @returns { Boolean }
      */
     mayBeRetracted() {
@@ -191,7 +193,7 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
     getUploadRequestMetadata(stanza) {
         const headers = sizzle(`slot[xmlns="${Strophe.NS.HTTPUPLOAD}"] put header`, stanza);
         // https://xmpp.org/extensions/xep-0363.html#request
-        // TODO: Can't set the Cookie header in JavaScipt, instead cookies need
+        // TODO: Can't set the Cookie header in JavaScript, instead cookies need
         // to be manually set via document.cookie, so we're leaving it out here.
         return {
             headers: headers
@@ -271,11 +273,11 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
             let message;
             if (xhr.responseText) {
                 message = __(
-                    'Sorry, could not succesfully upload your file. Your server’s response: "%1$s"',
+                    'Sorry, could not successfully upload your file. Your server’s response: "%1$s"',
                     xhr.responseText
                 );
             } else {
-                message = __('Sorry, could not succesfully upload your file.');
+                message = __('Sorry, could not successfully upload your file.');
             }
             this.save({
                 is_ephemeral: true,

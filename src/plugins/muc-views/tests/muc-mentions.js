@@ -4,7 +4,7 @@ const { dayjs, stx, u } = converse.env;
 
 // See: https://xmpp.org/rfcs/rfc3921.html
 
-describe("MUC Mention Notfications", function () {
+describe("MUC Mention Notifications", function () {
 
     it("may be received from a MUC in which the user is not currently present",
         mock.initConverse([], {

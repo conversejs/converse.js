@@ -15,34 +15,40 @@ describe('i18n', () => {
         it("returns the preferred locale if supported",
             mock.initConverse([], {
                 locales: ['en', 'es', 'fr'],
-                i18n: 'en'
+                i18n: 'es'
             }, async function (_converse) {
                 const { i18n } = _converse.env;
-                const locale = i18n.determineLocale('es', (l) => ['en', 'es', 'fr'].includes(l));
+                const locale = i18n.determineLocale();
                 expect(locale).toBe('es');
             })
         );
 
         it("supports regional dialects",
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse([], {
+                locales: ['en', 'pt_BR', 'pt'],
+                i18n: 'pt_BR'
+            }, async function (_converse) {
                 const { i18n } = _converse.env;
                 Object.defineProperty(navigator, 'languages', {
                     value: ['pt-BR'],
                     configurable: true,
                 });
-                const locale = i18n.determineLocale(undefined, (l) => ['pt_BR'].includes(l));
+                const locale = i18n.determineLocale();
                 expect(locale).toBe('pt_BR');
             })
         );
 
         it("falls back to the non-regional version",
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse([], {
+                locales: ['en', 'pt'],
+                i18n: 'pt_BR'
+            }, async function (_converse) {
                 const { i18n } = _converse.env;
                 Object.defineProperty(navigator, 'languages', {
                     value: ['pt-BR'],
                     configurable: true,
                 });
-                const locale = i18n.determineLocale(undefined, (l) => ['pt'].includes(l));
+                const locale = i18n.determineLocale();
                 expect(locale).toBe('pt');
             })
         );
@@ -50,14 +56,14 @@ describe('i18n', () => {
         it("falls back to browser language if preferred not supported",
             mock.initConverse([], {
                 locales: ['en', 'es', 'fr'],
-                i18n: 'en'
+                i18n: 'de'
             }, async function (_converse) {
                 const { i18n } = _converse.env;
                 Object.defineProperty(navigator, 'languages', {
                     value: ['fr-FR', 'fr', 'en-US', 'en'],
                     configurable: true,
                 });
-                const locale = i18n.determineLocale('de', (l) => ['en', 'es', 'fr'].includes(l));
+                const locale = i18n.determineLocale();
                 expect(locale).toBe('fr');
             })
         );
@@ -65,14 +71,14 @@ describe('i18n', () => {
         it("falls back to \"en\" if no supported locale found",
             mock.initConverse([], {
                 locales: ['en', 'es', 'fr'],
-                i18n: 'en'
+                i18n: 'ja'
             }, async function (_converse) {
                 const { i18n } = _converse.env;
                 Object.defineProperty(navigator, 'languages', {
                     value: ['de', 'it'],
                     configurable: true,
                 });
-                const locale = i18n.determineLocale('ja', (l) => ['en', 'es', 'fr'].includes(l));
+                const locale = i18n.determineLocale();
                 expect(locale).toBe('en');
             })
         );

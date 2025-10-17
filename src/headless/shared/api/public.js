@@ -3,6 +3,8 @@
  */
 import { sprintf } from 'sprintf-js';
 import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 import sizzle from 'sizzle';
 import { Stanza, Strophe, $build, $iq, $msg, $pres, stx } from 'strophe.js';
 import { Collection, Model } from "@converse/skeletor";
@@ -20,9 +22,6 @@ import { isTestEnv } from '../../utils/session.js';
 import { TimeoutError } from '../errors.js';
 import { initAppSettings } from '../settings/utils.js';
 import * as errors from '../errors.js';
-
-_converse.api = api;
-
 import {
     cleanup,
     initClientConfig,
@@ -30,6 +29,11 @@ import {
     initSessionStorage,
     registerGlobalEventHandlers,
 } from '../../utils/init.js';
+
+_converse.api = api;
+
+dayjs.extend(advancedFormat);
+dayjs.extend(localizedFormat);
 
 const env = /** @type {import('./types').ConverseEnv} */ {
     $build,

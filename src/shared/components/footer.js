@@ -39,7 +39,7 @@ export class ConverseFooter extends CustomElement {
                                                       rel="noopener"
                                                       ><img
                                                           style="width: 13em"
-                                                          src="https://conversejs.org/media/logos/bairesdev-primary.png"
+                                                          src="https://conversejs.org/media/logos/BairesDev_logo-orange.png"
                                                           alt="BairesDev"
                                                   /></a>
                                               </div>

@@ -50,7 +50,7 @@ describe("A Chat Message", function () {
 
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             msg = view.querySelector('.chat-msg .chat-msg__text');
-            expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('Have you heard this funny audio?'); // Emtpy
+            expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('Have you heard this funny audio?'); // Empty
 
             // We don't render the OOB data
             expect(view.querySelector('converse-chat-message:last-child .chat-msg__media')).toBe(null);

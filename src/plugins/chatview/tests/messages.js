@@ -116,7 +116,7 @@ describe("A Chat Message", function () {
                      to="${_converse.bare_jid}"
                      from="${sender_jid}"
                      type="chat">
-                <body>Inbetween message</body>
+                <body>In between message</body>
                 <delay xmlns="urn:xmpp:delay" stamp="2018-01-01T13:18:23Z"/>
             </message>`;
         _converse.handleMessageStanza(msg);
@@ -128,7 +128,7 @@ describe("A Chat Message", function () {
                      to="${_converse.bare_jid}"
                      from="${sender_jid}"
                      type="chat">
-                <body>another inbetween message</body>
+                <body>another in between message</body>
                 <delay xmlns="urn:xmpp:delay" stamp="2018-01-01T13:18:23Z"/>
             </message>`;
         _converse.handleMessageStanza(msg);
@@ -206,14 +206,14 @@ describe("A Chat Message", function () {
 
         day = sizzle('.date-separator:eq(1)', view).pop();
         expect(day.getAttribute('data-isodate')).toEqual(dayjs('2018-01-01T00:00:00').toISOString());
-        expect(day.nextElementSibling.querySelector('.chat-msg__text').textContent).toBe('Inbetween message');
+        expect(day.nextElementSibling.querySelector('.chat-msg__text').textContent).toBe('In between message');
 
         el = sizzle('.chat-msg:eq(1)', view).pop();
-        expect(el.querySelector('.chat-msg__text').textContent).toEqual('Inbetween message');
-        expect(el.parentElement.nextElementSibling.querySelector('.chat-msg__text').textContent).toEqual('another inbetween message');
+        expect(el.querySelector('.chat-msg__text').textContent).toEqual('In between message');
+        expect(el.parentElement.nextElementSibling.querySelector('.chat-msg__text').textContent).toEqual('another in between message');
         el = sizzle('.chat-msg:eq(2)', view).pop();
         expect(el.querySelector('.chat-msg__text').textContent)
-            .toEqual('another inbetween message');
+            .toEqual('another in between message');
         expect(u.hasClass('chat-msg--followup', el)).toBe(true);
 
         time = sizzle('time.separator-text:nth(2)', view).pop();
@@ -415,7 +415,7 @@ describe("A Chat Message", function () {
         let chatbox = await _converse.api.chats.get(impersonated_jid);
         expect(chatbox).toBe(null);
 
-        // Check that the chatbox for the malicous user is not created
+        // Check that the chatbox for the malicious user is not created
         chatbox = await _converse.api.chats.get(sender_jid);
         expect(chatbox).toBe(null);
     }));
@@ -774,7 +774,7 @@ describe("A Chat Message", function () {
         expect(view.querySelector(`${nth_child(6)} .chat-msg__text`).textContent).toBe(
             "Another message within 10 minutes, but from a different person");
 
-        // Let's add a delayed, inbetween message
+        // Let's add a delayed, in between message
         _converse.handleMessageStanza(
             $msg({
                 'xmlns': 'jabber:client',

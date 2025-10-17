@@ -56,7 +56,7 @@ declare const BaseMessage_base: {
         _listeningTo: {};
         _listenId: any;
         off(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context?: any): any;
-        stopListening(obj?: any, name?: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        stopListening(obj?: any, name?: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor" /** @type {import('./types').MessageAttributes} */).Collection, options: Record<string, any>) => any): any;
         once(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
         listenToOnce(obj: any, name: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
         trigger(name: string, ...args: any[]): any;
@@ -131,7 +131,7 @@ declare const BaseMessage_base: {
         _listeningTo: {};
         _listenId: any;
         off(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context?: any): any;
-        stopListening(obj?: any, name?: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        stopListening(obj?: any, name?: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor" /** @type {import('./types').MessageAttributes} */).Collection, options: Record<string, any>) => any): any;
         once(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
         listenToOnce(obj: any, name: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
         trigger(name: string, ...args: any[]): any;
@@ -200,7 +200,7 @@ declare const BaseMessage_base: {
         _listeningTo: {};
         _listenId: any;
         off(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context?: any): any;
-        stopListening(obj?: any, name?: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        stopListening(obj?: any, name?: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor" /** @type {import('./types').MessageAttributes} */).Collection, options: Record<string, any>) => any): any;
         once(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
         listenToOnce(obj: any, name: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
         trigger(name: string, ...args: any[]): any;
@@ -261,7 +261,7 @@ declare class BaseMessage extends BaseMessage_base {
      */
     isFollowup(): boolean;
     /**
-     * Determines whether this messsage may be retracted by the current user.
+     * Determines whether this message may be retracted by the current user.
      * @returns { Boolean }
      */
     mayBeRetracted(): boolean;

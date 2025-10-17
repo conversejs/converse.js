@@ -13,6 +13,6 @@ declare class Suggestion extends String {
     value: any;
     query: string;
     data: any;
-    get lenth(): any;
+    get length(): any;
 }
 //# sourceMappingURL=suggestion.d.ts.map

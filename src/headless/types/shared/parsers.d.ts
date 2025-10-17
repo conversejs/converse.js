@@ -40,7 +40,7 @@ export function getRetractionAttributes(stanza: Element, original_stanza: Elemen
  */
 export function getCorrectionAttributes(stanza: Element, original_stanza: Element): {
     replace_id: string;
-    edited: string;
+    edited: any;
 } | {
     replace_id?: undefined;
     edited?: undefined;

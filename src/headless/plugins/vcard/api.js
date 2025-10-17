@@ -35,7 +35,7 @@ export default {
          *     'fn': 'John Doe',
          *     'nickname': 'jdoe'
          * }).then(() => {
-         *     // Succes
+         *     // Success
          * }).catch((e) => {
          *     // Failure, e is your error object
          * }).

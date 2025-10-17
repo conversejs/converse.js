@@ -210,7 +210,7 @@ export type MessageAttributes = EncryptionAttrs &
         retracted_id: string; // The `id` attribute of a XEP-424 <retracted> element
         sender: 'me' | 'them'; // Whether the message was sent by the current user or someone else
         spoiler_hint: string; //  The XEP-0382 spoiler hint
-        stanza_id: string; // The XEP-0359 Stanza ID. Note: the key is actualy `stanza_id ${by_jid}` and there can be multiple.
+        stanza_id: string; // The XEP-0359 Stanza ID. Note: the key is actually `stanza_id ${by_jid}` and there can be multiple.
         subject: string; // The <subject> element value
         thread: string; // The <thread> element value
         time: string; // The time (in ISO8601 format), either given by the XEP-0203 <delay> element, or of receipt.

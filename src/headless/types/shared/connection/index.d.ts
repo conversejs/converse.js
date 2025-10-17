@@ -13,11 +13,11 @@ export class Connection extends Connection_base {
     bind(): Promise<void>;
     onDomainDiscovered(response: any): Promise<void>;
     /**
-     * Adds support for XEP-0156 by quering the XMPP server for alternate
+     * Adds support for XEP-0156 by querying the XMPP server for alternate
      * connection methods. This allows users to use the websocket or BOSH
      * connection of their own XMPP server instead of a proxy provided by the
      * host of Converse.js.
-     * @method Connnection.discoverConnectionMethods
+     * @method Connection.discoverConnectionMethods
      * @param {string} domain
      */
     discoverConnectionMethods(domain: string): Promise<void>;

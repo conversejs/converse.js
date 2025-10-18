@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-08 15:09+0200\n"
-"PO-Revision-Date: 2021-03-05 03:50+0000\n"
-"Last-Translator: Tomáš Obšívač <tomasek@gmail.com>\n"
+"PO-Revision-Date: 2025-10-20 04:50+0000\n"
+"Last-Translator: Dag Jeger <dag@jeger.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
 "translations/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.5.1-dev\n"
+"Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
+"X-Generator: Weblate 5.14-dev\n"
 
 #: dist/converse-no-dependencies.js:42934
 msgid "A timeout occurred"
@@ -785,7 +785,7 @@ msgstr "Zavřít"
 #: dist/converse-no-dependencies.js:138680
 #: dist/converse-no-dependencies.js:142802
 msgid "Confirm"
-msgstr ""
+msgstr "Potvrdit"
 
 #: dist/converse-no-dependencies.js:90588
 #: dist/converse-no-dependencies.js:95374

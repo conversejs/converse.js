@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-08 15:09+0200\n"
-"PO-Revision-Date: 2025-10-13 11:57+0000\n"
-"Last-Translator: solokot <solokot@gmail.com>\n"
+"PO-Revision-Date: 2025-10-20 04:50+0000\n"
+"Last-Translator: Yurt Page <yurtpage+weblate@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -594,7 +594,7 @@ msgstr "Запросы на авторизацию"
 
 #: dist/converse-no-dependencies.js:62417
 msgid "Ungrouped"
-msgstr "Несгруппированные"
+msgstr "Без группы"
 
 #: dist/converse-no-dependencies.js:62418
 #: dist/converse-no-dependencies.js:108517
@@ -838,7 +838,7 @@ msgstr "Роль"
 
 #: dist/converse-no-dependencies.js:95868
 msgid "Hats"
-msgstr "Шапки"
+msgstr "Шляпы"
 
 #: dist/converse-no-dependencies.js:95868
 msgid "Occupant Id"
@@ -1073,8 +1073,8 @@ msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
-"При попытке отменить команду произошла ошибка. Подробности в консоли "
-"разработчика."
+"При попытке отменить команду произошла ошибка. См. подробности в консоли "
+"разработчика"
 
 #: dist/converse-no-dependencies.js:98527
 msgid "Error: unexpected result"

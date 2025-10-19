@@ -1276,11 +1276,12 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @returns {Promise}
      */
     async getDiscoInfo() {
-        const identity = await api.disco.getIdentity('conference', 'text', this.get('jid'));
+        const jid = this.get('jid');
+        const identity = await api.disco.getIdentity('conference', 'text', jid);
         if (identity?.get('name')) {
             this.save({ name: identity.get('name') });
         } else {
-            log.error(`No identity or name found for ${this.get('jid')}`);
+            this.save({ name: Strophe.getNodeFromJid(jid) });
         }
         await this.getDiscoInfoFields();
         await this.getDiscoInfoFeatures();

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-08 15:09+0200\n"
-"PO-Revision-Date: 2022-10-02 18:24+0000\n"
-"Last-Translator: Geert van der Meer <geert.v.d.meer@live.nl>\n"
+"PO-Revision-Date: 2025-10-21 22:02+0000\n"
+"Last-Translator: Wim Cossement <sonicwim@gmail.com>\n"
 "Language-Team: Dutch (Belgium) <https://hosted.weblate.org/projects/"
 "conversejs/translations/nl_BE/>\n"
 "Language: nl_BE\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 5.14-dev\n"
 
 #: dist/converse-no-dependencies.js:42934
 msgid "A timeout occurred"
@@ -1901,7 +1901,7 @@ msgstr "Lid"
 
 #: dist/converse-no-dependencies.js:125256
 msgid "Moderator"
-msgstr "Moderator hoofdbewerker"
+msgstr "Moderator"
 
 #: dist/converse-no-dependencies.js:125260
 msgid "Visitor"

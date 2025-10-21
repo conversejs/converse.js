@@ -124,12 +124,7 @@ export async function routeToQueryAction(event) {
  */
 function extractXMPPURI(event) {
     let uri = null;
-
-    // Case 1: protocol handler (?uri=...)
-    const searchParams = new URLSearchParams(window.location.search);
-    uri = searchParams.get('uri');
-
-    // Case 2: hash-based (#converse/action?uri=...)
+    // hash-based (#converse/action?uri=...)
     if (!uri && location.hash.startsWith('#converse/action?uri=')) {
         event?.preventDefault();
         uri = location.hash.split('uri=').pop();
@@ -153,8 +148,8 @@ function extractXMPPURI(event) {
  */
 function parseXMPPURI(uri) {
     const [jid, query] = uri.split('?');
-    const queryParams = new URLSearchParams(query);
-    return { jid, queryParams };
+    const query_params = new URLSearchParams(query);
+    return { jid, query_params };
 }
 
 /**

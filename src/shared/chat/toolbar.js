@@ -24,6 +24,7 @@ export class ChatToolbar extends CustomElement {
             show_emoji_button: { type: Boolean },
             show_send_button: { type: Boolean },
             show_spoiler_button: { type: Boolean },
+            show_location_button: { type: Boolean },
         }
     }
 
@@ -34,6 +35,7 @@ export class ChatToolbar extends CustomElement {
         this.hidden_occupants = false;
         this.show_send_button = false;
         this.show_spoiler_button = false;
+        this.show_location_button = false;
         this.show_call_button = false;
         this.show_emoji_button = false;
     }
@@ -81,6 +83,19 @@ export class ChatToolbar extends CustomElement {
 
         if (this.show_spoiler_button) {
             buttons.push(this.getSpoilerButton());
+        }
+
+        if (this.show_location_button) {
+            const color = this.is_groupchat ? '--muc-color' : '--chat-color';
+            const i18n_insert_location = __('Insert current location');
+            buttons.push(html`
+                <button type="button"
+                        class="btn insert-location"
+                        @click=${this.insertLocation}
+                        title="${i18n_insert_location}">
+                    <converse-icon color="var(${color})" class="fa fa-location-arrow" size="1em"></converse-icon>
+                </button>`
+            );
         }
 
         const domain = _converse.session.get('domain');
@@ -197,6 +212,30 @@ export class ChatToolbar extends CustomElement {
             connection: api.connection.get(),
             model: this.model
         });
+    }
+
+    /** @param {MouseEvent} ev */
+    insertLocation (ev) {
+        ev?.preventDefault?.();
+        ev?.stopPropagation?.();
+        const i18n_error = __('Unable to get current location');
+        if (!('geolocation' in navigator)) {
+            api.toast.show('geo-not-supported', { type: 'warning', body: i18n_error });
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude, longitude } = pos.coords;
+                const lat = latitude.toFixed(6);
+                const lon = longitude.toFixed(6);
+                const geo = `geo:${lat},${lon}`;
+                const draft = (this.model.get('draft') || '').trim();
+                const sep = draft ? ' ' : '';
+                this.model.set('draft', `${draft}${sep}${geo}`);
+            },
+            () => api.toast.show('geo-error', { type: 'danger', body: i18n_error }),
+            { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+        );
     }
 }
 

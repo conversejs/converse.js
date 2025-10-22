@@ -10,7 +10,8 @@ import "../styles/audio.scss";
  */
 export default (url, hide_url, title) => {
     const { hostname } = u.getURL(url);
-    return html`<figure class="audio-element">
+    const label = title || (hostname ? `Audio from ${hostname}` : 'Audio');
+    return html`<figure class="audio-element" role="group" aria-label="${label}">
         ${title || !hide_url
             ? html`<figcaption>
                   ${title ? html`${title}</br>` : ""}
@@ -19,6 +20,6 @@ export default (url, hide_url, title) => {
                       : html`<a target="_blank" rel="noopener" title="${url}" href="${url}">${hostname}</a>`}
               </figcaption>`
             : ""}
-        <audio controls src="${url}"></audio>
+        <audio controls preload="metadata" src="${url}" aria-label="${label}" tabindex="0"></audio>
     </figure>`;
 };

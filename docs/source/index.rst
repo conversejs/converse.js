@@ -47,6 +47,7 @@ Table of Contents
    session
    configuration
    development
+   good_first_issues
    theming
    security
    translations

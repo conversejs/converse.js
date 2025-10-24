@@ -31,18 +31,18 @@ declare class Bookmarks extends Collection<Bookmark> {
      * @param {Bookmark} bookmark
      * @returns {Promise<void|Element>}
      */
-    removeBookmarkStanza(bookmark: Bookmark): Promise<void | Element>;
+    sendRemoveBookmarkStanza(bookmark: Bookmark): Promise<void | Element>;
     /**
      * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
-     * @param {Bookmark} bookmark
+     * @param {Bookmark} [bookmark]
      * @returns {Stanza|Stanza[]}
      */
-    getPublishedItems(node: "urn:xmpp:bookmarks:1" | "storage:bookmarks", bookmark: Bookmark): Stanza | Stanza[];
+    getPublishedItems(node: "urn:xmpp:bookmarks:1" | "storage:bookmarks", bookmark?: Bookmark): Stanza | Stanza[];
     /**
-     * @param {Bookmark} bookmark
+     * @param {Bookmark} [bookmark]
      * @returns {Promise<void|Element>}
      */
-    sendBookmarkStanza(bookmark: Bookmark): Promise<void | Element>;
+    sendBookmarkStanza(bookmark?: Bookmark): Promise<void | Element>;
     /**
      * @param {Element} iq
      */

@@ -36,19 +36,13 @@ class Bookmarks extends Collection {
                 .then((bm) => this.markRoomAsBookmarked(bm))
                 .catch((e) => log.fatal(e))
         );
-        this.on('remove', this.leaveRoom, this);
         this.on('change:autojoin', this.onAutoJoinChanged, this);
         this.on(
             'remove',
-            /** @param {Bookmark} bookmarks */
-            async (bookmark, bookmarks) => {
-                const bare_jid = _converse.session.get('bare_jid');
-                const sourceBookmark = (await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid))
-                    ? bookmark
-                    : bookmarks;
-                this.removeBookmarkStanza(sourceBookmark);
-            },
-            this
+            /** @param { Bookmark } bookmark }*/ (bookmark) => {
+                this.sendRemoveBookmarkStanza(bookmark);
+                this.leaveRoom(bookmark);
+            }
         );
 
         const { session } = _converse;
@@ -141,32 +135,39 @@ class Bookmarks extends Collection {
      * @param {Bookmark} bookmark
      * @returns {Promise<void|Element>}
      */
-    async removeBookmarkStanza(bookmark) {
+    async sendRemoveBookmarkStanza(bookmark) {
         const bare_jid = _converse.session.get('bare_jid');
-
         const node = (await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid))
             ? Strophe.NS.BOOKMARKS2
             : Strophe.NS.BOOKMARKS;
 
         if (node === Strophe.NS.BOOKMARKS2) {
-            const retractItem = stx`
-                <item id="${bookmark.get('jid')}">
-                    <remove/>
-                </item>`;
-
-            return api.pubsub.publish(null, node, retractItem, { persist_items: true });
+            const stanza = stx`
+                <iq from="${bare_jid}"
+                    to="${bare_jid}"
+                    type="set"
+                    xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <retract node="${node}" notify="true">
+                        <item id="${bookmark.get('jid')}"/>
+                    </retract>
+                </pubsub>
+                </iq>`;
+            return api.sendIQ(stanza);
         }
 
-        return this.sendBookmarkStanza(bookmark);
+        return this.sendBookmarkStanza().catch((iq) => this.onBookmarkError(iq));
     }
 
     /**
      * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
-     * @param {Bookmark} bookmark
+     * @param {Bookmark} [bookmark]
      * @returns {Stanza|Stanza[]}
      */
     getPublishedItems(node, bookmark) {
         if (node === Strophe.NS.BOOKMARKS2) {
+            if (!bookmark) throw new Error('getPublishedItems: missing bookmark');
+
             const extensions = bookmark.get('extensions') ?? [];
             return stx`<item id="${bookmark.get('jid')}">
                         <conference xmlns="${Strophe.NS.BOOKMARKS2}"
@@ -198,7 +199,7 @@ class Bookmarks extends Collection {
     }
 
     /**
-     * @param {Bookmark} bookmark
+     * @param {Bookmark} [bookmark]
      * @returns {Promise<void|Element>}
      */
     async sendBookmarkStanza(bookmark) {
@@ -219,7 +220,7 @@ class Bookmarks extends Collection {
      * @param {Element} iq
      */
     onBookmarkError(iq) {
-        log.error('Error while trying to add bookmark');
+        log.error('Error while trying to update bookmarks');
         log.error(iq);
     }
 

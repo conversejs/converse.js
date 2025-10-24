@@ -2,6 +2,7 @@
 
 ## Next release
 
+- #3815: Removal of boomark leads to new bookmark named `Symbol(lit-nothing)`
 - #3824: Dates and times are not translated 
 - #3829: Rich text from LibreOffice Calc is sent as screenshots
 - #3830: The message textarea blocks undo of the pasted text

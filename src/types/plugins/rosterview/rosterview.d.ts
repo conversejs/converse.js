@@ -5,7 +5,7 @@
  */
 export default class RosterView extends CustomElement {
     initialize(): Promise<void>;
-    model: Model;
+    model: Model<import("@converse/skeletor").ModelAttributes>;
     render(): import("lit-html").TemplateResult<1>;
     /** @param {MouseEvent} ev */
     showAddContactModal(ev: MouseEvent): void;
@@ -22,5 +22,5 @@ export default class RosterView extends CustomElement {
     toggleFilter(ev?: MouseEvent): void;
 }
 import { CustomElement } from 'shared/components/element.js';
-import { Model } from "@converse/headless";
+import { Model } from '@converse/headless';
 //# sourceMappingURL=rosterview.d.ts.map

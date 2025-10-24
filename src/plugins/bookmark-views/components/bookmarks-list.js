@@ -23,7 +23,7 @@ export default class BookmarksView extends CustomElement {
 
         const bare_jid = _converse.session.get('bare_jid');
         const id = `converse.bookmarks-list-model-${bare_jid}`;
-        this.model = new Model({ id });
+        this.model = new Model(/** @type {import('../types').BookmarksViewStateAttrs} */ ({ id }));
         initStorage(this.model, id);
 
         this.listenTo(this.model, 'change', () => this.requestUpdate());

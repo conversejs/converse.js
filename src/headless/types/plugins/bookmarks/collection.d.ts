@@ -1,6 +1,9 @@
 export default Bookmarks;
 export type MUC = import("../muc/muc.js").default;
-declare class Bookmarks extends Collection {
+/**
+ * @extends {Collection<Bookmark>}
+ */
+declare class Bookmarks extends Collection<Bookmark> {
     static checkBookmarksSupport(): Promise<any>;
     constructor();
     get idAttribute(): string;
@@ -21,9 +24,9 @@ declare class Bookmarks extends Collection {
     /**
      * @param {import('./types').BookmarkAttrs} attrs
      * @param {boolean} [create=true]
-     * @param {object} [options]
+     * @param {import('@converse/skeletor').FetchOrCreateOptions} [options]
      */
-    setBookmark(attrs: import("./types").BookmarkAttrs, create?: boolean, options?: object): void;
+    setBookmark(attrs: import("./types").BookmarkAttrs, create?: boolean, options?: import("@converse/skeletor").FetchOrCreateOptions): Promise<void>;
     /**
      * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
      * @param {Bookmark} bookmark
@@ -69,9 +72,9 @@ declare class Bookmarks extends Collection {
      * @param {Element} iq
      */
     onBookmarksReceivedError(deferred: any, iq: Element): Promise<void>;
-    getUnopenedBookmarks(): Promise<any>;
+    getUnopenedBookmarks(): Promise<Bookmark[]>;
 }
-import { Collection } from '@converse/skeletor';
 import Bookmark from './model.js';
+import { Collection } from '@converse/skeletor';
 import { Stanza } from 'strophe.js';
 //# sourceMappingURL=collection.d.ts.map

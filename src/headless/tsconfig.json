@@ -11,7 +11,7 @@
       "types/**/*",
   ],
   "compilerOptions": {
-    "target": "es2016",
+    "target": "es2020",
     "module": "esnext",
 
     "types": [
@@ -19,7 +19,7 @@
     ],
 
     "lib": [
-      "ES2020",
+      "es2023",
       "dom"
     ],
 

@@ -1,7 +1,11 @@
+import { ModelAttributes } from '@converse/skeletor';
 import { CHAT_STATES } from '../../shared/constants';
 import { MessageAttributes } from '../../shared/types';
 import MUC from './muc';
 export type MUCStatusCode = '100' | '101' | '102' | '103' | '104' | '110' | '170' | '171' | '172' | '173' | '174' | '201' | '210' | '301' | '303' | '307' | '321' | '322' | '332' | '333';
+export type MUCConfigAttributes = ModelAttributes & {
+    changesubject?: boolean;
+};
 export type DefaultMUCAttributes = {
     bookmarked: boolean;
     chat_state: typeof CHAT_STATES;

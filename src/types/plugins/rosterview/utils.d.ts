@@ -63,8 +63,11 @@ export function contactsComparator(contact1: RosterContact | Profile, contact2: 
  * @param {string} b
  */
 export function groupsComparator(a: string, b: string): 0 | 1 | -1;
-export function getGroupsAutoCompleteList(): any[];
-export function getJIDsAutoCompleteList(): any[];
+export function getGroupsAutoCompleteList(): string[];
+/**
+ * @returns {string[]}
+ */
+export function getJIDsAutoCompleteList(): string[];
 /**
  * @param {string} query
  */

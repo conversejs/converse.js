@@ -1,5 +1,6 @@
 export default Device;
-declare class Device extends Model {
+declare class Device extends Model<import("@converse/skeletor").ModelAttributes> {
+    constructor(attributes?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
     defaults(): {
         trusted: number;
         active: boolean;

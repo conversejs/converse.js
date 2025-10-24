@@ -44,8 +44,8 @@ declare const _default: {
     getLongestSubstring(string: string, candidates: string[]): string;
     isString(s: any): boolean;
     getDefaultStorageType(): import("./types.js").StorageType;
-    createStore(id: string, type: import("./types.js").StorageType): any;
-    initStorage(model: import("@converse/skeletor").Model | import("@converse/skeletor").Collection, id: string, type?: import("./types.js").StorageType): void;
+    createStore(id: string, type: import("./types.js").StorageType): import("@converse/skeletor").BrowserStorage;
+    initStorage(model: import("./types.js").StorageModel, id: string, type?: import("./types.js").StorageType): void;
     isErrorStanza(stanza: Element): boolean;
     isForbiddenError(stanza: Element): boolean;
     isServiceUnavailableError(stanza: Element): boolean;
@@ -66,7 +66,7 @@ declare const _default: {
     isFunction(val: unknown): boolean;
     isUndefined(x: unknown): boolean;
     isErrorObject(o: unknown): boolean;
-    isPersistableModel(model: import("@converse/skeletor").Model): boolean;
+    isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").BrowserStorage;
     isValidJID(jid?: string | null): boolean;
     isValidMUCJID(jid: string): boolean;
     isSameBareJID(jid1: string, jid2: string): boolean;
@@ -131,8 +131,8 @@ declare function shouldCreateMessage(attrs: any): any;
  * @param {boolean} [cancelable]
  */
 declare function triggerEvent(el: Element, name: string, type?: string, bubbles?: boolean, cancelable?: boolean): void;
-import { Model } from '@converse/skeletor';
 import * as session from './session.js';
 import * as promise from './promise.js';
+import { Model } from '@converse/skeletor';
 import * as init from './init.js';
 //# sourceMappingURL=index.d.ts.map

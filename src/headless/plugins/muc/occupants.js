@@ -1,8 +1,8 @@
 /**
  * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
- * @typedef {import('@converse/skeletor/src/types/collection').Attributes} Attributes
- * @typedef {import('@converse/skeletor/src/types/collection').CollectionOptions} CollectionOptions
- * @typedef {import('@converse/skeletor/src/types/collection').Options} Options
+ * @typedef {import('@converse/skeletor/dist/skeletor.d').ModelAttributes} ModelAttributes
+ * @typedef {import('@converse/skeletor/dist/skeletor.d').CollectionOptions} CollectionOptions
+ * @typedef {import('@converse/skeletor/dist/skeletor.d').Options} Options
  */
 import MUCOccupant from './occupant.js';
 import _converse from '../../shared/_converse.js';
@@ -19,8 +19,8 @@ const { u } = converse.env;
 
 /**
  * A list of {@link MUCOccupant} instances, representing participants in a MUC.
- * @class
  * @memberOf _converse
+ * @extends {Collection<MUCOccupant>}
  */
 class MUCOccupants extends Collection {
 
@@ -47,7 +47,7 @@ class MUCOccupants extends Collection {
     }
 
     /**
-     * @param {Model|Attributes} attrs
+     * @param {Model|ModelAttributes} attrs
      * @param {Options} [options]
      */
     create (attrs, options) {
@@ -130,6 +130,7 @@ class MUCOccupants extends Collection {
      * Lookup by occupant_id is done first, then jid, and then nick.
      *
      * @param {import('./types').OccupantData} data
+     * @returns {MUCOccupant}
      */
     findOccupant (data) {
         if (data.occupant_id) {
@@ -137,8 +138,10 @@ class MUCOccupants extends Collection {
         }
 
         const jid = data.jid && Strophe.getBareJidFromJid(data.jid);
-        return jid && this.findWhere({ jid }) ||
+        const occupant = jid && this.findWhere({ jid }) ||
             data.nick && this.findWhere({ 'nick': data.nick });
+
+        return occupant;
     }
 
     /**

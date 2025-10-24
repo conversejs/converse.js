@@ -9,6 +9,9 @@ import { rejectPresenceSubscription } from './utils.js';
 
 const { Strophe, sizzle, stx, u, Stanza } = converse.env;
 
+/**
+ * @extends {Collection<RosterContact>}
+ */
 class RosterContacts extends Collection {
     constructor() {
         super();
@@ -19,7 +22,9 @@ class RosterContacts extends Collection {
     initialize() {
         const bare_jid = _converse.session.get('bare_jid');
         const id = `roster.state-${bare_jid}-${this.get('jid')}`;
-        this.state = new Model({ id, 'collapsed_groups': [] });
+        this.state = new Model(
+            /** @type {import('./types').ContactsStateAttrs} */ ({ id, 'collapsed_groups': [] })
+        );
         initStorage(this.state, id);
         this.state.fetch();
         api.listen.on(
@@ -206,7 +211,7 @@ class RosterContacts extends Collection {
             { sort: false }
         );
 
-        if (subscribe) contact.subscribe(message);
+        if (contact && subscribe) contact.subscribe(message);
 
         return contact;
     }

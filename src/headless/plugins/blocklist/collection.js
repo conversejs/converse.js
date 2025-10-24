@@ -9,6 +9,9 @@ import BlockedEntity from './model.js';
 
 const { stx, u } = converse.env;
 
+/**
+ * @extends {Collection<BlockedEntity>}
+ */
 class Blocklist extends Collection {
     get idAttribute() {
         return 'jid';

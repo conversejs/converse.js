@@ -2,11 +2,11 @@
  * @typedef {import('@converse/headless').RosterContact} RosterContact
  * @typedef {import('@converse/headless').RosterContacts} RosterContacts
  */
-import { __ } from 'i18n';
-import { _converse, api, converse, log, constants, u, Profile } from '@converse/headless';
+import {__} from 'i18n';
+import {_converse, api, converse, log, constants, u, Profile} from '@converse/headless';
 
-const { Strophe } = converse.env;
-const { STATUS_WEIGHTS } = constants;
+const {Strophe} = converse.env;
+const {STATUS_WEIGHTS} = constants;
 
 /**
  * @param {RosterContact} contact
@@ -44,12 +44,12 @@ export async function declineContactRequest(contact) {
         [__('Are you sure you want to decline the contact request from %1$s?', contact.getDisplayName())],
         blocking_supported
             ? [
-                  {
-                      label: __('Also block this user from sending you further messages'),
-                      name: 'block',
-                      type: 'checkbox',
-                  },
-              ]
+                {
+                    label: __('Also block this user from sending you further messages'),
+                    name: 'block',
+                    type: 'checkbox',
+                },
+            ]
             : []
     );
 
@@ -132,7 +132,7 @@ export function highlightRosterItem(jid) {
  */
 export function toggleGroup(ev, name) {
     ev?.preventDefault?.();
-    const { roster } = _converse.state;
+    const {roster} = _converse.state;
     const collapsed = roster.state.get('collapsed_groups');
     if (collapsed.includes(name)) {
         roster.state.save(
@@ -156,7 +156,7 @@ export function toggleGroup(ev, name) {
 function getFilterCriteria(contact) {
     const nick = contact instanceof Profile ? contact.getNickname() : contact.get('nickname');
     const jid = contact.get('jid');
-    let criteria = contact.getDisplayName({ context: 'roster' });
+    let criteria = contact.getDisplayName({context: 'roster'});
     criteria = !criteria.includes(jid) ? criteria.concat(`   ${jid}`) : criteria;
     criteria = !criteria.includes(nick) ? criteria.concat(`   ${nick}`) : criteria;
     return criteria.toLowerCase();
@@ -245,21 +245,21 @@ export function shouldShowGroup(group, model) {
  * @returns {import('./types').ContactsMap}
  */
 export function populateContactsMap(contacts_map, contact) {
-    const { labels } = _converse;
+    const {labels} = _converse;
     const contact_groups = /** @type {string[]} */ (u.unique(contact.get('groups') ?? []));
 
     if (u.isOwnJID(contact.get('jid')) && !contact_groups.length) {
-        contact_groups.push(/** @type {string} */ (labels.HEADER_UNGROUPED));
+        contact_groups.push(/** @type {string} */(labels.HEADER_UNGROUPED));
     } else if (contact.get('requesting')) {
-        contact_groups.push(/** @type {string} */ (labels.HEADER_REQUESTING_CONTACTS));
+        contact_groups.push(/** @type {string} */(labels.HEADER_REQUESTING_CONTACTS));
     } else if (contact.get('ask') === 'subscribe') {
-        contact_groups.push(/** @type {string} */ (labels.HEADER_PENDING_CONTACTS));
+        contact_groups.push(/** @type {string} */(labels.HEADER_PENDING_CONTACTS));
     } else if (contact.get('subscription') === undefined) {
-        contact_groups.push(/** @type {string} */ (labels.HEADER_UNSAVED_CONTACTS));
+        contact_groups.push(/** @type {string} */(labels.HEADER_UNSAVED_CONTACTS));
     } else if (!api.settings.get('roster_groups')) {
-        contact_groups.push(/** @type {string} */ (labels.HEADER_CURRENT_CONTACTS));
+        contact_groups.push(/** @type {string} */(labels.HEADER_CURRENT_CONTACTS));
     } else if (!contact_groups.length) {
-        contact_groups.push(/** @type {string} */ (labels.HEADER_UNGROUPED));
+        contact_groups.push(/** @type {string} */(labels.HEADER_UNGROUPED));
     }
 
     for (const name of contact_groups) {
@@ -334,10 +334,16 @@ export function groupsComparator(a, b) {
 
 export function getGroupsAutoCompleteList() {
     const roster = /** @type {RosterContacts} */ (_converse.state.roster);
-    const groups = roster.reduce((groups, contact) => groups.concat(contact.get('groups')), []);
+    const groups = roster.models.reduce((groups, contact) => {
+        const contactGroups = /** @type string[] */(contact.get('groups'));
+        return contactGroups ? groups.concat(contactGroups) : groups;
+    }, /** @type string[] */([]));
     return [...new Set(groups.filter((i) => i))];
 }
 
+/**
+ * @returns {string[]}
+ */
 export function getJIDsAutoCompleteList() {
     const roster = /** @type {RosterContacts} */ (_converse.state.roster);
     return [

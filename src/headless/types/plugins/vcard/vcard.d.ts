@@ -1,5 +1,5 @@
 export default VCard;
-declare class VCard extends Model {
+declare class VCard extends Model<import("@converse/skeletor").ModelAttributes> {
     /**
      * @param {import("../../shared/types").ModelAttributes} attrs
      * @param {import("./types").VCardModelOptions} options

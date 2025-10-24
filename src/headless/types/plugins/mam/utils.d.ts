@@ -56,5 +56,5 @@ export function createScrollupPlaceholder(model: ChatBox | MUC): void;
 export function fetchNewestMessages(model: ChatBox | MUC): Promise<void>;
 export type MUC = import("../muc/muc").default;
 export type ChatBox = import("../chat/model").default;
-export type Model = import("@converse/skeletor/src/types/helpers.js").Model;
+export type Model = import("@converse/skeletor").Model;
 //# sourceMappingURL=utils.d.ts.map

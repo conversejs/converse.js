@@ -17,6 +17,9 @@ import '../../plugins/muc/index.js';
 
 const { Strophe, stx } = converse.env;
 
+/**
+ * @extends {Collection<Bookmark>}
+ */
 class Bookmarks extends Collection {
     get idAttribute() {
         return 'jid';
@@ -101,9 +104,9 @@ class Bookmarks extends Collection {
     /**
      * @param {import('./types').BookmarkAttrs} attrs
      * @param {boolean} [create=true]
-     * @param {object} [options]
+     * @param {import('@converse/skeletor').FetchOrCreateOptions} [options]
      */
-    setBookmark(attrs, create = true, options = {}) {
+    async setBookmark(attrs, create = true, options = {}) {
         if (!attrs.jid) return log.warn('No JID provided for setBookmark');
 
         let send_stanza = false;
@@ -119,10 +122,11 @@ class Bookmarks extends Collection {
                 send_stanza = true;
             }
         } else if (create) {
-            bookmark = this.create(attrs, options);
+            bookmark = await this.create(attrs, options);
             send_stanza = true;
         }
-        if (send_stanza) {
+
+        if (bookmark && send_stanza) {
             this.sendBookmarkStanza(bookmark).catch((iq) => this.onBookmarkError(iq));
         }
     }

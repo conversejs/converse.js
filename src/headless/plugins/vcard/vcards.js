@@ -5,6 +5,9 @@ import _converse from "../../shared/_converse.js";
 import { initStorage } from "../../utils/storage.js";
 import VCard from "./vcard";
 
+/**
+ * @extends {Collection<VCard>}
+ */
 class VCards extends Collection {
     constructor() {
         super();

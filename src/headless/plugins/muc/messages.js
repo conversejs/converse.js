@@ -3,6 +3,7 @@ import { Collection } from '@converse/skeletor';
 
 /**
  * Collection which stores MUC messages
+ * @extends {Collection<MUCMessage>}
  */
 class MUCMessages extends Collection {
 

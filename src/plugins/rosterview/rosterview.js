@@ -1,11 +1,10 @@
-import { _converse, api, u, constants, Model } from "@converse/headless";
+import { _converse, api, u, constants, Model } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { slideIn, slideOut } from 'utils/html.js';
-import tplRoster from "./templates/roster.js";
+import tplRoster from './templates/roster.js';
 
 const { initStorage } = u;
 const { CLOSED, OPENED } = constants;
-
 
 /**
  * @class
@@ -13,15 +12,14 @@ const { CLOSED, OPENED } = constants;
  * @memberOf _converse
  */
 export default class RosterView extends CustomElement {
-
-    async initialize () {
+    async initialize() {
         const bare_jid = _converse.session.get('bare_jid');
         const id = `converse.contacts-panel${bare_jid}`;
-        this.model = new Model({ id });
+        this.model = /** @type {Model} */ (new Model({ id }));
         initStorage(this.model, id);
         this.model.fetch();
 
-        await api.waitUntil('rosterInitialized')
+        await api.waitUntil('rosterInitialized');
 
         const { chatboxes, presences, roster } = _converse.state;
         this.listenTo(_converse, 'rosterContactsFetched', () => this.requestUpdate());
@@ -42,18 +40,18 @@ export default class RosterView extends CustomElement {
         api.trigger('rosterViewInitialized');
     }
 
-    render () {
+    render() {
         return tplRoster(this);
     }
 
     /** @param {MouseEvent} ev */
-    showAddContactModal (ev) {
-        api.modal.show('converse-add-contact-modal', { model: new Model()}, ev);
+    showAddContactModal(ev) {
+        api.modal.show('converse-add-contact-modal', { model: new Model() }, ev);
     }
 
     /** @param {MouseEvent} ev */
-    showNewChatModal (ev) {
-        api.modal.show('converse-new-chat-modal', { model: new Model()}, ev);
+    showNewChatModal(ev) {
+        api.modal.show('converse-new-chat-modal', { model: new Model() }, ev);
     }
 
     /** @param {MouseEvent} ev */
@@ -62,7 +60,7 @@ export default class RosterView extends CustomElement {
     }
 
     /** @param {MouseEvent} [ev] */
-    async syncContacts (ev) {
+    async syncContacts(ev) {
         ev?.preventDefault();
         const { roster } = _converse.state;
         this.syncing_contacts = true;
@@ -77,18 +75,18 @@ export default class RosterView extends CustomElement {
     }
 
     /** @param {MouseEvent} [ev] */
-    toggleRoster (ev) {
+    toggleRoster(ev) {
         ev?.preventDefault?.();
-        const list_el = /** @type {HTMLElement} */(this.querySelector('.list-container.roster-contacts'));
+        const list_el = /** @type {HTMLElement} */ (this.querySelector('.list-container.roster-contacts'));
         if (this.model.get('toggle_state') === CLOSED) {
-            slideOut(list_el).then(() => this.model.save({'toggle_state': OPENED}));
+            slideOut(list_el).then(() => this.model.save({ 'toggle_state': OPENED }));
         } else {
-            slideIn(list_el).then(() => this.model.save({'toggle_state': CLOSED}));
+            slideIn(list_el).then(() => this.model.save({ 'toggle_state': CLOSED }));
         }
     }
 
     /** @param {MouseEvent} [ev] */
-    toggleFilter (ev) {
+    toggleFilter(ev) {
         ev?.preventDefault?.();
         this.model.save({ filter_visible: !this.model.get('filter_visible') });
     }

@@ -1,5 +1,8 @@
 export default Blocklist;
-declare class Blocklist extends Collection {
+/**
+ * @extends {Collection<BlockedEntity>}
+ */
+declare class Blocklist extends Collection<BlockedEntity> {
     constructor();
     get idAttribute(): string;
     model: typeof BlockedEntity;
@@ -26,6 +29,6 @@ declare class Blocklist extends Collection {
      */
     onBlocklistReceived(deferred: any, iq: Element): Promise<any>;
 }
-import { Collection } from '@converse/skeletor';
 import BlockedEntity from './model.js';
+import { Collection } from '@converse/skeletor';
 //# sourceMappingURL=collection.d.ts.map

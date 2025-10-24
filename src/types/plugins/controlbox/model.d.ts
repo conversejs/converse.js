@@ -6,7 +6,8 @@ export default ControlBox;
  * In `overlayed` `view_mode` it's a box like the chat boxes, in `fullscreen`
  * `view_mode` it's a left-aligned sidebar.
  */
-declare class ControlBox extends Model {
+declare class ControlBox extends Model<import("@converse/skeletor").ModelAttributes> {
+    constructor(attributes?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
     defaults(): {
         bookmarked: boolean;
         box_id: string;

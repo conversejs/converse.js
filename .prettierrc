@@ -4,5 +4,6 @@
   "quoteProps": "preserve",
   "spaceBeforeFunctionParen": true,
   "tabWidth": 4,
-  "useTabs": false
+  "useTabs": false,
+  "bracketSpacing": true
 }

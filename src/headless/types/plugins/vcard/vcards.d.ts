@@ -1,5 +1,8 @@
 export default VCards;
-declare class VCards extends Collection {
+/**
+ * @extends {Collection<VCard>}
+ */
+declare class VCards extends Collection<VCard> {
     constructor();
     model: typeof VCard;
     initialize(): Promise<void>;
@@ -11,6 +14,6 @@ declare class VCards extends Collection {
         reject: (reason?: any) => void;
     };
 }
-import { Collection } from "@converse/skeletor";
 import VCard from "./vcard";
+import { Collection } from "@converse/skeletor";
 //# sourceMappingURL=vcards.d.ts.map

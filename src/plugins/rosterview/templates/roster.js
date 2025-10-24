@@ -24,13 +24,12 @@ export default (el) => {
     const i18n_title_new_chat = __('Start a new chat');
     const i18n_show_blocklist = __('Show block list');
     const { state } = _converse;
-    const roster = [
-        ...(state.roster || []),
-        ...api.settings.get('show_self_in_roster') ? [state.xmppstatus] : []
-    ];
+    const roster = [...(state.roster || []), ...(api.settings.get('show_self_in_roster') ? [state.xmppstatus] : [])];
 
     const contacts_map = roster.reduce((acc, contact) => populateContactsMap(acc, contact), {});
-    const groupnames = Object.keys(contacts_map).filter((contact) => shouldShowGroup(contact, el.model));
+    const groupnames = Object.keys(contacts_map).filter((contact) =>
+        shouldShowGroup(contact, /** @type {any} */ (el.model)),
+    );
     const is_closed = el.model.get('toggle_state') === CLOSED;
     groupnames.sort(groupsComparator);
 
@@ -43,7 +42,8 @@ export default (el) => {
         btns.push(html`
             <a
                 href="#"
-                class="dropdown-item add-contact" role="button"
+                class="dropdown-item add-contact"
+                role="button"
                 @click="${(/** @type {MouseEvent} */ ev) => el.showAddContactModal(ev)}"
                 title="${i18n_title_add_contact}"
                 data-toggle="modal"
@@ -59,7 +59,8 @@ export default (el) => {
         btns.push(html`
             <a
                 href="#"
-                class="dropdown-item new-chat" role="button"
+                class="dropdown-item new-chat"
+                role="button"
                 @click="${(/** @type {MouseEvent} */ ev) => el.showNewChatModal(ev)}"
                 title="${i18n_title_new_chat}"
                 data-toggle="modal"
@@ -74,7 +75,8 @@ export default (el) => {
     btns.push(html`
         <a
             href="#"
-            class="dropdown-item" role="button"
+            class="dropdown-item"
+            role="button"
             @click="${(/** @type {MouseEvent} */ ev) => el.showBlocklistModal(ev)}"
             title="${i18n_show_blocklist}"
         >
@@ -85,21 +87,25 @@ export default (el) => {
 
     if (roster.length > 5) {
         btns.push(html`
-            <a href="#"
-               class="dropdown-item toggle-filter" role="button"
-               @click="${(/** @type {MouseEvent} */ ev) => el.toggleFilter(ev)}">
+            <a
+                href="#"
+                class="dropdown-item toggle-filter"
+                role="button"
+                @click="${(/** @type {MouseEvent} */ ev) => el.toggleFilter(ev)}"
+            >
                 <converse-icon size="1em" class="fa fa-filter"></converse-icon>
                 ${is_filter_visible ? i18n_hide_filter : i18n_show_filter}
             </a>
         `);
     }
 
-    if (api.settings.get("loglevel") === 'debug') {
+    if (api.settings.get('loglevel') === 'debug') {
         const i18n_title_sync_contacts = __('Re-sync contacts');
         btns.push(html`
             <a
                 href="#"
-                class="dropdown-item" role="button"
+                class="dropdown-item"
+                role="button"
                 @click="${(/** @type {MouseEvent} */ ev) => el.syncContacts(ev)}"
                 title="${i18n_title_sync_contacts}"
             >
@@ -112,21 +118,27 @@ export default (el) => {
     return html`
         <div class="d-flex controlbox-padded">
             <span class="w-100 controlbox-heading controlbox-heading--contacts">
-                <a class="list-toggle open-contacts-toggle" title="${i18n_toggle_contacts}"
-                    role="heading" aria-level="3"
-                    @click="${el.toggleRoster}">
+                <a
+                    class="list-toggle open-contacts-toggle"
+                    title="${i18n_toggle_contacts}"
+                    role="heading"
+                    aria-level="3"
+                    @click="${el.toggleRoster}"
+                >
                     ${i18n_heading_contacts}
-
-                    ${ roster.length ? html`<converse-icon
-                        class="fa ${is_closed ? 'fa-caret-right' : 'fa-caret-down'}"
-                        size="1em"
-                        color="var(--chat-color)"
-                        ></converse-icon>` : '' }
+                    ${roster.length
+                        ? html`<converse-icon
+                              class="fa ${is_closed ? 'fa-caret-right' : 'fa-caret-down'}"
+                              size="1em"
+                              color="var(--chat-color)"
+                          ></converse-icon>`
+                        : ''}
                 </a>
             </span>
             <converse-dropdown
                 class="chatbox-btn btn-group dropstart dropdown--contacts"
-                .items=${btns}></converse-dropdown>
+                .items=${btns}
+            ></converse-dropdown>
         </div>
 
         <div class="list-container roster-contacts ${is_closed ? 'hidden' : ''}">
@@ -143,10 +155,12 @@ export default (el) => {
                 groupnames,
                 (n) => n,
                 (name) => {
-                    const contacts = contacts_map[name].filter((c) => shouldShowContact(c, name, el.model));
+                    const contacts = contacts_map[name].filter((c) =>
+                        shouldShowContact(c, name, /** @type {any} */ (el.model)),
+                    );
                     contacts.sort(contactsComparator);
                     return contacts.length ? tplGroup({ contacts, name }) : '';
-                }
+                },
             )}
         </div>
     `;

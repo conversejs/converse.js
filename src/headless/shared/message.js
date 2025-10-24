@@ -13,6 +13,9 @@ import converse from './api/public.js';
 
 const { dayjs } = converse.env;
 
+/**
+ * @extends {Model}
+ */
 class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     defaults() {
         return {

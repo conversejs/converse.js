@@ -62,7 +62,7 @@
   "dependencies": {
     "@converse/log": "^0.0.1",
     "@converse/openpromise": "^0.0.4",
-    "@converse/skeletor": "^0.0.9",
+    "@converse/skeletor": "^3.0.0",
     "dayjs": "^1.11.8",
     "dompurify": "^3.0.8",
     "filesize": "^11.0.13",

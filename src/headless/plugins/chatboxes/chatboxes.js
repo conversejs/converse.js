@@ -1,16 +1,17 @@
 /**
- * @typedef {import('../../plugins/chat/model.js').default} ChatBox
- * @typedef {import('../../plugins/muc/muc').default} MUC
- * @typedef {import('@converse/skeletor').Model} Model
+ * @typedef {import('../../shared/chatbox').default} ChatBoxBase
  */
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import { Collection } from '@converse/skeletor';
 import { initStorage } from '../../utils/storage.js';
 
+/**
+ * @extends {Collection<ChatBoxBase>}
+ */
 class ChatBoxes extends Collection {
     /**
-     * @param {Model[]} models
+     * @param {ChatBoxBase[]} models
      * @param {object} options
      */
     constructor(models, options) {
@@ -26,7 +27,7 @@ class ChatBoxes extends Collection {
          * Triggered once all chat boxes have been recreated from the browser cache
          * @event _converse#chatBoxesFetched
          * @type {object}
-         * @property {ChatBox|MUC} chatbox
+         * @property {ChatBoxBase} chatbox
          * @property {Element} stanza
          * @example _converse.api.listen.on('chatBoxesFetched', obj => { ... });
          * @example _converse.api.waitUntil('chatBoxesFetched').then(() => { ... });
@@ -50,7 +51,7 @@ class ChatBoxes extends Collection {
 
     /**
      * @param {import('./types').CreateModelAttributes} attrs
-     * @param {import('@converse/skeletor/src/types/model.js').ModelOptions} options
+     * @param {import('@converse/skeletor/dist/skeletor.d').ModelOptions} options
      */
     createModel(attrs, options) {
         if (!attrs.type) {

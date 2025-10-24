@@ -1,7 +1,7 @@
 /**
  * @typedef {import('../muc/muc').default} MUC
  * @typedef {import('../chat/model').default} ChatBox
- * @typedef {import('@converse/skeletor/src/types/helpers.js').Model} Model
+ * @typedef {import('@converse/skeletor').Model} Model
  */
 import sizzle from "sizzle";
 import { Strophe, $iq } from "strophe.js";

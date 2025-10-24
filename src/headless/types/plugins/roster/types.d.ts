@@ -1,3 +1,4 @@
+import { ModelAttributes } from "@converse/skeletor";
 export type PresenceTypes = null | 'available' | 'unavailable' | 'error' | 'probe' | 'subscribe' | 'subscribed' | 'unsubscribe' | 'unsubscribed';
 export type PresenceShowValues = 'chat' | 'away' | 'dnd' | 'xa';
 export type Presence = {
@@ -6,6 +7,11 @@ export type Presence = {
     priority: Number;
     show?: PresenceShowValues;
     timestamp: string;
+};
+export type PresenceAttrs = ModelAttributes & {
+    jid?: string;
+    presence: PresenceTypes | 'offline';
+    show?: string;
 };
 export type RosterContactUpdateAttrs = {
     nickname?: string;
@@ -40,5 +46,8 @@ export type RosterContactAttributes = {
 export type ContactDisplayNameOptions = {
     no_jid?: boolean;
     context?: 'roster';
+};
+export type ContactsStateAttrs = ModelAttributes & {
+    collapsed_groups: string[];
 };
 //# sourceMappingURL=types.d.ts.map

@@ -15,7 +15,7 @@ declare class Message extends BaseMessage {
         resolve: (value: any) => void;
         reject: (reason?: any) => void;
     };
-    setContact(): Promise<void>;
+    setContact(): any;
     getDisplayName(): any;
 }
 import BaseMessage from '../../shared/message.js';

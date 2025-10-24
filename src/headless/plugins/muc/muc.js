@@ -446,7 +446,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         this.features.listenTo(_converse, 'beforeLogout', () => this.features.browserStorage.flush());
 
         id = `converse.muc-config-${bare_jid}-${this.get('jid')}`;
-        this.config = new Model({ id });
+        this.config = new Model(/** @type {import('./types').MUCConfigAttributes} */({ id }));
         this.config.browserStorage = createStore(id, 'session');
         this.config.listenTo(_converse, 'beforeLogout', () => this.config.browserStorage.flush());
     }

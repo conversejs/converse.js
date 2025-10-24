@@ -1,3 +1,5 @@
+import { BrowserStorage, IEventEmitter } from "@converse/skeletor";
+
 export type Credentials = {
     jid: string;
     password: string;
@@ -27,3 +29,7 @@ export type MediaURLMetadata = MediaURLIndexes & {
 };
 
 export type StorageType = 'persistent' | 'session';
+
+export type StorageModel = IEventEmitter & {
+    browserStorage: BrowserStorage;
+}

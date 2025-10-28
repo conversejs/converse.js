@@ -125,7 +125,7 @@ export async function routeToQueryAction(event) {
 function extractXMPPURI(event) {
     let uri = null;
     // hash-based (#converse/action?uri=...)
-    if (!uri && location.hash.startsWith('#converse/action?uri=')) {
+    if (location.hash.startsWith('#converse/action?uri=')) {
         event?.preventDefault();
         uri = location.hash.split('uri=').pop();
     }

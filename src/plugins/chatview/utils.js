@@ -1,5 +1,5 @@
 import { __ } from 'i18n';
-import { _converse, api } from '@converse/headless';
+import { _converse, api,u } from '@converse/headless';
 import log from "@converse/log";
 
 
@@ -95,7 +95,7 @@ export async function routeToQueryAction(event) {
             return log.warn(`routeToQueryAction: Invalid JID: "${jid}"`);
         }
 
-        const action = queryParams.get('action');
+        const action = queryParams?.get('action'); 
         if (!action) {
             log.debug(`routeToQueryAction: No action specified, opening chat for "${jid}"`);
             return api.chats.open(jid);
@@ -148,7 +148,7 @@ function extractXMPPURI(event) {
  */
 function parseXMPPURI(uri) {
     const [jid, query] = uri.split('?');
-    const query_params = new URLSearchParams(query);
+    const query_params = new URLSearchParams(query || '');
     return { jid, query_params };
 }
 
@@ -185,3 +185,7 @@ async function handleRosterAction(jid, params) {
         log.error(`Failed to add "${jid}" to roster:`, err);
     }
 }
+
+Object.assign(u,{
+    routeToQueryAction,
+})

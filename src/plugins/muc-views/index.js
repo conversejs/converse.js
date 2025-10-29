@@ -26,8 +26,6 @@ converse.plugins.add('converse-muc-views', {
      * available, in which case any overrides applicable to them will be
      * ignored.
      *
-     * NB: These plugins need to have already been loaded via require.js.
-     *
      * It's possible to make these dependencies "non-optional".
      * If the setting "strict_plugin_dependencies" is set to true,
      * an error will be raised if the plugin is not found.

@@ -23,8 +23,6 @@ converse.plugins.add('converse-chatview', {
      * If the setting "strict_plugin_dependencies" is set to true,
      * an error will be raised if the plugin is not found. By default it's
      * false, which means these plugins are only loaded opportunistically.
-     *
-     * NB: These plugins need to have already been loaded via require.js.
      */
     dependencies: ['converse-dragresize', 'converse-chatboxviews', 'converse-chat', 'converse-disco', 'converse-modal'],
 

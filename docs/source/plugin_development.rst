@@ -368,10 +368,6 @@ not available.
 If the :ref:`strict_plugin_dependencies` setting is set to ``false`` (which is
 its default value), then no error will be raised if the plugin is not found.
 
-In this case, you can't specify the plugin as a dependency in the ``define``
-statement at the top of the plugin, since it might not always be available,
-which would cause ``require.js`` to throw an error.
-
 Extending Converse's configuration settings
 ----------------------------------------------
 

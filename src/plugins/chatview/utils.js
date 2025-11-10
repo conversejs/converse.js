@@ -90,12 +90,12 @@ export async function routeToQueryAction(event) {
         const uri = extractXMPPURI(event);
         if (!uri) return;
 
-        const { jid, queryParams } = parseXMPPURI(uri);
+        const { jid, query_params } = parseXMPPURI(uri);
         if (!u.isValidJID(jid)) {
             return log.warn(`routeToQueryAction: Invalid JID: "${jid}"`);
         }
 
-        const action = queryParams?.get('action'); 
+        const action = query_params?.get('action'); 
         if (!action) {
             log.debug(`routeToQueryAction: No action specified, opening chat for "${jid}"`);
             return api.chats.open(jid);
@@ -103,11 +103,11 @@ export async function routeToQueryAction(event) {
 
         switch (action) {
             case 'message':
-                await handleMessageAction(jid, queryParams);
+                await handleMessageAction(jid, query_params);
                 break;
 
             case 'add-roster':
-                await handleRosterAction(jid, queryParams);
+                await handleRosterAction(jid, query_params);
                 break;
 
             default:
@@ -168,8 +168,6 @@ async function handleMessageAction(jid, params) {
  * Handles the `action=add-roster` case.
  */
 async function handleRosterAction(jid, params) {
-    await api.waitUntil('rosterContactsFetched');
-
     const name = params.get('name') || jid.split('@')[0];
     const group = params.get('group');
     const groups = group ? [group] : [];

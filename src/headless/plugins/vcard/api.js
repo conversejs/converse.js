@@ -1,10 +1,10 @@
 /**
  * @typedef {import('@converse/skeletor').Model} Model
  */
-import log from "@converse/log";
+import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import converse from "../../shared/api/public.js";
+import converse from '../../shared/api/public.js';
 import { createStanza, fetchVCard } from './utils.js';
 
 const { Strophe, dayjs, u, stx } = converse.env;
@@ -40,8 +40,8 @@ export default {
          *     // Failure, e is your error object
          * }).
          */
-        async set (jid, data) {
-            if (!jid) throw Error("No jid provided for the VCard data");
+        async set(jid, data) {
+            if (!jid) throw Error('No jid provided for the VCard data');
             api.waitUntil('VCardsInitialized');
 
             let vcard = _converse.state.vcards.get(jid);
@@ -72,10 +72,10 @@ export default {
                     </PHOTO>
                 </vCard>`;
             try {
-                result = await api.sendIQ(createStanza("set", jid, vcard_el));
+                result = await api.sendIQ(createStanza('set', jid, vcard_el));
             } catch (e) {
                 if (old_vcard_attrs) vcard.save(old_vcard_attrs);
-                throw (e);
+                throw e;
             }
 
             vcard = await api.vcard.update(jid, true);
@@ -115,42 +115,35 @@ export default {
 
             if (typeof model === "string") return fetchVCard(model);
 
-            const error_date = model.get("vcard_error");
-            if (error_date) {
-                // For a VCard fetch that returned an error, we check how long ago
-                // it was fetched. If it was longer ago than the last 21 days plus
-                // some jitter (to prevent an IQ fetch flood), we try again.
-                const { random, round } = Math;
-                const subtract_flag = round(random());
-                const recent_date = dayjs()
-                    .subtract(21, "days")
-                    .subtract(round(random() * 24) * subtract_flag, "hours")
-                    .add(round(random() * 24) * (!subtract_flag ? 1 : 0), "hours");
-
-                const tried_recently = dayjs(error_date).isAfter(recent_date);
-                if (!force && tried_recently) return null;
-            }
-
+            const jid = model.get('jid');
             const vcard_updated = model.get("vcard_updated");
-            if (vcard_updated) {
-                // For a successful VCard fetch, we check how long ago it was fetched.
-                // If it was longer ago than the last 7 days plus some jitter
-                // (to prevent an IQ fetch flood), we try again.
+            const vcard_error = model.get("vcard_error");
+
+            if (vcard_updated || vcard_error) {
+                const muc = _converse.state.chatboxes.get(jid);
+                if (!muc || !force) return null;
+
+                // We don't get XEP-0153 presence updates for MUCs, so we need
+                // to refresh from time to time.
+                // We check how long ago it was fetched. If it was longer ago than
+                // the last 7 days plus some jitter (to prevent an IQ fetch flood),
+                // we try again.
                 const { random, round } = Math;
                 const subtract_flag = round(random());
                 const recent_date = dayjs()
                     .subtract(7, "days")
                     .subtract(round(random() * 24) * subtract_flag, "hours")
                     .add(round(random() * 24) * (!subtract_flag ? 1 : 0), "hours");
+
                 const updated_recently = dayjs(vcard_updated).isAfter(recent_date);
                 if (!force && updated_recently) return null;
             }
 
-            const jid = model.get("jid");
             if (!jid) {
-                log.error("No JID to get vcard for");
+                log.error('No JID to get vcard for');
                 return null;
             }
+
             return fetchVCard(jid);
         },
 
@@ -171,7 +164,7 @@ export default {
          *     api.vcard.update(chatbox);
          * });
          */
-        async update (model, force) {
+        async update(model, force) {
             api.waitUntil('VCardsInitialized');
             const data = await this.get(model, force);
             if (data === null) {
@@ -184,10 +177,10 @@ export default {
                 return;
             }
             if (Object.keys(data).length) {
-                delete data['stanza']
+                delete data['stanza'];
                 u.safeSave(model, data);
             }
             return model;
-        }
-    }
-}
+        },
+    },
+};

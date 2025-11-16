@@ -9,12 +9,16 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
  */
 const tplNavigation = (el) => {
     const i18n_about = __('About');
+    const i18n_accessibility = __('Accessibility');
     const i18n_commands = __('Commands');
     const i18n_services = __('Services');
     const show_client_info = api.settings.get('show_client_info');
+    const enable_accessibility = api.settings.get('enable_accessibility');
     const allow_adhoc_commands = api.settings.get('allow_adhoc_commands');
     const has_disco_browser = _converse.pluggable.plugins['converse-disco-views']?.enabled(_converse);
-    const show_tabs = (show_client_info ? 1 : 0) + (allow_adhoc_commands ? 1 : 0) + (has_disco_browser ? 1 : 0) >= 2;
+    const tab_count = (show_client_info ? 1 : 0) + (enable_accessibility ? 1 : 0) + 
+                      (allow_adhoc_commands ? 1 : 0) + (has_disco_browser ? 1 : 0);
+    const show_tabs = tab_count >= 2;
     return html`
         ${show_tabs
             ? html`<ul class="nav nav-pills justify-content-center">
@@ -30,6 +34,21 @@ const tplNavigation = (el) => {
                                 data-name="about"
                                 @click=${(ev) => el.switchTab(ev)}
                                 >${i18n_about}</a
+                            >
+                        </li>`
+                      : ''}
+                  ${enable_accessibility
+                      ? html`<li role="presentation" class="nav-item">
+                            <a
+                                class="nav-link ${el.tab === 'accessibility' ? 'active' : ''}"
+                                id="accessibility-tab"
+                                href="#accessibility-tabpanel"
+                                aria-controls="accessibility-tabpanel"
+                                role="tab"
+                                data-toggle="tab"
+                                data-name="accessibility"
+                                @click=${(ev) => el.switchTab(ev)}
+                                >${i18n_accessibility}</a
                             >
                         </li>`
                       : ''}
@@ -85,6 +104,7 @@ export default (el) => {
         '</a>'
     );
     const show_client_info = api.settings.get('show_client_info');
+    const enable_accessibility = api.settings.get('enable_accessibility');
     const allow_adhoc_commands = api.settings.get('allow_adhoc_commands');
     const show_both_tabs = show_client_info && allow_adhoc_commands;
 
@@ -109,6 +129,18 @@ export default (el) => {
                           <p class="text-center brand-subtitle">${unsafeHTML(DOMPurify.sanitize(second_subtitle))}</p>
                       </div>
                   </div>`
+                : ''}
+            ${enable_accessibility
+                ? html`
+                      <div
+                          class="tab-pane tab-pane--columns ${el.tab === 'accessibility' ? 'active' : ''}"
+                          id="accessibility-tabpanel"
+                          role="tabpanel"
+                          aria-labelledby="accessibility-tab"
+                      >
+                          <converse-accessibility-settings />
+                      </div>
+                  `
                 : ''}
             ${allow_adhoc_commands
                 ? html`

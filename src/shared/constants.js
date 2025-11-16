@@ -6,6 +6,7 @@ import { __ } from 'i18n';
 // as a whitelist (see src/converse.js) in addition to the
 // CORE_PLUGINS list in src/headless/consts.js.
 export const VIEW_PLUGINS = [
+    'converse-accessibility',
     'converse-adhoc-views',
     'converse-bookmark-views',
     'converse-chatboxviews',
@@ -27,7 +28,8 @@ export const VIEW_PLUGINS = [
     'converse-roomslist',
     'converse-rootview',
     'converse-rosterview',
-    'converse-singleton'
+    'converse-singleton',
+    'converse-voice-messages'
 ];
 
 /**

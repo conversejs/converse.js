@@ -2,6 +2,7 @@
 
 ## Next release
 
+- #3889: MUC join: Use room jids localpart as name in case name or identity not found
 - #3824: Dates and times are not translated 
 - #3829: Rich text from LibreOffice Calc is sent as screenshots
 - #3830: The message textarea blocks undo of the pasted text

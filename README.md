@@ -149,7 +149,7 @@ Converse integrates with popular platforms and frameworks:
 |--------|--------|
 | [Openfire](https://www.igniterealtime.org/projects/openfire/) | [inverse](https://www.igniterealtime.org/projects/openfire/plugins.jsp) |
 | [Prosody](https://prosody.im/) | [mod_conversejs](https://modules.prosody.im/mod_conversejs.html) |
-| [Ejabberd](https://ejabberd.im/) | [mod-conversejs](https://docs.ejabberd.im/admin/configuration/modules/#mod-conversejs) |
+| [ejabberd](https://ejabberd.im/) | [mod_conversejs](https://docs.ejabberd.im/admin/configuration/modules/#mod_conversejs) |
 
 ### Web Frameworks & CMS
 | Platform | Integration |

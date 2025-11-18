@@ -91,7 +91,8 @@ This is the job of a BOSH connection manager. BOSH (Bidirectional-streams Over
 Synchronous HTTP) is a protocol for allowing XMPP communication over HTTP. The
 protocol is defined in `XEP-0206: XMPP Over BOSH <https://xmpp.org/extensions/xep-0206.html>`_.
 
-Popular XMPP servers such as `Ejabberd <http://www.ejabberd.im>`_,
+Popular XMPP servers such as
+ejabberd `(mod_bosh) <https://docs.ejabberd.im/admin/configuration/modules/#mod_bosh>`_,
 Prosody `(mod_bosh) <http://prosody.im/doc/setting_up_bosh>`_ and
 `OpenFire <http://www.igniterealtime.org/projects/openfire/>`_ all include
 their own BOSH connection managers (but you usually have to enable them in the
@@ -232,7 +233,9 @@ your browser.
 Websockets provide long-lived, bidirectional connections which do not rely on
 HTTP. Therefore BOSH, which operates over HTTP, doesn't apply to websockets.
 
-`Prosody <http://prosody.im>`_ (from version 0.10) and `Ejabberd <http://www.ejabberd.im>`_ support websocket connections, as
+`Prosody <http://prosody.im>`_ (from version 0.10) and
+ejabberd `(ejabberd_http_ws) <https://docs.ejabberd.im/admin/configuration/listen/#ejabberd_http_ws>`_
+support websocket connections, as
 does the node-xmpp-bosh connection manager.
 
 Refer to the :ref:`websocket-url` configuration setting for information on how to

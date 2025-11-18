@@ -19,19 +19,19 @@ For example, the following XMPP servers have plugins available:
 
 * **Openfire**: `inverse plugin <https://www.igniterealtime.org/projects/openfire/plugin-archive.jsp?plugin=inverse>`_
 * **Prosody**: `mod_conversejs <https://modules.prosody.im/mod_conversejs.html>`_
-* **ejabberd**: `mod_conversejs <https://docs.ejabberd.im/admin/configuration/modules/#mod-conversejs>`_
+* **ejabberd**: `mod_conversejs <https://docs.ejabberd.im/admin/configuration/modules/#mod_conversejs>`_
 
 .. warning::
     When configuring one of these plugins in production, it's good practice to use a specific version of the Converse resources to avoid breaking changes.
 
 For instance, this will configure ejabberd's, mod-conversejs to fetch a specific version instead of whichever is the latest one.
 
-.. code-block:: yml
+.. code-block:: yaml
     
-    mod_conversejs:
-      # Replace 11.0.1 with your desired version
-      conversejs_css: https://cdn.conversejs.org/12.0.0/dist/converse.min.css
-      conversejs_script: https://cdn.conversejs.org/12.0.0/dist/converse.min.js
+    modules:
+      mod_conversejs:
+        conversejs_css: https://cdn.conversejs.org/12.0.0/dist/converse.min.css
+        conversejs_script: https://cdn.conversejs.org/12.0.0/dist/converse.min.js
 
 
 Option 2: Self-hosting

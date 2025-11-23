@@ -1665,6 +1665,25 @@ You can set the URL where the sound files are hosted with the `sounds_path`_ opt
 
 Requires the `src/converse-notification.js` plugin.
 
+popular_reactions
+-----------------
+
+* Default: ``[':thumbsup:', ':heart:', ':joy:', ':open_mouth:']``
+
+An array of emoji shortnames that are displayed as quick-access reaction buttons
+in the message reaction picker (see `XEP-0444: Message Reactions <https://xmpp.org/extensions/xep-0444.html>`_).
+
+These emojis are shown as the first row of buttons in the reaction picker,
+allowing users to quickly react to messages without opening the full emoji selector.
+
+Example:
+
+.. code-block:: javascript
+
+    converse.initialize({
+        popular_reactions: [':thumbsup:', ':thumbsdown:', ':heart:', ':laughing:', ':tada:']
+    });
+
 .. _`prebind_url`:
 
 prebind_url

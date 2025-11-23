@@ -161,14 +161,15 @@ export default function ModelWithMessages(BaseModel) {
         /**
          * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
-         * @returns {object}
+         * @returns {Promise<object>}
          */
-        getUpdatedMessageAttributes(message, attrs) {
+        async getUpdatedMessageAttributes(message, attrs) {
+            let new_attrs;
             if (!attrs.error_type && message.get('error_type') === 'Decryption') {
                 // Looks like we have a failed decrypted message stored, and now
                 // we have a properly decrypted version of the same message.
                 // See issue: https://github.com/conversejs/converse.js/issues/2733#issuecomment-1035493594
-                return Object.assign({}, attrs, {
+                new_attrs = Object.assign({}, attrs, {
                     error_condition: undefined,
                     error_message: undefined,
                     error_text: undefined,
@@ -178,19 +179,32 @@ export default function ModelWithMessages(BaseModel) {
                     is_error: false,
                 });
             } else {
-                return {
+                new_attrs = {
                     is_archived: attrs.is_archived,
                     time: attrs.time ? attrs.time : message.get('time'),
                 };
             }
+
+            // Pass through reaction data if present, so that the
+            // getUpdatedMessageAttributes hook can merge it with existing reactions.
+            if (/** @type {any} */ (attrs).reactions) {
+                /** @type {any} */ (new_attrs).reactions = /** @type {any} */ (attrs).reactions;
+            }
+
+            /**
+             * *Hook* which allows plugins to update the attributes that will be
+             * set on an existing message when new attributes are received.
+             * @event _converse#getUpdatedMessageAttributes
+             */
+            return await api.hook('getUpdatedMessageAttributes', message, new_attrs);
         }
 
         /**
          * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
          */
-        updateMessage(message, attrs) {
-            const new_attrs = this.getUpdatedMessageAttributes(message, attrs);
+        async updateMessage(message, attrs) {
+            const new_attrs = await this.getUpdatedMessageAttributes(message, attrs);
             new_attrs && message.save(new_attrs);
         }
 
@@ -674,6 +688,15 @@ export default function ModelWithMessages(BaseModel) {
          * @returns {BaseMessage}
          */
         getDuplicateMessage(attrs) {
+            // A reaction stanza references an existing message via reaction_to_id.
+            // Find that original message so it flows through updateMessage/getUpdatedMessageAttributes.
+            if (attrs.reaction_to_id) {
+                return this.messages.models.find(
+                    /** @param {BaseMessage} m */
+                    (m) => m.get('msgid') === attrs.reaction_to_id || m.get('origin_id') === attrs.reaction_to_id
+                );
+            }
+
             const queries = [
                 ...this.getStanzaIdQueryAttrs(attrs),
                 this.getOriginIdQueryAttrs(attrs),

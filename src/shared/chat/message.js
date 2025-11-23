@@ -30,13 +30,15 @@ export default class Message extends ObservableElement {
         this.model_with_messages = null;
         this.model = null;
         this.observable = /** @type {ObservableProperty} */ ("once");
+        this.show_reaction_picker = false;
     }
 
     static get properties () {
         return {
             ...super.properties,
             model_with_messages: { type: Object },
-            model: { type: Object }
+            model: { type: Object },
+            show_reaction_picker: { type: Boolean, state: true }
         }
     }
 
@@ -207,6 +209,19 @@ export default class Message extends ObservableElement {
     toggleSpoilerMessage (ev) {
         ev?.preventDefault();
         this.model.save({'is_spoiler_visible': !this.model.get('is_spoiler_visible')});
+    }
+
+    onReactionSelected (ev) {
+        const plugin = _converse.pluggable.plugins['converse-reactions'];
+        plugin?.onReactionSelected(ev);
+    }
+
+    onReactionPickerClose () {
+        this.show_reaction_picker = false;
+    }
+
+    get allowed_reactions () {
+        return this.model.collection?.chatbox?.get('allowed_reactions');
     }
 }
 

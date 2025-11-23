@@ -3,6 +3,7 @@
 ## Next release
 
 - #3382: Fix audio player accessibility for screen reader users (NVDA, JAWS)
+- #2398: Add support for XEP-0444: Message Reactions (see [XEP-0444](https://xmpp.org/extensions/xep-0444.html))
 - #3815: Removal of boomark leads to new bookmark named `Symbol(lit-nothing)`
 - #3824: Dates and times are not translated 
 - #3829: Rich text from LibreOffice Calc is sent as screenshots

@@ -33,7 +33,7 @@ describe('Groupchats', function () {
                     stx`<presence to="${muc_jid}/ralphm" type="probe" xmlns="jabber:client">
                         <priority>0</priority>
                         <x xmlns="vcard-temp:x:update"/>
-                        <c hash="sha-1" node="https://conversejs.org" ver="H63l6q0hnLTdpFJt2JA5AOAGl/o=" xmlns="http://jabber.org/protocol/caps"/>
+                        <c hash="sha-1" node="https://conversejs.org" ver="ck3OnqRh1RvV5dZB4Y8n20nJm0k=" xmlns="http://jabber.org/protocol/caps"/>
                     </presence>`
                 );
 
@@ -67,7 +67,7 @@ describe('Groupchats', function () {
                     stx`<presence to="${muc_jid}/gonePhising" type="probe" xmlns="jabber:client">
                         <priority>0</priority>
                         <x xmlns="vcard-temp:x:update"/>
-                        <c hash="sha-1" node="https://conversejs.org" ver="H63l6q0hnLTdpFJt2JA5AOAGl/o=" xmlns="http://jabber.org/protocol/caps"/>
+                        <c hash="sha-1" node="https://conversejs.org" ver="ck3OnqRh1RvV5dZB4Y8n20nJm0k=" xmlns="http://jabber.org/protocol/caps"/>
                     </presence>`
                 );
 

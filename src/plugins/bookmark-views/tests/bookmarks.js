@@ -278,7 +278,7 @@ describe("Bookmarks", function () {
             <c xmlns="http://jabber.org/protocol/caps"
                hash="sha-1"
                node="https://conversejs.org"
-               ver="H63l6q0hnLTdpFJt2JA5AOAGl/o="/>
+               ver="ck3OnqRh1RvV5dZB4Y8n20nJm0k="/>
             </presence>`);
     }));
 });

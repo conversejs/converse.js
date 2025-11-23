@@ -10,6 +10,26 @@ import 'shared/chat/reply-context.js';
 
 const { dayjs } = converse.env;
 
+
+const renderReactions = (model) => {
+    const reactions = model.get('reactions') || {};
+    const emojis = Object.keys(reactions);
+    if (emojis.length === 0) return '';
+
+    return html`
+        <div class="chat-msg__reactions">
+            ${emojis.map(emoji => {
+                const count = reactions[emoji].length;
+                return html`
+                    <button class="chat-msg__reaction" title="${reactions[emoji].join(', ')}">
+                        ${emoji} <span class="count">${count}</span>
+                    </button>
+                `;
+            })}
+        </div>
+    `;
+};
+
 /**
  * @param {import('../message').default} el
  */
@@ -95,6 +115,7 @@ export default (el) => {
                     class="chat-msg__body chat-msg__body--${el.model.get('message_type')} ${el.model.get('received')
                         ? 'chat-msg__body--received'
                         : ''} ${el.model.get('is_delayed') ? 'chat-msg__body--delayed' : ''}"
+                    style="position: relative;"
                 >
                     <div class="chat-msg__message">
                         ${is_action
@@ -111,14 +132,24 @@ export default (el) => {
                         .model=${el.model}
                         ?is_retracted=${is_retracted}
                     ></converse-message-actions>
+                    ${el.show_reaction_picker
+                        ? html`<converse-reaction-picker
+                            .model=${el.model}
+                            .allowed_emojis=${el.allowed_reactions}
+                            @reactionSelected=${el.onReactionSelected}
+                            @closePicker=${el.onReactionPickerClose}
+                        ></converse-reaction-picker>`
+                        : ''}
                 </div>
+                
+                ${renderReactions(el.model)}
 
                 ${!is_retracted ? el.model.get('ogp_metadata')?.map((m) =>
                     el.model.get('hide_url_previews') === true ? '' :
                     html`<converse-message-unfurl
                         @animationend="${el.onUnfurlAnimationEnd}"
                         class="${el.model.get('url_preview_transition')}"
-                        jid="${el.model_with_messages?.get('jid')}"
+                        jid="${el.model_with_messages.get('jid')}"
                         description="${m['og:description'] || ''}"
                         title="${m['og:title'] || ''}"
                         image="${(m['og:image'] && shouldRenderMediaFromURL(m['og:image'], 'image')) ? m['og:image'] : nothing}"

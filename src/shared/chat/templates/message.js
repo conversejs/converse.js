@@ -9,6 +9,26 @@ import 'shared/chat/unfurl.js';
 
 const { dayjs } = converse.env;
 
+
+const renderReactions = (model) => {
+    const reactions = model.get('reactions') || {};
+    const emojis = Object.keys(reactions);
+    if (emojis.length === 0) return '';
+
+    return html`
+        <div class="chat-msg__reactions">
+            ${emojis.map(emoji => {
+                const count = reactions[emoji].length;
+                return html`
+                    <button class="chat-msg__reaction" title="${reactions[emoji].join(', ')}">
+                        ${emoji} <span class="count">${count}</span>
+                    </button>
+                `;
+            })}
+        </div>
+    `;
+};
+
 /**
  * @param {import('../message').default} el
  */
@@ -109,6 +129,8 @@ export default (el) => {
                         ?is_retracted=${is_retracted}
                     ></converse-message-actions>
                 </div>
+                
+                ${renderReactions(el.model)}
 
                 ${el.model.get('ogp_metadata')?.map((m) => {
                     if (el.model.get('hide_url_previews') === true) {

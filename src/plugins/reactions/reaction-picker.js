@@ -53,7 +53,8 @@ export default class ReactionPicker extends CustomElement {
         return {
             'target': { type: Object },
             'model': { type: Object },
-            'emoji_picker_state': { type: Object }
+            'emoji_picker_state': { type: Object },
+            'allowed_emojis': { type: Array }
         };
     }
 
@@ -66,6 +67,7 @@ export default class ReactionPicker extends CustomElement {
         this.model = null;
         this.emoji_picker_state = null;
         this.picker_id = u.getUniqueId('reaction-picker');
+        this.allowed_emojis = null;
     }
 
     /**
@@ -85,10 +87,14 @@ export default class ReactionPicker extends CustomElement {
             return '';
         }
 
+        const popular_emojis = this.allowed_emojis ? 
+            POPULAR_EMOJIS.filter(sn => this.allowed_emojis.includes(u.shortnamesToEmojis(sn))) : 
+            POPULAR_EMOJIS;
+
         return html`
             <div class="reaction-picker popular">
                 <!-- Popular emojis for quick selection -->
-                ${POPULAR_EMOJIS.map(sn => html`
+                ${popular_emojis.map(sn => html`
                     <button class="reaction-item" @click=${() => this.onEmojiSelected(sn)}>
                         ${u.shortnamesToEmojis(sn)}
                     </button>
@@ -112,6 +118,7 @@ export default class ReactionPicker extends CustomElement {
                                 <converse-emoji-picker
                                     .state=${this.emoji_picker_state}
                                     .model=${this.model.collection.chatbox}
+                                    .allowed_emojis=${this.allowed_emojis}
                                     @emojiSelected=${(ev) => this.onEmojiSelected(ev.detail.value)}
                                     ?render_emojis=${true}
                                     current_category="${this.emoji_picker_state.get('current_category') || ''}"

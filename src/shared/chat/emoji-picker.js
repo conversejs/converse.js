@@ -27,6 +27,7 @@ export default class EmojiPicker extends CustomElement {
             state: { type: Object },
             // This is an optimization to lazily render the emoji picker
             render_emojis: { type: Boolean },
+            allowed_emojis: { type: Array },
         };
     }
 
@@ -42,6 +43,7 @@ export default class EmojiPicker extends CustomElement {
             /** @param {HTMLInputElement} input */ (input) => this.state.set({ "query": input.value }),
             250
         );
+        this.allowed_emojis = undefined;
     }
 
     initialize() {

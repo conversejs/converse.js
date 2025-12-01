@@ -73,7 +73,7 @@ converse.plugins.add('reactions', {
 
                 // Check for support in 1:1 chats
                 if (type === 'chat') {
-                    const entity = _converse.disco_entities?.get(jid);
+                    const entity = _converse.api.disco.entities.get(jid);
                     // If we have disco info, check for the feature
                     if (entity && entity.features && entity.features.length > 0) {
                         const supportsReactions = entity.features.findWhere({'var': 'urn:xmpp:reactions:0'});

@@ -15,7 +15,7 @@
 
 import { CustomElement } from 'shared/components/element.js';
 import { html } from 'lit';
-import { api, u, EmojiPicker } from '@converse/headless';
+import { api, u, EmojiPicker, converse } from '@converse/headless';
 import { __ } from 'i18n';
 import 'shared/components/dropdown.js'; // Ensure dropdown styles/scripts are loaded
 import 'shared/chat/emoji-picker.js'; // Ensure emoji picker component is loaded
@@ -121,6 +121,7 @@ export default class ReactionPicker extends CustomElement {
                                     .allowed_emojis=${this.allowed_emojis}
                                     @emojiSelected=${(ev) => this.onEmojiSelected(ev.detail.value)}
                                     ?render_emojis=${true}
+                                    .filter=${(sn) => !!converse.emojis.by_sn[sn]?.cp}
                                     current_category="${this.emoji_picker_state.get('current_category') || ''}"
                                     current_skintone="${this.emoji_picker_state.get('current_skintone') || ''}"
                                     query="${this.emoji_picker_state.get('query') || ''}"

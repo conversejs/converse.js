@@ -99,6 +99,7 @@ export function tplEmojiPicker (el, o) {
                 .model=${el.state}
                 .search_results="${o.search_results}"
                 .allowed_emojis="${el.allowed_emojis}"
+                .filter="${o.filter}"
                 current_skintone="${o.current_skintone}"
                 query="${o.query}"></converse-emoji-picker-content>` : ''}
 

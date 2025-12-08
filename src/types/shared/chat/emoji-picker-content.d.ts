@@ -12,11 +12,19 @@ export default class EmojiPickerContent extends CustomElement {
         query: {
             type: StringConstructor;
         };
+        allowed_emojis: {
+            type: ArrayConstructor;
+        };
+        filter: {
+            type: FunctionConstructor;
+        };
     };
     model: any;
     current_skintone: any;
     query: any;
     search_results: any;
+    allowed_emojis: any;
+    filter: any;
     render(): import("lit-html").TemplateResult<1>;
     firstUpdated(): void;
     initIntersectionObserver(): void;

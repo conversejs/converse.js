@@ -21,13 +21,23 @@ export default class EmojiPicker extends CustomElement {
         render_emojis: {
             type: BooleanConstructor;
         };
+        allowed_emojis: {
+            type: ArrayConstructor;
+        };
+        filter: {
+            type: FunctionConstructor;
+        };
     };
     state: any;
     model: any;
     query: string;
     render_emojis: any;
     _search_results: any[];
+    filter: any;
+    current_category: string;
+    current_skintone: string;
     debouncedFilter: import("lodash").DebouncedFunc<(input: HTMLInputElement) => any>;
+    allowed_emojis: any;
     initialize(): void;
     dropdown: Element;
     firstUpdated(changed: any): void;
@@ -36,8 +46,6 @@ export default class EmojiPicker extends CustomElement {
     render(): import("lit-html").TemplateResult<1>;
     updated(changed: any): void;
     onModelChanged(changed: any): void;
-    current_category: any;
-    current_skintone: any;
     setScrollPosition(): void;
     preserve_scroll: boolean;
     updateSearchResults(changed: any): any[];

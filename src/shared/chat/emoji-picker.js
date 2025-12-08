@@ -28,6 +28,7 @@ export default class EmojiPicker extends CustomElement {
             // This is an optimization to lazily render the emoji picker
             render_emojis: { type: Boolean },
             allowed_emojis: { type: Array },
+            filter: { type: Function },
         };
     }
 
@@ -38,6 +39,9 @@ export default class EmojiPicker extends CustomElement {
         this.query = "";
         this.render_emojis = null;
         this._search_results = [];
+        this.filter = null;
+        this.current_category = "";
+        this.current_skintone = "";
 
         this.debouncedFilter = debounce(
             /** @param {HTMLInputElement} input */ (input) => this.state.set({ "query": input.value }),
@@ -77,7 +81,8 @@ export default class EmojiPicker extends CustomElement {
             query: this.query,
             search_results: this.search_results,
             render_emojis: this.render_emojis,
-            sn2Emoji: /** @param {string} sn */ (sn) => u.shortnamesToEmojis(this.getTonedShortname(sn)),
+            filter: this.filter,
+            sn2Emoji: /** @param {string} sn */ (sn) => u.shortnamesToEmojis(sn),
         });
     }
 

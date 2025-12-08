@@ -65,8 +65,6 @@ converse.plugins.add('reactions', {
          * @listens getMessageActionButtons
          */
         api.listen.on('getMessageActionButtons', (el, buttons) => {
-            const is_own_message = el.model.get('sender') === 'me';
-            if (!is_own_message) {
                 const chatbox = el.model.collection.chatbox;
                 const jid = chatbox.get('jid');
                 const type = chatbox.get('type');
@@ -91,7 +89,6 @@ converse.plugins.add('reactions', {
                     'icon_class': 'fas fa-smile',
                     'name': 'reaction',
                 });
-            }
             return buttons;
         });
 

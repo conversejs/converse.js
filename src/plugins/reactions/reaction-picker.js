@@ -80,12 +80,7 @@ export default class ReactionPicker extends CustomElement {
      */
     render () {
         const anchor_name = `--reaction-anchor-${this.picker_id}`;
-        const is_own_message = this.model?.get('sender') === 'me';
-        
-        // Don't show reaction picker on own messages
-        if (is_own_message) {
-            return '';
-        }
+
 
         const popular_emojis = this.allowed_emojis ? 
             POPULAR_EMOJIS.filter(sn => this.allowed_emojis.includes(u.shortnamesToEmojis(sn))) : 

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-08 15:09+0200\n"
-"PO-Revision-Date: 2025-06-19 08:04+0000\n"
-"Last-Translator: Flávio Zarur Lucarelli <painel@lucanet.com.br>\n"
+"PO-Revision-Date: 2025-12-13 21:00+0000\n"
+"Last-Translator: Mateus Liberale Gomes <sergiogomes209403@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "conversejs/translations/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.12.1\n"
+"X-Generator: Weblate 5.15-dev\n"
 "domain: converse\n"
 "lang: pt_BR\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -27,9 +27,8 @@ msgid "A timeout occurred"
 msgstr "O tempo de espera se esgotou"
 
 #: dist/converse-no-dependencies.js:43504
-#, fuzzy
 msgid "You are blocked from sending messages."
-msgstr "Você não está autorizado a enviar uma mensagem."
+msgstr "Você está bloqueado e não pode enviar mensagens."
 
 #: dist/converse-no-dependencies.js:44116
 msgid "Timeout Error"
@@ -141,9 +140,8 @@ msgid "Sorry, an error occurred while trying to send your message."
 msgstr "Desculpe, ocorreu um erro ao tentar enviar sua mensagem."
 
 #: dist/converse-no-dependencies.js:52868
-#, fuzzy
 msgid "A timeout happened while trying to retract your message."
-msgstr "O tempo esgotou enquanto tentava retirar sua mensagem."
+msgstr "Ocorreu um tempo limite ao tentar apagar sua mensagem."
 
 #: dist/converse-no-dependencies.js:53639
 msgid "Sorry, an error happened while running the command."

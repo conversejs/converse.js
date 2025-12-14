@@ -37,15 +37,16 @@ function tplDomainInput(el) {
     const i18n_providers = __('Tip: A list of public XMPP providers is available');
     const i18n_providers_link = __('here');
     const href_providers = api.settings.get('providers_link');
+    const providers = api.settings.get('registration_providers') || [];
     return html`
-        <input
-            class="form-control"
-            required="required"
-            type="text"
+        <converse-autocomplete
+            .list=${providers}
+            filter="startswith"
             name="domain"
             placeholder="${domain_placeholder}"
-            value="${el.domain}"
-        />
+            ?required=${true}
+            .value=${el.domain || ''}
+        ></converse-autocomplete>
         <p class="form-text text-muted">
             ${i18n_providers}
             <a href="${href_providers}" class="url" target="_blank" rel="noopener">${i18n_providers_link}</a>.

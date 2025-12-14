@@ -1,5 +1,6 @@
 export default BlockedEntity;
-declare class BlockedEntity extends Model {
+declare class BlockedEntity extends Model<import("@converse/skeletor").ModelAttributes> {
+    constructor(attributes?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
     getDisplayName(): any;
 }
 import { Model } from '@converse/skeletor';

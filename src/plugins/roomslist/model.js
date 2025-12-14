@@ -3,6 +3,9 @@ import { _converse, api, converse, constants, Model } from "@converse/headless";
 const { Strophe } = converse.env;
 const { OPENED } = constants;
 
+/**
+ * @extends {Model<import("./types").RoomsListAttrs>}
+ */
 class RoomsListModel extends Model {
 
     defaults () {

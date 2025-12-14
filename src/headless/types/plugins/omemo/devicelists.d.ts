@@ -1,8 +1,11 @@
 export default DeviceLists;
-declare class DeviceLists extends Collection {
+/**
+ * @extends {Collection<DeviceList>}
+ */
+declare class DeviceLists extends Collection<DeviceList> {
     constructor();
     model: typeof DeviceList;
 }
-import { Collection } from "@converse/skeletor";
 import DeviceList from "./devicelist.js";
+import { Collection } from "@converse/skeletor";
 //# sourceMappingURL=devicelists.d.ts.map

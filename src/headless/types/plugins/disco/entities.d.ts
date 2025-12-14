@@ -1,9 +1,12 @@
 export default DiscoEntities;
-declare class DiscoEntities extends Collection {
+/**
+ * @extends {Collection<DiscoEntity>}
+ */
+declare class DiscoEntities extends Collection<DiscoEntity> {
     constructor();
     model: typeof DiscoEntity;
     fetchEntities(): Promise<any>;
 }
-import { Collection } from "@converse/skeletor";
 import DiscoEntity from './entity.js';
+import { Collection } from "@converse/skeletor";
 //# sourceMappingURL=entities.d.ts.map

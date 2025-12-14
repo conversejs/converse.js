@@ -80,7 +80,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
 
     /**
      * Send a presence subscription request to this roster contact
-     * @param {string} message - An optional message to explain the
+     * @param {string} [message] - An optional message to explain the
      *      reason for the subscription request.
      */
     subscribe (message) {
@@ -131,7 +131,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
 
     /**
      * Authorize presence subscription
-     * @param {string} message - Optional message to send to the person being authorized
+     * @param {string} [message] - Optional message to send to the person being authorized
      */
     authorize (message) {
         api.send(stx`

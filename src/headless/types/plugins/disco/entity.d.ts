@@ -8,7 +8,8 @@ export default DiscoEntity;
  *
  * See XEP-0030: https://xmpp.org/extensions/xep-0030.html
  */
-declare class DiscoEntity extends Model {
+declare class DiscoEntity extends Model<import("@converse/skeletor").ModelAttributes> {
+    constructor(attributes?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
     initialize(_: any, options: any): void;
     waitUntilFeaturesDiscovered: Promise<any> & {
         isResolved: boolean;
@@ -24,11 +25,11 @@ declare class DiscoEntity extends Model {
         resolve: (value: any) => void;
         reject: (reason?: any) => void;
     };
-    dataforms: Collection;
-    features: Collection;
-    fields: Collection;
-    items: Collection;
-    identities: Collection;
+    dataforms: Collection<Model<import("@converse/skeletor").ModelAttributes>>;
+    features: Collection<Model<import("@converse/skeletor").ModelAttributes>>;
+    fields: Collection<Model<import("@converse/skeletor").ModelAttributes>>;
+    items: Collection<Model<import("@converse/skeletor").ModelAttributes>>;
+    identities: Collection<Model<import("@converse/skeletor").ModelAttributes>>;
     /**
      * Returns a Promise which resolves with a map indicating
      * whether a given identity is provided by this entity.
@@ -36,7 +37,7 @@ declare class DiscoEntity extends Model {
      * @param {String} category - The identity category
      * @param {String} type - The identity type
      */
-    getIdentity(category: string, type: string): Promise<any>;
+    getIdentity(category: string, type: string): Promise<Model<import("@converse/skeletor").ModelAttributes>>;
     /**
      * Returns a Promise which resolves with a map indicating
      * whether a given feature is supported.

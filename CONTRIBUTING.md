@@ -3,16 +3,9 @@
 The developer docs are here:
 https://conversejs.org/docs/html/development.html
 
+See also AGENTS.md which has useful information even for humans.
+
 ## Quickstart
-
-### With GNU Make:
-
-```
-make serve_bg
-make watch
-```
-
-### Without GNU Make:
 
 ```
 npm install

@@ -48,7 +48,7 @@ export default {
                     log.warn(msg);
                     return;
                 }
-                return stream_features.findWhere({ 'name': name, 'xmlns': xmlns });
+                return stream_features.findWhere({ name, xmlns });
             },
         },
 
@@ -261,7 +261,7 @@ export default {
                 }
                 const entity = disco_entities.get(jid);
                 if (entity || !create) {
-                    return entity;
+                    return /** @type {DiscoEntity} */(entity);
                 }
                 return api.disco.entities.create({ jid });
             },

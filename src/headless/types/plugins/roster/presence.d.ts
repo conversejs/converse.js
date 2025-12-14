@@ -1,18 +1,21 @@
 export default Presence;
-declare class Presence extends Model {
+/**
+ * @extends {Model<import('./types').PresenceAttrs>}
+ */
+declare class Presence extends Model<import("./types").PresenceAttrs> {
+    constructor(attributes?: Partial<import("./types").PresenceAttrs>, options?: import("@converse/skeletor").ModelOptions);
     defaults(): {
-        presence: string;
-        show: any;
+        presence: import("./types").PresenceTypes | "offline";
     };
     initialize(): void;
     resources: Resources;
     onResourcesChanged(): void;
-    getStatus(): any;
+    getStatus(): string;
     /**
      * Return the resource with the highest priority.
      * If multiple resources have the same priority, take the latest one.
      */
-    getHighestPriorityResource(): any;
+    getHighestPriorityResource(): import("./resource.js").default;
     /**
      * Adds a new resource and it's associated attributes as taken
      * from the passed in presence stanza.

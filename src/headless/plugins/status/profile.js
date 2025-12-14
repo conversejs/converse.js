@@ -28,9 +28,6 @@ export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
         return this.get('show') || presence || 'offline';
     }
 
-    /**
-     * @param {string} attr
-     */
     get(attr) {
         if (attr === 'jid') {
             return _converse.session.get('bare_jid');

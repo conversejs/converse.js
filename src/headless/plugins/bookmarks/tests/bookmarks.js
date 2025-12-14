@@ -468,4 +468,65 @@ describe("A bookmark", function () {
             expect(result).toBe(true);
         })
     );
+
+    it(
+        'can be removed and sends out a retract stanza',
+        mock.initConverse(['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilDiscoConfirmed(
+                _converse,
+                _converse.bare_jid,
+                [{ 'category': 'pubsub', 'type': 'pep' }],
+                ['http://jabber.org/protocol/pubsub#publish-options', 'urn:xmpp:bookmarks:1#compat']
+            );
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const bare_jid = _converse.session.get('bare_jid');
+            const muc_jid = 'theplay@conference.shakespeare.lit';
+            const { api } = _converse;
+
+            // First create a bookmark
+            await api.bookmarks.set({
+                jid: muc_jid,
+                autojoin: true,
+                name: 'The Play',
+                nick: 'romeo',
+            });
+
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+            let sent_stanza = await u.waitUntil(() =>
+                IQ_stanzas.filter((s) => sizzle('publish[node="urn:xmpp:bookmarks:1"]', s).length).pop()
+            );
+
+            // Server acknowledges successful storage
+            const result_stanza = stx`
+                <iq xmlns="jabber:client"
+                    to="${_converse.api.connection.get().jid}"
+                    type="result"
+                    id="${sent_stanza.getAttribute('id')}"/>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result_stanza));
+
+            // Clear previous stanzas
+            while (IQ_stanzas.length) IQ_stanzas.pop();
+
+            // Now remove the bookmark
+            const bookmark = _converse.state.bookmarks.findWhere({ jid: muc_jid });
+            expect(bookmark).toBeTruthy();
+            _converse.state.bookmarks.remove(bookmark);
+
+            // Check that a retract stanza is sent as per XEP-0402
+            sent_stanza = await u.waitUntil(() =>
+                IQ_stanzas.filter((s) => sizzle('retract[node="urn:xmpp:bookmarks:1"]', s).length).pop()
+            );
+
+            expect(sent_stanza).toEqualStanza(stx`
+                <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                    <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                        <retract node="urn:xmpp:bookmarks:1" notify="true">
+                            <item id="${muc_jid}"/>
+                        </retract>
+                    </pubsub>
+                </iq>`);
+        })
+    );
 });

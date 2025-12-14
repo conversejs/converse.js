@@ -1,14 +1,15 @@
 declare const CustomElement_base: (new (...args: any[]) => {
-    on(name: string, callback: (event: any, model: import("@converse/headless").Model, collection: import("@converse/headless").Collection, options?: Record<string, any>) => any, context: any): any;
-    _events: any;
-    _listeners: {};
-    listenTo(obj: any, name: string, callback?: (event: any, model: import("@converse/headless").Model, collection: import("@converse/headless").Collection, options?: Record<string, any>) => any): any;
-    _listeningTo: {};
-    _listenId: any;
-    off(name: string, callback: (event: any, model: import("@converse/headless").Model, collection: import("@converse/headless").Collection, options?: Record<string, any>) => any, context?: any): any;
-    stopListening(obj?: any, name?: string, callback?: (event: any, model: import("@converse/headless").Model, collection: import("@converse/headless").Collection, options?: Record<string, any>) => any): any;
-    once(name: string, callback: (event: any, model: import("@converse/headless").Model, collection: import("@converse/headless").Collection, options?: Record<string, any>) => any, context: any): any;
-    listenToOnce(obj: any, name: string, callback?: (event: any, model: import("@converse/headless").Model, collection: import("@converse/headless").Collection, options?: Record<string, any>) => any): any;
+    [x: string]: any;
+    _events?: import("@converse/skeletor").EventHandlersMap;
+    _listeners?: import("@converse/skeletor").EventListenerMap;
+    _listeningTo?: import("@converse/skeletor").EventListenerMap;
+    _listenId?: string;
+    on(name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext, context?: import("@converse/skeletor").EventContext): any;
+    listenTo(obj: import("@converse/skeletor").ObjectListenedTo, name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
+    off(name?: string | import("@converse/skeletor").EventCallbackMap | null, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext | null, context?: import("@converse/skeletor").EventContext): any;
+    stopListening(obj?: any, name?: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
+    once(name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext, context?: import("@converse/skeletor").EventContext): any;
+    listenToOnce(obj: any, name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
     trigger(name: string, ...args: any[]): any;
 }) & typeof LitElement;
 export class CustomElement extends CustomElement_base {

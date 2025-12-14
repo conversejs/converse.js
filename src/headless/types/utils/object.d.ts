@@ -26,7 +26,7 @@ export function isUndefined(x: unknown): boolean;
 export function isErrorObject(o: unknown): boolean;
 /**
  * @param {import('@converse/skeletor').Model} model
- * @returns {boolean}
+ * @returns {import('@converse/skeletor').BrowserStorage}
  */
-export function isPersistableModel(model: import("@converse/skeletor").Model): boolean;
+export function isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").BrowserStorage;
 //# sourceMappingURL=object.d.ts.map

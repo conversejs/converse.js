@@ -240,7 +240,7 @@ export function getSessionCipher(jid, id) {
  * @param {import('./device.js').default} device
  */
 function encryptKey(key_and_tag, device) {
-    return getSessionCipher(device.get('jid'), device.get('id'))
+    return getSessionCipher(device.get('jid'), Number(device.get('id')))
         .encrypt(key_and_tag)
         .then(/** @param {ArrayBuffer} payload */ (payload) => ({ payload, device }));
 }
@@ -254,8 +254,10 @@ async function buildSession(device) {
     const sessionBuilder = new libsignal.SessionBuilder(_converse.state.omemo_store, address);
     const prekey = device.getRandomPreKey();
     const bundle = await device.getBundle();
+    const device_id = device.get('id');
+
     return sessionBuilder.processPreKey({
-        registrationId: parseInt(device.get('id'), 10),
+        registrationId: typeof device_id === 'string' ? parseInt(device_id, 10) : device_id,
         identityKey: base64ToArrayBuffer(bundle.identity_key),
         signedPreKey: {
             keyId: bundle.signed_prekey.id, // <Number>

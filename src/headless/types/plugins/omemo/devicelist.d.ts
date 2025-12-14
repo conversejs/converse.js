@@ -1,5 +1,6 @@
 export default DeviceList;
-declare class DeviceList extends Model {
+declare class DeviceList extends Model<import("@converse/skeletor").ModelAttributes> {
+    constructor(attributes?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
     initialize(): Promise<void>;
     initialized: Promise<any> & {
         isResolved: boolean;

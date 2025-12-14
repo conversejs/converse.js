@@ -1,3 +1,5 @@
+import { ModelAttributes } from "@converse/skeletor";
+
 export type PresenceTypes =
     | null
     | 'available'
@@ -17,6 +19,12 @@ export type Presence = {
     show?: PresenceShowValues;
     timestamp: string;
 };
+
+export type PresenceAttrs = ModelAttributes & {
+    jid?: string;
+    presence: PresenceTypes | 'offline';
+    show?: string;
+}
 
 export type RosterContactUpdateAttrs = {
     nickname?: string; // The name of that user
@@ -55,3 +63,7 @@ export type ContactDisplayNameOptions = {
     no_jid?: boolean; // If true, null will be returned instead of the JID
     context?: 'roster'; // The context in which the display name is being requested
 };
+
+export type ContactsStateAttrs = ModelAttributes & {
+    collapsed_groups: string[];
+}

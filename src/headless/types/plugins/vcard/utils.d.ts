@@ -42,5 +42,5 @@ export type VCards = import("../../plugins/vcard/vcards").default;
 export type VCard = import("../../plugins/vcard/vcard").default;
 export type ModelWithContact = typeof import("../../shared/model-with-contact.js").default;
 export type MUCOccupant = import("../muc/occupant.js").default;
-export type Model = import("@converse/skeletor/src/types/helpers.js").Model;
+export type Model = import("@converse/skeletor").Model;
 //# sourceMappingURL=utils.d.ts.map

@@ -17,6 +17,9 @@ import '../../plugins/muc/index.js';
 
 const { Strophe, stx } = converse.env;
 
+/**
+ * @extends {Collection<Bookmark>}
+ */
 class Bookmarks extends Collection {
     get idAttribute() {
         return 'jid';
@@ -33,13 +36,13 @@ class Bookmarks extends Collection {
                 .then((bm) => this.markRoomAsBookmarked(bm))
                 .catch((e) => log.fatal(e))
         );
-        this.on('remove', this.leaveRoom, this);
         this.on('change:autojoin', this.onAutoJoinChanged, this);
         this.on(
             'remove',
-            /** @param {Bookmark} bookmark */
-            (_, bookmark) => this.sendBookmarkStanza(bookmark),
-            this
+            /** @param { Bookmark } bookmark }*/ (bookmark) => {
+                this.sendRemoveBookmarkStanza(bookmark);
+                this.leaveRoom(bookmark);
+            }
         );
 
         const { session } = _converse;
@@ -101,9 +104,9 @@ class Bookmarks extends Collection {
     /**
      * @param {import('./types').BookmarkAttrs} attrs
      * @param {boolean} [create=true]
-     * @param {object} [options]
+     * @param {import('@converse/skeletor').FetchOrCreateOptions} [options]
      */
-    setBookmark(attrs, create = true, options = {}) {
+    async setBookmark(attrs, create = true, options = {}) {
         if (!attrs.jid) return log.warn('No JID provided for setBookmark');
 
         let send_stanza = false;
@@ -119,21 +122,52 @@ class Bookmarks extends Collection {
                 send_stanza = true;
             }
         } else if (create) {
-            bookmark = this.create(attrs, options);
+            bookmark = await this.create(attrs, options);
             send_stanza = true;
         }
-        if (send_stanza) {
+
+        if (bookmark && send_stanza) {
             this.sendBookmarkStanza(bookmark).catch((iq) => this.onBookmarkError(iq));
         }
     }
 
     /**
-     * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
      * @param {Bookmark} bookmark
+     * @returns {Promise<void|Element>}
+     */
+    async sendRemoveBookmarkStanza(bookmark) {
+        const bare_jid = _converse.session.get('bare_jid');
+        const node = (await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid))
+            ? Strophe.NS.BOOKMARKS2
+            : Strophe.NS.BOOKMARKS;
+
+        if (node === Strophe.NS.BOOKMARKS2) {
+            const stanza = stx`
+                <iq from="${bare_jid}"
+                    to="${bare_jid}"
+                    type="set"
+                    xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <retract node="${node}" notify="true">
+                        <item id="${bookmark.get('jid')}"/>
+                    </retract>
+                </pubsub>
+                </iq>`;
+            return api.sendIQ(stanza);
+        }
+
+        return this.sendBookmarkStanza().catch((iq) => this.onBookmarkError(iq));
+    }
+
+    /**
+     * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
+     * @param {Bookmark} [bookmark]
      * @returns {Stanza|Stanza[]}
      */
     getPublishedItems(node, bookmark) {
         if (node === Strophe.NS.BOOKMARKS2) {
+            if (!bookmark) throw new Error('getPublishedItems: missing bookmark');
+
             const extensions = bookmark.get('extensions') ?? [];
             return stx`<item id="${bookmark.get('jid')}">
                         <conference xmlns="${Strophe.NS.BOOKMARKS2}"
@@ -165,7 +199,7 @@ class Bookmarks extends Collection {
     }
 
     /**
-     * @param {Bookmark} bookmark
+     * @param {Bookmark} [bookmark]
      * @returns {Promise<void|Element>}
      */
     async sendBookmarkStanza(bookmark) {
@@ -186,7 +220,7 @@ class Bookmarks extends Collection {
      * @param {Element} iq
      */
     onBookmarkError(iq) {
-        log.error('Error while trying to add bookmark');
+        log.error('Error while trying to update bookmarks');
         log.error(iq);
     }
 

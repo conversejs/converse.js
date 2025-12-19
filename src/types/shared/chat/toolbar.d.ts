@@ -24,6 +24,9 @@ export class ChatToolbar extends CustomElement {
         show_spoiler_button: {
             type: BooleanConstructor;
         };
+        show_location_button: {
+            type: BooleanConstructor;
+        };
     };
     model: any;
     is_groupchat: any;
@@ -43,6 +46,8 @@ export class ChatToolbar extends CustomElement {
     getSpoilerButton(): import("lit-html").TemplateResult<1>;
     /** @param {MouseEvent} ev */
     toggleFileUpload(ev: MouseEvent): void;
+    /** @param {MouseEvent} ev */
+    insertLocation(ev: MouseEvent): void;
     /** @param {InputEvent} ev */
     onFileSelection(ev: InputEvent): void;
     /** @param {MouseEvent} ev */

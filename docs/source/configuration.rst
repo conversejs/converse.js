@@ -1718,6 +1718,29 @@ providers_link
 The hyperlink on the registration form which points to a directory of public
 XMPP servers.
 
+registration_providers
+----------------------
+
+* Default: ``[]``
+
+An optional array of XMPP provider domains to suggest via autocomplete when the user enters the
+provider on the registration form.
+
+For example:
+
+.. code-block:: javascript
+
+    converse.initialize({
+        registration_providers: [
+            'conversejs.org',
+            'jabber.org',
+            'xmpp.jp',
+            'trashserver.net',
+        ]
+    });
+
+Suggestions are shown via the ``<converse-autocomplete>`` component and filtered by prefix.
+
 .. _`assets_path`:
 
 assets_path

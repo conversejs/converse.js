@@ -8,7 +8,7 @@ import 'shared/chat/help-messages.js';
 import 'shared/chat/toolbar.js';
 import ChatView from './chat.js';
 import { _converse, api, converse } from '@converse/headless';
-import { clearHistory } from './utils.js';
+import { clearHistory,routeToQueryAction } from './utils.js';
 
 import './styles/index.scss';
 
@@ -63,6 +63,15 @@ converse.plugins.add('converse-chatview', {
         Object.assign(_converse, exports); // DEPRECATED
         Object.assign(_converse.exports, exports);
 
+        if ('registerProtocolHandler' in navigator) {
+            try {
+                const handlerUrl = `${window.location.origin}${window.location.pathname}#converse/action?uri=%s`;
+                navigator.registerProtocolHandler('xmpp', handlerUrl);
+            } catch (error) {
+                console.warn('Failed to register protocol handler:', error);
+            }
+        }
+        routeToQueryAction();
         api.listen.on('connected', () => api.disco.own.features.add(Strophe.NS.SPOILER));
         api.listen.on('chatBoxClosed', (model) => clearHistory(model.get('jid')));
     }

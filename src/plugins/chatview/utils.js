@@ -86,36 +86,32 @@ export function resetElementHeight (ev) {
 export async function routeToQueryAction(event) {
     const { u } = _converse.env;
 
-    try {
-        const uri = extractXMPPURI(event);
-        if (!uri) return;
+    const uri = extractXMPPURI(event);
+    if (!uri) return;
 
-        const { jid, query_params } = parseXMPPURI(uri);
-        if (!u.isValidJID(jid)) {
-            return log.warn(`routeToQueryAction: Invalid JID: "${jid}"`);
-        }
+    const { jid, query_params } = parseXMPPURI(uri);
+    if (!u.isValidJID(jid)) {
+        return log.warn(`routeToQueryAction: Invalid JID: "${jid}"`);
+    }
 
-        const action = query_params?.get('action'); 
-        if (!action) {
-            log.debug(`routeToQueryAction: No action specified, opening chat for "${jid}"`);
-            return api.chats.open(jid);
-        }
+    const action = query_params?.get('action'); 
+    if (!action) {
+        log.debug(`routeToQueryAction: No action specified, opening chat for "${jid}"`);
+        return api.chats.open(jid);
+    }
 
-        switch (action) {
-            case 'message':
-                await handleMessageAction(jid, query_params);
-                break;
+    switch (action) {
+        case 'message':
+            await handleMessageAction(jid, query_params);
+            break;
 
-            case 'add-roster':
-                await handleRosterAction(jid, query_params);
-                break;
+        case 'add-roster':
+            await handleRosterAction(jid, query_params);
+            break;
 
-            default:
-                log.warn(`routeToQueryAction: Unsupported XEP-0147 action: "${action}"`);
-                await api.chats.open(jid);
-        }
-    } catch (error) {
-        log.error('Failed to process XMPP query action:', error);
+        default:
+            log.warn(`routeToQueryAction: Unsupported XEP-0147 action: "${action}"`);
+            await api.chats.open(jid);
     }
 }
 

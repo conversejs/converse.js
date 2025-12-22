@@ -8,7 +8,7 @@ describe("XMPP URI Query Actions (XEP-0147)", function () {
      * Test the core functionality: opening a chat when no action is specified
      * This tests the basic URI parsing and chat opening behavior
      */
-    fit("opens a chat when URI has no action parameter",
+    it("opens a chat when URI has no action parameter",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const { api } = _converse;
@@ -50,7 +50,7 @@ describe("XMPP URI Query Actions (XEP-0147)", function () {
      * Test message sending functionality when action=message
      * This tests URI parsing, chat opening, and message sending
      */
-    fit("sends a message when action=message with body",
+    it("sends a message when action=message with body",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const { api } = _converse;
@@ -91,7 +91,7 @@ describe("XMPP URI Query Actions (XEP-0147)", function () {
      * Test roster add functionality when action=add-roster
      * This tests URI parsing and adding a contact to the roster
      */
-    fit("adds a contact to roster when action=add-roster",
+    it("adds a contact to roster when action=add-roster",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const { api } = _converse;
@@ -133,7 +133,7 @@ describe("XMPP URI Query Actions (XEP-0147)", function () {
      * Test handling of invalid JIDs
      * This ensures the function gracefully handles malformed JIDs
      */
-    fit("handles invalid JID gracefully",
+    it("handles invalid JID gracefully",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const { api } = _converse;

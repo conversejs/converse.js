@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the Converse.js package.
 # JC Brand <jc@opkode.com>, 2013.
 # Camaran <camaran@gmail.com>, 2016.
+# Albano Battistella <albanobattistella@gmail.com>, 2025.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-12 20:28+0200\n"
-"PO-Revision-Date: 2025-10-12 20:27+0200\n"
+"PO-Revision-Date: 2025-12-28 17:17+0200\n"
 "Last-Translator: albanobattistella <albanobattistella@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
 "translations/it/>\n"
@@ -3403,13 +3404,11 @@ msgstr "Abbandona"
 #~ msgid "%1$s has exited the room due to a technical issue"
 #~ msgstr "%1$s ha abbandonato la stanza per un problema tecnico"
 
-#, fuzzy
 #~ msgid "Hide occupants"
-#~ msgstr "Occupanti"
+#~ msgstr "Nascondi gli occupanti"
 
-#, fuzzy
 #~ msgid "Show occupants"
-#~ msgstr "Mostra conversazioni di gruppo"
+#~ msgstr "Mostra gli occupanti"
 
 #~ msgid "Edit this message"
 #~ msgstr "Modifica questo messaggio"
@@ -3519,13 +3518,11 @@ msgstr "Abbandona"
 #~ msgid "hello world"
 #~ msgstr "ciao mondo"
 
-#, fuzzy
 #~ msgid "%1$s is no longer a permanent member of this groupchat"
-#~ msgstr "Non sei nella lista dei membri di questa stanza"
+#~ msgstr "%1$s non è più un membro permanente di questa chat di gruppo"
 
-#, fuzzy
 #~ msgid "Ban user from groupchat"
-#~ msgstr "Bandisci utente dalla stanza"
+#~ msgstr "Escludi l'utente dalla chat di gruppo"
 
 #~ msgid "Revoke user's membership"
 #~ msgstr "Revoca la membership dell'utente"
@@ -3533,28 +3530,23 @@ msgstr "Abbandona"
 #~ msgid "No nickname was specified."
 #~ msgstr "Nessun nickname specificato."
 
-#, fuzzy
 #~ msgid "You cannot add yourself as a contact"
-#~ msgstr "Clicca per aggiungere il contatto alla chat"
+#~ msgstr "Non puoi aggiungerti come contatto"
 
-#, fuzzy
 #~ msgid "Error: the groupchat %1$s does not exist."
-#~ msgstr "Questa stanza non esiste (per ora)."
+#~ msgstr "Errore: la chat di gruppo %1$s non esiste."
 
-#, fuzzy
 #~ msgid "Destroy groupchat"
-#~ msgstr "Entra nella stanza"
+#~ msgstr "Distruggi la chat di gruppo"
 
 #~ msgid "XMPP Username:"
 #~ msgstr "Username XMPP:"
 
-#, fuzzy
 #~ msgid "%1$s is now an "
-#~ msgstr "%1$s è ora un moderatore."
+#~ msgstr "%1$s è ora un "
 
-#, fuzzy
 #~ msgid "This groupchat is not being moderated"
-#~ msgstr "Questa stanza non è moderata"
+#~ msgstr "Questa chat di gruppo non è moderata"
 
 #~ msgid "Jabber ID"
 #~ msgstr "ID Jabber"
@@ -3565,9 +3557,8 @@ msgstr "Abbandona"
 #~ msgid "Log in with %1$s"
 #~ msgstr "Entra con %1$s"
 
-#, fuzzy
 #~ msgid "Room address (JID)"
-#~ msgstr "Indirizzo stanza (JID):"
+#~ msgstr "Indirizzo stanza (JID)"
 
 #~ msgid "This room requires a password before entry"
 #~ msgstr "Questa stanza richiede una password"
@@ -3581,9 +3572,8 @@ msgstr "Abbandona"
 #~ msgid "This room is publicly searchable"
 #~ msgstr "Questa stanza è pubblicamente ricercabile"
 
-#, fuzzy
 #~ msgid "this room is restricted to members only"
-#~ msgstr "Questa stanza è ristretta ai soli membri"
+#~ msgstr "questa stanza è ristretta ai soli membri"
 
 #~ msgid "Anyone can join this room"
 #~ msgstr "Chiunque può collegarsi a questa stanza"
@@ -3604,16 +3594,14 @@ msgstr "Abbandona"
 #~ msgid "Add a new room"
 #~ msgstr "Aggiungi una nuova stanza"
 
-#, fuzzy
 #~ msgid "Query for rooms"
-#~ msgstr "Bandisci utente dalla stanza"
+#~ msgstr "Richiesta stanze"
 
 #~ msgid "Open room"
 #~ msgstr "Stanza aperta"
 
-#, fuzzy
 #~ msgid "Chatrooms"
-#~ msgstr "Mostra stanze"
+#~ msgstr "Stanze per Chat"
 
 #~ msgid "Open Rooms"
 #~ msgstr "Stanze aperte"
@@ -3778,7 +3766,6 @@ msgstr "Abbandona"
 #~ msgid "Rooms"
 #~ msgstr "Stanze"
 
-#, fuzzy
 #~ msgid ""
 #~ "A very large message has been received. This might be due to an attack "
 #~ "meant to degrade the chat performance. Output has been shortened."
@@ -3811,9 +3798,8 @@ msgstr "Abbandona"
 #~ msgid "Close this box"
 #~ msgstr "Chiudi questo box"
 
-#, fuzzy
 #~ msgid "Account Registration"
-#~ msgstr "Modulo di registrazione"
+#~ msgstr "Registrazione dell'account"
 
 #~ msgid "Sign in"
 #~ msgstr "Accesso"
@@ -3851,16 +3837,14 @@ msgstr "Abbandona"
 #~ msgid "Return"
 #~ msgstr "Ritorna"
 
-#, fuzzy
 #~ msgid "The reason given is: <em>\"%1$s\"</em>."
-#~ msgstr "La ragione data è: \"%1$s\"."
+#~ msgstr "Il motivo indicato è: <em>\"%1$s\"</em>."
 
 #~ msgid "Minimize this box"
 #~ msgstr "Riduci questo box"
 
-#, fuzzy
 #~ msgid "Attempting to reconnect"
-#~ msgstr "Attendi riconversione in 5 secondi"
+#~ msgstr "Tentativo di riconnessione"
 
 #~ msgid "Your nickname is already taken"
 #~ msgstr "Il tuo soprannome è già utilizzato"

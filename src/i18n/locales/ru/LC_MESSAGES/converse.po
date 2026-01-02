@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-08 15:09+0200\n"
-"PO-Revision-Date: 2026-01-02 06:45+0000\n"
-"Last-Translator: Yurt Page <yurtpage+weblate@gmail.com>\n"
+"PO-Revision-Date: 2026-01-02 10:26+0000\n"
+"Last-Translator: solokot <solokot@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -347,7 +347,7 @@ msgstr "%1$s перестал быть владельцем этого груп�
 #: dist/converse-no-dependencies.js:55340
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "%1$s больше не заблокирован в этой групповом беседе"
+msgstr "%1$s больше не заблокирован в этой групповом чате"
 
 #: dist/converse-no-dependencies.js:55346
 #, javascript-format
@@ -1085,7 +1085,7 @@ msgstr "Вы уверены, что хотите удалить закладку
 
 #: dist/converse-no-dependencies.js:98798
 msgid "Unbookmark this groupchat"
-msgstr "Удалить этот групповую беседу из закладок"
+msgstr "Удалить этот групповой чат из закладок"
 
 #: dist/converse-no-dependencies.js:98799
 #: dist/converse-no-dependencies.js:141835
@@ -1895,7 +1895,7 @@ msgstr "Успешно"
 
 #: dist/converse-no-dependencies.js:125819
 msgid "The user has been invited to join this groupchat"
-msgstr "Пользователь был приглашён в эту групповую беседу"
+msgstr "Пользователь был приглашён в этот групповой чат"
 
 #: dist/converse-no-dependencies.js:126271
 msgid "Filter by name"

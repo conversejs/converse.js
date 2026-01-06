@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-08 15:09+0200\n"
-"PO-Revision-Date: 2025-06-20 09:25+0000\n"
+"PO-Revision-Date: 2026-01-07 08:01+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13-dev\n"
+"X-Generator: Weblate 5.15.1\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -652,17 +652,16 @@ msgid "Sorry, could not determine file upload URL."
 msgstr "Jammer, kon nie die lêer oplaai-adres bepaal nie."
 
 #: dist/converse-no-dependencies.js:68520
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Sorry, could not successfully upload your file. Your server’s response: "
 "\"%1$s\""
 msgstr ""
-"Jammer, oplaai van u lêer het gefaal. Die bediener se terugvoer: \"%1$s"
+"Jammer, die oplaai van u lêer het gefaal. Die bediener se terugvoer: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:68522
-#, fuzzy
 msgid "Sorry, could not successfully upload your file."
-msgstr "Jammer, oplaai van u lêer het gefaal."
+msgstr "Jammer, die oplaai van u lêer het gefaal."
 
 #: dist/converse-no-dependencies.js:69234
 #: dist/converse-no-dependencies.js:69252
@@ -2611,9 +2610,8 @@ msgstr "Kies watter toestelle u vertrou vir versleutelde OMEMO kommunikasie"
 
 #: dist/converse-no-dependencies.js:135004
 #: dist/converse-no-dependencies.js:138308
-#, fuzzy
 msgid "Device ID"
-msgstr "Diens"
+msgstr "Toestel ID"
 
 #. *
 #. * @param {import('../fingerprints').Fingerprints} el
@@ -2629,7 +2627,7 @@ msgstr "Geen OMEMO-ondersteunende apparate gevind nie"
 
 #: dist/converse-no-dependencies.js:135015
 msgid "Show inactive devices"
-msgstr ""
+msgstr "Wys onaktiewe toestelle"
 
 #: dist/converse-no-dependencies.js:138277
 msgid "Checkbox for selecting the following fingerprint"
@@ -2660,14 +2658,12 @@ msgid "Select all"
 msgstr "Kies alle"
 
 #: dist/converse-no-dependencies.js:138304
-#, fuzzy
 msgid "This device"
-msgstr "Hierdie toestel word vertrou"
+msgstr "Hierdie toestel"
 
 #: dist/converse-no-dependencies.js:138305
-#, fuzzy
 msgid "OMEMO fingerprint"
-msgstr "OMEMO vingerafdrukke"
+msgstr "OMEMO vingerafdruk"
 
 #: dist/converse-no-dependencies.js:138306
 msgid "Generate new keys and fingerprint"

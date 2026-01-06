@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 5.15-dev\n"
 "domain: converse\n"
 "lang: it\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -670,18 +670,17 @@ msgid "Sorry, could not determine file upload URL."
 msgstr "Spiacente, impossibile determinare l'URL di caricamento del file."
 
 #: dist/converse-no-dependencies.js:68520
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Sorry, could not successfully upload your file. Your server’s response: "
 "\"%1$s\""
 msgstr ""
-"Spiacente, impossibile caricare il tuo file. Risposta del tuo server: "
-"\"%1$s\""
+"Spiacenti, non è stato possibile caricare correttamente il file. Risposta "
+"del server: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:68522
-#, fuzzy
 msgid "Sorry, could not successfully upload your file."
-msgstr "Spiacente, caricamento del file non riuscito."
+msgstr "Spiacenti, non è stato possibile caricare correttamente il file."
 
 #: dist/converse-no-dependencies.js:69234
 #: dist/converse-no-dependencies.js:69252
@@ -2645,9 +2644,8 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:135004
 #: dist/converse-no-dependencies.js:138308
-#, fuzzy
 msgid "Device ID"
-msgstr "Server"
+msgstr "ID dispositivo"
 
 #. *
 #. * @param {import('../fingerprints').Fingerprints} el
@@ -2663,7 +2661,7 @@ msgstr "Nessun dispositivo OMEMO abilitato trovato"
 
 #: dist/converse-no-dependencies.js:135015
 msgid "Show inactive devices"
-msgstr ""
+msgstr "Mostra dispositivi inattivi"
 
 #: dist/converse-no-dependencies.js:138277
 msgid "Checkbox for selecting the following fingerprint"
@@ -2696,14 +2694,12 @@ msgid "Select all"
 msgstr "Seleziona tutto"
 
 #: dist/converse-no-dependencies.js:138304
-#, fuzzy
 msgid "This device"
-msgstr "Questo è un dispositivo fidato"
+msgstr "Questo dispositivo"
 
 #: dist/converse-no-dependencies.js:138305
-#, fuzzy
 msgid "OMEMO fingerprint"
-msgstr "Impronte OMEMO"
+msgstr "Impronta digitale OMEMO"
 
 #: dist/converse-no-dependencies.js:138306
 msgid "Generate new keys and fingerprint"

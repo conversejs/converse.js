@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-08 15:09+0200\n"
-"PO-Revision-Date: 2025-09-20 22:02+0000\n"
-"Last-Translator: Yurt Page <yurtpage+weblate@gmail.com>\n"
+"PO-Revision-Date: 2026-01-02 10:26+0000\n"
+"Last-Translator: solokot <solokot@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 5.15.1\n"
 
 #: dist/converse-no-dependencies.js:42934
 msgid "A timeout occurred"
@@ -116,7 +116,8 @@ msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
 msgstr ""
-"Ваш отзыв не был доставлен, потому что вы не присутствовали в групповом чате."
+"Ваш отзыв сообщения не был доставлен, потому что вы не присутствовали в "
+"групповом чате."
 
 #: dist/converse-no-dependencies.js:52518
 #: dist/converse-no-dependencies.js:69825
@@ -301,12 +302,12 @@ msgstr "%1$s отключены"
 #: dist/converse-no-dependencies.js:55299
 #, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "%1$s был забанен %2$s"
+msgstr "%1$s был выгнан от %2$s"
 
 #: dist/converse-no-dependencies.js:55299
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr "%1$s был забанен"
+msgstr "%1$s был выгнан"
 
 #: dist/converse-no-dependencies.js:55301
 #, javascript-format
@@ -346,7 +347,7 @@ msgstr "%1$s перестал быть владельцем этого груп�
 #: dist/converse-no-dependencies.js:55340
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "%1$s был разбанен в этом групповом чате"
+msgstr "%1$s больше не заблокирован в этой групповом чате"
 
 #: dist/converse-no-dependencies.js:55346
 #, javascript-format
@@ -593,7 +594,7 @@ msgstr "Запросы на авторизацию"
 
 #: dist/converse-no-dependencies.js:62417
 msgid "Ungrouped"
-msgstr "Несгруппированные"
+msgstr "Без группы"
 
 #: dist/converse-no-dependencies.js:62418
 #: dist/converse-no-dependencies.js:108517
@@ -615,8 +616,7 @@ msgstr "Произошла ошибка при подключении к сер�
 
 #: dist/converse-no-dependencies.js:67184
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr ""
-"Ваш адрес XMPP и/или пароль некорректные. Пожалуйста, попробуйте снова."
+msgstr "Ваш адрес XMPP и/или пароль некорректные. Пожалуйста, попробуйте снова."
 
 #: dist/converse-no-dependencies.js:67193
 #, javascript-format
@@ -644,14 +644,13 @@ msgid "Sorry, could not determine file upload URL."
 msgstr "Не удалось определить URL для загрузки файла."
 
 #: dist/converse-no-dependencies.js:68520
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Sorry, could not successfully upload your file. Your server’s response: "
 "\"%1$s\""
 msgstr "Не удалось загрузить ваш файл. Ответ сервера: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:68522
-#, fuzzy
 msgid "Sorry, could not successfully upload your file."
 msgstr "При загрузке файла произошла ошибка."
 
@@ -838,7 +837,7 @@ msgstr "Роль"
 
 #: dist/converse-no-dependencies.js:95868
 msgid "Hats"
-msgstr "Шапки"
+msgstr "Шляпы"
 
 #: dist/converse-no-dependencies.js:95868
 msgid "Occupant Id"
@@ -894,8 +893,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:96386
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
 msgstr ""
-"Чтобы забанить пользователя, вы присваиваете ему принадлежность "
-"\"изгнанный\"."
+"Чтобы выгнать пользователя, вы присваиваете ему принадлежность \"изгнанный\"."
 
 #: dist/converse-no-dependencies.js:96412
 msgid "No users with that affiliation found."
@@ -1017,7 +1015,7 @@ msgstr "Ошибка: неверное количество аргументов
 #. ESM default export
 #: dist/converse-no-dependencies.js:97969
 msgid "On which entity do you want to run commands?"
-msgstr "На чем вы хотите запускать команды?"
+msgstr "На чём вы хотите запускать команды?"
 
 #: dist/converse-no-dependencies.js:97970
 msgid ""
@@ -1025,7 +1023,7 @@ msgid ""
 "commands on them."
 msgstr ""
 "Некоторые службы и объекты XMPP позволяют привилегированным пользователям "
-"выполнять команды ad-hoc."
+"выполнять ситуативные ad-hoc команды."
 
 #: dist/converse-no-dependencies.js:97971
 msgid "Commands found"
@@ -1037,7 +1035,7 @@ msgstr "Список доступных команд"
 
 #: dist/converse-no-dependencies.js:97974
 msgid "No commands found"
-msgstr "Комманд не найдено"
+msgstr "Команд не найдено"
 
 #: dist/converse-no-dependencies.js:98290
 msgid "Sorry, an error occurred while looking for commands on that entity."
@@ -1045,7 +1043,7 @@ msgstr "Извините, произошла ошибка."
 
 #: dist/converse-no-dependencies.js:98304
 msgid "The specified entity doesn't support ad-hoc commands"
-msgstr "Указанный объект не поддерживает команды ad-hoc"
+msgstr "Указанный объект не поддерживает ситуативные команды ad-hoc"
 
 #: dist/converse-no-dependencies.js:98367
 msgid "An error occurred while trying to fetch the command form"
@@ -1073,8 +1071,8 @@ msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
-"При попытке отменить команду произошла ошибка. Подробности в консоли "
-"разработчика."
+"При попытке отменить команду произошла ошибка. См. подробности в консоли "
+"разработчика"
 
 #: dist/converse-no-dependencies.js:98527
 msgid "Error: unexpected result"
@@ -1402,7 +1400,7 @@ msgstr "Запрос контакта"
 
 #: dist/converse-no-dependencies.js:107778
 msgid "Uploading file:"
-msgstr "Загружаеммый файл:"
+msgstr "Закачивания файла:"
 
 #: dist/converse-no-dependencies.js:107851
 msgid "Retry"
@@ -1566,8 +1564,7 @@ msgstr "Опционная подсказка"
 
 #: dist/converse-no-dependencies.js:115298
 msgid "Sorry, the connection has been lost, and your message could not be sent"
-msgstr ""
-"К сожалению, связь была потеряна, и ваше сообщение не удалось отправить"
+msgstr "К сожалению, связь была потеряна, и ваше сообщение не удалось отправить"
 
 #: dist/converse-no-dependencies.js:116885
 msgid "Remove messages"
@@ -1898,7 +1895,7 @@ msgstr "Успешно"
 
 #: dist/converse-no-dependencies.js:125819
 msgid "The user has been invited to join this groupchat"
-msgstr "Пользователь был забанен в этом групповом чате"
+msgstr "Пользователь был приглашён в этот групповой чат"
 
 #: dist/converse-no-dependencies.js:126271
 msgid "Filter by name"
@@ -1969,7 +1966,7 @@ msgstr "Дать права администратора"
 
 #: dist/converse-no-dependencies.js:128188
 msgid "Ban user by changing their affiliation to outcast"
-msgstr "Забанить пользователя, изменив его принадлежность на \"изгнанный\""
+msgstr "Выгнать пользователя, изменив его принадлежность на \"изгнанный\""
 
 #: dist/converse-no-dependencies.js:128189
 msgid "Clear the chat area"
@@ -2039,7 +2036,7 @@ msgstr "Установить тему группового чата (псевд�
 
 #: dist/converse-no-dependencies.js:128206
 msgid "Allow muted user to post messages"
-msgstr "Разрешить заглушенным пользователям отправлять сообщения"
+msgstr "Разрешить игнорируемым пользователям отправлять сообщения"
 
 #: dist/converse-no-dependencies.js:128295
 msgid ""
@@ -2400,8 +2397,7 @@ msgstr "Ваш сервер не поддерживает сброс парол�
 #: dist/converse-no-dependencies.js:132650
 msgid ""
 "Your server responded with an unknown error, check the console for details"
-msgstr ""
-"Ваш сервер ответил неизвестной ошибкой, проверьте подробности в консоли"
+msgstr "Ваш сервер ответил неизвестной ошибкой, проверьте подробности в консоли"
 
 #: dist/converse-no-dependencies.js:132673
 msgid "Timeout error while trying to set your password"
@@ -2470,8 +2466,7 @@ msgstr "Ваш профиль"
 
 #: dist/converse-no-dependencies.js:133452
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr ""
-"Извините, произошла ошибка при попытке сохранить данные вашего профиля."
+msgstr "Извините, произошла ошибка при попытке сохранить данные вашего профиля."
 
 #: dist/converse-no-dependencies.js:133546
 msgid "Profile updated successfully"
@@ -2592,9 +2587,8 @@ msgstr "Выберите устройства, которым вы доверя�
 
 #: dist/converse-no-dependencies.js:135004
 #: dist/converse-no-dependencies.js:138308
-#, fuzzy
 msgid "Device ID"
-msgstr "Служба"
+msgstr "ID устройства"
 
 #. *
 #. * @param {import('../fingerprints').Fingerprints} el
@@ -2610,7 +2604,7 @@ msgstr "Не найдено устройств с включённым OMEMO"
 
 #: dist/converse-no-dependencies.js:135015
 msgid "Show inactive devices"
-msgstr ""
+msgstr "Показать неактивные устройства"
 
 #: dist/converse-no-dependencies.js:138277
 msgid "Checkbox for selecting the following fingerprint"
@@ -2641,14 +2635,12 @@ msgid "Select all"
 msgstr "Выбрать всё"
 
 #: dist/converse-no-dependencies.js:138304
-#, fuzzy
 msgid "This device"
-msgstr "Это доверенное устройство"
+msgstr "Это устройство"
 
 #: dist/converse-no-dependencies.js:138305
-#, fuzzy
 msgid "OMEMO fingerprint"
-msgstr "Отпечатки OMEMO"
+msgstr "Отпечаток OMEMO"
 
 #: dist/converse-no-dependencies.js:138306
 msgid "Generate new keys and fingerprint"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-08 15:09+0200\n"
-"PO-Revision-Date: 2025-08-30 06:01+0000\n"
+"PO-Revision-Date: 2025-10-30 04:24+0000\n"
 "Last-Translator: \"Mr. EddX\" <mreddx@chatrix.one>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/bg/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13.1-dev\n"
+"X-Generator: Weblate 5.14.1-dev\n"
 
 #: dist/converse-no-dependencies.js:42934
 msgid "A timeout occurred"
@@ -636,16 +636,17 @@ msgid "Sorry, could not determine file upload URL."
 msgstr "Не може да се определи URL адреса за качване на файл."
 
 #: dist/converse-no-dependencies.js:68520
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Sorry, could not successfully upload your file. Your server’s response: "
 "\"%1$s\""
-msgstr "Файлът не можа да бъде качен. Отговор на сървъра: \"%1$s\""
+msgstr ""
+"За съжаление, файлът Ви не можа да бъде качен успешно. Отговор на сървъра: "
+"\"%1$s\""
 
 #: dist/converse-no-dependencies.js:68522
-#, fuzzy
 msgid "Sorry, could not successfully upload your file."
-msgstr "Файлът не можа да бъде качен."
+msgstr "За съжаление, файлът Ви не можа да бъде качен успешно."
 
 #: dist/converse-no-dependencies.js:69234
 #: dist/converse-no-dependencies.js:69252
@@ -2595,9 +2596,8 @@ msgstr "Изберете доверени устройства за OMEMO кри
 
 #: dist/converse-no-dependencies.js:135004
 #: dist/converse-no-dependencies.js:138308
-#, fuzzy
 msgid "Device ID"
-msgstr "Услуга"
+msgstr "ID на устройството"
 
 #. *
 #. * @param {import('../fingerprints').Fingerprints} el
@@ -2613,7 +2613,7 @@ msgstr "Не са открити OMEMO активирани устройства
 
 #: dist/converse-no-dependencies.js:135015
 msgid "Show inactive devices"
-msgstr ""
+msgstr "Покажи неактивни устройства"
 
 #: dist/converse-no-dependencies.js:138277
 msgid "Checkbox for selecting the following fingerprint"
@@ -2645,14 +2645,12 @@ msgid "Select all"
 msgstr "Избери всички"
 
 #: dist/converse-no-dependencies.js:138304
-#, fuzzy
 msgid "This device"
-msgstr "Това е надеждно устройство"
+msgstr "Това устройство"
 
 #: dist/converse-no-dependencies.js:138305
-#, fuzzy
 msgid "OMEMO fingerprint"
-msgstr "OMEMO отпечатъци"
+msgstr "OMEMO пръстов отпечатък"
 
 #: dist/converse-no-dependencies.js:138306
 msgid "Generate new keys and fingerprint"

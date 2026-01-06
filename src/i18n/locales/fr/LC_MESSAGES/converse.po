@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-12 20:35+0200\n"
-"PO-Revision-Date: 2025-10-12 20:35+0200\n"
+"PO-Revision-Date: 2025-12-24 20:00+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 5.15.1\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -661,18 +661,15 @@ msgid "Sorry, could not determine file upload URL."
 msgstr "Désolé, impossible de déterminer l’URL pour envoyer le fichier."
 
 #: dist/converse-no-dependencies.js:68520
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Sorry, could not successfully upload your file. Your server’s response: "
 "\"%1$s\""
-msgstr ""
-"Désolé, le téléversement du fichier a échoué. Votre serveur a répondu : "
-"« %1$s »"
+msgstr "Désolé, l’envoi du fichier a échoué. Votre serveur a répondu : « %1$s »"
 
 #: dist/converse-no-dependencies.js:68522
-#, fuzzy
 msgid "Sorry, could not successfully upload your file."
-msgstr "Désolé, le téléversement du fichier a échoué."
+msgstr "Désolé, l’envoi du fichier a échoué."
 
 #: dist/converse-no-dependencies.js:69234
 #: dist/converse-no-dependencies.js:69252
@@ -2636,9 +2633,8 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:135004
 #: dist/converse-no-dependencies.js:138308
-#, fuzzy
 msgid "Device ID"
-msgstr "Serveur"
+msgstr "ID appareil"
 
 #. *
 #. * @param {import('../fingerprints').Fingerprints} el
@@ -2654,7 +2650,7 @@ msgstr "Aucun client compatible avec le chiffrement OMEMO n'a été trouvé"
 
 #: dist/converse-no-dependencies.js:135015
 msgid "Show inactive devices"
-msgstr ""
+msgstr "Voir les appareils inactifs"
 
 #: dist/converse-no-dependencies.js:138277
 msgid "Checkbox for selecting the following fingerprint"
@@ -2687,14 +2683,12 @@ msgid "Select all"
 msgstr "Tout sélectionner"
 
 #: dist/converse-no-dependencies.js:138304
-#, fuzzy
 msgid "This device"
-msgstr "Ceci est un appareil de confiance"
+msgstr "Cet appareil"
 
 #: dist/converse-no-dependencies.js:138305
-#, fuzzy
 msgid "OMEMO fingerprint"
-msgstr "Empreintes de clé OMEMO"
+msgstr "Empreinte de clé OMEMO"
 
 #: dist/converse-no-dependencies.js:138306
 msgid "Generate new keys and fingerprint"

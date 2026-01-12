@@ -21,6 +21,8 @@ import { __ } from 'i18n';
 
 converse.plugins.add('reactions', {
 
+    dependencies: ['converse-disco', 'converse-chatview', 'converse-muc-views'],
+
     /**
      * Initializes the reactions plugin
      * Sets up event listeners for:

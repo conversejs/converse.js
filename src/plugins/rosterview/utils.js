@@ -346,11 +346,14 @@ export function getGroupsAutoCompleteList() {
  */
 export function getJIDsAutoCompleteList() {
     const roster = /** @type {RosterContacts} */ (_converse.state.roster);
+    const from_roster = roster.map((item) => Strophe.getDomainFromJid(item.get('jid')));
+    const from_settings = api.settings.get('registration_providers') || [];
     return [
         ...new Set([
-            ...roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))),
+            ...from_roster,
             _converse.session.get('domain'),
-        ]),
+            ...from_settings,
+        ].filter(Boolean)),
     ];
 }
 

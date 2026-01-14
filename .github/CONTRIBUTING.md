@@ -15,6 +15,11 @@ You can also ask questions on [StackOverflow](https://stackoverflow.com/question
 
 Please follow the usual Github workflow. Create a fork of this repository, make your changes and then submit a pull request.
 
+### Good first issues and bounties
+
+If you're new, check out our docs page for beginner tasks and bounty issues:
+https://conversejs.org/docs/html/good_first_issues.html
+
 ### Before submitting a pull request
 
 Please read the [style guide](https://conversejs.org/docs/html/style_guide.html) and make sure that your code follows it.

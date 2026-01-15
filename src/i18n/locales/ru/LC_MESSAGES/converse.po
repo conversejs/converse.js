@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-08 15:09+0200\n"
-"PO-Revision-Date: 2026-01-02 10:26+0000\n"
-"Last-Translator: solokot <solokot@gmail.com>\n"
+"PO-Revision-Date: 2026-01-16 19:01+0000\n"
+"Last-Translator: Yurt Page <yurtpage+weblate@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.15.1\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #: dist/converse-no-dependencies.js:42934
 msgid "A timeout occurred"
@@ -1882,7 +1882,7 @@ msgstr "Пригласить этого пользователя в группо
 
 #: dist/converse-no-dependencies.js:125489
 msgid "Open a one-on-one chat with this user"
-msgstr "Открыть приватный чат с этим пользователем"
+msgstr "Начать личную беседу с этим пользователем"
 
 #: dist/converse-no-dependencies.js:125490
 msgid "Open Chat"

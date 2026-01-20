@@ -15,11 +15,16 @@
  */
 
 import { converse, api, u, _converse } from '@converse/headless';
+import { updateMessageReactions, findMessage } from './utils.js';
 import './reaction-picker.js';
 
 import { __ } from 'i18n';
 
-converse.plugins.add('reactions', {
+const { Strophe } = converse.env;
+
+Strophe.addNamespace('REACTIONS', 'urn:xmpp:reactions:0');
+
+converse.plugins.add('converse-reactions', {
 
     dependencies: ['converse-disco', 'converse-chatview', 'converse-muc-views'],
 
@@ -31,14 +36,13 @@ converse.plugins.add('reactions', {
      * - Handling connection/reconnection events
      */
     initialize () {
-        const { Strophe } = converse.env;
         this.allowed_emojis = new Map(); // Store allowed emojis per JID
 
         /**
          * Register the "urn:xmpp:reactions:0" feature
          */
         api.listen.on('addClientFeatures', () => {
-            api.disco.own.features.add('urn:xmpp:reactions:0');
+             api.disco.own.features.add(Strophe.NS.REACTIONS);
         });
 
         /**
@@ -50,7 +54,7 @@ converse.plugins.add('reactions', {
                 if (query) {
                     const from_jid = stanza.getAttribute('from');
                     const bare_jid = Strophe.getBareJidFromJid(from_jid);
-                    const feature = query.querySelector(`feature[var="urn:xmpp:reactions:0#restricted"]`);
+                    const feature = query.querySelector(`feature[var="${Strophe.NS.REACTIONS}#restricted"]`);
                     if (feature) {
                         const allowed = Array.from(feature.querySelectorAll('allow')).map(el => el.textContent);
                         this.allowed_emojis.set(bare_jid, allowed);
@@ -67,25 +71,6 @@ converse.plugins.add('reactions', {
          * @listens getMessageActionButtons
          */
         api.listen.on('getMessageActionButtons', (el, buttons) => {
-            const is_own_message = el.model.get('sender') === 'me';
-            if (!is_own_message) {
-                const chatbox = el.model.collection.chatbox;
-                const jid = chatbox.get('jid');
-                const type = chatbox.get('type');
-
-                // Check for support in 1:1 chats
-                if (type === 'chat') {
-                    const entity = _converse.api.disco.entities.get(jid);
-                    // If we have disco info, check for the feature
-                    if (entity && entity.features && entity.features.length > 0) {
-                        const supportsReactions = entity.features.findWhere({'var': 'urn:xmpp:reactions:0'});
-                        if (!supportsReactions) {
-                            return buttons;
-                        }
-                    }
-                    // If unknown, we default to showing it (or we could trigger a disco check here)
-                }
-
                 buttons.push({
                     'i18n_text': __('Add Reaction'),
                     'handler': (ev) => this.onReactionButtonClicked(el, ev),
@@ -93,7 +78,7 @@ converse.plugins.add('reactions', {
                     'icon_class': 'fas fa-smile',
                     'name': 'reaction',
                 });
-            }
+
             return buttons;
         });
 
@@ -110,7 +95,7 @@ converse.plugins.add('reactions', {
              */
             const handler = (stanza) => {
                 // Check for reactions element per XEP-0444
-                const reactions = stanza.getElementsByTagNameNS('urn:xmpp:reactions:0', 'reactions');
+                const reactions = stanza.getElementsByTagNameNS(Strophe.NS.REACTIONS, 'reactions');
                 
                 if (reactions.length > 0) {
                     this.onReactionReceived(stanza, reactions[0]);
@@ -136,56 +121,20 @@ converse.plugins.add('reactions', {
     },
 
     /**
-     * Helper function to update a message with a new reaction
-     * @param {Object} message - The message model to update
-     * @param {string} from_jid - The JID of the user reacting
-     * @param {Array<string>} emojis - The list of emojis (can be empty for removal)
-     */
-    updateMessageReactions (message, from_jid, emojis) {
-        // IMPORTANT: Clone the reactions object to ensure Backbone detects the change
-        const current_reactions = message.get('reactions') || {};
-        const reactions = JSON.parse(JSON.stringify(current_reactions));
-        
-        // Remove user's previous reactions (clear slate for this user)
-        for (const existingEmoji in reactions) {
-            const index = reactions[existingEmoji].indexOf(from_jid);
-            if (index !== -1) {
-                reactions[existingEmoji].splice(index, 1);
-                // Remove emoji key if no one else reacted with it
-                if (reactions[existingEmoji].length === 0) {
-                    delete reactions[existingEmoji];
-                }
-            }
-        }
-        
-        // Add the new reactions
-        emojis.forEach(emoji => {
-            if (!reactions[emoji]) {
-                reactions[emoji] = [];
-            }
-            if (!reactions[emoji].includes(from_jid)) {
-                reactions[emoji].push(from_jid);
-            }
-        });
-        
-        message.save({ 'reactions': reactions });
-    },
-
-    /**
      * Process a received reaction stanza
      * Updates the target message's reactions data structure
      * 
      * @param {Element} stanza - The XMPP message stanza containing the reaction
-     * @param {Element} reactionsElement - The <reactions> element from the stanza
+     * @param {Element} reactions_element - The <reactions> element from the stanza
      */
-    async onReactionReceived (stanza, reactionsElement) {
+    async onReactionReceived (stanza, reactions_element) {
         const from_jid = stanza.getAttribute('from');
-        const id = reactionsElement.getAttribute('id'); // Target message ID
+        const id = reactions_element.getAttribute('id'); // Target message ID
         
         // Extract emojis from <reaction> child elements
-        const reactionElements = reactionsElement.getElementsByTagName('reaction');
-        const emojis = Array.from(reactionElements).map(el => el.textContent).filter(e => e);
-
+        const reaction_elements = reactions_element.getElementsByTagName('reaction');
+        const emojis = Array.from(reaction_elements).map(el => el.textContent).filter(e => e);
+        
         if (!id) return;
 
         // Strategy 1: Try to find chatbox by sender's bare JID
@@ -193,29 +142,10 @@ converse.plugins.add('reactions', {
         const bare_jid = Strophe.getBareJidFromJid(from_jid);
         let chatbox = api.chatboxes.get(bare_jid);
         
-        /**
-         * Helper to find message by ID in a chatbox
-         * @param {Object} box - The chatbox to search in
-         * @param {string} msgId - The message ID to find
-         * @returns {Object|null} - The message model or null
-         */
-        const findMessage = (box, msgId) => {
-            if (!box || !box.messages) {
-                return null;
-            }
-            // Try direct lookup first
-            let msg = box.messages.get(msgId);
-            if (!msg) {
-                // Fallback to findWhere for older messages
-                msg = box.messages.findWhere({ 'msgid': msgId });
-            }
-            return msg;
-        };
-
         if (chatbox) {
             const message = findMessage(chatbox, id);
             if (message) {
-                this.updateMessageReactions(message, from_jid, emojis);
+                updateMessageReactions(message, from_jid, emojis);
                 return;
             }
         }
@@ -226,7 +156,7 @@ converse.plugins.add('reactions', {
         for (const cb of allChatboxes) {
             const message = findMessage(cb, id);
             if (message) {
-                this.updateMessageReactions(message, from_jid, emojis);
+                updateMessageReactions(message, from_jid, emojis);
                 return;
             }
         }
@@ -248,9 +178,9 @@ converse.plugins.add('reactions', {
         
         // Toggle: if clicking same button, close picker instead of reopening
         if (existing_picker) {
-            const isSameTarget = /** @type {any} */(existing_picker).target === target;
+            const is_same_target = /** @type {any} */(existing_picker).target === target;
             existing_picker.remove();
-            if (isSameTarget) {
+            if (is_same_target) {
                 return;
             }
         }
@@ -293,8 +223,8 @@ converse.plugins.add('reactions', {
                 document.removeEventListener('click', onClickOutside);
                 return;
             }
-            const clickTarget = /** @type {Node} */(ev.target);
-            if (!picker.contains(clickTarget) && !target.contains(clickTarget)) {
+            const click_target = /** @type {Node} */(ev.target);
+            if (!picker.contains(click_target) && !target.contains(click_target)) {
                 picker.remove();
                 document.removeEventListener('click', onClickOutside);
             }
@@ -322,7 +252,7 @@ converse.plugins.add('reactions', {
      * @param {string} emoji - The emoji reaction (can be unicode or shortname like :joy:)
      */
     sendReaction (message, emoji) {
-        const { $msg } = converse.env;
+        const { stx, Stanza } = converse.env;
         const chatbox = message.collection.chatbox;
         const msgId = message.get('msgid');
         const to_jid = chatbox.get('jid');
@@ -333,21 +263,21 @@ converse.plugins.add('reactions', {
 
         // Convert emoji shortname (e.g. :joy:) to unicode (e.g. 😂)
         // Check if emoji is already unicode (from emoji picker) or needs conversion (from shortname buttons)
-        let emojiUnicode = emoji;
+        let emoji_unicode = emoji;
         if (emoji.startsWith(':') && emoji.endsWith(':')) {
-            const emojiArray = u.shortnamesToEmojis(emoji, { unicode_only: true });
-            emojiUnicode = Array.isArray(emojiArray) ? emojiArray.join('') : emojiArray;
+            const emoji_array = u.shortnamesToEmojis(emoji, { unicode_only: true });
+            emoji_unicode = Array.isArray(emoji_array) ? emoji_array.join('') : emoji_array;
         }
 
         // Filter out custom emojis (stickers) which don't have a unicode representation
-        if (emojiUnicode.startsWith(':') && emojiUnicode.endsWith(':')) {
+        if (emoji_unicode.startsWith(':') && emoji_unicode.endsWith(':')) {
             return;
         }
 
         const my_jid = api.connection.get().jid;
-        const currentReactions = message.get('reactions') || {};
+        const current_reactions = message.get('reactions') || {};
         // Clone to ensure Backbone detects the change
-        const reactions = JSON.parse(JSON.stringify(currentReactions));
+        const reactions = JSON.parse(JSON.stringify(current_reactions));
 
         // Determine current user's reactions
         const myReactions = new Set();
@@ -358,33 +288,29 @@ converse.plugins.add('reactions', {
         }
 
         // Toggle the clicked emoji
-        if (myReactions.has(emojiUnicode)) {
-            myReactions.delete(emojiUnicode);
+        if (myReactions.has(emoji_unicode)) {
+            myReactions.delete(emoji_unicode);
         } else {
-            myReactions.add(emojiUnicode);
+            myReactions.add(emoji_unicode);
         }
 
         // Build XEP-0444 reaction stanza with ALL current reactions
-        const reactionStanza = $msg({
-            'to': to_jid,
-            'type': type,
-            'id': u.getUniqueId('reaction')
-        }).c('reactions', {
-            'xmlns': 'urn:xmpp:reactions:0',
-            'id': msgId  // ID of the message being reacted to
-        });
-
-        myReactions.forEach(r => {
-            reactionStanza.c('reaction').t(r).up();
-        });
+        const reactions_xml = Array.from(myReactions).map(r => `<reaction>${r}</reaction>`).join('');
+        const reaction_stanza = stx`
+            <message to="${to_jid}" type="${type}" id="${u.getUniqueId('reaction')}" xmlns="jabber:client">
+                <reactions xmlns="${Strophe.NS.REACTIONS}" id="${msgId}">
+                    ${Stanza.unsafeXML(reactions_xml)}
+                </reactions>
+            </message>
+        `;
 
         // Send stanza to XMPP server
-        api.send(reactionStanza);
+        api.send(reaction_stanza);
 
         // Optimistic local update for immediate UI feedback
         // Only for 1:1 chats where no server reflection occurs for the sender
         if (type === 'chat') {
-            this.updateMessageReactions(message, my_jid, Array.from(myReactions));
+            updateMessageReactions(message, my_jid, Array.from(myReactions));
         }
     }
 });

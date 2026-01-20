@@ -80,13 +80,6 @@ export default class ReactionPicker extends CustomElement {
      */
     render () {
         const anchor_name = `--reaction-anchor-${this.picker_id}`;
-        const is_own_message = this.model?.get('sender') === 'me';
-        
-        // Don't show reaction picker on own messages
-        if (is_own_message) {
-            return '';
-        }
-
         const popular_emojis = this.allowed_emojis ? 
             POPULAR_EMOJIS.filter(sn => this.allowed_emojis.includes(u.shortnamesToEmojis(sn))) : 
             POPULAR_EMOJIS;
@@ -101,7 +94,7 @@ export default class ReactionPicker extends CustomElement {
                 `)}
                 
                 <!-- Full emoji picker dropdown -->
-                <div class="dropdown">
+                <div class="dropdown emoji-picker__dropdown">
                     <button class="reaction-item more dropdown-toggle" 
                             type="button" 
                             id="${this.picker_id}-dropdown" 
@@ -119,7 +112,10 @@ export default class ReactionPicker extends CustomElement {
                                     .state=${this.emoji_picker_state}
                                     .model=${this.model.collection.chatbox}
                                     .allowed_emojis=${this.allowed_emojis}
-                                    @emojiSelected=${(ev) => this.onEmojiSelected(ev.detail.value)}
+                                    @emojiSelected=${(ev) => {
+                                        ev.stopPropagation();
+                                        this.onEmojiSelected(ev.detail.value);
+                                    }}
                                     ?render_emojis=${true}
                                     current_category="${this.emoji_picker_state.get('current_category') || ''}"
                                     current_skintone="${this.emoji_picker_state.get('current_skintone') || ''}"

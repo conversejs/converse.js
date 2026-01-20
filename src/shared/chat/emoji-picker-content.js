@@ -94,12 +94,17 @@ export default class EmojiPickerContent extends CustomElement {
     }
 
     /**
+     * Helper method for the template which decides whether an
+     * emoji should be hidden.
+     * It filters based on:
+     * - Whether the emoji is allowed (if restrictions apply)
+     * - The current skin tone
+     * - The current search query
+     *
      * @param {string} shortname
+     * @returns {boolean}
      */
     shouldBeHidden (shortname) {
-        // Helper method for the template which decides whether an
-        // emoji should be hidden, based on which skin tone is
-        // currently being applied.
         if (this.allowed_emojis && this.allowed_emojis.length > 0) {
             const unicode = u.shortnamesToEmojis(shortname);
             if (!this.allowed_emojis.includes(unicode)) {

@@ -28,7 +28,7 @@ export const VIEW_PLUGINS = [
     'converse-rootview',
     'converse-rosterview',
     'converse-singleton',
-    'reactions'
+    'converse-reactions'
 ];
 
 /**

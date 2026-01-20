@@ -51,7 +51,7 @@ describe("Message Reactions (XEP-0444)", function () {
             })
         );
 
-        it("does not appear for own messages",
+        it("appears for own messages",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
@@ -72,9 +72,9 @@ describe("Message Reactions (XEP-0444)", function () {
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 const msg_el = view.querySelector('.chat-msg');
                 
-                // Reaction button should not appear for own messages
+                // Reaction button should appear for own messages
                 const reaction_btn = msg_el.querySelector('.chat-msg__action-reaction');
-                expect(reaction_btn).toBe(null);
+                expect(reaction_btn).not.toBe(null);
             })
         );
 

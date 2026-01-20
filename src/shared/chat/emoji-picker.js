@@ -48,7 +48,7 @@ export default class EmojiPicker extends CustomElement {
 
     initialize() {
         super.initialize();
-        this.dropdown = this.closest("converse-emoji-dropdown") || this.closest(".dropdown");
+        this.dropdown = this.closest("converse-emoji-dropdown") || this.closest(".emoji-picker__dropdown");
     }
 
     firstUpdated(changed) {
@@ -124,6 +124,8 @@ export default class EmojiPicker extends CustomElement {
 
     registerEvents() {
         this.onKeyDown = (ev) => this.#onKeyDown(ev);
+        // The emoji picker might not be inside a dropdown (e.g. when used in the chat bottom panel).
+        // In that case, we don't need to listen for the hide event.
         this.dropdown?.addEventListener("hide.bs.dropdown", () => this.onDropdownHide());
         this.addEventListener("keydown", this.onKeyDown);
     }

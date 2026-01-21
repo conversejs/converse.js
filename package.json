@@ -149,7 +149,8 @@
     "pluggable.js": "^3.0.1",
     "prettier": "^3.2.5",
     "sizzle": "^2.3.5",
-    "sprintf-js": "^1.1.2"
+    "sprintf-js": "^1.1.2",
+    "strophe.js": "github:kousu/strophejs#sasl2_fast_2"
   },
   "resolutions": {
     "autoprefixer": "10.4.5"

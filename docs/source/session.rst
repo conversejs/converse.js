@@ -196,10 +196,12 @@ We've purposefully not put this functionality in Converse.js due to the
 security implications of storing plaintext passwords in localStorage.
 
 
-Storing the SASL SCRAM-SHA1 hash in IndexedDB
----------------------------------------------
+Storing the SASL SCRAM-SHA1 hash or FAST token in IndexedDB
+-----------------------------------------------------------
 
 Another suggestion that's been suggested is to store the SCRAM-SHA1 computed
 ``clientKey`` in localStorage and to use that upon page reload to log the user in again.
 
-This has been implemented since version 10, see documentation on `reuse_scram_keys <https://conversejs.org/docs/html/configuration.html#reuse-scram-keys>`_
+In more modern terms, we can store the FAST token if supported by the server.
+
+This has been implemented since version 10, see documentation on `reuse_keys <https://conversejs.org/docs/html/configuration.html#reuse-keys>`_

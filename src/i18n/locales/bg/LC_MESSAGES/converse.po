@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-08 15:09+0200\n"
-"PO-Revision-Date: 2025-10-30 04:24+0000\n"
+"PO-Revision-Date: 2026-01-22 21:17+0000\n"
 "Last-Translator: \"Mr. EddX\" <mreddx@chatrix.one>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/bg/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14.1-dev\n"
+"X-Generator: Weblate 5.16-dev\n"
 
 #: dist/converse-no-dependencies.js:42934
 msgid "A timeout occurred"
@@ -42,28 +42,28 @@ msgstr ""
 #: dist/converse-no-dependencies.js:45716
 #, javascript-format
 msgid "%1$s has gone offline"
-msgstr "%1$s е офлайн"
+msgstr "%1$s премина офлайн"
 
 #: dist/converse-no-dependencies.js:45718
 #: dist/converse-no-dependencies.js:54910
 #: dist/converse-no-dependencies.js:68852
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr "%1$s отсъства"
+msgstr "%1$s си тръгна"
 
 #: dist/converse-no-dependencies.js:45720
 #, javascript-format
 msgid "%1$s is busy"
-msgstr "%1$s са заети"
+msgstr "%1$s е зает"
 
 #: dist/converse-no-dependencies.js:45722
 #, javascript-format
 msgid "%1$s is online"
-msgstr "%1$s е офлайн"
+msgstr "%1$s е онлайн"
 
 #: dist/converse-no-dependencies.js:48771
 msgid "Smileys and emotions"
-msgstr "Емотикони"
+msgstr "Усмивки и емотикони"
 
 #: dist/converse-no-dependencies.js:48772
 msgid "People"

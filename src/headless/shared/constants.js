@@ -108,6 +108,7 @@ Strophe.addNamespace('RAI', 'urn:xmpp:rai:0');
 Strophe.addNamespace('RECEIPTS', 'urn:xmpp:receipts');
 Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
 Strophe.addNamespace('REGISTER', 'jabber:iq:register');
+Strophe.addNamespace('REPLY', 'urn:xmpp:reply:0');
 Strophe.addNamespace('RETRACT', 'urn:xmpp:message-retract:1');
 Strophe.addNamespace('RETRACT0', 'urn:xmpp:message-retract:0');
 Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');

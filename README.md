@@ -138,6 +138,7 @@ Converse implements a wide range of XMPP Extensions (XEPs), making it one of the
 | [XEP-0437](https://xmpp.org/extensions/xep-0437.html) | Room Activity Indicators | |
 | [XEP-0453](https://xmpp.org/extensions/xep-0453.html) | DOAP Usage in XMPP | |
 | [XEP-0454](https://xmpp.org/extensions/xep-0454.html) | OMEMO Media Sharing | |
+| [XEP-0461](https://xmpp.org/extensions/xep-0461.html) | Message Replies | |
 </details>
 
 ## Integration Options

@@ -17,6 +17,7 @@ import {
     getOutOfBandAttributes,
     getReceiptId,
     getReferences,
+    getReplyAttributes,
     getRetractionAttributes,
     getSpoilerAttributes,
     getStanzaIDs,
@@ -288,6 +289,7 @@ export async function parseMUCMessage(original_stanza, chatbox) {
             getRetractionAttributes(stanza, original_stanza),
             getModerationAttributes(stanza),
             getEncryptionAttributes(stanza),
+            getReplyAttributes(stanza),
             getStatusCodes(stanza, 'message')
         )
     );

@@ -1,32 +1,8 @@
 import { __ } from "i18n";
 import { api, u } from "@converse/headless";
-import { html, nothing } from "lit";
+import { html } from "lit";
 import { resetElementHeight } from "../utils.js";
-
-/**
- * Render the reply preview banner
- * @param {import('../message-form').default} el
- */
-function tplReplyPreview(el) {
-    const reply_message = el.getReplyToMessage();
-    if (!reply_message) return nothing;
-
-    const sender = reply_message.getDisplayName();
-    const body = reply_message.getMessageText();
-    const truncated_body = body.length > 100 ? body.slice(0, 100) + '...' : body;
-
-    return html`
-        <div class="reply-preview">
-            <div class="reply-preview__content">
-                <span class="reply-preview__sender">${__('Replying to %1$s', sender)}</span>
-                <span class="reply-preview__text">${truncated_body}</span>
-            </div>
-            <button type="button" class="reply-preview__cancel" @click=${() => el.cancelReply()} title="${__('Cancel reply')}">
-                <converse-icon class="fa fa-times" size="1em"></converse-icon>
-            </button>
-        </div>
-    `;
-}
+import 'shared/chat/reply-preview.js';
 
 /**
  * @param {import('../message-form').default} el
@@ -43,7 +19,7 @@ export default (el) => {
     const show_toolbar = api.settings.get("show_toolbar");
 
     return html`
-        ${tplReplyPreview(el)}
+        <converse-reply-preview .model=${el.model}></converse-reply-preview>
         <form
         class="chat-message-form"
         @submit="${/** @param {SubmitEvent} ev */ (ev) => el.onFormSubmitted(ev)}"

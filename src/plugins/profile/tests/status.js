@@ -34,7 +34,7 @@ describe("The Controlbox", function () {
                     <show>dnd</show>
                     <priority>0</priority>
                     <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                    <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
+                    <c hash="sha-1" node="https://conversejs.org" ver="IVrSARVJ+weVvRNIXt5E3K0e1NE=" xmlns="http://jabber.org/protocol/caps"/>
                 </presence>`);
             const view = await u.waitUntil(() => document.querySelector('converse-user-profile'));
             const first_child = view.querySelector('.xmpp-status span:first-child');
@@ -62,7 +62,7 @@ describe("The Controlbox", function () {
                     <status>I am happy</status>
                     <priority>0</priority>
                     <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                    <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
+                    <c hash="sha-1" node="https://conversejs.org" ver="IVrSARVJ+weVvRNIXt5E3K0e1NE=" xmlns="http://jabber.org/protocol/caps"/>
                 </presence>`);
 
             const view = await u.waitUntil(() => document.querySelector('converse-user-profile'));

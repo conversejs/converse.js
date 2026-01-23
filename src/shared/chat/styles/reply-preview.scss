@@ -1,0 +1,52 @@
+converse-reply-preview {
+    display: block;
+
+    .reply-preview {
+        display: flex;
+        align-items: center;
+        padding: 0.5em;
+        margin-bottom: 0.25em;
+        background-color: var(--chat-head-color);
+        border-left: 3px solid var(--link-color);
+        border-radius: 3px;
+        gap: 0.5em;
+
+        &__content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        &__sender {
+            display: block;
+            font-weight: bold;
+            font-size: 0.9em;
+            color: var(--link-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &__text {
+            display: block;
+            font-size: 0.85em;
+            color: var(--foreground-color);
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &__cancel {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25em;
+            color: var(--foreground-color);
+            opacity: 0.7;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+}

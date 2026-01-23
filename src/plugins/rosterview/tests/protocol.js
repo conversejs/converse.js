@@ -144,7 +144,7 @@ describe("Presence subscriptions", function () {
                     <nick xmlns="http://jabber.org/protocol/nick">Romeo</nick>
                     <priority>0</priority>
                     <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                    <c hash="sha-1" node="https://conversejs.org" ver="qgxN8hmrdSa2/4/7PUoM9bPFN2s=" xmlns="http://jabber.org/protocol/caps"/>
+                    <c hash="sha-1" node="https://conversejs.org" ver="IVrSARVJ+weVvRNIXt5E3K0e1NE=" xmlns="http://jabber.org/protocol/caps"/>
                 </presence>
             `);
 

@@ -17,7 +17,6 @@ function tplReplyContext(el) {
     const replied_message = el.getRepliedMessage();
     if (!replied_message) {
         // If the replied message is not found, show a generic reference
-        const reply_to = el.model.get('reply_to');
         if (el.model.get('reply_to_id')) {
             return html`
                 <div class="chat-msg__reply-context chat-msg__reply-context--unavailable" @click=${(ev) => el.scrollToRepliedMessage(ev)}>

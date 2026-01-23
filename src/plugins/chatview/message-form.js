@@ -55,14 +55,16 @@ export default class MessageForm extends CustomElement {
     }
 
     /**
-     * Get the message being replied to, if any
+     * Get the message being replied to, if any.
+     * According to XEP-0461, for groupchat messages we use stanza_id,
+     * for other messages we use msgid.
      * @returns {import('@converse/headless/shared/message.js').default|undefined}
      */
     getReplyToMessage() {
         const reply_to_id = this.model.get('reply_to_id');
         if (!reply_to_id) return undefined;
         return this.model.messages.models.find(
-            (m) => m.get('origin_id') === reply_to_id || m.get('msgid') === reply_to_id
+            (m) => m.get('msgid') === reply_to_id
         );
     }
 

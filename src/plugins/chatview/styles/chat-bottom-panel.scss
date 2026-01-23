@@ -11,6 +11,55 @@
                 height: calc(100% - (var(--chat-textarea-height) + var(--send-button-height) + 2 * var(--send-button-margin)));
             }
 
+            .reply-preview {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.5em 0.75em;
+                background-color: var(--chat-head-color-lighten);
+                border-left: 3px solid var(--chat-color);
+                margin-bottom: 0;
+
+                &__content {
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    flex: 1;
+                    min-width: 0;
+                }
+
+                &__sender {
+                    font-weight: 600;
+                    font-size: 0.85em;
+                    color: var(--chat-color);
+                    margin-bottom: 0.15em;
+                }
+
+                &__text {
+                    font-size: 0.85em;
+                    color: var(--foreground-color);
+                    opacity: 0.8;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                &__cancel {
+                    background: none;
+                    border: none;
+                    padding: 0.25em;
+                    margin-left: 0.5em;
+                    cursor: pointer;
+                    color: var(--foreground-color);
+                    opacity: 0.6;
+                    flex-shrink: 0;
+
+                    &:hover {
+                        opacity: 1;
+                    }
+                }
+            }
+
             .chat-message-form {
                 border-top: 0.25em solid var(--chat-color);
                 border-right: 0 !important;

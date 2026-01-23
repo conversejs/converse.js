@@ -311,6 +311,24 @@ class MessageActions extends CustomElement {
         chatbox.save({ draft });
     }
 
+    /** @param {MouseEvent} [ev] */
+    onMessageReplyButtonClicked (ev) {
+        ev?.preventDefault?.();
+        const chatbox = this.model.collection.chatbox;
+        // Get the message ID to reply to (use origin_id or msgid)
+        const reply_to_id = this.model.get('origin_id') || this.model.get('msgid');
+        // Get the sender's JID for the reply
+        const reply_to = this.model.get('from');
+        // Store reply state on the chatbox
+        chatbox.save({
+            reply_to_id,
+            reply_to,
+        });
+        // Focus the textarea
+        const textarea = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea');
+        textarea?.focus();
+    }
+
     async getActionButtons () {
         const buttons = [];
         if (this.model.get('editable')) {
@@ -353,6 +371,13 @@ class MessageActions extends CustomElement {
         });
 
         if (this.model.collection.chatbox.canPostMessages()) {
+            buttons.push({
+                'i18n_text': __('Reply'),
+                'handler': (ev) => this.onMessageReplyButtonClicked(ev),
+                'button_class': 'chat-msg__action-reply',
+                'icon_class': 'fas fa-reply',
+                'name': 'reply',
+            });
             buttons.push({
                 'i18n_text': __('Quote'),
                 'handler': (ev) => this.onMessageQuoteButtonClicked(ev),

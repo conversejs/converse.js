@@ -198,6 +198,11 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         const origin_id = u.getUniqueId();
         const text = attrs?.body;
         const body = text ? u.shortnamesToUnicode(text) : undefined;
+
+        // Get reply attributes from chatbox model if replying to a message
+        const reply_to_id = this.get('reply_to_id');
+        const reply_to = this.get('reply_to');
+
         attrs = Object.assign(
             {},
             attrs,
@@ -212,12 +217,19 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
                 msgid: origin_id,
                 nick: this.get('nickname'),
                 origin_id,
+                reply_to_id,
+                reply_to,
                 sender: 'me',
                 time: new Date().toISOString(),
                 type: this.get('message_type'),
             },
             await u.getMediaURLsMetadata(text)
         );
+
+        // Clear reply state after capturing it
+        if (reply_to_id) {
+            this.save({ reply_to_id: undefined, reply_to: undefined });
+        }
 
         /**
          * *Hook* which allows plugins to update the attributes of an outgoing message.

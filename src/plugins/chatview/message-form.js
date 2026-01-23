@@ -27,6 +27,7 @@ export default class MessageForm extends CustomElement {
         await this.model.initialized;
         this.listenTo(this.model, 'change:composing_spoiler', () => this.requestUpdate());
         this.listenTo(this.model, 'change:draft', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:reply_to_id', () => this.requestUpdate());
         this.listenTo(this.model, 'change:hidden', () => {
             if (this.model.get('hidden')) {
                 const draft_hint = /** @type {HTMLInputElement} */ (this.querySelector('.spoiler-hint'))?.value;
@@ -51,6 +52,25 @@ export default class MessageForm extends CustomElement {
 
     render() {
         return tplMessageForm(this);
+    }
+
+    /**
+     * Get the message being replied to, if any
+     * @returns {import('@converse/headless/shared/message.js').default|undefined}
+     */
+    getReplyToMessage() {
+        const reply_to_id = this.model.get('reply_to_id');
+        if (!reply_to_id) return undefined;
+        return this.model.messages.models.find(
+            (m) => m.get('origin_id') === reply_to_id || m.get('msgid') === reply_to_id
+        );
+    }
+
+    /**
+     * Cancel the reply
+     */
+    cancelReply() {
+        this.model.save({ reply_to_id: undefined, reply_to: undefined });
     }
 
     /**

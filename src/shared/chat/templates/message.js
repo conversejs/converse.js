@@ -10,6 +10,39 @@ import 'shared/chat/unfurl.js';
 const { dayjs } = converse.env;
 
 /**
+ * Render the reply context for a message that is replying to another message
+ * @param {import('../message').default} el
+ */
+function tplReplyContext(el) {
+    const replied_message = el.getRepliedMessage();
+    if (!replied_message) {
+        // If the replied message is not found, show a generic reference
+        const reply_to = el.model.get('reply_to');
+        if (el.model.get('reply_to_id')) {
+            return html`
+                <div class="chat-msg__reply-context chat-msg__reply-context--unavailable" @click=${(ev) => el.scrollToRepliedMessage(ev)}>
+                    <converse-icon class="fa fa-reply" size="0.9em"></converse-icon>
+                    <span class="chat-msg__reply-text">${__('Replying to a message')}</span>
+                </div>
+            `;
+        }
+        return nothing;
+    }
+
+    const sender = replied_message.getDisplayName();
+    const body = replied_message.getMessageText();
+    const truncated_body = body && body.length > 80 ? body.slice(0, 80) + '...' : body;
+
+    return html`
+        <div class="chat-msg__reply-context" @click=${(ev) => el.scrollToRepliedMessage(ev)}>
+            <converse-icon class="fa fa-reply" size="0.9em"></converse-icon>
+            <span class="chat-msg__reply-sender">${sender}</span>
+            <span class="chat-msg__reply-text">${truncated_body || __('(empty message)')}</span>
+        </div>
+    `;
+}
+
+/**
  * @param {import('../message').default} el
  */
 export default (el) => {
@@ -87,6 +120,8 @@ export default (el) => {
                               : ''}
                       </span>`
                     : ''}
+
+                ${el.model.get('reply_to_id') ? tplReplyContext(el) : ''}
 
                 <div
                     class="chat-msg__body chat-msg__body--${el.model.get('message_type')} ${el.model.get('received')

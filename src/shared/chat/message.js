@@ -208,6 +208,37 @@ export default class Message extends ObservableElement {
         ev?.preventDefault();
         this.model.save({'is_spoiler_visible': !this.model.get('is_spoiler_visible')});
     }
+
+    /**
+     * Get the message being replied to, if this message is a reply
+     * @returns {import('@converse/headless/shared/message.js').default|undefined}
+     */
+    getRepliedMessage () {
+        const reply_to_id = this.model.get('reply_to_id');
+        if (!reply_to_id) return undefined;
+        return this.model_with_messages.messages.models.find(
+            (m) => m.get('origin_id') === reply_to_id || m.get('msgid') === reply_to_id
+        );
+    }
+
+    /**
+     * Scroll to and highlight the replied message
+     * @param {MouseEvent} ev
+     */
+    scrollToRepliedMessage (ev) {
+        ev?.preventDefault();
+        const replied_message = this.getRepliedMessage();
+        if (!replied_message) return;
+
+        const msgid = replied_message.get('msgid');
+        const el = this.closest('.chatbox')?.querySelector(`[data-msgid="${msgid}"]`);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Add highlight effect
+            el.classList.add('chat-msg--highlighted');
+            setTimeout(() => el.classList.remove('chat-msg--highlighted'), 2000);
+        }
+    }
 }
 
 api.elements.define('converse-chat-message', Message);

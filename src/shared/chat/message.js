@@ -14,7 +14,8 @@ import tplMessageText from './templates/message-text.js';
 import tplRetraction from './templates/retraction.js';
 import tplSpinner from 'templates/spinner.js';
 import { ObservableElement } from 'shared/components/observable.js';
-import { __ } from 'i18n';
+import { __ } from 'i18n/index.js';
+
 
 const { Strophe } = converse.env;
 const { SUCCESS } = constants;
@@ -112,6 +113,20 @@ export default class Message extends ObservableElement {
             ['chat', 'groupchat', 'normal'].includes(this.model.get('type'));
     }
 
+    onReplyClick (ev) {
+    ev.preventDefault();
+    const reply = this.getReplyTo();
+    if (!reply || !reply.id) return;
+
+    const el = this.closest('converse-chat')
+        ?.querySelector(`[data-msgid="${reply.id}"]`);
+
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el?.classList.add('highlight-reply');
+
+    setTimeout(() => el?.classList.remove('highlight-reply'), 2000);
+}
+
     onImgClick (ev) {
         ev.preventDefault();
         api.modal.show('converse-image-modal', { src: ev.target.src }, ev);
@@ -145,6 +160,27 @@ export default class Message extends ObservableElement {
 
     getOccupantRole () {
         return this.model.occupant?.get('role');
+    }
+
+    hasReply () {
+    return !!this.model.get('reply_to');
+    }
+
+    getReplyTo () {
+    return this.model.get('reply_to');
+    }
+    getReplyAuthorName () {
+    const reply = this.getReplyTo();
+    if (!reply) return __('Unknown');
+
+    return reply.nick || reply.from || __('Unknown');
+}
+    getReplySnippet () {
+        const reply = this.getReplyTo();
+        if (!reply) return '';
+
+        const text = reply.body || reply.text || '';
+        return text.length > 60 ? text.slice(0, 60) + '…' : text;
     }
 
     getExtraMessageClasses () {

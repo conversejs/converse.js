@@ -57,19 +57,32 @@ export default (el) => {
     return html`
         ${el.model.get('is_spoiler') ? tplSpoilerHint : ''}
         ${el.model.get('subject') ? html`<div class="chat-msg__subject">${el.model.get('subject')}</div>` : ''}
-        <span class="chat-msg__body--wrapper ${error_text ? 'error' : ''}">
-            <converse-chat-message-body
-                class="chat-msg__text ${el.model.get('is_only_emojis')
-                    ? 'chat-msg__text--larger'
-                    : ''} ${spoiler_classes}"
-                .model="${el.model}"
-                hide_url_previews=${el.model.get('hide_url_previews')}
-                ?is_me_message=${el.model.isMeCommand()}
-                text="${text}"
-            ></converse-chat-message-body>
-            ${el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message ? tplCheckmark() : ''}
-            ${el.model.get('edited') ? tplEditedIcon(el) : ''}
-        </span>
+       <span class="chat-msg__body--wrapper ${error_text ? 'error' : ''}">
+      ${el.hasReply() ? html`
+    <div class="reply-preview" @click=${el.onReplyClick.bind(el)}>
+        <div class="reply-author">
+            ${el.getReplyAuthorName()}
+        </div>
+        <div class="reply-snippet">
+            ${el.getReplySnippet()}
+        </div>
+    </div>
+` : ''}
+
+    <converse-chat-message-body
+        class="chat-msg__text ${el.model.get('is_only_emojis')
+            ? 'chat-msg__text--larger'
+            : ''} ${spoiler_classes}"
+        .model=${el.model}
+        hide_url_previews=${el.model.get('hide_url_previews')}
+        ?is_me_message=${el.model.isMeCommand()}
+        text="${text}"
+    ></converse-chat-message-body>
+
+    ${el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message ? tplCheckmark() : ''}
+    ${el.model.get('edited') ? tplEditedIcon(el) : ''}
+</span>
+
         ${show_oob ? html`<div class="chat-msg__media">
             <converse-texture
                 text="${el.model.get('oob_url')}"

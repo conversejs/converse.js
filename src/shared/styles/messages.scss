@@ -337,6 +337,38 @@
             justify-content: space-between;
         }
     }
+        /* ===== Reply preview UI ===== */
+    .reply-preview {
+        border-left: 3px solid var(--info-color);
+        padding: 4px 8px;
+        margin-bottom: 6px;
+        background: rgba(0,0,0,0.05);
+        cursor: pointer;
+    }
+
+    .reply-preview:hover {
+        background: rgba(0,0,0,0.08);
+    }
+
+    .reply-author {
+        font-weight: bold;
+        font-size: 0.85em;
+    }
+
+    .reply-snippet {
+        font-size: 0.8em;
+        opacity: 0.8;
+    }
+
+    .highlight-reply {
+        animation: highlightFlash 2s ease;
+    }
+
+    @keyframes highlightFlash {
+        0% { background: yellow; }
+        100% { background: inherit; }
+    }
+
 
     .chatroom-body .message {
         &.onload {

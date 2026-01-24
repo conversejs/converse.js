@@ -59,6 +59,9 @@ converse.plugins.add('converse-reactions', {
                         const allowed = Array.from(feature.querySelectorAll('allow')).map(el => el.textContent);
                         this.allowed_emojis.set(bare_jid, allowed);
                         this.allowed_emojis.set(from_jid, allowed);
+
+                        const chatbox = api.chatboxes.get(from_jid) || api.chatboxes.get(bare_jid);
+                        chatbox?.set('allowed_reactions', allowed);
                     }
                 }
             }
@@ -71,13 +74,18 @@ converse.plugins.add('converse-reactions', {
          * @listens getMessageActionButtons
          */
         api.listen.on('getMessageActionButtons', (el, buttons) => {
-                buttons.push({
-                    'i18n_text': __('Add Reaction'),
-                    'handler': (ev) => this.onReactionButtonClicked(el, ev),
-                    'button_class': 'chat-msg__action-reaction',
-                    'icon_class': 'fas fa-smile',
-                    'name': 'reaction',
-                });
+            buttons.push({
+                'i18n_text': __('Add Reaction'),
+                'handler': (ev) => {
+                    ev?.preventDefault?.();
+                    ev?.stopPropagation?.();
+                    const show = el.model.get('show_reaction_picker');
+                    el.model.set('show_reaction_picker', !show);
+                },
+                'button_class': 'chat-msg__action-reaction',
+                'icon_class': 'fas fa-smile',
+                'name': 'reaction',
+            });
 
             return buttons;
         });
@@ -169,79 +177,19 @@ converse.plugins.add('converse-reactions', {
      * @param {Element} el - The message element component
      * @param {Event} ev - The click event
      */
-    onReactionButtonClicked (el, ev) {
-        ev?.preventDefault?.();
-        ev?.stopPropagation?.();
-        
-        const target = /** @type {HTMLElement} */(ev.target).closest('button');
-        const existing_picker = document.querySelector('converse-reaction-picker');
-        
-        // Toggle: if clicking same button, close picker instead of reopening
-        if (existing_picker) {
-            const is_same_target = /** @type {any} */(existing_picker).target === target;
-            existing_picker.remove();
-            if (is_same_target) {
-                return;
-            }
+    /**
+     * Handle emoji selection from picker
+     * We listen on the document because the picker is rendered inside the message template
+     * and we want to handle the event globally or per message.
+     * Actually, it's better to listen for a custom event from the component.
+     */
+    onReactionSelected (ev) {
+        const { detail, target } = ev;
+        const picker = target.closest('converse-reaction-picker');
+        if (picker && picker.model) {
+            this.sendReaction(picker.model, detail.emoji);
+            picker.model.set('show_reaction_picker', false);
         }
-
-        // Create reaction picker component
-        const pickerEl = document.createElement('converse-reaction-picker');
-        const picker = /** @type {HTMLElement & { target: HTMLElement | null; model: any; allowed_emojis: any; }} */ (pickerEl);
-        // @ts-ignore - custom element exposes target property
-        picker.target = target;
-        // @ts-ignore - custom element exposes model property
-        picker.model = el.model;
-        
-        // @ts-ignore
-        const chatbox = el.model.collection.chatbox;
-        const jid = chatbox.get('jid');
-        const { Strophe } = converse.env;
-        const bare_jid = Strophe.getBareJidFromJid(jid);
-        // @ts-ignore
-        picker.allowed_emojis = this.allowed_emojis.get(jid) || this.allowed_emojis.get(bare_jid);
-        
-        // Position picker below the button
-        const rect = target.getBoundingClientRect();
-        picker.style.position = 'absolute';
-        picker.style.zIndex = '10000'; // Ensure it's above other elements
-        picker.style.left = `${rect.left}px`;
-        picker.style.top = `${rect.bottom + 5}px`;
-        
-        // Append to .conversejs container for proper CSS scoping
-        // Fallback to converse-root or document.body if container not found
-        const converseRoot = document.querySelector('.conversejs') || document.querySelector('converse-root');
-        const container = converseRoot || document.body;
-        container.appendChild(picker);
-
-        /**
-         * Close picker when clicking outside
-         * @param {Event} ev - The click event
-         */
-        const onClickOutside = (ev) => {
-            if (!picker.isConnected) {
-                document.removeEventListener('click', onClickOutside);
-                return;
-            }
-            const click_target = /** @type {Node} */(ev.target);
-            if (!picker.contains(click_target) && !target.contains(click_target)) {
-                picker.remove();
-                document.removeEventListener('click', onClickOutside);
-            }
-        };
-        // Use setTimeout to avoid immediate trigger if event bubbles
-        setTimeout(() => document.addEventListener('click', onClickOutside), 0);
-
-        /**
-         * Handle emoji selection from picker
-         * @listens reactionSelected
-         */
-        picker.addEventListener('reactionSelected', (/** @type {CustomEvent} */ e) => {
-            const emoji = e.detail.emoji;
-            this.sendReaction(/** @type {any} */(el).model, emoji);
-            picker.remove();
-            document.removeEventListener('click', onClickOutside);
-        });
     },
 
     /**

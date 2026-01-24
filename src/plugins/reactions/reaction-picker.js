@@ -51,7 +51,6 @@ export default class ReactionPicker extends CustomElement {
      */
     static get properties () {
         return {
-            'target': { type: Object },
             'model': { type: Object },
             'emoji_picker_state': { type: Object },
             'allowed_emojis': { type: Array }
@@ -63,11 +62,29 @@ export default class ReactionPicker extends CustomElement {
      */
     constructor () {
         super();
-        this.target = null;
         this.model = null;
         this.emoji_picker_state = null;
         this.picker_id = u.getUniqueId('reaction-picker');
         this.allowed_emojis = null;
+        this.onClickOutside = this.onClickOutside.bind(this);
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        // Use setTimeout to avoid immediate trigger if event bubbles
+        setTimeout(() => document.addEventListener('click', this.onClickOutside), 0);
+    }
+
+    disconnectedCallback () {
+        super.disconnectedCallback();
+        document.removeEventListener('click', this.onClickOutside);
+    }
+
+    onClickOutside (ev) {
+        const click_target = /** @type {Node} */(ev.target);
+        if (!this.contains(click_target)) {
+            this.dispatchEvent(new CustomEvent('closePicker', { bubbles: true, composed: true }));
+        }
     }
 
     /**

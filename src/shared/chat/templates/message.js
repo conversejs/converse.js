@@ -115,6 +115,7 @@ export default (el) => {
                     class="chat-msg__body chat-msg__body--${el.model.get('message_type')} ${el.model.get('received')
                         ? 'chat-msg__body--received'
                         : ''} ${el.model.get('is_delayed') ? 'chat-msg__body--delayed' : ''}"
+                    style="position: relative;"
                 >
                     <div class="chat-msg__message">
                         ${is_action
@@ -131,9 +132,18 @@ export default (el) => {
                         .model=${el.model}
                         ?is_retracted=${is_retracted}
                     ></converse-message-actions>
+                    ${el.model.get('show_reaction_picker')
+                        ? html`<converse-reaction-picker
+                            .model=${el.model}
+                            .allowed_emojis=${el.allowed_reactions}
+                            @reactionSelected=${el.onReactionSelected}
+                            @closePicker=${el.onReactionPickerClose}
+                        ></converse-reaction-picker>`
+                        : ''}
                 </div>
                 
                 ${renderReactions(el.model)}
+
 
                 ${el.model.get('ogp_metadata')?.map((m) => {
                     if (el.model.get('hide_url_previews') === true) {
@@ -142,7 +152,7 @@ export default (el) => {
                     return html`<converse-message-unfurl
                         @animationend="${el.onUnfurlAnimationEnd}"
                         class="${el.model.get('url_preview_transition')}"
-                        jid="${el.model_with_messages?.get('jid')}"
+                        jid="${el.model_with_messages.get('jid')}"
                         description="${m['og:description'] || ''}"
                         title="${m['og:title'] || ''}"
                         image="${(m['og:image'] && shouldRenderMediaFromURL(m['og:image'], 'image')) ? m['og:image'] : nothing}"

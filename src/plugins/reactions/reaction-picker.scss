@@ -23,19 +23,22 @@
 
 /* Main reaction picker container - glassmorphic design */
 .reaction-picker {
-    position: relative; /* anchor absolute dropdown so it doesn't affect layout */
-    background: var(--reaction-picker-bg, rgba(255, 255, 255, 0.15));
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-    padding: 4px 8px;
+    position: absolute;
+    top: 2.25rem; 
+    right: 0.5rem;
+    z-index: 1000;
+    width: max-content;
+    background: var(--reaction-picker-bg, rgba(255, 255, 255, 0.1));
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    padding: 6px 10px;
     display: flex;
-    gap: 4px;
+    gap: 8px;
     animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    transform-origin: bottom center;
-    margin-right: 1rem;
+    transform-origin: top right;
 
     &.popular {
         flex-direction: row;
@@ -47,40 +50,42 @@
 
     /* Individual emoji button in picker */
     .reaction-item {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
         background: none;
         border: none;
         cursor: pointer;
-        font-size: 1rem;
+        font-size: 1.25rem;
         border-radius: 50%;
-        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--text-color);
+        color: white;
         position: relative;
         flex-shrink: 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   
 
         &:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
+            background-color: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.15);
+            z-index: 2;
         }
 
         &:active, &.active {
-            transform: scale(0.95);
-            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(0.9);
+            background-color: rgba(255, 255, 255, 0.4);
         }
 
         /* "More" button (plus icon) */
         &.more {
-            font-size: 0.7rem;
-            background: rgba(0, 0, 0, 0.05);
+            font-size: 0.8rem;
             
             &:hover {
-                background: rgba(0, 0, 0, 0.1);
-                transform: scale(1.05);
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(1.15);
             }
         }
     }

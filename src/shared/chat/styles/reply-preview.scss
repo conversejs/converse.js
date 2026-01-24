@@ -4,11 +4,12 @@ converse-reply-preview {
     .reply-preview {
         display: flex;
         align-items: center;
-        padding: 0.5em;
-        margin-bottom: 0.25em;
+        padding: 0.5em 0.75em;
+        margin-bottom: 0;
         background-color: var(--chat-head-color);
         border-left: 3px solid var(--link-color);
-        border-radius: 3px;
+        border-top: 1px solid var(--chat-separator-border-color, rgba(0, 0, 0, 0.1));
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
         gap: 0.5em;
 
         &__content {

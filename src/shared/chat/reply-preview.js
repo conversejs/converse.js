@@ -30,15 +30,24 @@ export default class ReplyPreview extends CustomElement {
     }
 
     /**
-     * Get the message being replied to, if any
+     * Get the message being replied to, if any.
+     * According to XEP-0461, for groupchat messages the stanza_id is used,
+     * for other messages we check origin_id first, then msgid.
      * @returns {import('@converse/headless/shared/message.js').default|undefined}
      */
     getReplyToMessage() {
         const reply_to_id = this.model.get('reply_to_id');
         if (!reply_to_id) return undefined;
-        return this.model.messages.models.find(
-            (m) => m.get('msgid') === reply_to_id
-        );
+
+        const is_groupchat = this.model.get('message_type') === 'groupchat';
+        if (is_groupchat) {
+            const attr = `stanza_id ${this.model.get('jid')}`;
+            return this.model.messages.models.find((m) => m.get(attr) === reply_to_id);
+        } else {
+            return this.model.messages.models.find(
+                (m) => m.get('origin_id') === reply_to_id || m.get('msgid') === reply_to_id
+            );
+        }
     }
 
     /**

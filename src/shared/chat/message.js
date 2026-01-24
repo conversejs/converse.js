@@ -208,52 +208,6 @@ export default class Message extends ObservableElement {
         ev?.preventDefault();
         this.model.save({'is_spoiler_visible': !this.model.get('is_spoiler_visible')});
     }
-
-    /**
-     * Get the message being replied to, if this message is a reply.
-     * According to XEP-0461, for groupchat messages the stanza_id is used,
-     * for other messages the msgid is used.
-     * @returns {import('@converse/headless/shared/message.js').default|undefined}
-     */
-    getRepliedMessage () {
-        const reply_to_id = this.model.get('reply_to_id');
-        if (!reply_to_id) return undefined;
-
-        const message_type = this.model.get('type');
-        if (message_type === 'groupchat') {
-            // For groupchat, the reply_to_id is a stanza_id
-            // We need to find a message where the stanza_id matches
-            const muc_jid = this.model_with_messages?.get('jid');
-            if (muc_jid) {
-                return this.model_with_messages.messages.models.find(
-                    (m) => m.get(`stanza_id ${muc_jid}`) === reply_to_id
-                );
-            }
-        }
-        // For non-groupchat or if muc_jid not found, use msgid
-        return this.model_with_messages.messages.models.find(
-            (m) => m.get('msgid') === reply_to_id
-        );
-    }
-
-    /**
-     * Scroll to and highlight the replied message
-     * @param {MouseEvent} ev
-     */
-    scrollToRepliedMessage (ev) {
-        ev?.preventDefault();
-        const replied_message = this.getRepliedMessage();
-        if (!replied_message) return;
-
-        const msgid = replied_message.get('msgid');
-        const el = this.closest('.chatbox')?.querySelector(`[data-msgid="${msgid}"]`);
-        if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            // Add highlight effect
-            el.classList.add('chat-msg--highlighted');
-            setTimeout(() => el.classList.remove('chat-msg--highlighted'), 2000);
-        }
-    }
 }
 
 api.elements.define('converse-chat-message', Message);

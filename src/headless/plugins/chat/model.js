@@ -219,6 +219,15 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
             await u.getMediaURLsMetadata(text)
         );
 
+        if (this.get('replying_to')) {
+            attrs.reply_to = this.get('replying_to'); // The origin ID or Stanza ID
+            attrs.reply_id = this.get('replying_to_msgid'); // The fallback ID
+            // We should clear the state after getting attributes, 
+            // but normally UI handles clearing or we clear it after send.
+            // Let's rely on the UI or clear it here?
+            // Better to clear it after successful send, but for now let's just Read it.
+        }
+
         /**
          * *Hook* which allows plugins to update the attributes of an outgoing message.
          * These attributes get set on the {@link Message} or

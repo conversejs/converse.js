@@ -17,6 +17,7 @@ import {
     getOutOfBandAttributes,
     getReceiptId,
     getReferences,
+    getReplyAttributes,
     getRetractionAttributes,
     getSpoilerAttributes,
     getStanzaIDs,
@@ -30,12 +31,16 @@ import {
 
 const { Strophe, dayjs, sizzle } = converse.env;
 
+// Add Namespace
+Strophe.addNamespace('REPLY', 'urn:xmpp:reply:0');
+
+
 /**
  * Parses a passed in message stanza and returns an object of attributes.
  * @param {Element} stanza - The message stanza
  * @returns {Promise<import('../../shared/types.ts').MessageAttributes|StanzaParseError>}
  */
-export async function parseMessage (stanza) {
+export async function parseMessage(stanza) {
     throwErrorIfInvalidForward(stanza);
 
     let to_jid = stanza.getAttribute('to');

@@ -42,8 +42,8 @@ export default (el) => {
             .value="${el.model.get("draft_hint") ?? ""}"
             @change="${
                 /** @param {Event} ev */ (ev) =>
-                    u.safeSave(el.model, { draft_hint: /** @type {HTMLInputElement} */ (ev.target).value })
-            }"
+            u.safeSave(el.model, { draft_hint: /** @type {HTMLInputElement} */ (ev.target).value })
+        }"
             class="${composing_spoiler ? "" : "hidden"} spoiler-hint"
         />
         <textarea
@@ -58,13 +58,20 @@ export default (el) => {
             @paste="${/** @param {ClipboardEvent} ev */ (ev) => el.onPaste(ev)}"
             @change="${
                 /** @param {Event} ev */ (ev) =>
-                    u.safeSave(el.model, { draft: /** @type {HTMLTextAreaElement} */ (ev.target).value })
-            }"
+            u.safeSave(el.model, { draft: /** @type {HTMLTextAreaElement} */ (ev.target).value })
+        }"
             class="chat-textarea
                         ${el.model.get("correcting") ? "correcting" : ""}
                         ${show_send_button ? "chat-textarea-send-button" : ""}
                         ${composing_spoiler ? "spoiler" : ""}"
             placeholder="${label_message}"
         ></textarea>
+        ${el.model.get('replying_to_author') ? html`
+            <div class="chat-replying-to">
+                <converse-icon size="1em" class="fas fa-reply"></converse-icon>
+                ${__('Replying to %1$s', el.model.get('replying_to_author'))}
+                <button type="button" class="close" @click=${() => el.model.save({ 'replying_to': null, 'replying_to_author': null })}>&times;</button>
+            </div>
+        ` : ''}
     </form>`;
 };

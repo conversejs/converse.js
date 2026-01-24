@@ -25,20 +25,20 @@ class MessageActions extends CustomElement {
      * @typedef {import('@converse/headless/types/utils/types').MediaURLMetadata} MediaURLMetadata
      */
 
-    static get properties () {
+    static get properties() {
         return {
             is_retracted: { type: Boolean },
             model: { type: Object }
         };
     }
 
-    constructor () {
+    constructor() {
         super();
         this.model = null;
         this.is_retracted = null;
     }
 
-    initialize () {
+    initialize() {
         const settings = api.settings.get();
         this.listenTo(settings, 'change:allowed_audio_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());
@@ -55,18 +55,18 @@ class MessageActions extends CustomElement {
 
     }
 
-    updateIfOwnOccupant (o) {
+    updateIfOwnOccupant(o) {
         const bare_jid = _converse.session.get('bare_jid');
         if (o.get('jid') === bare_jid) {
             this.requestUpdate();
         }
     }
 
-    render () {
+    render() {
         return html`${until(this.renderActions(), '')}`;
     }
 
-    async renderActions () {
+    async renderActions() {
         // This can be called before the model has been added to the collection
         // when requesting an update on change:connection_status.
         // This line allows us to pass tests.
@@ -84,7 +84,7 @@ class MessageActions extends CustomElement {
         }
     }
 
-    static getActionsDropdownItem (o) {
+    static getActionsDropdownItem(o) {
         return html`
             <button type="button" class="dropdown-item chat-msg__action ${o.button_class}" @click=${o.handler}>
                 <converse-icon
@@ -97,7 +97,7 @@ class MessageActions extends CustomElement {
     }
 
     /** @param {MouseEvent} ev */
-    async onMessageEditButtonClicked (ev) {
+    async onMessageEditButtonClicked(ev) {
         ev.preventDefault();
         const currently_correcting = this.model.collection.findWhere('correcting');
         // TODO: Use state instead of DOM querying
@@ -118,14 +118,14 @@ class MessageActions extends CustomElement {
         }
     }
 
-    async onDirectMessageRetractButtonClicked () {
+    async onDirectMessageRetractButtonClicked() {
         if (this.model.get('sender') !== 'me') {
             return log.error("onMessageRetractButtonClicked called for someone else's message!");
         }
         const retraction_warning = __(
             'Be aware that other XMPP/Jabber clients (and servers) may ' +
-                'not yet support retractions and that this message may not ' +
-                'be removed everywhere.'
+            'not yet support retractions and that this message may not ' +
+            'be removed everywhere.'
         );
         const messages = [__('Are you sure you want to retract this message?')];
         if (api.settings.get('show_retraction_warning')) {
@@ -142,7 +142,7 @@ class MessageActions extends CustomElement {
      * Retract someone else's message in this groupchat.
      * @param {string} [reason] - The reason for retracting the message.
      */
-    async retractOtherMessage (reason) {
+    async retractOtherMessage(reason) {
         const chatbox = this.model.collection.chatbox;
         const result = await chatbox.retractOtherMessage(this.model, reason);
         if (result === null) {
@@ -157,11 +157,11 @@ class MessageActions extends CustomElement {
         }
     }
 
-    async onMUCMessageRetractButtonClicked () {
+    async onMUCMessageRetractButtonClicked() {
         const retraction_warning = __(
             'Be aware that other XMPP/Jabber clients (and servers) may ' +
-                'not yet support retractions and that this message may not ' +
-                'be removed everywhere.'
+            'not yet support retractions and that this message may not ' +
+            'be removed everywhere.'
         );
 
         if (this.model.mayBeRetracted()) {
@@ -198,7 +198,7 @@ class MessageActions extends CustomElement {
     }
 
     /** @param {MouseEvent} [ev] */
-    onMessageRetractButtonClicked (ev) {
+    onMessageRetractButtonClicked(ev) {
         ev?.preventDefault?.();
         const chatbox = this.model.collection.chatbox;
         if (chatbox.get('type') === CHATROOMS_TYPE) {
@@ -209,7 +209,7 @@ class MessageActions extends CustomElement {
     }
 
     /** @param {MouseEvent} [ev] */
-    onMediaToggleClicked (ev) {
+    onMediaToggleClicked(ev) {
         ev?.preventDefault?.();
 
         if (this.hasHiddenMedia(this.getMediaURLs())) {
@@ -239,7 +239,7 @@ class MessageActions extends CustomElement {
      * @param { Array<String> } media_urls
      * @returns { Boolean }
      */
-    hasHiddenMedia (media_urls) {
+    hasHiddenMedia(media_urls) {
         if (typeof this.model.get('hide_url_previews') === 'boolean') {
             return this.model.get('hide_url_previews');
         }
@@ -251,7 +251,7 @@ class MessageActions extends CustomElement {
         }
     }
 
-    getMediaURLs () {
+    getMediaURLs() {
         const unfurls_to_show = (this.model.get('ogp_metadata') || [])
             .map(o => ({ 'url': o['og:image'], 'is_image': true }))
             .filter(o => isMediaURLDomainAllowed(o));
@@ -276,7 +276,7 @@ class MessageActions extends CustomElement {
      *
      * @param { Array<MessageActionAttributes> } buttons - An array of objects representing action buttons
      */
-    addMediaRenderingToggle (buttons) {
+    addMediaRenderingToggle(buttons) {
         const urls = this.getMediaURLs();
         if (urls.length) {
             const hidden = this.hasHiddenMedia(urls);
@@ -291,13 +291,13 @@ class MessageActions extends CustomElement {
     }
 
     /** @param {MouseEvent} [ev] */
-    async onMessageCopyButtonClicked (ev) {
+    async onMessageCopyButtonClicked(ev) {
         ev?.preventDefault?.();
         await navigator.clipboard.writeText(this.model.getMessageText());
     }
 
     /** @param {MouseEvent} [ev] */
-    onMessageQuoteButtonClicked (ev) {
+    onMessageQuoteButtonClicked(ev) {
         ev?.preventDefault?.();
         const chatbox = this.model.collection.chatbox;
         const idx = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea')?.selectionEnd;
@@ -311,7 +311,20 @@ class MessageActions extends CustomElement {
         chatbox.save({ draft });
     }
 
-    async getActionButtons () {
+    /** @param {MouseEvent} [ev] */
+    onMessageReplyButtonClicked(ev) {
+        ev?.preventDefault?.();
+        const chatbox = this.model.collection.chatbox;
+        const textarea = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea');
+        chatbox.save({
+            'replying_to': this.model.get('id'),
+            'replying_to_msgid': this.model.get('msgid'),
+            'replying_to_author': this.model.getDisplayName()
+        });
+        textarea?.focus();
+    }
+
+    async getActionButtons() {
         const buttons = [];
         if (this.model.get('editable')) {
             buttons.push(/** @type {MessageActionAttributes} */({
@@ -360,7 +373,15 @@ class MessageActions extends CustomElement {
                 'icon_class': 'fas fa-quote-right',
                 'name': 'quote',
             });
+            buttons.push({
+                'i18n_text': __('Reply'),
+                'handler': (ev) => this.onMessageReplyButtonClicked(ev),
+                'button_class': 'chat-msg__action-reply',
+                'icon_class': 'fas fa-reply',
+                'name': 'reply',
+            });
         }
+
 
         /**
          * *Hook* which allows plugins to add more message action buttons

@@ -7,7 +7,7 @@ import log from "@converse/log";
 import { decodeHTMLEntities } from '../utils/html.js';
 import { getAttributes } from '../utils/stanza.js';
 import { rejectMessage } from './actions.js';
-import { XFORM_TYPE_MAP,  XFORM_VALIDATE_TYPE_MAP } from './constants.js';
+import { XFORM_TYPE_MAP, XFORM_VALIDATE_TYPE_MAP } from './constants.js';
 import * as errors from './errors.js';
 import _converse from './_converse.js';
 import api from './api/index.js';
@@ -96,7 +96,7 @@ export async function parseErrorStanza(stanza) {
  *      the message stanza.
  * @returns {Object}
  */
-export function getStanzaIDs (stanza, original_stanza) {
+export function getStanzaIDs(stanza, original_stanza) {
     // Generic stanza ids
     const sids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
     const sid_attrs = sids.reduce((acc, s) => {
@@ -128,7 +128,7 @@ export function getStanzaIDs (stanza, original_stanza) {
  * @param {Element} stanza
  * @returns {import('./types').EncryptionAttrs}
  */
-export function getEncryptionAttributes (stanza) {
+export function getEncryptionAttributes(stanza) {
     const eme_tag = sizzle(`encryption[xmlns="${Strophe.NS.EME}"]`, stanza).pop();
     const namespace = eme_tag?.getAttribute('namespace');
     const attrs = {};
@@ -148,7 +148,7 @@ export function getEncryptionAttributes (stanza) {
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
  * @returns {import('./types').RetractionAttrs | {}}
  */
-export function getDeprecatedRetractionAttributes (stanza, original_stanza) {
+export function getDeprecatedRetractionAttributes(stanza, original_stanza) {
     const fastening = sizzle(`> apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
     if (fastening) {
         const applies_to_id = fastening.getAttribute('id');
@@ -172,7 +172,7 @@ export function getDeprecatedRetractionAttributes (stanza, original_stanza) {
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
  * @returns {import('./types').RetractionAttrs | {}}
  */
-export function getRetractionAttributes (stanza, original_stanza) {
+export function getRetractionAttributes(stanza, original_stanza) {
     const retraction = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();
     if (retraction) {
         const delay = sizzle(`> delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
@@ -202,7 +202,7 @@ export function getRetractionAttributes (stanza, original_stanza) {
  * @param {Element} stanza
  * @param {Element} original_stanza
  */
-export function getCorrectionAttributes (stanza, original_stanza) {
+export function getCorrectionAttributes(stanza, original_stanza) {
     const el = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
     if (el) {
         const replace_id = el.getAttribute('id');
@@ -221,7 +221,7 @@ export function getCorrectionAttributes (stanza, original_stanza) {
 /**
  * @param {Element} stanza
  */
-export function getOpenGraphMetadata (stanza) {
+export function getOpenGraphMetadata(stanza) {
     const fastening = sizzle(`> apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
     if (fastening) {
         const applies_to_id = fastening.getAttribute('id');
@@ -258,8 +258,23 @@ export function getOpenGraphMetadata (stanza) {
 
 /**
  * @param {Element} stanza
+ * @returns {import('./types').ReplyAttributes}
  */
-export function getSpoilerAttributes (stanza) {
+export function getReplyAttributes(stanza) {
+    const reply = sizzle(`reply[xmlns="${Strophe.NS.REPLY}"]`, stanza).pop();
+    if (reply) {
+        return {
+            'reply_to': reply.getAttribute('to'),
+            'reply_id': reply.getAttribute('id')
+        };
+    }
+    return {};
+}
+
+/**
+ * @param {Element} stanza
+ */
+export function getSpoilerAttributes(stanza) {
     const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, stanza).pop();
     return {
         'is_spoiler': !!spoiler,
@@ -270,7 +285,7 @@ export function getSpoilerAttributes (stanza) {
 /**
  * @param {Element} stanza
  */
-export function getOutOfBandAttributes (stanza) {
+export function getOutOfBandAttributes(stanza) {
     const xform = sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza).pop();
     if (xform) {
         return {
@@ -285,7 +300,7 @@ export function getOutOfBandAttributes (stanza) {
  * Returns the human readable error message contained in a `groupchat` message stanza of type `error`.
  * @param {Element} stanza - The message stanza
  */
-export function getErrorAttributes (stanza) {
+export function getErrorAttributes(stanza) {
     if (stanza.getAttribute('type') === 'error') {
         const error = stanza.querySelector('error');
         const text = sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop();
@@ -305,7 +320,7 @@ export function getErrorAttributes (stanza) {
  * @param {Element} stanza - The message stanza
  * @returns {import('./types').XEP372Reference[]}
  */
-export function getReferences (stanza) {
+export function getReferences(stanza) {
     return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza).map(ref => {
         const anchor = ref.getAttribute('anchor');
         const text = stanza.querySelector(anchor ? `#${anchor}` : 'body')?.textContent;
@@ -327,7 +342,7 @@ export function getReferences (stanza) {
 /**
  * @param {Element} stanza
  */
-export function getReceiptId (stanza) {
+export function getReceiptId(stanza) {
     const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop();
     return receipt?.getAttribute('id');
 }
@@ -337,7 +352,7 @@ export function getReceiptId (stanza) {
  * @param {Element} stanza - The message stanza
  * @returns {Boolean}
  */
-export function isCarbon (stanza) {
+export function isCarbon(stanza) {
     const xmlns = Strophe.NS.CARBONS;
     return (
         sizzle(`message > received[xmlns="${xmlns}"]`, stanza).length > 0 ||
@@ -349,7 +364,7 @@ export function isCarbon (stanza) {
  * Returns the XEP-0085 chat state contained in a message stanza
  * @param {Element} stanza - The message stanza
  */
-export function getChatState (stanza) {
+export function getChatState(stanza) {
     return sizzle(
         `
         composing[xmlns="${NS.CHATSTATES}"],
@@ -365,7 +380,7 @@ export function getChatState (stanza) {
  * @param {Element} stanza
  * @param {Object} attrs
  */
-export function isValidReceiptRequest (stanza, attrs) {
+export function isValidReceiptRequest(stanza, attrs) {
     return (
         attrs.sender !== 'me' &&
         !attrs.is_carbon &&
@@ -379,7 +394,7 @@ export function isValidReceiptRequest (stanza, attrs) {
  * i.e. it's not forwarded as part of a larger protocol, like MAM.
  * @param { Element } stanza
  */
-export function throwErrorIfInvalidForward (stanza) {
+export function throwErrorIfInvalidForward(stanza) {
     const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
     if (bare_forward) {
         rejectMessage(stanza, 'Forwarded messages not part of an encapsulating protocol are not supported');
@@ -394,7 +409,7 @@ export function throwErrorIfInvalidForward (stanza) {
  * @param {Element} stanza - The message stanza
  * @returns {Element}
  */
-export function getChatMarker (stanza) {
+export function getChatMarker(stanza) {
     // If we receive more than one marker (which shouldn't happen), we take
     // the highest level of acknowledgement.
     return sizzle(`
@@ -409,7 +424,7 @@ export function getChatMarker (stanza) {
  * @param {Element} stanza
  * @returns {boolean}
  */
-export function isHeadline (stanza) {
+export function isHeadline(stanza) {
     return stanza.getAttribute('type') === 'headline';
 }
 
@@ -417,7 +432,7 @@ export function isHeadline (stanza) {
  * @param {Element} stanza
  * @returns {Promise<boolean>}
  */
-export async function isMUCPrivateMessage (stanza) {
+export async function isMUCPrivateMessage(stanza) {
     const bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
     return !!(await api.rooms.get(bare_jid));
 }
@@ -426,7 +441,7 @@ export async function isMUCPrivateMessage (stanza) {
  * @param {Element} stanza
  * @returns {boolean}
  */
-export function isServerMessage (stanza) {
+export function isServerMessage(stanza) {
     if (sizzle(`mentions[xmlns="${Strophe.NS.MENTIONS}"]`, stanza).pop()) {
         return false;
     }
@@ -447,7 +462,7 @@ export function isServerMessage (stanza) {
  * @param {Element} original_stanza - The message stanza
  * @returns {boolean}
  */
-export function isArchived (original_stanza) {
+export function isArchived(original_stanza) {
     return !!sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
 }
 

@@ -213,7 +213,7 @@ export default function ModelWithMessages(BaseModel) {
                 query = occupant_id
                     ? ({ attributes: m }) => m.msgid === replace_id && m.occupant_id == occupant_id
                     : ({ attributes: m }) =>
-                          m.msgid === attrs.replace_id && m.from === attrs.from && m.occupant_id == null;
+                        m.msgid === attrs.replace_id && m.from === attrs.from && m.occupant_id == null;
             } else {
                 query = ({ attributes: m }) =>
                     m.msgid === attrs.replace_id && m.from === attrs.from && m.occupant_id == null;
@@ -390,10 +390,10 @@ export default function ModelWithMessages(BaseModel) {
                     const message = Array.isArray(size)
                         ? __('The size of your file, %1$s, exceeds the maximum allowed by your server.', file.name)
                         : __(
-                              'The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
-                              file.name,
-                              size
-                          );
+                            'The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
+                            file.name,
+                            size
+                        );
                     return this.createMessage({
                         message,
                         type: 'error',
@@ -944,17 +944,17 @@ export default function ModelWithMessages(BaseModel) {
                     ${type === 'chat' ? stx`<request xmlns="${Strophe.NS.RECEIPTS}"></request>` : ''}
                     ${!is_encrypted && oob_url ? stx`<x xmlns="${Strophe.NS.OUTOFBAND}"><url>${oob_url}</url></x>` : ''}
                     ${!is_encrypted && is_spoiler ? stx`<spoiler xmlns="${Strophe.NS.SPOILER}">${spoiler_hint ?? ''}</spoiler>` : ''}
-                    ${
-                        !is_encrypted
-                            ? references?.map(
-                                  (ref) => stx`<reference xmlns="${Strophe.NS.REFERENCE}"
+                    ${!is_encrypted && message.get('reply_to') ? stx`<reply xmlns="${Strophe.NS.REPLY}" to="${message.get('reply_to')}"/>` : ''}
+                    ${!is_encrypted
+                    ? references?.map(
+                        (ref) => stx`<reference xmlns="${Strophe.NS.REFERENCE}"
                                                 begin="${ref.begin}"
                                                 end="${ref.end}"
                                                 type="${ref.type}"
                                                 uri="${ref.uri}"></reference>`
-                              )
-                            : ''
-                    }
+                    )
+                    : ''
+                }
                     ${edited ? stx`<replace xmlns="${Strophe.NS.MESSAGE_CORRECT}" id="${msgid}"></replace>` : ''}
                     ${origin_id ? stx`<origin-id xmlns="${Strophe.NS.SID}" id="${origin_id}"></origin-id>` : ''}
                 </message>`;

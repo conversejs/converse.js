@@ -3,12 +3,10 @@
  * @license Mozilla Public License (MPLv2)
  * @description A custom element to display reply context for a message
  */
-import { api, converse } from '@converse/headless';
+import { api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { html, nothing } from 'lit';
 import { __ } from 'i18n';
-
-const { Strophe } = converse.env;
 
 /**
  * A custom element that displays the context of the message being replied to.

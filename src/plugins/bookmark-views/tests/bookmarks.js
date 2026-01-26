@@ -1,49 +1,49 @@
 /* global mock, converse */
 const { Strophe, sizzle, stx, u } = converse.env;
 
-describe("A chat room", function () {
-
+describe('A chat room', function () {
     beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
-    describe("when bookmarked", function () {
-
-        it("will use the nickname from the bookmark", mock.initConverse([], {}, async function (_converse) {
-            const { u } = converse.env;
-            await mock.waitForRoster(_converse, 'current', 0);
-            await mock.waitUntilBookmarksReturned(_converse);
-            const muc_jid = 'coven@chat.shakespeare.lit';
-            const { bookmarks } = _converse.state;
-            bookmarks.create({
-                'jid': muc_jid,
-                'autojoin': false,
-                'name':  'The Play',
-                'nick': 'Othello'
-            });
-            spyOn(_converse.ChatRoom.prototype, 'getAndPersistNickname').and.callThrough();
-            _converse.api.rooms.open(muc_jid);
-            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
-            await mock.waitForReservedNick(_converse, muc_jid);
-            const room = await u.waitUntil(() => _converse.chatboxes.get(muc_jid));
-            expect(room.get('nick')).toBe('Othello');
-        }));
+    describe('when bookmarked', function () {
+        it(
+            'will use the nickname from the bookmark',
+            mock.initConverse([], {}, async function (_converse) {
+                const { u } = converse.env;
+                await mock.waitForRoster(_converse, 'current', 0);
+                await mock.waitUntilBookmarksReturned(_converse);
+                const muc_jid = 'coven@chat.shakespeare.lit';
+                const { bookmarks } = _converse.state;
+                bookmarks.create({
+                    'jid': muc_jid,
+                    'autojoin': false,
+                    'name': 'The Play',
+                    'nick': 'Othello',
+                });
+                spyOn(_converse.ChatRoom.prototype, 'getAndPersistNickname').and.callThrough();
+                _converse.api.rooms.open(muc_jid);
+                await mock.waitForMUCDiscoInfo(_converse, muc_jid);
+                await mock.waitForReservedNick(_converse, muc_jid);
+                const room = await u.waitUntil(() => _converse.chatboxes.get(muc_jid));
+                expect(room.get('nick')).toBe('Othello');
+            }),
+        );
     });
 });
 
-describe("Bookmarks", function () {
-
+describe('Bookmarks', function () {
     beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
-    it("can be pushed from the XMPP server", mock.initConverse(
-            ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+    it(
+        'can be pushed from the XMPP server',
+        mock.initConverse(['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            const { u } = converse.env;
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
 
-        const { api } = _converse;
-        const { u } = converse.env;
-        await mock.waitForRoster(_converse, 'current', 0);
-        await mock.waitUntilBookmarksReturned(_converse);
-
-        // The stored data is automatically pushed to all of the user's connected resources.
-        // Publisher receives event notification
-        let stanza = stx`<message from="romeo@montague.lit"
+            // The stored data is automatically pushed to all of the user's connected resources.
+            // Publisher receives event notification
+            let stanza = stx`<message from="romeo@montague.lit"
                             to="${_converse.jid}"
                             type="headline"
                             id="${u.getUniqueId()}"
@@ -67,16 +67,16 @@ describe("Bookmarks", function () {
                 </items>
             </event>
         </message>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await mock.waitForMUCDiscoInfo(_converse, 'theplay@conference.shakespeare.lit');
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            await mock.waitForMUCDiscoInfo(_converse, 'theplay@conference.shakespeare.lit');
 
-        const { bookmarks } = _converse.state;
-        await u.waitUntil(() => bookmarks.length);
-        expect(bookmarks.length).toBe(2);
-        expect(bookmarks.map(b => b.get('name'))).toEqual(['Another bookmark', "The Play's the Thing"]);
-        expect(await api.rooms.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
+            const { bookmarks } = _converse.state;
+            await u.waitUntil(() => bookmarks.length);
+            expect(bookmarks.length).toBe(2);
+            expect(bookmarks.map((b) => b.get('name'))).toEqual(['Another bookmark', "The Play's the Thing"]);
+            expect(await api.rooms.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
 
-        stanza = stx`<message from="romeo@montague.lit"
+            stanza = stx`<message from="romeo@montague.lit"
                         to="${_converse.jid}"
                         type="headline"
                         id="${u.getUniqueId()}"
@@ -101,17 +101,19 @@ describe("Bookmarks", function () {
                 </items>
             </event>
         </message>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-        await u.waitUntil(() => bookmarks.length === 3);
-        expect(bookmarks.map(b => b.get('name'))).toEqual(
-            ['Second bookmark', "The Play's the Thing", 'Yet another bookmark']
-        );
-        expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
-        expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(1);
+            await u.waitUntil(() => bookmarks.length === 3);
+            expect(bookmarks.map((b) => b.get('name'))).toEqual([
+                'Second bookmark',
+                "The Play's the Thing",
+                'Yet another bookmark',
+            ]);
+            expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
+            expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(1);
 
-        // Check that MUC is left when autojoin is set to false
-        stanza = stx`<message from="romeo@montague.lit"
+            // Check that MUC is left when autojoin is set to false
+            stanza = stx`<message from="romeo@montague.lit"
                         to="${_converse.jid}"
                         type="headline"
                         id="${u.getUniqueId()}"
@@ -136,50 +138,51 @@ describe("Bookmarks", function () {
                 </items>
             </event>
         </message>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-        await u.waitUntil(() => bookmarks.filter((b) => !b.get('autojoin')).length === 3);
-        expect(bookmarks.map(b => b.get('name'))).toEqual(
-            ['Second bookmark', "The Play's the Thing", 'Yet another bookmark']
-        );
-        expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).toBeUndefined();
-        expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(0);
-    }));
+            await u.waitUntil(() => bookmarks.filter((b) => !b.get('autojoin')).length === 3);
+            expect(bookmarks.map((b) => b.get('name'))).toEqual([
+                'Second bookmark',
+                "The Play's the Thing",
+                'Yet another bookmark',
+            ]);
+            expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).toBeUndefined();
+            expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(0);
+        }),
+    );
 
-    it("can be retrieved from the XMPP server", mock.initConverse(
-            ['chatBoxesFetched'], {},
-            async function (_converse) {
+    it(
+        'can be retrieved from the XMPP server',
+        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            const { sizzle, u } = converse.env;
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilDiscoConfirmed(
+                _converse,
+                _converse.bare_jid,
+                [{ 'category': 'pubsub', 'type': 'pep' }],
+                ['http://jabber.org/protocol/pubsub#publish-options', 'urn:xmpp:bookmarks:1#compat'],
+            );
 
-        const { sizzle, u } = converse.env;
-        await mock.waitForRoster(_converse, 'current', 0);
-        await mock.waitUntilDiscoConfirmed(
-            _converse, _converse.bare_jid,
-            [{'category': 'pubsub', 'type': 'pep'}],
-            [
-                'http://jabber.org/protocol/pubsub#publish-options',
-                'urn:xmpp:bookmarks:1#compat'
-            ]
-        );
+            // Client requests all items
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+            const sent_stanza = await u.waitUntil(() =>
+                IQ_stanzas.filter((s) => sizzle('items[node="urn:xmpp:bookmarks:1"]', s).length).pop(),
+            );
 
-        // Client requests all items
-        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-        const sent_stanza = await u.waitUntil(
-            () => IQ_stanzas.filter(s => sizzle('items[node="urn:xmpp:bookmarks:1"]', s).length).pop());
-
-        expect(sent_stanza).toEqualStanza(
-            stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
+            expect(sent_stanza).toEqualStanza(
+                stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <items node="urn:xmpp:bookmarks:1"/>
                 </pubsub>
-            </iq>`
-        );
+            </iq>`,
+            );
 
-        expect(_converse.bookmarks.models.length).toBe(0);
-        spyOn(_converse.bookmarks, 'onBookmarksReceived').and.callThrough();
+            expect(_converse.bookmarks.models.length).toBe(0);
+            spyOn(_converse.bookmarks, 'onBookmarksReceived').and.callThrough();
 
-        // Server returns all items
-        // Purposefully exclude the <nick> element to test #1043
-        const stanza = stx`
+            // Server returns all items
+            // Purposefully exclude the <nick> element to test #1043
+            const stanza = stx`
             <iq xmlns="jabber:server"
                 type="result"
                 to="${_converse.jid}"
@@ -206,66 +209,66 @@ describe("Bookmarks", function () {
             </pubsub>
             </iq>`;
 
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.bookmarks.onBookmarksReceived.calls.count());
-        await _converse.api.waitUntil('bookmarksInitialized');
-        const { bookmarks } = _converse.state;
-        expect(bookmarks.models.length).toBe(2);
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            await u.waitUntil(() => _converse.bookmarks.onBookmarksReceived.calls.count());
+            await _converse.api.waitUntil('bookmarksInitialized');
+            const { bookmarks } = _converse.state;
+            expect(bookmarks.models.length).toBe(2);
 
-        const theplay = bookmarks.get('theplay@conference.shakespeare.lit');
-        expect(theplay.get('autojoin')).toBe(true);
+            const theplay = bookmarks.get('theplay@conference.shakespeare.lit');
+            expect(theplay.get('autojoin')).toBe(true);
 
-        const orchard = bookmarks.get('orchard@conference.shakespeare.lit');
-        expect(orchard.get('autojoin')).toBe(true);
-        expect(orchard.get('extensions').length).toBe(1);
-        expect(orchard.get('extensions')[0]).toBe('<state xmlns="http://myclient.example/bookmark/state" minimized="true"/>');
-    }));
+            const orchard = bookmarks.get('orchard@conference.shakespeare.lit');
+            expect(orchard.get('autojoin')).toBe(true);
+            expect(orchard.get('extensions').length).toBe(1);
+            expect(orchard.get('extensions')[0]).toBe(
+                '<state xmlns="http://myclient.example/bookmark/state" minimized="true"/>',
+            );
+        }),
+    );
 
-    it("can have a password which will be used to enter", mock.initConverse(
-            ['chatBoxesFetched'], {},
-            async function (_converse) {
+    it(
+        'can have a password which will be used to enter',
+        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            const autojoin_muc = 'theplay@conference.shakespeare.lit';
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse, [
+                {
+                    jid: autojoin_muc,
+                    name: "The Play's the Thing",
+                    autojoin: true,
+                    nick: 'JC',
+                    password: 'secret',
+                },
+                {
+                    jid: 'orchard@conference.shakespeare.lit',
+                    name: 'The Orchard',
+                },
+            ]);
 
-        const autojoin_muc = "theplay@conference.shakespeare.lit";
-        await mock.waitForRoster(_converse, 'current', 0);
-        await mock.waitUntilBookmarksReturned(_converse, [
-            {
-                jid: autojoin_muc,
-                name: "The Play's the Thing",
-                autojoin: true,
-                nick: 'JC',
-                password: 'secret',
-            }, {
-                jid: "orchard@conference.shakespeare.lit",
-                name: "The Orchard",
-            }
-        ]);
+            await _converse.api.waitUntil('bookmarksInitialized');
+            const { bookmarks } = _converse.state;
+            expect(bookmarks.models.length).toBe(2);
 
-        await _converse.api.waitUntil('bookmarksInitialized');
-        const { bookmarks } = _converse.state;
-        expect(bookmarks.models.length).toBe(2);
+            const theplay = bookmarks.get(autojoin_muc);
+            expect(theplay.get('autojoin')).toBe(true);
+            expect(theplay.get('name')).toBe("The Play's the Thing");
+            expect(theplay.get('nick')).toBe('JC');
+            expect(theplay.get('password')).toBe('secret');
+            expect(bookmarks.get('orchard@conference.shakespeare.lit').get('autojoin')).toBe(false);
 
-        const theplay = bookmarks.get(autojoin_muc);
-        expect(theplay.get('autojoin')).toBe(true);
-        expect(theplay.get('name')).toBe("The Play's the Thing");
-        expect(theplay.get('nick')).toBe('JC');
-        expect(theplay.get('password')).toBe('secret');
-        expect(bookmarks.get('orchard@conference.shakespeare.lit').get('autojoin')).toBe(false);
+            await mock.waitForMUCDiscoInfo(_converse, autojoin_muc);
+            await u.waitUntil(() => _converse.state.chatboxes.get(autojoin_muc));
 
-        await mock.waitForMUCDiscoInfo(_converse, autojoin_muc);
-        await u.waitUntil(() => _converse.state.chatboxes.get(autojoin_muc));
+            const features = ['http://jabber.org/protocol/muc', 'jabber:iq:register', 'muc_passwordprotected'];
+            await mock.waitForMUCDiscoInfo(_converse, autojoin_muc, features);
 
-        const features = [
-            'http://jabber.org/protocol/muc',
-            'jabber:iq:register',
-            'muc_passwordprotected',
-        ];
-        await mock.waitForMUCDiscoInfo(_converse, autojoin_muc, features);
+            const { sent_stanzas } = _converse.api.connection.get();
+            const sent_stanza = await u.waitUntil(() =>
+                sent_stanzas.filter((s) => s.getAttribute('to') === `${autojoin_muc}/JC`).pop(),
+            );
 
-        const { sent_stanzas } = _converse.api.connection.get();
-        const sent_stanza = await u.waitUntil(
-            () => sent_stanzas.filter(s => s.getAttribute('to') === `${autojoin_muc}/JC`).pop());
-
-        expect(sent_stanza).toEqualStanza(stx`
+            expect(sent_stanza).toEqualStanza(stx`
             <presence
                 xmlns="jabber:client"
                 from="${_converse.jid}"
@@ -278,7 +281,8 @@ describe("Bookmarks", function () {
             <c xmlns="http://jabber.org/protocol/caps"
                hash="sha-1"
                node="https://conversejs.org"
-               ver="H63l6q0hnLTdpFJt2JA5AOAGl/o="/>
+               ver="MGI8RlyfupY+RiLF6iOY7u36yDA="/>
             </presence>`);
-    }));
+        }),
+    );
 });

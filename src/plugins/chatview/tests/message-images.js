@@ -47,7 +47,11 @@ describe("A Chat Message", function () {
         expect(view.querySelectorAll('.chat-content .chat-image').length).toBe(5);
 
         // Check that the Imgur URL gets a .png attached to make it render
-        await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-content .chat-image')).pop().src.endsWith('png'), 1000);
+        await u.waitUntil(() => {
+            const images = Array.from(view.querySelectorAll('.chat-content .chat-image'));
+            const lastImage = images.pop();
+            return lastImage && lastImage.src && lastImage.src.endsWith('png');
+        }, 1000);
     }));
 
     it("will not render images if render_media is false",

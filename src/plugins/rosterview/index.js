@@ -25,6 +25,8 @@ converse.plugins.add('converse-rosterview', {
             hide_offline_users: false,
             roster_groups: true,
             xhr_user_search_url: null,
+            // XMPP Providers autocomplete settings
+            xmpp_providers_url: 'https://data.xmpp.net/providers/v2/providers-Ds.json',
         });
         api.promises.add('rosterViewInitialized');
 

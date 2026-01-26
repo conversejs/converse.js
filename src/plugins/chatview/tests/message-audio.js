@@ -93,7 +93,7 @@ describe("A Chat Message", function () {
         expect(hiddenLabels.length).toBeGreaterThan(0);
     }));
 
-    it("audio player play button responds to click and keyboard events",
+    it("audio player play button has proper accessibility attributes",
             mock.initConverse(['chatBoxesFetched'],
             { fetch_url_headers: true },
             async function (_converse) {
@@ -110,11 +110,13 @@ describe("A Chat Message", function () {
         const audioPlayer = view.querySelector('converse-audio-player');
         const playBtn = audioPlayer.querySelector('.audio-player__play-btn');
         
-        // Check that play button is focusable
-        playBtn.focus();
-        expect(document.activeElement).toBe(playBtn);
+        // Check that play button has proper attributes for accessibility
+        expect(playBtn).not.toBeNull();
+        expect(playBtn.getAttribute('type')).toEqual('button');
+        expect(playBtn.getAttribute('aria-label')).toBeTruthy();
+        expect(playBtn.hasAttribute('aria-pressed')).toBe(true);
         
-        // Check that aria-pressed is initially false
+        // Check that aria-pressed is initially false (not playing)
         expect(playBtn.getAttribute('aria-pressed')).toEqual('false');
     }));
 

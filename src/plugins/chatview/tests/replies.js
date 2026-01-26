@@ -1,4 +1,4 @@
-/*global mock, converse */
+﻿/*global mock, converse */
 
 const { u, stx } = converse.env;
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @copyright 2025, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description A custom element to display reply context for a message

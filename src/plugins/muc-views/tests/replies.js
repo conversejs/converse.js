@@ -1,4 +1,4 @@
-/*global mock, converse */
+﻿/*global mock, converse */
 
 const { u, stx } = converse.env;
 
@@ -24,12 +24,14 @@ describe("XEP-0461 Message Replies", function () {
                     id="${msg_id}">
                     <body>Hello from juliet</body>
                     <origin-id xmlns="urn:xmpp:sid:0" id="${msg_id}"/>
+                    <stanza-id xmlns="urn:xmpp:sid:0" id="${msg_id}" by="${muc_jid}"/>
                 </message>
             `;
             await view.model.handleMessageStanza(received_stanza);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
-            // Click the reply button
+            // Click the reply button (wait for it to appear first)
+            await u.waitUntil(() => view.querySelector('.chat-msg__action-reply'));
             const replyAction = view.querySelector('.chat-msg__action-reply');
             expect(replyAction).not.toBeNull();
             replyAction.click();
@@ -63,6 +65,7 @@ describe("XEP-0461 Message Replies", function () {
                     id="${original_id}">
                     <body>Original message</body>
                     <origin-id xmlns="urn:xmpp:sid:0" id="${original_id}"/>
+                    <stanza-id xmlns="urn:xmpp:sid:0" id="${original_id}" by="${muc_jid}"/>
                 </message>
             `;
             await view.model.handleMessageStanza(original_stanza);
@@ -82,8 +85,11 @@ describe("XEP-0461 Message Replies", function () {
             await view.model.handleMessageStanza(reply_stanza);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
 
-            // Check that the reply context is displayed
-            await u.waitUntil(() => view.querySelector('converse-reply-context'));
+            // Check that the reply context is displayed with the sender name
+            await u.waitUntil(() => {
+                const ctx = view.querySelector('converse-reply-context');
+                return ctx && ctx.textContent.includes('juliet');
+            });
             const replyContext = view.querySelector('converse-reply-context');
             expect(replyContext).not.toBeNull();
             expect(replyContext.textContent).toContain('juliet');

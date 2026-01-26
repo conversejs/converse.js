@@ -1,0 +1,71 @@
+// MUC-specific audio player styles
+// Use MUC color (orange) instead of chat color (green) when inside a chatroom
+
+.conversejs {
+    .chatroom-body .audio-player {
+        &__play-btn {
+            background-color: var(--muc-color);
+        }
+
+        &__btn {
+            &:hover:not(:disabled) {
+                color: var(--muc-color);
+            }
+
+            &:focus-visible {
+                outline-color: var(--muc-color);
+            }
+        }
+
+        &__seek,
+        &__volume {
+            &:focus-visible {
+                outline-color: var(--muc-color);
+            }
+
+            &::-webkit-slider-thumb {
+                background: var(--muc-color);
+            }
+
+            &::-moz-range-progress {
+                background: var(--muc-color);
+            }
+
+            &::-moz-range-thumb {
+                background: var(--muc-color);
+            }
+        }
+
+        &__seek {
+            &::-webkit-slider-runnable-track {
+                background: linear-gradient(
+                    to right,
+                    var(--muc-color) 0%,
+                    var(--muc-color) var(--progress-percent, 0%),
+                    var(--subdued-color) var(--progress-percent, 0%),
+                    var(--subdued-color) 100%
+                );
+            }
+        }
+
+        &__volume {
+            &::-webkit-slider-runnable-track {
+                background: linear-gradient(
+                    to right,
+                    var(--muc-color) 0%,
+                    var(--muc-color) var(--volume-percent, 100%),
+                    var(--subdued-color) var(--volume-percent, 100%),
+                    var(--subdued-color) 100%
+                );
+            }
+        }
+
+        &__mute-btn,
+        &__speed-btn {
+            &:hover:not(:disabled),
+            &:focus:not(:disabled) {
+                color: var(--muc-color);
+            }
+        }
+    }
+}

@@ -393,39 +393,46 @@ export default class AudioPlayer extends CustomElement {
                         />
                     </div>
 
-                    <!-- Mute Button -->
-                    <button
-                        type="button"
-                        class="audio-player__btn audio-player__mute-btn"
-                        @click=${this.toggleMute}
-                        @keydown=${this.#onMuteKeyDown}
-                        aria-label="${mute_label}"
-                        aria-pressed="${this.is_muted}"
-                        ?disabled=${this.has_error}
-                    >
-                        <converse-icon aria-hidden="true" class="${this.#getVolumeIcon()}" size="1.2em"></converse-icon>
-                    </button>
-
-                    <!-- Volume Slider -->
-                    <div class="audio-player__volume-container">
-                        <label for="volume-${this.id}" class="visually-hidden">${i18n_volume}</label>
-                        <input
-                            type="range"
-                            id="volume-${this.id}"
-                            class="audio-player__volume"
-                            min="0"
-                            max="1"
-                            step="0.01"
-                            .value="${this.is_muted ? 0 : this.volume}"
-                            @input=${this.#onVolumeChange2}
-                            @keydown=${this.#onVolumeKeyDown}
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                            aria-valuenow="${Math.round(this.is_muted ? 0 : this.volume * 100)}"
-                            aria-valuetext="${Math.round(this.is_muted ? 0 : this.volume * 100)}%"
+                    <!-- Volume Controls Wrapper (hover to show slider) -->
+                    <div class="audio-player__volume-wrapper">
+                        <!-- Mute Button -->
+                        <button
+                            type="button"
+                            class="audio-player__btn audio-player__mute-btn"
+                            @click=${this.toggleMute}
+                            @keydown=${this.#onMuteKeyDown}
+                            aria-label="${mute_label}"
+                            aria-pressed="${this.is_muted}"
                             ?disabled=${this.has_error}
-                            style="--volume-percent: ${this.is_muted ? 0 : volume_percent}%"
-                        />
+                        >
+                            <converse-icon
+                                aria-hidden="true"
+                                class="${this.#getVolumeIcon()}"
+                                size="1.2em"
+                            ></converse-icon>
+                        </button>
+
+                        <!-- Volume Slider -->
+                        <div class="audio-player__volume-container">
+                            <label for="volume-${this.id}" class="visually-hidden">${i18n_volume}</label>
+                            <input
+                                type="range"
+                                id="volume-${this.id}"
+                                class="audio-player__volume"
+                                min="0"
+                                max="1"
+                                step="0.01"
+                                .value="${this.is_muted ? 0 : this.volume}"
+                                @input=${this.#onVolumeChange2}
+                                @keydown=${this.#onVolumeKeyDown}
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                aria-valuenow="${Math.round(this.is_muted ? 0 : this.volume * 100)}"
+                                aria-valuetext="${Math.round(this.is_muted ? 0 : this.volume * 100)}%"
+                                ?disabled=${this.has_error}
+                                style="--volume-percent: ${this.is_muted ? 0 : volume_percent}%"
+                            />
+                        </div>
                     </div>
                 </div>
 

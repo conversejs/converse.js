@@ -24,6 +24,7 @@ export { ChatBox, Message, Messages } from './plugins/chat/index.js'; // RFC-612
 import './plugins/chatboxes/index.js';
 import './plugins/disco/index.js'; // XEP-0030 Service discovery
 import './plugins/adhoc/index.js'; // XEP-0050 Ad Hoc Commands
+import './plugins/bob/index.js'; // XEP-0231 Bits of Binary
 import './plugins/headlines/index.js'; // Support for headline messages
 export { Device, Devices, DeviceList, DeviceLists } from './plugins/omemo/index.js'; // Support for headline messages
 

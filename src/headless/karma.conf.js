@@ -16,6 +16,7 @@ module.exports = function(config) {
       { pattern: "tests/*.js", type: 'module' },
       { pattern: "shared/settings/tests/settings.js", type: 'module' },
       { pattern: "plugins/blocklist/tests/*.js", type: 'module' },
+      { pattern: "plugins/bob/tests/*.js", type: 'module' },
       { pattern: "plugins/caps/tests/*.js", type: 'module' },
       { pattern: "plugins/bookmarks/tests/*.js", type: 'module' },
       { pattern: "plugins/chat/tests/*.js", type: 'module' },

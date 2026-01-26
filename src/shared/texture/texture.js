@@ -2,6 +2,7 @@ import { html } from "lit";
 import { until } from "lit/directives/until.js";
 import { Directive, directive } from "lit/directive.js";
 import { api, u } from "@converse/headless";
+import log from "@converse/log";
 import tplAudio from "./templates/audio.js";
 import tplGif from "./templates/gif.js";
 import tplImage from "./templates/image.js";
@@ -56,6 +57,7 @@ export class Texture extends String {
      *  which create new Texture instances (as happens with XEP-393 styling directives).
      * @param {Object} [options]
      * @param {string} [options.nick] - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
+     * @param {string} [options.from_jid] - The JID of the message sender (needed for fetching BOB images)
      * @param {boolean} [options.render_styling] - Whether XEP-0393 message styling should be applied to the message
      * @param {boolean} [options.embed_audio] - Whether audio URLs should be rendered as <audio> elements.
      *  If set to `true`, then audio files will always be rendered with an
@@ -184,6 +186,46 @@ export class Texture extends String {
                 m.index + m[0].length + offset,
                 getHyperlinkTemplate(m[0].replace(regex, api.settings.get("geouri_replacement")))
             );
+        }
+    }
+
+    /**
+     * Look for `cid:` URIs (XEP-0231 Bits of Binary) and render as inline images
+     * @param {String} text
+     * @param {number} offset - The index of the passed in text relative to
+     *  the start of the message body text.
+     */
+    async addBOBImages(text, offset) {
+        // Skip if BOB API not available or no cid: URIs in text
+        if (!api.bob || !text.includes('cid:')) return;
+        
+        const regex = /cid:([^\s]+)/g;
+        const matches = [...text.matchAll(regex)];
+        
+        for (const m of matches) {
+            const cid = m[0]; // Full "cid:..." string
+            const from_jid = this.options?.from_jid; // Sender JID for IQ fetch
+            
+            try {
+                const blob_url = await api.bob.get(cid, from_jid);
+                if (blob_url) {
+                    // Render as image
+                    const template = tplImage({
+                        src: blob_url,
+                        href: null,
+                        onClick: this.onImgClick,
+                        onLoad: this.onImgLoad
+                    });
+                    this.addTemplateResult(
+                        m.index + offset,
+                        m.index + m[0].length + offset,
+                        template
+                    );
+                }
+            } catch (e) {
+                // Silently fail - don't block other rendering
+                log.debug(`Could not render BOB image ${cid}:`, e);
+            }
         }
     }
 
@@ -323,6 +365,7 @@ export class Texture extends String {
         await this.addAnnotations(this.addMentions);
         await this.addAnnotations(this.addHyperlinks);
         await this.addAnnotations(this.addMapURLs);
+        await this.addAnnotations(this.addBOBImages);
 
         await api.emojis.initialize();
         await this.addAnnotations(this.addEmojis);

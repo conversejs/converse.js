@@ -3,6 +3,7 @@
 ## Next release
 
 - Fix audio player accessibility for screen reader users (NVDA, JAWS)
+- Add support for XEP-0461 Message Replies, allowing users to reply to specific messages
 - #3815: Removal of boomark leads to new bookmark named `Symbol(lit-nothing)`
 - #3824: Dates and times are not translated 
 - #3829: Rich text from LibreOffice Calc is sent as screenshots

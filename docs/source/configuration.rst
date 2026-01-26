@@ -1144,6 +1144,18 @@ Set this option to ``true`` to request all pages of archived messages, but be
 aware that this can have performance implications.
 
 
+max_bob_size
+------------
+
+* Default: ``8192``
+
+The maximum size (in bytes) of Base64-encoded data that may be stored via
+`XEP-0231: Bits of Binary <https://xmpp.org/extensions/xep-0231.html>`_.
+
+Any received BOB data that exceeds this limit will be discarded.
+This helps prevent excessive memory usage from large inline binary objects.
+
+
 muc_hats
 --------
 

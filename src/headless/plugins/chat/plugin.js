@@ -51,6 +51,7 @@ converse.plugins.add('converse-chat', {
         api.listen.on('chatBoxesFetched', autoJoinChats);
         api.listen.on('presencesInitialized', registerMessageHandlers);
 
+        api.listen.on('addClientFeatures', () => api.disco.own.features.add(converse.env.Strophe.NS.REPLY));
         api.listen.on('connected', () => enableCarbons());
         api.listen.on('reconnected', () => enableCarbons());
     },

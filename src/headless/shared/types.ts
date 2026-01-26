@@ -206,6 +206,8 @@ export type MessageAttributes = EncryptionAttrs &
         received: string; // An ISO8601 string recording the time that the message was received
         references: Array<Reference>; // A list of objects representing XEP-0372 references
         replace_id: string; // The `id` attribute of a XEP-0308 <replace> element
+        reply_to_id: string; // The `id` attribute of the message being replied to (XEP-0461)
+        reply_to: string; // The JID of the author of the message being replied to (XEP-0461)
         retracted: string; // An ISO8601 string recording the time that the message was retracted
         retracted_id: string; // The `id` attribute of a XEP-424 <retracted> element
         sender: 'me' | 'them'; // Whether the message was sent by the current user or someone else

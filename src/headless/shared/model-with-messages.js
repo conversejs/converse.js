@@ -327,6 +327,11 @@ export default function ModelWithMessages(BaseModel) {
              * @property {(BaseMessage)} data.message
              */
             api.trigger('sendMessage', { 'chatbox': this, message });
+            
+            // Clear reply state after sending
+            this.unset('replying_to');
+            this.unset('reply_to_id');
+            
             return message;
         }
 
@@ -929,6 +934,8 @@ export default function ModelWithMessages(BaseModel) {
                 oob_url,
                 origin_id,
                 references,
+                reply_to_id,
+                reply_to,
                 spoiler_hint,
                 type,
             } = message.attributes;
@@ -956,6 +963,7 @@ export default function ModelWithMessages(BaseModel) {
                             : ''
                     }
                     ${edited ? stx`<replace xmlns="${Strophe.NS.MESSAGE_CORRECT}" id="${msgid}"></replace>` : ''}
+                    ${reply_to_id ? stx`<reply xmlns="${Strophe.NS.REPLY}" to="${reply_to_id}"></reply>` : ''}
                     ${origin_id ? stx`<origin-id xmlns="${Strophe.NS.SID}" id="${origin_id}"></origin-id>` : ''}
                 </message>`;
 

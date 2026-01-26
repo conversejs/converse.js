@@ -6,6 +6,7 @@ import { getHats } from '../utils.js';
 import { __ } from 'i18n';
 import 'shared/avatar/avatar.js';
 import 'shared/chat/unfurl.js';
+import 'shared/chat/reply-context.js';
 
 const { dayjs } = converse.env;
 
@@ -94,6 +95,7 @@ export default (el) => {
                         : ''} ${el.model.get('is_delayed') ? 'chat-msg__body--delayed' : ''}"
                 >
                     <div class="chat-msg__message">
+                        ${el.model.get('reply_to_id') ? html`<converse-reply-context .message=${el.model}></converse-reply-context>` : ''}
                         ${is_action
                             ? html`<time title="${pretty_date}" timestamp="${edited || time}" class="chat-msg__time">${pretty_time}</time>
                                   ${is_me_message

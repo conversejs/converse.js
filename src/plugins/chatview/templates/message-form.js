@@ -2,6 +2,7 @@ import { __ } from "i18n";
 import { api, u } from "@converse/headless";
 import { html } from "lit";
 import { resetElementHeight } from "../utils.js";
+import 'shared/chat/reply-preview.js';
 
 /**
  * @param {import('../message-form').default} el
@@ -34,6 +35,8 @@ export default (el) => {
                   message_limit="${message_limit}"
               ></converse-chat-toolbar>`
             : ""}
+
+        <converse-reply-preview .model=${el.model}></converse-reply-preview>
 
         <input
             type="text"

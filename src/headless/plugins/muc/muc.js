@@ -1146,6 +1146,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         }
         const origin_id = getUniqueId();
         const body = text ? u.shortnamesToUnicode(text) : undefined;
+        
+        // Get reply state from chatbox
+        const replying_to = this.get('replying_to');
+        const reply_to_id = this.get('reply_to_id');
+        
         attrs = Object.assign(
             {},
             attrs,
@@ -1166,6 +1171,12 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             },
             await u.getMediaURLsMetadata(text)
         );
+        
+        // Add reply attributes if replying to a message
+        if (reply_to_id && replying_to) {
+            attrs.reply_to_id = reply_to_id;
+            attrs.reply_to = replying_to.get('from');
+        }
 
         /**
          * *Hook* which allows plugins to update the attributes of an outgoing

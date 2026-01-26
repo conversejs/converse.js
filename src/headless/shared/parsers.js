@@ -219,6 +219,21 @@ export function getCorrectionAttributes (stanza, original_stanza) {
 }
 
 /**
+ * Extract XEP-0461 reply attributes from a message stanza
+ * @param {Element} stanza - The message stanza
+ * @returns {Object} Object containing reply_to_id and reply_to attributes
+ */
+export function getReplyAttributes (stanza) {
+    const reply = sizzle(`reply[xmlns="${Strophe.NS.REPLY}"]`, stanza).pop();
+    if (reply) {
+        return {
+            'reply_to_id': reply.getAttribute('to')
+        };
+    }
+    return {};
+}
+
+/**
  * @param {Element} stanza
  */
 export function getOpenGraphMetadata (stanza) {

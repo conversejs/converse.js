@@ -296,6 +296,38 @@ class MessageActions extends CustomElement {
         await navigator.clipboard.writeText(this.model.getMessageText());
     }
 
+    /**
+     * Get the appropriate message ID to use for replying, based on XEP-0461 rules.
+     * For groupchats: use stanza-id with 'by' attribute matching MUC JID
+     * For direct chats: use origin-id if present, otherwise msgid
+     * @returns {string|null}
+     */
+    getReplyToId () {
+        const chatbox = this.model.collection.chatbox;
+        const is_groupchat = chatbox.get('type') === CHATROOMS_TYPE;
+        
+        if (is_groupchat) {
+            const bare_jid = chatbox.get('jid');
+            return this.model.get(`stanza_id ${bare_jid}`);
+        } else {
+            return this.model.get('origin_id') || this.model.get('msgid');
+        }
+    }
+
+    /** @param {MouseEvent} [ev] */
+    onMessageReplyButtonClicked (ev) {
+        ev?.preventDefault?.();
+        const chatbox = this.model.collection.chatbox;
+        const reply_to_id = this.getReplyToId();
+        
+        if (reply_to_id) {
+            chatbox.set({
+                'replying_to': this.model,
+                'reply_to_id': reply_to_id
+            });
+        }
+    }
+
     /** @param {MouseEvent} [ev] */
     onMessageQuoteButtonClicked (ev) {
         ev?.preventDefault?.();
@@ -353,6 +385,18 @@ class MessageActions extends CustomElement {
         });
 
         if (this.model.collection.chatbox.canPostMessages()) {
+            // Add reply button if we can get a valid reply-to ID
+            const reply_to_id = this.getReplyToId();
+            if (reply_to_id) {
+                buttons.push({
+                    'i18n_text': __('Reply'),
+                    'handler': (ev) => this.onMessageReplyButtonClicked(ev),
+                    'button_class': 'chat-msg__action-reply',
+                    'icon_class': 'fas fa-reply',
+                    'name': 'reply',
+                });
+            }
+
             buttons.push({
                 'i18n_text': __('Quote'),
                 'handler': (ev) => this.onMessageQuoteButtonClicked(ev),

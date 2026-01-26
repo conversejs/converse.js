@@ -186,7 +186,7 @@ describe("A Chat Message", function () {
         await _converse.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 7);
 
-        expect(view.querySelectorAll('.date-separator').length).toEqual(4);
+        expect(view.querySelectorAll('.date-separator').length).toEqual(5);
 
         let day = sizzle('.date-separator:first', view).pop();
         expect(day.getAttribute('data-isodate')).toEqual(dayjs('2017-12-31T00:00:00').toISOString());
@@ -229,7 +229,8 @@ describe("A Chat Message", function () {
 
         el = sizzle('.chat-msg:eq(4)', view).pop();
         expect(el.querySelector('.chat-msg__text').textContent).toEqual('message');
-        expect(el.parentElement.nextElementSibling.querySelector('.chat-msg__text').textContent).toEqual('newer message from the next day');
+        const next_msg = view.querySelectorAll('.chat-msg')[5];
+        expect(next_msg.querySelector('.chat-msg__text').textContent).toEqual('newer message from the next day');
         expect(u.hasClass('chat-msg--followup', el)).toBe(false);
 
         day = sizzle('.date-separator:last', view).pop();

@@ -1,0 +1,52 @@
+.reply-preview {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background: var(--chat-head-color);
+    border-left: 3px solid var(--primary-color);
+    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+
+    &__content {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__author {
+        display: block;
+        font-size: 0.875rem;
+        margin-bottom: 0.125rem;
+        color: var(--text-color);
+    }
+
+    &__message {
+        margin: 0;
+        font-size: 0.813rem;
+        color: var(--text-color-lighten-15-percent);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__cancel {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem;
+        color: var(--text-color-lighten-15-percent);
+        flex-shrink: 0;
+        
+        &:hover {
+            color: var(--text-color);
+        }
+    }
+}

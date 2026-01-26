@@ -364,6 +364,61 @@
     }
 }
 
+// XEP-0461 Reply Context Styles
+.reply-context {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--subdued-color);
+    border-left: 2px solid var(--primary-color);
+    margin-bottom: 0.25rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    border-radius: 3px;
+
+    &:hover {
+        background: var(--highlight-color-hover);
+    }
+
+    &__author {
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    &__message {
+        margin: 0;
+        color: var(--text-color-lighten-15-percent);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+    }
+
+    &--not-found {
+        opacity: 0.6;
+        cursor: default;
+        
+        &:hover {
+            background: var(--subdued-color);
+        }
+    }
+}
+
+// Highlight animation for referenced messages
+.message.highlighted {
+    animation: highlight-flash 2s ease-out;
+}
+
+@keyframes highlight-flash {
+    0%, 100% {
+        background-color: transparent;
+    }
+    50% {
+        background-color: var(--highlight-color);
+    }
+}
+
 @media screen and (max-width: 767px) {
     converse-chats:not(.converse-embedded) {
         .message {

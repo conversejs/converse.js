@@ -6,6 +6,7 @@ import { getHats } from '../utils.js';
 import { __ } from 'i18n';
 import 'shared/avatar/avatar.js';
 import 'shared/chat/unfurl.js';
+import 'shared/chat/reply-context.js';
 
 const { dayjs } = converse.env;
 
@@ -87,6 +88,8 @@ export default (el) => {
                               : ''}
                       </span>`
                     : ''}
+
+                ${el.model.get('reply_to_id') ? html`<converse-reply-context .model=${el.model} .model_with_messages=${el.model_with_messages}></converse-reply-context>` : ''}
 
                 <div
                     class="chat-msg__body chat-msg__body--${el.model.get('message_type')} ${el.model.get('received')

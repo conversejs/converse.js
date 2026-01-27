@@ -301,6 +301,22 @@ export function getErrorAttributes (stanza) {
 }
 
 /**
+ * Given a message stanza, extract XEP-0461 reply attributes
+ * @param {Element} stanza - The message stanza
+ * @returns {Object} An object containing reply_to_id and reply_to if present
+ */
+export function getReplyAttributes (stanza) {
+    const reply = sizzle(`reply[xmlns="${Strophe.NS.REPLY}"]`, stanza).pop();
+    if (reply) {
+        return {
+            reply_to_id: reply.getAttribute('id'),
+            reply_to: reply.getAttribute('to')
+        };
+    }
+    return {};
+}
+
+/**
  * Given a message stanza, find and return any XEP-0372 references
  * @param {Element} stanza - The message stanza
  * @returns {import('./types').XEP372Reference[]}

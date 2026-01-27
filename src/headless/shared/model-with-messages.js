@@ -929,6 +929,8 @@ export default function ModelWithMessages(BaseModel) {
                 oob_url,
                 origin_id,
                 references,
+                reply_to_id,
+                reply_to,
                 spoiler_hint,
                 type,
             } = message.attributes;
@@ -955,6 +957,7 @@ export default function ModelWithMessages(BaseModel) {
                               )
                             : ''
                     }
+                    ${reply_to_id ? stx`<reply xmlns="${Strophe.NS.REPLY}" id="${reply_to_id}" to="${reply_to || ''}"></reply>` : ''}
                     ${edited ? stx`<replace xmlns="${Strophe.NS.MESSAGE_CORRECT}" id="${msgid}"></replace>` : ''}
                     ${origin_id ? stx`<origin-id xmlns="${Strophe.NS.SID}" id="${origin_id}"></origin-id>` : ''}
                 </message>`;

@@ -1,0 +1,53 @@
+converse-reply-preview {
+    display: block;
+
+    .reply-preview {
+        display: flex;
+        align-items: center;
+        padding: 0.5em 0.75em;
+        margin-bottom: 0;
+        background-color: var(--chat-head-color);
+        border-left: 3px solid var(--link-color);
+        border-top: 1px solid var(--chat-separator-border-color, rgba(0, 0, 0, 0.1));
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+        gap: 0.5em;
+
+        &__content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        &__sender {
+            display: block;
+            font-weight: bold;
+            font-size: 0.9em;
+            color: var(--link-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &__text {
+            display: block;
+            font-size: 0.85em;
+            color: var(--foreground-color);
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &__cancel {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25em;
+            color: var(--foreground-color);
+            opacity: 0.7;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+}

@@ -14,6 +14,17 @@ describe("The 'Add Contact' widget", function () {
     it("opens up an add modal when you click on it",
             mock.initConverse([], {}, async function (_converse) {
 
+        // Mock fetch to return empty providers (so test focuses on roster domains)
+        spyOn(window, 'fetch').and.callFake((url) => {
+            if (url.includes('providers')) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve([])
+                });
+            }
+            return Promise.reject(new Error('Unknown URL'));
+        });
+
         await mock.waitForRoster(_converse, 'all');
         await mock.openControlBox(_converse);
 
@@ -196,7 +207,14 @@ describe("The 'Add Contact' widget", function () {
                 xmpp_providers_url: ''
             }, async function (_converse) {
 
-        const fetchSpy = spyOn(window, 'fetch').and.callThrough();
+        // Track if providers URL was called
+        const fetchSpy = spyOn(window, 'fetch').and.callFake((url) => {
+            // Return empty response for any fetch call
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve([])
+            });
+        });
 
         await mock.waitForRoster(_converse, 'all');
         await mock.openControlBox(_converse);
@@ -218,7 +236,7 @@ describe("The 'Add Contact' widget", function () {
             2000
         );
 
-        // Verify that no fetch was made to providers URL (fetch might still be called for other things)
+        // Verify that no fetch was made to providers URL
         const providerFetchCalls = fetchSpy.calls.all()
             .filter(call => call.args[0]?.includes?.('providers'));
         expect(providerFetchCalls.length).toBe(0);

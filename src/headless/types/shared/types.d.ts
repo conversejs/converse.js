@@ -146,6 +146,8 @@ export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     received: string;
     references: Array<Reference>;
     replace_id: string;
+    reply_to_id: string;
+    reply_to: string;
     retracted: string;
     retracted_id: string;
     sender: 'me' | 'them';

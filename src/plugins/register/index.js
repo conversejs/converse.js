@@ -10,6 +10,7 @@ import { __ } from 'i18n';
 import { routeToForm } from './utils.js';
 import RegistrationForm from './form.js';
 import RegisterLink from './register_link.js';
+import 'shared/autocomplete/index.js';
 
 // Strophe methods for building stanzas
 const { Strophe } = converse.env;
@@ -43,7 +44,10 @@ converse.plugins.add('converse-register', {
             allow_registration: true,
             domain_placeholder: __(' e.g. conversejs.org'), // Placeholder text shown in the domain input on the registration form
             providers_link: 'https://providers.xmpp.net/', // Link to XMPP providers shown on registration page
-            registration_domain: ''
+            registration_domain: '',
+            // Optional list of known public XMPP providers to suggest during registration
+            // e.g.: ['conversejs.org', 'jabber.org', 'xmpp.jp']
+            registration_providers: []
         });
 
         const exports = { RegisterLink, RegistrationForm };

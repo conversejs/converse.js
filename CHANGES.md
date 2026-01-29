@@ -21,6 +21,7 @@
 - #3769: Various OMEMO fixes
 - #3791: Fetching pubsub node configuration fails
 - #3792: Node reconfiguration attempt uses incorrect field names
+- Adds support for opening XMPP URIs in Converse and for XEP-0147 query actions
 - Fix documentation formatting in security.rst
 - Add approval banner in chats with requesting contacts or unsaved contacts
 - Add mongolian as a language option

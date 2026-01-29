@@ -79,8 +79,16 @@ converse.plugins.add('converse-reactions', {
                 'handler': (ev) => {
                     ev?.preventDefault?.();
                     ev?.stopPropagation?.();
-                    const show = el.model.get('show_reaction_picker');
-                    el.model.set('show_reaction_picker', !show);
+                    const message = el.closest('converse-chat-message') || el.getRootNode()?.host;
+                    if (message) {
+                        const show = !message.model.get('show_reaction_picker');
+                        message.model.set('show_reaction_picker', show);
+                    }
+                    // Close the dropdown menu
+                    const dropdown = el.renderRoot?.querySelector('converse-dropdown');
+                    if (dropdown?.dropdown?.hide) {
+                        dropdown.dropdown.hide();
+                    }
                 },
                 'button_class': 'chat-msg__action-reaction',
                 'icon_class': 'fas fa-smile',
@@ -188,7 +196,6 @@ converse.plugins.add('converse-reactions', {
         const picker = target.closest('converse-reaction-picker');
         if (picker && picker.model) {
             this.sendReaction(picker.model, detail.emoji);
-            picker.model.set('show_reaction_picker', false);
         }
     },
 

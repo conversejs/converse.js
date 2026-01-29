@@ -53,7 +53,10 @@ export default class ReactionPicker extends CustomElement {
         return {
             'model': { type: Object },
             'emoji_picker_state': { type: Object },
-            'allowed_emojis': { type: Array }
+            'allowed_emojis': { type: Array },
+            'dropup': { type: Boolean },
+            'shifted': { type: Boolean },
+            'closing': { type: Boolean }
         };
     }
 
@@ -66,7 +69,62 @@ export default class ReactionPicker extends CustomElement {
         this.emoji_picker_state = null;
         this.picker_id = u.getUniqueId('reaction-picker');
         this.allowed_emojis = null;
+        this.dropup = false;
+        this.shifted = false;
+        this.closing = false;
         this.onClickOutside = this.onClickOutside.bind(this);
+    }
+
+    firstUpdated () {
+        // Defer to ensure element is painted
+        requestAnimationFrame(() => {
+            const picker = /** @type {HTMLElement} */ (this.querySelector('.reaction-picker'));
+            if (!picker) return;
+            
+            const hostRect = this.getBoundingClientRect(); // The absolute overlay rect
+            
+            // Threshold for "Last Messages" - If within 150px of bottom, go UP.
+            const threshold = 150; 
+            const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+            
+            let needsUpdate = false;
+
+            // 1. Vertical Calculation: Default to Dropdown, switch to Dropup if near bottom
+            // Check if there is enough space BELOW.
+            // Distance from bottom of host to bottom of screen:
+            const spaceBelow = windowHeight - hostRect.bottom;
+            
+            if (spaceBelow < threshold) {
+                if (!this.dropup) {
+                    this.dropup = true;
+                    needsUpdate = true;
+                }
+            } else {
+                 if (this.dropup) {
+                    this.dropup = false;
+                    needsUpdate = true;
+                }
+            }
+            
+            // 2. Horizontal: Force Right Alignment via JS
+            // This ensures it overrides any inherited 'left' or conflicting styles.
+            picker.style.position = 'absolute';
+            picker.style.right = '0';
+            picker.style.left = 'auto'; // Prevent left anchoring
+            
+            if (this.dropup) {
+                // Ensure dropup specific styles are enforced
+                picker.style.top = 'auto';
+                picker.style.bottom = '100%';
+            } else {
+                picker.style.bottom = 'auto';
+                picker.style.top = '100%'; // Or existing CSS default
+            }
+
+            if (needsUpdate) {
+                this.requestUpdate();
+            }
+        });
     }
 
     connectedCallback () {
@@ -83,9 +141,23 @@ export default class ReactionPicker extends CustomElement {
     onClickOutside (ev) {
         const click_target = /** @type {Node} */(ev.target);
         if (!this.contains(click_target)) {
+            this.close();
+        }
+    }
+
+    close () {
+        if (this.closing) return;
+        this.closing = true;
+        const picker = this.querySelector('.reaction-picker');
+        if (picker) {
+            picker.addEventListener('animationend', () => {
+                this.dispatchEvent(new CustomEvent('closePicker', { bubbles: true, composed: true }));
+            }, { once: true });
+        } else {
             this.dispatchEvent(new CustomEvent('closePicker', { bubbles: true, composed: true }));
         }
     }
+
 
     /**
      * Render the reaction picker UI
@@ -102,7 +174,7 @@ export default class ReactionPicker extends CustomElement {
             POPULAR_EMOJIS;
 
         return html`
-            <div class="reaction-picker popular">
+            <div class="reaction-picker popular ${this.dropup ? 'dropup' : ''} ${this.shifted ? 'shifted' : ''} ${this.closing ? 'closing' : ''}">
                 <!-- Popular emojis for quick selection -->
                 ${popular_emojis.map(sn => html`
                     <button class="reaction-item" @click=${() => this.onEmojiSelected(sn)}>
@@ -188,6 +260,7 @@ export default class ReactionPicker extends CustomElement {
             bubbles: true,   // Allow event to bubble up
             composed: true   // Cross shadow DOM boundary
         }));
+        this.close();
         
         // Close Bootstrap dropdown programmatically
         const dropdown = this.querySelector('.dropdown-menu');

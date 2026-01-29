@@ -7,7 +7,7 @@ describe("XEP-0231: Bits of Binary", function() {
     describe("BOB Cache", function() {
         
         it("stores and retrieves BOB data", mock.initConverse(
-            ['chatBoxesInitialized'], {},
+            ['chatBoxesInitialized', 'BOBsInitialized'], {},
             async (_converse) => {
                 const { api } = _converse;
                 const cid = 'cid:sha1+8f35fef110ffc5df08d579a50083ff9308fb6242@bob.xmpp.org';
@@ -28,7 +28,7 @@ describe("XEP-0231: Bits of Binary", function() {
         ));
 
         it("respects max-age expiration", mock.initConverse(
-            ['chatBoxesInitialized'], {},
+            ['chatBoxesInitialized', 'BOBsInitialized'], {},
             async (_converse) => {
                 const { api } = _converse;
                 const cid = 'cid:sha1+test@bob.xmpp.org';
@@ -47,7 +47,7 @@ describe("XEP-0231: Bits of Binary", function() {
         ));
 
         it("rejects oversized data", mock.initConverse(
-            ['chatBoxesInitialized'], {},
+            ['chatBoxesInitialized', 'BOBsInitialized'], {},
             async (_converse) => {
                 const { api } = _converse;
                 const cid = 'cid:sha1+large@bob.xmpp.org';
@@ -62,7 +62,7 @@ describe("XEP-0231: Bits of Binary", function() {
         ));
 
         it("rejects non-image MIME types", mock.initConverse(
-            ['chatBoxesInitialized'], {},
+            ['chatBoxesInitialized', 'BOBsInitialized'], {},
             async (_converse) => {
                 const { api } = _converse;
                 const cid = 'cid:sha1+pdf@bob.xmpp.org';
@@ -79,7 +79,7 @@ describe("XEP-0231: Bits of Binary", function() {
     describe("Message Parsing", function() {
         
         it("extracts BOB data from incoming messages", mock.initConverse(
-            ['chatBoxesInitialized'], {},
+            ['chatBoxesInitialized', 'BOBsInitialized'], {},
             async (_converse) => {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -110,7 +110,7 @@ describe("XEP-0231: Bits of Binary", function() {
     describe("IQ Requests", function() {
         
         it("fetches uncached BOB data via IQ-get", mock.initConverse(
-            ['chatBoxesInitialized'], {},
+            ['chatBoxesInitialized', 'BOBsInitialized'], {},
             async (_converse) => {
                 const { api } = _converse;
                 const contact_jid = 'romeo@montague.lit';
@@ -141,7 +141,7 @@ describe("XEP-0231: Bits of Binary", function() {
         ));
 
         it("handles IQ errors gracefully", mock.initConverse(
-            ['chatBoxesInitialized'], {},
+            ['chatBoxesInitialized', 'BOBsInitialized'], {},
             async (_converse) => {
                 const { api } = _converse;
                 const contact_jid = 'romeo@montague.lit';

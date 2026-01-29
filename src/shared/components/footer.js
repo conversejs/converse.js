@@ -39,7 +39,9 @@ export class ConverseFooter extends CustomElement {
                                                       rel="noopener"
                                                       ><img
                                                           style="width: 13em"
-                                                          src="https://conversejs.org/media/logos/BairesDev_logo-orange.png"
+                                                          src="${is_dark_theme
+                                                              ? 'https://conversejs.org/media/logos/bairesdev-dark.png'
+                                                              : 'https://conversejs.org/media/logos/BairesDev_logo-orange.png'}"
                                                           alt="BairesDev"
                                                   /></a>
                                               </div>
@@ -58,10 +60,15 @@ export class ConverseFooter extends CustomElement {
                                               </div>
                                               <div>
                                                   <a
-                                                      href="https://www.keycdn.com?utm_source=conversejs"
+                                                      href="https://www.litslink.com?utm_source=conversejs"
                                                       target="_blank"
                                                       rel="noopener"
-                                                      ><img style="height: 3em" src="https://conversejs.org/logo/keycdn.png" alt="KeyCDN"
+                                                      ><img
+                                                          style="width: 12em"
+                                                          src="${is_dark_theme
+                                                              ? 'https://conversejs.org/media/logos/litslink-dark.svg'
+                                                              : 'https://conversejs.org/media/logos/litslink-light.svg'}"
+                                                          alt="LITSLINK software development"
                                                   /></a>
                                               </div>
                                           </div>

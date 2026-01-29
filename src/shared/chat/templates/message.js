@@ -113,11 +113,9 @@ export default (el) => {
                     ></converse-message-actions>
                 </div>
 
-                ${el.model.get('ogp_metadata')?.map((m) => {
-                    if (el.model.get('hide_url_previews') === true) {
-                        return '';
-                    }
-                    return html`<converse-message-unfurl
+                ${!is_retracted ? el.model.get('ogp_metadata')?.map((m) =>
+                    el.model.get('hide_url_previews') === true ? '' :
+                    html`<converse-message-unfurl
                         @animationend="${el.onUnfurlAnimationEnd}"
                         class="${el.model.get('url_preview_transition')}"
                         jid="${el.model_with_messages?.get('jid')}"
@@ -126,8 +124,8 @@ export default (el) => {
                         image="${(m['og:image'] && shouldRenderMediaFromURL(m['og:image'], 'image')) ? m['og:image'] : nothing}"
                         site_name="${m['og:site_name'] || ''}"
                         url="${m['og:url'] || ''}"
-                    ></converse-message-unfurl>`;
-                })}
+                    ></converse-message-unfurl>`
+                ) : ''}
             </div>
         </div>`;
 };

@@ -11,10 +11,7 @@ import log from '@converse/log';
 import BOB from './bob.js';
 import BOBs from './bobs.js';
 
-const { Strophe, $iq } = converse.env;
-
-// Maximum size for BOB data (8KB as per XEP-0231)
-const MAX_BOB_SIZE = 8192;
+const { $iq } = converse.env;
 
 converse.plugins.add('converse-bob', {
     dependencies: [],
@@ -24,55 +21,54 @@ converse.plugins.add('converse-bob', {
 
         api.promises.add('BOBsInitialized');
 
-        // Export classes
+        api.settings.extend({
+            max_bob_size: 8192
+        });
+
         const exports = { BOB, BOBs };
-        Object.assign(_converse, exports); // XXX DEPRECATED
         Object.assign(_converse.exports, exports);
 
-        // Register namespace
         api.listen.on('addClientFeatures', () => {
             api.disco.own.features.add('urn:xmpp:bob');
         });
 
-        // Initialize BOB collection on connect
         api.listen.on('connected', async () => {
             const bobs = new _converse.exports.BOBs();
             _converse.state.bobs = bobs;
-            Object.assign(_converse, { bobs }); // XXX DEPRECATED
             await bobs.initialize();
+
+            _converse.state.bobs_cleanup_interval = setInterval(() => {
+                if (_converse.state.bobs) {
+                    _converse.state.bobs.cleanupExpired();
+                }
+            }, 600000);
         });
 
-        // Clear BOB cache on session clear
         api.listen.on('clearSession', () => {
+            if (_converse.state.bobs_cleanup_interval) {
+                clearInterval(_converse.state.bobs_cleanup_interval);
+                delete _converse.state.bobs_cleanup_interval;
+            }
             if (_converse.state.bobs) {
                 _converse.state.bobs.clearStore();
                 delete _converse.state.bobs;
             }
         });
 
-        // Expose BOB API
         Object.assign(api, {
             /**
              * BOB (Bits of Binary) API
              */
             bob: {
                 /**
-                 * Check if CID is cached and not expired
+                 * Check if CID is cached
                  * @param {string} cid
                  * @returns {boolean}
                  */
                 has(cid) {
                     const bobs = _converse.state.bobs;
                     if (!bobs) return false;
-
-                    const bob = bobs.get(cid);
-                    if (!bob) return false;
-
-                    if (bob.isExpired()) {
-                        bob.destroy();
-                        return false;
-                    }
-                    return true;
+                    return !!bobs.get(cid);
                 },
 
                 /**
@@ -89,11 +85,10 @@ converse.plugins.add('converse-bob', {
                         return;
                     }
 
-                    // Validate size
                     try {
                         const size = atob(data).length;
-                        if (size > MAX_BOB_SIZE) {
-                            log.warn(`BOB data for ${cid} exceeds max size (${size} > ${MAX_BOB_SIZE})`);
+                        if (size > api.settings.get('max_bob_size')) {
+                            log.warn(`BOB data for ${cid} exceeds max size (${size} > ${api.settings.get('max_bob_size')})`);
                             return;
                         }
                     } catch (e) {
@@ -101,23 +96,20 @@ converse.plugins.add('converse-bob', {
                         return;
                     }
 
-                    // Validate MIME type (only images for now)
                     if (!type.startsWith('image/')) {
                         log.warn(`BOB data for ${cid} has unsupported MIME type: ${type}`);
                         return;
                     }
 
-                    // Check if already exists
                     if (bobs.get(cid)) {
-                        return; // Already cached
+                        return;
                     }
 
-                    // Create and save new BOB entry
                     bobs.create({
                         cid,
                         data,
                         type,
-                        max_age: max_age || 86400, // Default 24 hours
+                        max_age: max_age || 86400,
                         timestamp: Date.now()
                     });
                 },
@@ -131,17 +123,15 @@ converse.plugins.add('converse-bob', {
                 async get(cid, from_jid) {
                     const bobs = _converse.state.bobs;
 
-                    // Check cache
                     if (this.has(cid)) {
                         const bob = bobs.get(cid);
                         return bob.getBlobURL();
                     }
 
-                    // If from_jid provided, request via IQ
                     if (from_jid) {
                         try {
                             await this.fetch(cid, from_jid);
-                            return this.get(cid); // Recursive call after fetch
+                            return this.get(cid);
                         } catch (e) {
                             log.error(`Failed to fetch BOB data for ${cid}:`, e);
                             return null;
@@ -182,7 +172,6 @@ converse.plugins.add('converse-bob', {
             }
         });
 
-        // Parse BOB (Bits of Binary) data from message
         api.listen.on('parseMessage', (stanza, attrs) => {
             const bob_data = [];
             const data_els = sizzle('data[xmlns="urn:xmpp:bob"]', stanza);
@@ -195,7 +184,6 @@ converse.plugins.add('converse-bob', {
 
                 if (cid && data) {
                     bob_data.push({ cid, data, type, max_age });
-                    // Auto-store in cache
                     api.bob?.store(cid, data, type, max_age);
                 }
             });

@@ -2,7 +2,6 @@ import { html } from "lit";
 import { until } from "lit/directives/until.js";
 import { Directive, directive } from "lit/directive.js";
 import { api, u } from "@converse/headless";
-import log from "@converse/log";
 import tplAudio from "./templates/audio.js";
 import tplGif from "./templates/gif.js";
 import tplImage from "./templates/image.js";
@@ -57,7 +56,6 @@ export class Texture extends String {
      *  which create new Texture instances (as happens with XEP-393 styling directives).
      * @param {Object} [options]
      * @param {string} [options.nick] - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
-     * @param {string} [options.from_jid] - The JID of the message sender (needed for fetching BOB images)
      * @param {boolean} [options.render_styling] - Whether XEP-0393 message styling should be applied to the message
      * @param {boolean} [options.embed_audio] - Whether audio URLs should be rendered as <audio> elements.
      *  If set to `true`, then audio files will always be rendered with an

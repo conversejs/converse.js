@@ -6,8 +6,7 @@
  * View plugin for XEP-0231 Bits of Binary
  * Handles rendering BOB images in message bodies
  */
-import { api, log } from '@converse/headless';
-import converse from '@converse/headless/shared/api/public.js';
+import { api, converse, log } from '@converse/headless';
 import tplImage from 'shared/texture/templates/image.js';
 
 /**
@@ -15,25 +14,21 @@ import tplImage from 'shared/texture/templates/image.js';
  * @param {import('shared/texture/texture.js').Texture} texture
  */
 async function handleBOBImages(texture) {
-    // Skip if BOB API not available
     if (!api.bob) return;
 
     const text = texture.toString();
 
-    // Skip if no cid: URIs in text
     if (!text.includes('cid:')) return;
 
     const regex = /cid:([^\s]+)/g;
     const matches = [...text.matchAll(regex)];
 
     for (const m of matches) {
-        const cid = m[0]; // Full "cid:..." string
-        const from_jid = texture.options?.from_jid; // Sender JID for IQ fetch
+        const cid = m[0];
 
         try {
-            const blob_url = await api.bob.get(cid, from_jid);
+            const blob_url = await api.bob.get(cid);
             if (blob_url) {
-                // Render as image
                 const template = tplImage({
                     src: blob_url,
                     href: null,
@@ -47,7 +42,6 @@ async function handleBOBImages(texture) {
                 );
             }
         } catch (e) {
-            // Silently fail - don't block other rendering
             log.debug(`Could not render BOB image ${cid}:`, e);
         }
     }

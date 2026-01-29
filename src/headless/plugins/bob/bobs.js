@@ -24,7 +24,6 @@ class BOBs extends Collection {
 
         await this.fetchBOBs();
 
-        // Clean up expired entries
         this.cleanupExpired();
 
         /**
@@ -48,8 +47,7 @@ class BOBs extends Collection {
      * Remove expired BOB entries from the collection
      */
     cleanupExpired() {
-        const expired = this.filter((bob) => bob.isExpired());
-        expired.forEach((bob) => bob.destroy());
+        this.forEach((bob) => { if (bob.isExpired()) bob.destroy(); });
     }
 }
 

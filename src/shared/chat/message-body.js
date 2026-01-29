@@ -51,7 +51,6 @@ export default class MessageBody extends CustomElement {
             media_urls: this.model.get('media_urls'),
             mentions: this.model.get('references'),
             nick: this.model.chatbox.get('nick'),
-            from_jid: this.model.get('from'),
             onImgClick: (ev) => this.onImgClick(ev),
             onImgLoad: () => this.onImgLoad(),
             render_styling: !this.model.get('is_unstyled') && api.settings.get('allow_message_styling'),

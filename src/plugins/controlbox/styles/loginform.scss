@@ -122,12 +122,6 @@
                 converse-registration-form,
                 converse-login-form {
                     margin: auto;
-                    @include media-breakpoint-up(xs) {
-                        padding: 1em 1em;
-                    }
-                    @include media-breakpoint-up(sm) {
-                        padding: 3em 2em 3em;
-                    }
                     @include make-col-ready();
                     @include make-col(8);
 
@@ -141,7 +135,7 @@
                         @include make-col(4);
                     }
                     @include media-breakpoint-up(xl) {
-                        @include make-col(4);
+                        @include make-col(3);
                     }
                     .title,
                     .instructions {

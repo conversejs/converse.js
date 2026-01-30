@@ -1,7 +1,11 @@
 import { html } from 'lit';
 import { api } from '@converse/headless';
 import { __ } from 'i18n';
-import { getGroupsAutoCompleteList, getJIDsAutoCompleteList, getNamesAutoCompleteList } from '../../utils.js';
+import {
+    getGroupsAutoCompleteList,
+    getJIDsAutoCompleteListWithProviders,
+    getNamesAutoCompleteList,
+} from '../../utils.js';
 import 'shared/autocomplete/index.js';
 
 /**
@@ -35,7 +39,7 @@ export default (el) => {
                                 name="jid"
                             ></converse-autocomplete>`
                           : html`<converse-autocomplete
-                                .list="${getJIDsAutoCompleteList()}"
+                                .getAutoCompleteList="${getJIDsAutoCompleteListWithProviders}"
                                 .data="${(text, input) => `${input.slice(0, input.indexOf('@'))}@${text}`}"
                                 position="below"
                                 min_chars="2"

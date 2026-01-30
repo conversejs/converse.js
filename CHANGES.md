@@ -2,8 +2,7 @@
 
 ## Next release
 
-- Add XMPP providers autocomplete when adding contacts (new `xmpp_providers_url` setting)
-- Add support for XEP-0461 Message Replies, allowing users to reply to specific messages
+- #2929: Add XMPP providers autocomplete when adding contacts (new `xmpp_providers_url` setting)
 - #3815: Removal of boomark leads to new bookmark named `Symbol(lit-nothing)`
 - #3824: Dates and times are not translated 
 - #3829: Rich text from LibreOffice Calc is sent as screenshots

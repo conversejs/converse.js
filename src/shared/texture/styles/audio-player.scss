@@ -7,7 +7,7 @@
         margin: 0;
         padding: 0.625rem 0.75rem;
         border-radius: 0.5rem;
-        background-color: var(--chat-textarea-background-color, #f8f9fa);
+        background-color: var(--background-color, #f8f9fa);
         max-width: 100%;
 
         &__caption {
@@ -98,12 +98,8 @@
                 transform: scale(0.96);
             }
 
-            .converse-icon {
-                margin-left: 1px;
-            }
-
-            &[aria-pressed="true"] .converse-icon {
-                margin-left: 0;
+            converse-icon svg {
+                fill: white !important;
             }
         }
 

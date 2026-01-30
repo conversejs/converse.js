@@ -7,7 +7,7 @@ describe("A Chat Message", function () {
 
     describe("which contains an OOB URL", function () {
 
-        it("will render audio from oob mp3 URLs",
+        it("will render audio from oob mp3 URLs using accessible audio player",
             mock.initConverse(
                 ['chatBoxesFetched'], {},
                 async function (_converse) {
@@ -29,13 +29,13 @@ describe("A Chat Message", function () {
                 </message>`
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg audio').length, 1000);
+            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg converse-audio-player').length, 1000);
             let msg = view.querySelector('.chat-msg .chat-msg__text');
             expect(msg.classList.length).toEqual(1);
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you heard this funny audio?');
             const media = view.querySelector('.chat-msg .chat-msg__media');
-            expect(media.querySelector('audio').getAttribute('src')).toBe(url);
+            expect(media.querySelector('converse-audio-player').getAttribute('src')).toBe(url);
 
             // If the <url> and <body> contents is the same, don't duplicate.
             stanza = stx`
@@ -55,10 +55,10 @@ describe("A Chat Message", function () {
             // We don't render the OOB data
             expect(view.querySelector('converse-chat-message:last-child .chat-msg__media')).toBe(null);
 
-            // But we do render the body
-            const audio = await await u.waitUntil(
-                () => view.querySelector('converse-chat-message:last-child .chat-msg__text audio'));
-            expect(audio.getAttribute('src')).toBe(url);
+            // But we do render the body using the accessible audio player
+            const audioPlayer = await u.waitUntil(
+                () => view.querySelector('converse-chat-message:last-child .chat-msg__text converse-audio-player'));
+            expect(audioPlayer.getAttribute('src')).toBe(url);
         }));
 
         it("will render video from oob mp4 URLs",

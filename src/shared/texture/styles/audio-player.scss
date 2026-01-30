@@ -1,0 +1,429 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "shared/styles/_mixins.scss";
+
+.conversejs {
+    .audio-player {
+        margin: 0;
+        padding: 0.625rem 0.75rem;
+        border-radius: 0.5rem;
+        background-color: var(--background-color, #f8f9fa);
+        max-width: 100%;
+
+        &__caption {
+            padding-bottom: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.125rem;
+        }
+
+        &__title {
+            font-weight: 500;
+            font-size: 0.875rem;
+            word-break: break-word;
+            color: var(--text-color, #1a1a1a);
+        }
+
+        &__link {
+            font-size: 0.75rem;
+            color: var(--link-color, #1db954);
+            text-decoration: none;
+
+            &:hover,
+            &:focus {
+                text-decoration: underline;
+            }
+        }
+
+        &__controls {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+
+            @include media-breakpoint-down(sm) {
+                gap: 0.5rem;
+            }
+        }
+
+        &__btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            background-color: transparent;
+            color: var(--text-color, #666);
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.1s ease;
+
+            &:hover:not(:disabled) {
+                color: var(--link-color, #1db954);
+            }
+
+            &:focus {
+                outline: none;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--link-color, #1db954);
+                outline-offset: 2px;
+            }
+
+            &:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+            &:active:not(:disabled) {
+                transform: scale(0.95);
+            }
+        }
+
+        &__play-btn {
+            width: 2rem;
+            height: 2rem;
+            background-color: #1db954;
+            color: white;
+            flex-shrink: 0;
+
+            &:hover:not(:disabled) {
+                background-color: #1ed760;
+                color: white;
+                transform: scale(1.04);
+            }
+
+            &:active:not(:disabled) {
+                background-color: #1aa34a;
+                transform: scale(0.96);
+            }
+
+            converse-icon svg {
+                fill: white !important;
+            }
+        }
+
+        &__spinner {
+            animation: audio-player-spin 1s linear infinite;
+        }
+
+        &__time {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 0.6875rem;
+            color: var(--subdued-color, #a7a7a7);
+            white-space: nowrap;
+            flex-shrink: 0;
+
+            @include media-breakpoint-down(sm) {
+                font-size: 0.625rem;
+            }
+        }
+
+        &__seek-container,
+        &__volume-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 16px;
+        }
+
+        &__seek-container {
+            flex: 1;
+            min-width: 60px;
+        }
+
+        &__volume-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+
+            &:hover,
+            &:focus-within {
+                .audio-player__volume-container {
+                    width: 90px;
+                    opacity: 1;
+                    padding: 0 0.5rem;
+                    margin-left: 0.5rem;
+
+                    @include media-breakpoint-down(sm) {
+                        width: 70px;
+                    }
+                }
+            }
+        }
+
+        &__volume-container {
+            width: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: width 0.25s ease, opacity 0.25s ease, padding 0.25s ease;
+            border-radius: 1rem;
+            padding: 0;
+            margin-left: 0;
+            background-color: transparent;
+        }
+
+        &__seek,
+        &__volume {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            // Base track color (used as fallback)
+            background: #c4c4c4;
+
+            &:focus {
+                outline: none;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--link-color, #1db954);
+                outline-offset: 4px;
+            }
+
+            &:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+            // Darker gray track on hover for unfilled portion
+            &:hover {
+                background: #a0a0a0;
+            }
+
+            // Webkit (Chrome, Safari, Edge)
+            &::-webkit-slider-runnable-track {
+                height: 4px;
+                border-radius: 2px;
+                background: transparent;
+            }
+
+            &::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 12px;
+                height: 12px;
+                margin-top: -4px;
+                border-radius: 50%;
+                background: #1db954;
+                border: none;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                cursor: pointer;
+            }
+
+            // Firefox
+            &::-moz-range-track {
+                height: 4px;
+                border-radius: 2px;
+                background: #c4c4c4;
+            }
+
+            &:hover::-moz-range-track {
+                background: #a0a0a0;
+            }
+
+            &::-moz-range-progress {
+                height: 4px;
+                border-radius: 2px;
+                background: #1db954;
+            }
+
+            &::-moz-range-thumb {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: #1db954;
+                border: none;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                cursor: pointer;
+            }
+        }
+
+        &__seek {
+            &::-webkit-slider-runnable-track {
+                background: linear-gradient(
+                    to right,
+                    #1db954 0%,
+                    #1db954 var(--progress-percent, 0%),
+                    #c4c4c4 var(--progress-percent, 0%),
+                    #c4c4c4 100%
+                );
+            }
+
+            &:hover::-webkit-slider-runnable-track {
+                background: linear-gradient(
+                    to right,
+                    #1db954 0%,
+                    #1db954 var(--progress-percent, 0%),
+                    #a0a0a0 var(--progress-percent, 0%),
+                    #a0a0a0 100%
+                );
+            }
+        }
+
+        &__volume {
+            &::-webkit-slider-runnable-track {
+                background: linear-gradient(
+                    to right,
+                    #1db954 0%,
+                    #1db954 var(--volume-percent, 100%),
+                    #c4c4c4 var(--volume-percent, 100%),
+                    #c4c4c4 100%
+                );
+            }
+
+            &:hover::-webkit-slider-runnable-track {
+                background: linear-gradient(
+                    to right,
+                    #1db954 0%,
+                    #1db954 var(--volume-percent, 100%),
+                    #a0a0a0 var(--volume-percent, 100%),
+                    #a0a0a0 100%
+                );
+            }
+        }
+
+        &__mute-btn {
+            width: 1.75rem;
+            height: 1.75rem;
+            flex-shrink: 0;
+            border-radius: 50%;
+            transition: color 0.2s ease, transform 0.15s ease;
+
+            &:hover:not(:disabled),
+            &:focus:not(:disabled) {
+                color: var(--link-color, #1db954);
+                transform: scale(1.05);
+            }
+
+            .converse-icon {
+                width: 1.125rem;
+                height: 1.125rem;
+            }
+        }
+    }
+
+    // Visually hidden class for screen reader only content
+    .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    @keyframes audio-player-spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+}
+
+// Overlayed mode adjustments
+.converse-overlayed {
+    .audio-player {
+        padding: 0.5rem;
+
+        &__controls {
+            gap: 0.5rem;
+        }
+
+        &__play-btn {
+            width: 1.75rem;
+            height: 1.75rem;
+        }
+
+        &__time {
+            font-size: 0.625rem;
+            min-width: 3.5rem;
+        }
+
+        &__mute-btn {
+            width: 1.5rem;
+            height: 1.5rem;
+
+            .converse-icon {
+                width: 1rem;
+                height: 1rem;
+            }
+        }
+
+        &__volume-wrapper {
+            &:hover,
+            &:focus-within {
+                .audio-player__volume-container {
+                    width: 60px;
+                }
+            }
+        }
+    }
+}
+
+// Fullscreen mode adjustments
+.converse-fullscreen {
+    .audio-player {
+        max-width: 500px;
+    }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+    .conversejs {
+        .audio-player {
+            border: 2px solid currentColor;
+
+            &__btn {
+                border: 2px solid currentColor;
+            }
+
+            &__seek,
+            &__volume {
+                border: 1px solid currentColor;
+            }
+        }
+    }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+    .conversejs {
+        .audio-player {
+            &__btn {
+                transition: none;
+
+                &:active:not(:disabled) {
+                    transform: none;
+                }
+            }
+
+            &__spinner {
+                animation: none;
+            }
+
+            &__volume-container {
+                transition: none;
+            }
+
+            &__mute-btn {
+                transition: none;
+
+                &:hover:not(:disabled),
+                &:focus:not(:disabled) {
+                    transform: none;
+                }
+            }
+
+        }
+    }
+}

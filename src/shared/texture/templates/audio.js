@@ -1,24 +1,18 @@
 import { html } from "lit";
-import { u } from "@converse/headless";
 
-import "../styles/audio.scss";
+import "../components/audio-player.js";
 
 /**
- * @param {string} url
- * @param {boolean} [hide_url]
- * @param {string} [title]
+ * Renders an accessible audio player for the given URL.
+ * The audio player uses custom controls that work with screen readers.
+ * @param {string} url - The URL of the audio file
+ * @param {boolean} [hide_url] - Whether to hide the URL link
+ * @param {string} [title] - Optional title for the audio
  */
 export default (url, hide_url, title) => {
-    const { hostname } = u.getURL(url);
-    return html`<figure class="audio-element">
-        ${title || !hide_url
-            ? html`<figcaption>
-                  ${title ? html`${title}</br>` : ""}
-                  ${hide_url
-                      ? ""
-                      : html`<a target="_blank" rel="noopener" title="${url}" href="${url}">${hostname}</a>`}
-              </figcaption>`
-            : ""}
-        <audio controls src="${url}"></audio>
-    </figure>`;
+    return html`<converse-audio-player
+        src="${url}"
+        title="${title || ""}"
+        ?hide_url="${hide_url}"
+    ></converse-audio-player>`;
 };

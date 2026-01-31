@@ -347,18 +347,18 @@ export default class AudioPlayer extends CustomElement {
                             ? html`<converse-icon
                                   aria-hidden="true"
                                   class="fa fa-spinner audio-player__spinner"
-                                  size="1.2em"
+                                  size="1.5em"
                               ></converse-icon>`
                             : this.is_playing
                               ? html`<converse-icon
                                     aria-hidden="true"
                                     class="fa fa-pause"
-                                    size="1.2em"
+                                    size="1.5em"
                                 ></converse-icon>`
                               : html`<converse-icon
                                     aria-hidden="true"
                                     class="fa fa-play"
-                                    size="1.2em"
+                                    size="1.5em"
                                 ></converse-icon>`}
                     </button>
 

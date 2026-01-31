@@ -7,7 +7,7 @@
         margin: 0;
         padding: 0.625rem 0.75rem;
         border-radius: 0.5rem;
-        background-color: var(--highlight-color, #f8f9fa);
+        background-color: var(--highlight-color);
         max-width: 100%;
 
         &__caption {
@@ -21,12 +21,12 @@
             font-weight: 500;
             font-size: 0.875rem;
             word-break: break-word;
-            color: var(--text-color, #1a1a1a);
+            color: var(--text-color);
         }
 
         &__link {
             font-size: 0.75rem;
-            color: var(--link-color, #1db954);
+            color: var(--link-color);
             text-decoration: none;
 
             &:hover,
@@ -53,12 +53,12 @@
             border: none;
             border-radius: 50%;
             background-color: transparent;
-            color: var(--text-color, #666);
+            color: var(--text-color);
             cursor: pointer;
             transition: color 0.2s ease, transform 0.1s ease;
 
             &:hover:not(:disabled) {
-                color: var(--link-color, #1db954);
+                color: var(--link-color);
             }
 
             &:focus {
@@ -66,7 +66,7 @@
             }
 
             &:focus-visible {
-                outline: 2px solid var(--link-color, #1db954);
+                outline: 2px solid var(--link-color);
                 outline-offset: 2px;
             }
 
@@ -83,23 +83,23 @@
         &__play-btn {
             width: 2rem;
             height: 2rem;
-            background-color: #1db954;
+            background-color: var(--chat-color);
             color: white;
             flex-shrink: 0;
 
             &:hover:not(:disabled) {
-                background-color: #1ed760;
                 color: white;
-                transform: scale(1.04);
+                transform: scale(1.06);
             }
 
             &:active:not(:disabled) {
-                background-color: #1aa34a;
-                transform: scale(0.96);
+                transform: scale(0.94);
             }
 
             converse-icon svg {
                 fill: white !important;
+                margin-top: -2px;
+                margin-left: 2px;
             }
         }
 
@@ -110,7 +110,7 @@
         &__time {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             font-size: 0.6875rem;
-            color: var(--subdued-color, #a7a7a7);
+            color: var(--subdued-color);
             white-space: nowrap;
             flex-shrink: 0;
 
@@ -181,7 +181,7 @@
             }
 
             &:focus-visible {
-                outline: 2px solid var(--link-color, #1db954);
+                outline: 2px solid var(--link-color);
                 outline-offset: 4px;
             }
 
@@ -209,7 +209,7 @@
                 height: 12px;
                 margin-top: -4px;
                 border-radius: 50%;
-                background: #1db954;
+                background: var(--chat-color);
                 border: none;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
                 cursor: pointer;
@@ -229,14 +229,14 @@
             &::-moz-range-progress {
                 height: 4px;
                 border-radius: 2px;
-                background: #1db954;
+                background: var(--chat-color);
             }
 
             &::-moz-range-thumb {
                 width: 12px;
                 height: 12px;
                 border-radius: 50%;
-                background: #1db954;
+                background: var(--chat-color);
                 border: none;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
                 cursor: pointer;
@@ -247,8 +247,8 @@
             &::-webkit-slider-runnable-track {
                 background: linear-gradient(
                     to right,
-                    #1db954 0%,
-                    #1db954 var(--progress-percent, 0%),
+                    var(--chat-color) 0%,
+                    var(--chat-color) var(--progress-percent, 0%),
                     #c4c4c4 var(--progress-percent, 0%),
                     #c4c4c4 100%
                 );
@@ -257,8 +257,8 @@
             &:hover::-webkit-slider-runnable-track {
                 background: linear-gradient(
                     to right,
-                    #1db954 0%,
-                    #1db954 var(--progress-percent, 0%),
+                    var(--chat-color) 0%,
+                    var(--chat-color) var(--progress-percent, 0%),
                     #a0a0a0 var(--progress-percent, 0%),
                     #a0a0a0 100%
                 );
@@ -269,8 +269,8 @@
             &::-webkit-slider-runnable-track {
                 background: linear-gradient(
                     to right,
-                    #1db954 0%,
-                    #1db954 var(--volume-percent, 100%),
+                    var(--chat-color) 0%,
+                    var(--chat-color) var(--volume-percent, 100%),
                     #c4c4c4 var(--volume-percent, 100%),
                     #c4c4c4 100%
                 );
@@ -279,8 +279,8 @@
             &:hover::-webkit-slider-runnable-track {
                 background: linear-gradient(
                     to right,
-                    #1db954 0%,
-                    #1db954 var(--volume-percent, 100%),
+                    var(--chat-color) 0%,
+                    var(--chat-color) var(--volume-percent, 100%),
                     #a0a0a0 var(--volume-percent, 100%),
                     #a0a0a0 100%
                 );
@@ -296,13 +296,79 @@
 
             &:hover:not(:disabled),
             &:focus:not(:disabled) {
-                color: var(--link-color, #1db954);
+                color: var(--link-color);
                 transform: scale(1.05);
             }
 
             .converse-icon {
                 width: 1.125rem;
                 height: 1.125rem;
+            }
+        }
+    }
+
+    // Use MUC color when inside a chatroom
+    .chatroom-body .audio-player {
+        &__play-btn {
+            background-color: var(--muc-color);
+        }
+
+        &__seek,
+        &__volume {
+            &::-webkit-slider-thumb {
+                background: var(--muc-color);
+            }
+
+            &::-moz-range-progress {
+                background: var(--muc-color);
+            }
+
+            &::-moz-range-thumb {
+                background: var(--muc-color);
+            }
+        }
+
+        &__seek {
+            &::-webkit-slider-runnable-track {
+                background: linear-gradient(
+                    to right,
+                    var(--muc-color) 0%,
+                    var(--muc-color) var(--progress-percent, 0%),
+                    #c4c4c4 var(--progress-percent, 0%),
+                    #c4c4c4 100%
+                );
+            }
+
+            &:hover::-webkit-slider-runnable-track {
+                background: linear-gradient(
+                    to right,
+                    var(--muc-color) 0%,
+                    var(--muc-color) var(--progress-percent, 0%),
+                    #a0a0a0 var(--progress-percent, 0%),
+                    #a0a0a0 100%
+                );
+            }
+        }
+
+        &__volume {
+            &::-webkit-slider-runnable-track {
+                background: linear-gradient(
+                    to right,
+                    var(--muc-color) 0%,
+                    var(--muc-color) var(--volume-percent, 100%),
+                    #c4c4c4 var(--volume-percent, 100%),
+                    #c4c4c4 100%
+                );
+            }
+
+            &:hover::-webkit-slider-runnable-track {
+                background: linear-gradient(
+                    to right,
+                    var(--muc-color) 0%,
+                    var(--muc-color) var(--volume-percent, 100%),
+                    #a0a0a0 var(--volume-percent, 100%),
+                    #a0a0a0 100%
+                );
             }
         }
     }

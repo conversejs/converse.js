@@ -39,6 +39,7 @@
 - Updated translations
 - bugfix: Don't show closed MUCs in the rooms list
 - bugfix: dragresize resistance not applied
+- bugfix: Fixed an issue on the Contacts page where sponsor logos were overlapping
 
 ## 11.0.1 (2025-06-09)
 

@@ -138,6 +138,7 @@ Converse implements a wide range of XMPP Extensions (XEPs), making it one of the
 | [XEP-0437](https://xmpp.org/extensions/xep-0437.html) | Room Activity Indicators | |
 | [XEP-0453](https://xmpp.org/extensions/xep-0453.html) | DOAP Usage in XMPP | |
 | [XEP-0454](https://xmpp.org/extensions/xep-0454.html) | OMEMO Media Sharing | |
+| [XEP-0461](https://xmpp.org/extensions/xep-0461.html) | Message Replies | |
 </details>
 
 ## Integration Options
@@ -180,6 +181,9 @@ Thanks to everyone who has supported this project over the years through donatio
   </a>
   <a href="https://blokt.com?utm_source=conversejs" target="_blank" rel="noopener">
     <img alt="Blokt Crypto & Privacy" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/blokt.png" width="200">
+  </a>
+  <a href="https://www.litslink.com?utm_source=conversejs" target="_blank" rel="noopener">
+    <img alt="LITSLINK software development" src="https://raw.githubusercontent.com/conversejs/media/main/logos/litslink-light.svg" width="200">
   </a>
   <a href="https://www.keycdn.com?utm_source=conversejs" target="_blank" rel="noopener">
     <img alt="KeyCDN" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/keycdn.png" width="200">

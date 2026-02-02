@@ -438,6 +438,68 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.querySelector('converse-message-unfurl .chat-image') !== null);
     }));
 
+    it("will not render an unfurl when the message has been retracted",
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+        const nick = 'romeo';
+        const muc_jid = 'lounge@montague.lit';
+        await mock.openAndEnterMUC(_converse, muc_jid, nick);
+        const view = _converse.chatboxviews.get(muc_jid);
+
+        const unfurl_image_src = "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg";
+        const unfurl_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        const msg_id = "eda6c790-b4f3-4c07-b5e2-13fff99e6c04";
+
+        // Receive a message with a URL
+        const message_stanza = stx`
+            <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="${msg_id}">
+                <body>${unfurl_url}</body>
+                <active xmlns="http://jabber.org/protocol/chatstates"/>
+                <origin-id xmlns="urn:xmpp:sid:0" id="${msg_id}"/>
+                <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
+                <markable xmlns="urn:xmpp:chat-markers:0"/>
+            </message>`;
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+
+        const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
+        expect(el.textContent).toBe(unfurl_url);
+
+        // Receive OGP metadata to create an unfurl
+        const metadata_stanza = stx`
+            <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
+                <apply-to xmlns="urn:xmpp:fasten:0" id="${msg_id}">
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:url" content="${unfurl_url}" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:title" content="Rick Astley - Never Gonna Give You Up (Video)" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image" content="${unfurl_image_src}" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley's official music video" />
+                </apply-to>
+            </message>`;
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+
+        // Verify the unfurl is rendered
+        const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
+        expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe(unfurl_image_src);
+
+        // Retract the message
+        const retraction_stanza = stx`
+            <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" to="${_converse.jid}" id="retraction-id-1">
+                <apply-to xmlns="urn:xmpp:fasten:0" id="${msg_id}">
+                    <retract xmlns="urn:xmpp:message-retract:0"/>
+                </apply-to>
+            </message>`;
+        _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
+
+        // Verify the unfurl is no longer rendered
+        await u.waitUntil(() => view.querySelector('converse-message-unfurl') === null);
+
+        // Verify the message shows as retracted
+        await u.waitUntil(() => view.querySelector('.chat-msg--retracted'));
+                debugger;
+        expect(view.querySelector('.chat-msg--retracted .retraction').textContent.trim())
+            .toBe('arzu has removed a message');
+    }));
+
     it("will not render an unfurl that has been removed in a subsequent correction",
             mock.initConverse(['chatBoxesFetched'], { auto_register_muc_nickname: false }, async function (_converse) {
 

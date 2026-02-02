@@ -15,6 +15,8 @@ import {
     registerMessageHandlers,
 } from './utils.js';
 
+const { Strophe } = converse.env;
+
 
 converse.plugins.add('converse-chat', {
     dependencies: ['converse-chatboxes', 'converse-disco'],
@@ -53,5 +55,10 @@ converse.plugins.add('converse-chat', {
 
         api.listen.on('connected', () => enableCarbons());
         api.listen.on('reconnected', () => enableCarbons());
+
+        // Advertise XEP-0461 Message Replies support
+        api.listen.on('addClientFeatures', () => {
+            api.disco.own.features.add(Strophe.NS.REPLY);
+        });
     },
 });

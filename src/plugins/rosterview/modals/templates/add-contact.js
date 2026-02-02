@@ -35,12 +35,13 @@ export default (el) => {
                                 name="jid"
                             ></converse-autocomplete>`
                           : html`<converse-autocomplete
-                                .list="${getJIDsAutoCompleteList()}"
-                                .data="${(text, input) => `${input.slice(0, input.indexOf('@'))}@${text}`}"
+                                .list=${getJIDsAutoCompleteList()}
+                                .data=${(text, input) => `${input.slice(0, input.indexOf('@'))}@${text}`}
                                 position="below"
-                                min_chars="2"
+                                min_chars="1"
                                 filter="startswith"
-                                ?required="${!api.settings.get('xhr_user_search_url')}"
+                                triggers="@"
+                                ?required=${!api.settings.get('xhr_user_search_url')}
                                 value="${el.state.get('jid') || ''}"
                                 placeholder="${i18n_contact_placeholder}"
                                 name="jid"

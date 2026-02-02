@@ -12,6 +12,11 @@ import "shared/components/icons.js";
 import "../styles/audio-player.scss";
 
 /**
+ * Available playback speed options
+ */
+const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+
+/**
  * Format time in seconds to MM:SS format
  * @param {number} seconds
  * @returns {string}
@@ -23,6 +28,15 @@ function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+/**
+ * Format playback speed for display
+ * @param {number} speed
+ * @returns {string}
+ */
+function formatSpeed(speed) {
+    return speed === 1 ? "1x" : `${speed}x`;
 }
 
 /**
@@ -43,6 +57,7 @@ export default class AudioPlayer extends CustomElement {
             is_muted: { state: true },
             is_loading: { state: true },
             has_error: { state: true },
+            playback_speed: { state: true },
         };
     }
 
@@ -58,6 +73,7 @@ export default class AudioPlayer extends CustomElement {
         this.is_muted = false;
         this.is_loading = true;
         this.has_error = false;
+        this.playback_speed = 1;
         /** @type {HTMLAudioElement|null} */
         this.audio = null;
         this.id = u.getUniqueId();
@@ -88,6 +104,7 @@ export default class AudioPlayer extends CustomElement {
         this.audio.addEventListener("error", this.#onError);
         this.audio.addEventListener("canplay", this.#onCanPlay);
         this.audio.addEventListener("waiting", this.#onWaiting);
+        this.audio.addEventListener("ratechange", this.#onRateChange);
     }
 
     #cleanupAudio() {
@@ -102,6 +119,7 @@ export default class AudioPlayer extends CustomElement {
             this.audio.removeEventListener("error", this.#onError);
             this.audio.removeEventListener("canplay", this.#onCanPlay);
             this.audio.removeEventListener("waiting", this.#onWaiting);
+            this.audio.removeEventListener("ratechange", this.#onRateChange);
             this.audio = null;
         }
     }
@@ -140,6 +158,13 @@ export default class AudioPlayer extends CustomElement {
         if (this.audio) {
             this.volume = this.audio.volume;
             this.is_muted = this.audio.muted;
+        }
+        this.requestUpdate();
+    };
+
+    #onRateChange = () => {
+        if (this.audio) {
+            this.playback_speed = this.audio.playbackRate;
         }
         this.requestUpdate();
     };
@@ -252,7 +277,7 @@ export default class AudioPlayer extends CustomElement {
      * Handle volume slider change
      * @param {Event} ev
      */
-    #onVolumeChange2 = (ev) => {
+    #onVolumeInputChange = (ev) => {
         if (!this.audio) return;
         const target = /** @type {HTMLInputElement} */ (ev.target);
         const newVolume = parseFloat(target.value);
@@ -278,6 +303,30 @@ export default class AudioPlayer extends CustomElement {
             ev.preventDefault();
             const newVolume = Math.min(1, this.volume + step);
             this.audio.volume = newVolume;
+        }
+    };
+
+    /**
+     * Cycle through playback speeds
+     * @param {Event} [ev]
+     */
+    cyclePlaybackSpeed(ev) {
+        ev?.preventDefault();
+        if (!this.audio) return;
+
+        const currentIndex = PLAYBACK_SPEEDS.indexOf(this.playback_speed);
+        const nextIndex = (currentIndex + 1) % PLAYBACK_SPEEDS.length;
+        this.audio.playbackRate = PLAYBACK_SPEEDS[nextIndex];
+    }
+
+    /**
+     * Handle keyboard events for speed button
+     * @param {KeyboardEvent} ev
+     */
+    #onSpeedKeyDown = (ev) => {
+        if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            this.cyclePlaybackSpeed();
         }
     };
 
@@ -308,9 +357,11 @@ export default class AudioPlayer extends CustomElement {
         const i18n_error = __("Error loading audio");
         const i18n_current_time = __("Current time");
         const i18n_duration = __("Duration");
+        const i18n_playback_speed = __("Playback speed");
 
         const play_pause_label = this.is_playing ? i18n_pause : i18n_play;
         const mute_label = this.is_muted ? i18n_unmute : i18n_mute;
+        const speed_label = `${i18n_playback_speed}: ${formatSpeed(this.playback_speed)}`;
         const progress_percent = this.duration > 0 ? (this.current_time / this.duration) * 100 : 0;
         const volume_percent = this.volume * 100;
 
@@ -423,7 +474,7 @@ export default class AudioPlayer extends CustomElement {
                                 max="1"
                                 step="0.01"
                                 .value="${this.is_muted ? 0 : this.volume}"
-                                @input=${this.#onVolumeChange2}
+                                @input=${this.#onVolumeInputChange}
                                 @keydown=${this.#onVolumeKeyDown}
                                 aria-valuemin="0"
                                 aria-valuemax="100"
@@ -434,6 +485,18 @@ export default class AudioPlayer extends CustomElement {
                             />
                         </div>
                     </div>
+
+                    <!-- Playback Speed Button -->
+                    <button
+                        type="button"
+                        class="audio-player__btn audio-player__speed-btn"
+                        @click=${this.cyclePlaybackSpeed}
+                        @keydown=${this.#onSpeedKeyDown}
+                        aria-label="${speed_label}"
+                        ?disabled=${this.has_error}
+                    >
+                        ${formatSpeed(this.playback_speed)}
+                    </button>
                 </div>
 
                 <!-- Status announcements for screen readers -->

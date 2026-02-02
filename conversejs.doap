@@ -111,6 +111,15 @@
     </implements>
     <implements>
       <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0147.html"/>
+        <xmpp:status>partial</xmpp:status>
+        <xmpp:version>1.2</xmpp:version>
+        <xmpp:since>12.0.1</xmpp:since>
+        <xmpp:note>Supports XMPP URI scheme with query actions for message and roster management</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0153.html"/>
         <xmpp:since>11.0.0</xmpp:since>
       </xmpp:SupportedXep>

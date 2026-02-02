@@ -6,6 +6,7 @@ import { _converse, api, converse, RosterFilter } from '@converse/headless';
 import RosterContactView from './contactview.js';
 import { clearXMPPProvidersCache, highlightRosterItem } from './utils.js';
 import '../modal/index.js';
+import { clearXMPPProvidersCache, highlightRosterItem, routeToQueryAction } from './utils.js';
 import AddContactModal from './modals/add-contact.js';
 import AcceptContactRequestModal from './modals/accept-contact-request.js';
 import NewChatModal from './modals/new-chat.js';
@@ -47,6 +48,14 @@ converse.plugins.add('converse-rosterview', {
         api.listen.on('chatBoxesInitialized', () => {
             _converse.state.chatboxes.on('destroy', (c) => highlightRosterItem(c.get('jid')));
             _converse.state.chatboxes.on('change:hidden', (c) => highlightRosterItem(c.get('jid')));
+        });
+        
+        // Handle XEP-0147 query actions for roster management
+        api.listen.on('xmppURIAction', ({ jid, query_params, action }) => {
+            // Handle roster-specific actions
+            if (action === 'add-roster') {
+                routeToQueryAction(jid, query_params);
+            }
         });
     },
 });

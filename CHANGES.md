@@ -62,14 +62,15 @@
 - #3023: Fix empty roster group name treated as a valid group instead of "Ungrouped"
 - #3382: Fix audio player accessibility for screen reader users (NVDA, JAWS)
 - #3502: Fix custom emoji shortnames overlapping with built-in emoji shortnames
-- #3815: Removal of bookmark leads to new b
+- #3815: Removal of bookmark leads to new bookmark named `Symbol(lit-nothing)`
+- #3889: MUC join: Use room jids localpart as name in case name or identity not found
+- #3824: Dates and times are not translated
 - #3829: Rich text from LibreOffice Calc is sent as screenshots
 - #3830: The message textarea blocks undo of the pasted text
 - #3839: Fix contacts menu displayed off-screen in fullscreen mode
 - #3863: Shift `unescapeHTML` helper function (used to set `isOnlyEmoji` on a message) to converse-headless
 - #3885: Don't show contact approval alerts when `allow_contact_requests` is false (e.g. anonymous mode)
 - #3886: Don't show OMEMO padlock icon when libsignal is not available (e.g. anonymous mode)
-- #3889: MUC join: Use room jids localpart as name in case name or identity not found
 - #3710: Fix autocomplete adding a trailing space when selecting a group name with the mouse
 - #3916: Add support for XEP-0461 Message Replies, allowing users to reply to specific messages
 - #3939: Don't show invitations to groupchats in which the user is already present
@@ -88,6 +89,7 @@
 - #3769: Various OMEMO fixes
 - #3791: Fetching pubsub node configuration fails
 - #3792: Node reconfiguration attempt uses incorrect field names
+- Adds support for opening XMPP URIs in Converse and for XEP-0147 query actions
 - Fix documentation formatting in security.rst
 - Add approval banner in chats with requesting contacts or unsaved contacts
 - Add mongolian as a language option

@@ -3,6 +3,9 @@ import { Model } from '@converse/skeletor';
 import { initStorage } from '../../utils/storage.js';
 import {parsePresence} from './parsers.js';
 
+/**
+ * @extends {Model<import('./types').PresenceAttrs>}
+ */
 class Presence extends Model {
     get idAttribute() {
         return 'jid';
@@ -10,8 +13,7 @@ class Presence extends Model {
 
     defaults() {
         return {
-            presence: 'offline',
-            show: null,
+            presence: /** @type {import('./types').PresenceTypes | 'offline'} */('offline'),
         };
     }
 

@@ -20,6 +20,7 @@ export default class MessageForm extends CustomElement {
     constructor() {
         super();
         this.model = null;
+        this.shiftDown = false;
     }
 
     async initialize() {
@@ -102,6 +103,10 @@ export default class MessageForm extends CustomElement {
      * @param {ClipboardEvent} ev
      */
     onPaste(ev) {
+        if (this.shiftDown) {
+            return;
+        }
+
         if (ev.clipboardData.files.length !== 0) {
             ev.stopPropagation();
             ev.preventDefault();
@@ -125,6 +130,11 @@ export default class MessageForm extends CustomElement {
      * @param {KeyboardEvent} ev
      */
     onKeyUp(ev) {
+        const { keycodes } = converse;
+        if (ev.key === keycodes.SHIFT) {
+            this.shiftDown = false;
+        }
+
         // Trigger an event, for `<converse-message-limit-indicator/>`
         this.model.trigger('event:keyup', { ev });
     }
@@ -134,6 +144,10 @@ export default class MessageForm extends CustomElement {
      */
     onKeyDown(ev) {
         const { keycodes } = converse;
+        if (ev.key === keycodes.SHIFT) {
+            this.shiftDown = true;
+        }
+
         if (
             ev.ctrlKey ||
             (ev.shiftKey && ev.key === keycodes.ENTER) ||

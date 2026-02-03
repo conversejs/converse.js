@@ -1,9 +1,17 @@
 export default RosterContacts;
-declare class RosterContacts extends Collection {
+/**
+ * @extends {Collection<RosterContact>}
+ */
+declare class RosterContacts extends Collection<RosterContact> {
     constructor();
     model: typeof RosterContact;
     data: any;
-    state: Model;
+    initialize(): void;
+    state: Model<{
+        [x: string]: any;
+        id: string | number;
+        collapsed_groups: string[];
+    }>;
     /**
      * @param {import('../../shared/chatbox').default} model
      */
@@ -94,7 +102,7 @@ declare class RosterContacts extends Collection {
      */
     presenceHandler(presence: Element): true | void;
 }
-import { Collection } from '@converse/skeletor';
 import RosterContact from './contact.js';
+import { Collection } from '@converse/skeletor';
 import { Model } from '@converse/skeletor';
 //# sourceMappingURL=contacts.d.ts.map

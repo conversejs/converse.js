@@ -4,7 +4,7 @@ export default class BlockListModal extends BaseModal {
             type: StringConstructor;
         };
         model: {
-            type: typeof import("@converse/headless").Model;
+            type: typeof import("@converse/skeletor").Model;
         };
     };
     constructor();

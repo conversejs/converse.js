@@ -50,7 +50,7 @@ export function isErrorObject(o) {
 
 /**
  * @param {import('@converse/skeletor').Model} model
- * @returns {boolean}
+ * @returns {import('@converse/skeletor').BrowserStorage}
  */
 export function isPersistableModel(model) {
     return model.browserStorage || model.collection?.browserStorage;

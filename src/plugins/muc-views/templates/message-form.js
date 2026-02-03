@@ -2,6 +2,7 @@ import { __ } from "i18n";
 import { api, u } from "@converse/headless";
 import { html } from "lit";
 import { resetElementHeight } from "plugins/chatview/utils.js";
+import 'shared/chat/reply-preview.js';
 
 /**
  * @param {import('../message-form').default} el
@@ -16,7 +17,9 @@ export default (el) => {
     const show_send_button = api.settings.get("show_send_button");
     const show_spoiler_button = api.settings.get("visible_toolbar_buttons").spoiler;
     const show_toolbar = api.settings.get("show_toolbar");
-    return html` <form class="setNicknameButtonForm hidden">
+    return html`
+        <converse-reply-preview .model=${el.model}></converse-reply-preview>
+        <form class="setNicknameButtonForm hidden">
             <input type="submit" class="btn btn-primary" name="join" value="Join" />
         </form>
         <form class="chat-message-form" @submit="${/** @param {SubmitEvent} ev */ (ev) => el.onFormSubmitted(ev)}">

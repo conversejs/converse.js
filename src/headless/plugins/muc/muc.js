@@ -446,7 +446,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         this.features.listenTo(_converse, 'beforeLogout', () => this.features.browserStorage.flush());
 
         id = `converse.muc-config-${bare_jid}-${this.get('jid')}`;
-        this.config = new Model({ id });
+        this.config = new Model(/** @type {import('./types').MUCConfigAttributes} */({ id }));
         this.config.browserStorage = createStore(id, 'session');
         this.config.listenTo(_converse, 'beforeLogout', () => this.config.browserStorage.flush());
     }
@@ -1146,6 +1146,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         }
         const origin_id = getUniqueId();
         const body = text ? u.shortnamesToUnicode(text) : undefined;
+
+        // Get reply attributes from chatbox model if replying to a message
+        const reply_to_id = this.get('reply_to_id');
+        const reply_to = this.get('reply_to');
+
         attrs = Object.assign(
             {},
             attrs,
@@ -1154,6 +1159,8 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 is_spoiler,
                 origin_id,
                 references,
+                reply_to_id,
+                reply_to,
                 id: origin_id,
                 msgid: origin_id,
                 from: `${this.get('jid')}/${this.get('nick')}`,
@@ -1166,6 +1173,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             },
             await u.getMediaURLsMetadata(text)
         );
+
+        // Clear reply state after capturing it
+        if (reply_to_id) {
+            this.save({ reply_to_id: undefined, reply_to: undefined });
+        }
 
         /**
          * *Hook* which allows plugins to update the attributes of an outgoing
@@ -1276,11 +1288,12 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @returns {Promise}
      */
     async getDiscoInfo() {
-        const identity = await api.disco.getIdentity('conference', 'text', this.get('jid'));
+        const jid = this.get('jid');
+        const identity = await api.disco.getIdentity('conference', 'text', jid);
         if (identity?.get('name')) {
             this.save({ name: identity.get('name') });
         } else {
-            log.error(`No identity or name found for ${this.get('jid')}`);
+            this.save({ name: Strophe.getNodeFromJid(jid) });
         }
         await this.getDiscoInfoFields();
         await this.getDiscoInfoFeatures();

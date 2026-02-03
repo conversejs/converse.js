@@ -17,12 +17,9 @@ import { i18n as i18nStub } from '@converse/headless';
 /**
  * Determines which locale is supported by the user's system as well
  * as by the relevant library (e.g. converse.js or dayjs).
- * @param {string} preferred_locale
- * @param {(locale: string) => boolean} isSupportedByLibrary - Returns a boolean indicating whether
- *   the locale is supported.
  * @returns {string}
  */
-declare function determineLocale(preferred_locale: string, isSupportedByLibrary: (locale: string) => boolean): string;
+declare function determineLocale(): string;
 declare function getLocale(): string;
 declare function initialize(): Promise<void>;
 /**

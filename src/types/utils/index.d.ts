@@ -27,8 +27,8 @@ declare const _default: {
     getLongestSubstring(string: string, candidates: string[]): string;
     isString(s: any): boolean;
     getDefaultStorageType(): import("headless/types/utils/types.js").StorageType;
-    createStore(id: string, type: import("headless/types/utils/types.js").StorageType): any;
-    initStorage(model: import("@converse/headless").Model | import("@converse/headless").Collection, id: string, type?: import("headless/types/utils/types.js").StorageType): void;
+    createStore(id: string, type: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").BrowserStorage;
+    initStorage(model: import("headless/types/utils/types.js").StorageModel, id: string, type?: import("headless/types/utils/types.js").StorageType): void;
     isErrorStanza(stanza: Element): boolean;
     isForbiddenError(stanza: Element): boolean;
     isServiceUnavailableError(stanza: Element): boolean;
@@ -49,7 +49,7 @@ declare const _default: {
     isFunction(val: unknown): boolean;
     isUndefined(x: unknown): boolean;
     isErrorObject(o: unknown): boolean;
-    isPersistableModel(model: import("@converse/headless").Model): boolean;
+    isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").BrowserStorage;
     isValidJID(jid?: string | null): boolean;
     isValidMUCJID(jid: string): boolean;
     isSameBareJID(jid1: string, jid2: string): boolean;
@@ -65,8 +65,8 @@ declare const _default: {
     registerGlobalEventHandlers(_converse: ConversePrivateGlobal): void;
     cleanup(_converse: ConversePrivateGlobal): Promise<void>;
     attemptNonPreboundSession(credentials?: import("headless/types/utils/types.js").Credentials, automatic?: boolean): Promise<void>;
-    savedLoginInfo(jid: string): Promise<import("@converse/headless").Model>;
-    safeSave(model: import("@converse/headless").Model, attributes: any, options: any): void;
+    savedLoginInfo(jid: string): Promise<import("@converse/skeletor").Model>;
+    safeSave(model: import("@converse/skeletor").Model, attributes: any, options: any): void;
     isElement(el: unknown): boolean;
     isEqualNode(actual: Element, expected: Element): boolean;
     isTagEqual(stanza: Element | typeof import("@converse/headless").Builder, name: string): boolean;
@@ -74,6 +74,7 @@ declare const _default: {
     queryChildren(el: HTMLElement, selector: string): ChildNode[];
     siblingIndex(el: Element): number;
     decodeHTMLEntities(str: string): string;
+    unescapeHTML(string: string): string;
     getSelectValues(select: HTMLSelectElement): string[];
     webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
     getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;
@@ -139,8 +140,8 @@ declare const _default: {
         getLongestSubstring(string: string, candidates: string[]): string;
         isString(s: any): boolean;
         getDefaultStorageType(): import("headless/types/utils/types.js").StorageType;
-        createStore(id: string, type: import("headless/types/utils/types.js").StorageType): any;
-        initStorage(model: import("@converse/headless").Model | import("@converse/headless").Collection, id: string, type?: import("headless/types/utils/types.js").StorageType): void;
+        createStore(id: string, type: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").BrowserStorage;
+        initStorage(model: import("headless/types/utils/types.js").StorageModel, id: string, type?: import("headless/types/utils/types.js").StorageType): void;
         isErrorStanza(stanza: Element): boolean;
         isForbiddenError(stanza: Element): boolean;
         isServiceUnavailableError(stanza: Element): boolean;
@@ -161,7 +162,7 @@ declare const _default: {
         isFunction(val: unknown): boolean;
         isUndefined(x: unknown): boolean;
         isErrorObject(o: unknown): boolean;
-        isPersistableModel(model: import("@converse/headless").Model): boolean;
+        isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").BrowserStorage;
         isValidJID(jid?: string | null): boolean;
         isValidMUCJID(jid: string): boolean;
         isSameBareJID(jid1: string, jid2: string): boolean;
@@ -177,8 +178,8 @@ declare const _default: {
         registerGlobalEventHandlers(_converse: ConversePrivateGlobal): void;
         cleanup(_converse: ConversePrivateGlobal): Promise<void>;
         attemptNonPreboundSession(credentials?: import("headless/types/utils/types.js").Credentials, automatic?: boolean): Promise<void>;
-        savedLoginInfo(jid: string): Promise<import("@converse/headless").Model>;
-        safeSave(model: import("@converse/headless").Model, attributes: any, options: any): void;
+        savedLoginInfo(jid: string): Promise<import("@converse/skeletor").Model>;
+        safeSave(model: import("@converse/skeletor").Model, attributes: any, options: any): void;
         isElement(el: unknown): boolean;
         isEqualNode(actual: Element, expected: Element): boolean;
         isTagEqual(stanza: Element | typeof import("@converse/headless").Builder, name: string): boolean;
@@ -186,6 +187,7 @@ declare const _default: {
         queryChildren(el: HTMLElement, selector: string): ChildNode[];
         siblingIndex(el: Element): number;
         decodeHTMLEntities(str: string): string;
+        unescapeHTML(string: string): string;
         getSelectValues(select: HTMLSelectElement): string[];
         webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
         getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;

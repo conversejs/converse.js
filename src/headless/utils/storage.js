@@ -1,4 +1,4 @@
-import Storage from '@converse/skeletor/src/storage.js';
+import { BrowserStorage } from '@converse/skeletor';
 import _converse from '../shared/_converse.js';
 import { settings_api } from '../shared/settings/api.js';
 import { getUnloadEvent } from './session.js';
@@ -27,6 +27,7 @@ function storeUsesIndexedDB(type) {
 /**
  * @param {string} id
  * @param {import('./types').StorageType} type
+ * @returns {BrowserStorage}
  */
 export function createStore(id, type) {
     const name = type || getDefaultStorageType();
@@ -34,11 +35,11 @@ export function createStore(id, type) {
     if (typeof s === 'undefined') {
         throw new TypeError(`createStore: Could not find store for ${id}`);
     }
-    return new Storage(id, s, storeUsesIndexedDB(type));
+    return new BrowserStorage(id, s, storeUsesIndexedDB(type));
 }
 
 /**
- * @param {import('@converse/skeletor').Model|import('@converse/skeletor').Collection} model
+ * @param {import('./types').StorageModel} model
  * @param {string} id
  * @param {import('./types').StorageType} [type]
  */

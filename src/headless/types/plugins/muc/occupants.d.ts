@@ -1,18 +1,24 @@
 export default MUCOccupants;
 export type MemberListItem = any;
-export type Attributes = import("@converse/skeletor/src/types/collection").Attributes;
-export type CollectionOptions = import("@converse/skeletor/src/types/collection").CollectionOptions;
-export type Options = import("@converse/skeletor/src/types/collection").Options;
+export type ModelAttributes = import("@converse/skeletor/dist/skeletor.d").ModelAttributes;
+export type CollectionOptions = import("@converse/skeletor/dist/skeletor.d").CollectionOptions;
+export type Options = import("@converse/skeletor/dist/skeletor.d").Options;
 /**
  * A list of {@link MUCOccupant} instances, representing participants in a MUC.
- * @class
  * @memberOf _converse
+ * @extends {Collection<MUCOccupant>}
  */
-declare class MUCOccupants extends Collection {
+declare class MUCOccupants extends Collection<MUCOccupant> {
     static getAutoFetchedAffiliationLists(): any[];
     constructor(attrs: any, options: any);
     chatroom: any;
     get model(): typeof MUCOccupant;
+    initialize(): void;
+    /**
+     * @param {Model|ModelAttributes} attrs
+     * @param {Options} [options]
+     */
+    create(attrs: Model | ModelAttributes, options?: Options): MUCOccupant | Promise<MUCOccupant>;
     fetchMembers(): Promise<void>;
     /**
      * Try to find an existing occupant based on the provided {@link OccupantData} object.
@@ -22,8 +28,9 @@ declare class MUCOccupants extends Collection {
      * Lookup by occupant_id is done first, then jid, and then nick.
      *
      * @param {import('./types').OccupantData} data
+     * @returns {MUCOccupant}
      */
-    findOccupant(data: import("./types").OccupantData): any;
+    findOccupant(data: import("./types").OccupantData): MUCOccupant;
     /**
      * Get the {@link MUCOccupant} instance which
      * represents the current user.
@@ -32,6 +39,7 @@ declare class MUCOccupants extends Collection {
      */
     getOwnOccupant(): MUCOccupant;
 }
-import { Collection } from '@converse/skeletor';
 import MUCOccupant from './occupant.js';
+import { Collection } from '@converse/skeletor';
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=occupants.d.ts.map

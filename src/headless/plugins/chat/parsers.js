@@ -4,7 +4,6 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import dayjs from 'dayjs';
 import log from "@converse/log";
 import u from '../../utils/index.js';
 import { rejectMessage } from '../../shared/actions.js';
@@ -18,6 +17,7 @@ import {
     getOutOfBandAttributes,
     getReceiptId,
     getReferences,
+    getReplyAttributes,
     getRetractionAttributes,
     getSpoilerAttributes,
     getStanzaIDs,
@@ -29,7 +29,7 @@ import {
     throwErrorIfInvalidForward,
 } from '../../shared/parsers';
 
-const { Strophe, sizzle } = converse.env;
+const { Strophe, dayjs, sizzle } = converse.env;
 
 /**
  * Parses a passed in message stanza and returns an object of attributes.
@@ -138,7 +138,8 @@ export async function parseMessage (stanza) {
         getCorrectionAttributes(stanza, original_stanza),
         getStanzaIDs(stanza, original_stanza),
         getRetractionAttributes(stanza, original_stanza),
-        getEncryptionAttributes(stanza)
+        getEncryptionAttributes(stanza),
+        getReplyAttributes(stanza)
     );
 
     if (attrs.is_archived) {

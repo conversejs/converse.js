@@ -143,7 +143,7 @@ export default {
             }
             if (jids === undefined) {
                 const chats = await api.chatboxes.get();
-                return chats.filter(c => (c.get('type') === PRIVATE_CHAT_TYPE));
+                return chats?.filter(c => (c.get('type') === PRIVATE_CHAT_TYPE)) ?? [];
             } else if (typeof jids === 'string') {
                 return _get(jids);
             }

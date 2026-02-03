@@ -40,7 +40,7 @@ export function getRetractionAttributes(stanza: Element, original_stanza: Elemen
  */
 export function getCorrectionAttributes(stanza: Element, original_stanza: Element): {
     replace_id: string;
-    edited: string;
+    edited: any;
 } | {
     replace_id?: undefined;
     edited?: undefined;
@@ -86,6 +86,12 @@ export function getErrorAttributes(stanza: Element): {
     error_condition?: undefined;
     errors?: undefined;
 };
+/**
+ * Given a message stanza, extract XEP-0461 reply attributes
+ * @param {Element} stanza - The message stanza
+ * @returns {Object} An object containing reply_to_id and reply_to if present
+ */
+export function getReplyAttributes(stanza: Element): any;
 /**
  * Given a message stanza, find and return any XEP-0372 references
  * @param {Element} stanza - The message stanza

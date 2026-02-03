@@ -15,7 +15,7 @@ export namespace QRUtil {
     function getPatternPosition(typeNumber: any): number[];
     function getMask(maskPattern: any, i: any, j: any): boolean;
     function getErrorCorrectPolynomial(errorCorrectLength: any): QRPolynomial;
-    function getLengthInBits(mode: any, type: any): 16 | 8 | 10 | 9 | 11 | 12 | 14 | 13;
+    function getLengthInBits(mode: any, type: any): 8 | 9 | 10 | 11 | 12 | 16 | 14 | 13;
     function getLostPoint(qrCode: any): number;
 }
 import QRPolynomial from "./polynomial";

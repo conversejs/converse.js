@@ -13,7 +13,7 @@ declare class BaseModal extends CustomElement {
      */
     constructor(options: any);
     model: any;
-    state: Model;
+    state: Model<import("@converse/skeletor").ModelAttributes>;
     onKeyDown: (ev: KeyboardEvent) => void;
     initialized: Promise<any> & {
         isResolved: boolean;

@@ -3,7 +3,6 @@
  * @typedef {import('../muc/muc.js').default} MUC
  * @typedef {import('./types').MUCMessageAttributes} MUCMessageAttributes
  */
-import dayjs from 'dayjs';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
@@ -18,6 +17,7 @@ import {
     getOutOfBandAttributes,
     getReceiptId,
     getReferences,
+    getReplyAttributes,
     getRetractionAttributes,
     getSpoilerAttributes,
     getStanzaIDs,
@@ -29,7 +29,7 @@ import {
 } from '../../shared/parsers';
 import { STATUS_CODE_STANZAS } from './constants.js';
 
-const { Strophe, sizzle, u } = converse.env;
+const { Strophe, dayjs, sizzle, u } = converse.env;
 const { NS } = Strophe;
 
 /**
@@ -289,6 +289,7 @@ export async function parseMUCMessage(original_stanza, chatbox) {
             getRetractionAttributes(stanza, original_stanza),
             getModerationAttributes(stanza),
             getEncryptionAttributes(stanza),
+            getReplyAttributes(stanza),
             getStatusCodes(stanza, 'message')
         )
     );

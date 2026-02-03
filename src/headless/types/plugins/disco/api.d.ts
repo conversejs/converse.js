@@ -7,7 +7,7 @@ declare namespace _default {
              * @param { String } xmlns The XML namespace
              * @example _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver')
              */
-            function getFeature(name: string, xmlns: string): Promise<any>;
+            function getFeature(name: string, xmlns: string): Promise<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>>;
         }
         export namespace own {
             namespace identities {
@@ -131,13 +131,7 @@ declare namespace _default {
                 name: string;
             }, options?: {
                 ignore_cache?: boolean;
-            }): false | import("@converse/skeletor").Model | (Promise<any> & {
-                isResolved: boolean;
-                isPending: boolean;
-                isRejected: boolean;
-                resolve: Function;
-                reject: Function;
-            }) | import("@converse/skeletor/src/types/collection.js").Attributes;
+            }): import("./entity").default | Promise<import("./entity").default>;
         }
         export namespace features_1 {
             /**

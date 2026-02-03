@@ -12,7 +12,7 @@
       "src/website.js",
   ],
   "compilerOptions": {
-    "target": "es2022",
+    "target": "es2020",
     "module": "esnext",
 
     "types": [
@@ -20,7 +20,7 @@
     ],
 
     "lib": [
-      "ES2020",
+      "es2023",
       "dom",
       "dom.iterable"
     ],

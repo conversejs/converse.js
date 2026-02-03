@@ -5,7 +5,7 @@
  * @typedef {import('../../plugins/vcard/vcard').default} VCard
  * @typedef {import('../../shared/model-with-contact.js').default} ModelWithContact
  * @typedef {import('../muc/occupant.js').default} MUCOccupant
- * @typedef {import('@converse/skeletor/src/types/helpers.js').Model} Model
+ * @typedef {import('@converse/skeletor').Model} Model
  */
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';

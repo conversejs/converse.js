@@ -1,13 +1,14 @@
 export default ChatBoxes;
-export type ChatBox = import("../../plugins/chat/model.js").default;
-export type MUC = import("../../plugins/muc/muc").default;
-export type Model = import("@converse/skeletor").Model;
-declare class ChatBoxes extends Collection {
+export type ChatBoxBase = import("../../shared/chatbox").default;
+/**
+ * @extends {Collection<ChatBoxBase>}
+ */
+declare class ChatBoxes extends Collection<import("../../shared/chatbox").default> {
     /**
-     * @param {Model[]} models
+     * @param {ChatBoxBase[]} models
      * @param {object} options
      */
-    constructor(models: Model[], options: object);
+    constructor(models: ChatBoxBase[], options: object);
     /**
      * @param {Collection} collection
      */
@@ -18,9 +19,9 @@ declare class ChatBoxes extends Collection {
     onConnected(reconnecting: boolean): void;
     /**
      * @param {import('./types').CreateModelAttributes} attrs
-     * @param {import('@converse/skeletor/src/types/model.js').ModelOptions} options
+     * @param {import('@converse/skeletor/dist/skeletor.d').ModelOptions} options
      */
-    createModel(attrs: import("./types").CreateModelAttributes, options: import("@converse/skeletor/src/types/model.js").ModelOptions): any;
+    createModel(attrs: import("./types").CreateModelAttributes, options: import("@converse/skeletor/dist/skeletor.d").ModelOptions): any;
 }
 import { Collection } from '@converse/skeletor';
 //# sourceMappingURL=chatboxes.d.ts.map

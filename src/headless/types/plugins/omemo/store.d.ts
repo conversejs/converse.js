@@ -1,6 +1,7 @@
 export function generateDeviceID(): Promise<any>;
 export default OMEMOStore;
-declare class OMEMOStore extends Model {
+declare class OMEMOStore extends Model<import("@converse/skeletor").ModelAttributes> {
+    constructor(attributes?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
     /**
      * @typedef {Window & globalThis & {libsignal: any} } WindowWithLibsignal
      */
@@ -70,7 +71,7 @@ declare class OMEMOStore extends Model {
     /**
      * @param {string} identifier
      */
-    removeSession(identifier: string): Promise<false | Awaited<this>>;
+    removeSession(identifier: string): Promise<Awaited<this>>;
     /**
      * @param {string} [identifier='']
      */

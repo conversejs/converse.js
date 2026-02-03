@@ -138,6 +138,7 @@ Converse implements a wide range of XMPP Extensions (XEPs), making it one of the
 | [XEP-0437](https://xmpp.org/extensions/xep-0437.html) | Room Activity Indicators | |
 | [XEP-0453](https://xmpp.org/extensions/xep-0453.html) | DOAP Usage in XMPP | |
 | [XEP-0454](https://xmpp.org/extensions/xep-0454.html) | OMEMO Media Sharing | |
+| [XEP-0461](https://xmpp.org/extensions/xep-0461.html) | Message Replies | |
 </details>
 
 ## Integration Options
@@ -149,7 +150,7 @@ Converse integrates with popular platforms and frameworks:
 |--------|--------|
 | [Openfire](https://www.igniterealtime.org/projects/openfire/) | [inverse](https://www.igniterealtime.org/projects/openfire/plugins.jsp) |
 | [Prosody](https://prosody.im/) | [mod_conversejs](https://modules.prosody.im/mod_conversejs.html) |
-| [Ejabberd](https://ejabberd.im/) | [mod-conversejs](https://docs.ejabberd.im/admin/configuration/modules/#mod-conversejs) |
+| [ejabberd](https://ejabberd.im/) | [mod_conversejs](https://docs.ejabberd.im/admin/configuration/modules/#mod_conversejs) |
 
 ### Web Frameworks & CMS
 | Platform | Integration |
@@ -176,10 +177,13 @@ Thanks to everyone who has supported this project over the years through donatio
 
 <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center;">
   <a href="https://bairesdev.com/sponsoring-open-source-projects/?utm_source=conversejs" target="_blank" rel="noopener">
-    <img alt="BairesDev" src="https://raw.githubusercontent.com/conversejs/media/main/logos/bairesdev-primary.png" width="200">
+    <img alt="BairesDev" src="https://raw.githubusercontent.com/conversejs/media/main/logos/BairesDev_logo-orange.png" width="200">
   </a>
   <a href="https://blokt.com?utm_source=conversejs" target="_blank" rel="noopener">
     <img alt="Blokt Crypto & Privacy" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/blokt.png" width="200">
+  </a>
+  <a href="https://www.litslink.com?utm_source=conversejs" target="_blank" rel="noopener">
+    <img alt="LITSLINK software development" src="https://raw.githubusercontent.com/conversejs/media/main/logos/litslink-light.svg" width="200">
   </a>
   <a href="https://www.keycdn.com?utm_source=conversejs" target="_blank" rel="noopener">
     <img alt="KeyCDN" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/keycdn.png" width="200">

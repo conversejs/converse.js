@@ -2,7 +2,9 @@ import DiscoEntity from './entity.js';
 import log from "@converse/log";
 import { Collection } from "@converse/skeletor";
 
-
+/**
+ * @extends {Collection<DiscoEntity>}
+ */
 class DiscoEntities extends Collection {
 
     constructor () {

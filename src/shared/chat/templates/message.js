@@ -6,6 +6,7 @@ import { getHats } from '../utils.js';
 import { __ } from 'i18n';
 import 'shared/avatar/avatar.js';
 import 'shared/chat/unfurl.js';
+import 'shared/chat/reply-context.js';
 
 const { dayjs } = converse.env;
 
@@ -88,6 +89,8 @@ export default (el) => {
                       </span>`
                     : ''}
 
+                ${el.model.get('reply_to_id') ? html`<converse-reply-context .model=${el.model} .model_with_messages=${el.model_with_messages}></converse-reply-context>` : ''}
+
                 <div
                     class="chat-msg__body chat-msg__body--${el.model.get('message_type')} ${el.model.get('received')
                         ? 'chat-msg__body--received'
@@ -110,11 +113,9 @@ export default (el) => {
                     ></converse-message-actions>
                 </div>
 
-                ${el.model.get('ogp_metadata')?.map((m) => {
-                    if (el.model.get('hide_url_previews') === true) {
-                        return '';
-                    }
-                    return html`<converse-message-unfurl
+                ${!is_retracted ? el.model.get('ogp_metadata')?.map((m) =>
+                    el.model.get('hide_url_previews') === true ? '' :
+                    html`<converse-message-unfurl
                         @animationend="${el.onUnfurlAnimationEnd}"
                         class="${el.model.get('url_preview_transition')}"
                         jid="${el.model_with_messages?.get('jid')}"
@@ -123,8 +124,8 @@ export default (el) => {
                         image="${(m['og:image'] && shouldRenderMediaFromURL(m['og:image'], 'image')) ? m['og:image'] : nothing}"
                         site_name="${m['og:site_name'] || ''}"
                         url="${m['og:url'] || ''}"
-                    ></converse-message-unfurl>`;
-                })}
+                    ></converse-message-unfurl>`
+                ) : ''}
             </div>
         </div>`;
 };

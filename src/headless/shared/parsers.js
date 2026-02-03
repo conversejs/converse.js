@@ -2,18 +2,18 @@
  * @module:headless-shared-parsers
  */
 import sizzle from 'sizzle';
-import _converse from './_converse.js';
-import api from './api/index.js';
-import dayjs from 'dayjs';
-import log from "@converse/log";
 import { Strophe } from 'strophe.js';
+import log from "@converse/log";
 import { decodeHTMLEntities } from '../utils/html.js';
 import { getAttributes } from '../utils/stanza.js';
 import { rejectMessage } from './actions.js';
 import { XFORM_TYPE_MAP,  XFORM_VALIDATE_TYPE_MAP } from './constants.js';
 import * as errors from './errors.js';
+import _converse from './_converse.js';
+import api from './api/index.js';
+import converse from './api/public.js';
 
-
+const { dayjs } = converse.env;
 const { NS } = Strophe;
 
 /**
@@ -295,6 +295,22 @@ export function getErrorAttributes (stanza) {
             error_type: error.getAttribute('type'),
             error_condition: error.firstElementChild.nodeName,
             errors: Array.from(error.children).map((e) => ({ name: e.nodeName, xmlns: e.getAttribute('xmlns') })),
+        };
+    }
+    return {};
+}
+
+/**
+ * Given a message stanza, extract XEP-0461 reply attributes
+ * @param {Element} stanza - The message stanza
+ * @returns {Object} An object containing reply_to_id and reply_to if present
+ */
+export function getReplyAttributes (stanza) {
+    const reply = sizzle(`reply[xmlns="${Strophe.NS.REPLY}"]`, stanza).pop();
+    if (reply) {
+        return {
+            reply_to_id: reply.getAttribute('id'),
+            reply_to: reply.getAttribute('to')
         };
     }
     return {};

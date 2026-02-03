@@ -1,6 +1,9 @@
 import { Collection } from "@converse/skeletor";
 import Resource from "./resource";
 
+/**
+ * @extends {Collection<Resource>}
+ */
 class Resources extends Collection {
 
     constructor () {

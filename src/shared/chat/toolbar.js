@@ -22,6 +22,7 @@ export class ChatToolbar extends CustomElement {
             model: { type: Object },
             show_call_button: { type: Boolean },
             show_emoji_button: { type: Boolean },
+            show_location_button: { type: Boolean },
             show_send_button: { type: Boolean },
             show_spoiler_button: { type: Boolean },
         }
@@ -36,6 +37,7 @@ export class ChatToolbar extends CustomElement {
         this.show_spoiler_button = false;
         this.show_call_button = false;
         this.show_emoji_button = false;
+        this.show_location_button = false;
     }
 
     connectedCallback () {
@@ -81,6 +83,10 @@ export class ChatToolbar extends CustomElement {
 
         if (this.show_spoiler_button) {
             buttons.push(this.getSpoilerButton());
+        }
+
+        if (this.show_location_button) {
+            buttons.push(this.getLocationButton());
         }
 
         const domain = _converse.session.get('domain');
@@ -160,6 +166,90 @@ export class ChatToolbar extends CustomElement {
                 )).then(results => results.reduce((acc, val) => (acc && val), true));
             return html`${until(spoilers_promise.then(() => markup), '')}`;
         }
+    }
+
+    getLocationButton () {
+        const color = this.is_groupchat ? '--muc-color' : '--chat-color';
+        const i18n_send_location = __("Insert current location");
+        return html`
+            <button type="button"
+                    class="btn toggle-location"
+                    title="${i18n_send_location}"
+                    @click=${this.insertLocation}>
+                <converse-icon
+                    color="var(${color})"
+                    class="fa fa-globe"
+                    size="1em"></converse-icon>
+            </button>`;
+    }
+
+    /** @param {MouseEvent} ev */
+    async insertLocation (ev) {
+        ev?.preventDefault?.();
+        ev?.stopPropagation?.();
+
+        if (!navigator.geolocation) {
+            alert(__("Geolocation is not supported by your browser"));
+            return;
+        }
+
+        const i18n_getting_location = __("Getting location...");
+        const button = /** @type {HTMLButtonElement} */ (ev?.currentTarget);
+        if (button) {
+            button.disabled = true;
+            button.title = i18n_getting_location;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                const geoUri = `geo:${latitude.toFixed(6)},${longitude.toFixed(6)}`;
+                
+                // Insert into textarea instead of sending directly
+                const textarea = /** @type {HTMLTextAreaElement} */ (
+                    this.querySelector('textarea.chat-textarea') ||
+                    this.closest('converse-message-form')?.querySelector('textarea.chat-textarea')
+                );
+                if (textarea) {
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    const text = textarea.value;
+                    textarea.value = text.substring(0, start) + geoUri + text.substring(end);
+                    textarea.selectionStart = textarea.selectionEnd = start + geoUri.length;
+                    textarea.focus();
+                    // Trigger input event so the model updates
+                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+                
+                if (button) {
+                    button.disabled = false;
+                    button.title = __("Insert current location");
+                }
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+                let message;
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        message = __("Location permission denied");
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        message = __("Location unavailable");
+                        break;
+                    case error.TIMEOUT:
+                        message = __("Location request timed out");
+                        break;
+                    default:
+                        message = __("Could not get location");
+                }
+                alert(message);
+                if (button) {
+                    button.disabled = false;
+                    button.title = __("Insert current location");
+                }
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
     }
 
     /** @param {MouseEvent} ev */

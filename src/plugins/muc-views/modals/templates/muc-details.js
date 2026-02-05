@@ -66,7 +66,7 @@ export default (model) => {
                 height="72" width="72"></converse-avatar>
 
             <p class="room-info"><strong>${i18n_name}:</strong> ${model.get('name')}</p>
-            <p class="room-info"><strong>${i18n_address}:</strong> <converse-texture text="xmpp:${model.get('jid')}?join"></converse-texture></p>
+            <p class="room-info"><strong>${i18n_address}:</strong> <converse-texture text="xmpp:${model.get('jid')}?join"></converse-texture> <a href="https://xmpp.link/#${model.get('jid')}?join">web</a></p>
             <br/>
             <p class="room-info"><strong>${i18n_desc}:</strong> <converse-texture text="${config.description}" render_styling></converse-texture></p>
             ${ (model.get('subject')) ? subject(model) : '' }

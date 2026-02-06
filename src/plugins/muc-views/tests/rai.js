@@ -92,14 +92,14 @@ describe("XEP-0437 Room Activity Indicators", function () {
             <presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">
                 <priority>0</priority>
                 <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="xLNm7xDIHf5niRYX69ViCnDXhb4=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="3Tday6wfQnY1R8zGPMO3CBYFrik=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`
         );
         expect(sent_stanzas[3]).toEqualStanza(stx`
             <presence to="montague.lit" xmlns="jabber:client">
                 <priority>0</priority>
                 <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="xLNm7xDIHf5niRYX69ViCnDXhb4=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="3Tday6wfQnY1R8zGPMO3CBYFrik=" xmlns="http://jabber.org/protocol/caps"/>
                 <rai xmlns="urn:xmpp:rai:0"/>
             </presence>`
         );
@@ -157,14 +157,14 @@ describe("XEP-0437 Room Activity Indicators", function () {
             <presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">
                 <priority>0</priority>
                 <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="xLNm7xDIHf5niRYX69ViCnDXhb4=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="3Tday6wfQnY1R8zGPMO3CBYFrik=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`
         );
         expect(sent_presences[2]).toEqualStanza(stx`
             <presence to="montague.lit" xmlns="jabber:client">
                 <priority>0</priority>
                 <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="xLNm7xDIHf5niRYX69ViCnDXhb4=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="3Tday6wfQnY1R8zGPMO3CBYFrik=" xmlns="http://jabber.org/protocol/caps"/>
                 <rai xmlns="urn:xmpp:rai:0"/>
             </presence>`
         );
@@ -213,14 +213,14 @@ describe("XEP-0437 Room Activity Indicators", function () {
             <presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">
                 <priority>0</priority>
                 <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="xLNm7xDIHf5niRYX69ViCnDXhb4=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="3Tday6wfQnY1R8zGPMO3CBYFrik=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`
         );
         expect(sent_presences[1]).toEqualStanza(stx`
             <presence to="montague.lit" xmlns="jabber:client">
                 <priority>0</priority>
                 <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="xLNm7xDIHf5niRYX69ViCnDXhb4=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="3Tday6wfQnY1R8zGPMO3CBYFrik=" xmlns="http://jabber.org/protocol/caps"/>
                 <rai xmlns="urn:xmpp:rai:0"/>
             </presence>`
         );

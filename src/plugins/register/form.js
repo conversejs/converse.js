@@ -2,7 +2,7 @@ import { _converse, api, converse, log, constants, u, parsers, errors } from "@c
 import tplFormInput from "templates/form_input.js";
 import tplFormUrl from "templates/form_url.js";
 import tplFormUsername from "templates/form_username.js";
-import tplChooseProvider from "./templates/choose_provider.js";
+import tplChooseProvider, { getXMPPProviders } from "./templates/choose_provider.js";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { setActiveForm } from './utils.js';
@@ -31,6 +31,7 @@ class RegistrationForm extends CustomElement {
             service_url: { type: String },
             alert_message: { type: String },
             alert_type: { type: String },
+            providers: { type: Array },
         }
     }
 
@@ -44,12 +45,15 @@ class RegistrationForm extends CustomElement {
         this.setFeedbackMessage = /** @param {string} m */(m) => this.setMessage(m, 'info');
     }
 
-    initialize () {
+    async initialize () {
         this.reset();
         this.listenTo(_converse, 'connectionInitialized', () => this.registerHooks());
 
         const settings = api.settings.get();
         this.listenTo(settings, 'change:show_connection_url_input', () => this.requestUpdate());
+
+        // Load XMPP providers for autocomplete
+        this.providers = await getXMPPProviders();
 
         const domain = api.settings.get('registration_domain');
         if (domain) {

@@ -13,7 +13,7 @@ import tplRegistrationForm from './registration_form.js';
  */
 async function getXMPPProviders() {
     try {
-        const response = await fetch('https://invent.kde.org/melvo/xmpp-providers/-/raw/master/providers.json');
+        const response = await fetch('https://data.xmpp.net/providers.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

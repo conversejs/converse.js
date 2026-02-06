@@ -7,6 +7,64 @@ import tplSwitchForm from './switch_form.js';
 import tplRegistrationForm from './registration_form.js';
 
 /**
+ * Fetches XMPP providers from XMPP Providers API
+ * Returns providers in categories A and B
+ * @returns {Promise<Array<{domain: string, name: string, category: string}>>}
+ */
+async function getXMPPProviders() {
+    try {
+        const response = await fetch('https://invent.kde.org/melvo/xmpp-providers/-/raw/master/providers.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        // Filter providers by category A or B
+        const providers = [];
+        for (const [domain, info] of Object.entries(data)) {
+            if (info.category === 'A' || info.category === 'B') {
+                providers.push({
+                    domain: domain,
+                    name: info.name || domain,
+                    category: info.category
+                });
+            }
+        }
+        
+        // Sort by category (A first) then by name
+        providers.sort((a, b) => {
+            if (a.category !== b.category) {
+                return a.category.localeCompare(b.category);
+            }
+            return a.name.localeCompare(b.name);
+        });
+        
+        return providers;
+    } catch (error) {
+        console.error('Error fetching XMPP providers:', error);
+        return [];
+    }
+}
+
+/**
+ * Returns a function that provides autocomplete suggestions
+ * @param {Array} providers - List of XMPP providers
+ * @returns {Function}
+ */
+function getAutoCompleteList(providers) {
+    return (query) => {
+        const q = query.toLowerCase();
+        return providers.filter(p => 
+            p.domain.toLowerCase().includes(q) || 
+            p.name.toLowerCase().includes(q)
+        ).map(p => ({
+            label: `${p.name} (${p.domain}) [${p.category}]`,
+            value: p.domain
+        }));
+    };
+}
+
+/**
  * @param {import('../form.js').default} el
  */
 function tplFormRequest(el) {
@@ -37,15 +95,22 @@ function tplDomainInput(el) {
     const i18n_providers = __('Tip: A list of public XMPP providers is available');
     const i18n_providers_link = __('here');
     const href_providers = api.settings.get('providers_link');
+    
+    // Get autocomplete list function
+    const acList = el.providers ? getAutoCompleteList(el.providers) : () => [];
+    
     return html`
-        <input
-            class="form-control"
-            required="required"
-            type="text"
-            name="domain"
+        <converse-autocomplete
+            .getAutoCompleteList="${acList}"
+            .data="${(item) => item}"
+            .validate="${(value) => value ? '' : __('Please enter a domain')}"
             placeholder="${domain_placeholder}"
+            name="domain"
             value="${el.domain}"
-        />
+            filter="startswith"
+            min_chars="1"
+            @autocomplete-select="${(ev) => { el.domain = ev.detail.suggestion.value; }}"
+        ></converse-autocomplete>
         <p class="form-text text-muted">
             ${i18n_providers}
             <a href="${href_providers}" class="url" target="_blank" rel="noopener">${i18n_providers_link}</a>.
@@ -109,3 +174,5 @@ export default (el) => {
         ${el.status === REGISTRATION_FORM_ERROR ? tplSwitchForm() : ''}
     `;
 };
+
+export { getXMPPProviders };

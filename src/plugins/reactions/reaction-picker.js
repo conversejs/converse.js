@@ -1,0 +1,283 @@
+/**
+ * @module converse-reaction-picker
+ * @copyright The Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ * @description
+ * LitElement custom component for the reaction picker UI
+ * Displays popular emojis for quick selection and a dropdown for full emoji picker
+ * 
+ * Features:
+ * - Quick access to popular emojis (👍, ❤️, 😂, 😮)
+ * - Full emoji picker dropdown with search and categories
+ * - Lazy-loads emoji picker for better performance
+ * - Dispatches 'reactionSelected' event when emoji is chosen
+ */
+
+import { CustomElement } from 'shared/components/element.js';
+import { html } from 'lit';
+import { api, u, EmojiPicker } from '@converse/headless';
+import { __ } from 'i18n';
+import 'shared/components/dropdown.js'; // Ensure dropdown styles/scripts are loaded
+import 'shared/chat/emoji-picker.js'; // Ensure emoji picker component is loaded
+import 'shared/chat/styles/emoji.scss'; // Import emoji picker styles
+import './reaction-picker.scss';
+
+/**
+ * Popular emojis shown in the quick picker
+ * These are the most commonly used reactions across messaging platforms
+ */
+const POPULAR_EMOJIS = [
+    ':thumbsup:',  // 👍
+    ':heart:',     // ❤️
+    ':joy:',       // 😂
+    ':open_mouth:' // 😮
+];
+
+/**
+ * ReactionPicker Component
+ * @extends CustomElement
+ * @fires reactionSelected - Dispatched when user selects an emoji
+ */
+export default class ReactionPicker extends CustomElement {
+
+    /**
+     * Define reactive properties for the component
+     * @returns {Object} Property definitions
+     * 
+     * Properties:
+     * - target: The button element that triggered the picker (for positioning)
+     * - model: The message model being reacted to
+     * - emoji_picker_state: State model for the full emoji picker
+     */
+    static get properties () {
+        return {
+            'model': { type: Object },
+            'emoji_picker_state': { type: Object },
+            'allowed_emojis': { type: Array },
+            'dropup': { type: Boolean },
+            'shifted': { type: Boolean },
+            'closing': { type: Boolean }
+        };
+    }
+
+    /**
+     * Initialize component with default values
+     */
+    constructor () {
+        super();
+        this.model = null;
+        this.emoji_picker_state = null;
+        this.picker_id = u.getUniqueId('reaction-picker');
+        this.allowed_emojis = null;
+        this.dropup = false;
+        this.shifted = false;
+        this.closing = false;
+        this.onClickOutside = this.onClickOutside.bind(this);
+    }
+
+    firstUpdated () {
+        // Defer to ensure element is painted
+        requestAnimationFrame(() => {
+            const picker = /** @type {HTMLElement} */ (this.querySelector('.reaction-picker'));
+            if (!picker) return;
+            
+            const hostRect = this.getBoundingClientRect(); // The absolute overlay rect
+            
+            // Threshold for "Last Messages" - If within 150px of bottom, go UP.
+            const threshold = 150; 
+            const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+            
+            let needsUpdate = false;
+
+            // 1. Vertical Calculation: Default to Dropdown, switch to Dropup if near bottom
+            // Check if there is enough space BELOW.
+            // Distance from bottom of host to bottom of screen:
+            const spaceBelow = windowHeight - hostRect.bottom;
+            
+            if (spaceBelow < threshold) {
+                if (!this.dropup) {
+                    this.dropup = true;
+                    needsUpdate = true;
+                }
+            } else {
+                 if (this.dropup) {
+                    this.dropup = false;
+                    needsUpdate = true;
+                }
+            }
+            
+            // 2. Horizontal: Force Right Alignment via JS
+            // This ensures it overrides any inherited 'left' or conflicting styles.
+            picker.style.position = 'absolute';
+            picker.style.right = '0';
+            picker.style.left = 'auto'; // Prevent left anchoring
+            
+            if (this.dropup) {
+                // Ensure dropup specific styles are enforced
+                picker.style.top = 'auto';
+                picker.style.bottom = '100%';
+            } else {
+                picker.style.bottom = 'auto';
+                picker.style.top = '100%'; // Or existing CSS default
+            }
+
+            if (needsUpdate) {
+                this.requestUpdate();
+            }
+        });
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        // Use setTimeout to avoid immediate trigger if event bubbles
+        setTimeout(() => document.addEventListener('click', this.onClickOutside), 0);
+    }
+
+    disconnectedCallback () {
+        super.disconnectedCallback();
+        document.removeEventListener('click', this.onClickOutside);
+    }
+
+    onClickOutside (ev) {
+        const click_target = /** @type {Node} */(ev.target);
+        if (!this.contains(click_target)) {
+            this.close();
+        }
+    }
+
+    close () {
+        if (this.closing) return;
+        this.closing = true;
+        const picker = this.querySelector('.reaction-picker');
+        if (picker) {
+            picker.addEventListener('animationend', () => {
+                this.dispatchEvent(new CustomEvent('closePicker', { bubbles: true, composed: true }));
+            }, { once: true });
+        } else {
+            this.dispatchEvent(new CustomEvent('closePicker', { bubbles: true, composed: true }));
+        }
+    }
+
+
+    /**
+     * Render the reaction picker UI
+     * @returns {Object} Lit HTML template
+     * 
+     * UI Structure:
+     * - Popular emojis row (quick selection)
+     * - Plus button with dropdown (full emoji picker)
+     */
+    render () {
+        const anchor_name = `--reaction-anchor-${this.picker_id}`;
+        const popular_emojis = this.allowed_emojis ? 
+            POPULAR_EMOJIS.filter(sn => this.allowed_emojis.includes(u.shortnamesToEmojis(sn))) : 
+            POPULAR_EMOJIS;
+
+        return html`
+            <div class="reaction-picker popular ${this.dropup ? 'dropup' : ''} ${this.shifted ? 'shifted' : ''} ${this.closing ? 'closing' : ''}">
+                <!-- Popular emojis for quick selection -->
+                ${popular_emojis.map(sn => html`
+                    <button class="reaction-item" @click=${() => this.onEmojiSelected(sn)}>
+                        ${u.shortnamesToEmojis(sn)}
+                    </button>
+                `)}
+                
+                <!-- Full emoji picker dropdown -->
+                <div class="dropdown emoji-picker__dropdown">
+                    <button class="reaction-item more dropdown-toggle" 
+                            type="button" 
+                            id="${this.picker_id}-dropdown" 
+                            style="anchor-name: ${anchor_name}"
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false"
+                            @click=${this.initEmojiPicker}>
+                        <converse-icon class="fas fa-plus" size="1em"></converse-icon>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="${this.picker_id}-dropdown" style="position-anchor: ${anchor_name}">
+                        <li>
+                            <!-- Lazy-loaded emoji picker component -->
+                            ${this.emoji_picker_state ? html`
+                                <converse-emoji-picker
+                                    .state=${this.emoji_picker_state}
+                                    .model=${this.model.collection.chatbox}
+                                    .allowed_emojis=${this.allowed_emojis}
+                                    @emojiSelected=${(ev) => {
+                                        ev.stopPropagation();
+                                        this.onEmojiSelected(ev.detail.value);
+                                    }}
+                                    ?render_emojis=${true}
+                                    current_category="${this.emoji_picker_state.get('current_category') || ''}"
+                                    current_skintone="${this.emoji_picker_state.get('current_skintone') || ''}"
+                                    query="${this.emoji_picker_state.get('query') || ''}"
+                                ></converse-emoji-picker>
+                            ` : ''}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Initialize the full emoji picker (lazy-loaded)
+     * Only loads emoji data when user opens the dropdown
+     * This improves initial performance
+     * 
+     * @async
+     * @returns {Promise<void>}
+     */
+    async initEmojiPicker () {
+        if (!this.emoji_picker_state) {
+            // Initialize emoji data from API
+            await api.emojis.initialize();
+            
+            // Create emoji picker state model
+            const id = u.getUniqueId('emoji-picker');
+            this.emoji_picker_state = new EmojiPicker({ id });
+            
+            // Initialize local storage for picker preferences
+            u.initStorage(this.emoji_picker_state, id);
+            
+            // Fetch emoji data (categories, recent emojis, etc.)
+            await new Promise(resolve => this.emoji_picker_state.fetch({'success': resolve, 'error': resolve}));
+            
+            // Trigger re-render to show the picker
+            this.requestUpdate();
+        }
+    }
+
+    /**
+     * Handle emoji selection
+     * Dispatches custom event and closes the dropdown
+     * 
+     * @param {string} emoji - The selected emoji (can be unicode or shortname)
+     * @fires reactionSelected
+     */
+    onEmojiSelected (emoji) {
+        // Dispatch event for parent component to handle
+        this.dispatchEvent(new CustomEvent('reactionSelected', {
+            detail: { emoji },
+            bubbles: true,   // Allow event to bubble up
+            composed: true   // Cross shadow DOM boundary
+        }));
+        this.close();
+        
+        // Close Bootstrap dropdown programmatically
+        const dropdown = this.querySelector('.dropdown-menu');
+        if (dropdown && dropdown.classList.contains('show')) {
+            const dropdownBtn = /** @type {HTMLElement} */ (this.querySelector('.dropdown-toggle'));
+            if (dropdownBtn) {
+                // Use Bootstrap 5 API to properly hide dropdown
+                const bootstrap = window.bootstrap;
+                if (bootstrap && bootstrap.Dropdown) {
+                    const dropdownInstance = bootstrap.Dropdown.getInstance(dropdownBtn);
+                    if (dropdownInstance) {
+                        dropdownInstance.hide();
+                    }
+                }
+            }
+        }
+    }
+}
+
+api.elements.define('converse-reaction-picker', ReactionPicker);

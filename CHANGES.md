@@ -4,11 +4,11 @@
 
 - #3382: Fix audio player accessibility for screen reader users (NVDA, JAWS)
 - #3815: Removal of boomark leads to new bookmark named `Symbol(lit-nothing)`
+- #3889: MUC join: Use room jids localpart as name in case name or identity not found
 - #3824: Dates and times are not translated 
 - #3829: Rich text from LibreOffice Calc is sent as screenshots
 - #3830: The message textarea blocks undo of the pasted text
 - #3863: Shift `unescapeHTML` helper function (used to set `isOnlyEmoji` on a message) to converse-headless
-- #3889: MUC join: Use room jids localpart as name in case name or identity not found
 - #3916: Add support for XEP-0461 Message Replies, allowing users to reply to specific messages
 - Don't render unfurls for retracted messages.
 
@@ -23,6 +23,7 @@
 - #3769: Various OMEMO fixes
 - #3791: Fetching pubsub node configuration fails
 - #3792: Node reconfiguration attempt uses incorrect field names
+- Adds support for opening XMPP URIs in Converse and for XEP-0147 query actions
 - Fix documentation formatting in security.rst
 - Add approval banner in chats with requesting contacts or unsaved contacts
 - Add mongolian as a language option

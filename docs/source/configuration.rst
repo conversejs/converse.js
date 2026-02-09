@@ -1840,6 +1840,26 @@ registration_domain
 Specify a domain name for which the registration form will be fetched automatically,
 without the user having to enter any XMPP server domain name.
 
+xmpp_providers_url
+------------------
+
+* Default: ``'https://data.xmpp.net/providers/v2/providers-B.json'``
+
+The URL from which to fetch the curated list of XMPP providers shown on the
+registration form. The list is sourced from the
+`XMPP Providers <https://invent.kde.org/melvo/xmpp-providers>`_ project and
+displays providers grouped by category (A and B) with details such as compliance
+score, server locations, and service properties.
+
+Set to an empty string or ``false`` to disable the provider list and fall back
+to the manual domain input.
+
+.. code-block:: javascript
+
+    converse.initialize({
+        xmpp_providers_url: 'https://data.xmpp.net/providers/v2/providers-B.json'
+    });
+
 render_media
 ------------
 

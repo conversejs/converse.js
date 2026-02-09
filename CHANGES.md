@@ -2,6 +2,7 @@
 
 ## Next release
 
+- #2740: Add autocomplete of possible XMPP servers when registering a new account
 - #3382: Fix audio player accessibility for screen reader users (NVDA, JAWS)
 - #3815: Removal of boomark leads to new bookmark named `Symbol(lit-nothing)`
 - #3824: Dates and times are not translated 

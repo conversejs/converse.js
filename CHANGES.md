@@ -2,6 +2,8 @@
 
 ## Next release
 
+- #2740: Add autocomplete of possible XMPP servers when registering a new account
+- #2929: Add XMPP providers autocomplete when adding contacts (new `xmpp_providers_url` setting)
 - #3382: Fix audio player accessibility for screen reader users (NVDA, JAWS)
 - #3815: Removal of boomark leads to new bookmark named `Symbol(lit-nothing)`
 - #3824: Dates and times are not translated 

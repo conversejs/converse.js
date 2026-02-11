@@ -53,6 +53,48 @@ describe("The Registration Form", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               discover_connection_methods: false,
+              allow_registration: true,
+              xmpp_providers_url: '' },
+            async function (_converse) {
+
+        const { api } = _converse;
+
+        const toggle = await u.waitUntil(() => document.querySelector(".toggle-controlbox"));
+        toggle.click();
+
+        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
+        await u.waitUntil(() => u.isVisible(cbview));
+
+        cbview.querySelector('.toggle-register-login').click();
+
+        const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+        spyOn(registerview, 'onProviderChosen').and.callThrough();
+        spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
+
+        // Check the form layout
+        const form = cbview.querySelector('#converse-register');
+        expect(form.querySelectorAll('input').length).toEqual(2);
+        expect(form.querySelectorAll('input')[0].getAttribute('name')).toEqual('domain');
+        expect(sizzle('input:last', form).pop().getAttribute('type')).toEqual('submit');
+        // Check that the input[type=domain] input is required
+        const submit_button = form.querySelector('input[type=submit]');
+        submit_button.click();
+        expect(registerview.onProviderChosen).not.toHaveBeenCalled();
+
+        // Check that the form is accepted if input[type=domain] has a value
+        form.querySelector('input[name=domain]').value = 'conversejs.org';
+        submit_button.click();
+        expect(registerview.onProviderChosen).toHaveBeenCalled();
+        expect(registerview.fetchRegistrationForm).toHaveBeenCalled();
+
+        api.connection.destroy();
+    }));
+
+    it("shows a provider list when xmpp_providers_url is set",
+        mock.initConverse(
+            ['chatBoxesInitialized'],
+            { auto_login: false,
+              discover_connection_methods: false,
               allow_registration: true },
             async function (_converse) {
 
@@ -69,9 +111,10 @@ describe("The Registration Form", function () {
         const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
         spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
 
-        // Check the form layout
+        // Check the form layout - should have no domain input
         const form = cbview.querySelector('#converse-register');
         expect(form).toBeDefined();
+        expect(form.querySelector('input[name=domain]')).toBeNull();
 
         // Select a provider via the provider list
         registerview.onProviderSelected('conversejs.org');
@@ -86,7 +129,8 @@ describe("The Registration Form", function () {
                 auto_login: false,
                 view_mode: 'fullscreen',
                 discover_connection_methods: false,
-                allow_registration: true
+                allow_registration: true,
+                xmpp_providers_url: ''
             },
             async function (_converse) {
 
@@ -95,12 +139,15 @@ describe("The Registration Form", function () {
 
         const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
         spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
+        spyOn(registerview, 'onProviderChosen').and.callThrough();
         spyOn(registerview, 'getRegistrationFields').and.callThrough();
         spyOn(registerview, 'renderRegistrationForm').and.callThrough();
 
         expect(registerview._registering).toBeFalsy();
         expect(_converse.api.connection.connected()).toBeFalsy();
-        registerview.onProviderSelected('conversejs.org');
+        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+        registerview.querySelector('input[type=submit]').click();
+        expect(registerview.onProviderChosen).toHaveBeenCalled();
         expect(registerview._registering).toBeTruthy();
 
         await u.waitUntil(() => registerview.fetchRegistrationForm.calls.count());
@@ -137,7 +184,8 @@ describe("The Registration Form", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         await mock.toggleControlBox();
@@ -147,13 +195,16 @@ describe("The Registration Form", function () {
 
         const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
         spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
+        spyOn(registerview, 'onProviderChosen').and.callThrough();
         spyOn(registerview, 'getRegistrationFields').and.callThrough();
         spyOn(registerview, 'onRegistrationFields').and.callThrough();
         spyOn(registerview, 'renderRegistrationForm').and.callThrough();
 
         expect(registerview._registering).toBeFalsy();
         expect(_converse.api.connection.connected()).toBeFalsy();
-        registerview.onProviderSelected('conversejs.org');
+        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+        registerview.querySelector('input[type=submit]').click();
+        expect(registerview.onProviderChosen).toHaveBeenCalled();
         expect(registerview._registering).toBeTruthy();
         await u.waitUntil(() => registerview.fetchRegistrationForm.calls.count());
 
@@ -190,7 +241,8 @@ describe("The Registration Form", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
@@ -209,7 +261,8 @@ describe("The Registration Form", function () {
         spyOn(registerview, 'onRegistrationFields').and.callThrough();
         spyOn(registerview, 'renderRegistrationForm').and.callThrough();
 
-        registerview.onProviderSelected('conversejs.org');
+        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+        registerview.querySelector('input[type=submit]').click();
 
         let stanza = new Strophe.Builder("stream:features", {
                     'xmlns:stream': "http://etherx.jabber.org/streams",
@@ -252,7 +305,8 @@ describe("The Registration Form", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
@@ -269,7 +323,8 @@ describe("The Registration Form", function () {
         spyOn(registerview, 'onRegistrationFields').and.callThrough();
         spyOn(registerview, 'renderRegistrationForm').and.callThrough();
 
-        registerview.onProviderSelected('conversejs.org');
+        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+        registerview.querySelector('input[type=submit]').click();
 
         let stanza = new Strophe.Builder("stream:features", {
                     'xmlns:stream': "http://etherx.jabber.org/streams",
@@ -331,7 +386,8 @@ describe("The Registration Form", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
@@ -346,7 +402,8 @@ describe("The Registration Form", function () {
         login_form.click();
 
         const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
-        registerview.onProviderSelected('conversejs.org');
+        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+        registerview.querySelector('input[type=submit]').click();
 
         let stanza = new Strophe.Builder("stream:features", {
                     'xmlns:stream': "http://etherx.jabber.org/streams",
@@ -396,7 +453,8 @@ describe("The Registration Form", function () {
             { auto_login: false,
               view_mode: 'fullscreen',
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
@@ -410,7 +468,8 @@ describe("The Registration Form", function () {
         cbview.querySelector('.toggle-register-login').click();
         const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
 
-        registerview.onProviderSelected('conversejs.org');
+        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+        registerview.querySelector('input[type=submit]').click();
 
         let stanza = new Strophe.Builder("stream:features", {
                     'xmlns:stream': "http://etherx.jabber.org/streams",
@@ -443,8 +502,8 @@ describe("The Registration Form", function () {
         expect(button.value).toBe("Choose a different provider");
         button.click();
 
-        await u.waitUntil(() => registerview.querySelector('.xmpp-providers-list') || registerview.querySelector('#converse-register'));
-        expect(registerview.querySelector('#converse-register')).toBeDefined();
+        await u.waitUntil(() => registerview.querySelector('input[name="domain"]'));
+        expect(registerview.querySelectorAll('input[required]').length).toBe(1);
 
         // Hide the controlbox so that we can see whether the test passed or failed
         u.addClass('hidden', _converse.chatboxviews.get('controlbox'));
@@ -457,7 +516,8 @@ describe("The Registration Form", function () {
             { auto_login: false,
               view_mode: 'fullscreen',
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
@@ -471,7 +531,8 @@ describe("The Registration Form", function () {
         cbview.querySelector('.toggle-register-login').click();
         const view = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
 
-        view.onProviderSelected('conversejs.org');
+        view.querySelector('input[name=domain]').value = 'conversejs.org';
+        view.querySelector('input[type=submit]').click();
 
         let stanza = new Strophe.Builder("stream:features", {
                     'xmlns:stream': "http://etherx.jabber.org/streams",
@@ -541,7 +602,8 @@ describe("The Registration Form", function () {
             { auto_login: false,
               view_mode: 'fullscreen',
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         await mock.toggleControlBox();
@@ -554,7 +616,8 @@ describe("The Registration Form", function () {
 
         expect(registerview._registering).toBeFalsy();
         expect(_converse.api.connection.connected()).toBeFalsy();
-        registerview.onProviderSelected('conversejs.org');
+        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+        registerview.querySelector('input[type=submit]').click();
         expect(registerview._registering).toBeTruthy();
         await u.waitUntil(() => registerview.fetchRegistrationForm.calls.count());
 

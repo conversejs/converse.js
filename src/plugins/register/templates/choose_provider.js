@@ -54,39 +54,39 @@ function hasKeys(obj) {
 
 /**
  * Renders the expandable detail panel for a provider.
- * @param {import('../utils.js').XMPPProvider} provider
+ * @param {import('../types.ts').XMPPProvider} provider
  * @returns {import('lit').TemplateResult}
  */
 function tplProviderDetails(provider) {
-    const isFree = provider.freeOfCharge;
-    const isCompany = provider.organization === 'company' || provider.organization === 'commercial person';
-    const professionalHosting = provider.professionalHosting;
-    const hasPasswordReset = hasKeys(provider.passwordReset);
-    const hasLegalNotice = hasKeys(provider.legalNotice);
+    const is_free = provider.freeOfCharge;
+    const is_company = provider.organization === 'company' || provider.organization === 'commercial person';
+    const professional_hosting = provider.professionalHosting;
+    const has_password_reset = hasKeys(provider.passwordReset);
+    const has_legal_notice = hasKeys(provider.legalNotice);
     const since = provider.since ? formatSinceDate(provider.since) : '';
-    const archiveTime = provider.maximumMessageArchiveManagementStorageTime;
-    const uploadSize = provider.maximumHttpFileUploadFileSize;
-    const uploadTime = provider.maximumHttpFileUploadStorageTime;
+    const archive_time = provider.maximumMessageArchiveManagementStorageTime;
+    const upload_size = provider.maximumHttpFileUploadFileSize;
+    const upload_time = provider.maximumHttpFileUploadStorageTime;
 
     return html`
         <div class="provider-details">
             <div class="provider-details__item">
                 <span class="provider-details__label">${__('Free')}:</span>
-                <span class="provider-details__value">${isFree ? __('Yes') : __('No')}</span>
+                <span class="provider-details__value">${is_free ? __('Yes') : __('No')}</span>
             </div>
             <div class="provider-details__item">
                 <span class="provider-details__label">${__('Company')}:</span>
-                <span class="provider-details__value">${isCompany ? __('Yes') : __('No')}</span>
+                <span class="provider-details__value">${is_company ? __('Yes') : __('No')}</span>
             </div>
             <div class="provider-details__item">
                 <span class="provider-details__label">${__('Professional hosted')}:</span>
-                <span class="provider-details__value">${professionalHosting ? __('Yes') : __('No')}</span>
+                <span class="provider-details__value">${professional_hosting ? __('Yes') : __('No')}</span>
             </div>
             <div class="provider-details__item">
                 <span class="provider-details__label">${__('Password reset')}:</span>
-                <span class="provider-details__value">${hasPasswordReset ? __('Yes') : __('No')}</span>
+                <span class="provider-details__value">${has_password_reset ? __('Yes') : __('No')}</span>
             </div>
-            ${hasLegalNotice ? html`
+            ${has_legal_notice ? html`
                 <div class="provider-details__item">
                     <span class="provider-details__label">${__('Legal notice')}:</span>
                     <span class="provider-details__value">${__('Yes')}</span>
@@ -98,22 +98,22 @@ function tplProviderDetails(provider) {
                     <span class="provider-details__value">${since}</span>
                 </div>
             ` : ''}
-            ${archiveTime !== undefined && archiveTime !== null ? html`
+            ${archive_time !== undefined && archive_time !== null ? html`
                 <div class="provider-details__item">
                     <span class="provider-details__label">${__('Message archive storage time')}:</span>
-                    <span class="provider-details__value">${archiveTime > 0 ? __('%1$s days', archiveTime) : '-'}</span>
+                    <span class="provider-details__value">${archive_time > 0 ? __('%1$s days', archive_time) : '-'}</span>
                 </div>
             ` : ''}
-            ${uploadSize !== undefined && uploadSize !== null ? html`
+            ${upload_size !== undefined && upload_size !== null ? html`
                 <div class="provider-details__item">
                     <span class="provider-details__label">${__('File upload size limit')}:</span>
-                    <span class="provider-details__value">${uploadSize > 0 ? `${uploadSize} MB` : '-'}</span>
+                    <span class="provider-details__value">${upload_size > 0 ? `${upload_size} MB` : '-'}</span>
                 </div>
             ` : ''}
-            ${uploadTime !== undefined && uploadTime !== null ? html`
+            ${upload_time !== undefined && upload_time !== null ? html`
                 <div class="provider-details__item">
                     <span class="provider-details__label">${__('File upload storage time')}:</span>
-                    <span class="provider-details__value">${uploadTime > 0 ? __('%1$s days', uploadTime) : '-'}</span>
+                    <span class="provider-details__value">${upload_time > 0 ? __('%1$s days', upload_time) : '-'}</span>
                 </div>
             ` : ''}
         </div>
@@ -122,7 +122,7 @@ function tplProviderDetails(provider) {
 
 /**
  * Renders a single provider row in the provider list.
- * @param {import('../utils.js').XMPPProvider} provider
+ * @param {import('../types.ts').XMPPProvider} provider
  * @param {import('../form.js').default} el
  * @returns {import('lit').TemplateResult}
  */
@@ -150,11 +150,20 @@ function tplProviderRow(provider, el) {
                     ? html`<span class="provider-row__compliance ${compliance === 100 ? 'compliance-full' : ''}"
                           >${compliance}%</span>`
                     : ''}
-                <button type="button" class="provider-row__register-btn"
-                        @click=${(ev) => { ev.stopPropagation(); el.onProviderSelected(provider.jid); }}>
-                    <converse-icon class="fa fa-user-plus" size="0.85em"></converse-icon>
-                    ${__('Register')}
-                </button>
+                ${provider.category === 'B' && hasKeys(provider.registrationWebPage)
+                    ? html`<a class="provider-row__register-btn"
+                              href="${Object.values(provider.registrationWebPage)[0]}"
+                              target="_blank" rel="noopener"
+                              @click=${(ev) => ev.stopPropagation()}>
+                        <converse-icon class="fa fa-user-plus" size="0.85em"></converse-icon>
+                        ${__('Register')}
+                    </a>`
+                    : html`<button type="button" class="provider-row__register-btn"
+                            @click=${(ev) => { ev.stopPropagation(); el.onProviderSelected(provider.jid); }}>
+                        <converse-icon class="fa fa-user-plus" size="0.85em"></converse-icon>
+                        ${__('Register')}
+                    </button>`
+                }
             </div>
             ${isExpanded ? tplProviderDetails(provider) : ''}
         </div>
@@ -165,7 +174,7 @@ function tplProviderRow(provider, el) {
  * Renders a category section with its providers.
  * @param {string} category
  * @param {string} description
- * @param {import('../utils.js').XMPPProvider[]} providers
+ * @param {import('../types.ts').XMPPProvider[]} providers
  * @param {import('../form.js').default} el
  * @returns {import('lit').TemplateResult|string}
  */
@@ -207,13 +216,13 @@ function tplProviderList(el) {
         <div class="xmpp-providers-list">
             ${tplCategorySection(
                 'A',
-                __('Providers in this category have the best properties, allow you to register via an app and are free of charge.'),
+                __('With these providers you can register directly inside this app.'),
                 catA,
                 el
             )}
             ${tplCategorySection(
                 'B',
-                __('Providers in this category have the best properties but may only allow you to register via a web page.'),
+                __('For these providers, you\'ll need to register externally via a web page.'),
                 catB,
                 el
             )}
@@ -226,11 +235,9 @@ function tplProviderList(el) {
  */
 function tplChooseProvider(el) {
     const default_domain = api.settings.get('registration_domain');
+    const xmpp_providers_url = api.settings.get('xmpp_providers_url');
     const i18n_create_account = __('Create your account');
-    const i18n_choose_provider = __('Choose an XMPP provider to register with:');
-    const has_providers = el.xmpp_providers?.length > 0;
     const href_providers = api.settings.get('providers_link');
-    const i18n_browse_all = __('Browse all providers');
     const i18n_existing_account = __('Already have a chat account?');
     const i18n_login = __('Go back to login');
 
@@ -242,6 +249,45 @@ function tplChooseProvider(el) {
             </form>
         `;
     }
+
+    // If xmpp_providers_url is not set, show the legacy domain input form
+    if (!xmpp_providers_url) {
+        const i18n_providers = __('Tip: A list of public XMPP providers is available');
+        const i18n_providers_link = __('here');
+        const i18n_register = __('Fetch registration form');
+        const domain_placeholder = api.settings.get('domain_placeholder');
+        return html`
+            <form id="converse-register" class="converse-form" @submit=${(ev) => el.onFormSubmission(ev)}>
+                <legend class="col-form-label">${i18n_create_account}</legend>
+                <div class="form-group">
+                    <label for="reg-domain">${__('Please enter the XMPP provider to register with:')}</label>
+                    <input class="form-control" required="required" type="text" name="domain"
+                           placeholder="${domain_placeholder}">
+                    <p class="form-text text-muted">${i18n_providers}
+                        <a href="${href_providers}" class="url" target="_blank" rel="noopener">${i18n_providers_link}</a>.
+                    </p>
+                </div>
+                ${api.settings.get('show_connection_url_input')
+                    ? html`
+                        <div class="form-group">
+                            <label for="reg-connection-url">${__('Connection URL')}</label>
+                            <input class="form-control" id="reg-connection-url" type="text" name="connection-url"
+                                   placeholder="${__('e.g. https://example.org/http-bind')}">
+                        </div>`
+                    : ''}
+                <input class="btn btn-primary" type="submit" value="${i18n_register}">
+                <div class="switch-form">
+                    <p class="mb-1">${i18n_existing_account}</p>
+                    <a class="login-here toggle-register-login" href="#converse/login">${i18n_login}</a>
+                </div>
+            </form>
+        `;
+    }
+
+    // Show the categorized provider list
+    const i18n_choose_provider = __('Choose an XMPP provider to register with:');
+    const has_providers = el.xmpp_providers?.length > 0;
+    const i18n_browse_all = __('Browse all providers');
 
     return html`
         <div id="converse-register" class="converse-form">

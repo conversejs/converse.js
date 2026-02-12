@@ -1,5 +1,6 @@
 import { html } from 'lit';
 import { api } from '@converse/headless';
+import { isEmpty } from '@converse/headless/utils/object.js';
 import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import tplSwitchForm from './switch_form.js';
@@ -44,15 +45,6 @@ function formatSinceDate(dateStr) {
 }
 
 /**
- * Helper: check if an object has any keys (non-empty).
- * @param {Object|undefined|null} obj
- * @returns {boolean}
- */
-function hasKeys(obj) {
-    return obj !== null && obj !== undefined && typeof obj === 'object' && Object.keys(obj).length > 0;
-}
-
-/**
  * Renders the expandable detail panel for a provider.
  * @param {import('../types.ts').XMPPProvider} provider
  * @returns {import('lit').TemplateResult}
@@ -61,8 +53,8 @@ function tplProviderDetails(provider) {
     const is_free = provider.freeOfCharge;
     const is_company = provider.organization === 'company' || provider.organization === 'commercial person';
     const professional_hosting = provider.professionalHosting;
-    const has_password_reset = hasKeys(provider.passwordReset);
-    const has_legal_notice = hasKeys(provider.legalNotice);
+    const has_password_reset = !isEmpty(provider.passwordReset);
+    const has_legal_notice = !isEmpty(provider.legalNotice);
     const since = provider.since ? formatSinceDate(provider.since) : '';
     const archive_time = provider.maximumMessageArchiveManagementStorageTime;
     const upload_size = provider.maximumHttpFileUploadFileSize;
@@ -121,6 +113,19 @@ function tplProviderDetails(provider) {
 }
 
 /**
+ * Looks up the best translated URL from a locale-keyed object.
+ * Uses the i18n setting, falls back to 'en', then to the first available value.
+ * @param {{ [key: string]: string }|undefined|null} url_map
+ * @returns {string}
+ */
+function getLocalizedURL (url_map) {
+    if (isEmpty(url_map)) return '';
+    const locale = api.settings.get('i18n');
+    const lang = locale ? locale.split('-')[0].toLowerCase() : 'en';
+    return url_map[lang] || url_map['en'] || Object.values(url_map)[0] || '';
+}
+
+/**
  * Renders a single provider row in the provider list.
  * @param {import('../types.ts').XMPPProvider} provider
  * @param {import('../form.js').default} el
@@ -150,11 +155,10 @@ function tplProviderRow(provider, el) {
                     ? html`<span class="provider-row__compliance ${compliance === 100 ? 'compliance-full' : ''}"
                           >${compliance}%</span>`
                     : ''}
-                ${provider.category === 'B' && hasKeys(provider.registrationWebPage)
+                ${provider.category === 'B' && !isEmpty(provider.registrationWebPage)
                     ? html`<a class="provider-row__register-btn"
-                              href="${Object.values(provider.registrationWebPage)[0]}"
-                              target="_blank" rel="noopener"
-                              @click=${(ev) => ev.stopPropagation()}>
+                              href="${getLocalizedURL(provider.registrationWebPage)}"
+                              target="_blank" rel="noopener">
                         <converse-icon class="fa fa-user-plus" size="0.85em"></converse-icon>
                         ${__('Register')}
                     </a>`
@@ -264,7 +268,8 @@ function tplChooseProvider(el) {
                     <input class="form-control" required="required" type="text" name="domain"
                            placeholder="${domain_placeholder}">
                     <p class="form-text text-muted">${i18n_providers}
-                        <a href="${href_providers}" class="url" target="_blank" rel="noopener">${i18n_providers_link}</a>.
+                        <a href="${href_providers}" class="url"
+                            target="_blank" rel="noopener">${i18n_providers_link}</a>.
                     </p>
                 </div>
                 ${api.settings.get('show_connection_url_input')

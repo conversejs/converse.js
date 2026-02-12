@@ -18,9 +18,7 @@ export function routeToForm (event) {
     }
 }
 
-/** @type {import('./types.ts').XMPPProvider[]} */
-let xmpp_providers_list = [];
-let providers_fetched = false;
+/** @type {Promise<import('./types.ts').XMPPProvider[]>|null} */
 let providers_fetch_promise = null;
 
 /**
@@ -35,18 +33,17 @@ async function fetchProviderData (url) {
         }
         const data = await response.json();
         if (Array.isArray(data)) {
-            xmpp_providers_list = data
+            const providers = data
                 .map(item => typeof item === 'string' ? { jid: item, category: '' } : item)
                 .filter(item => item.jid);
+            log.debug(`Fetched ${providers.length} XMPP providers`);
+            return providers;
         }
-        providers_fetched = true;
-        log.debug(`Fetched ${xmpp_providers_list.length} XMPP providers`);
+        return [];
     } catch (err) {
         log.warn(`Failed to fetch XMPP providers from ${url}: ${err.message}`);
-        xmpp_providers_list = [];
+        return [];
     }
-    providers_fetch_promise = null;
-    return xmpp_providers_list;
 }
 
 /**
@@ -55,7 +52,6 @@ async function fetchProviderData (url) {
  * @returns {Promise<import('./types.ts').XMPPProvider[]>} - Array of provider objects
  */
 export async function fetchXMPPProviders () {
-    if (providers_fetched) return xmpp_providers_list;
     if (providers_fetch_promise) return providers_fetch_promise;
 
     const url = api.settings.get('xmpp_providers_url');

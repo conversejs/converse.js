@@ -1,6 +1,5 @@
 import { html } from 'lit';
-import { api } from '@converse/headless';
-import { isEmpty } from '@converse/headless/utils/object.js';
+import { api, u } from '@converse/headless';
 import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import tplSwitchForm from './switch_form.js';
@@ -53,8 +52,8 @@ function tplProviderDetails(provider) {
     const is_free = provider.freeOfCharge;
     const is_company = provider.organization === 'company' || provider.organization === 'commercial person';
     const professional_hosting = provider.professionalHosting;
-    const has_password_reset = !isEmpty(provider.passwordReset);
-    const has_legal_notice = !isEmpty(provider.legalNotice);
+    const has_password_reset = !u.isEmpty(provider.passwordReset);
+    const has_legal_notice = !u.isEmpty(provider.legalNotice);
     const since = provider.since ? formatSinceDate(provider.since) : '';
     const archive_time = provider.maximumMessageArchiveManagementStorageTime;
     const upload_size = provider.maximumHttpFileUploadFileSize;
@@ -119,7 +118,7 @@ function tplProviderDetails(provider) {
  * @returns {string}
  */
 function getLocalizedURL (url_map) {
-    if (isEmpty(url_map)) return '';
+    if (u.isEmpty(url_map)) return '';
     const locale = api.settings.get('i18n');
     const lang = locale ? locale.split('-')[0].toLowerCase() : 'en';
     return url_map[lang] || url_map['en'] || Object.values(url_map)[0] || '';
@@ -155,7 +154,7 @@ function tplProviderRow(provider, el) {
                     ? html`<span class="provider-row__compliance ${compliance === 100 ? 'compliance-full' : ''}"
                           >${compliance}%</span>`
                     : ''}
-                ${provider.category === 'B' && !isEmpty(provider.registrationWebPage)
+                ${provider.category === 'B' && !u.isEmpty(provider.registrationWebPage)
                     ? html`<a class="provider-row__register-btn"
                               href="${getLocalizedURL(provider.registrationWebPage)}"
                               target="_blank" rel="noopener">

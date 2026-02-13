@@ -52,7 +52,8 @@ converse.plugins.add('converse-chatview', {
                 'call': false,
                 'clear': true,
                 'emoji': true,
-                'spoiler': false
+                'spoiler': false,
+                'voice_message': true
             }
         });
 

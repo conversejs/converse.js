@@ -1,0 +1,383 @@
+/**
+ * Estilos de accesibilidad para Converse.js
+ * Mejoras visuales para usuarios con necesidades de accesibilidad
+ */
+
+/* Clase solo para lectores de pantalla */
+.sr-only,
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+}
+
+/* Skip links - Enlaces de salto para navegación rápida */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--primary-color, #0066cc);
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    z-index: 10000;
+    border-radius: 0 0 4px 0;
+    font-weight: bold;
+    
+    &:focus {
+        top: 0;
+        outline: 3px solid var(--focus-outline-color, #ffbf47);
+        outline-offset: 2px;
+    }
+}
+
+/* Mejoras de enfoque visible */
+*:focus-visible,
+*:focus {
+    outline: 2px solid var(--focus-outline-color, #0066cc);
+    outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid var(--focus-outline-color, #0066cc);
+    outline-offset: 2px;
+}
+
+/* Indicador de enfoque para mensajes */
+.chat-msg:focus-visible {
+    outline: 3px solid var(--focus-outline-color, #0066cc);
+    outline-offset: -3px;
+    background-color: var(--focus-background-color, rgba(0, 102, 204, 0.1));
+}
+
+/* Mejoras de contraste para enlaces */
+a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    
+    &:hover,
+    &:focus {
+        text-decoration-thickness: 2px;
+    }
+}
+
+/* Botones más accesibles */
+button,
+.btn {
+    min-height: 44px;
+    min-width: 44px;
+    position: relative;
+    
+    &:focus-visible::after {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border: 3px solid var(--focus-outline-color, #0066cc);
+        border-radius: inherit;
+        pointer-events: none;
+    }
+}
+
+/* Atajos de teclado visibles */
+kbd,
+.shortcut-key {
+    display: inline-block;
+    padding: 3px 8px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text-color, #333);
+    background-color: var(--kbd-background, #f4f4f4);
+    border: 1px solid var(--kbd-border, #ccc);
+    border-radius: 4px;
+    box-shadow: 0 1px 0 var(--kbd-shadow, rgba(0, 0, 0, 0.2));
+    white-space: nowrap;
+}
+
+/* Modo de alto contraste */
+body.converse-high-contrast {
+    --text-color: #000;
+    --background-color: #fff;
+    --border-color: #000;
+    --focus-outline-color: #000;
+    --focus-background-color: #ff0;
+    --link-color: #00f;
+    --link-visited-color: #800080;
+    
+    /* Aumentar contraste en todos los elementos */
+    * {
+        border-color: var(--border-color) !important;
+    }
+    
+    /* Enlaces más visibles */
+    a {
+        color: var(--link-color) !important;
+        text-decoration: underline !important;
+        text-decoration-thickness: 2px !important;
+        
+        &:visited {
+            color: var(--link-visited-color) !important;
+        }
+        
+        &:hover,
+        &:focus {
+            background-color: var(--focus-background-color) !important;
+            color: #000 !important;
+        }
+    }
+    
+    /* Botones con mejor contraste */
+    button,
+    .btn {
+        background-color: #fff !important;
+        color: #000 !important;
+        border: 2px solid #000 !important;
+        
+        &:hover,
+        &:focus {
+            background-color: #ff0 !important;
+            color: #000 !important;
+        }
+        
+        &:disabled {
+            opacity: 0.5;
+        }
+    }
+    
+    /* Inputs con borde fuerte */
+    input,
+    textarea,
+    select {
+        background-color: #fff !important;
+        color: #000 !important;
+        border: 2px solid #000 !important;
+        
+        &:focus {
+            background-color: #ffc !important;
+            outline: 3px solid #000 !important;
+        }
+    }
+    
+    /* Mensajes más legibles */
+    .chat-msg {
+        border: 1px solid #000 !important;
+        background-color: #fff !important;
+        
+        &.mentioned {
+            background-color: #ff0 !important;
+            border-color: #000 !important;
+            border-width: 2px !important;
+        }
+    }
+    
+    /* Iconos visibles */
+    svg,
+    .converse-icon {
+        filter: contrast(1.5);
+    }
+}
+
+/* Animaciones reducidas para usuarios que lo prefieran */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Mejoras para usuarios con daltonismo */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --focus-outline-color: #4d9fff;
+    }
+}
+
+/* Estilos para el modal de atajos de teclado */
+.shortcuts-section {
+    margin-bottom: 1.5rem;
+    
+    h5 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-color, #0066cc);
+    }
+}
+
+.shortcut-description {
+    font-size: 0.95rem;
+    color: var(--text-color, #333);
+}
+
+.shortcut-key {
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+/* Indicador de mensajes no leídos más visible */
+.unread-msgs {
+    position: relative;
+    font-weight: 700;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        left: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 8px;
+        height: 8px;
+        background-color: var(--notification-color, #e91e63);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translateY(-50%) scale(1.1);
+    }
+}
+
+/* Tooltips más accesibles */
+[title],
+[aria-label] {
+    position: relative;
+    
+    &:hover::after,
+    &:focus::after {
+        content: attr(title) attr(aria-label);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 4px 8px;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: white;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        border-radius: 4px;
+        z-index: 1000;
+        pointer-events: none;
+        margin-bottom: 4px;
+    }
+}
+
+/* Mejoras para tablas de datos */
+table {
+    caption {
+        font-weight: 600;
+        text-align: left;
+        padding: 0.5rem 0;
+        caption-side: top;
+    }
+    
+    th {
+        font-weight: 600;
+        text-align: left;
+    }
+}
+
+/* Estados de carga accesibles */
+.loading-spinner {
+    &::after {
+        content: attr(aria-label) attr(aria-valuetext);
+        position: absolute;
+        left: -10000px;
+    }
+}
+
+/* Región de anuncios para lectores de pantalla */
+#converse-live-region {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Focus trap visual indicator */
+.focus-trapped {
+    box-shadow: inset 0 0 0 3px var(--focus-outline-color, #0066cc);
+}
+
+/* Estados de error más visibles */
+.error,
+.has-error,
+[aria-invalid="true"] {
+    border-color: var(--error-color, #d32f2f) !important;
+    background-color: var(--error-background, #fdecea) !important;
+    
+    &:focus {
+        outline-color: var(--error-color, #d32f2f) !important;
+    }
+}
+
+.error-message {
+    color: var(--error-color, #d32f2f);
+    font-weight: 600;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    &::before {
+        content: '⚠';
+        font-size: 1.2em;
+    }
+}
+
+/* Estados de éxito */
+.success,
+[aria-live="polite"].success {
+    border-color: var(--success-color, #388e3c) !important;
+    background-color: var(--success-background, #e8f5e9) !important;
+}
+
+/* Mejoras de contraste para badges */
+.badge {
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+    border: 1px solid currentColor;
+}
+
+/* Lista de contactos más accesible */
+.roster-contact {
+    &:focus-within {
+        background-color: var(--focus-background-color, rgba(0, 102, 204, 0.1));
+        outline: 2px solid var(--focus-outline-color, #0066cc);
+        outline-offset: -2px;
+    }
+}

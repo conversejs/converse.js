@@ -1,0 +1,262 @@
+/**
+ * Estilos para el grabador de audio
+ */
+
+.audio-recorder {
+    padding: 1rem;
+    background: var(--chat-background-color, #f8f9fa);
+    border-radius: 8px;
+    border: 2px solid var(--border-color, #dee2e6);
+    margin: 0.5rem 0;
+}
+
+/* Estado idle */
+.recorder-idle {
+    text-align: center;
+    
+    .btn-record {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 24px;
+        transition: all 0.3s ease;
+        
+        &:hover, &:focus {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        &:focus-visible {
+            outline: 3px solid var(--focus-outline-color, #0066cc);
+            outline-offset: 2px;
+        }
+    }
+    
+    .recorder-hint {
+        margin-top: 0.75rem;
+        font-size: 0.9rem;
+        color: var(--text-muted, #6c757d);
+    }
+}
+
+/* Estado solicitando permiso */
+.recorder-requesting {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    
+    .recorder-message {
+        margin: 0;
+        color: var(--text-color, #333);
+    }
+}
+
+/* Estado grabando/pausado */
+.recorder-active,
+.recorder-paused {
+    .recorder-status {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-color, #333);
+    }
+    
+    .recording-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: var(--danger-color, #dc3545);
+        
+        &.pulsing {
+            animation: pulse 1.5s infinite;
+        }
+    }
+    
+    .paused-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+        background-color: var(--warning-color, #ffc107);
+    }
+    
+    .recorder-controls {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-bottom: 1rem;
+        
+        button {
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            
+            &:hover:not(:disabled) {
+                transform: scale(1.1);
+            }
+            
+            &:focus-visible {
+                outline: 3px solid var(--focus-outline-color, #0066cc);
+                outline-offset: 2px;
+            }
+        }
+        
+        .btn-stop {
+            background-color: var(--danger-color, #dc3545);
+            border-color: var(--danger-color, #dc3545);
+            
+            &:hover:not(:disabled) {
+                background-color: darken(#dc3545, 10%);
+            }
+        }
+    }
+    
+    .recorder-waveform {
+        margin-top: 1rem;
+    }
+}
+
+/* Forma de onda */
+.waveform-container {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 50px;
+    padding: 0 1rem;
+}
+
+.waveform-bar {
+    flex: 1;
+    background: linear-gradient(
+        to top,
+        var(--primary-color, #0066cc),
+        var(--primary-color-light, #4d9fff)
+    );
+    border-radius: 2px;
+    transition: height 0.1s ease;
+    animation: wave 1.2s ease-in-out infinite;
+    
+    @for $i from 1 through 20 {
+        &:nth-child(#{$i}) {
+            animation-delay: #{$i * 0.05}s;
+        }
+    }
+}
+
+@keyframes wave {
+    0%, 100% {
+        transform: scaleY(0.5);
+    }
+    50% {
+        transform: scaleY(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.2);
+    }
+}
+
+/* Estado procesando */
+.recorder-processing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    
+    .recorder-message {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--success-color, #28a745);
+    }
+}
+
+/* Estado de error */
+.recorder-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    text-align: center;
+    
+    .error-message {
+        color: var(--danger-color, #dc3545);
+        font-weight: 500;
+        margin: 0;
+    }
+}
+
+/* Accesibilidad */
+.audio-recorder {
+    &:focus-within {
+        border-color: var(--primary-color, #0066cc);
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+}
+
+/* Modo de alto contraste */
+body.converse-high-contrast {
+    .audio-recorder {
+        border-width: 3px;
+        border-color: #000;
+    }
+    
+    .recording-indicator {
+        border: 2px solid #000;
+    }
+    
+    .waveform-bar {
+        border: 1px solid #000;
+    }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .audio-recorder {
+        padding: 0.75rem;
+    }
+    
+    .recorder-controls button {
+        min-width: 40px;
+        min-height: 40px;
+    }
+    
+    .waveform-container {
+        height: 40px;
+        padding: 0 0.5rem;
+    }
+}
+
+/* Animaciones reducidas */
+@media (prefers-reduced-motion: reduce) {
+    .waveform-bar,
+    .recording-indicator.pulsing {
+        animation: none;
+    }
+    
+    button {
+        transition: none !important;
+        
+        &:hover {
+            transform: none !important;
+        }
+    }
+}

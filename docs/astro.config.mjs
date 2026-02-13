@@ -10,6 +10,9 @@ export default defineConfig({
             logo: {
                 src: './src/assets/logo.svg',
             },
+            components: {
+                Footer: './src/components/Footer.astro',
+            },
             social: [
                 { icon: 'github', label: 'GitHub', href: 'https://github.com/conversejs/converse.js' },
             ],

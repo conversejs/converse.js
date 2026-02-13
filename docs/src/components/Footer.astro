@@ -1,0 +1,76 @@
+---
+import DefaultFooter from '@astrojs/starlight/components/Footer.astro';
+---
+
+<DefaultFooter {...Astro.props} />
+
+<section class="sponsors">
+    <p class="sponsors-heading">A big thank you to our sponsors</p>
+    <div class="sponsors-logos">
+        <a href="https://bairesdev.com/sponsoring-open-source-projects/?utm_source=conversejs" target="_blank" rel="noopener">
+            <img src="https://conversejs.org/media/logos/BairesDev_logo-orange.png" alt="BairesDev" />
+        </a>
+        <a href="https://blokt.com?utm_source=conversejs" target="_blank" rel="noopener">
+            <img src="https://conversejs.org/media/logos/blokt.png" alt="Blokt Crypto & Privacy" />
+        </a>
+        <a href="https://www.litslink.com?utm_source=conversejs" target="_blank" rel="noopener">
+            <img src="https://conversejs.org/media/logos/litslink-light.svg" alt="LITSLINK software development" />
+        </a>
+        <a href="https://www.keycdn.com?utm_source=conversejs" target="_blank" rel="noopener">
+            <img src="https://conversejs.org/logo/keycdn.png" alt="KeyCDN" />
+        </a>
+        <a href="https://weblate.org?utm_source=conversejs" target="_blank" rel="noopener">
+            <img src="https://conversejs.org/logo/weblate-button.svg" alt="Weblate" />
+        </a>
+    </div>
+    <p class="sponsors-cta">
+        If you'd like to sponsor this project, please visit
+        <a href="https://github.com/sponsors/jcbrand" target="_blank" rel="noopener">Github</a>,
+        <a href="https://www.patreon.com/jcbrand" target="_blank" rel="noopener">Patreon</a>,
+        <a href="https://liberapay.com/jcbrand" target="_blank" rel="noopener">Liberapay</a> or
+        <a href="https://opkode.com/contact.html" target="_blank" rel="noopener">contact us</a>.
+    </p>
+</section>
+
+<style>
+    .sponsors {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--sl-color-gray-5);
+        text-align: center;
+    }
+
+    .sponsors-heading {
+        font-size: var(--sl-text-base);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .sponsors-logos {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .sponsors-logos a {
+        display: inline-block;
+    }
+
+    .sponsors-logos img {
+        max-width: 10em;
+        max-height: 2.5em;
+        object-fit: contain;
+    }
+
+    .sponsors-cta {
+        font-size: var(--sl-text-sm);
+        color: var(--sl-color-gray-3);
+    }
+
+    .sponsors-cta a {
+        color: var(--sl-color-text-accent);
+    }
+</style>

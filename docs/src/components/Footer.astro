@@ -4,23 +4,57 @@ import DefaultFooter from '@astrojs/starlight/components/Footer.astro';
 
 <DefaultFooter {...Astro.props} />
 
+<script>
+    // Dynamically update sponsor logos based on theme
+    document.addEventListener('DOMContentLoaded', () => {
+        const updateSponsorLogos = () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            const logos = document.querySelectorAll('.sponsor-logo');
+            
+            logos.forEach(img => {
+                const lightSrc = img.getAttribute('data-light-src');
+                const darkSrc = img.getAttribute('data-dark-src');
+                
+                img.src = isDarkMode ? darkSrc : lightSrc;
+            });
+        };
+
+        // Initial update
+        updateSponsorLogos();
+
+        // Watch for theme changes
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    updateSponsorLogos();
+                }
+            });
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    });
+</script>
+
 <section class="sponsors">
     <p class="sponsors-heading">A big thank you to our sponsors</p>
     <div class="sponsors-logos">
         <a href="https://bairesdev.com/sponsoring-open-source-projects/?utm_source=conversejs" target="_blank" rel="noopener">
-            <img src="https://conversejs.org/media/logos/BairesDev_logo-orange.png" alt="BairesDev" />
+            <img class="sponsor-logo" data-light-src="https://conversejs.org/media/logos/BairesDev_logo-orange.png" data-dark-src="https://conversejs.org/media/logos/bairesdev-dark.png" alt="BairesDev" />
         </a>
         <a href="https://blokt.com?utm_source=conversejs" target="_blank" rel="noopener">
-            <img src="https://conversejs.org/media/logos/blokt.png" alt="Blokt Crypto & Privacy" />
+            <img class="sponsor-logo" data-light-src="https://conversejs.org/media/logos/blokt.png" data-dark-src="https://conversejs.org/media/logos/blokt-invert.png" alt="Blokt Crypto & Privacy" />
         </a>
         <a href="https://www.litslink.com?utm_source=conversejs" target="_blank" rel="noopener">
-            <img src="https://conversejs.org/media/logos/litslink-light.svg" alt="LITSLINK software development" />
+            <img class="sponsor-logo" data-light-src="https://conversejs.org/media/logos/litslink-light.svg" data-dark-src="https://conversejs.org/media/logos/litslink-dark.svg" alt="LITSLINK software development" />
         </a>
         <a href="https://www.keycdn.com?utm_source=conversejs" target="_blank" rel="noopener">
-            <img src="https://conversejs.org/logo/keycdn.png" alt="KeyCDN" />
+            <img class="sponsor-logo" data-light-src="https://conversejs.org/logo/keycdn.png" data-dark-src="https://conversejs.org/logo/keycdn.png" alt="KeyCDN" />
         </a>
         <a href="https://weblate.org?utm_source=conversejs" target="_blank" rel="noopener">
-            <img src="https://conversejs.org/logo/weblate-button.svg" alt="Weblate" />
+            <img class="sponsor-logo" data-light-src="https://conversejs.org/logo/weblate-button.svg" data-dark-src="https://conversejs.org/logo/weblate-button.svg" alt="Weblate" />
         </a>
     </div>
     <p class="sponsors-cta">

@@ -31,7 +31,7 @@
     "COPYRIGHT",
     "dist/",
     "docs/**/*.md",
-    "docs/**/*.rst",
+    "docs/**/*.mdx",
     "sass/**/*.scss",
     "src/**/*.html",
     "src/**/*.js",
@@ -69,7 +69,9 @@
     "types:check": "tsc --noEmit",
     "watch": "concurrently \"npm run watch:headless\" \"npm run watch:main\"",
     "watch:headless": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.headless.js --mode=development",
-    "watch:main": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.build.cjs.js --mode=development"
+    "watch:main": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.build.cjs.js --mode=development",
+    "docs:dev": "cd docs && npm run dev",
+    "docs:build": "cd docs && npm run build"
   },
   "repository": {
     "type": "git",

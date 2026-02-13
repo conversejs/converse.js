@@ -13,13 +13,11 @@ RJS					?= ./node_modules/.bin/r.js
 NPX					?= ./node_modules/.bin/npx
 SASS				?= ./node_modules/.bin/sass
 SED					?= sed
-SPHINXBUILD	 		?= ./bin/sphinx-build
-SPHINXOPTS			=
+
 XGETTEXT			= xgettext
 
 
 # Internal variables.
-ALLSPHINXOPTS	= -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 VERSION_FORMAT	= [0-9]+\.[0-9]+\.[0-9]+
 
 .PHONY: all
@@ -89,9 +87,9 @@ version:
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' package.json
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' src/headless/package.json
 	$(SED) -ri 's/--package-version=$(VERSION_FORMAT)/--package-version=$(VERSION)/' Makefile
-	$(SED) -i -e "/version =/s/=.*/= '$(VERSION)'/" -e "/release =/s/=.*/= '$(VERSION)'/" docs/source/conf.py
+
 	$(SED) -i "s/[Uu]nreleased/`date +%Y-%m-%d`/" CHANGES.md
-	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' docs/source/quickstart.rst
+	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' docs/src/content/docs/quickstart.md
 	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' *.html
 	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' demo/*.html
 	make pot
@@ -247,25 +245,11 @@ test:
 ########################################################################
 ## Documentation
 
-./bin/activate:
-	python3 -m venv .
-
-.PHONY: docsdev
-docsdev: ./bin/activate requirements.txt
-	./bin/python -m ensurepip --upgrade
-	./bin/python -m pip install --upgrade setuptools
-	./bin/pip3 install -r requirements.txt
-
 .PHONY: html
 html: doc
 
-.PHONY: sphinx
-sphinx: node_modules docsdev
-	rm -rf $(BUILDDIR)/html
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
-
 .PHONY: doc
 doc:
-	make sphinx
+	cd docs && npm install && npx astro build
 	@echo
-	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+	@echo "Build finished. The HTML pages are in docs/dist/."

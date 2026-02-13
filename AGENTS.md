@@ -476,15 +476,17 @@ Read: RELEASE.md
 
 ## Documentation
 
-- **Source**: `docs/source/` (ReStructuredText)
-- **Build**: `make doc` (requires Python + Sphinx)
-- **Output**: `docs/html/`
-- **Online**: https://conversejs.org/docs/html/
+- **Source**: `docs/src/content/docs/` (Markdown)
+- **Framework**: Starlight (Astro)
+- **Build**: `make doc` or `npm run docs:build`
+- **Dev server**: `npm run docs:dev`
+- **Output**: `docs/dist/`
+- **Online**: https://conversejs.org/docs/
 
 Generate docs:
 
 ```bash
-make docsdev  # Install Python dependencies
-make doc      # Build HTML documentation
+make doc           # Build HTML documentation
+npm run docs:dev   # Start dev server with live reload
+npm run docs:build # Build for production
 ```
-

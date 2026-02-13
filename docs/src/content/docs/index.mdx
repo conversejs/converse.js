@@ -1,0 +1,42 @@
+---
+title: Converse Documentation
+description: Official documentation for Converse, a free and open-source XMPP chat client.
+template: splash
+hero:
+  tagline: A free and open-source XMPP chat client written in JavaScript
+  actions:
+    - text: Quickstart
+      link: /quickstart/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/conversejs/converse.js
+      variant: minimal
+      icon: github
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Introduction
+
+Converse is a free and open-source [XMPP](https://xmpp.org/about-xmpp/) chat client written in JavaScript which can be tightly integrated into any website.
+
+The benefit of using Converse as opposed to relying on a SaaS (software-as-a-service) solution, is that your users can have a much more customized, streamlined and integrated webchat experience and that you have control over the data. The latter being a requirement for many sites dealing with sensitive information.
+
+You'll likely want users who are authenticated on your website to also automatically be authenticated on the XMPP server. In order to do this, you'll have to add some server-side code for your website.
+
+The [Setup and Integration](/setup/#an-xmpp-server) and [Session Management](/session/) sections provide more information on how to achieve this.
+
+<CardGrid>
+  <Card title="Quickstart" icon="rocket">
+    Get Converse up and running quickly. [Read more →](/quickstart/)
+  </Card>
+  <Card title="Features" icon="list-format">
+    Explore all available features including file sharing, OMEMO encryption, and more. [Read more →](/features/)
+  </Card>
+  <Card title="Configuration" icon="setting">
+    All available configuration settings for customizing Converse. [Read more →](/configuration/)
+  </Card>
+  <Card title="Plugin Development" icon="puzzle">
+    Learn how to extend Converse with custom plugins. [Read more →](/development/plugin-development/)
+  </Card>
+</CardGrid>

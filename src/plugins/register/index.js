@@ -43,6 +43,7 @@ converse.plugins.add('converse-register', {
             allow_registration: true,
             domain_placeholder: __(' e.g. conversejs.org'), // Placeholder text shown in the domain input on the registration form
             providers_link: 'https://providers.xmpp.net/', // Link to XMPP providers shown on registration page
+            providers_data_url: 'https://data.xmpp.net/providers/v2/providers-A-and-B.json',
             registration_domain: ''
         });
 

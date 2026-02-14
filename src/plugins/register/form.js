@@ -39,17 +39,20 @@ class RegistrationForm extends CustomElement {
         this.urls = [];
         this.fields = {};
         this.domain = null;
+        this.provider_domains = [];
         this.alert_type = 'info';
         this.setErrorMessage = /** @param {string} m */(m) => this.setMessage(m, 'danger');
         this.setFeedbackMessage = /** @param {string} m */(m) => this.setMessage(m, 'info');
     }
 
-    initialize () {
+    async initialize () {
         this.reset();
         this.listenTo(_converse, 'connectionInitialized', () => this.registerHooks());
 
         const settings = api.settings.get();
         this.listenTo(settings, 'change:show_connection_url_input', () => this.requestUpdate());
+
+        await this.fetchProviderDomains();
 
         const domain = api.settings.get('registration_domain');
         if (domain) {
@@ -70,6 +73,59 @@ class RegistrationForm extends CustomElement {
     setMessage(message, type) {
         this.alert_type = type;
         this.alert_message = message;
+    }
+
+    /**
+     * @param {unknown} payload
+     */
+    #extractProviderDomains (payload) {
+        const domains = new Set();
+        const addDomain = (value) => {
+            if (typeof value !== 'string') {
+                return;
+            }
+            const domain = value.trim().toLowerCase();
+            if (domain && !domain.includes(' ')) {
+                domains.add(domain);
+            }
+        };
+
+        const collect = (node) => {
+            if (Array.isArray(node)) {
+                node.forEach(collect);
+                return;
+            }
+            if (!node || typeof node !== 'object') {
+                return;
+            }
+            addDomain(node.domain);
+            addDomain(node.jid);
+            collect(node.providers);
+            collect(node.items);
+            collect(node.entries);
+        };
+
+        collect(payload?.A ?? payload?.a ?? payload);
+        collect(payload?.B ?? payload?.b ?? []);
+        return Array.from(domains).sort();
+    }
+
+    async fetchProviderDomains () {
+        const url = api.settings.get('providers_data_url');
+        if (!url) {
+            return;
+        }
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                return;
+            }
+            const payload = await response.json();
+            this.provider_domains = this.#extractProviderDomains(payload);
+        } catch {
+            log.warn('Could not fetch XMPP provider domain list');
+        }
     }
 
     /**

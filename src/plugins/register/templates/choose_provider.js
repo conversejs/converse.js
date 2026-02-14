@@ -5,6 +5,7 @@ import { __ } from 'i18n';
 import { tplConnectionURLInput } from '../../controlbox/templates/loginform.js';
 import tplSwitchForm from './switch_form.js';
 import tplRegistrationForm from './registration_form.js';
+import 'shared/autocomplete/index.js';
 
 /**
  * @param {import('../form.js').default} el
@@ -37,15 +38,27 @@ function tplDomainInput(el) {
     const i18n_providers = __('Tip: A list of public XMPP providers is available');
     const i18n_providers_link = __('here');
     const href_providers = api.settings.get('providers_link');
+    const has_provider_suggestions = (el.provider_domains?.length ?? 0) > 0;
     return html`
-        <input
-            class="form-control"
-            required="required"
-            type="text"
-            name="domain"
-            placeholder="${domain_placeholder}"
-            value="${el.domain}"
-        />
+        ${has_provider_suggestions
+            ? html`<converse-autocomplete
+                  .list=${el.provider_domains}
+                  position="below"
+                  min_chars="1"
+                  filter="startswith"
+                  ?required=${true}
+                  value="${el.domain || ''}"
+                  placeholder="${domain_placeholder}"
+                  name="domain"
+              ></converse-autocomplete>`
+            : html`<input
+                  class="form-control"
+                  required="required"
+                  type="text"
+                  name="domain"
+                  placeholder="${domain_placeholder}"
+                  value="${el.domain || ''}"
+              />`}
         <p class="form-text text-muted">
             ${i18n_providers}
             <a href="${href_providers}" class="url" target="_blank" rel="noopener">${i18n_providers_link}</a>.

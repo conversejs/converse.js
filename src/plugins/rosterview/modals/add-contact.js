@@ -11,11 +11,13 @@ export default class AddContactModal extends BaseModal {
     constructor() {
         super();
         this.contact = null;
+        this.provider_domains = [];
     }
 
     initialize() {
         super.initialize();
         this.listenTo(this.contact, 'change', () => this.requestUpdate());
+        this.fetchProviderDomains().finally(() => this.requestUpdate());
         this.requestUpdate();
         this.addEventListener(
             'shown.bs.modal',
@@ -26,6 +28,69 @@ export default class AddContactModal extends BaseModal {
 
     renderModal() {
         return tplAddContactModal(this);
+    }
+
+    /**
+     * @param {unknown} payload
+     */
+    #extractProviderDomains(payload) {
+        const domains = new Set();
+        const addDomain = (value) => {
+            if (typeof value !== 'string') {
+                return;
+            }
+            const domain = value.trim().toLowerCase();
+            if (domain && !domain.includes(' ')) {
+                domains.add(domain);
+            }
+        };
+
+        const collect = (node) => {
+            if (Array.isArray(node)) {
+                node.forEach(collect);
+                return;
+            }
+            if (!node || typeof node !== 'object') {
+                return;
+            }
+            addDomain(node.domain);
+            addDomain(node.jid);
+            collect(node.providers);
+            collect(node.items);
+            collect(node.entries);
+        };
+
+        collect(payload?.A ?? payload?.a ?? payload);
+        collect(payload?.B ?? payload?.b ?? []);
+        return Array.from(domains).sort();
+    }
+
+    async fetchProviderDomains() {
+        const url = api.settings.get('providers_data_url');
+        if (!url) {
+            return;
+        }
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                return;
+            }
+            const payload = await response.json();
+            this.provider_domains = this.#extractProviderDomains(payload);
+        } catch {
+            log.warn('Could not fetch XMPP provider domain list');
+        }
+    }
+
+    getJIDDomainAutoCompleteList() {
+        return [...new Set([...this.provider_domains, ...this.getRosterDomainAutoCompleteList()])];
+    }
+
+    getRosterDomainAutoCompleteList() {
+        return _converse.state.roster
+            ? [...new Set([..._converse.state.roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))), _converse.session.get('domain')].filter(Boolean))]
+            : [];
     }
 
     getModalTitle() {

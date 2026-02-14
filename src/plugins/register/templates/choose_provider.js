@@ -49,6 +49,7 @@ function formatSinceDate(dateStr) {
  * @returns {import('lit').TemplateResult}
  */
 function tplProviderDetails(provider) {
+    const compliance = provider.ratingXmppComplianceTester;
     const is_free = provider.freeOfCharge;
     const is_company = provider.organization === 'company' || provider.organization === 'commercial person';
     const professional_hosting = provider.professionalHosting;
@@ -61,6 +62,12 @@ function tplProviderDetails(provider) {
 
     return html`
         <div class="provider-details">
+            ${compliance !== undefined && compliance !== null && compliance >= 0 ? html`
+                <div class="provider-details__item">
+                    <span class="provider-details__label">${__('XMPP Compliance')}:</span>
+                    <span class="provider-details__value">${compliance}%</span>
+                </div>
+            ` : ''}
             <div class="provider-details__item">
                 <span class="provider-details__label">${__('Free')}:</span>
                 <span class="provider-details__value">${is_free ? __('Yes') : __('No')}</span>
@@ -132,7 +139,6 @@ function getLocalizedURL (url_map) {
  */
 function tplProviderRow(provider, el) {
     const category = provider.category || '';
-    const compliance = provider.ratingXmppComplianceTester;
     const isExpanded = el.expanded_provider === provider.jid;
 
     const categoryClass = category === 'A'
@@ -150,10 +156,6 @@ function tplProviderRow(provider, el) {
                 </span>
                 <span class="provider-row__jid">${provider.jid}</span>
                 <span class="provider-row__badge ${categoryClass}">${category}</span>
-                ${compliance !== undefined && compliance !== null && compliance >= 0
-                    ? html`<span class="provider-row__compliance ${compliance === 100 ? 'compliance-full' : ''}"
-                          >${compliance}%</span>`
-                    : ''}
                 ${provider.category === 'B' && !u.isEmpty(provider.registrationWebPage)
                     ? html`<a class="provider-row__register-btn"
                               href="${getLocalizedURL(provider.registrationWebPage)}"

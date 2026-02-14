@@ -213,21 +213,6 @@ converse-registration-form {
         color: var(--text-color);
     }
 
-    .provider-row__compliance {
-        font-size: 0.85em;
-        font-weight: 600;
-        padding: 0.15em 0.4em;
-        border-radius: 0.2em;
-        background-color: rgba(255, 255, 255, 0.08);
-        color: var(--text-color-lighten, #bbb);
-        flex-shrink: 0;
-
-        &.compliance-full {
-            background-color: #4caf50;
-            color: #fff;
-        }
-    }
-
     .provider-row__register-btn {
         display: inline-flex;
         align-items: center;
@@ -283,7 +268,7 @@ converse-registration-form {
         background-color: #4caf50;
     }
     .badge-category-b {
-        background-color: #ff9800;
+        background-color: #81c784;
     }
     .badge-category-other {
         background-color: #9e9e9e;

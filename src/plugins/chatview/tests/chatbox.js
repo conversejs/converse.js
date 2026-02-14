@@ -352,10 +352,11 @@ describe("Chatboxes", function () {
                     }
                 });
 
+                const textarea = view.querySelector('textarea.chat-textarea');
                 spyOn(view.model, 'sendMessage').and.callThrough();
                 button.click();
-                await u.waitUntil(() => view.model.sendMessage.calls.count() === 1);
-                expect(view.model.sendMessage).toHaveBeenCalledWith({ 'body': 'geo:1.23,4.56' });
+                await u.waitUntil(() => textarea.value === 'geo:1.23,4.56');
+                expect(view.model.sendMessage).not.toHaveBeenCalled();
                 Object.defineProperty(navigator, 'geolocation', { configurable: true, value: original_geolocation });
             }));
 

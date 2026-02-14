@@ -201,7 +201,17 @@ export class ChatToolbar extends CustomElement {
                 navigator.geolocation.getCurrentPosition(resolve, reject)
             );
             const { latitude, longitude } = position.coords;
-            await this.model.sendMessage({ 'body': `geo:${latitude},${longitude}` });
+            const geo_uri = `geo:${latitude},${longitude}`;
+            const textarea = this.closest('.chatbox')?.querySelector('textarea.chat-textarea');
+
+            if (textarea) {
+                textarea.value = textarea.value ? `${textarea.value} ${geo_uri}` : geo_uri;
+                textarea.dispatchEvent(new Event('change', { bubbles: true }));
+                textarea.focus();
+                return;
+            }
+
+            await this.model.sendMessage({ 'body': geo_uri });
         } catch {
             return api.alert(
                 'error',

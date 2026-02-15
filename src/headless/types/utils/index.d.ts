@@ -93,12 +93,6 @@ declare const _default: {
     siblingIndex(el: Element): number;
     decodeHTMLEntities(str: string): string;
     unescapeHTML(string: string): string;
-    getSelectValues(select: HTMLSelectElement): string[];
-    webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
-    getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;
-    isMentionBoundary(s: string): boolean;
-    replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
-    placeCaretAtEnd(textarea: HTMLTextAreaElement): void;
     colorize(s: string): Promise<string>;
     appendArrayBuffer(buffer1: any, buffer2: any): ArrayBufferLike;
     arrayBufferToHex(ab: any): any;

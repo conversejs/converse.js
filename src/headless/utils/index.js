@@ -8,7 +8,6 @@ import log, { LEVELS } from '@converse/log';
 import * as array from './array.js';
 import * as arraybuffer from './arraybuffer.js';
 import * as color from './color.js';
-import * as form from './form.js';
 import * as html from './html.js';
 import * as init from './init.js';
 import * as jid from './jid';
@@ -19,7 +18,6 @@ import * as stanza from './stanza.js';
 import * as storage from './storage.js';
 import * as text from './text.js';
 import * as url from './url.js';
-
 
 /**
  * @typedef {Record<string, Function>} CommonUtils
@@ -39,27 +37,29 @@ const u = {
 /**
  * @param {Event} [event]
  */
-export function setLogLevelFromRoute (event) {
+export function setLogLevelFromRoute(event) {
     if (location.hash.startsWith('#converse?loglevel=')) {
         event?.preventDefault();
         const level = location.hash.split('=').pop();
         if (Object.keys(LEVELS).includes(level)) {
-            log.setLogLevel(/** @type {keyof LEVELS} */(level));
+            log.setLogLevel(/** @type {keyof LEVELS} */ (level));
         } else {
             log.error(`Could not set loglevel of ${level}`);
         }
     }
 }
 
-export function isEmptyMessage (attrs) {
+export function isEmptyMessage(attrs) {
     if (attrs instanceof Model) {
         attrs = attrs.attributes;
     }
-    return !attrs['oob_url'] &&
+    return (
+        !attrs['oob_url'] &&
         !attrs['file'] &&
         !(attrs['is_encrypted'] && attrs['plaintext']) &&
         !attrs['message'] &&
-        !attrs['body'];
+        !attrs['body']
+    );
 }
 
 /**
@@ -67,19 +67,21 @@ export function isEmptyMessage (attrs) {
  * inserted before the mentioned nicknames.
  * @param {import('../shared/message').default} message
  */
-export function prefixMentions (message) {
+export function prefixMentions(message) {
     let text = message.getMessageText();
     (message.get('references') || [])
         .sort((a, b) => b.begin - a.begin)
-        .forEach(ref => {
-            text = `${text.slice(0, ref.begin)}@${text.slice(ref.begin)}`
+        .forEach((ref) => {
+            text = `${text.slice(0, ref.begin)}@${text.slice(ref.begin)}`;
         });
     return text;
 }
 
-function shouldCreateMessage (attrs) {
-    return attrs['retracted'] || // Retraction received *before* the message
-        !isEmptyMessage(attrs);
+function shouldCreateMessage(attrs) {
+    return (
+        attrs['retracted'] || // Retraction received *before* the message
+        !isEmptyMessage(attrs)
+    );
 }
 
 /**
@@ -89,17 +91,17 @@ function shouldCreateMessage (attrs) {
  * @param { Function } callback: The function to call once all events have
  *    been triggered.
  */
-function onMultipleEvents (events=[], callback) {
+function onMultipleEvents(events = [], callback) {
     let triggered = [];
 
-    function handler (result) {
-        triggered.push(result)
+    function handler(result) {
+        triggered.push(result);
         if (events.length === triggered.length) {
             callback(triggered);
             triggered = [];
         }
     }
-    events.forEach(e => e.object.on(e.event, handler));
+    events.forEach((e) => e.object.on(e.event, handler));
 }
 
 /**
@@ -109,13 +111,13 @@ function onMultipleEvents (events=[], callback) {
  * @param {boolean} [bubbles]
  * @param {boolean} [cancelable]
  */
-function triggerEvent (el, name, type="Event", bubbles=true, cancelable=true) {
+function triggerEvent(el, name, type = 'Event', bubbles = true, cancelable = true) {
     const evt = document.createEvent(type);
     evt.initEvent(name, bubbles, cancelable);
     el.dispatchEvent(evt);
 }
 
-export function getRandomInt (max) {
+export function getRandomInt(max) {
     return (Math.random() * max) | 0;
 }
 
@@ -123,40 +125,43 @@ export function getRandomInt (max) {
  * @param {string} [suffix]
  * @return {string}
  */
-export function getUniqueId (suffix) {
-    const uuid = crypto.randomUUID?.() ??
+export function getUniqueId(suffix) {
+    const uuid =
+        crypto.randomUUID?.() ??
         'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
             const r = getRandomInt(16);
-            const v = c === 'x' ? r : r & 0x3 | 0x8;
+            const v = c === 'x' ? r : (r & 0x3) | 0x8;
             return v.toString(16);
         });
-    if (typeof(suffix) === "string" || typeof(suffix) === "number") {
-        return uuid + ":" + suffix;
+    if (typeof suffix === 'string' || typeof suffix === 'number') {
+        return uuid + ':' + suffix;
     } else {
         return uuid;
     }
 }
 
-export default Object.assign({
-    ...array,
-    ...arraybuffer,
-    ...color,
-    ...form,
-    ...html,
-    ...init,
-    ...jid,
-    ...object,
-    ...promise,
-    ...session,
-    ...stanza,
-    ...storage,
-    ...text,
-    ...url,
-    getRandomInt,
-    getUniqueId,
-    isEmptyMessage,
-    onMultipleEvents,
-    prefixMentions,
-    shouldCreateMessage,
-    triggerEvent,
-}, u);
+export default Object.assign(
+    {
+        ...array,
+        ...arraybuffer,
+        ...color,
+        ...html,
+        ...init,
+        ...jid,
+        ...object,
+        ...promise,
+        ...session,
+        ...stanza,
+        ...storage,
+        ...text,
+        ...url,
+        getRandomInt,
+        getUniqueId,
+        isEmptyMessage,
+        onMultipleEvents,
+        prefixMentions,
+        shouldCreateMessage,
+        triggerEvent,
+    },
+    u
+);

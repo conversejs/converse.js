@@ -8,7 +8,6 @@ import log, { LEVELS } from '@converse/log';
 import * as array from './array.js';
 import * as arraybuffer from './arraybuffer.js';
 import * as color from './color.js';
-import * as form from './form.js';
 import * as html from './html.js';
 import * as init from './init.js';
 import * as jid from './jid';
@@ -141,7 +140,6 @@ export default Object.assign({
     ...array,
     ...arraybuffer,
     ...color,
-    ...form,
     ...html,
     ...init,
     ...jid,

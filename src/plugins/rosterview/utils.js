@@ -2,11 +2,11 @@
  * @typedef {import('@converse/headless').RosterContact} RosterContact
  * @typedef {import('@converse/headless').RosterContacts} RosterContacts
  */
-import {__} from 'i18n';
-import {_converse, api, converse, log, constants, u, Profile} from '@converse/headless';
+import { __ } from 'i18n';
+import { _converse, api, converse, log, constants, u, Profile } from '@converse/headless';
 
-const {Strophe} = converse.env;
-const {STATUS_WEIGHTS} = constants;
+const { Strophe } = converse.env;
+const { STATUS_WEIGHTS } = constants;
 
 /**
  * @param {RosterContact} contact
@@ -44,13 +44,13 @@ export async function declineContactRequest(contact) {
         [__('Are you sure you want to decline the contact request from %1$s?', contact.getDisplayName())],
         blocking_supported
             ? [
-                {
-                    label: __('Also block this user from sending you further messages'),
-                    name: 'block',
-                    type: 'checkbox',
-                },
-            ]
-            : []
+                  {
+                      label: __('Also block this user from sending you further messages'),
+                      name: 'block',
+                      type: 'checkbox',
+                  },
+              ]
+            : [],
     );
 
     if (result) {
@@ -132,12 +132,12 @@ export function highlightRosterItem(jid) {
  */
 export function toggleGroup(ev, name) {
     ev?.preventDefault?.();
-    const {roster} = _converse.state;
+    const { roster } = _converse.state;
     const collapsed = roster.state.get('collapsed_groups');
     if (collapsed.includes(name)) {
         roster.state.save(
             'collapsed_groups',
-            collapsed.filter((n) => n !== name)
+            collapsed.filter((n) => n !== name),
         );
     } else {
         roster.state.save('collapsed_groups', [...collapsed, name]);
@@ -156,7 +156,7 @@ export function toggleGroup(ev, name) {
 function getFilterCriteria(contact) {
     const nick = contact instanceof Profile ? contact.getNickname() : contact.get('nickname');
     const jid = contact.get('jid');
-    let criteria = contact.getDisplayName({context: 'roster'});
+    let criteria = contact.getDisplayName({ context: 'roster' });
     criteria = !criteria.includes(jid) ? criteria.concat(`   ${jid}`) : criteria;
     criteria = !criteria.includes(nick) ? criteria.concat(`   ${nick}`) : criteria;
     return criteria.toLowerCase();
@@ -245,21 +245,21 @@ export function shouldShowGroup(group, model) {
  * @returns {import('./types').ContactsMap}
  */
 export function populateContactsMap(contacts_map, contact) {
-    const {labels} = _converse;
+    const { labels } = _converse;
     const contact_groups = /** @type {string[]} */ (u.unique(contact.get('groups') ?? []));
 
     if (u.isOwnJID(contact.get('jid')) && !contact_groups.length) {
-        contact_groups.push(/** @type {string} */(labels.HEADER_UNGROUPED));
+        contact_groups.push(/** @type {string} */ (labels.HEADER_UNGROUPED));
     } else if (contact.get('requesting')) {
-        contact_groups.push(/** @type {string} */(labels.HEADER_REQUESTING_CONTACTS));
+        contact_groups.push(/** @type {string} */ (labels.HEADER_REQUESTING_CONTACTS));
     } else if (contact.get('ask') === 'subscribe') {
-        contact_groups.push(/** @type {string} */(labels.HEADER_PENDING_CONTACTS));
+        contact_groups.push(/** @type {string} */ (labels.HEADER_PENDING_CONTACTS));
     } else if (contact.get('subscription') === undefined) {
-        contact_groups.push(/** @type {string} */(labels.HEADER_UNSAVED_CONTACTS));
+        contact_groups.push(/** @type {string} */ (labels.HEADER_UNSAVED_CONTACTS));
     } else if (!api.settings.get('roster_groups')) {
-        contact_groups.push(/** @type {string} */(labels.HEADER_CURRENT_CONTACTS));
+        contact_groups.push(/** @type {string} */ (labels.HEADER_CURRENT_CONTACTS));
     } else if (!contact_groups.length) {
-        contact_groups.push(/** @type {string} */(labels.HEADER_UNGROUPED));
+        contact_groups.push(/** @type {string} */ (labels.HEADER_UNGROUPED));
     }
 
     for (const name of contact_groups) {
@@ -335,9 +335,9 @@ export function groupsComparator(a, b) {
 export function getGroupsAutoCompleteList() {
     const roster = /** @type {RosterContacts} */ (_converse.state.roster);
     const groups = roster.models.reduce((groups, contact) => {
-        const contactGroups = /** @type string[] */(contact.get('groups'));
+        const contactGroups = /** @type string[] */ (contact.get('groups'));
         return contactGroups ? groups.concat(contactGroups) : groups;
-    }, /** @type string[] */([]));
+    }, /** @type string[] */ ([]));
     return [...new Set(groups.filter((i) => i))];
 }
 
@@ -352,6 +352,83 @@ export function getJIDsAutoCompleteList() {
             _converse.session.get('domain'),
         ]),
     ];
+}
+
+/** @type {Promise<string[]> | null} */
+let xmpp_providers_promise = null;
+
+/**
+ * Clears the cached XMPP providers list.
+ * Useful for testing or when the providers URL is changed.
+ */
+export function clearXMPPProvidersCache() {
+    xmpp_providers_promise = null;
+}
+
+/**
+ * Fetches the list of XMPP providers from the configured URL.
+ * Results are cached after the first successful fetch.
+ * @returns {Promise<string[]>}
+ */
+export async function fetchXMPPProviders() {
+    if (xmpp_providers_promise !== null) {
+        return xmpp_providers_promise;
+    }
+
+    const providers_url = api.settings.get('autocomplete_providers_url');
+    if (!providers_url) {
+        return [];
+    }
+
+    xmpp_providers_promise = (async () => {
+        try {
+            const response = await fetch(providers_url, {
+                mode: /** @type {RequestMode} */ ('cors'),
+                headers: {
+                    Accept: 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                log.error(`Failed to fetch XMPP providers: ${response.status} ${response.statusText}`);
+                return [];
+            }
+
+            const json = await response.json();
+
+            if (Array.isArray(json)) {
+                return json.filter((p) => typeof p === 'string');
+            }
+
+            log.error('Invalid XMPP providers response format');
+            return [];
+        } catch (e) {
+            log.error('Failed to fetch XMPP providers');
+            log.error(e);
+            return [];
+        }
+    })();
+
+    return xmpp_providers_promise;
+}
+
+/**
+ * Returns a combined list of JID domains from the user's roster and XMPP providers.
+ * Used for autocomplete when adding a contact.
+ * This function fetches providers asynchronously and caches them for future use.
+ * @param {string} _query - The current input value (unused, filtering is done by the autocomplete component)
+ * @returns {Promise<string[]>}
+ */
+export async function getJIDsAutoCompleteListWithProviders(_query) {
+    const roster_domains = getJIDsAutoCompleteList();
+    const providers = await fetchXMPPProviders();
+
+    // Combine, deduplicate, and sort alphabetically
+    const all_domains = [...new Set([...roster_domains, ...providers])].sort((a, b) =>
+        a.toLowerCase().localeCompare(b.toLowerCase()),
+    );
+
+    return all_domains;
 }
 
 /**
@@ -403,6 +480,9 @@ Object.assign(u, {
         groupsComparator,
         getGroupsAutoCompleteList,
         getJIDsAutoCompleteList,
+        getJIDsAutoCompleteListWithProviders,
+        fetchXMPPProviders,
+        clearXMPPProvidersCache,
         getNamesAutoCompleteList,
     },
 });

@@ -50,6 +50,7 @@ declare const _default: {
     isUndefined(x: unknown): boolean;
     isErrorObject(o: unknown): boolean;
     isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").BrowserStorage;
+    isEmpty(obj: any | undefined | null): boolean;
     isValidJID(jid?: string | null): boolean;
     isValidMUCJID(jid: string): boolean;
     isSameBareJID(jid1: string, jid2: string): boolean;
@@ -163,6 +164,7 @@ declare const _default: {
         isUndefined(x: unknown): boolean;
         isErrorObject(o: unknown): boolean;
         isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").BrowserStorage;
+        isEmpty(obj: any | undefined | null): boolean;
         isValidJID(jid?: string | null): boolean;
         isValidMUCJID(jid: string): boolean;
         isSameBareJID(jid1: string, jid2: string): boolean;

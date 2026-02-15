@@ -354,6 +354,97 @@ export function getJIDsAutoCompleteList() {
     ];
 }
 
+/** @type {string[] | null} */
+let xmpp_providers_cache = null;
+
+/** @type {Promise<string[]> | null} */
+let xmpp_providers_fetch_promise = null;
+
+/**
+ * Clears the cached XMPP providers list.
+ * Useful for testing or when the providers URL is changed.
+ */
+export function clearXMPPProvidersCache() {
+    xmpp_providers_cache = null;
+    xmpp_providers_fetch_promise = null;
+}
+
+/**
+ * Fetches the list of XMPP providers from the configured URL.
+ * Results are cached after the first successful fetch.
+ * @returns {Promise<string[]>}
+ */
+export async function fetchXMPPProviders() {
+    // Return cached providers if available
+    if (xmpp_providers_cache !== null) {
+        return xmpp_providers_cache;
+    }
+
+    // If a fetch is already in progress, wait for it
+    if (xmpp_providers_fetch_promise !== null) {
+        return xmpp_providers_fetch_promise;
+    }
+
+    const providers_url = api.settings.get('xmpp_providers_url');
+    if (!providers_url) {
+        return [];
+    }
+
+    xmpp_providers_fetch_promise = (async () => {
+        try {
+            const response = await fetch(providers_url, {
+                mode: /** @type {RequestMode} */ ('cors'),
+                headers: {
+                    Accept: 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                log.error(`Failed to fetch XMPP providers: ${response.status} ${response.statusText}`);
+                return [];
+            }
+
+            const json = await response.json();
+
+            // The simple provider list (providers-Ds.json) returns an array of domain strings
+            if (Array.isArray(json)) {
+                xmpp_providers_cache = json.filter((p) => typeof p === 'string');
+                return xmpp_providers_cache;
+            }
+
+            log.error('Invalid XMPP providers response format');
+            return [];
+        } catch (e) {
+            log.error('Failed to fetch XMPP providers');
+            log.error(e);
+            return [];
+        } finally {
+            xmpp_providers_fetch_promise = null;
+        }
+    })();
+
+    return xmpp_providers_fetch_promise;
+}
+
+/**
+ * Returns a combined list of JID domains from the user's roster and XMPP providers.
+ * Used for autocomplete when adding a contact.
+ * This function fetches providers asynchronously and caches them for future use.
+ * @param {string} _query - The current input value (unused, filtering is done by the autocomplete component)
+ * @returns {Promise<string[]>}
+ */
+export async function getJIDsAutoCompleteListWithProviders(_query) {
+    const roster_domains = getJIDsAutoCompleteList();
+    const providers = await fetchXMPPProviders();
+
+    // Combine, deduplicate, and sort alphabetically
+    const all_domains = [...new Set([...roster_domains, ...providers])].sort((a, b) =>
+        a.toLowerCase().localeCompare(b.toLowerCase())
+    );
+
+    return all_domains;
+}
+
 /**
  * @param {string} query
  */
@@ -403,6 +494,9 @@ Object.assign(u, {
         groupsComparator,
         getGroupsAutoCompleteList,
         getJIDsAutoCompleteList,
+        getJIDsAutoCompleteListWithProviders,
+        fetchXMPPProviders,
+        clearXMPPProvidersCache,
         getNamesAutoCompleteList,
     },
 });

@@ -19,11 +19,19 @@ declare class RegistrationForm extends CustomElement {
         alert_type: {
             type: StringConstructor;
         };
+        xmpp_providers: {
+            type: ArrayConstructor;
+        };
+        expanded_provider: {
+            type: StringConstructor;
+        };
     };
     urls: any[];
     fields: {};
     domain: any;
     alert_type: string;
+    xmpp_providers: any[];
+    expanded_provider: any;
     setErrorMessage: (m: string) => void;
     setFeedbackMessage: (m: string) => void;
     initialize(): void;
@@ -61,6 +69,18 @@ declare class RegistrationForm extends CustomElement {
      * @param {Event} ev
      */
     onFormSubmission(ev: Event): void;
+    /**
+     * Called when a user clicks a provider from the categorized provider list.
+     * Sets the domain and immediately fetches the registration form.
+     * @param {string} jid - The provider's JID (domain)
+     */
+    onProviderSelected(jid: string): void;
+    /**
+     * Toggles the expanded detail panel for a provider row.
+     * @param {Event} ev
+     * @param {string} jid - The provider's JID (domain)
+     */
+    onToggleProviderDetails(ev: Event, jid: string): void;
     /**
      * Callback method that gets called when the user has chosen an XMPP provider
      * @param {HTMLFormElement} form - The form that was submitted

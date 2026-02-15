@@ -46,7 +46,7 @@ describe('A sent presence stanza', function () {
                 <status>Hello world</status>
                 <priority>0</priority>
                 <x xmlns="vcard-temp:x:update"/>
-                <c hash="sha-1" node="https://conversejs.org" ver="5xpk8wyeMSdAjnSeIv3fwIjd1r0=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="KVNJ9gqHYdyeIi4pySOVMTuG920=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`);
 
 
@@ -58,7 +58,7 @@ describe('A sent presence stanza', function () {
                 <status>Going jogging</status>
                 <priority>2</priority>
                 <x xmlns="vcard-temp:x:update"/>
-                <c hash="sha-1" node="https://conversejs.org" ver="5xpk8wyeMSdAjnSeIv3fwIjd1r0=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="KVNJ9gqHYdyeIi4pySOVMTuG920=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`);
 
             api.settings.set('priority', undefined);
@@ -69,7 +69,7 @@ describe('A sent presence stanza', function () {
                 <status>Doing taxes</status>
                 <priority>0</priority>
                 <x xmlns="vcard-temp:x:update"/>
-                <c hash="sha-1" node="https://conversejs.org" ver="5xpk8wyeMSdAjnSeIv3fwIjd1r0=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="KVNJ9gqHYdyeIi4pySOVMTuG920=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`);
         })
     );

@@ -127,6 +127,7 @@ Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
 // the other plugins are whitelisted in src/consts.js
 export const CORE_PLUGINS = [
     'converse-adhoc',
+    'converse-bob',
     'converse-bookmarks',
     'converse-blocklist',
     'converse-bosh',

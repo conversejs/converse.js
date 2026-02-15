@@ -329,6 +329,71 @@ describe("Chatboxes", function () {
                 call_button.click();
                 expect(_converse.api.trigger).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
             }));
+
+            it("can send a geo message via the location toolbar button",
+                    mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+                await mock.waitForRoster(_converse, 'current');
+                await mock.openControlBox(_converse);
+
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                await mock.openChatBoxFor(_converse, contact_jid);
+                const view = _converse.chatboxviews.get(contact_jid);
+                const toolbar = view.querySelector('converse-chat-toolbar');
+                const button = toolbar.querySelector('.toggle-location');
+
+                const original_geolocation = navigator.geolocation;
+                Object.defineProperty(navigator, 'geolocation', {
+                    configurable: true,
+                    value: {
+                        getCurrentPosition (success) {
+                            success({ coords: { latitude: 1.23, longitude: 4.56 } });
+                        }
+                    }
+                });
+
+                const textarea = view.querySelector('textarea.chat-textarea');
+                spyOn(view.model, 'sendMessage').and.callThrough();
+                button.click();
+                await u.waitUntil(() => textarea.value === 'geo:1.23,4.56');
+                expect(view.model.sendMessage).not.toHaveBeenCalled();
+                Object.defineProperty(navigator, 'geolocation', { configurable: true, value: original_geolocation });
+            }));
+
+            it("shows an error and sends no message when geolocation fails",
+                    mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+                await mock.waitForRoster(_converse, 'current');
+                await mock.openControlBox(_converse);
+
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                await mock.openChatBoxFor(_converse, contact_jid);
+                const view = _converse.chatboxviews.get(contact_jid);
+                const toolbar = view.querySelector('converse-chat-toolbar');
+                const button = toolbar.querySelector('.toggle-location');
+
+                const original_geolocation = navigator.geolocation;
+                Object.defineProperty(navigator, 'geolocation', {
+                    configurable: true,
+                    value: {
+                        getCurrentPosition (_success, fail) {
+                            fail(new Error('Permission denied'));
+                        }
+                    }
+                });
+
+                spyOn(view.model, 'sendMessage').and.callThrough();
+                spyOn(_converse.api, 'alert').and.callThrough();
+                button.click();
+                await u.waitUntil(() => _converse.api.alert.calls.count() === 1);
+                expect(view.model.sendMessage).not.toHaveBeenCalled();
+                expect(_converse.api.alert).toHaveBeenCalledWith(
+                    'error',
+                    'Error',
+                    'Could not get your current location. Please check location permissions and try again.'
+                );
+                Object.defineProperty(navigator, 'geolocation', { configurable: true, value: original_geolocation });
+            }));
         });
 
         describe("A Chat Status Notification", function () {
@@ -583,7 +648,10 @@ describe("Chatboxes", function () {
 
                     const xmlns = 'https://jabber.org/protocol/chatstates';
                     const sent_stanzas = api.connection.get().sent_stanzas;
-                    let stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`composing`, s).length).pop(), 1000);
+                    let stanza = await u.waitUntil(
+                        () => sent_stanzas.filter(s => sizzle(`composing`, s).length).pop(),
+                        1000
+                    );
 
                     expect(Strophe.serialize(stanza)).toBe(
                         `<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">`+

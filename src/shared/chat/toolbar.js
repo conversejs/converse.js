@@ -83,6 +83,8 @@ export class ChatToolbar extends CustomElement {
             buttons.push(this.getSpoilerButton());
         }
 
+        buttons.push(this.getLocationButton());
+
         const domain = _converse.session.get('domain');
         const http_upload_promise = api.disco.supports(Strophe.NS.HTTPUPLOAD, domain);
         buttons.push(html`${until(http_upload_promise.then(is_supported => this.getHTTPUploadButton(!!is_supported)),'')}`);
@@ -124,6 +126,17 @@ export class ChatToolbar extends CustomElement {
         } else {
             return '';
         }
+    }
+
+    getLocationButton () {
+        const i18n_send_location = __('Send your current location');
+        return html`
+            <button type="button"
+                    class="btn toggle-location"
+                    title="${i18n_send_location}"
+                    @click=${this.sendCurrentLocation}>
+                <converse-icon class="fa fa-map-marker" size="1em"></converse-icon>
+            </button>`;
     }
 
     getSpoilerButton () {
@@ -172,6 +185,40 @@ export class ChatToolbar extends CustomElement {
     /** @param {InputEvent} ev */
     onFileSelection (ev) {
         this.model.sendFiles(/** @type {HTMLInputElement} */(ev.target).files);
+    }
+
+    /** @param {MouseEvent} ev */
+    async sendCurrentLocation (ev) {
+        ev?.preventDefault?.();
+        ev?.stopPropagation?.();
+
+        if (!navigator?.geolocation?.getCurrentPosition) {
+            return api.alert('error', __('Error'), __('Geolocation is not supported in this browser.'));
+        }
+
+        try {
+            const position = await new Promise((resolve, reject) =>
+                navigator.geolocation.getCurrentPosition(resolve, reject)
+            );
+            const { latitude, longitude } = position.coords;
+            const geo_uri = `geo:${latitude},${longitude}`;
+            const textarea = this.closest('.chatbox')?.querySelector('textarea.chat-textarea');
+
+            if (textarea) {
+                textarea.value = textarea.value ? `${textarea.value} ${geo_uri}` : geo_uri;
+                textarea.dispatchEvent(new Event('change', { bubbles: true }));
+                textarea.focus();
+                return;
+            }
+
+            await this.model.sendMessage({ 'body': geo_uri });
+        } catch {
+            return api.alert(
+                'error',
+                __('Error'),
+                __('Could not get your current location. Please check location permissions and try again.')
+            );
+        }
     }
 
     /** @param {MouseEvent} ev */

@@ -12,13 +12,9 @@ export function isElement(el) {
 const EMPTY_TEXT_REGEX = /\s*\n\s*/;
 
 /**
- * @param {Element|Builder|Stanza} el
+ * @param {Element} el
  */
 function stripEmptyTextNodes(el) {
-    if (el instanceof Builder || el instanceof Stanza) {
-        el = el.tree();
-    }
-
     let n;
     const text_nodes = [];
     const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, (node) => {
@@ -35,12 +31,26 @@ function stripEmptyTextNodes(el) {
 
 /**
  * Given two XML or HTML elements, determine if they're equal
+ * @param {Stanza|Builder|Element} s
+ * @returns {Element}
+ */
+function convertStanzaToElement(s) {
+    return /** @type {Stanza|Builder} */(s).tree?.() || /** @type {Element} */(s);
+}
+
+/**
+ * Given two XML or HTML elements, determine if they're equal
  * @param {Element} actual
  * @param {Element} expected
  * @returns {Boolean}
  */
 export function isEqualNode(actual, expected) {
-    if (!isElement(actual)) throw new Error('Element being compared must be an Element!');
+    actual = convertStanzaToElement(actual);
+    expected = convertStanzaToElement(expected);
+
+    if (!isElement(actual) || !isElement(expected)) {
+        throw new Error('Element being compared must be an Element!');
+    }
 
     expected = stripEmptyTextNodes(expected);
     actual = stripEmptyTextNodes(actual);
@@ -143,7 +153,7 @@ export function decodeHTMLEntities(str) {
  * @param {string} string - a String containing the HTML-escaped symbols.
  * @return {string}
  */
-export function unescapeHTML (string) {
+export function unescapeHTML(string) {
     var div = document.createElement('div');
     div.innerHTML = string;
     return div.innerText;

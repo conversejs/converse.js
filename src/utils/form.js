@@ -1,5 +1,5 @@
 /**
- * @copyright 2022, the Converse.js contributors
+ * @copyright the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description This is the form utilities module.
  */
@@ -18,7 +18,7 @@ const tplXformValue = (value) => `<value>${Strophe.xmlescape(value)}</value>`;
  * @param {HTMLSelectElement} select
  * @return {string[]}
  */
-export function getSelectValues (select) {
+export function getSelectValues(select) {
     const result = [];
     const options = select?.options;
     for (let i = 0, iLen = options.length; i < iLen; i++) {
@@ -35,14 +35,15 @@ export function getSelectValues (select) {
  * @param {HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement} field - the field to convert
  * @return {Element}
  */
-export function webForm2xForm (field) {
+export function webForm2xForm(field) {
     const name = field.getAttribute('name');
     if (!name) {
         return null; // See #1924
     }
     let value;
     if (field.getAttribute('type') === 'checkbox') {
-        value = /** @type {HTMLInputElement} */ (field).checked && '1' || '0';
+        const checkbox = /** @type {HTMLInputElement} */ (field);
+        value = (checkbox.checked && '1') || '0';
     } else if (field.tagName == 'TEXTAREA') {
         value = field.value.split('\n').filter((s) => s.trim());
     } else if (field.tagName == 'SELECT') {
@@ -62,7 +63,7 @@ export function webForm2xForm (field) {
  * @param {string|RegExp} [delineator] - An optional string delineator to
  *  differentiate between words.
  */
-export function getCurrentWord (input, index, delineator) {
+export function getCurrentWord(input, index, delineator) {
     if (!index) {
         index = input.selectionEnd || undefined;
     }
@@ -76,7 +77,7 @@ export function getCurrentWord (input, index, delineator) {
 /**
  * @param {string} s
  */
-export function isMentionBoundary (s) {
+export function isMentionBoundary(s) {
     return s !== '@' && RegExp(`(\\p{Z}|\\p{P})`, 'u').test(s);
 }
 
@@ -84,7 +85,7 @@ export function isMentionBoundary (s) {
  * @param {HTMLInputElement} input - The HTMLElement in which text is being entered
  * @param {string} new_value
  */
-export function replaceCurrentWord (input, new_value) {
+export function replaceCurrentWord(input, new_value) {
     const caret = input.selectionEnd || undefined;
     const current_word = input.value.slice(0, caret).split(/\s/).pop();
     const value = input.value;
@@ -97,7 +98,7 @@ export function replaceCurrentWord (input, new_value) {
 /**
  * @param {HTMLTextAreaElement} textarea
  */
-export function placeCaretAtEnd (textarea) {
+export function placeCaretAtEnd(textarea) {
     if (textarea !== document.activeElement) {
         textarea.focus();
     }

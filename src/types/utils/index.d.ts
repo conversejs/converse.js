@@ -76,12 +76,6 @@ declare const _default: {
     siblingIndex(el: Element): number;
     decodeHTMLEntities(str: string): string;
     unescapeHTML(string: string): string;
-    getSelectValues(select: HTMLSelectElement): string[];
-    webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
-    getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;
-    isMentionBoundary(s: string): boolean;
-    replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
-    placeCaretAtEnd(textarea: HTMLTextAreaElement): void;
     colorize(s: string): Promise<string>;
     appendArrayBuffer(buffer1: any, buffer2: any): ArrayBufferLike;
     arrayBufferToHex(ab: any): any;
@@ -190,12 +184,6 @@ declare const _default: {
         siblingIndex(el: Element): number;
         decodeHTMLEntities(str: string): string;
         unescapeHTML(string: string): string;
-        getSelectValues(select: HTMLSelectElement): string[];
-        webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
-        getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;
-        isMentionBoundary(s: string): boolean;
-        replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
-        placeCaretAtEnd(textarea: HTMLTextAreaElement): void;
         colorize(s: string): Promise<string>;
         appendArrayBuffer(buffer1: any, buffer2: any): ArrayBufferLike;
         arrayBufferToHex(ab: any): any;
@@ -206,6 +194,12 @@ declare const _default: {
         hexToArrayBuffer(hex: any): ArrayBufferLike;
         unique<T extends unknown>(arr: Array<T>): Array<T>;
     } & import("headless/types/utils/index.js").CommonUtils & import("headless/types/utils/index.js").PluginUtils;
+    getSelectValues(select: HTMLSelectElement): string[];
+    webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
+    getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;
+    isMentionBoundary(s: string): boolean;
+    replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
+    placeCaretAtEnd(textarea: HTMLTextAreaElement): void;
     isImageWithAlphaChannel(image_file: File): Promise<boolean>;
     compressImage(file: File, options?: import("./types.js").CompressionOptions): Promise<Blob>;
     MIMETYPES_MAP: {
@@ -290,6 +284,6 @@ declare const _default: {
     getAuthorStyle(occupant: any): string | TemplateResult;
 };
 export default _default;
-import * as html from "./html.js";
-import * as color from "./color.js";
+import * as html from './html.js';
+import * as color from './color.js';
 //# sourceMappingURL=index.d.ts.map

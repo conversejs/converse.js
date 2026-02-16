@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.9.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-16 08:36+0200\n"
+"POT-Creation-Date: 2026-02-16 09:03+0200\n"
 "PO-Revision-Date: 2024-06-14 19:00+0000\n"
 "Last-Translator: Wojciech Teichert <wojtekt99@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/conversejs/"
@@ -2843,8 +2843,9 @@ msgid "XMPP Compliance"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:133696
-msgid "Free"
-msgstr ""
+#, fuzzy
+msgid "Free of charge"
+msgstr "Zmieniono rolę"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Yes"
@@ -2859,7 +2860,7 @@ msgid "Company"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:133696
-msgid "Professional hosted"
+msgid "Professional hosting"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:133696

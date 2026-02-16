@@ -69,7 +69,7 @@ function tplProviderDetails(provider) {
                 </div>
             ` : ''}
             <div class="provider-details__item">
-                <span class="provider-details__label">${__('Free')}:</span>
+                <span class="provider-details__label">${__('Free of charge')}:</span>
                 <span class="provider-details__value">${is_free ? __('Yes') : __('No')}</span>
             </div>
             <div class="provider-details__item">
@@ -77,7 +77,7 @@ function tplProviderDetails(provider) {
                 <span class="provider-details__value">${is_company ? __('Yes') : __('No')}</span>
             </div>
             <div class="provider-details__item">
-                <span class="provider-details__label">${__('Professional hosted')}:</span>
+                <span class="provider-details__label">${__('Professional hosting')}:</span>
                 <span class="provider-details__value">${professional_hosting ? __('Yes') : __('No')}</span>
             </div>
             <div class="provider-details__item">

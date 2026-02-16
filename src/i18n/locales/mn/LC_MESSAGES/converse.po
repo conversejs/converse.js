@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 11.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-16 08:36+0200\n"
+"POT-Creation-Date: 2026-02-16 09:03+0200\n"
 "PO-Revision-Date: 2025-06-18 02:04+0000\n"
 "Last-Translator: PolarisMail <george@polarismail.com>\n"
 "Language-Team: Mongolian <https://hosted.weblate.org/projects/conversejs/"
@@ -2690,7 +2690,7 @@ msgid "XMPP Compliance"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:133696
-msgid "Free"
+msgid "Free of charge"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:133696
@@ -2706,7 +2706,7 @@ msgid "Company"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:133696
-msgid "Professional hosted"
+msgid "Professional hosting"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:133696

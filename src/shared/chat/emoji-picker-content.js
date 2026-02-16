@@ -17,6 +17,7 @@ export default class EmojiPickerContent extends CustomElement {
             'current_skintone': { type: String },
             'model': { type: Object },
             'query': { type: String },
+            'allowed_emojis': { type: Array },
         };
     }
 
@@ -26,6 +27,7 @@ export default class EmojiPickerContent extends CustomElement {
         this.current_skintone = null;
         this.query = null;
         this.search_results = null;
+        this.allowed_emojis = null;
     }
 
     render () {
@@ -92,12 +94,24 @@ export default class EmojiPickerContent extends CustomElement {
     }
 
     /**
+     * Helper method for the template which decides whether an
+     * emoji should be hidden.
+     * It filters based on:
+     * - Whether the emoji is allowed (if restrictions apply)
+     * - The current skin tone
+     * - The current search query
+     *
      * @param {string} shortname
+     * @returns {boolean}
      */
     shouldBeHidden (shortname) {
-        // Helper method for the template which decides whether an
-        // emoji should be hidden, based on which skin tone is
-        // currently being applied.
+        if (this.allowed_emojis && this.allowed_emojis.length > 0) {
+            const unicode = u.shortnamesToEmojis(shortname);
+            if (!this.allowed_emojis.includes(unicode)) {
+                return true;
+            }
+        }
+
         if (shortname.includes('_tone')) {
             if (!this.current_skintone || !shortname.includes(this.current_skintone)) {
                 return true;

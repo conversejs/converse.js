@@ -31,7 +31,7 @@ describe("A sent presence stanza", function () {
                 <status>My custom status</status>
                 <priority>0</priority>
                 <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="H63l6q0hnLTdpFJt2JA5AOAGl/o=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="ck3OnqRh1RvV5dZB4Y8n20nJm0k=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`)
 
         cbview.querySelector('.change-status').click()
@@ -49,7 +49,7 @@ describe("A sent presence stanza", function () {
                     <status>My custom status</status>
                     <priority>0</priority>
                     <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                    <c hash="sha-1" node="https://conversejs.org" ver="H63l6q0hnLTdpFJt2JA5AOAGl/o=" xmlns="http://jabber.org/protocol/caps"/>
+                    <c hash="sha-1" node="https://conversejs.org" ver="ck3OnqRh1RvV5dZB4Y8n20nJm0k=" xmlns="http://jabber.org/protocol/caps"/>
                 </presence>`)
     }));
 });

@@ -24,12 +24,16 @@ export class ChatToolbar extends CustomElement {
         show_spoiler_button: {
             type: BooleanConstructor;
         };
+        show_location_button: {
+            type: BooleanConstructor;
+        };
     };
     model: any;
     is_groupchat: any;
     hidden_occupants: boolean;
     show_send_button: boolean;
     show_spoiler_button: boolean;
+    show_location_button: boolean;
     show_call_button: boolean;
     show_emoji_button: boolean;
     connectedCallback(): void;
@@ -41,6 +45,9 @@ export class ChatToolbar extends CustomElement {
      */
     getHTTPUploadButton(is_supported: boolean): import("lit-html").TemplateResult<1> | "";
     getSpoilerButton(): import("lit-html").TemplateResult<1>;
+    getLocationButton(): import("lit-html").TemplateResult<1>;
+    /** @param {MouseEvent} ev */
+    insertLocation(ev: MouseEvent): Promise<void>;
     /** @param {MouseEvent} ev */
     toggleFileUpload(ev: MouseEvent): void;
     /** @param {InputEvent} ev */

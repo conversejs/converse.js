@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-16 09:03+0200\n"
-"PO-Revision-Date: 2026-01-22 21:17+0000\n"
+"PO-Revision-Date: 2026-02-18 16:09+0000\n"
 "Last-Translator: \"Mr. EddX\" <mreddx@chatrix.one>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/bg/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16-dev\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 
 #: dist/converse-no-dependencies.js:35408
 msgid "A timeout occurred"
@@ -833,7 +833,7 @@ msgstr "Шапки"
 
 #: dist/converse-no-dependencies.js:88549
 msgid "Occupant Id"
-msgstr "ID на ползвателя"
+msgstr "ID на обитателя"
 
 #: dist/converse-no-dependencies.js:88663
 #: dist/converse-no-dependencies.js:89374
@@ -1250,7 +1250,7 @@ msgstr "Копирай"
 
 #: dist/converse-no-dependencies.js:94621
 msgid "Reply"
-msgstr ""
+msgstr "Отговор"
 
 #: dist/converse-no-dependencies.js:94631
 msgid "Quote"
@@ -1262,53 +1262,51 @@ msgstr "Изображение: "
 
 #: dist/converse-no-dependencies.js:95474
 msgid "Play"
-msgstr ""
+msgstr "Пусни"
 
 #: dist/converse-no-dependencies.js:95475
 msgid "Pause"
-msgstr ""
+msgstr "Пауза"
 
 #: dist/converse-no-dependencies.js:95476
 msgid "Mute"
-msgstr ""
+msgstr "Заглуши"
 
 #: dist/converse-no-dependencies.js:95477
 msgid "Unmute"
-msgstr ""
+msgstr "Премахни заглушаването"
 
 #: dist/converse-no-dependencies.js:95478
 msgid "Seek"
-msgstr ""
+msgstr "Търси"
 
 #: dist/converse-no-dependencies.js:95479
 msgid "Volume"
-msgstr ""
+msgstr "Сила звук"
 
 #: dist/converse-no-dependencies.js:95480
 msgid "Audio player"
-msgstr ""
+msgstr "Аудио плейър"
 
 #: dist/converse-no-dependencies.js:95481
 msgid "Loading audio..."
-msgstr ""
+msgstr "Зареждане на аудио..."
 
 #: dist/converse-no-dependencies.js:95482
 msgid "Error loading audio"
-msgstr ""
+msgstr "Грешка при зареждане на аудиото"
 
 #: dist/converse-no-dependencies.js:95483
-#, fuzzy
 msgid "Current time"
-msgstr "Текуща версия"
+msgstr "Текущо време"
 
 #: dist/converse-no-dependencies.js:95484
-#, fuzzy
 msgid "Duration"
-msgstr "Описание"
+msgstr "Продължителност"
 
 #: dist/converse-no-dependencies.js:95485
 msgid "Playback speed"
-msgstr ""
+msgstr "Скорост на възпроизвеждане"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:99219
@@ -1461,14 +1459,12 @@ msgid "Retry"
 msgstr "Повторен опит"
 
 #: dist/converse-no-dependencies.js:101956
-#, fuzzy
 msgid "Replying to a message"
-msgstr "Изпрати съобщението"
+msgstr "Отговаряне на съобщение"
 
 #: dist/converse-no-dependencies.js:101963
-#, fuzzy
 msgid "(empty message)"
-msgstr "Нови съобщения"
+msgstr "(празно съобщение)"
 
 #: dist/converse-no-dependencies.js:102291
 msgid "This message has been edited"
@@ -1615,12 +1611,11 @@ msgstr "Сигурни ли сте, че желаете да изчистите 
 #: dist/converse-no-dependencies.js:108595
 #, javascript-format
 msgid "Replying to %1$s"
-msgstr ""
+msgstr "Отговаряне на %1$s"
 
 #: dist/converse-no-dependencies.js:108597
-#, fuzzy
 msgid "Cancel reply"
-msgstr "Отменяне"
+msgstr "Откажи отговора"
 
 #: dist/converse-no-dependencies.js:108683
 #: dist/converse-no-dependencies.js:117634
@@ -2777,68 +2772,65 @@ msgstr "Регистриране"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "XMPP Compliance"
-msgstr ""
+msgstr "XMPP съответствие"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Free of charge"
-msgstr "ролята е променена"
+msgstr "Безплатно"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Yes"
-msgstr ""
+msgstr "Да"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "No"
-msgstr ""
+msgstr "Не"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Company"
-msgstr ""
+msgstr "Компания"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Professional hosting"
-msgstr ""
+msgstr "Професионален хостинг"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Password reset"
-msgstr "Неправилна парола"
+msgstr "Възстановяване на парола"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Legal notice"
-msgstr ""
+msgstr "Правно известие"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Online since"
-msgstr "Онлайн потребители"
+msgstr "Онлайн от"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Message archive storage time"
-msgstr "Архивиране на съобщения"
+msgstr "Време за съхранение на архива със съобщенията"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s days"
-msgstr "%1$s казва"
+msgstr "%1$s дни"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload size limit"
-msgstr ""
+msgstr "Ограничение за размер на качвания файл"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload storage time"
-msgstr ""
+msgstr "Време за съхранение на качени файлове"
 
 #: dist/converse-no-dependencies.js:133752
 msgid "With these providers you can register directly inside this app."
-msgstr ""
+msgstr "С тези доставчици можете да се регистрирате директно в това приложение."
 
 #: dist/converse-no-dependencies.js:133752
 msgid "For these providers, you'll need to register externally via a web page."
 msgstr ""
+"За тези доставчици ще трябва да се регистрирате външно чрез уеб страница."
 
 #: dist/converse-no-dependencies.js:133760
 msgid "Create your account"
@@ -2861,19 +2853,17 @@ msgid "Please enter the XMPP provider to register with:"
 msgstr "Моля въведете XMPP доставчик, при който да се запишете:"
 
 #: dist/converse-no-dependencies.js:133777
-#, fuzzy
 msgid "e.g. https://example.org/http-bind"
-msgstr "Например: wss://example.org/xmpp-websocket"
+msgstr "Например: https://example.org/http-bind"
 
 #. Show the categorized provider list
 #: dist/converse-no-dependencies.js:133780
-#, fuzzy
 msgid "Choose an XMPP provider to register with:"
-msgstr "Моля въведете XMPP доставчик, при който да се запишете:"
+msgstr "Изберете XMPP доставчик, при който да се регистрирате:"
 
 #: dist/converse-no-dependencies.js:133782
 msgid "Browse all providers"
-msgstr ""
+msgstr "Разгледайте всички доставчици"
 
 #: dist/converse-no-dependencies.js:134189
 msgid "Sorry, we're unable to connect to your chosen provider."

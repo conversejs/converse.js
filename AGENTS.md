@@ -356,7 +356,9 @@ api.listen.on('connected', callback);
 api.trigger('customEvent', data);
 
 // Promises
-await api.waitUntil('connected');
+api.promises.add('myFeatureReady');     // Register a new promise
+await api.waitUntil('myFeatureReady');  // Wait for a promise
+api.trigger('myFeatureReady');          // Resolve promise and emit event
 
 // Disco features
 api.disco.own.features.add(Strophe.NS.SPOILER);
@@ -364,7 +366,62 @@ api.disco.own.features.add(Strophe.NS.SPOILER);
 // User interaction
 const confirmed = await api.confirm('Are you sure?');
 await api.alert('Something happened');
+
+// Custom elements
+api.elements.define('my-element', MyElement);  // Define/redefine element
+const ExistingClass = api.elements.registry['converse-chat-message'];  // Get existing class
 ```
+
+### Hooks
+
+Hooks are special events that let you modify behavior at runtime. Unlike regular events:
+
+1. **Converse waits** for all handlers to finish before continuing
+2. **Handlers can modify the payload** and return updated data
+
+**Triggering a hook:**
+
+```javascript
+async function processMessage(message) {
+    const payload = { message, attrs: {} };
+    updated = await api.hook('beforeMessageSend', this, payload);
+    return updated;
+}
+```
+
+**Listening to a hook:**
+
+```javascript
+api.listen.on('beforeMessageSend', (context, payload) => {
+    // Modify and return the payload
+    return { ...payload, attrs: { ...payload.attrs, custom: 'value' } };
+});
+```
+
+**How hooks work:**
+
+When a hook is triggered with `api.hook(eventName, context, payload)`, Converse:
+1. Collects all registered listeners for that hook
+2. Executes each handler sequentially, passing `(context, payload)`
+3. Waits for all handlers to complete (including async handlers)
+4. Returns the final modified payload
+
+**Common hooks in the codebase:**
+
+- `getToolbarButtons` — Add/modify toolbar buttons in chat views
+- `getMessageActionButtons` — Add/modify action buttons on messages
+- `constructMessageStanza` — Modify outgoing message stanzas before sending
+- `parseMessageStanza` — Modify parsed incoming message data
+- `shouldShowErrorMessage` — Control whether to display error messages
+- `beforeMessageRender` — Modify message data before rendering
+- `afterMessagesFetched` — Perform actions after messages are fetched
+
+**Best practices for using hooks:**
+
+1. **Return the payload** (possibly modified) from your hook handlers
+2. **Handle async operations properly** in hook handlers
+3. **Be mindful of performance** since hooks block execution until all handlers complete
+4. **Document your hooks** since you're adding them for other parts of the codebase to use
 
 ## TypeScript and Type Definitions
 

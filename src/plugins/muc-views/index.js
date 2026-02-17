@@ -3,15 +3,15 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
-import { api, converse, constants } from '@converse/headless';
+import {api, converse, constants} from '@converse/headless';
 import '../chatboxviews/index.js';
 import './affiliation-form.js';
 import './role-form.js';
 import MUCView from './muc.js';
-import { clearHistory, confirmDirectMUCInvitation, parseMessageForMUCCommands } from './utils.js';
+import {clearHistory, confirmDirectMUCInvitation, parseMessageForMUCCommands} from './utils.js';
 
-const { Strophe } = converse.env;
-const { CHATROOMS_TYPE } = constants;
+const {Strophe} = converse.env;
+const {CHATROOMS_TYPE} = constants;
 
 import './styles/index.scss';
 
@@ -20,20 +20,10 @@ converse.MUC.VIEWS = {
 }
 
 converse.plugins.add('converse-muc-views', {
-    /* Dependencies are other plugins which might be
-     * overridden or relied upon, and therefore need to be loaded before
-     * this plugin. They are "optional" because they might not be
-     * available, in which case any overrides applicable to them will be
-     * ignored.
-     *
-     * It's possible to make these dependencies "non-optional".
-     * If the setting "strict_plugin_dependencies" is set to true,
-     * an error will be raised if the plugin is not found.
-     */
     dependencies: ['converse-modal', 'converse-dragresize', 'converse-controlbox', 'converse-chatview'],
 
-    initialize () {
-        const { _converse } = this;
+    initialize() {
+        const {_converse} = this;
 
         // Configuration values for this plugin
         // ====================================

@@ -3,7 +3,7 @@ title: Quickstart
 description: Get Converse up and running quickly.
 ---
 
-You can use the latest version of Converse at [conversejs.org](https://conversejs.org/fullscreen.html).
+Converse is a modern, feature-rich XMPP chat client that runs in web browsers. You can try the latest version at [conversejs.org](https://conversejs.org/fullscreen.html).
 
 There are several ways to run Converse yourself or to add it to your website or web app:
 
@@ -72,23 +72,35 @@ Always specify a version number in production to avoid breaking changes.
 
 #### C. Build from Source
 
-For custom builds and development, run the following commands:
+For custom builds and development:
 
-1. `git clone git@github.com:conversejs/converse.js.git` to clone the repo.
-2. `cd converse.js && npm install` to install dependencies
-3. `npm run build` to build distribution files to the `./dist` folder
-4. `npm run serve` to start a local server at port `8080`.
-5. You can now access Converse at http://localhost:8080/dev.html in your browser.
+1. Clone the repository:
+   ```bash
+   git clone git@github.com:conversejs/converse.js.git
+   ```
+2. Install dependencies:
+   ```bash
+   cd converse.js && npm install
+   ```
+3. Build the distribution files:
+   ```bash
+   npm run build
+   ```
+4. Start a local server:
+   ```bash
+   npm run serve
+   ```
+5. Access Converse at http://localhost:8000/dev.html in your browser.
 
 See the [Generating Builds](/development/builds/) section for detailed build instructions and customization options.
 
 :::tip
-You can run `npm run watch` to automatically rebuild the dist files whenever a source file changes.
+For active development, use `npm run devserver` to start a dev server with live reload on port 8080, or run `npm run watch` to automatically rebuild the dist files whenever a source file changes.
 :::
 
 ### Initializing Converse
 
-After building and including the necessary files, you need to initialize Converse:
+After including the necessary files, you need to initialize Converse:
 
 ```html
 <script>
@@ -97,7 +109,7 @@ After building and including the necessary files, you need to initialize Convers
 ```
 
 See the [Configuration](/configuration/) section for all available initialization options and the
-[index.html](https://github.com/jcbrand/converse.js/blob/master/index.html) file in the repository for a complete example.
+[index.html](https://github.com/conversejs/converse.js/blob/master/index.html) file in the repository for a complete example.
 
 #### Display Modes
 
@@ -111,7 +123,7 @@ To use fullscreen mode, simply set the `view_mode` parameter:
 
 ```javascript
 converse.initialize({
-    view_mode: 'fullscreen' // other options are `overlay` and `embedded`
+    view_mode: 'fullscreen' // other options are 'overlay' and 'embedded'
 });
 ```
 

@@ -16,6 +16,7 @@ export default (el) => {
     const show_emoji_button = api.settings.get("visible_toolbar_buttons").emoji;
     const show_send_button = api.settings.get("show_send_button");
     const show_spoiler_button = api.settings.get("visible_toolbar_buttons").spoiler;
+    const show_voice_message_button = api.settings.get("visible_toolbar_buttons").voice_message;
     const show_toolbar = api.settings.get("show_toolbar");
 
     return html`
@@ -33,6 +34,7 @@ export default (el) => {
                   ?show_emoji_button="${show_emoji_button}"
                   ?show_send_button="${show_send_button}"
                   ?show_spoiler_button="${show_spoiler_button}"
+                  ?show_voice_message_button="${show_voice_message_button}"
                   ?show_toolbar="${show_toolbar}"
                   message_limit="${message_limit}"
               ></converse-chat-toolbar>`

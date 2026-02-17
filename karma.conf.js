@@ -50,6 +50,7 @@ module.exports = function(config) {
       { pattern: "src/i18n/tests/i18n.js", type: 'module' },
       { pattern: "src/plugins/adhoc-views/tests/*.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/*.js", type: 'module' },
+      { pattern: "src/plugins/chatboxviews/tests/*.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/*.js", type: 'module' },
       { pattern: "src/plugins/controlbox/tests/*.js", type: 'module' },
       { pattern: "src/plugins/disco-views/tests/*.js", type: 'module' },

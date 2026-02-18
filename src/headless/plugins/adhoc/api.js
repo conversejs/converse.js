@@ -91,9 +91,10 @@ export default {
 
             const command = result.querySelector('command');
             const status = command?.getAttribute('status');
+            const resultData = command?.querySelector('x[type=result]');
             return {
                 status,
-                ...(status === 'executing' ? parseCommandResult(result) : {}),
+                ...(status === 'executing' || (status === 'completed' && resultData) ? parseCommandResult(result) : {}),
                 note: result.querySelector('note')?.textContent
             }
         }

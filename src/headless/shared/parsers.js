@@ -514,6 +514,16 @@ function parseXFormField(field, readonly, stanza) {
             required: !!field.querySelector('required'),
             ...result,
         };
+    } else if (type === 'text-multi') {
+        const values = Array.from(field.querySelectorAll(':scope > value')).map((el) => el?.textContent);
+        return {
+            type,
+            label,
+            var: v,
+            required: !!field.querySelector('required'),
+            values,
+            ...result,
+        };
     } else if (type === 'boolean') {
         const value = field.querySelector('value')?.textContent;
         return {

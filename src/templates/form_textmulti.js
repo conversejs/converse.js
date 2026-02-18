@@ -5,7 +5,7 @@ export default (o) => {
     const id = u.getUniqueId();
     return html`
         <div class="mb-3">
-            <table class="table" name="${o.name}" id="${o.id}" data-var="${o.var}">
+            <table class="table" name="${o.name}" id="${id}" data-var="${o.var}">
                 <thead class="thead-light">
                     <th scope="col">
                         ${o.label}

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 5.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-16 09:03+0200\n"
-"PO-Revision-Date: 2025-11-06 18:51+0000\n"
+"PO-Revision-Date: 2026-02-18 16:09+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/conversejs/"
 "translations/id/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.15-dev\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 
 #: dist/converse-no-dependencies.js:35408
 msgid "A timeout occurred"
@@ -1257,7 +1257,7 @@ msgstr "Salin"
 
 #: dist/converse-no-dependencies.js:94621
 msgid "Reply"
-msgstr ""
+msgstr "Balas"
 
 #: dist/converse-no-dependencies.js:94631
 msgid "Quote"
@@ -1269,53 +1269,51 @@ msgstr "Gambar: "
 
 #: dist/converse-no-dependencies.js:95474
 msgid "Play"
-msgstr ""
+msgstr "Putar"
 
 #: dist/converse-no-dependencies.js:95475
 msgid "Pause"
-msgstr ""
+msgstr "Jeda"
 
 #: dist/converse-no-dependencies.js:95476
 msgid "Mute"
-msgstr ""
+msgstr "Senyapkan"
 
 #: dist/converse-no-dependencies.js:95477
 msgid "Unmute"
-msgstr ""
+msgstr "Bunyikan"
 
 #: dist/converse-no-dependencies.js:95478
 msgid "Seek"
-msgstr ""
+msgstr "Geser"
 
 #: dist/converse-no-dependencies.js:95479
 msgid "Volume"
-msgstr ""
+msgstr "Volume"
 
 #: dist/converse-no-dependencies.js:95480
 msgid "Audio player"
-msgstr ""
+msgstr "Pemutar audio"
 
 #: dist/converse-no-dependencies.js:95481
 msgid "Loading audio..."
-msgstr ""
+msgstr "Memuat audio..."
 
 #: dist/converse-no-dependencies.js:95482
 msgid "Error loading audio"
-msgstr ""
+msgstr "Kesalahan saat memuat audio"
 
 #: dist/converse-no-dependencies.js:95483
-#, fuzzy
 msgid "Current time"
-msgstr "Versi saat ini"
+msgstr "Waktu saat ini"
 
 #: dist/converse-no-dependencies.js:95484
-#, fuzzy
 msgid "Duration"
-msgstr "Keterangan"
+msgstr "Durasi"
 
 #: dist/converse-no-dependencies.js:95485
 msgid "Playback speed"
-msgstr ""
+msgstr "Kecepatan pemutaran"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:99219
@@ -1471,14 +1469,12 @@ msgid "Retry"
 msgstr "Coba lagi"
 
 #: dist/converse-no-dependencies.js:101956
-#, fuzzy
 msgid "Replying to a message"
-msgstr "Mengirim pesan ini"
+msgstr "Membalas sebuah pesan"
 
 #: dist/converse-no-dependencies.js:101963
-#, fuzzy
 msgid "(empty message)"
-msgstr "Pesan baru"
+msgstr "(pesan kosong)"
 
 #: dist/converse-no-dependencies.js:102291
 msgid "This message has been edited"
@@ -1624,12 +1620,11 @@ msgstr "Apakah Anda yakin ingin menghapus pesan-pesan dari percakapan ini?"
 #: dist/converse-no-dependencies.js:108595
 #, javascript-format
 msgid "Replying to %1$s"
-msgstr ""
+msgstr "Membalas %1$s"
 
 #: dist/converse-no-dependencies.js:108597
-#, fuzzy
 msgid "Cancel reply"
-msgstr "Batal"
+msgstr "Batalkan balasan"
 
 #: dist/converse-no-dependencies.js:108683
 #: dist/converse-no-dependencies.js:117634
@@ -2779,68 +2774,67 @@ msgstr "Daftar"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "XMPP Compliance"
-msgstr ""
+msgstr "Kepatuhan XMPP"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Free of charge"
-msgstr "peran berubah"
+msgstr "Gratis"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Yes"
-msgstr ""
+msgstr "Ya"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "No"
-msgstr ""
+msgstr "Tidak"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Company"
-msgstr ""
+msgstr "Perusahaan"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Professional hosting"
-msgstr ""
+msgstr "Hosting profesional"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Password reset"
-msgstr "Kata sandi salah"
+msgstr "Reset kata sandi"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Legal notice"
-msgstr ""
+msgstr "Pemberitahuan hukum"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Online since"
-msgstr "Pengguna Online"
+msgstr "Online sejak"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Message archive storage time"
-msgstr "Pengarsipan pesan"
+msgstr "Durasi penyimpanan arsip pesan"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s days"
-msgstr "%1$s mengatakan"
+msgstr "%1$s hari"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload size limit"
-msgstr ""
+msgstr "Batas ukuran unggah file"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload storage time"
-msgstr ""
+msgstr "Durasi penyimpanan unggah file"
 
 #: dist/converse-no-dependencies.js:133752
 msgid "With these providers you can register directly inside this app."
 msgstr ""
+"Dengan penyedia ini Anda dapat mendaftar langsung di dalam aplikasi ini."
 
 #: dist/converse-no-dependencies.js:133752
 msgid "For these providers, you'll need to register externally via a web page."
 msgstr ""
+"Untuk penyedia ini, Anda perlu mendaftar secara eksternal melalui halaman "
+"web."
 
 #: dist/converse-no-dependencies.js:133760
 msgid "Create your account"
@@ -2863,19 +2857,17 @@ msgid "Please enter the XMPP provider to register with:"
 msgstr "Silakan masukkan penyedia XMPP untuk mendaftar:"
 
 #: dist/converse-no-dependencies.js:133777
-#, fuzzy
 msgid "e.g. https://example.org/http-bind"
-msgstr "contoh: wss://example.org/xmpp-websocket"
+msgstr "mis. https://example.org/http-bind"
 
 #. Show the categorized provider list
 #: dist/converse-no-dependencies.js:133780
-#, fuzzy
 msgid "Choose an XMPP provider to register with:"
-msgstr "Silakan masukkan penyedia XMPP untuk mendaftar:"
+msgstr "Pilih penyedia XMPP untuk mendaftar:"
 
 #: dist/converse-no-dependencies.js:133782
 msgid "Browse all providers"
-msgstr ""
+msgstr "Jelajahi semua penyedia"
 
 #: dist/converse-no-dependencies.js:134189
 msgid "Sorry, we're unable to connect to your chosen provider."

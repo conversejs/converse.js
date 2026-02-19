@@ -578,9 +578,12 @@ describe("Ad-hoc commands consisting of multiple steps", function () {
                         </field>
                         <field var="jid-multi-field">
                             <value>jid@multi/value#1</value>
+                            <value>jid@multi/value#2</value>
                         </field>
                         <field var="text-multi-field">
                             <value>text</value>
+                            <value>multi</value>
+                            <value>value</value>
                         </field>
                         <field var="jid-single-field">
                             <value>jid@single/value</value>
@@ -654,8 +657,15 @@ describe("Ad-hoc commands consisting of multiple steps", function () {
                     type="submit">
                     <field var="text-private-field">
                     <value>text-private-value</value></field>
-                    <field var="jid-multi-field"><value>jid@multi/value#1</value></field>
-                    <field var="text-multi-field"><value>text</value></field>
+                    <field var="jid-multi-field">
+                        <value>jid@multi/value#1</value>
+                        <value>jid@multi/value#2</value>
+                    </field>
+                    <field var="text-multi-field">
+                        <value>text</value>
+                        <value>multi</value>
+                        <value>value</value>
+                    </field>
                     <field var="jid-single-field"><value>jid@single/value</value></field>
                     <field var="list-single-field"><value>list-single-value</value></field>
                     </x>

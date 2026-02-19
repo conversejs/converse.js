@@ -13,7 +13,6 @@ import tplFormFixed from '../templates/form_fixed.js';
 import tplFormInput from '../templates/form_input.js';
 import tplFormSelect from '../templates/form_select.js';
 import tplFormTextarea from '../templates/form_textarea.js';
-import tplFormTextmulti from '../templates/form_textmulti.js';
 import tplFormUrl from '../templates/form_url.js';
 import tplFormUsername from '../templates/form_username.js';
 import tplHyperlink from 'templates/hyperlink.js';
@@ -383,10 +382,20 @@ export function xFormField2TemplateResult(xfield, options = {}) {
         return tplFormFixed(xfield);
 
     } else if (xfield['type'] === 'jid-multi') {
-        return tplFormTextarea({ ...default_vals, ...xfield });
+        return tplFormTextarea({
+            ...default_vals,
+            ...xfield,
+            value: (xfield !== undefined && xfield.values.length !== 0)
+                ? xfield.values.reduce((acc, x) => acc + '\n' + x) : ''
+        });
 
     } else if (xfield['type'] === 'text-multi') {
-        return tplFormTextmulti({ ...default_vals, ...xfield });
+        return tplFormTextarea({
+            ...default_vals,
+            ...xfield,
+            value: (xfield !== undefined && xfield.values.length !== 0)
+                ? xfield.values.reduce((acc, x) => acc + '\n' + x) : ''
+        });
 
     } else if (xfield['type'] === 'boolean') {
         return tplFormCheckbox({ ...default_vals, ...xfield });

@@ -50,6 +50,7 @@ export namespace KEYCODES {
     let META: string;
 }
 export const XFORM_TYPE_MAP: {
+    'text-multi': string;
     'text-private': string;
     'text-single': string;
     fixed: string;

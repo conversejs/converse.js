@@ -506,11 +506,12 @@ function parseXFormField(field, readonly, stanza) {
         const text = field.querySelector('value')?.textContent;
         return { text, label, type, var: v, ...result };
     } else if (type === 'jid-multi') {
+        const values = Array.from(field.querySelectorAll(':scope > value')).map((el) => el?.textContent);
         return {
             type,
             var: v,
             label,
-            value: field.querySelector('value')?.textContent,
+            values,
             required: !!field.querySelector('required'),
             ...result,
         };

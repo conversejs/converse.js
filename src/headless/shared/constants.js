@@ -167,6 +167,7 @@ export const KEYCODES = {
 };
 
 export const XFORM_TYPE_MAP = {
+    'text-multi': 'textarea',
     'text-private': 'password',
     'text-single': 'text',
     'fixed': 'label',

@@ -148,5 +148,46 @@ describe("Groupchats", function () {
                     <c hash="sha-1" node="https://conversejs.org" ver="5xpk8wyeMSdAjnSeIv3fwIjd1r0=" xmlns="http://jabber.org/protocol/caps"/>
                 </presence>`);
         }));
+
+        it("ignores connection attempts when already connected",
+                mock.initConverse([], {}, async function (_converse) {
+
+            const {api} = _converse;
+            const muc_jid = 'coven@chat.shakespeare.lit';
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+            const model = _converse.chatboxes.get(muc_jid);
+
+            spyOn(_converse.exports, 'onDirectMUCInvitation').and.callThrough();
+            spyOn(api, 'hook').and.callThrough();
+            const apiRoomsGet = api.rooms.get;
+            spyOn(api.rooms, 'get').and.callFake(function () {
+                apiRoomsGet(...arguments)
+            });
+
+            expect(model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
+
+            const stanza = stx`
+                <message to='${_converse.bare_jid}' xmlns='jabber:client'>
+                    <result queryid='25822713-35d2-4582-829a-90c3df793191' xmlns='urn:xmpp:mam:2'
+                        id='019c63cc-b024-74fd-a4ae-49620c17e05d'>
+                        <forwarded xmlns='urn:xmpp:forward:0'>
+                            <delay xmlns='urn:xmpp:delay' stamp='2026-02-16T00:14:44.772090Z' />
+                            <message to='${_converse.bare_jid}' id='test'
+                                from='${_converse.bare_jid}' xmlns='jabber:client'
+                                xml:lang='en'>
+                                <x jid='${muc_jid}' xmlns='jabber:x:conference' />
+                            </message>
+                        </forwarded>
+                    </result>
+                </message>`;
+            api.connection.get()._dataRecv(mock.createRequest(stanza));
+            await api.waitUntil(() => _converse.exports.onDirectMUCInvitation.calls.count());
+            expect(_converse.exports.onDirectMUCInvitation).toHaveBeenCalledTimes(1);
+            await _converse.exports.onDirectMUCInvitation.calls.all()[0].returnValue;
+            const apiHookCalls = api.hook.calls.all();
+            const apiRoomsGetCalls = api.rooms.get.calls.all();
+            expect(apiHookCalls.filter(e => e.args[0] == 'confirmDirectMUCInvitation' && e.args[1].jid == muc_jid)).toHaveSize(0);
+            expect(apiRoomsGetCalls.filter(e => e.args[1].jid == muc_jid)).toHaveSize(0);
+        }));
     });
 });

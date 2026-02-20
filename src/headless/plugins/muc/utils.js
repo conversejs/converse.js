@@ -131,7 +131,14 @@ export async function onDirectMUCInvitation(message) {
         reason = x_el.getAttribute('reason');
 
     let result;
-    if (api.settings.get('auto_join_on_invite')) {
+
+    const { chatboxes } = _converse.state;
+    const rooms = chatboxes.filter((m) => m.get('type') === CHATROOMS_TYPE && !m.get('closed'));
+
+    if (rooms.find(e => e.get('id') == room_jid)) {
+        result = false;
+    } 
+    else if (api.settings.get('auto_join_on_invite')) {
         result = true;
     } else {
         // Invite request might come from someone not your roster list

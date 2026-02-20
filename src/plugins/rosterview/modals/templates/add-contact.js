@@ -35,7 +35,7 @@ export default (el) => {
                                 name="jid"
                             ></converse-autocomplete>`
                           : html`<converse-autocomplete
-                                .list="${getJIDsAutoCompleteList()}"
+                                .getAutoCompleteList="${getJIDsAutoCompleteList}"
                                 .data="${(text, input) => `${input.slice(0, input.indexOf('@'))}@${text}`}"
                                 position="below"
                                 min_chars="2"

@@ -341,17 +341,79 @@ export function getGroupsAutoCompleteList() {
     return [...new Set(groups.filter((i) => i))];
 }
 
+let xmppProvidersCache = null;
+let xmppProvidersCacheTime = 0;
+const XMPP_PROVIDERS_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+const XMPP_PROVIDERS_URL = 'https://data.xmpp.net/providers.json';
+
 /**
- * @returns {string[]}
+ * Fetch XMPP providers from the public API
+ * @returns {Promise<string[]>}
  */
-export function getJIDsAutoCompleteList() {
+async function fetchXMPPProviders() {
+    const now = Date.now();
+    if (xmppProvidersCache && (now - xmppProvidersCacheTime) < XMPP_PROVIDERS_CACHE_DURATION) {
+        return xmppProvidersCache;
+    }
+
+    try {
+        const response = await fetch(XMPP_PROVIDERS_URL, {
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        // Extract domain names from providers data
+        // The API returns an array of provider objects with a 'domain' property
+        let providers = [];
+        if (Array.isArray(data)) {
+            providers = data.map(provider => provider.domain).filter(Boolean);
+        } else if (data && Array.isArray(data.providers)) {
+            providers = data.providers.map(provider => provider.domain).filter(Boolean);
+        }
+
+        xmppProvidersCache = providers;
+        xmppProvidersCacheTime = now;
+        return providers;
+    } catch (e) {
+        log.error('Failed to fetch XMPP providers:', e);
+        return [];
+    }
+}
+
+/**
+ * @param {string} [query]
+ * @returns {Promise<string[]>}
+ */
+export async function getJIDsAutoCompleteList(query) {
     const roster = /** @type {RosterContacts} */ (_converse.state.roster);
-    return [
+    const localDomains = [
         ...new Set([
             ...roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))),
             _converse.session.get('domain'),
         ]),
-    ];
+    ].filter(Boolean);
+
+    // Fetch providers from XMPP Providers API
+    const providers = await fetchXMPPProviders();
+    
+    // Combine local domains with providers, removing duplicates
+    const allDomains = [...new Set([...localDomains, ...providers])];
+    
+    // Filter by query if provided
+    if (query) {
+        const lowerQuery = query.toLowerCase();
+        return allDomains.filter(domain => domain.toLowerCase().includes(lowerQuery));
+    }
+    
+    return allDomains;
 }
 
 /**

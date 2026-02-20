@@ -97,4 +97,51 @@ describe("The 'Add Contact' widget", function () {
                 <query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"/></query>
             </iq>`);
     }));
+
+    it("fetches XMPP providers from the XMPP Providers API for autocompletion",
+            mock.initConverse([], {}, async function (_converse) {
+
+        await mock.waitForRoster(_converse, 'all');
+        await mock.openControlBox(_converse);
+
+        // Mock the fetch API to return XMPP providers
+        spyOn(window, 'fetch').and.callFake((url) => {
+            if (url === 'https://data.xmpp.net/providers.json') {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve([
+                        { domain: 'example.com' },
+                        { domain: 'jabber.org' },
+                        { domain: 'xmpp.net' }
+                    ])
+                });
+            }
+            return Promise.reject(new Error('Unexpected URL: ' + url));
+        });
+
+        const cbview = _converse.chatboxviews.get('controlbox');
+
+        const dropdown = await u.waitUntil(
+            () => cbview.querySelector('.dropdown--contacts')
+        );
+        dropdown.querySelector('.add-contact').click()
+
+        const modal = _converse.api.modal.get('converse-add-contact-modal');
+        await u.waitUntil(() => u.isVisible(modal), 1000);
+
+        const input_jid = modal.querySelector('input[name="jid"]');
+        input_jid.value = 'test@exam';
+
+        const evt = new Event('input');
+        input_jid.dispatchEvent(evt);
+
+        // Wait for the suggestion box to show providers from the API
+        await u.waitUntil(() => modal.querySelector('.suggestion-box li'), 2000);
+        const suggestions = modal.querySelectorAll('.suggestion-box li');
+        expect(suggestions.length).toBeGreaterThan(0);
+
+        // Check that one of the suggestions is from the mocked providers
+        const suggestionTexts = Array.from(suggestions).map(li => li.textContent);
+        expect(suggestionTexts).toContain('example.com');
+    }));
 });

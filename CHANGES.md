@@ -11,6 +11,7 @@
 - #3863: Shift `unescapeHTML` helper function (used to set `isOnlyEmoji` on a message) to converse-headless
 - #3889: MUC join: Use room jids localpart as name in case name or identity not found
 - #3916: Add support for XEP-0461 Message Replies, allowing users to reply to specific messages
+- Don't show invitations to groupchats in which the user is already present
 - Don't render unfurls for retracted messages.
 
 ## 12.0.0 (2025-08-28)

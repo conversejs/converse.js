@@ -505,7 +505,7 @@ function parseXFormField(field, readonly, stanza) {
     } else if (type === 'fixed') {
         const text = field.querySelector('value')?.textContent;
         return { text, label, type, var: v, ...result };
-    } else if (type === 'jid-multi') {
+    } else if (type === 'jid-multi' || type === 'text-multi') {
         const values = Array.from(field.querySelectorAll(':scope > value')).map((el) => el?.textContent);
         return {
             type,
@@ -513,16 +513,6 @@ function parseXFormField(field, readonly, stanza) {
             label,
             values,
             required: !!field.querySelector('required'),
-            ...result,
-        };
-    } else if (type === 'text-multi') {
-        const values = Array.from(field.querySelectorAll(':scope > value')).map((el) => el?.textContent);
-        return {
-            type,
-            label,
-            var: v,
-            required: !!field.querySelector('required'),
-            values,
             ...result,
         };
     } else if (type === 'boolean') {

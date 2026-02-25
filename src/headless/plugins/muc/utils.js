@@ -132,10 +132,10 @@ export async function onDirectMUCInvitation(message) {
 
     let result;
 
-    const { chatboxes } = _converse.state;
-    const rooms = chatboxes.filter((m) => m.get('type') === CHATROOMS_TYPE && !m.get('closed'));
+    const { api } = _converse;
+    const room = await api.rooms.get(room_jid);
 
-    if (rooms.find(e => e.get('id') == room_jid)) {
+    if (room) {
         result = false;
     } 
     else if (api.settings.get('auto_join_on_invite')) {

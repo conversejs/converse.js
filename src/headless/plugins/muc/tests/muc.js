@@ -157,10 +157,12 @@ describe("Groupchats", function () {
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const model = _converse.chatboxes.get(muc_jid);
 
+            expect(api.rooms.get(model.muc_jid)).not.toBeNull();
+
             spyOn(_converse.exports, 'onDirectMUCInvitation').and.callThrough();
             spyOn(api, 'hook').and.callThrough();
             const apiRoomsGet = api.rooms.get;
-            spyOn(api.rooms, 'get').and.callFake(apiRoomsGet(...arguments));
+            spyOn(api.rooms, 'get').and.callFake(function () { return apiRoomsGet(...arguments); });
 
             expect(model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
 
@@ -185,7 +187,7 @@ describe("Groupchats", function () {
             const apiHookCalls = api.hook.calls.all();
             const apiRoomsGetCalls = api.rooms.get.calls.all();
             expect(apiHookCalls.filter(e => e.args[0] == 'confirmDirectMUCInvitation' && e.args[1].jid == muc_jid)).toHaveSize(0);
-            expect(apiRoomsGetCalls.filter(e => e.args[1].jid == muc_jid)).toHaveSize(0);
+            expect(apiRoomsGetCalls.filter(e => e.args[0] == muc_jid)).toHaveSize(1);
         }));
     });
 });

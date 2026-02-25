@@ -160,9 +160,7 @@ describe("Groupchats", function () {
             spyOn(_converse.exports, 'onDirectMUCInvitation').and.callThrough();
             spyOn(api, 'hook').and.callThrough();
             const apiRoomsGet = api.rooms.get;
-            spyOn(api.rooms, 'get').and.callFake(function () {
-                apiRoomsGet(...arguments)
-            });
+            spyOn(api.rooms, 'get').and.callFake(apiRoomsGet(...arguments));
 
             expect(model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
 

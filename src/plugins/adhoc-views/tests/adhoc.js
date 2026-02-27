@@ -964,10 +964,10 @@ describe("Ad-hoc commands consisting of multiple steps", function () {
         sel = `iq[to="${entity_jid}"][type="set"] command`;
         iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
 
-        expect(Strophe.serialize(iq)).toBe(
-            `<iq id="${iq.getAttribute("id")}" to="${entity_jid}" type="set" xmlns="jabber:client">`+
-                `<command action="execute" node="get-online-users-list" xmlns="http://jabber.org/protocol/commands"/>`+
-            `</iq>`
+        expect(iq).toEqualStanza(stx`
+            <iq id="${iq.getAttribute("id")}" to="${entity_jid}" type="set" xmlns="jabber:client">
+                <command action="execute" node="get-online-users-list" xmlns="http://jabber.org/protocol/commands"/>
+            </iq>`
         );
 
         const sessionid = "f4d477d3-d8b1-452d-95c9-fece53ef99ad";

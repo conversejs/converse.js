@@ -1050,7 +1050,7 @@ describe("Ad-hoc commands consisting of multiple steps", function () {
             </iq>`
         ));
 
-        const dummy = await u.waitUntil(() => adhoc_form.querySelector('form form textarea'));
+        const dummy = await u.waitUntil(() => adhoc_form.querySelector('form form textarea[name="onlineuserjids"]'));
 
         const form = await u.waitUntil(() => adhoc_form.querySelector('form form'));
         expect(form).toBeDefined();

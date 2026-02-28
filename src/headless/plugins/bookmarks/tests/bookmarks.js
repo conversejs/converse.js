@@ -1,6 +1,6 @@
 /* global converse */
 import mock from '../../../tests/mock.js';
-const { sizzle, stx, u } = converse.env;
+const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('A bookmark', function () {
     it(
@@ -16,7 +16,7 @@ describe('A bookmark', function () {
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle('iq publish[node="urn:xmpp:bookmarks:1"]', s).length).pop(),
+                IQ_stanzas.filter((s) => sizzle(`iq publish[node="${Strophe.NS.BOOKMARKS2}"]`, s).length).pop(),
             );
 
             expect(sent_stanza).toEqualStanza(
@@ -26,9 +26,9 @@ describe('A bookmark', function () {
                     type="set"
                     xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                    <publish node="urn:xmpp:bookmarks:1">
+                    <publish node="${Strophe.NS.BOOKMARKS2}">
                         <item id="${muc.get('jid')}">
-                            <conference xmlns="urn:xmpp:bookmarks:1" autojoin="true" name="${settings.name}">
+                            <conference xmlns="${Strophe.NS.BOOKMARKS2}" autojoin="true" name="${settings.name}">
                                 <nick>${nick}</nick>
                                 <password>${settings.password}</password>
                             </conference>
@@ -81,7 +81,7 @@ describe('A bookmark', function () {
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             let sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle('iq publish[node="urn:xmpp:bookmarks:1"]', s).length).pop(),
+                IQ_stanzas.filter((s) => sizzle(`iq publish[node="${Strophe.NS.BOOKMARKS2}"]`, s).length).pop(),
             );
 
             const stanza = stx`<iq
@@ -139,7 +139,7 @@ describe('A bookmark', function () {
             );
 
             sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle('iq publish[node="urn:xmpp:bookmarks:1"]', s).length).pop(),
+                IQ_stanzas.filter((s) => sizzle(`iq publish[node="${Strophe.NS.BOOKMARKS2}"]`, s).length).pop(),
             );
 
             expect(sent_stanza).toEqualStanza(
@@ -149,9 +149,9 @@ describe('A bookmark', function () {
                     type="set"
                     xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                    <publish node="urn:xmpp:bookmarks:1">
+                    <publish node="${Strophe.NS.BOOKMARKS2}">
                         <item id="${muc_jid}">
-                            <conference xmlns="urn:xmpp:bookmarks:1" name="${settings.name}" autojoin="true">
+                            <conference xmlns="${Strophe.NS.BOOKMARKS2}" name="${settings.name}" autojoin="true">
                                 <nick>${newnick}</nick>
                                 <password>${settings.password}</password>
                             </conference>
@@ -267,9 +267,9 @@ describe('A bookmark', function () {
                         type="set"
                         xmlns="jabber:client">
                     <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                        <publish node="urn:xmpp:bookmarks:1">
+                        <publish node="${Strophe.NS.BOOKMARKS2}">
                             <item id="${muc_jid}">
-                                <conference xmlns="urn:xmpp:bookmarks:1" name="${settings.name}" autojoin="false">
+                                <conference xmlns="${Strophe.NS.BOOKMARKS2}" name="${settings.name}" autojoin="false">
                                     <nick>${nick}</nick>
                                 </conference>
                             </item>
@@ -319,15 +319,15 @@ describe('A bookmark', function () {
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             let sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle('publish[node="urn:xmpp:bookmarks:1"]', s).length).pop(),
+                IQ_stanzas.filter((s) => sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"]`, s).length).pop(),
             );
 
             expect(sent_stanza).toEqualStanza(stx`
             <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                    <publish node="urn:xmpp:bookmarks:1">
+                    <publish node="${Strophe.NS.BOOKMARKS2}">
                         <item id="${muc1_jid}">
-                            <conference xmlns="urn:xmpp:bookmarks:1" autojoin="true" name="Hamlet"/>
+                            <conference xmlns="${Strophe.NS.BOOKMARKS2}" autojoin="true" name="Hamlet"/>
                         </item>
                     </publish>
                     <publish-options>
@@ -362,16 +362,16 @@ describe('A bookmark', function () {
 
             sent_stanza = await u.waitUntil(() =>
                 IQ_stanzas.filter(
-                    (s) => sizzle('publish[node="urn:xmpp:bookmarks:1"] conference[name="Balcony"]', s).length,
+                    (s) => sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="Balcony"]`, s).length,
                 ).pop(),
             );
 
             expect(sent_stanza).toEqualStanza(stx`
             <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                    <publish node="urn:xmpp:bookmarks:1">
+                    <publish node="${Strophe.NS.BOOKMARKS2}">
                         <item id="${muc2_jid}">
-                            <conference xmlns="urn:xmpp:bookmarks:1" autojoin="true" name="Balcony">
+                            <conference xmlns="${Strophe.NS.BOOKMARKS2}" autojoin="true" name="Balcony">
                                 <nick>romeo</nick>
                             </conference>
                         </item>
@@ -413,16 +413,16 @@ describe('A bookmark', function () {
 
             sent_stanza = await u.waitUntil(() =>
                 IQ_stanzas.filter(
-                    (s) => sizzle('publish[node="urn:xmpp:bookmarks:1"] conference[name="Garden"]', s).length,
+                    (s) => sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="Garden"]`, s).length,
                 ).pop(),
             );
 
             expect(sent_stanza).toEqualStanza(stx`
             <iq xmlns="jabber:client" type="set" from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                    <publish node="urn:xmpp:bookmarks:1">
+                    <publish node="${Strophe.NS.BOOKMARKS2}">
                         <item id="${muc3_jid}">
-                            <conference xmlns="urn:xmpp:bookmarks:1" autojoin="false" name="Garden">
+                            <conference xmlns="${Strophe.NS.BOOKMARKS2}" autojoin="false" name="Garden">
                                 <nick>r0meo</nick>
                                 <password>secret</password>
                                 <extensions>
@@ -469,7 +469,7 @@ describe('A bookmark', function () {
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle(`items[node="urn:xmpp:bookmarks:1"]`, s).length).pop(),
+                IQ_stanzas.filter((s) => sizzle(`items[node="${Strophe.NS.BOOKMARKS2}"]`, s).length).pop(),
             );
 
             // Simulate server response with item-not-found error
@@ -479,7 +479,7 @@ describe('A bookmark', function () {
                         from="${sent_stanza.getAttribute('to')}"
                         to="${sent_stanza.getAttribute('from')}">
                     <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                        <items node="urn:xmpp:bookmarks:1"/>
+                        <items node="${Strophe.NS.BOOKMARKS2}"/>
                     </pubsub>
                     <error code="404" type="cancel">
                         <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
@@ -521,7 +521,7 @@ describe('A bookmark', function () {
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             let sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle('publish[node="urn:xmpp:bookmarks:1"]', s).length).pop(),
+                IQ_stanzas.filter((s) => sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"]`, s).length).pop(),
             );
 
             // Server acknowledges successful storage
@@ -542,17 +542,169 @@ describe('A bookmark', function () {
 
             // Check that a retract stanza is sent as per XEP-0402
             sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle('retract[node="urn:xmpp:bookmarks:1"]', s).length).pop(),
+                IQ_stanzas.filter((s) => sizzle(`retract[node="${Strophe.NS.BOOKMARKS2}"]`, s).length).pop(),
             );
 
             expect(sent_stanza).toEqualStanza(stx`
                 <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                     <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                        <retract node="urn:xmpp:bookmarks:1" notify="true">
+                        <retract node="${Strophe.NS.BOOKMARKS2}" notify="true">
                             <item id="${muc_jid}"/>
                         </retract>
                     </pubsub>
                 </iq>`);
         }),
+    );
+
+    it("can be pinned and sends out a stanza", mock.initConverse(
+        ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const bare_jid = _converse.session.get('bare_jid');
+            const muc_jid = 'theplay@conference.shakespeare.lit';
+            const { api, state } = _converse;
+
+            // First create a bookmark
+            state.bookmarks.create({
+                jid: muc_jid,
+                autojoin: true,
+                name: 'The Play',
+                nick: 'romeo',
+                extensions: [],
+            });
+
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
+            await u.waitUntil(() => state.chatboxes.length === 1);
+
+            const IQ_stanzas = api.connection.get().IQ_stanzas;
+
+            // Now pin the bookmark
+            const bookmark = state.bookmarks.findWhere({ jid: muc_jid });
+            expect(bookmark).toBeTruthy();
+            await state.bookmarks.pinBookmark(bookmark);
+
+
+            const sent_stanza = await u.waitUntil(() =>
+                IQ_stanzas.filter((s) =>
+                    sizzle(
+                        `publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="The Play"] extensions pinned`,
+                        s,
+                    ).length
+                ).pop()
+            );
+
+            expect(bookmark.pinned).toBe(true);
+
+            const chatbox = state.chatboxes.get(muc_jid);
+            expect(chatbox.get('pinned')).toBe(true);
+
+            expect(sent_stanza).toEqualStanza(stx`
+                <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                    <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                        <publish node="${Strophe.NS.BOOKMARKS2}">
+                            <item id="${muc_jid}">
+                                <conference xmlns="${Strophe.NS.BOOKMARKS2}" autojoin="true" name="The Play">
+                                    <nick>romeo</nick>
+                                    <extensions>
+                                        <pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>
+                                    </extensions>
+                                </conference>
+                            </item>
+                        </publish>
+                        <publish-options>
+                            <x type="submit" xmlns="jabber:x:data">
+                                <field type="hidden" var="FORM_TYPE">
+                                    <value>http://jabber.org/protocol/pubsub#publish-options</value>
+                                </field>
+                                <field var='pubsub#persist_items'>
+                                    <value>true</value>
+                                </field>
+                                <field var='pubsub#max_items'>
+                                    <value>max</value>
+                                </field>
+                                <field var='pubsub#send_last_published_item'>
+                                    <value>never</value>
+                                </field>
+                                <field var='pubsub#access_model'>
+                                    <value>whitelist</value>
+                                </field>
+                            </x>
+                        </publish-options>
+                    </pubsub>
+                </iq>`);
+        })
+    );
+
+    it("can be unpinned and sends out a stanza", mock.initConverse(
+        ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const bare_jid = _converse.session.get('bare_jid');
+            const muc_jid = 'theplay@conference.shakespeare.lit';
+            const { api, state } = _converse;
+
+            // First create a pinned bookmark
+            const bookmark = state.bookmarks.create({
+                jid: muc_jid,
+                autojoin: true,
+                name: 'The Play',
+                nick: 'romeo',
+                extensions: [`<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`],
+            });
+
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
+            await u.waitUntil(() => state.chatboxes.length === 1);
+
+            const IQ_stanzas = api.connection.get().IQ_stanzas;
+
+            expect(bookmark.pinned).toBe(true);
+            expect(state.chatboxes.get(muc_jid).get('pinned')).toBe(true);
+
+            // Now unpin the bookmark
+            await state.bookmarks.unpinBookmark(bookmark);
+
+            const sent_stanza = await u.waitUntil(() =>
+                IQ_stanzas.filter((s) => {
+                    return sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="The Play"]`, s).length
+                }).pop()
+            );
+
+            expect(bookmark.pinned).toBe(false);
+            expect(state.chatboxes.get(muc_jid).get('pinned')).toBe(false);
+
+            expect(sent_stanza).toEqualStanza(stx`
+                <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                    <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                        <publish node="${Strophe.NS.BOOKMARKS2}">
+                            <item id="${muc_jid}">
+                                <conference xmlns="${Strophe.NS.BOOKMARKS2}" autojoin="true" name="The Play">
+                                    <nick>romeo</nick>
+                                </conference>
+                            </item>
+                        </publish>
+                        <publish-options>
+                            <x type="submit" xmlns="jabber:x:data">
+                                <field type="hidden" var="FORM_TYPE">
+                                    <value>http://jabber.org/protocol/pubsub#publish-options</value>
+                                </field>
+                                <field var='pubsub#persist_items'>
+                                    <value>true</value>
+                                </field>
+                                <field var='pubsub#max_items'>
+                                    <value>max</value>
+                                </field>
+                                <field var='pubsub#send_last_published_item'>
+                                    <value>never</value>
+                                </field>
+                                <field var='pubsub#access_model'>
+                                    <value>whitelist</value>
+                                </field>
+                            </x>
+                        </publish-options>
+                    </pubsub>
+                </iq>`);
+        })
     );
 });

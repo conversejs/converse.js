@@ -47,6 +47,7 @@ export default (el) => {
             ? html`<converse-user-profile></converse-user-profile>
                   <div class="controlbox-pane">
                       <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
+                      <converse-pinned-bookmarks class="controlbox-section"></converse-pinned-bookmarks>
                       <div id="chatrooms" class="controlbox-section"><converse-rooms-list></converse-rooms-list></div>
                       ${api.settings.get('authentication') === ANONYMOUS
                           ? ''

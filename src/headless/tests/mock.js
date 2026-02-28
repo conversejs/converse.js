@@ -72,7 +72,7 @@ export const pend_names = ['Lord Capulet', 'Guard', 'Servant'];
 export const cur_names = Object.keys(current_contacts_map);
 
 export async function waitForRoster(_converse, type = 'current', length = -1, include_nick = true, grouped = true) {
-    const { Stanza, u, sizzle } = window.converse.env;
+    const { Stanza, Strophe, u, sizzle } = window.converse.env;
     const s = `iq[type="get"] query[xmlns="${Strophe.NS.ROSTER}"]`;
     const iq = await u.waitUntil(() =>
         _converse.api.connection
@@ -184,7 +184,7 @@ export async function waitUntilBookmarksReturned(
     ],
     node = 'urn:xmpp:bookmarks:1',
 ) {
-    const { u, sizzle } = window.converse.env;
+    const { Strophe, u, sizzle } = window.converse.env;
     await waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [{ 'category': 'pubsub', 'type': 'pep' }], features);
     const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
     const sent_stanza = await u.waitUntil(() =>
@@ -220,11 +220,11 @@ export async function waitUntilBookmarksReturned(
                 id="${sent_stanza.getAttribute('id')}"
                 xmlns="jabber:client">
             <pubsub xmlns="${Strophe.NS.PUBSUB}">
-                <items node="urn:xmpp:bookmarks:1">
+                <items node="${Strophe.NS.BOOKMARKS2}">
                 ${bookmarks.map(
                     (b) => stx`
                     <item id="${b.jid}">
-                        <conference xmlns="urn:xmpp:bookmarks:1"
+                        <conference xmlns="${Strophe.NS.BOOKMARKS2}"
                                     name="${b.name}"
                                     autojoin="${b.autojoin ?? false}">
                             ${b.nick ? stx`<nick>${b.nick}</nick>` : ''}

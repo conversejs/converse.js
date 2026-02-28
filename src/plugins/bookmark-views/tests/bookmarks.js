@@ -47,14 +47,14 @@ describe('Bookmarks', function () {
             <event xmlns='http://jabber.org/protocol/pubsub#event'>
                 <items node='urn:xmpp:bookmarks:1'>
                     <item id="theplay@conference.shakespeare.lit">
-                        <conference xmlns="urn:xmpp:bookmarks:1"
+                        <conference xmlns="${Strophe.NS.BOOKMARKS2}"
                                 name="The Play's the Thing"
                                 autojoin="true" >
                             <nick>JC</nick>
                         </conference>
                     </item>
                     <item id="another@conference.shakespeare.lit">
-                        <conference xmlns="urn:xmpp:bookmarks:1"
+                        <conference xmlns="${Strophe.NS.BOOKMARKS2}"
                                 name="Another bookmark"
                                 autojoin="false">
                             <nick>JC</nick>
@@ -78,19 +78,19 @@ describe('Bookmarks', function () {
                         id="${u.getUniqueId()}"
                         xmlns="jabber:client">
             <event xmlns="http://jabber.org/protocol/pubsub#event">
-                <items node="urn:xmpp:bookmarks:1">
+                <items node="${Strophe.NS.BOOKMARKS2}">
                     <item id="theplay@conference.shakespeare.lit">
-                        <conference xmlns="urn:xmpp:bookmarks:1" name="The Play's the Thing" autojoin="true">
+                        <conference xmlns="${Strophe.NS.BOOKMARKS2}" name="The Play's the Thing" autojoin="true">
                             <nick>JC</nick>
                         </conference>
                     </item>
                     <item id="another@conference.shakespeare.lit">
-                        <conference xmlns="urn:xmpp:bookmarks:1" name="Second bookmark" autojoin="false">
+                        <conference xmlns="${Strophe.NS.BOOKMARKS2}" name="Second bookmark" autojoin="false">
                             <nick>JC</nick>
                         </conference>
                     </item>
                     <item id="yab@conference.shakespeare.lit">
-                        <conference xmlns="urn:xmpp:bookmarks:1" name="Yet another bookmark" autojoin="false">
+                        <conference xmlns="${Strophe.NS.BOOKMARKS2}" name="Yet another bookmark" autojoin="false">
                             <nick>JC</nick>
                         </conference>
                     </item>
@@ -115,19 +115,19 @@ describe('Bookmarks', function () {
                         id="${u.getUniqueId()}"
                         xmlns="jabber:client">
             <event xmlns="http://jabber.org/protocol/pubsub#event">
-                <items node="urn:xmpp:bookmarks:1">
+                <items node="${Strophe.NS.BOOKMARKS2}">
                     <item id="theplay@conference.shakespeare.lit">
-                        <conference xmlns="urn:xmpp:bookmarks:1" name="The Play's the Thing" autojoin="false">
+                        <conference xmlns="${Strophe.NS.BOOKMARKS2}" name="The Play's the Thing" autojoin="false">
                             <nick>JC</nick>
                         </conference>
                     </item>
                     <item id="another@conference.shakespeare.lit">
-                        <conference xmlns="urn:xmpp:bookmarks:1" name="Second bookmark" autojoin="false">
+                        <conference xmlns="${Strophe.NS.BOOKMARKS2}" name="Second bookmark" autojoin="false">
                             <nick>JC</nick>
                         </conference>
                     </item>
                     <item id="yab@conference.shakespeare.lit">
-                        <conference xmlns="urn:xmpp:bookmarks:1" name="Yet another bookmark" autojoin="false">
+                        <conference xmlns="${Strophe.NS.BOOKMARKS2}" name="Yet another bookmark" autojoin="false">
                             <nick>JC</nick>
                         </conference>
                     </item>
@@ -162,13 +162,13 @@ describe('Bookmarks', function () {
             // Client requests all items
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle('items[node="urn:xmpp:bookmarks:1"]', s).length).pop(),
+                IQ_stanzas.filter((s) => sizzle(`items[node="${Strophe.NS.BOOKMARKS2}"]`, s).length).pop(),
             );
 
             expect(sent_stanza).toEqualStanza(
                 stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                    <items node="urn:xmpp:bookmarks:1"/>
+                    <items node="${Strophe.NS.BOOKMARKS2}"/>
                 </pubsub>
             </iq>`,
             );
@@ -184,16 +184,16 @@ describe('Bookmarks', function () {
                 to="${_converse.jid}"
                 id="${sent_stanza.getAttribute('id')}">
             <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                <items node="urn:xmpp:bookmarks:1">
+                <items node="${Strophe.NS.BOOKMARKS2}">
                 <item id="theplay@conference.shakespeare.lit">
-                    <conference xmlns="urn:xmpp:bookmarks:1"
+                    <conference xmlns="${Strophe.NS.BOOKMARKS2}"
                                 name="The Play's the Thing"
                                 autojoin="true">
                     <nick>JC</nick>
                     </conference>
                 </item>
                 <item id="orchard@conference.shakespeare.lit">
-                    <conference xmlns="urn:xmpp:bookmarks:1"
+                    <conference xmlns="${Strophe.NS.BOOKMARKS2}"
                                 name="The Orchard"
                                 autojoin="1">
                         <extensions>

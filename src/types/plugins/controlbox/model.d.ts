@@ -9,7 +9,6 @@ export default ControlBox;
 declare class ControlBox extends Model<import("@converse/skeletor").ModelAttributes> {
     constructor(attributes?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
     defaults(): {
-        bookmarked: boolean;
         box_id: string;
         chat_state: any;
         closed: boolean;

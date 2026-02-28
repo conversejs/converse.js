@@ -5,15 +5,16 @@ import _converse from './_converse.js';
 import converse from './api/public.js';
 import log from '@converse/log';
 import ModelWithMessages from './model-with-messages.js';
+import ModelWithBookmark from './model-with-bookmark.js';
 
 const { u } = converse.env;
 
 /**
  * Base class for all chat boxes. Provides common methods.
  */
-export default class ChatBoxBase extends ModelWithMessages(Model) {
-    initialize() {
-        super.initialize();
+export default class ChatBoxBase extends ModelWithBookmark(ModelWithMessages(Model)) {
+    async initialize() {
+        await super.initialize();
         const jid = this.get('jid');
         if (!jid) {
             // XXX: The `validate` method will prevent this model

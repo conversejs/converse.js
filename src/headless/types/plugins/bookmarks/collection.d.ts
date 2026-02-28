@@ -78,6 +78,16 @@ declare class Bookmarks extends Collection<Bookmark> {
      */
     onBookmarksReceivedError(deferred: any, iq: Element): Promise<void>;
     getUnopenedBookmarks(): Promise<Bookmark[]>;
+    /**
+     *
+     * @param {Bookmark} bookmark
+     */
+    pinBookmark(bookmark: Bookmark): void;
+    /**
+     *
+     * @param {Bookmark} bookmark
+     */
+    unpinBookmark(bookmark: Bookmark): void;
 }
 import Bookmark from './model.js';
 import { Collection } from '@converse/skeletor';

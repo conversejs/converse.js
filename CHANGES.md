@@ -7,6 +7,7 @@
 - #1509: You can now chat with a bare-host JID.
 - #3560: Emoji shortnames are now matched case-sensitively
 - #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds
+- #3949: Allow pinning bookmarked conversations to the top (XEP-0469)
 - #3978: Add support for XEP-0202 Entity Time.
 - Full XEP-0172 User Nickname support.
 - fix(chatview): The contact's name and status message in a chat header were painted the same

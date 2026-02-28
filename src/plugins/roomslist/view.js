@@ -82,6 +82,12 @@ export class RoomsList extends CustomElement {
         }
     }
 
+    /** @param {Event} ev */
+    async pinRoom(ev) {
+        ev.preventDefault();
+        // Coming soon
+    }
+
     /** @param {Event} [ev] */
     toggleRoomsList(ev) {
         ev?.preventDefault?.();

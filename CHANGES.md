@@ -7,6 +7,7 @@
 - #1509: You can now chat with a bare-host JID.
 - #3560: Emoji shortnames are now matched case-sensitively
 - #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds
+- #3949: Allow pinning bookmarked conversations to the top (XEP-0469)
 - #3978: Add support for XEP-0202 Entity Time.
 - Full XEP-0172 User Nickname support.
 - feat: 1:1 audio calls over Jingle ([XEP-0167](https://xmpp.org/extensions/xep-0167.html)), set up with Jingle Message Initiation ([XEP-0353](https://xmpp.org/extensions/xep-0353.html)) and STUN/TURN discovery via [XEP-0215](https://xmpp.org/extensions/xep-0215.html). Adds the `call_ice_servers` setting, and the `call` key of `visible_toolbar_buttons` now shows the audio call button in 1:1 chats (on by default).

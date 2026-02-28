@@ -38,6 +38,7 @@ converse.plugins.add('converse-app-chat', {
             },
             renderControlbox: () => html`
                 <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
+                <converse-pinned-bookmarks class="controlbox-section"></converse-pinned-bookmarks>
                 <div id="chatrooms" class="controlbox-section">
                     <converse-rooms-list></converse-rooms-list>
                 </div>

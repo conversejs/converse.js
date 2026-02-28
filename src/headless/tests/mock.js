@@ -223,11 +223,11 @@ export async function waitUntilBookmarksReturned(
                 id="${sent_stanza.getAttribute('id')}"
                 xmlns="jabber:client">
             <pubsub xmlns="${Strophe.NS.PUBSUB}">
-                <items node="urn:xmpp:bookmarks:1">
+                <items node="${Strophe.NS.BOOKMARKS2}">
                 ${bookmarks.map(
                     (b) => stx`
                     <item id="${b.jid}">
-                        <conference xmlns="urn:xmpp:bookmarks:1"
+                        <conference xmlns="${Strophe.NS.BOOKMARKS2}"
                                     name="${b.name}"
                                     autojoin="${b.autojoin ?? false}">
                             ${b.nick ? stx`<nick>${b.nick}</nick>` : ''}
@@ -459,7 +459,7 @@ export async function openAndEnterMUC(
 
     await room_creation_promise;
     const model = _converse.chatboxes.get(muc_jid);
-    await u.waitUntil(() => model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED);
+    await u.waitUntil(() => model.session.get('connection_status') === window.converse.ROOMSTATUS.ENTERED);
 
     const affs = api.settings.get('muc_fetch_members');
     const all_affiliations = Array.isArray(affs) ? affs : affs ? ['member', 'admin', 'owner'] : [];

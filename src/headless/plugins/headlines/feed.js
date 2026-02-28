@@ -9,7 +9,6 @@ import ChatBoxBase from '../../shared/chatbox.js';
 export default class HeadlinesFeed extends ChatBoxBase {
     defaults() {
         return {
-            'bookmarked': false,
             'hidden': isUniView() && !api.settings.get('singleton'),
             'message_type': 'headline',
             'num_unread': 0,

@@ -67,6 +67,7 @@
 - #3941: add adhoc completed command result and text-multi as merged lines of text
 - #3989: properly display occupant hats in details dialog
 - Don't render unfurls for retracted messages.
+- #3949: Allow pinning bookmarked conversations to the top (XEP-0469)
 
 ## 12.0.0 (2025-08-28)
 

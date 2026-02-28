@@ -82,6 +82,7 @@ class Bookmarks extends Collection {
             const groupchat = await api.rooms.create(bookmark.get('jid'), {
                 nick: bookmark.get('nick'),
                 password: bookmark.get('password'),
+                pinned: bookmark.get('pinned'),
             });
             groupchat.maybeShow();
         }
@@ -250,7 +251,7 @@ class Bookmarks extends Collection {
     markRoomAsBookmarked(bookmark) {
         const { chatboxes } = _converse.state;
         const groupchat = chatboxes.get(bookmark.get('jid'));
-        groupchat?.save('bookmarked', true);
+        groupchat?.setBookmark(bookmark);
     }
 
     /**
@@ -333,6 +334,48 @@ class Bookmarks extends Collection {
         await api.waitUntil('chatBoxesFetched');
         const { chatboxes } = _converse.state;
         return this.filter((b) => !chatboxes.get(b.get('jid')));
+    }
+
+    /**
+     * 
+     * @param {Bookmark} bookmark
+     */
+    pinBookmark(bookmark) {
+        const extensions = [...bookmark.get('extensions'), `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`];
+
+        bookmark.set('pinned', true);
+        
+        try {
+            api.bookmarks.set({
+                jid: bookmark.get('jid'),
+                extensions,
+            });
+        } catch (error) {
+            bookmark.set('pinned', false);
+            log.error('Error while trying to pin bookmark');
+            log.error(error);
+        }
+    }
+
+    /**
+     * 
+     * @param {Bookmark} bookmark
+     */
+    unpinBookmark(bookmark) {
+        const extensions = bookmark.get('extensions').filter(/** @param {String} e */ e => !(e.includes('<pinned')));
+
+        bookmark.set('pinned', false);
+        
+        try {
+            api.bookmarks.set({
+                jid: bookmark.get('jid'),
+                extensions,
+            });
+        } catch (error) {
+            bookmark.set('pinned', true);
+            log.error('Error while trying to unpin bookmark');
+            log.error(error);
+        }
     }
 }
 

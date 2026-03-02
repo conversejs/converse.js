@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-16 09:03+0200\n"
-"PO-Revision-Date: 2025-12-24 20:00+0000\n"
+"PO-Revision-Date: 2026-03-03 15:09+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.15.1\n"
+"X-Generator: Weblate 5.17-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -862,7 +862,7 @@ msgstr "Chapeaux"
 
 #: dist/converse-no-dependencies.js:88549
 msgid "Occupant Id"
-msgstr "ID de l'occupant"
+msgstr "Id de l'occupant"
 
 #: dist/converse-no-dependencies.js:88663
 #: dist/converse-no-dependencies.js:89374
@@ -1278,7 +1278,7 @@ msgstr "Copier"
 
 #: dist/converse-no-dependencies.js:94621
 msgid "Reply"
-msgstr ""
+msgstr "Réponse"
 
 #: dist/converse-no-dependencies.js:94631
 msgid "Quote"
@@ -1294,7 +1294,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:95475
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #: dist/converse-no-dependencies.js:95476
 msgid "Mute"
@@ -1310,19 +1310,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:95479
 msgid "Volume"
-msgstr ""
+msgstr "Volume"
 
 #: dist/converse-no-dependencies.js:95480
 msgid "Audio player"
-msgstr ""
+msgstr "Lecteur audio"
 
 #: dist/converse-no-dependencies.js:95481
 msgid "Loading audio..."
-msgstr ""
+msgstr "Chargement de l’audio…"
 
 #: dist/converse-no-dependencies.js:95482
 msgid "Error loading audio"
-msgstr ""
+msgstr "Erreur en chargeant l’audio"
 
 #: dist/converse-no-dependencies.js:95483
 #, fuzzy
@@ -1330,13 +1330,12 @@ msgid "Current time"
 msgstr "Version actuelle"
 
 #: dist/converse-no-dependencies.js:95484
-#, fuzzy
 msgid "Duration"
-msgstr "Description"
+msgstr "Durée"
 
 #: dist/converse-no-dependencies.js:95485
 msgid "Playback speed"
-msgstr ""
+msgstr "Vitesse de lecture"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:99219
@@ -1495,14 +1494,12 @@ msgid "Retry"
 msgstr "Réessayer"
 
 #: dist/converse-no-dependencies.js:101956
-#, fuzzy
 msgid "Replying to a message"
-msgstr "Envoyer le message"
+msgstr "Répondre à un message"
 
 #: dist/converse-no-dependencies.js:101963
-#, fuzzy
 msgid "(empty message)"
-msgstr "Nouveaux messages"
+msgstr "(message vide)"
 
 #: dist/converse-no-dependencies.js:102291
 msgid "This message has been edited"
@@ -1648,12 +1645,11 @@ msgstr "Voulez-vous vraiment effacer les messages de cette conversation ?"
 #: dist/converse-no-dependencies.js:108595
 #, javascript-format
 msgid "Replying to %1$s"
-msgstr ""
+msgstr "Réponse à %1$s"
 
 #: dist/converse-no-dependencies.js:108597
-#, fuzzy
 msgid "Cancel reply"
-msgstr "Annuler"
+msgstr "Annuler la réponse"
 
 #: dist/converse-no-dependencies.js:108683
 #: dist/converse-no-dependencies.js:117634
@@ -2739,7 +2735,7 @@ msgstr "Client sans empreinte de clé OMEMO"
 
 #: dist/converse-no-dependencies.js:132163
 msgid "Checkbox for selecting the following device"
-msgstr "Case à cocher pour sélectionner le périphérique OMEMO suivant"
+msgstr "Case à cocher pour sélectionner le client OMEMO suivant"
 
 #: dist/converse-no-dependencies.js:132173
 msgid "Other OMEMO-enabled devices"
@@ -2774,7 +2770,7 @@ msgstr "Générer de nouvelles clés et empreintes de clés"
 #: dist/converse-no-dependencies.js:132528
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr ""
-"Désolé, une erreur est survenue en tentant de supprimer les clients OMEMO."
+"Désolé, une erreur est survenue en essayant de supprimer les clients OMEMO."
 
 #: dist/converse-no-dependencies.js:132561
 msgid ""
@@ -2817,68 +2813,68 @@ msgstr "S’inscrire"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "XMPP Compliance"
-msgstr ""
+msgstr "Compliance XMPP"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Free of charge"
-msgstr "rôle modifié"
+msgstr "Gratuit"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Yes"
-msgstr ""
+msgstr "Oui"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Company"
-msgstr ""
+msgstr "Entreprise"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Professional hosting"
-msgstr ""
+msgstr "Hébergement professionnel"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Password reset"
-msgstr "Mot de passe incorrect"
+msgstr "Réinitialisation du mot de passe"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Legal notice"
-msgstr ""
+msgstr "Mentions légales"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Online since"
-msgstr "Utilisateurs en ligne"
+msgstr "En ligne depuis"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Message archive storage time"
-msgstr "Archivage des messages"
+msgstr "Temps de stockage des messages archivés"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s days"
-msgstr "%1$s dit"
+msgstr "%1$s jours"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload size limit"
-msgstr ""
+msgstr "Taille maximale des fichiers envoyés"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload storage time"
-msgstr ""
+msgstr "Durée de conservation des fichiers envoyés"
 
 #: dist/converse-no-dependencies.js:133752
 msgid "With these providers you can register directly inside this app."
 msgstr ""
+"Avec ces fournisseurs vous pouvez créer un compte directement depuis cette "
+"application."
 
 #: dist/converse-no-dependencies.js:133752
 msgid "For these providers, you'll need to register externally via a web page."
 msgstr ""
+"Pour ces fournisseurs, vous devrez créer un compte depuis une page web "
+"externe."
 
 #: dist/converse-no-dependencies.js:133760
 msgid "Create your account"
@@ -2901,19 +2897,17 @@ msgid "Please enter the XMPP provider to register with:"
 msgstr "Veuillez saisir le fournisseur XMPP auprès duquel s’inscrire :"
 
 #: dist/converse-no-dependencies.js:133777
-#, fuzzy
 msgid "e.g. https://example.org/http-bind"
-msgstr "par ex. wss://example.org/xmpp-websocket"
+msgstr "par ex. https://example.org/http-bind"
 
 #. Show the categorized provider list
 #: dist/converse-no-dependencies.js:133780
-#, fuzzy
 msgid "Choose an XMPP provider to register with:"
-msgstr "Veuillez saisir le fournisseur XMPP auprès duquel s’inscrire :"
+msgstr "Veuillez sélectionner le fournisseur XMPP auprès duquel s’inscrire :"
 
 #: dist/converse-no-dependencies.js:133782
 msgid "Browse all providers"
-msgstr ""
+msgstr "Découvrir tous les fournisseurs"
 
 #: dist/converse-no-dependencies.js:134189
 msgid "Sorry, we're unable to connect to your chosen provider."

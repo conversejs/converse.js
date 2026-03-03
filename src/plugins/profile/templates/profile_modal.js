@@ -145,7 +145,7 @@ export default (el) => {
                         <div class="col">
                             <div class="px-3">
                                 <label class="col-form-label">${i18n_jid}:</label>
-                                <div>${o.jid}</div>
+                                <div><a href="xmpp:${o.jid}">${o.jid}</a> <a href="https://xmpp.link/#${o.jid}">web</a></div>
                             </div>
                         </div>
                     </div>

@@ -96,6 +96,20 @@ export class RoomsList extends CustomElement {
                 }));
     }
 
+    /** @param {Event} ev */
+    unpinRoom(ev) {
+        ev.preventDefault();
+        const target = /** @type {HTMLElement} */ (ev.currentTarget);
+        const jid = target.getAttribute('data-room-jid');
+        const { bookmarks } = _converse.state;
+        bookmarks
+            .where({ jid })
+            .forEach((b) =>
+                bookmarks.sendUnpinBookmarkStanza(b).then((res) => {
+                    console.log('Unpin bookmark stanza sent successfully', res);
+                }));
+    }
+
     /** @param {Event} [ev] */
     toggleRoomsList(ev) {
         ev?.preventDefault?.();

@@ -42,20 +42,28 @@ function tplRoomItem (el, room) {
             alt_text: i18n_leave_room,
             text: __('Leave'),
             icon_class: 'fa-sign-out-alt',
-            is_active: isCurrentlyOpen(room),
             handler: (ev) => el.closeRoom(ev)
         }),
     ];
 
     if (api.settings.get('allow_bookmarks')) {
-        buttons.push(tplRoomMenuItem({
-            room,
-            alt_text: __('Pin this groupchat to the top of the list'),
-            text: room.get('pinned') ? __('Unpin') : __('Pin'),
-            icon_class: 'fa-bookmark',
-            is_active: room.get('pinned'),
-            handler: (ev) => el.pinRoom(ev)
-        }))
+        if (!room.get('pinned')) {
+            buttons.push(tplRoomMenuItem({
+                room,
+                alt_text: __('Pin this groupchat to the top of the list'),
+                text: __('Pin'),
+                icon_class: 'fa-bookmark',
+                handler: (ev) => el.pinRoom(ev)
+            }))
+        } else {
+            buttons.push(tplRoomMenuItem({
+                room,
+                alt_text: __('Unpin this groupchat from the top of the list'),
+                text:  __('Unpin'),
+                icon_class: 'fa-bookmark-empty',
+                handler: (ev) => el.unpinRoom(ev)
+            }))
+        }
     }
 
     return html`
@@ -90,18 +98,17 @@ function tplRoomItem (el, room) {
  * @param {string} config.text
  * @param {function} config.handler
  * @param {string} config.icon_class
- * @param {boolean} config.is_active
  * @returns 
  */
 function tplRoomMenuItem (config) {
-    const { room, alt_text, text, handler, icon_class, is_active } = config;
+    const { room, alt_text, text, handler, icon_class } = config;
     return html`<a class="dropdown-item" role="button"
             @click="${handler}"
             tabindex="0"
             data-room-jid="${room.get('jid')}"
             data-room-name="${room.getDisplayName()}"
             title="${alt_text}">
-                <converse-icon class="fa ${icon_class}" size="1em" color="${ is_active ? 'var(--foreground-color)' : '' }"></converse-icon>
+                <converse-icon class="fa ${icon_class}" size="1em" color="${ isCurrentlyOpen(room) ? 'var(--foreground-color)' : '' }"></converse-icon>
                 ${text}
         </a>`;
 }

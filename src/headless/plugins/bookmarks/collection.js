@@ -251,6 +251,7 @@ class Bookmarks extends Collection {
         const { chatboxes } = _converse.state;
         const groupchat = chatboxes.get(bookmark.get('jid'));
         groupchat?.save('bookmarked', true);
+        groupchat?.save('pinned', bookmark.pinned);
     }
 
     /**
@@ -341,9 +342,52 @@ class Bookmarks extends Collection {
      * @returns {Promise<void|Element>}
      */
     async sendPinBookmarkStanza(bookmark) {
+        const extensions = [...bookmark.get('extensions'), '<pinned xmlns="urn:xmpp:bookmarks-pinning:0"/>'];
+
+        const { chatboxes } = _converse.state;
+        const groupchat = chatboxes.get(bookmark.get('jid'));
+        groupchat?.save('pinned', true);
+        
+        try {
+            return await api.sendIQ(this.buildExtensionsUpdateStanza(bookmark, extensions));
+        } catch (error) {
+            groupchat?.save('pinned', false);
+            log.error('Error while trying to pin bookmark');
+            log.error(error);
+        }
+    }
+
+    /**
+     * 
+     * @param {Bookmark} bookmark 
+     * @returns {Promise<void|Element>}
+     */
+    async sendUnpinBookmarkStanza(bookmark) {
+        const extensions = bookmark.get('extensions').filter(/** @param {String} e */ e => !(e.includes('<pinned')));
+
+        const { chatboxes } = _converse.state;
+        const groupchat = chatboxes.get(bookmark.get('jid'));
+        groupchat?.save('pinned', false);
+        
+        try {
+            return await api.sendIQ(this.buildExtensionsUpdateStanza(bookmark, extensions));
+        } catch (error) {
+            groupchat?.save('pinned', true);
+            log.error('Error while trying to unpin bookmark');
+            log.error(error);
+        }
+    }
+
+    /**
+     * 
+     * @param {Bookmark} bookmark
+     * @param {Array} extensions
+     * @returns {Stanza}
+     */
+    buildExtensionsUpdateStanza(bookmark, extensions) {
         const bare_jid = _converse.session.get('bare_jid');
 
-        const stanza = stx`
+        return stx`
             <iq from="${bare_jid}"
                 to="${bare_jid}"
                 type="set"
@@ -356,29 +400,17 @@ class Bookmarks extends Collection {
                                 autojoin="${bookmark.get('autojoin')}">
                             ${bookmark.get('nick') ? stx`<nick>${bookmark.get('nick')}</nick>` : ''}
                             ${bookmark.get('password') ? stx`<password>${bookmark.get('password')}</password>` : ''}
-                            <extensions>
-                                <pinned xmlns="urn:xmpp:bookmarks-pinning:0"/>
-                            </extensions>
+                            ${
+                                extensions.length
+                                    ? stx`<extensions>${extensions.map((e) => Stanza.fromString(e))}</extensions>`
+                                    : ''
+                            }
                         </conference>
                     </item>
                 </publish>
             </pubsub>
             </iq>`;
-        
-        try {
-            const iq = await api.sendIQ(stanza);
-
-            const { chatboxes } = _converse.state;
-            const groupchat = chatboxes.get(bookmark.get('jid'));
-            groupchat?.save('pinned', true);
-
-            return iq;
-        } catch (error) {
-            log.error('Error while trying to pin bookmark');
-            log.error(error);
-        }
     }
-        
 }
 
 export default Bookmarks;

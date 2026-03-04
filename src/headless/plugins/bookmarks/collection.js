@@ -334,6 +334,51 @@ class Bookmarks extends Collection {
         const { chatboxes } = _converse.state;
         return this.filter((b) => !chatboxes.get(b.get('jid')));
     }
+
+    /**
+     * 
+     * @param {Bookmark} bookmark 
+     * @returns {Promise<void|Element>}
+     */
+    async sendPinBookmarkStanza(bookmark) {
+        const bare_jid = _converse.session.get('bare_jid');
+
+        const stanza = stx`
+            <iq from="${bare_jid}"
+                to="${bare_jid}"
+                type="set"
+                xmlns="jabber:client">
+            <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                <publish node="${Strophe.NS.BOOKMARKS2}">
+                    <item id="${bookmark.get('jid')}">
+                        <conference xmlns="${Strophe.NS.BOOKMARKS2}"
+                                name="${bookmark.get('name') || nothing}"
+                                autojoin="${bookmark.get('autojoin')}">
+                            ${bookmark.get('nick') ? stx`<nick>${bookmark.get('nick')}</nick>` : ''}
+                            ${bookmark.get('password') ? stx`<password>${bookmark.get('password')}</password>` : ''}
+                            <extensions>
+                                <pinned xmlns="urn:xmpp:bookmarks-pinning:0"/>
+                            </extensions>
+                        </conference>
+                    </item>
+                </publish>
+            </pubsub>
+            </iq>`;
+        
+        try {
+            const iq = await api.sendIQ(stanza);
+
+            const { chatboxes } = _converse.state;
+            const groupchat = chatboxes.get(bookmark.get('jid'));
+            groupchat?.save('pinned', true);
+
+            return iq;
+        } catch (error) {
+            log.error('Error while trying to pin bookmark');
+            log.error(error);
+        }
+    }
+        
 }
 
 export default Bookmarks;

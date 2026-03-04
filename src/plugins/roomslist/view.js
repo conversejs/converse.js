@@ -83,9 +83,17 @@ export class RoomsList extends CustomElement {
     }
 
     /** @param {Event} ev */
-    async pinRoom(ev) {
+    pinRoom(ev) {
         ev.preventDefault();
-        // Coming soon
+        const target = /** @type {HTMLElement} */ (ev.currentTarget);
+        const jid = target.getAttribute('data-room-jid');
+        const { bookmarks } = _converse.state;
+        bookmarks
+            .where({ jid })
+            .forEach(/** @param {import('@converse/headless').Bookmark} b */ (b) =>
+                bookmarks.sendPinBookmarkStanza(b).then((res) => {
+                    console.log('Pin bookmark stanza sent successfully', res);
+                }));
     }
 
     /** @param {Event} [ev] */

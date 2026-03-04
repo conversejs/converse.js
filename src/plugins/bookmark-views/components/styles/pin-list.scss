@@ -1,0 +1,17 @@
+.conversejs {
+    #converse-bookmarks-pin {
+        padding-bottom: 1rem;
+        
+        converse-bookmarks-pin {
+            .list-item {
+                .open-room {
+                    display: flex;
+                    flex-direction: row;
+                    line-height: 1.5em;
+                    height: 2.5em;
+                    padding: 0.2em 0;
+                }
+            }
+        }
+    }
+}

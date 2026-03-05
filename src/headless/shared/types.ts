@@ -98,6 +98,7 @@ export type XFormField = {
     type?: XFormFieldTypes;
     text?: string;
     value?: string;
+    values?: string[];
     required?: boolean;
     checked?: boolean;
     options?: XFormOption[];

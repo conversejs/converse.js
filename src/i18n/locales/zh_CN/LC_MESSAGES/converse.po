@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-16 09:03+0200\n"
-"PO-Revision-Date: 2025-10-15 00:07+0000\n"
+"PO-Revision-Date: 2026-02-17 08:09+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 5.16\n"
 
 #: dist/converse-no-dependencies.js:35408
 msgid "A timeout occurred"
@@ -225,12 +225,12 @@ msgstr "%1$s 不再是主持人"
 #: dist/converse-no-dependencies.js:47501
 #, javascript-format
 msgid "%1$s has been given a voice"
-msgstr "%1$s 已有发言权"
+msgstr "%1$s 已获得发言权"
 
 #: dist/converse-no-dependencies.js:47503
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr "已禁言 %1$s"
+msgstr "%1$s 已被禁言"
 
 #: dist/converse-no-dependencies.js:47511
 #, javascript-format
@@ -275,22 +275,22 @@ msgstr "%1$s 不再是主持人"
 #: dist/converse-no-dependencies.js:47528
 #, javascript-format
 msgid "%1$s have been given voices"
-msgstr "%1$s 已有发言权"
+msgstr "%1$s 已获得发言权"
 
 #: dist/converse-no-dependencies.js:47530
 #, javascript-format
 msgid "%1$s have been muted"
-msgstr "已禁言 %1$s"
+msgstr "%1$s 已被禁言"
 
 #: dist/converse-no-dependencies.js:47880
 #, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "%2$s 封禁了 %1$s"
+msgstr "%1$s 已被 %2$s 封禁"
 
 #: dist/converse-no-dependencies.js:47880
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr "已封禁 %1$s"
+msgstr "%1$s 已被封禁"
 
 #: dist/converse-no-dependencies.js:47882
 #, javascript-format
@@ -300,22 +300,22 @@ msgstr "%1$s 的昵称已更改"
 #: dist/converse-no-dependencies.js:47884
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%2$s 踢出了 %1$s"
+msgstr "%1$s 已被 %2$s 踢出"
 
 #: dist/converse-no-dependencies.js:47884
 #, javascript-format
 msgid "%1$s has been kicked out"
-msgstr "已踢出 %1$s"
+msgstr "%1$s 已被踢出"
 
 #: dist/converse-no-dependencies.js:47886
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "由于从属关系的更改移除了 %1$s"
+msgstr "%1$s 由于从属关系的更改已被移除"
 
 #: dist/converse-no-dependencies.js:47888
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr "因不是成员移除了 %1$s"
+msgstr "%1$s 因不是成员而被移除"
 
 #: dist/converse-no-dependencies.js:47911
 #, javascript-format
@@ -330,7 +330,7 @@ msgstr "%1$s 不再是此群聊的所有者"
 #: dist/converse-no-dependencies.js:47921
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "此群聊不再封禁 %1$s"
+msgstr "%1$s 不再被禁止进入此群聊"
 
 #: dist/converse-no-dependencies.js:47927
 #, javascript-format
@@ -407,11 +407,11 @@ msgstr "群聊配置已更改"
 
 #: dist/converse-no-dependencies.js:49584
 msgid "Groupchat logging is now enabled"
-msgstr "现已启用群聊日志记录"
+msgstr "群聊日志记录现已启用"
 
 #: dist/converse-no-dependencies.js:49585
 msgid "Groupchat logging is now disabled"
-msgstr "现已禁用群聊日志记录"
+msgstr "群聊日志记录现已禁用"
 
 #: dist/converse-no-dependencies.js:49586
 msgid "This groupchat is now no longer anonymous"
@@ -427,7 +427,7 @@ msgstr "此群聊现在是完全匿名的"
 
 #: dist/converse-no-dependencies.js:49589
 msgid "A new groupchat has been created"
-msgstr "已创建新群聊"
+msgstr "新群聊已创建"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:49591
@@ -437,7 +437,7 @@ msgstr "您的昵称已自动设置为 %1$s"
 
 #: dist/converse-no-dependencies.js:49592
 msgid "You have been banned from this groupchat"
-msgstr "禁止您进入此群聊"
+msgstr "您已被禁止进入此群聊"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:49594
@@ -526,8 +526,8 @@ msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
 msgstr ""
-"这是 OMEMO 加密消息，您的客户端似乎不支持。请访问 https://conversations.im/"
-"omemo 了解详情"
+"这是 OMEMO 加密消息，您的客户端似乎不支持。如需了解详情，请访问 https://"
+"conversations.im/omemo"
 
 #: dist/converse-no-dependencies.js:53017
 #, javascript-format
@@ -681,7 +681,7 @@ msgstr "已离线"
 #: dist/converse-no-dependencies.js:80551
 #: dist/converse-no-dependencies.js:120161
 msgid "Extended Away"
-msgstr "延长离开"
+msgstr "不在"
 
 #. *
 #. * @param {import('../modals/profile').default} el
@@ -695,7 +695,7 @@ msgstr "离开"
 
 #: dist/converse-no-dependencies.js:80553
 msgid "Do not disturb"
-msgstr "请勿打扰"
+msgstr "忙碌"
 
 #: dist/converse-no-dependencies.js:80554
 #: dist/converse-no-dependencies.js:120158
@@ -1194,7 +1194,7 @@ msgstr "复制"
 
 #: dist/converse-no-dependencies.js:94621
 msgid "Reply"
-msgstr ""
+msgstr "回复"
 
 #: dist/converse-no-dependencies.js:94631
 msgid "Quote"
@@ -1206,53 +1206,51 @@ msgstr "图片： "
 
 #: dist/converse-no-dependencies.js:95474
 msgid "Play"
-msgstr ""
+msgstr "播放"
 
 #: dist/converse-no-dependencies.js:95475
 msgid "Pause"
-msgstr ""
+msgstr "暂停"
 
 #: dist/converse-no-dependencies.js:95476
 msgid "Mute"
-msgstr ""
+msgstr "静音"
 
 #: dist/converse-no-dependencies.js:95477
 msgid "Unmute"
-msgstr ""
+msgstr "取消静音"
 
 #: dist/converse-no-dependencies.js:95478
 msgid "Seek"
-msgstr ""
+msgstr "跳转"
 
 #: dist/converse-no-dependencies.js:95479
 msgid "Volume"
-msgstr ""
+msgstr "音量"
 
 #: dist/converse-no-dependencies.js:95480
 msgid "Audio player"
-msgstr ""
+msgstr "音频播放器"
 
 #: dist/converse-no-dependencies.js:95481
 msgid "Loading audio..."
-msgstr ""
+msgstr "正在加载音频…"
 
 #: dist/converse-no-dependencies.js:95482
 msgid "Error loading audio"
-msgstr ""
+msgstr "加载音频时出错"
 
 #: dist/converse-no-dependencies.js:95483
-#, fuzzy
 msgid "Current time"
-msgstr "当前版本"
+msgstr "当前时间"
 
 #: dist/converse-no-dependencies.js:95484
-#, fuzzy
 msgid "Duration"
-msgstr "描述"
+msgstr "时长"
 
 #: dist/converse-no-dependencies.js:95485
 msgid "Playback speed"
-msgstr ""
+msgstr "播放速度"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:99219
@@ -1403,14 +1401,12 @@ msgid "Retry"
 msgstr "重试"
 
 #: dist/converse-no-dependencies.js:101956
-#, fuzzy
 msgid "Replying to a message"
-msgstr "发送消息"
+msgstr "正在回复消息"
 
 #: dist/converse-no-dependencies.js:101963
-#, fuzzy
 msgid "(empty message)"
-msgstr "新消息"
+msgstr "（空消息）"
 
 #: dist/converse-no-dependencies.js:102291
 msgid "This message has been edited"
@@ -1556,12 +1552,11 @@ msgstr "是否确定要清除此对话中的消息？"
 #: dist/converse-no-dependencies.js:108595
 #, javascript-format
 msgid "Replying to %1$s"
-msgstr ""
+msgstr "正在回复 %1$s"
 
 #: dist/converse-no-dependencies.js:108597
-#, fuzzy
 msgid "Cancel reply"
-msgstr "取消"
+msgstr "取消回复"
 
 #: dist/converse-no-dependencies.js:108683
 #: dist/converse-no-dependencies.js:117634
@@ -1620,7 +1615,7 @@ msgid ""
 msgstr ""
 "为了提高性能，我们在此浏览器中缓存您的数据。如果这是公用计算机或您希望登出时"
 "删除数据，请取消勾选。请务必手动登出，否则可能不会删除所有缓存数据。请注意，"
-"使用未受信任的设备时，OMEMO 加密不可用。"
+"使用不受信任的设备时，OMEMO 加密不可用。"
 
 #: dist/converse-no-dependencies.js:111330
 msgid "This is a trusted device"
@@ -1641,7 +1636,7 @@ msgstr "用于连接到 XMPP 服务器的 HTTP 或 websocket URL"
 
 #: dist/converse-no-dependencies.js:111336
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr "如 wss://example.org/xmpp-websocket"
+msgstr "例如：wss://example.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:111340
 msgid "Password"
@@ -2373,7 +2368,7 @@ msgstr "忙碌"
 
 #: dist/converse-no-dependencies.js:126054
 msgid "away for long"
-msgstr "离开很久"
+msgstr "不在"
 
 #: dist/converse-no-dependencies.js:126056
 msgid "away"
@@ -2439,11 +2434,11 @@ msgstr "设置状态"
 
 #: dist/converse-no-dependencies.js:126683
 msgid "Away for long"
-msgstr "离开很久"
+msgstr "不在"
 
 #: dist/converse-no-dependencies.js:126684
 msgid "Personal status message"
-msgstr "个人状态信息"
+msgstr "个人状态消息"
 
 #: dist/converse-no-dependencies.js:126693
 msgid "Clear status message"
@@ -2578,7 +2573,7 @@ msgstr "已受信任"
 
 #: dist/converse-no-dependencies.js:128879
 msgid "Untrusted"
-msgstr "未受信任"
+msgstr "不受信任"
 
 #: dist/converse-no-dependencies.js:128880
 msgid "Choose which devices you trust for OMEMO encrypted communication"
@@ -2689,68 +2684,64 @@ msgstr "注册"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "XMPP Compliance"
-msgstr ""
+msgstr "XMPP 合规性"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Free of charge"
-msgstr "角色已更改"
+msgstr "免费"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Yes"
-msgstr ""
+msgstr "是"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "No"
-msgstr ""
+msgstr "否"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Company"
-msgstr ""
+msgstr "公司"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Professional hosting"
-msgstr ""
+msgstr "专业托管"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Password reset"
-msgstr "密码不正确"
+msgstr "密码重置"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Legal notice"
-msgstr ""
+msgstr "法律声明"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Online since"
-msgstr "在线用户"
+msgstr "上线时间"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Message archive storage time"
-msgstr "消息归档"
+msgstr "消息归档存储时间"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s days"
-msgstr "%1$s 说"
+msgstr "%1$s 天"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload size limit"
-msgstr ""
+msgstr "文件上传大小限制"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload storage time"
-msgstr ""
+msgstr "文件上传存储时间"
 
 #: dist/converse-no-dependencies.js:133752
 msgid "With these providers you can register directly inside this app."
-msgstr ""
+msgstr "您可以使用这些服务提供者直接在本应用内注册。"
 
 #: dist/converse-no-dependencies.js:133752
 msgid "For these providers, you'll need to register externally via a web page."
-msgstr ""
+msgstr "对于这些服务提供者，您需要通过网页进行外部注册。"
 
 #: dist/converse-no-dependencies.js:133760
 msgid "Create your account"
@@ -2773,19 +2764,17 @@ msgid "Please enter the XMPP provider to register with:"
 msgstr "请输入要注册的 XMPP 提供者："
 
 #: dist/converse-no-dependencies.js:133777
-#, fuzzy
 msgid "e.g. https://example.org/http-bind"
-msgstr "如 wss://example.org/xmpp-websocket"
+msgstr "例如：https://example.org/http-bind"
 
 #. Show the categorized provider list
 #: dist/converse-no-dependencies.js:133780
-#, fuzzy
 msgid "Choose an XMPP provider to register with:"
-msgstr "请输入要注册的 XMPP 提供者："
+msgstr "选择要注册的 XMPP 提供者："
 
 #: dist/converse-no-dependencies.js:133782
 msgid "Browse all providers"
-msgstr ""
+msgstr "浏览所有提供者"
 
 #: dist/converse-no-dependencies.js:134189
 msgid "Sorry, we're unable to connect to your chosen provider."
@@ -2834,7 +2823,7 @@ msgstr "没有聊天账号？"
 
 #: dist/converse-no-dependencies.js:134871
 msgid " e.g. conversejs.org"
-msgstr " 例如 conversejs.org"
+msgstr " 例如：conversejs.org"
 
 #: dist/converse-no-dependencies.js:135321
 msgid "This field is required"
@@ -2979,15 +2968,15 @@ msgstr "是否确定要离开群聊 %1$s？"
 
 #: dist/converse-no-dependencies.js:137755
 msgid "This contact is busy"
-msgstr "此联系人正忙"
+msgstr "此联系人“忙碌”"
 
 #: dist/converse-no-dependencies.js:137756
 msgid "This contact is online"
-msgstr "此联系人在线"
+msgstr "此联系人“在线”"
 
 #: dist/converse-no-dependencies.js:137757
 msgid "This contact is offline"
-msgstr "此联系人离线"
+msgstr "此联系人“离线”"
 
 #: dist/converse-no-dependencies.js:137758
 msgid "This contact is unavailable"
@@ -2995,11 +2984,11 @@ msgstr "此联系人不可用"
 
 #: dist/converse-no-dependencies.js:137759
 msgid "This contact is away for an extended period"
-msgstr "此联系人离开很久了"
+msgstr "此联系人“不在”"
 
 #: dist/converse-no-dependencies.js:137760
 msgid "This contact is away"
-msgstr "此联系人离开"
+msgstr "此联系人“离开”"
 
 #: dist/converse-no-dependencies.js:137876
 #, javascript-format

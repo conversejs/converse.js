@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-16 09:03+0200\n"
-"PO-Revision-Date: 2026-01-07 08:01+0000\n"
+"PO-Revision-Date: 2026-02-17 08:09+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15.1\n"
+"X-Generator: Weblate 5.16\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -2793,9 +2793,8 @@ msgid "XMPP Compliance"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Free of charge"
-msgstr "Rol verander"
+msgstr "Gratis"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Yes"
@@ -2811,7 +2810,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Professional hosting"
-msgstr ""
+msgstr "Professionele bediening"
 
 #: dist/converse-no-dependencies.js:133696
 #, fuzzy
@@ -2820,7 +2819,7 @@ msgstr "Verkeerde wagwoord"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Legal notice"
-msgstr ""
+msgstr "Wettige kennisgewing"
 
 #: dist/converse-no-dependencies.js:133696
 #, fuzzy
@@ -2843,15 +2842,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload storage time"
-msgstr ""
+msgstr "Stoortyd vir opgelaaide lêers"
 
 #: dist/converse-no-dependencies.js:133752
 msgid "With these providers you can register directly inside this app."
-msgstr ""
+msgstr "Met hierdie aanbieders kan u direk in hierdie toepassing registreer."
 
 #: dist/converse-no-dependencies.js:133752
 msgid "For these providers, you'll need to register externally via a web page."
-msgstr ""
+msgstr "Met hierdie aanbieders sal u deur 'n eksterne webwerf moet registreer."
 
 #: dist/converse-no-dependencies.js:133760
 msgid "Create your account"
@@ -2874,19 +2873,17 @@ msgid "Please enter the XMPP provider to register with:"
 msgstr "Kies asb. die XMPP-bediener waarby u wil registreer:"
 
 #: dist/converse-no-dependencies.js:133777
-#, fuzzy
 msgid "e.g. https://example.org/http-bind"
-msgstr "bv. wss://voorbeeld.org/xmpp-websocket"
+msgstr "bv. https://voorbeeld.org/http-bind"
 
 #. Show the categorized provider list
 #: dist/converse-no-dependencies.js:133780
-#, fuzzy
 msgid "Choose an XMPP provider to register with:"
-msgstr "Kies asb. die XMPP-bediener waarby u wil registreer:"
+msgstr "Kies die XMPP-bediener om by te registreer:"
 
 #: dist/converse-no-dependencies.js:133782
 msgid "Browse all providers"
-msgstr ""
+msgstr "Blaai deur alle bedieners"
 
 #: dist/converse-no-dependencies.js:134189
 msgid "Sorry, we're unable to connect to your chosen provider."

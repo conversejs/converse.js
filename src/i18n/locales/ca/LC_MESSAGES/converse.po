@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-16 09:03+0200\n"
-"PO-Revision-Date: 2026-01-28 12:52+0000\n"
+"PO-Revision-Date: 2026-02-25 23:09+0000\n"
 "Last-Translator: fran secs <fransecs@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/conversejs/"
 "translations/ca/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16-dev\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: ca\n"
 "Language-Code: ca\n"
@@ -1256,7 +1256,7 @@ msgstr "Copiar"
 
 #: dist/converse-no-dependencies.js:94621
 msgid "Reply"
-msgstr ""
+msgstr "Resposta"
 
 #: dist/converse-no-dependencies.js:94631
 msgid "Quote"
@@ -1268,53 +1268,51 @@ msgstr "Imatge: "
 
 #: dist/converse-no-dependencies.js:95474
 msgid "Play"
-msgstr ""
+msgstr "Reprodueix"
 
 #: dist/converse-no-dependencies.js:95475
 msgid "Pause"
-msgstr ""
+msgstr "Pausa"
 
 #: dist/converse-no-dependencies.js:95476
 msgid "Mute"
-msgstr ""
+msgstr "Silencia"
 
 #: dist/converse-no-dependencies.js:95477
 msgid "Unmute"
-msgstr ""
+msgstr "Activa el so"
 
 #: dist/converse-no-dependencies.js:95478
 msgid "Seek"
-msgstr ""
+msgstr "Cerca"
 
 #: dist/converse-no-dependencies.js:95479
 msgid "Volume"
-msgstr ""
+msgstr "Volum"
 
 #: dist/converse-no-dependencies.js:95480
 msgid "Audio player"
-msgstr ""
+msgstr "Reproductor d'àudio"
 
 #: dist/converse-no-dependencies.js:95481
 msgid "Loading audio..."
-msgstr ""
+msgstr "S'està carregant l'àudio…"
 
 #: dist/converse-no-dependencies.js:95482
 msgid "Error loading audio"
-msgstr ""
+msgstr "Error en carregar l'àudio"
 
 #: dist/converse-no-dependencies.js:95483
-#, fuzzy
 msgid "Current time"
-msgstr "Versió actual"
+msgstr "Temps actual"
 
 #: dist/converse-no-dependencies.js:95484
-#, fuzzy
 msgid "Duration"
-msgstr "Descripció"
+msgstr "Durada"
 
 #: dist/converse-no-dependencies.js:95485
 msgid "Playback speed"
-msgstr ""
+msgstr "Velocitat de reproducció"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:99219
@@ -1465,14 +1463,12 @@ msgid "Retry"
 msgstr "Tornar a provar"
 
 #: dist/converse-no-dependencies.js:101956
-#, fuzzy
 msgid "Replying to a message"
-msgstr "Enviar el missatge"
+msgstr "Resposta a un missatge"
 
 #: dist/converse-no-dependencies.js:101963
-#, fuzzy
 msgid "(empty message)"
-msgstr "Missatges nous"
+msgstr "(missatge buit)"
 
 #: dist/converse-no-dependencies.js:102291
 msgid "This message has been edited"
@@ -1618,12 +1614,11 @@ msgstr "Confirmeu la supressió dels missatges d'aquest a conversa?"
 #: dist/converse-no-dependencies.js:108595
 #, javascript-format
 msgid "Replying to %1$s"
-msgstr ""
+msgstr "Responent a %1$s"
 
 #: dist/converse-no-dependencies.js:108597
-#, fuzzy
 msgid "Cancel reply"
-msgstr "Cancel·lar"
+msgstr "Cancel·lar resposta"
 
 #: dist/converse-no-dependencies.js:108683
 #: dist/converse-no-dependencies.js:117634
@@ -2775,68 +2770,68 @@ msgstr "Registrar-se"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "XMPP Compliance"
-msgstr ""
+msgstr "Compliment de l'XMPP"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Free of charge"
-msgstr "rol canviat"
+msgstr "Gratuït"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Yes"
-msgstr ""
+msgstr "Sí"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "No"
-msgstr ""
+msgstr "No"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Company"
-msgstr ""
+msgstr "Empresa"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Professional hosting"
-msgstr ""
+msgstr "Allotjament professional"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Password reset"
-msgstr "Contrasenya incorrecta"
+msgstr "Restabliment de contrasenya"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Legal notice"
-msgstr ""
+msgstr "Avís legal"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Online since"
-msgstr "Usuaris en línea"
+msgstr "En línia des de"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Message archive storage time"
-msgstr "Arxiu de missatges"
+msgstr "Temps d'emmagatzematge de l'arxiu de missatges"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s days"
-msgstr "%1$s diu"
+msgstr "%1$s dies"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload size limit"
-msgstr ""
+msgstr "Límit de mida de càrrega de fitxers"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload storage time"
-msgstr ""
+msgstr "Temps d'emmagatzematge de càrrega de fitxers"
 
 #: dist/converse-no-dependencies.js:133752
 msgid "With these providers you can register directly inside this app."
 msgstr ""
+"Amb aquests proveïdors us podeu registrar directament dins d'aquesta "
+"aplicació."
 
 #: dist/converse-no-dependencies.js:133752
 msgid "For these providers, you'll need to register externally via a web page."
 msgstr ""
+"Per a aquests proveïdors, haureu de registrar-vos externament a través d'una "
+"pàgina web."
 
 #: dist/converse-no-dependencies.js:133760
 msgid "Create your account"
@@ -2859,19 +2854,17 @@ msgid "Please enter the XMPP provider to register with:"
 msgstr "Introduïu el proveïdor XMPP amb el qual registrar-se:"
 
 #: dist/converse-no-dependencies.js:133777
-#, fuzzy
 msgid "e.g. https://example.org/http-bind"
-msgstr "p. ex. wss://exemple.cat/xmpp-websocket"
+msgstr "e.g. https://exemple.cat/http-bind"
 
 #. Show the categorized provider list
 #: dist/converse-no-dependencies.js:133780
-#, fuzzy
 msgid "Choose an XMPP provider to register with:"
-msgstr "Introduïu el proveïdor XMPP amb el qual registrar-se:"
+msgstr "Trieu un proveïdor XMPP amb el qual registrar-vos:"
 
 #: dist/converse-no-dependencies.js:133782
 msgid "Browse all providers"
-msgstr ""
+msgstr "Navega per tots els proveïdors"
 
 #: dist/converse-no-dependencies.js:134189
 msgid "Sorry, we're unable to connect to your chosen provider."

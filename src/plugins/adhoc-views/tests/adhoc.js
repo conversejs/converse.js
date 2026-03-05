@@ -578,9 +578,12 @@ describe("Ad-hoc commands consisting of multiple steps", function () {
                         </field>
                         <field var="jid-multi-field">
                             <value>jid@multi/value#1</value>
+                            <value>jid@multi/value#2</value>
                         </field>
                         <field var="text-multi-field">
                             <value>text</value>
+                            <value>multi</value>
+                            <value>value</value>
                         </field>
                         <field var="jid-single-field">
                             <value>jid@single/value</value>
@@ -654,8 +657,15 @@ describe("Ad-hoc commands consisting of multiple steps", function () {
                     type="submit">
                     <field var="text-private-field">
                     <value>text-private-value</value></field>
-                    <field var="jid-multi-field"><value>jid@multi/value#1</value></field>
-                    <field var="text-multi-field"><value>text</value></field>
+                    <field var="jid-multi-field">
+                        <value>jid@multi/value#1</value>
+                        <value>jid@multi/value#2</value>
+                    </field>
+                    <field var="text-multi-field">
+                        <value>text</value>
+                        <value>multi</value>
+                        <value>value</value>
+                    </field>
                     <field var="jid-single-field"><value>jid@single/value</value></field>
                     <field var="list-single-field"><value>list-single-value</value></field>
                     </x>
@@ -899,5 +909,158 @@ describe("Ad-hoc commands consisting of multiple steps", function () {
                 </command>
             </iq>
         `));
+    }));
+
+    it("may return a result form with readonly fields", mock.initConverse([], {}, async (_converse) => {
+        const { api } = _converse;
+        const entity_jid = 'muc.montague.lit';
+        const { IQ_stanzas } = _converse.api.connection.get();
+
+        const jid = _converse.session.get('jid');
+
+        const modal = await api.modal.show('converse-user-settings-modal');
+        await u.waitUntil(() => u.isVisible(modal));
+        modal.querySelector('#commands-tab').click();
+
+        const adhoc_form = modal.querySelector('converse-adhoc-commands');
+        await u.waitUntil(() => u.isVisible(adhoc_form));
+
+        adhoc_form.querySelector('input[name="jid"]').value = entity_jid;
+        adhoc_form.querySelector('input[type="submit"]').click();
+
+        await mock.waitUntilDiscoConfirmed(
+            _converse,
+            entity_jid,
+            [],
+            ['http://jabber.org/protocol/commands'],
+            [],
+            'info'
+        );
+
+        let sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#items"]`;
+        let iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <iq type="result"
+                id="${iq.getAttribute("id")}"
+                to="${_converse.jid}"
+                from="${entity_jid}"
+                xmlns="jabber:client">
+                <query xmlns="http://jabber.org/protocol/disco#items"
+                        node="http://jabber.org/protocol/commands">
+                    <item node="get-online-users-list" name="Get List of Online Users" jid="${entity_jid}"/>
+                </query>
+            </iq>`
+        ));
+
+        const heading = await u.waitUntil(() => adhoc_form.querySelector('.list-group-item.active'));
+        expect(heading.textContent.trim()).toBe('Commands found:');
+
+        const items = adhoc_form.querySelectorAll('.list-group-item:not(.active)');
+        expect(items.length).toBe(1);
+        expect(items[0].textContent.trim()).toBe('Get List of Online Users');
+        items[0].querySelector('a').click();
+
+        sel = `iq[to="${entity_jid}"][type="set"] command`;
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(iq).toEqualStanza(stx`
+            <iq id="${iq.getAttribute("id")}" to="${entity_jid}" type="set" xmlns="jabber:client">
+                <command action="execute" node="get-online-users-list" xmlns="http://jabber.org/protocol/commands"/>
+            </iq>`
+        );
+
+        const sessionid = "f4d477d3-d8b1-452d-95c9-fece53ef99ad";
+
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <iq type="result" to="${_converse.jid}" from="${entity_jid}"
+            id="${iq.getAttribute('id')}" xmlns="jabber:client">
+                <command status="executing"
+                    xmlns="http://jabber.org/protocol/commands"
+                    node="get-online-users-list"
+                    sessionid="${sessionid}">
+                    <x xmlns="jabber:x:data" type="form">
+                        <title>Getting List of Online Users</title>
+                        <instructions>How many users should be returned at most?</instructions>
+                        <field var="FORM_TYPE" type="hidden">
+                            <value>http://jabber.org/protocol/admin</value>
+                        </field>
+                        <field type="list-single" var="max_items" label="Maximum number of users">
+                            <option label="25"><value>25</value></option>
+                            <option label="50"><value>50</value></option>
+                            <option label="75"><value>75</value></option>
+                            <option label="100"><value>100</value></option>
+                            <option label="150"><value>150</value></option>
+                            <option label="200"><value>200</value></option>
+                            <option label="all"><value>all</value></option>
+                        </field>
+                        <field type="boolean" var="details" label="Show details"/>
+                    </x>
+                    <actions execute="complete">
+                        <next/><complete/>
+                    </actions>
+                </command>
+            </iq>`
+        ));
+
+        const button = await u.waitUntil(() => adhoc_form.querySelector('input[data-action="complete"]'));
+        button.click();
+
+        sel = `iq[to="${entity_jid}"] command[sessionid="${sessionid}"][action="complete"]`;
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(iq).toEqualStanza(stx`
+            <iq type="set" to="${entity_jid}" xmlns="jabber:client" id="${iq.getAttribute('id')}">
+                <command sessionid="${sessionid}"
+                    node="get-online-users-list"
+                    action="complete"
+                    xmlns="http://jabber.org/protocol/commands">
+                    <x xmlns="jabber:x:data" type="submit">
+                        <field var="FORM_TYPE">
+                            <value>http://jabber.org/protocol/admin</value>
+                        </field>
+                        <field var="max_items">
+                            <value>25</value>
+                        </field>
+                        <field var="details">
+                            <value>0</value>
+                        </field>
+                    </x>
+                </command>
+            </iq>`
+        );
+
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <iq type="result"
+                to="${entity_jid}" from="${_converse.jid}"
+                id="${iq.getAttribute('id')}" xmlns="jabber:client">
+                <command status="completed"
+                    xmlns="http://jabber.org/protocol/commands"
+                    node="get-online-users-list"
+                    sessionid="${sessionid}">
+                    <x xmlns="jabber:x:data" type="result">
+                        <field var="FORM_TYPE" type="hidden">
+                            <value>http://jabber.org/protocol/admin</value>
+                        </field>
+                        <field type="text-multi" var="onlineuserjids" label="The list of all online users">
+                            <value>${entity_jid}</value>
+                        </field>
+                    </x>
+                </command>
+            </iq>`
+        ));
+
+        const dummy = await u.waitUntil(() => adhoc_form.querySelector('form form textarea[name="onlineuserjids"]'));
+
+        const form = await u.waitUntil(() => adhoc_form.querySelector('form form'));
+        expect(form).toBeDefined();
+
+        const labels = Array.from(form.querySelectorAll('label'));
+        expect(labels.length).toBe(1);
+        expect(labels[0].textContent).toEqual('The list of all online users');
+
+        const textareas = Array.from(form.querySelectorAll('textarea'));
+        expect(textareas.length).toBe(1);
+        expect(textareas[0].textContent).toEqual(entity_jid);
     }));
 });

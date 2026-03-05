@@ -107,3 +107,4 @@ export function replaceCurrentWord(input, new_value) {
     const selection_end = caret - current_word.length + new_value.length + 1;
     input.selectionEnd = mention_boundary ? selection_end + 1 : selection_end;
 }
+

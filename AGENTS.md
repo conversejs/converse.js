@@ -589,14 +589,24 @@ await api.waitUntil('connected');
 ```javascript
 import { _converse, api, converse } from '@converse/headless';
 
-// Access global state (use sparingly, prefer api)
-_converse.chatboxes.get(jid);
+// Access global state via `_converse.state` (use sparingly, prefer api)
+const { chatboxes } = _converse.state;
+const chatbox = chatboxes.get(jid);
 
-// Access libraries
-const { Strophe, $msg, $iq, dayjs, sizzle, u } = converse.env;
+// Access 3rd party libraries
+const { Strophe, $msg, $iq, $pres, $build, stx } = converse.env;
 
-// XMPP stanzas
-const stanza = $msg({ to: jid, type: 'chat' })
+// XML stanzas (prefer stx template literal over old $msg, $pres, $iq, $build functions)
+// The stx template literal is the current preferred method for creating XML stanzas
+// When using stx, the `xmlns` attribute always needs to be set to "jabber:client".
+const stanza_stx = stx`
+    <message to="${jid}" type="chat" xmlns="jabber:client">
+        <body>Hello</body>
+        <active xmlns="${Strophe.NS.CHATSTATES}"/>
+    </message>`;
+
+// Legacy methods ($msg, $pres, $iq, $build) are deprecated - use stx instead
+const stanza_legacy = $msg({ to: jid, type: 'chat' })
     .c('body').t('Hello').up()
     .c('active', { xmlns: Strophe.NS.CHATSTATES });
 ```
@@ -674,17 +684,24 @@ This command:
 ### Development Tools
 
 ```javascript
-// Access converse object in browser console
+// Access global converse object in browser console
 window.converse
 
-// API methods
-converse.api.user.jid()
-converse.api.settings.get('jid')
-converse.api.chatboxes.get('user@example.com')
+// Internal state (as represented by Models and Collections)
+_converse.state
 
-// Internal state
-converse._converse
-converse._converse.chatboxes.models
+// Namespace for storing code that might be useful to 3rd party
+// plugins. We want to make it possible for 3rd party plugins to have
+// access to code (e.g. classes) without having to add converse.js
+// as a dependency.
+_converse.exports 
+
+// API methods
+const { api } = _converse;
+api.user.jid()
+api.settings.get('jid')
+api.chatboxes.get('user@example.com')
+
 ```
 
 ### Debug Logging

@@ -187,7 +187,11 @@ export default class AdHocCommands extends CustomElement {
             this.alert_type = 'primary';
             this.alert = __('Completed');
             this.note = note;
-            this.clearCommand(cmd);
+            if (response.type === 'result') {
+                Object.assign(cmd, { fields, instructions, actions, status });
+            } else {
+                this.clearCommand(cmd);
+            }
         } else {
             log.error(`Unexpected status for ad-hoc command: ${status}`);
             cmd.alert = __('Completed');

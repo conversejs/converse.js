@@ -381,8 +381,13 @@ export function xFormField2TemplateResult(xfield, options = {}) {
     } else if (xfield['type'] === 'fixed') {
         return tplFormFixed(xfield);
 
-    } else if (xfield['type'] === 'jid-multi') {
-        return tplFormTextarea({ ...default_vals, ...xfield });
+    } else if (xfield['type'] === 'jid-multi' || xfield['type'] === 'text-multi') {
+        return tplFormTextarea({
+            ...default_vals,
+            ...xfield,
+            value: (xfield !== undefined && xfield.values.length !== 0)
+                ? xfield.values.reduce((acc, x) => acc + '\n' + x) : ''
+        });
 
     } else if (xfield['type'] === 'boolean') {
         return tplFormCheckbox({ ...default_vals, ...xfield });

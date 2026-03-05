@@ -349,7 +349,9 @@ class Bookmarks extends Collection {
         groupchat?.save('pinned', true);
         
         try {
-            return await api.sendIQ(this.buildExtensionsUpdateStanza(bookmark, extensions));
+            const iq = await api.sendIQ(this.buildExtensionsUpdateStanza(bookmark, extensions));
+            bookmark.save('extensions', extensions);
+            return iq;
         } catch (error) {
             groupchat?.save('pinned', false);
             log.error('Error while trying to pin bookmark');
@@ -370,7 +372,9 @@ class Bookmarks extends Collection {
         groupchat?.save('pinned', false);
         
         try {
-            return await api.sendIQ(this.buildExtensionsUpdateStanza(bookmark, extensions));
+            const iq = await api.sendIQ(this.buildExtensionsUpdateStanza(bookmark, extensions));
+            bookmark.save('extensions', extensions);
+            return iq;
         } catch (error) {
             groupchat?.save('pinned', true);
             log.error('Error while trying to unpin bookmark');

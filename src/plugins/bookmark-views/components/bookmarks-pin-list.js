@@ -1,7 +1,9 @@
-import { _converse, api } from '@converse/headless';
+import { _converse, api, u } from '@converse/headless';
 import tplBookmarksPinList from './templates/pin-list';
 import BookmarksPinListModel from './model';
 import { RoomsList } from 'plugins/roomslist/view';
+
+const { initStorage } = u;
 
 export class BookmarksPinView extends RoomsList {
     model = null;
@@ -11,6 +13,9 @@ export class BookmarksPinView extends RoomsList {
         const id = `converse.bookmarks-pin-list-model-${bare_jid}`;
         this.model = new BookmarksPinListModel({ id });
         _converse.state.bookmarksPinList = this.model;
+
+        initStorage(this.model, id);
+        this.model.fetch();
 
         this.handleEvents();
 

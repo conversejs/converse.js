@@ -24,6 +24,7 @@
 - #3939: Don't show invitations to groupchats in which the user is already present
 - #3941: add adhoc completed command result and text-multi as merged lines of text
 - Don't render unfurls for retracted messages.
+- #3949: Allow pinning bookmarked conversations to the top (XEP-0469)
 
 ## 12.0.0 (2025-08-28)
 

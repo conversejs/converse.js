@@ -338,10 +338,9 @@ class Bookmarks extends Collection {
 
     /**
      * 
-     * @param {Bookmark} bookmark 
-     * @returns {Promise<void|Element>}
+     * @param {Bookmark} bookmark
      */
-    async sendPinBookmarkStanza(bookmark) {
+    pinBookmark(bookmark) {
         const extensions = [...bookmark.get('extensions'), '<pinned xmlns="urn:xmpp:bookmarks-pinning:0"/>'];
 
         const { chatboxes } = _converse.state;
@@ -349,9 +348,10 @@ class Bookmarks extends Collection {
         groupchat?.save('pinned', true);
         
         try {
-            const iq = await api.sendIQ(this.buildExtensionsUpdateStanza(bookmark, extensions));
-            bookmark.save('extensions', extensions);
-            return iq;
+            api.bookmarks.set({
+                jid: bookmark.get('jid'),
+                extensions,
+            });
         } catch (error) {
             groupchat?.save('pinned', false);
             log.error('Error while trying to pin bookmark');
@@ -361,10 +361,9 @@ class Bookmarks extends Collection {
 
     /**
      * 
-     * @param {Bookmark} bookmark 
-     * @returns {Promise<void|Element>}
+     * @param {Bookmark} bookmark
      */
-    async sendUnpinBookmarkStanza(bookmark) {
+    unpinBookmarkStanza(bookmark) {
         const extensions = bookmark.get('extensions').filter(/** @param {String} e */ e => !(e.includes('<pinned')));
 
         const { chatboxes } = _converse.state;
@@ -372,48 +371,15 @@ class Bookmarks extends Collection {
         groupchat?.save('pinned', false);
         
         try {
-            const iq = await api.sendIQ(this.buildExtensionsUpdateStanza(bookmark, extensions));
-            bookmark.save('extensions', extensions);
-            return iq;
+            api.bookmarks.set({
+                jid: bookmark.get('jid'),
+                extensions,
+            });
         } catch (error) {
             groupchat?.save('pinned', true);
             log.error('Error while trying to unpin bookmark');
             log.error(error);
         }
-    }
-
-    /**
-     * 
-     * @param {Bookmark} bookmark
-     * @param {Array} extensions
-     * @returns {Stanza}
-     */
-    buildExtensionsUpdateStanza(bookmark, extensions) {
-        const bare_jid = _converse.session.get('bare_jid');
-
-        return stx`
-            <iq from="${bare_jid}"
-                to="${bare_jid}"
-                type="set"
-                xmlns="jabber:client">
-            <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                <publish node="${Strophe.NS.BOOKMARKS2}">
-                    <item id="${bookmark.get('jid')}">
-                        <conference xmlns="${Strophe.NS.BOOKMARKS2}"
-                                name="${bookmark.get('name') || nothing}"
-                                autojoin="${bookmark.get('autojoin')}">
-                            ${bookmark.get('nick') ? stx`<nick>${bookmark.get('nick')}</nick>` : ''}
-                            ${bookmark.get('password') ? stx`<password>${bookmark.get('password')}</password>` : ''}
-                            ${
-                                extensions.length
-                                    ? stx`<extensions>${extensions.map((e) => Stanza.fromString(e))}</extensions>`
-                                    : ''
-                            }
-                        </conference>
-                    </item>
-                </publish>
-            </pubsub>
-            </iq>`;
     }
 }
 

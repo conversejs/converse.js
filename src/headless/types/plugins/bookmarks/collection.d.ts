@@ -81,22 +81,13 @@ declare class Bookmarks extends Collection<Bookmark> {
     /**
      *
      * @param {Bookmark} bookmark
-     * @returns {Promise<void|Element>}
      */
-    sendPinBookmarkStanza(bookmark: Bookmark): Promise<void | Element>;
+    pinBookmark(bookmark: Bookmark): void;
     /**
      *
      * @param {Bookmark} bookmark
-     * @returns {Promise<void|Element>}
      */
-    sendUnpinBookmarkStanza(bookmark: Bookmark): Promise<void | Element>;
-    /**
-     *
-     * @param {Bookmark} bookmark
-     * @param {Array} extensions
-     * @returns {Stanza}
-     */
-    buildExtensionsUpdateStanza(bookmark: Bookmark, extensions: any[]): Stanza;
+    unpinBookmarkStanza(bookmark: Bookmark): void;
 }
 import Bookmark from './model.js';
 import { Collection } from '@converse/skeletor';

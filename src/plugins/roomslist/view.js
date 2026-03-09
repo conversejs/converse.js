@@ -95,7 +95,7 @@ export class RoomsList extends CustomElement {
         bookmarks
             .where({ jid })
             .forEach(/** @param {import('@converse/headless').Bookmark} b */ (b) =>
-                bookmarks.sendPinBookmarkStanza(b));
+                bookmarks.pinBookmark(b));
     }
 
     /** @param {Event} ev */
@@ -106,7 +106,7 @@ export class RoomsList extends CustomElement {
         const { bookmarks } = _converse.state;
         bookmarks
             .where({ jid })
-            .forEach((b) => bookmarks.sendUnpinBookmarkStanza(b));
+            .forEach((b) => bookmarks.unpinBookmark(b));
     }
 
     /** @param {Event} [ev] */

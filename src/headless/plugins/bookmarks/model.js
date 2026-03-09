@@ -12,7 +12,7 @@ class Bookmark extends Model {
      * @returns {boolean}
      */
     get pinned() {
-        return this.get('extensions').some(/** @param {String} e */ e => e.includes('<pinned') && e.includes('urn:xmpp:bookmarks-pinning:0'));
+        return this.get('extensions')?.some(/** @param {String} e */ e => e.includes('<pinned') && e.includes('urn:xmpp:bookmarks-pinning:0'));
     }
 
     getDisplayName() {

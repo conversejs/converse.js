@@ -71,6 +71,30 @@ export function sendReceiptStanza(to_jid, id) {
 }
 
 /**
+ * Send XEP-0444 message reactions
+ * @param {string} to_jid
+ * @param {string} message_id - The id of the message being reacted to
+ * @param {string[]} emojis - Array of emoji reactions (empty array to remove all)
+ * @param {string} [msg_type] - Message type ('chat' or 'groupchat')
+ * @return void
+ */
+export function sendReactionStanza(to_jid, message_id, emojis, msg_type) {
+    const reactions_children = emojis.map(
+        emoji => Stanza.unsafeXML(`<reaction>${emoji}</reaction>`)
+    ).join('');
+    const stanza = stx`
+        <message from="${api.connection.get().jid}"
+                id="${u.getUniqueId()}"
+                to="${to_jid}"
+                type="${msg_type ? msg_type : 'chat'}"
+                xmlns="jabber:client">
+            <reactions xmlns="${Strophe.NS.REACTIONS}" id="${message_id}">${Stanza.unsafeXML(reactions_children)}</reactions>
+            <store xmlns="${Strophe.NS.HINTS}"/>
+        </message>`;
+    api.send(stanza);
+}
+
+/**
  * Sends a message with the given XEP-0085 chat state.
  * @param {string} jid
  * @param {import("./types").ChatStateType} chat_state

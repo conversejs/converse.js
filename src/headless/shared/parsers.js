@@ -301,6 +301,24 @@ export function getErrorAttributes (stanza) {
 }
 
 /**
+ * Given a message stanza, extract XEP-0444 reaction attributes
+ * @param {Element} stanza - The message stanza
+ * @returns {Object} An object containing reacting_to_id and reactions if present
+ */
+export function getReactionsAttributes (stanza) {
+    const reactions_el = sizzle(`reactions[xmlns="${Strophe.NS.REACTIONS}"]`, stanza).pop();
+    if (reactions_el) {
+        return {
+            is_reaction: true,
+            reacting_to_id: reactions_el.getAttribute('id'),
+            reactions: Array.from(reactions_el.querySelectorAll('reaction')).map(r => r.textContent),
+            reactor_jid: stanza.getAttribute('from'),
+        };
+    }
+    return {};
+}
+
+/**
  * Given a message stanza, extract XEP-0461 reply attributes
  * @param {Element} stanza - The message stanza
  * @returns {Object} An object containing reply_to_id and reply_to if present

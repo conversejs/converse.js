@@ -2353,6 +2353,37 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
+     * Handle an incoming XEP-0444 message reaction in a MUC.
+     * In MUCs, we use the stanza-id to look up the target message.
+     * @param {MUCMessageAttributes} attrs
+     * @returns {boolean}
+     */
+    handleReaction(attrs) {
+        if (!attrs.is_reaction) {
+            return false;
+        }
+        // In MUCs, the reacting_to_id may refer to a stanza-id
+        const target = this.messages.findWhere({ 'msgid': attrs.reacting_to_id }) ||
+            this.messages.findWhere({ 'origin_id': attrs.reacting_to_id }) ||
+            this.messages.models.find(m => {
+                const dominated_by = Object.keys(m.attributes).filter(k => k.startsWith('stanza_id '));
+                return dominated_by.some(k => m.get(k) === attrs.reacting_to_id);
+            });
+
+        if (target) {
+            const reactions = Object.assign({}, target.get('reactions') || {});
+            const sender = attrs.nick || Strophe.getResourceFromJid(attrs.reactor_jid) || attrs.reactor_jid;
+            if (attrs.reactions.length === 0) {
+                delete reactions[sender];
+            } else {
+                reactions[sender] = attrs.reactions;
+            }
+            target.save({ reactions });
+        }
+        return true;
+    }
+
+    /**
      * @param {MessageAttributes} attrs
      * @returns {boolean}
      */
@@ -2433,6 +2464,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             message.get('type') === 'groupchat' && this.updateMessage(message, attrs);
             return;
         } else if (attrs.receipt_id || attrs.is_marker || this.ignorableCSN(attrs)) {
+            return;
+        }
+
+        if (attrs.is_reaction) {
+            this.handleReaction(attrs);
             return;
         }
 

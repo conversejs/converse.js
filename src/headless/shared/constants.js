@@ -105,6 +105,7 @@ Strophe.addNamespace('OMEMO', 'eu.siacs.conversations.axolotl');
 Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
 Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
 Strophe.addNamespace('RAI', 'urn:xmpp:rai:0');
+Strophe.addNamespace('REACTIONS', 'urn:xmpp:reactions:0');
 Strophe.addNamespace('RECEIPTS', 'urn:xmpp:receipts');
 Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
 Strophe.addNamespace('REGISTER', 'jabber:iq:register');

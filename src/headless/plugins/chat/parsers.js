@@ -15,6 +15,7 @@ import {
     getEncryptionAttributes,
     getErrorAttributes,
     getOutOfBandAttributes,
+    getReactionsAttributes,
     getReceiptId,
     getReferences,
     getReplyAttributes,
@@ -139,7 +140,8 @@ export async function parseMessage (stanza) {
         getStanzaIDs(stanza, original_stanza),
         getRetractionAttributes(stanza, original_stanza),
         getEncryptionAttributes(stanza),
-        getReplyAttributes(stanza)
+        getReplyAttributes(stanza),
+        getReactionsAttributes(stanza)
     );
 
     if (attrs.is_archived) {

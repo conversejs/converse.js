@@ -91,6 +91,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         } else if (
             !this.handleReceipt(attrs) &&
             !this.handleChatMarker(attrs) &&
+            !this.handleReaction(attrs) &&
             !(await this.handleRetraction(attrs))
         ) {
             this.setEditable(attrs, attrs.time);
@@ -158,6 +159,32 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
      */
     isSameUser(jid1, jid2) {
         return u.isSameBareJID(jid1, jid2);
+    }
+
+    /**
+     * Handle an incoming XEP-0444 message reaction.
+     * Updates the referenced message's reactions instead of creating a new message.
+     * @param {MessageAttributes} attrs
+     * @returns {boolean} Whether the stanza was handled as a reaction
+     */
+    handleReaction(attrs) {
+        if (!attrs.is_reaction) {
+            return false;
+        }
+        const target = this.messages.findWhere({ 'msgid': attrs.reacting_to_id }) ||
+            this.messages.findWhere({ 'origin_id': attrs.reacting_to_id });
+
+        if (target) {
+            const reactions = Object.assign({}, target.get('reactions') || {});
+            const sender = Strophe.getBareJidFromJid(attrs.reactor_jid);
+            if (attrs.reactions.length === 0) {
+                delete reactions[sender];
+            } else {
+                reactions[sender] = attrs.reactions;
+            }
+            target.save({ reactions });
+        }
+        return true;
     }
 
     /**

@@ -59,6 +59,7 @@ converse.plugins.add('converse-chat', {
         // Advertise XEP-0461 Message Replies support
         api.listen.on('addClientFeatures', () => {
             api.disco.own.features.add(Strophe.NS.REPLY);
+            api.disco.own.features.add(Strophe.NS.REACTIONS);
         });
     },
 });

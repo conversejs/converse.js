@@ -12,8 +12,8 @@
  * - Send reactions as XMPP stanzas per XEP-0444
  */
 
-import { converse, api, u, _converse } from '@converse/headless';
-import { updateMessageReactions } from './utils.js';
+import { converse, api, _converse } from '@converse/headless';
+import { sendReaction } from './utils.js';
 import './reaction-picker.js';
 
 import { __ } from 'i18n';
@@ -43,24 +43,44 @@ converse.plugins.add('converse-reaction-views', {
             api.disco.own.features.add(Strophe.NS.REACTIONS);
         });
 
-        api.listen.on('stanza', (stanza) => {
-            if (stanza.nodeName === 'iq' && stanza.getAttribute('type') === 'result') {
-                const query = stanza.querySelector(`query[xmlns="${Strophe.NS.DISCO_INFO}"]`);
-                if (query) {
-                    const from_jid = stanza.getAttribute('from');
-                    const bare_jid = Strophe.getBareJidFromJid(from_jid);
-                    const feature = query.querySelector(`feature[var="${Strophe.NS.REACTIONS}#restricted"]`);
-                    if (feature) {
-                        const allowed = Array.from(feature.querySelectorAll('allow')).map(el => el.textContent);
-                        this.allowed_emojis.set(bare_jid, allowed);
-                        this.allowed_emojis.set(from_jid, allowed);
-
-                        const chatbox = api.chatboxes.get(from_jid) || api.chatboxes.get(bare_jid);
-                        chatbox?.set('allowed_reactions', allowed);
+        const registerRestrictedReactionsHandler = () => {
+            api.connection.get()?.addHandler(
+                /** @param {Element} stanza */
+                (stanza) => {
+                    const query = stanza.querySelector(`query[xmlns="${Strophe.NS.DISCO_INFO}"]`);
+                    if (!query) {
+                        return true;
                     }
-                }
-            }
-        });
+                    const feature = query.querySelector(`feature[var="${Strophe.NS.REACTIONS}#restricted"]`);
+                    if (!feature) {
+                        return true;
+                    }
+
+                    const from_jid = stanza.getAttribute('from');
+                    if (!from_jid) {
+                        return true;
+                    }
+
+                    const bare_jid = Strophe.getBareJidFromJid(from_jid);
+                    const allowed = Array.from(feature.querySelectorAll('allow'))
+                        .map((el) => el.textContent)
+                        .filter(Boolean);
+
+                    this.allowed_emojis.set(bare_jid, allowed);
+                    this.allowed_emojis.set(from_jid, allowed);
+
+                    const chatbox = api.chatboxes.get(from_jid) || api.chatboxes.get(bare_jid);
+                    chatbox?.set('allowed_reactions', allowed);
+                    return true;
+                },
+                Strophe.NS.DISCO_INFO,
+                'iq',
+                'result'
+            );
+        };
+
+        api.listen.on('connected', registerRestrictedReactionsHandler);
+        api.listen.on('reconnected', registerRestrictedReactionsHandler);
 
         api.listen.on('getMessageActionButtons', (el, buttons) => {
             buttons.push({
@@ -85,64 +105,7 @@ converse.plugins.add('converse-reaction-views', {
     },
 
     sendReaction (message, emoji) {
-        const { stx, Stanza } = converse.env;
-        const chatbox = message.collection.chatbox;
-        const msg_id = message.get('msgid');
-        const to_jid = chatbox.get('jid');
-        const type = chatbox.get('type') === 'chatroom' ? 'groupchat' : 'chat';
-        
-        if (!emoji) return;
-
-        let emoji_unicode = emoji;
-        if (emoji.startsWith(':') && emoji.endsWith(':')) {
-            const emoji_array = u.shortnamesToEmojis(emoji, { unicode_only: true });
-            emoji_unicode = Array.isArray(emoji_array) ? emoji_array.join('') : emoji_array;
-        }
-
-        if (emoji_unicode.startsWith(':') && emoji_unicode.endsWith(':')) {
-            return;
-        }
-
-        const my_jid = Strophe.getBareJidFromJid(api.connection.get().jid);
-        const current_reactions = message.get('reactions') || {};
-        const my_reactions = new Set(current_reactions[my_jid] || []);
-
-        if (my_reactions.has(emoji_unicode)) {
-            my_reactions.delete(emoji_unicode);
-        } else {
-            my_reactions.add(emoji_unicode);
-        }
-
-        const reactions_xml = Array.from(my_reactions).map(r => `<reaction>${r}</reaction>`).join('');
-        const reaction_id = u.getUniqueId('reaction');
-        const reaction_stanza = stx`
-            <message to="${to_jid}" type="${type}" id="${reaction_id}" xmlns="jabber:client">
-                <reactions xmlns="${Strophe.NS.REACTIONS}" id="${msg_id}">
-                    ${Stanza.unsafeXML(reactions_xml)}
-                </reactions>
-            </message>
-        `;
-
-        api.send(reaction_stanza);
-
-        updateMessageReactions(message, my_jid, Array.from(my_reactions));
-
-        const conn = api.connection.get();
-        if (conn) {
-            const handler = (stanza) => {
-                const error = stanza.querySelector('error');
-                if (error) {
-                    const error_type = error.getAttribute('type');
-                    const error_condition = error.querySelector('[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]')?.tagName;
-                    
-                    if (error_condition === 'not-acceptable' || error_type === 'cancel') {
-                        updateMessageReactions(message, my_jid, []);
-                    }
-                }
-                return false;
-            };
-            conn.addHandler(handler, null, 'message', 'error', reaction_id, to_jid);
-        }
+        return sendReaction(message, emoji);
     },
 
     onReactionSelected (ev) {

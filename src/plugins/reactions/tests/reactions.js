@@ -39,16 +39,16 @@ describe("Message Reactions (XEP-0444)", function () {
                 ).find(el => el.querySelector && el.querySelector('reactions'));
 
                 expect(sent_stanza).toBeDefined();
-                expect(sent_stanza.getAttribute('type')).toBe('chat');
-                expect(sent_stanza.getAttribute('to')).toBe(contact_jid);
-
-                const reactions_el = sent_stanza.querySelector('reactions');
-                expect(reactions_el).not.toBe(null);
-                expect(reactions_el.getAttribute('id')).toBe('msg-to-react-to');
-
-                const reaction_el = reactions_el.querySelector('reaction');
-                expect(reaction_el).not.toBe(null);
-                expect(reaction_el.textContent).toBe('👍');
+                expect(sent_stanza).toEqualStanza(stx`
+                    <message xmlns="jabber:client"
+                             to="${contact_jid}"
+                             type="chat"
+                             id="${sent_stanza.getAttribute('id')}">
+                        <reactions xmlns="urn:xmpp:reactions:0" id="msg-to-react-to">
+                            <reaction>👍</reaction>
+                        </reactions>
+                    </message>
+                `);
 
                 // Reactions are JID-keyed: { jid: [emojis] }
                 await u.waitUntil(() => msg_model.get('reactions')?.[_converse.bare_jid]?.includes('👍'));
@@ -98,9 +98,14 @@ describe("Message Reactions (XEP-0444)", function () {
 
                 expect(all_stanzas.length).toBe(2);
                 const toggle_off_stanza = all_stanzas[1];
-                const reactions_el = toggle_off_stanza.querySelector('reactions');
-                expect(reactions_el).not.toBe(null);
-                expect(reactions_el.querySelectorAll('reaction').length).toBe(0);
+                expect(toggle_off_stanza).toEqualStanza(stx`
+                    <message xmlns="jabber:client"
+                             to="${contact_jid}"
+                             type="chat"
+                             id="${toggle_off_stanza.getAttribute('id')}">
+                        <reactions xmlns="urn:xmpp:reactions:0" id="toggle-msg"></reactions>
+                    </message>
+                `);
             })
         );
     });
@@ -297,13 +302,16 @@ describe("Message Reactions (XEP-0444)", function () {
                 ).find(el => el.querySelector && el.querySelector('reactions'));
 
                 expect(sent_stanza).toBeDefined();
-                expect(sent_stanza.getAttribute('type')).toBe('groupchat');
-                expect(sent_stanza.getAttribute('to')).toBe(muc_jid);
-
-                const reactions_el = sent_stanza.querySelector('reactions');
-                expect(reactions_el).not.toBe(null);
-                expect(reactions_el.getAttribute('id')).toBe(msg_model.get('msgid'));
-                expect(reactions_el.querySelector('reaction').textContent).toBe('🎉');
+                expect(sent_stanza).toEqualStanza(stx`
+                    <message xmlns="jabber:client"
+                             to="${muc_jid}"
+                             type="groupchat"
+                             id="${sent_stanza.getAttribute('id')}">
+                        <reactions xmlns="urn:xmpp:reactions:0" id="${msg_model.get('msgid')}">
+                            <reaction>🎉</reaction>
+                        </reactions>
+                    </message>
+                `);
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[_converse.bare_jid]?.includes('🎉'));
                 expect(msg_model.get('reactions')[_converse.bare_jid]).toContain('🎉');

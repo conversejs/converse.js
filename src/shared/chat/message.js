@@ -211,17 +211,8 @@ export default class Message extends ObservableElement {
         this.model.save({'is_spoiler_visible': !this.model.get('is_spoiler_visible')});
     }
 
-    onReactionSelected (ev) {
-        const plugin = _converse.pluggable.plugins['converse-reaction-views'];
-        plugin?.onReactionSelected(ev);
-    }
-
     onReactionPickerClose () {
         this.show_reaction_picker = false;
-    }
-
-    get allowed_reactions () {
-        return this.model.collection?.chatbox?.get('allowed_reactions');
     }
 }
 

@@ -185,18 +185,12 @@ export default function ModelWithMessages(BaseModel) {
                 };
             }
 
-            // Pass through reaction data if present, so that the
-            // getUpdatedMessageAttributes hook can merge it with existing reactions.
-            if (/** @type {any} */ (attrs).reactions) {
-                /** @type {any} */ (new_attrs).reactions = /** @type {any} */ (attrs).reactions;
-            }
-
             /**
              * *Hook* which allows plugins to update the attributes that will be
              * set on an existing message when new attributes are received.
              * @event _converse#getUpdatedMessageAttributes
              */
-            return await api.hook('getUpdatedMessageAttributes', message, new_attrs);
+            return await api.hook('getUpdatedMessageAttributes', message, new_attrs, attrs);
         }
 
         /**
@@ -688,16 +682,8 @@ export default function ModelWithMessages(BaseModel) {
          * @returns {BaseMessage}
          */
         getDuplicateMessage(attrs) {
-            // A reaction stanza references an existing message via reaction_to_id.
-            // Find that original message so it flows through updateMessage/getUpdatedMessageAttributes.
-            if (attrs.reaction_to_id) {
-                return this.messages.models.find(
-                    /** @param {BaseMessage} m */
-                    (m) => m.get('msgid') === attrs.reaction_to_id || m.get('origin_id') === attrs.reaction_to_id
-                );
-            }
-
             const queries = [
+                ...this.getReactionQueryAttrs(attrs),
                 ...this.getStanzaIdQueryAttrs(attrs),
                 this.getOriginIdQueryAttrs(attrs),
                 this.getMessageBodyQueryAttrs(attrs),
@@ -714,6 +700,14 @@ export default function ModelWithMessages(BaseModel) {
          */
         getOriginIdQueryAttrs(attrs) {
             return attrs.origin_id && { origin_id: attrs.origin_id, from: attrs.from };
+        }
+
+        /**
+         * @param {object} attrs - Attributes representing a received
+         */
+        getReactionQueryAttrs(attrs) {
+            const { reaction_to_id } = attrs;
+            return reaction_to_id ? [{ origin_id: reaction_to_id }, { msgid: reaction_to_id }] : [];
         }
 
         /**

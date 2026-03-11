@@ -31,21 +31,22 @@ converse.plugins.add('converse-reactions', {
          * with all existing reactions from other JIDs, so that no
          * reactions are lost when the message is saved.
          */
-        api.listen.on('getUpdatedMessageAttributes', (message, attrs) => {
-            if (!attrs.reactions) {
+        api.listen.on('getUpdatedMessageAttributes', (message, attrs, original_attrs) => {
+            const incoming_reactions = original_attrs?.reactions;
+            if (!incoming_reactions) {
                 return attrs;
             }
 
             const reactions = message.get('reactions') || {};
-            
-            for (const jid in attrs.reactions) {            
-                if (attrs.reactions[jid]?.length) {
-                    reactions[jid] = attrs.reactions[jid];
+
+            for (const jid in incoming_reactions) {
+                if (incoming_reactions[jid]?.length) {
+                    reactions[jid] = incoming_reactions[jid];
                 } else {
                     delete reactions[jid];
                 }
             }
-            return { ...attrs, ...{ reactions }};
+            return { ...attrs, ...{ reactions } };
         });
     },
 });

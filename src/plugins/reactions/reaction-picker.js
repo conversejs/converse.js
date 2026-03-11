@@ -8,6 +8,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { api, u, EmojiPicker } from '@converse/headless';
 import { __ } from 'i18n';
 import tplReactionPicker from '../../templates/reaction-picker.js';
+import { sendReaction } from './utils.js';
 import 'shared/components/dropdown.js';
 import 'shared/chat/emoji-picker.js';
 import 'shared/chat/styles/emoji.scss';
@@ -19,7 +20,6 @@ export default class ReactionPicker extends CustomElement {
         return {
             'model': { type: Object },
             'emoji_picker_state': { type: Object },
-            'allowed_emojis': { type: Array },
             'dropup': { type: Boolean },
             'shifted': { type: Boolean },
             'closing': { type: Boolean }
@@ -31,7 +31,6 @@ export default class ReactionPicker extends CustomElement {
         this.model = null;
         this.emoji_picker_state = null;
         this.picker_id = u.getUniqueId('reaction-picker');
-        this.allowed_emojis = null;
         this.dropup = false;
         this.shifted = false;
         this.closing = false;
@@ -112,6 +111,10 @@ export default class ReactionPicker extends CustomElement {
         }
     }
 
+    get allowed_emojis () {
+        return this.model?.collection?.chatbox?.get('allowed_reactions');
+    }
+
 
     /**
      * Render the reaction picker UI
@@ -150,11 +153,7 @@ export default class ReactionPicker extends CustomElement {
     }
 
     onEmojiSelected (emoji) {
-        this.dispatchEvent(new CustomEvent('reactionSelected', {
-            detail: { emoji, model: this.model },
-            bubbles: true,
-            composed: true
-        }));
+        sendReaction(this.model, emoji);
         this.close();
         
         const dropdown = this.querySelector('.dropdown-menu');

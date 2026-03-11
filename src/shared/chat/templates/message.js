@@ -153,8 +153,6 @@ export default (el) => {
                     ${el.show_reaction_picker
                         ? html`<converse-reaction-picker
                             .model=${el.model}
-                            .allowed_emojis=${el.allowed_reactions}
-                            @reactionSelected=${el.onReactionSelected}
                             @closePicker=${el.onReactionPickerClose}
                         ></converse-reaction-picker>`
                         : ''}

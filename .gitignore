@@ -5,7 +5,7 @@ dist
 certs
 
 # conversejs/media repo checkout
-media
+# media # This was causing the problem for not displaying the images of the sponsors, so I have commented it out for now. We can add it back if we need to do some work on the media repo.
 
 # Editor fluff
 *~

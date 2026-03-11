@@ -36,16 +36,16 @@ converse.plugins.add('converse-reactions', {
                 return attrs;
             }
 
-            const existing_reactions = message.get('reactions') || {};
-            const merged = { ...existing_reactions, ...attrs.reactions };
-
-            for (const jid in merged) {
-                if (!merged[jid]?.length) {
-                    delete merged[jid];
+            const reactions = message.get('reactions') || {};
+            
+            for (const jid in attrs.reactions) {            
+                if (attrs.reactions[jid]?.length) {
+                    reactions[jid] = attrs.reactions[jid];
+                } else {
+                    delete reactions[jid];
                 }
             }
-
-            return { ...attrs, reactions: merged };
+            return { ...attrs, ...{ reactions }};
         });
     },
 });

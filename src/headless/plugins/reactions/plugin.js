@@ -48,5 +48,15 @@ converse.plugins.add('converse-reactions', {
             }
             return { ...attrs, ...{ reactions } };
         });
+
+        api.listen.on('getErrorAttributesForMessage', (attrs, new_attrs, message) => {
+            if (attrs.reaction_to_id) {
+                const my_jid = Strophe.getBareJidFromJid(api.connection.get().jid);
+                const reactions = { ...message.get('reactions') };
+                delete reactions[my_jid];
+                new_attrs.reactions = reactions;
+            }
+            return new_attrs;
+        });
     },
 });

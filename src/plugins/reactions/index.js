@@ -13,7 +13,7 @@
  */
 
 import { converse, api, _converse } from '@converse/headless';
-import { sendReaction } from './utils.js';
+import { registerRestrictedReactionsHandler } from './utils.js';
 import './reaction-picker.js';
 
 import { __ } from 'i18n';
@@ -43,44 +43,8 @@ converse.plugins.add('converse-reaction-views', {
             api.disco.own.features.add(Strophe.NS.REACTIONS);
         });
 
-        const registerRestrictedReactionsHandler = () => {
-            api.connection.get()?.addHandler(
-                /** @param {Element} stanza */
-                (stanza) => {
-                    const query = stanza.querySelector(`query[xmlns="${Strophe.NS.DISCO_INFO}"]`);
-                    if (!query) {
-                        return true;
-                    }
-                    const feature = query.querySelector(`feature[var="${Strophe.NS.REACTIONS}#restricted"]`);
-                    if (!feature) {
-                        return true;
-                    }
-
-                    const from_jid = stanza.getAttribute('from');
-                    if (!from_jid) {
-                        return true;
-                    }
-
-                    const bare_jid = Strophe.getBareJidFromJid(from_jid);
-                    const allowed = Array.from(feature.querySelectorAll('allow'))
-                        .map((el) => el.textContent)
-                        .filter(Boolean);
-
-                    this.allowed_emojis.set(bare_jid, allowed);
-                    this.allowed_emojis.set(from_jid, allowed);
-
-                    const chatbox = api.chatboxes.get(from_jid) || api.chatboxes.get(bare_jid);
-                    chatbox?.set('allowed_reactions', allowed);
-                    return true;
-                },
-                Strophe.NS.DISCO_INFO,
-                'iq',
-                'result'
-            );
-        };
-
-        api.listen.on('connected', registerRestrictedReactionsHandler);
-        api.listen.on('reconnected', registerRestrictedReactionsHandler);
+        api.listen.on('connected', () => registerRestrictedReactionsHandler(this.allowed_emojis));
+        api.listen.on('reconnected', () => registerRestrictedReactionsHandler(this.allowed_emojis));
 
         api.listen.on('getMessageActionButtons', (el, buttons) => {
             buttons.push({
@@ -102,17 +66,5 @@ converse.plugins.add('converse-reaction-views', {
 
             return buttons;
         });
-    },
-
-    sendReaction (message, emoji) {
-        return sendReaction(message, emoji);
-    },
-
-    onReactionSelected (ev) {
-        const emoji = ev.detail?.emoji;
-        const message = ev.detail?.model;
-        if (emoji && message) {
-            this.sendReaction(message, emoji);
-        }
     }
 });

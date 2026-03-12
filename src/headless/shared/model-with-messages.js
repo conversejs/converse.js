@@ -641,8 +641,8 @@ export default function ModelWithMessages(BaseModel) {
          * @param {object} attrs
          */
         getMessageReferencedByError(attrs) {
-            const id = attrs.msgid;
-            return id && this.messages.models.find((m) => [m.get('msgid'), m.get('retraction_id')].includes(id));
+            const id = attrs.msgid || attrs.reaction_to_id;
+            return id && this.messages.models.find((m) => [m.get('msgid'), m.get('retraction_id'), m.get('origin_id')].includes(id));
         }
 
         /**
@@ -703,7 +703,7 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {object} attrs - Attributes representing a received
+         * @param {object} attrs - Attributes representing a received message
          */
         getReactionQueryAttrs(attrs) {
             const { reaction_to_id } = attrs;
@@ -828,7 +828,7 @@ export default function ModelWithMessages(BaseModel) {
              * *Hook* which allows plugins to add application-specific attributes
              * @event _converse#getErrorAttributesForMessage
              */
-            return await api.hook('getErrorAttributesForMessage', attrs, new_attrs);
+            return await api.hook('getErrorAttributesForMessage', attrs, new_attrs, message);
         }
 
         /**

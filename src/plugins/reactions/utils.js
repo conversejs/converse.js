@@ -68,12 +68,11 @@ export function sendReaction (message, emoji) {
         my_reactions.add(emoji_unicode);
     }
 
-    const reactions_xml = Array.from(my_reactions).map((reaction) => `<reaction>${reaction}</reaction>`).join('');
     const reaction_id = u.getUniqueId('reaction');
     const reaction_stanza = stx`
         <message to="${to_jid}" type="${type}" id="${reaction_id}" xmlns="jabber:client">
             <reactions xmlns="${Strophe.NS.REACTIONS}" id="${msg_id}">
-                ${Stanza.unsafeXML(reactions_xml)}
+                ${Array.from(my_reactions).map((reaction) => stx`<reaction>${reaction}</reaction>`)}
             </reactions>
         </message>
     `;
@@ -81,31 +80,6 @@ export function sendReaction (message, emoji) {
     api.send(reaction_stanza);
 
     updateMessageReactions(message, my_jid, Array.from(my_reactions));
-
-    const conn = api.connection.get();
-    if (conn) {
-        conn.addHandler(
-            (stanza) => {
-                const error = stanza.querySelector('error');
-                if (error) {
-                    const error_type = error.getAttribute('type');
-                    const error_condition = error
-                        .querySelector('[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]')
-                        ?.tagName;
-
-                    if (error_condition === 'not-acceptable' || error_type === 'cancel') {
-                        updateMessageReactions(message, my_jid, []);
-                    }
-                }
-                return false;
-            },
-            null,
-            'message',
-            'error',
-            reaction_id,
-            to_jid
-        );
-    }
 }
 
 /**
@@ -131,3 +105,44 @@ export function getEmojiKeyedReactions (reactions) {
     return emoji_map;
 }
 
+/**
+ * Registers a handler for disco#info result stanzas to check for restricted reactions support.
+ *
+ * @param {Map<string, string[]>} allowed_emojis_map - Map to store allowed emojis per JID
+ */
+export function registerRestrictedReactionsHandler (allowed_emojis_map) {
+    const { Strophe } = converse.env;
+    api.connection.get()?.addHandler(
+        /** @param {Element} stanza */
+        (stanza) => {
+            const query = stanza.querySelector(`query[xmlns="${Strophe.NS.DISCO_INFO}"]`);
+            if (!query) {
+                return true;
+            }
+            const feature = query.querySelector(`feature[var="${Strophe.NS.REACTIONS}#restricted"]`);
+            if (!feature) {
+                return true;
+            }
+
+            const from_jid = stanza.getAttribute('from');
+            if (!from_jid) {
+                return true;
+            }
+
+            const bare_jid = Strophe.getBareJidFromJid(from_jid);
+            const allowed = Array.from(feature.querySelectorAll('allow'))
+                .map((el) => el.textContent)
+                .filter(Boolean);
+
+            allowed_emojis_map.set(bare_jid, allowed);
+            allowed_emojis_map.set(from_jid, allowed);
+
+            const chatbox = api.chatboxes.get(from_jid) || api.chatboxes.get(bare_jid);
+            chatbox?.set('allowed_reactions', allowed);
+            return true;
+        },
+        Strophe.NS.DISCO_INFO,
+        'iq',
+        'result'
+    );
+}

@@ -87,7 +87,7 @@ declare class Bookmarks extends Collection<Bookmark> {
      *
      * @param {Bookmark} bookmark
      */
-    unpinBookmarkStanza(bookmark: Bookmark): void;
+    unpinBookmark(bookmark: Bookmark): void;
 }
 import Bookmark from './model.js';
 import { Collection } from '@converse/skeletor';

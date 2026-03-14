@@ -604,4 +604,74 @@ describe("A bookmark", function () {
                 </iq>`);
         })
     );
+
+    it("can be unpinned and sends out a stanza", mock.initConverse(
+        ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const bare_jid = _converse.session.get('bare_jid');
+            const muc_jid = 'theplay@conference.shakespeare.lit';
+            const { api, state } = _converse;
+
+            // First create a pinned bookmark
+            const bookmark = state.bookmarks.create({
+                jid: muc_jid,
+                autojoin: true,
+                name: 'The Play',
+                nick: 'romeo',
+                extensions: ['<pinned xmlns="urn:xmpp:bookmarks-pinning:0"/>'],
+            });
+
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
+            await u.waitUntil(() => state.chatboxes.length === 1);
+
+            const IQ_stanzas = api.connection.get().IQ_stanzas;
+
+            expect(bookmark.pinned).toBe(true);
+            expect(state.chatboxes.get(muc_jid).get('pinned')).toBe(true);
+
+            // Now unpin the bookmark
+            await state.bookmarks.unpinBookmark(bookmark);
+
+            const sent_stanza = await u.waitUntil(() =>
+                IQ_stanzas.filter((s) => sizzle('publish[node="urn:xmpp:bookmarks:1"] conference[name="The Play"]', s).length).pop()
+            );
+
+            expect(bookmark.pinned).toBe(false);
+            expect(state.chatboxes.get(muc_jid).get('pinned')).toBe(false);
+
+            expect(sent_stanza).toEqualStanza(stx`
+                <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                    <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                        <publish node="urn:xmpp:bookmarks:1">
+                            <item id="${muc_jid}">
+                                <conference xmlns="urn:xmpp:bookmarks:1" autojoin="true" name="The Play">
+                                    <nick>romeo</nick>
+                                </conference>
+                            </item>
+                        </publish>
+                        <publish-options>
+                            <x type="submit" xmlns="jabber:x:data">
+                                <field type="hidden" var="FORM_TYPE">
+                                    <value>http://jabber.org/protocol/pubsub#publish-options</value>
+                                </field>
+                                <field var='pubsub#persist_items'>
+                                    <value>true</value>
+                                </field>
+                                <field var='pubsub#max_items'>
+                                    <value>max</value>
+                                </field>
+                                <field var='pubsub#send_last_published_item'>
+                                    <value>never</value>
+                                </field>
+                                <field var='pubsub#access_model'>
+                                    <value>whitelist</value>
+                                </field>
+                            </x>
+                        </publish-options>
+                    </pubsub>
+                </iq>`);
+        })
+    );
 });

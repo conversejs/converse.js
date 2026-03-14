@@ -363,7 +363,7 @@ class Bookmarks extends Collection {
      * 
      * @param {Bookmark} bookmark
      */
-    unpinBookmarkStanza(bookmark) {
+    unpinBookmark(bookmark) {
         const extensions = bookmark.get('extensions').filter(/** @param {String} e */ e => !(e.includes('<pinned')));
 
         const { chatboxes } = _converse.state;

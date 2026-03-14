@@ -12,7 +12,7 @@ export class BookmarksPinView extends RoomsList {
         const bare_jid = _converse.session.get('bare_jid');
         const id = `converse.bookmarks-pin-list-model-${bare_jid}`;
         this.model = new BookmarksPinListModel({ id });
-        _converse.state.bookmarksPinList = this.model;
+        _converse.state.bookmarks_pin_list = this.model;
 
         initStorage(this.model, id);
         this.model.fetch();

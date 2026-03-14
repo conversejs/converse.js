@@ -40,6 +40,7 @@ export function tplRoomItem (el, room) {
             alt_text: i18n_leave_room,
             text: __('Leave'),
             icon_class: 'fa-sign-out-alt',
+            btn_class: 'close-room',
             handler: (ev) => el.closeRoom(ev)
         }),
     ];
@@ -51,6 +52,7 @@ export function tplRoomItem (el, room) {
                 alt_text: __('Pin this groupchat to the top of the list'),
                 text: __('Pin'),
                 icon_class: 'fa-bookmark',
+                btn_class: 'pin-room',
                 handler: (ev) => el.pinRoom(ev)
             }))
         } else {
@@ -59,6 +61,7 @@ export function tplRoomItem (el, room) {
                 alt_text: __('Unpin this groupchat from the top of the list'),
                 text:  __('Unpin'),
                 icon_class: 'fa-bookmark-empty',
+                btn_class: 'unpin-room',
                 handler: (ev) => el.unpinRoom(ev)
             }))
         }
@@ -96,11 +99,12 @@ export function tplRoomItem (el, room) {
  * @param {string} config.text
  * @param {function} config.handler
  * @param {string} config.icon_class
+ * @param {string} config.btn_class
  * @returns 
  */
 function tplRoomMenuItem (config) {
-    const { room, alt_text, text, handler, icon_class } = config;
-    return html`<a class="dropdown-item" role="button"
+    const { room, alt_text, text, handler, icon_class, btn_class } = config;
+    return html`<a class="dropdown-item ${btn_class}" role="button"
             @click="${handler}"
             tabindex="0"
             data-room-jid="${room.get('jid')}"

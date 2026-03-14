@@ -82,6 +82,7 @@ class Bookmarks extends Collection {
             const groupchat = await api.rooms.create(bookmark.get('jid'), {
                 nick: bookmark.get('nick'),
                 password: bookmark.get('password'),
+                pinned: bookmark.get('pinned'),
             });
             groupchat.maybeShow();
         }

@@ -3,72 +3,14 @@
  * @typedef {import('@converse/headless').MUC} MUC
  */
 import { html } from "lit";
-import { _converse, api, u, constants } from "@converse/headless";
+import { api, constants } from "@converse/headless";
 import 'plugins/muc-views/modals/add-muc.js';
 import 'plugins/muc-views/modals/muc-list.js';
 import { __ } from 'i18n';
-import { getUnreadMsgsDisplay } from "shared/chat/utils";
-
 import '../styles/roomsgroups.scss';
+import { tplRoomItem } from "shared/roomslist/templates/room-item";
 
 const { CLOSED } = constants;
-const { isUniView } = u;
-
-/** @param {MUC} room */
-function isCurrentlyOpen (room) {
-    return isUniView() && !room.get('hidden');
-}
-
-/** @param {MUC} room */
-function tplUnreadIndicator (room) {
-    return html`<span class="list-item-badge badge badge--muc msgs-indicator">${ getUnreadMsgsDisplay(room) }</span>`;
-}
-
-function tplActivityIndicator () {
-    return html`<span class="list-item-badge badge badge--muc msgs-indicator"></span>`;
-}
-
-/**
- * @param {RoomsList} el
- * @param {MUC} room
- */
-function tplRoomItem (el, room) {
-    const i18n_leave_room = __('Leave this groupchat');
-    const has_unread_msgs = room.get('num_unread_general') || room.get('has_activity');
-    return html`
-        <li class="list-item controlbox-padded available-chatroom d-flex flex-row ${ isCurrentlyOpen(room) ? 'open' : '' } ${ has_unread_msgs ? 'unread-msgs' : '' }"
-            data-room-jid="${room.get('jid')}">
-
-            <a class="list-item-link open-room available-room w-100"
-                data-room-jid="${room.get('jid')}"
-                data-room-name="${room.getDisplayName()}"
-                title="${__('Click to open this groupchat')}"
-                @click=${ev => el.openRoom(ev)}>
-                <converse-avatar
-                    .model=${room}
-                    class="avatar avatar-muc"
-                    name="${room.getDisplayName()}"
-                    nonce=${room.vcard?.get('vcard_updated')}
-                    height="30" width="30"></converse-avatar>
-                <span>${ room.get('num_unread') ?
-                            tplUnreadIndicator(room) :
-                            (room.get('has_activity') ? tplActivityIndicator() : '') }
-                    ${room.getDisplayName()}</span>
-            </a>
-
-            <a class="list-item-action close-room"
-                tabindex="0"
-                data-room-jid="${room.get('jid')}"
-                data-room-name="${room.getDisplayName()}"
-                title="${i18n_leave_room}"
-                @click=${(ev) => el.closeRoom(ev)}>
-                <converse-icon
-                    class="fa fa-sign-out-alt"
-                    size="1.2em"
-                    color="${ isCurrentlyOpen(room) ? 'var(--foreground-color)' : '' }"></converse-icon>
-            </a>
-        </li>`;
-}
 
 /**
  * @param {RoomsList} el

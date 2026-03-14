@@ -9,6 +9,7 @@ import BookmarkForm from './components/bookmark-form.js';
 import BookmarksView from './components/bookmarks-list.js';
 import { BookmarkableChatRoomView } from './mixins.js';
 import { removeBookmarkViaEvent } from './utils.js';
+import { BookmarksPinView } from './components/bookmarks-pin-list.js';
 
 import './styles/bookmarks.scss';
 
@@ -36,6 +37,7 @@ converse.plugins.add('converse-bookmark-views', {
             removeBookmarkViaEvent,
             MUCBookmarkForm: BookmarkForm,
             BookmarksView,
+            BookmarksPinView,
         };
 
         Object.assign(_converse, exports); // DEPRECATED

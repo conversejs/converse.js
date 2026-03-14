@@ -19,6 +19,12 @@ export class RoomsList extends CustomElement {
         initStorage(this.model, id);
         this.model.fetch();
 
+        this.handleEvents();
+
+        this.requestUpdate();
+    }
+
+    handleEvents() {
         const { chatboxes } = _converse.state;
         this.listenTo(chatboxes, 'add', this.renderIfChatRoom);
         this.listenTo(chatboxes, 'remove', this.renderIfChatRoom);
@@ -27,8 +33,6 @@ export class RoomsList extends CustomElement {
         this.listenTo(chatboxes, 'vcard:add', () => this.requestUpdate());
         this.listenTo(chatboxes, 'vcard:change', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
-
-        this.requestUpdate();
     }
 
     render() {
@@ -42,7 +46,7 @@ export class RoomsList extends CustomElement {
 
     /** @param {import('@converse/headless').Model} model */
     renderIfRelevantChange(model) {
-        const attrs = ['bookmarked', 'hidden', 'name', 'num_unread', 'num_unread_general', 'has_activity'];
+        const attrs = ['bookmarked', 'hidden', 'name', 'num_unread', 'num_unread_general', 'has_activity', 'pinned'];
         const changed = model.changed || {};
         if (u.muc.isChatRoom(model) && Object.keys(changed).filter((m) => attrs.includes(m)).length) {
             this.requestUpdate();
@@ -52,7 +56,7 @@ export class RoomsList extends CustomElement {
     /** @returns {import('@converse/headless').MUC[]} */
     getRoomsToShow() {
         const { chatboxes } = _converse.state;
-        const rooms = chatboxes.filter((m) => m.get('type') === CHATROOMS_TYPE && !m.get('closed'));
+        const rooms = chatboxes.filter((m) => m.get('type') === CHATROOMS_TYPE && !m.get('closed') && !m.get('pinned'));
         rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
         return rooms;
     }
@@ -80,6 +84,29 @@ export class RoomsList extends CustomElement {
             const room = await api.rooms.get(jid);
             room.close();
         }
+    }
+
+    /** @param {Event} ev */
+    pinRoom(ev) {
+        ev.preventDefault();
+        const target = /** @type {HTMLElement} */ (ev.currentTarget);
+        const jid = target.getAttribute('data-room-jid');
+        const { bookmarks } = _converse.state;
+        bookmarks
+            .where({ jid })
+            .forEach(/** @param {import('@converse/headless').Bookmark} b */ (b) =>
+                bookmarks.pinBookmark(b));
+    }
+
+    /** @param {Event} ev */
+    unpinRoom(ev) {
+        ev.preventDefault();
+        const target = /** @type {HTMLElement} */ (ev.currentTarget);
+        const jid = target.getAttribute('data-room-jid');
+        const { bookmarks } = _converse.state;
+        bookmarks
+            .where({ jid })
+            .forEach((b) => bookmarks.unpinBookmark(b));
     }
 
     /** @param {Event} [ev] */

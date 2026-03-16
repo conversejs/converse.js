@@ -14,6 +14,7 @@ import {
     collapseLineBreaks,
     containsDirectives,
     getDirectiveAndLength,
+    getUrlRanges,
     isQuoteDirective,
     isSpotifyTrack,
     isString,
@@ -238,15 +239,27 @@ export class Texture extends String {
         }
 
         const references = [];
+        const text_str = this.toString();
         const mention_ranges = this.mentions.map((m) =>
             Array.from({ "length": Number(m.end) }, (_, i) => Number(m.begin) + i)
         );
+
+        // Pre-detect URL ranges so that styling directives (e.g. underscores)
+        // inside URLs are not mistakenly treated as emphasis markers.
+        // See https://github.com/conversejs/converse.js/issues/2857
+        const url_ranges = getUrlRanges(text_str);
+
         let i = 0;
         while (i < this.length) {
             if (mention_ranges.filter((r) => r.includes(i)).length) {
                 // eslint-disable-line no-loop-func
                 // Don't treat potential directives if they fall within a
                 // declared XEP-0372 reference
+                i++;
+                continue;
+            }
+            if (url_ranges.some(([start, end]) => i >= start && i < end)) {
+                // Don't treat potential directives if they fall within a URL
                 i++;
                 continue;
             }

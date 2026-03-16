@@ -189,6 +189,32 @@ export function isQuoteDirective(d) {
 }
 
 /**
+ * Detect URL ranges in a text string so that characters inside URLs
+ * (e.g. underscores) are not mistakenly treated as styling directives.
+ * @param {string} text
+ * @returns {Array<[number, number]>} - Array of [start, end) index pairs
+ * @see https://github.com/conversejs/converse.js/issues/2857
+ */
+export function getUrlRanges(text) {
+    /** @type {Array<[number, number]>} */
+    const ranges = [];
+    const url_re = /[a-z][a-z0-9.+-]*:\/\/[^\s]*/gi;
+    const trim_re = /[`!()\[\]{};:'".,<>?\u00AB\u00BB\u201C\u201D\u2018\u2019]+$/;
+    let m;
+    while ((m = url_re.exec(text)) !== null) {
+        const start = m.index;
+        let end = start + m[0].replace(trim_re, '').length;
+        if (end > start && text[end - 1] === '_') {
+            end--;
+        }
+        if (end > start) {
+            ranges.push([start, end]);
+        }
+    }
+    return ranges;
+}
+
+/**
  * @param {import('./texture').Texture} text
  * @returns {boolean}
  */

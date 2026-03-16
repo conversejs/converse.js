@@ -39,6 +39,14 @@ export function getDirectiveAndLength(text: import("./texture").Texture, i: numb
  */
 export function isQuoteDirective(d: string): boolean;
 /**
+ * Detect URL ranges in a text string so that characters inside URLs
+ * (e.g. underscores) are not mistakenly treated as styling directives.
+ * @param {string} text
+ * @returns {Array<[number, number]>} - Array of [start, end) index pairs
+ * @see https://github.com/conversejs/converse.js/issues/2857
+ */
+export function getUrlRanges(text: string): Array<[number, number]>;
+/**
  * @param {import('./texture').Texture} text
  * @returns {boolean}
  */

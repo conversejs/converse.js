@@ -246,7 +246,7 @@ export function shouldShowGroup(group, model) {
  */
 export function populateContactsMap(contacts_map, contact) {
     const { labels } = _converse;
-    const contact_groups = /** @type {string[]} */ (u.unique(contact.get('groups') ?? []));
+    const contact_groups = /** @type {string[]} */ (u.unique(/** @type {string[]} */ (contact.get('groups') ?? [])).filter((n) => n?.trim()));
 
     if (u.isOwnJID(contact.get('jid')) && !contact_groups.length) {
         contact_groups.push(/** @type {string} */ (labels.HEADER_UNGROUPED));

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-16 09:03+0200\n"
-"PO-Revision-Date: 2025-10-13 11:57+0000\n"
+"PO-Revision-Date: 2026-03-18 05:09+0000\n"
 "Last-Translator: \"josé m.\" <correoxm@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 5.17-dev\n"
 
 #: dist/converse-no-dependencies.js:35408
 msgid "A timeout occurred"
@@ -490,7 +490,7 @@ msgid ""
 "XMPP address for that user."
 msgstr ""
 "Lamentámolo, non se descifrou a mensaxe OMEMO recibida porque non temos o "
-"enderezo XMPP desta usuaria."
+"enderezo XMPP desta conta."
 
 #: dist/converse-no-dependencies.js:52458
 #, javascript-format
@@ -901,9 +901,9 @@ msgid ""
 "the duration of the user's session."
 msgstr ""
 "Os roles asígnanse ás usuarias para outorgar ou denegarlles certos permisos "
-"nunha conversa multiusuario. Asígnanse de xeito implícito ou explícito como "
-"parte da filiación. Un rol que non é debido a filiación só é valido durante "
-"a duración da sesión do usuario."
+"nunha conversa multiusuaria. Asígnanse de xeito implícito ou explícito como "
+"parte da filiación. Un rol que non é debido á filiación só é valido durante "
+"a duración da sesión da usuaria."
 
 #: dist/converse-no-dependencies.js:89099
 msgid ""
@@ -1235,7 +1235,7 @@ msgstr "Copiar"
 
 #: dist/converse-no-dependencies.js:94621
 msgid "Reply"
-msgstr ""
+msgstr "Responder"
 
 #: dist/converse-no-dependencies.js:94631
 msgid "Quote"
@@ -1247,53 +1247,51 @@ msgstr "Imaxe: "
 
 #: dist/converse-no-dependencies.js:95474
 msgid "Play"
-msgstr ""
+msgstr "Reproducir"
 
 #: dist/converse-no-dependencies.js:95475
 msgid "Pause"
-msgstr ""
+msgstr "Pausa"
 
 #: dist/converse-no-dependencies.js:95476
 msgid "Mute"
-msgstr ""
+msgstr "Acalar"
 
 #: dist/converse-no-dependencies.js:95477
 msgid "Unmute"
-msgstr ""
+msgstr "Reactivar son"
 
 #: dist/converse-no-dependencies.js:95478
 msgid "Seek"
-msgstr ""
+msgstr "Avanzar"
 
 #: dist/converse-no-dependencies.js:95479
 msgid "Volume"
-msgstr ""
+msgstr "Volume"
 
 #: dist/converse-no-dependencies.js:95480
 msgid "Audio player"
-msgstr ""
+msgstr "Reprodutor"
 
 #: dist/converse-no-dependencies.js:95481
 msgid "Loading audio..."
-msgstr ""
+msgstr "Cargando son…"
 
 #: dist/converse-no-dependencies.js:95482
 msgid "Error loading audio"
-msgstr ""
+msgstr "Erro ao cargar o son"
 
 #: dist/converse-no-dependencies.js:95483
-#, fuzzy
 msgid "Current time"
-msgstr "Versión actual"
+msgstr "Hora actual"
 
 #: dist/converse-no-dependencies.js:95484
-#, fuzzy
 msgid "Duration"
-msgstr "Descrición"
+msgstr "Duración"
 
 #: dist/converse-no-dependencies.js:95485
 msgid "Playback speed"
-msgstr ""
+msgstr "Velocidade de reprodución"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:99219
@@ -1444,14 +1442,12 @@ msgid "Retry"
 msgstr "Reintentar"
 
 #: dist/converse-no-dependencies.js:101956
-#, fuzzy
 msgid "Replying to a message"
-msgstr "Enviar a mensaxe"
+msgstr "Respondendo á mensaxe"
 
 #: dist/converse-no-dependencies.js:101963
-#, fuzzy
 msgid "(empty message)"
-msgstr "Novas mensaxes"
+msgstr "(mensaxe baleira)"
 
 #: dist/converse-no-dependencies.js:102291
 msgid "This message has been edited"
@@ -1597,12 +1593,11 @@ msgstr "Seguro que desexas eliminar as mensaxes desta conversa?"
 #: dist/converse-no-dependencies.js:108595
 #, javascript-format
 msgid "Replying to %1$s"
-msgstr ""
+msgstr "Respondendo a %1$s"
 
 #: dist/converse-no-dependencies.js:108597
-#, fuzzy
 msgid "Cancel reply"
-msgstr "Cancelar"
+msgstr "Desbotar resposta"
 
 #: dist/converse-no-dependencies.js:108683
 #: dist/converse-no-dependencies.js:117634
@@ -1697,11 +1692,11 @@ msgstr "Acceder"
 
 #: dist/converse-no-dependencies.js:111353
 msgid "Username"
-msgstr "Nome de usuaria"
+msgstr "Identificador"
 
 #: dist/converse-no-dependencies.js:111353
 msgid "user@domain"
-msgstr "usuaria@dominio"
+msgstr "identificador@dominio"
 
 #: dist/converse-no-dependencies.js:111360
 msgid "Disconnected"
@@ -1917,21 +1912,21 @@ msgstr "Visitante"
 
 #: dist/converse-no-dependencies.js:119203
 msgid "This user is a moderator."
-msgstr "Esta usuaria é moderador."
+msgstr "Esta usuaria é moderadora."
 
 #: dist/converse-no-dependencies.js:119204
 msgid "This user can send messages in this groupchat."
-msgstr "Esta usuaria pode enviar mensaxes a conversa en grupo."
+msgstr "Esta usuaria pode enviar mensaxes na conversa en grupo."
 
 #: dist/converse-no-dependencies.js:119205
 msgid "This user can NOT send messages in this groupchat."
-msgstr "Esta usuaria NON pode enviar mensaxes a conversa en grupo."
+msgstr "Esta usuaria NON pode enviar mensaxes na conversa en grupo."
 
 #: dist/converse-no-dependencies.js:119370
 msgid ""
 "This user is not currently in this groupchat and can't receive messages."
 msgstr ""
-"Esta usuaria non está actualmente na parola en grupo e non pode recibir "
+"Esta usuaria non está actualmente na conversa en grupo e non pode recibir "
 "mensaxes."
 
 #: dist/converse-no-dependencies.js:119371
@@ -2070,7 +2065,7 @@ msgstr "Cambiar o seu alcume"
 
 #: dist/converse-no-dependencies.js:122083
 msgid "Grant moderator role to user"
-msgstr "Conceder rol de moderador a usuaria"
+msgstr "Conceder rol de moderadora a usuaria"
 
 #: dist/converse-no-dependencies.js:122084
 msgid "Grant ownership of this groupchat"
@@ -2094,7 +2089,7 @@ msgstr "Establecer o asunto da conversa (alias para /subject)"
 
 #: dist/converse-no-dependencies.js:122089
 msgid "Allow muted user to post messages"
-msgstr "Permitir as usuarias acaladas publicar mensaxes"
+msgstr "Permitir á usuaria acalada publicar mensaxes"
 
 #: dist/converse-no-dependencies.js:122178
 msgid ""
@@ -2755,68 +2750,65 @@ msgstr "Rexistrar"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "XMPP Compliance"
-msgstr ""
+msgstr "Cumprimento con XMPP"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Free of charge"
-msgstr "rol cambiado"
+msgstr "De balde"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Yes"
-msgstr ""
+msgstr "Si"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Company"
-msgstr ""
+msgstr "Empresa"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Professional hosting"
-msgstr ""
+msgstr "Hospedaxe profesional"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Password reset"
-msgstr "Contrasinal incorrecto"
+msgstr "Restablecer contrasinal"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Legal notice"
-msgstr ""
+msgstr "Aviso legal"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Online since"
-msgstr "Usuarias conectadas"
+msgstr "Activo desde"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Message archive storage time"
-msgstr "Arquivado de mensaxes"
+msgstr "Período de almacenaxe das mensaxes"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s days"
-msgstr "%1$s di"
+msgstr "%1$s días"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload size limit"
-msgstr ""
+msgstr "Tamaño máx. subida de ficheiros"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload storage time"
-msgstr ""
+msgstr "Tempo de almacenaxe de ficheiros subidos"
 
 #: dist/converse-no-dependencies.js:133752
 msgid "With these providers you can register directly inside this app."
-msgstr ""
+msgstr "Podes crear unha conta directamente nestes provedores desde esta app."
 
 #: dist/converse-no-dependencies.js:133752
 msgid "For these providers, you'll need to register externally via a web page."
 msgstr ""
+"Nestes provedores, deberás crear a conta de xeito externo na súa páxina web."
 
 #: dist/converse-no-dependencies.js:133760
 msgid "Create your account"
@@ -2839,19 +2831,17 @@ msgid "Please enter the XMPP provider to register with:"
 msgstr "Por favor, escribe o provedor XMPP no que rexistrarse:"
 
 #: dist/converse-no-dependencies.js:133777
-#, fuzzy
 msgid "e.g. https://example.org/http-bind"
-msgstr "ex. wss://exemplo.org/xmpp-websocket"
+msgstr "ex. https://example.org/http-bind"
 
 #. Show the categorized provider list
 #: dist/converse-no-dependencies.js:133780
-#, fuzzy
 msgid "Choose an XMPP provider to register with:"
-msgstr "Por favor, escribe o provedor XMPP no que rexistrarse:"
+msgstr "Elixe un provedor XMPP para crear a conta:"
 
 #: dist/converse-no-dependencies.js:133782
 msgid "Browse all providers"
-msgstr ""
+msgstr "Ver todos os provedores"
 
 #: dist/converse-no-dependencies.js:134189
 msgid "Sorry, we're unable to connect to your chosen provider."
@@ -3154,7 +3144,7 @@ msgid ""
 "<username@example.org>\"."
 msgstr ""
 "Valor non válido para o nome e enderezo XMPP. Por favor usa o formato \"Nome "
-"<usuaria@exemplo.org>\"."
+"<identificador@exemplo.org>\"."
 
 #: dist/converse-no-dependencies.js:139485
 msgid "Sorry, something went wrong while accepting the contact request"

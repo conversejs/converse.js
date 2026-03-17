@@ -3,6 +3,8 @@
 ## Next release
 
 - #2311: Strip locked MUC domain from room address input to avoid mangled JIDs
+- #3885: Don't show contact approval alerts when `allow_contact_requests` is false (e.g. anonymous mode)
+- #3886: Don't show OMEMO padlock icon when libsignal is not available (e.g. anonymous mode)
 - #2740: Add autocomplete of possible XMPP servers when registering a new account
 - #2929: Add XMPP providers autocomplete when adding contacts (new `autocomplete_providers_url` setting)
 - #3382: Fix audio player accessibility for screen reader users (NVDA, JAWS)

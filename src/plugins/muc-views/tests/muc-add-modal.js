@@ -106,6 +106,25 @@ describe('The "Groupchats" Add modal', function () {
         })
     );
 
+    it('strips the locked MUC domain from user input', mock.initConverse(
+        ['chatBoxesFetched'], { muc_domain: 'muc.example.org', locked_muc_domain: true },
+        async function (_converse) {
+            const modal = await mock.openAddMUCModal(_converse);
+            spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
+            const name_input = modal.querySelector('input[name="chatroom"]');
+            name_input.value = 'lounge@muc.example.org';
+            const nick_input = modal.querySelector('input[name="nickname"]');
+            nick_input.value = 'max';
+            modal.querySelector('form input[type="submit"]').click();
+            await mock.waitForMUCDiscoInfo(_converse, 'lounge@muc.example.org');
+            await u.waitUntil(() => _converse.chatboxes.length);
+            await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
+            expect(
+                _converse.chatboxes.models.map(m => m.get('id')).includes('lounge@muc.example.org')
+            ).toBe(true);
+        })
+    );
+
     it("lets you create a MUC with only the name",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             const { domain } = _converse;

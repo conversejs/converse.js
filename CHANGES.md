@@ -2,6 +2,7 @@
 
 ## Next release
 
+- #1855: Use default or locked domain when adding contacts or starting new chats
 - #2311: Strip locked MUC domain from room address input to avoid mangled JIDs
 - #2740: Add autocomplete of possible XMPP servers when registering a new account
 - #2929: Add XMPP providers autocomplete when adding contacts (new `autocomplete_providers_url` setting)

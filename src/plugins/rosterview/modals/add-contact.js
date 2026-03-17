@@ -36,7 +36,8 @@ export default class AddContactModal extends BaseModal {
      * @param {string} jid
      */
     validateSubmission(jid) {
-        if (!jid || jid.split('@').filter((s) => !!s).length < 2) {
+        const dominated = api.settings.get('locked_domain') || api.settings.get('default_domain');
+        if (!jid || (!dominated && jid.split('@').filter((s) => !!s).length < 2)) {
             this.alert(__('Please enter a valid XMPP address'), 'danger', false);
             return false;
         } else if (!this.contact && _converse.state.roster.get(Strophe.getBareJidFromJid(jid))) {
@@ -75,6 +76,16 @@ export default class AddContactModal extends BaseModal {
         const form = /** @type {HTMLFormElement} */ (ev.target);
         const data = new FormData(form);
         let jid = /** @type {string} */ (data.get('jid') || '').trim();
+
+        if (api.settings.get('locked_domain')) {
+            const last_part = '@' + api.settings.get('locked_domain');
+            if (jid.endsWith(last_part)) {
+                jid = jid.substring(0, jid.length - last_part.length);
+            }
+            jid = Strophe.escapeNode(jid) + last_part;
+        } else if (api.settings.get('default_domain') && !jid.includes('@')) {
+            jid = jid + '@' + api.settings.get('default_domain');
+        }
 
         let name;
         if (api.settings.get('xhr_user_search_url')) {

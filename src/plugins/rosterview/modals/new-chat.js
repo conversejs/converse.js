@@ -1,7 +1,9 @@
-import { _converse, api, log } from '@converse/headless';
+import { _converse, api, converse, log } from '@converse/headless';
 import BaseModal from 'plugins/modal/modal.js';
 import tplNewChat from './templates/new-chat.js';
 import { __ } from 'i18n';
+
+const { Strophe } = converse.env;
 
 export default class NewChatModal extends BaseModal {
     initialize() {
@@ -27,7 +29,8 @@ export default class NewChatModal extends BaseModal {
      * @param {string} jid
      */
     validateSubmission(jid) {
-        if (!jid || jid.split('@').filter((s) => !!s).length < 2) {
+        const dominated = api.settings.get('locked_domain') || api.settings.get('default_domain');
+        if (!jid || (!dominated && jid.split('@').filter((s) => !!s).length < 2)) {
             this.model.set('error', __('Please enter a valid XMPP address'));
             return false;
         }
@@ -58,7 +61,17 @@ export default class NewChatModal extends BaseModal {
         ev.preventDefault();
         const form = /** @type {HTMLFormElement} */ (ev.target);
         const data = new FormData(form);
-        const jid = /** @type {string} */ (data.get('jid') || '').trim();
+        let jid = /** @type {string} */ (data.get('jid') || '').trim();
+
+        if (api.settings.get('locked_domain')) {
+            const last_part = '@' + api.settings.get('locked_domain');
+            if (jid.endsWith(last_part)) {
+                jid = jid.substring(0, jid.length - last_part.length);
+            }
+            jid = Strophe.escapeNode(jid) + last_part;
+        } else if (api.settings.get('default_domain') && !jid.includes('@')) {
+            jid = jid + '@' + api.settings.get('default_domain');
+        }
 
         if (this.validateSubmission(jid)) {
             this.afterSubmission(form, jid);

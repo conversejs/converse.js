@@ -88,12 +88,17 @@ export default class AddMUCModal extends BaseModal {
         if (api.settings.get('locked_muc_domain') || !u.isValidJID(data.jid)) {
             const muc_service = await u.muc.getDefaultMUCService();
             if (muc_service) {
-                settings.name = data.jid;
+                let room_name = data.jid;
+                const suffix = `@${muc_service}`;
+                if (room_name.toLowerCase().endsWith(suffix.toLowerCase())) {
+                    room_name = room_name.slice(0, -suffix.length);
+                }
+                settings.name = room_name;
                 settings.auto_configure = true;
                 settings.roomconfig = {
-                    roomname: data.jid,
+                    roomname: room_name,
                 };
-                jid = `${this.normalizeNode(data.jid)}@${muc_service}`.toLowerCase();
+                jid = `${this.normalizeNode(room_name)}@${muc_service}`.toLowerCase();
             }
         }
 
@@ -141,12 +146,17 @@ export default class AddMUCModal extends BaseModal {
 
         const policy = api.settings.get('muc_roomid_policy');
         if (policy && api.settings.get('muc_domain')) {
+            const muc_domain = api.settings.get('muc_domain');
             if (api.settings.get('locked_muc_domain') || !u.isValidJID(jid)) {
-                jid = `${Strophe.escapeNode(jid)}@${api.settings.get('muc_domain')}`;
+                const domain_suffix = `@${muc_domain}`;
+                if (jid.toLowerCase().endsWith(domain_suffix.toLowerCase())) {
+                    jid = jid.slice(0, -domain_suffix.length);
+                }
+                jid = `${Strophe.escapeNode(jid)}@${muc_domain}`;
             }
             const muc_jid = Strophe.getNodeFromJid(jid);
-            const muc_domain = Strophe.getDomainFromJid(jid);
-            if (api.settings.get('muc_domain') === muc_domain && !policy.test(muc_jid)) {
+            const jid_domain = Strophe.getDomainFromJid(jid);
+            if (muc_domain === jid_domain && !policy.test(muc_jid)) {
                 return __('Groupchat id is invalid.');
             }
         }

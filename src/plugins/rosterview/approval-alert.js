@@ -24,9 +24,10 @@ export default class ContactApprovalAlert extends CustomElement {
     }
 
     render() {
-        if (this.contact.get('requesting')) {
+        const allow_contact_requests = api.settings.get('allow_contact_requests');
+        if (this.contact.get('requesting') && allow_contact_requests) {
             return tplApprovalAlert(this);
-        } else if (u.roster.isUnsavedContact(this.contact)) {
+        } else if (allow_contact_requests && u.roster.isUnsavedContact(this.contact)) {
             if (this.contact.get('hide_contact_add_alert')) return '';
             return tplUnsavedAlert(this);
         }

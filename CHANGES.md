@@ -2,6 +2,7 @@
 
 ## Next release
 
+- #1855: Use default or locked domain when adding contacts or starting new chats
 - #2311: Strip locked MUC domain from room address input to avoid mangled JIDs
 - #3885: Don't show contact approval alerts when `allow_contact_requests` is false (e.g. anonymous mode)
 - #3886: Don't show OMEMO padlock icon when libsignal is not available (e.g. anonymous mode)

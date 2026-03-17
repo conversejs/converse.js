@@ -239,4 +239,64 @@ describe("The 'Add Contact' widget", function () {
             .filter(call => call.args[0]?.includes?.('providers'));
         expect(providerFetchCalls.length).toBe(0);
     }));
+
+    it("appends locked_domain when adding a contact with just a username",
+        mock.initConverse([], { locked_domain: 'montague.lit' }, async function (_converse) {
+
+        await mock.waitForRoster(_converse, 'all');
+        await mock.openControlBox(_converse);
+
+        const cbview = _converse.chatboxviews.get('controlbox');
+        const dropdown = await u.waitUntil(() => cbview.querySelector('.dropdown--contacts'));
+        dropdown.querySelector('.add-contact').click();
+
+        const modal = _converse.api.modal.get('converse-add-contact-modal');
+        await u.waitUntil(() => u.isVisible(modal), 1000);
+
+        const input_jid = modal.querySelector('input[name="jid"]');
+        input_jid.value = 'juliet';
+        const input_name = modal.querySelector('input[name="name"]');
+        input_name.value = 'Juliet';
+        modal.querySelector('button[type="submit"]').click();
+
+        const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+        const sent_stanza = await u.waitUntil(() => sent_IQs.filter(
+            iq => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`, iq).length).pop());
+        expect(sent_stanza).toEqualStanza(stx`
+            <iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster">
+                    <item jid="juliet@montague.lit" name="Juliet"/>
+                </query>
+            </iq>`);
+    }));
+
+    it("appends default_domain when adding a contact with just a username",
+        mock.initConverse([], { default_domain: 'montague.lit' }, async function (_converse) {
+
+        await mock.waitForRoster(_converse, 'all');
+        await mock.openControlBox(_converse);
+
+        const cbview = _converse.chatboxviews.get('controlbox');
+        const dropdown = await u.waitUntil(() => cbview.querySelector('.dropdown--contacts'));
+        dropdown.querySelector('.add-contact').click();
+
+        const modal = _converse.api.modal.get('converse-add-contact-modal');
+        await u.waitUntil(() => u.isVisible(modal), 1000);
+
+        const input_jid = modal.querySelector('input[name="jid"]');
+        input_jid.value = 'juliet';
+        const input_name = modal.querySelector('input[name="name"]');
+        input_name.value = 'Juliet';
+        modal.querySelector('button[type="submit"]').click();
+
+        const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+        const sent_stanza = await u.waitUntil(() => sent_IQs.filter(
+            iq => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`, iq).length).pop());
+        expect(sent_stanza).toEqualStanza(stx`
+            <iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster">
+                    <item jid="juliet@montague.lit" name="Juliet"/>
+                </query>
+            </iq>`);
+    }));
 });

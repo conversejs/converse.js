@@ -685,6 +685,45 @@ describe("The Contacts Roster", function () {
             toggle.click();
             expect(state.get('collapsed_groups')).toEqual([]);
         }));
+
+        it("treats empty roster group names as 'Ungrouped'",
+                mock.initConverse([], { roster_groups: true, show_self_in_roster: false }, async function (_converse) {
+
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.openControlBox(_converse);
+
+            // Simulate a contact with an empty group name (as sent by ejabberd bug)
+            _converse.roster.create({
+                jid: 'contact-with-empty-group@montague.lit',
+                subscription: 'both',
+                ask: null,
+                groups: [''],
+                fullname: 'Empty Group Contact'
+            });
+
+            // Simulate a contact with no groups at all
+            _converse.roster.create({
+                jid: 'contact-without-group@montague.lit',
+                subscription: 'both',
+                ask: null,
+                groups: [],
+                fullname: 'No Group Contact'
+            });
+
+            const rosterview = document.querySelector('converse-roster');
+            await u.waitUntil(() => sizzle('li', rosterview).filter(u.isVisible).length === 2);
+
+            // Both contacts should appear under "Ungrouped", not under an empty-named group
+            const group_titles = sizzle('.roster-group a.group-toggle', rosterview).map(o => o.textContent.trim());
+            expect(group_titles).toEqual(['Ungrouped']);
+
+            // The empty string group should not exist
+            expect(sizzle('.roster-group[data-group=""]', rosterview).length).toBe(0);
+
+            // Both contacts should be in the Ungrouped group
+            const ungrouped_contacts = sizzle('.roster-group[data-group="Ungrouped"] li', rosterview).filter(u.isVisible);
+            expect(ungrouped_contacts.length).toBe(2);
+        }));
     });
 
     describe("Pending Contacts", function () {

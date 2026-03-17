@@ -8,6 +8,7 @@
 - #3886: Don't show OMEMO padlock icon when libsignal is not available (e.g. anonymous mode)
 - #2740: Add autocomplete of possible XMPP servers when registering a new account
 - #2929: Add XMPP providers autocomplete when adding contacts (new `autocomplete_providers_url` setting)
+- #3023: Fix empty roster group name treated as a valid group instead of "Ungrouped"
 - #3382: Fix audio player accessibility for screen reader users (NVDA, JAWS)
 - #3502: Fix custom emoji shortnames overlapping with built-in emoji shortnames
 - #3815: Removal of boomark leads to new bookmark named `Symbol(lit-nothing)`

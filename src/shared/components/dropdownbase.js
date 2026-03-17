@@ -7,7 +7,12 @@ export default class DropdownBase extends CustomElement {
         super.firstUpdated(changed);
         this.menu = this.querySelector(".dropdown-menu");
         this.button = this.querySelector("button");
-        this.dropdown = new BootstrapDropdown(/** @type {HTMLElement} */ (this.button));
+        // Use fixed positioning strategy for dropstart menus to prevent
+        // clipping by ancestor overflow:hidden containers (e.g. .controlbox-pane)
+        const config = this.classList.contains('dropstart')
+            ? { popperConfig: { strategy: 'fixed' } }
+            : {};
+        this.dropdown = new BootstrapDropdown(/** @type {HTMLElement} */ (this.button), config);
     }
 }
 

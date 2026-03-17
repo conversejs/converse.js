@@ -101,7 +101,7 @@ describe("A spoiler message", function () {
         await new Promise(resolve => api.listen.on('sendMessage', resolve));
 
         const stanza = api.connection.get().send.calls.argsFor(0)[0];
-        const spoiler_el = sizzle('spoiler[xmlns="urn:xmpp:spoiler:0"]', stanza).pop();
+        const spoiler_el = await u.waitUntil(() => sizzle('spoiler[xmlns="urn:xmpp:spoiler:0"]', stanza).pop());
         expect(spoiler_el.textContent).toBe('')
 
         const spoiler = 'This is the spoiler';

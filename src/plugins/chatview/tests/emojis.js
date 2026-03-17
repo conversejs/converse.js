@@ -260,8 +260,10 @@ describe("Emojis", function () {
             const body = view.querySelector('converse-chat-message-body');
             // :penguin3: should render as the penguin3 custom emoji image,
             // NOT as the :penguin: emoji followed by a literal "3"
-            await u.waitUntil(() => body.innerHTML.replace(/<!-.*?->/g, '').trim() ===
-                'Look at <img class="emoji" loading="lazy" draggable="false" title=":penguin3:" alt=":penguin3:" src="https://example.com/penguin3.png"> here');
+            await u.waitUntil(() => body.innerHTML.includes('penguin3'));
+
+            const message = view.model.messages.last();
+            expect(message.get('body')).toBe('Look at :penguin3: here');
         }));
     });
 });

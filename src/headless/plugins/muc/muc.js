@@ -2056,11 +2056,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     /**
      * @param {MUCMessage} message
      * @param {MUCMessageAttributes} attrs
-     * @return {object}
+     * @return {Promise<object>}
      */
-    getUpdatedMessageAttributes(message, attrs) {
+    async getUpdatedMessageAttributes(message, attrs) {
         const new_attrs = {
-            ...super.getUpdatedMessageAttributes(message, attrs),
+            ...await super.getUpdatedMessageAttributes(message, attrs),
             ...pick(attrs, ['from_muc', 'occupant_id']),
         };
 
@@ -2430,7 +2430,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
         const message = this.getDuplicateMessage(attrs);
         if (message) {
-            message.get('type') === 'groupchat' && this.updateMessage(message, attrs);
+            message.get('type') === 'groupchat' && await this.updateMessage(message, attrs);
             return;
         } else if (attrs.receipt_id || attrs.is_marker || this.ignorableCSN(attrs)) {
             return;

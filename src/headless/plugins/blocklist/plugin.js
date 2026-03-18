@@ -57,10 +57,11 @@ converse.plugins.add("converse-blocklist", {
         api.listen.on(
             "getErrorAttributesForMessage",
             /**
-             * @param {import('shared/types').MessageAttributes} attrs
-             * @param {import('shared/types').MessageErrorAttributes} new_attrs
+             * @param {import('../chat/model.js').default} _message
+             * @param {import('../../shared/types').MessageErrorAttributes} new_attrs
+             * @param {import('../../shared/types').MessageAttributes} attrs
              */
-            (attrs, new_attrs) => {
+            (_message, new_attrs, attrs) => {
                 if (attrs.errors.find((e) => e.name === "blocked" && e.xmlns === `${Strophe.NS.BLOCKING}:errors`)) {
                     const { __ } = _converse;
                     new_attrs.error = __("You are blocked from sending messages.");

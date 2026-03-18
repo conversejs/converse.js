@@ -32,4 +32,12 @@ export function getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, in
  * @param {string} new_value
  */
 export function replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
+/**
+ * Validates a JID for user input scenarios where locked_domain or default_domain
+ * may be configured. When these settings are present, users can enter just a username
+ * without the domain part.
+ * @param {string} jid - The JID to validate
+ * @returns {boolean} True if the JID is valid or if a domain will be auto-appended
+ */
+export function isValidJIDInput(jid: string): boolean;
 //# sourceMappingURL=form.d.ts.map

@@ -1,4 +1,4 @@
-import { converse, u } from '@converse/headless';
+import { api, converse, u } from '@converse/headless';
 
 const { Strophe } = converse.env;
 
@@ -108,3 +108,24 @@ export function replaceCurrentWord(input, new_value) {
     input.selectionEnd = mention_boundary ? selection_end + 1 : selection_end;
 }
 
+/**
+ * Validates a JID for user input scenarios where locked_domain or default_domain
+ * may be configured. When these settings are present, users can enter just a username
+ * without the domain part.
+ * @param {string} jid - The JID to validate
+ * @returns {boolean} True if the JID is valid or if a domain will be auto-appended
+ */
+export function isValidJIDInput(jid) {
+    if (!jid) {
+        return false;
+    }
+
+    const has_implicit_domain = api.settings.get('locked_domain') || api.settings.get('default_domain');
+    if (has_implicit_domain) {
+        // Domain will be appended automatically, so any non-empty input is valid
+        return true;
+    }
+
+    // Without implicit domain, require a full valid JID
+    return u.isValidJID(jid);
+}

@@ -30,4 +30,17 @@ export function getJIDFromURI(jid: string): string;
  * @returns {boolean}
  */
 export function isOwnJID(jid: string, include_resource?: boolean): boolean;
+/**
+ * Appends locked_domain or default_domain to a JID if configured.
+ * When locked_domain is set, it will:
+ * - Strip the locked_domain if already present in the input
+ * - Escape the username part using Strophe.escapeNode()
+ * - Append the locked_domain
+ * When default_domain is set and the input is not already a valid JID:
+ * - Escape the username part using Strophe.escapeNode()
+ * - Append the default_domain
+ * @param {string} jid - The JID or username to process
+ * @returns {string} The full JID with domain appended if applicable
+ */
+export function maybeAppendDomain(jid: string): string;
 //# sourceMappingURL=jid.d.ts.map

@@ -74,6 +74,7 @@ declare const _default: {
     isSameDomain(jid1: string, jid2: string): boolean;
     getJIDFromURI(jid: string): string;
     isOwnJID(jid: string, include_resource?: boolean): boolean;
+    maybeAppendDomain(jid: string): string;
     initPlugins(_converse: ConversePrivateGlobal): void;
     initClientConfig(_converse: ConversePrivateGlobal): Promise<void>;
     initSessionStorage(_converse: ConversePrivateGlobal): Promise<void>;

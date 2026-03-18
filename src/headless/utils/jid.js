@@ -1,5 +1,6 @@
 import { Strophe } from 'strophe.js';
-import _converse from "../shared/_converse";
+import _converse from '../shared/_converse';
+import { settings_api } from '../shared/settings/api.js';
 
 /**
  * @param {string|null} [jid]
@@ -68,3 +69,33 @@ export function isOwnJID(jid, include_resource = false) {
     }
     return Strophe.getBareJidFromJid(jid) === _converse.session.get('bare_jid');
 }
+
+/**
+ * Appends locked_domain or default_domain to a JID if configured.
+ * When locked_domain is set, it will:
+ * - Strip the locked_domain if already present in the input
+ * - Escape the username part using Strophe.escapeNode()
+ * - Append the locked_domain
+ * When default_domain is set and the input is not already a valid JID:
+ * - Escape the username part using Strophe.escapeNode()
+ * - Append the default_domain
+ * @param {string} jid - The JID or username to process
+ * @returns {string} The full JID with domain appended if applicable
+ */
+export function maybeAppendDomain(jid) {
+    const locked_domain = settings_api.get('locked_domain');
+    const default_domain = settings_api.get('default_domain');
+
+    if (locked_domain) {
+        const last_part = '@' + locked_domain;
+        if (jid.endsWith(last_part)) {
+            jid = jid.substring(0, jid.length - last_part.length);
+        }
+        jid = Strophe.escapeNode(jid) + last_part;
+    } else if (default_domain && !isValidJID(jid)) {
+        jid = Strophe.escapeNode(jid) + '@' + default_domain;
+    }
+
+    return jid;
+}
+

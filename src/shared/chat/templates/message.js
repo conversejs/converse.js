@@ -5,11 +5,11 @@ import { getAuthorStyle } from '../../../utils/color.js';
 import { getHats } from '../utils.js';
 import { __ } from 'i18n';
 import 'shared/avatar/avatar.js';
+import 'shared/chat/reactions.js';
 import 'shared/chat/unfurl.js';
 import 'shared/chat/reply-context.js';
 
 const { dayjs } = converse.env;
-
 /**
  * @param {import('../message').default} el
  */
@@ -95,6 +95,7 @@ export default (el) => {
                     class="chat-msg__body chat-msg__body--${el.model.get('message_type')} ${el.model.get('received')
                         ? 'chat-msg__body--received'
                         : ''} ${el.model.get('is_delayed') ? 'chat-msg__body--delayed' : ''}"
+                    style="position: relative;"
                 >
                     <div class="chat-msg__message">
                         ${is_action
@@ -111,7 +112,15 @@ export default (el) => {
                         .model=${el.model}
                         ?is_retracted=${is_retracted}
                     ></converse-message-actions>
+                    ${el.show_reaction_picker
+                        ? html`<converse-reaction-picker
+                            .model=${el.model}
+                            @closePicker=${el.onReactionPickerClose}
+                        ></converse-reaction-picker>`
+                        : ''}
                 </div>
+
+                <converse-reactions .model=${el.model}></converse-reactions>
 
                 ${!is_retracted ? el.model.get('ogp_metadata')?.map((m) =>
                     el.model.get('hide_url_previews') === true ? '' :

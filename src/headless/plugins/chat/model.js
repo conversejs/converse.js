@@ -87,7 +87,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         const attrs = /** @type {MessageAttributes} */ (attrs_or_error);
         const message = this.getDuplicateMessage(attrs);
         if (message) {
-            this.updateMessage(message, attrs);
+            await this.updateMessage(message, attrs);
         } else if (
             !this.handleReceipt(attrs) &&
             !this.handleChatMarker(attrs) &&

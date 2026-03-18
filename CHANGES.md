@@ -4,6 +4,7 @@
 
 - #1855: Use default or locked domain when adding contacts or starting new chats
 - #2311: Strip locked MUC domain from room address input to avoid mangled JIDs
+- #2398: Add support for XEP-0444: Message Reactions (see [XEP-0444](https://xmpp.org/extensions/xep-0444.html))
 - #2740: Add autocomplete of possible XMPP servers when registering a new account
 - #2857: Fix underscores and other styling directives inside URLs being mistakenly treated as emphasis markers
 - #2929: Add XMPP providers autocomplete when adding contacts (new `autocomplete_providers_url` setting)

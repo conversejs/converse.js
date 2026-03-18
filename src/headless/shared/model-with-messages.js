@@ -161,14 +161,15 @@ export default function ModelWithMessages(BaseModel) {
         /**
          * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
-         * @returns {object}
+         * @returns {Promise<object>}
          */
-        getUpdatedMessageAttributes(message, attrs) {
+        async getUpdatedMessageAttributes(message, attrs) {
+            let new_attrs;
             if (!attrs.error_type && message.get('error_type') === 'Decryption') {
                 // Looks like we have a failed decrypted message stored, and now
                 // we have a properly decrypted version of the same message.
                 // See issue: https://github.com/conversejs/converse.js/issues/2733#issuecomment-1035493594
-                return Object.assign({}, attrs, {
+                new_attrs = Object.assign({}, attrs, {
                     error_condition: undefined,
                     error_message: undefined,
                     error_text: undefined,
@@ -178,19 +179,26 @@ export default function ModelWithMessages(BaseModel) {
                     is_error: false,
                 });
             } else {
-                return {
+                new_attrs = {
                     is_archived: attrs.is_archived,
                     time: attrs.time ? attrs.time : message.get('time'),
                 };
             }
+
+            /**
+             * *Hook* which allows plugins to update the attributes that will be
+             * set on an existing message when new attributes are received.
+             * @event _converse#getUpdatedMessageAttributes
+             */
+            return await api.hook('getUpdatedMessageAttributes', message, new_attrs, attrs);
         }
 
         /**
          * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
          */
-        updateMessage(message, attrs) {
-            const new_attrs = this.getUpdatedMessageAttributes(message, attrs);
+        async updateMessage(message, attrs) {
+            const new_attrs = await this.getUpdatedMessageAttributes(message, attrs);
             new_attrs && message.save(new_attrs);
         }
 
@@ -633,8 +641,11 @@ export default function ModelWithMessages(BaseModel) {
          * @param {object} attrs
          */
         getMessageReferencedByError(attrs) {
-            const id = attrs.msgid;
-            return id && this.messages.models.find((m) => [m.get('msgid'), m.get('retraction_id')].includes(id));
+            if (attrs.msgid) {
+                return this.messages.models.find(m => [m.get('msgid'), m.get('retraction_id'), m.get('origin_id')].includes(attrs.msgid));
+            } else if (attrs.reaction_to_id) {
+                return this.messages.models.find(m => [m.get('msgid'), m.get('origin_id')].includes(attrs.reaction_to_id));
+            }
         }
 
         /**
@@ -675,6 +686,7 @@ export default function ModelWithMessages(BaseModel) {
          */
         getDuplicateMessage(attrs) {
             const queries = [
+                ...this.getReactionQueryAttrs(attrs),
                 ...this.getStanzaIdQueryAttrs(attrs),
                 this.getOriginIdQueryAttrs(attrs),
                 this.getMessageBodyQueryAttrs(attrs),
@@ -691,6 +703,14 @@ export default function ModelWithMessages(BaseModel) {
          */
         getOriginIdQueryAttrs(attrs) {
             return attrs.origin_id && { origin_id: attrs.origin_id, from: attrs.from };
+        }
+
+        /**
+         * @param {object} attrs - Attributes representing a received message
+         */
+        getReactionQueryAttrs(attrs) {
+            const { reaction_to_id } = attrs;
+            return reaction_to_id ? [{ origin_id: reaction_to_id }, { msgid: reaction_to_id }] : [];
         }
 
         /**
@@ -810,8 +830,11 @@ export default function ModelWithMessages(BaseModel) {
             /**
              * *Hook* which allows plugins to add application-specific attributes
              * @event _converse#getErrorAttributesForMessage
+             * @param {BaseMessage} message - The message context
+             * @param {Object} new_attrs - The newly created error attributes
+             * @param {Object} attrs - The original stanza attributes
              */
-            return await api.hook('getErrorAttributesForMessage', attrs, new_attrs);
+            return await api.hook('getErrorAttributesForMessage', message, new_attrs, attrs);
         }
 
         /**

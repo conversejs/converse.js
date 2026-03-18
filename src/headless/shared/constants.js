@@ -140,6 +140,7 @@ export const CORE_PLUGINS = [
     'converse-muc',
     'converse-ping',
     'converse-pubsub',
+    'converse-reactions',
     'converse-roster',
     'converse-smacks',
     'converse-status',

@@ -143,3 +143,32 @@ two of my own custom templates.
         './templates/message.js': path.resolve(__dirname, 'path/to/my/custom/chat_message.js'),
         }
     }
+
+Complete example project
+------------------------
+
+To help you get started with creating custom themes and templates, we have created
+a complete example project that demonstrates:
+
+* Setting up a new JavaScript package with Converse.js as a dependency
+* Configuring Webpack with aliases to override templates
+* Creating a custom theme with CSS variables
+* Creating custom templates for messages
+* Building and running the project
+
+You can find the example project here:
+
+**`converse-custom-theme-example <https://github.com/uvkwong/converse-custom-theme-example>`_**
+
+The example includes:
+
+* ``package.json`` with all necessary dependencies
+* ``webpack.config.js`` with template aliases configured
+* ``src/index.js`` showing how to import and initialize Converse
+* ``src/styles/custom-theme.scss`` - a complete custom theme example
+* ``src/templates/`` - custom message templates
+* Detailed README with step-by-step instructions
+
+We recommend using this example as a starting point for your own custom Converse.js
+projects. You can fork it, modify the theme and templates to your needs, and use
+it as a foundation for your application.

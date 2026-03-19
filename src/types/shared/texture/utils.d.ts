@@ -39,6 +39,12 @@ export function getDirectiveAndLength(text: import("./texture").Texture, i: numb
  */
 export function isQuoteDirective(d: string): boolean;
 /**
+ * Detects URL ranges in a text string.
+ * @param {string} string - The input string to search for URLs
+ * @returns {Array<[number, number]>} - Array of [start, end] index pairs for detected URLs
+ */
+export function getURLRanges(string: string): Array<[number, number]>;
+/**
  * @param {import('./texture').Texture} text
  * @returns {boolean}
  */

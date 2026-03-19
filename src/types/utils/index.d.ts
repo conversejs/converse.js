@@ -50,12 +50,14 @@ declare const _default: {
     isUndefined(x: unknown): boolean;
     isErrorObject(o: unknown): boolean;
     isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").BrowserStorage;
+    isEmpty(obj: any | undefined | null): boolean;
     isValidJID(jid?: string | null): boolean;
     isValidMUCJID(jid: string): boolean;
     isSameBareJID(jid1: string, jid2: string): boolean;
     isSameDomain(jid1: string, jid2: string): boolean;
     getJIDFromURI(jid: string): string;
     isOwnJID(jid: string, include_resource?: boolean): boolean;
+    maybeAppendDomain(jid: string): string;
     initPlugins(_converse: ConversePrivateGlobal): void;
     initClientConfig(_converse: ConversePrivateGlobal): Promise<void>;
     initSessionStorage(_converse: ConversePrivateGlobal): Promise<void>;
@@ -75,12 +77,6 @@ declare const _default: {
     siblingIndex(el: Element): number;
     decodeHTMLEntities(str: string): string;
     unescapeHTML(string: string): string;
-    getSelectValues(select: HTMLSelectElement): string[];
-    webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
-    getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;
-    isMentionBoundary(s: string): boolean;
-    replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
-    placeCaretAtEnd(textarea: HTMLTextAreaElement): void;
     colorize(s: string): Promise<string>;
     appendArrayBuffer(buffer1: any, buffer2: any): ArrayBufferLike;
     arrayBufferToHex(ab: any): any;
@@ -163,12 +159,14 @@ declare const _default: {
         isUndefined(x: unknown): boolean;
         isErrorObject(o: unknown): boolean;
         isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").BrowserStorage;
+        isEmpty(obj: any | undefined | null): boolean;
         isValidJID(jid?: string | null): boolean;
         isValidMUCJID(jid: string): boolean;
         isSameBareJID(jid1: string, jid2: string): boolean;
         isSameDomain(jid1: string, jid2: string): boolean;
         getJIDFromURI(jid: string): string;
         isOwnJID(jid: string, include_resource?: boolean): boolean;
+        maybeAppendDomain(jid: string): string;
         initPlugins(_converse: ConversePrivateGlobal): void;
         initClientConfig(_converse: ConversePrivateGlobal): Promise<void>;
         initSessionStorage(_converse: ConversePrivateGlobal): Promise<void>;
@@ -188,12 +186,6 @@ declare const _default: {
         siblingIndex(el: Element): number;
         decodeHTMLEntities(str: string): string;
         unescapeHTML(string: string): string;
-        getSelectValues(select: HTMLSelectElement): string[];
-        webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
-        getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;
-        isMentionBoundary(s: string): boolean;
-        replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
-        placeCaretAtEnd(textarea: HTMLTextAreaElement): void;
         colorize(s: string): Promise<string>;
         appendArrayBuffer(buffer1: any, buffer2: any): ArrayBufferLike;
         arrayBufferToHex(ab: any): any;
@@ -204,6 +196,13 @@ declare const _default: {
         hexToArrayBuffer(hex: any): ArrayBufferLike;
         unique<T extends unknown>(arr: Array<T>): Array<T>;
     } & import("headless/types/utils/index.js").CommonUtils & import("headless/types/utils/index.js").PluginUtils;
+    getSelectValues(select: HTMLSelectElement): string[];
+    webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
+    placeCaretAtEnd(textarea: HTMLTextAreaElement): void;
+    isMentionBoundary(s: string): boolean;
+    getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;
+    replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
+    isValidJIDInput(jid: string): boolean;
     isImageWithAlphaChannel(image_file: File): Promise<boolean>;
     compressImage(file: File, options?: import("./types.js").CompressionOptions): Promise<Blob>;
     MIMETYPES_MAP: {
@@ -288,6 +287,6 @@ declare const _default: {
     getAuthorStyle(occupant: any): string | TemplateResult;
 };
 export default _default;
-import * as html from "./html.js";
-import * as color from "./color.js";
+import * as html from './html.js';
+import * as color from './color.js';
 //# sourceMappingURL=index.d.ts.map

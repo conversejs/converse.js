@@ -202,6 +202,18 @@ describe("An incoming chat Message", function () {
             '<i><a target="_blank" rel="noopener" href="https://converse_js.org/">https://converse_js.org</a></i>'+
             '<span class="styling-directive">_</span> <span class="styling-directive">_</span><i>please</i><span class="styling-directive">_</span>');
 
+        // Underscores inside a URL path should not be treated as styling directives
+        // https://github.com/conversejs/converse.js/issues/2857
+        msg_text = `https://nitter.kavin.rocks/_MG_/status/1506109152665382920`;
+        msg = mock.createChatMessage(_converse, contact_jid, msg_text)
+        await _converse.handleMessageStanza(msg);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 11);
+        msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
+        expect(msg_el.innerText).toBe(msg_text);
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
+            '<a target="_blank" rel="noopener" href="https://nitter.kavin.rocks/_MG_/status/1506109152665382920">'+
+            'https://nitter.kavin.rocks/_MG_/status/1506109152665382920</a>');
+
     }));
 
     it("can be styled with block XEP-0393 message styling hints",

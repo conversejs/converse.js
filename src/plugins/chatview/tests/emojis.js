@@ -206,5 +206,64 @@ describe("Emojis", function () {
             await u.waitUntil(() => body.innerHTML.replace(/<!-.*?->/g, '').trim() ===
                 'Running tests for <img class="emoji" loading="lazy" draggable="false" title=":converse:" alt=":converse:" src="/dist/./images/custom_emojis/converse.png">');
         }));
+
+        it("correctly resolves overlapping custom emoji shortnames",
+            mock.initConverse(
+                ['chatBoxesFetched'],
+                { emoji_categories: {
+                    "smileys": ":grinning:",
+                    "people": ":thumbsup:",
+                    "activity": ":soccer:",
+                    "travel": ":motorcycle:",
+                    "objects": ":bomb:",
+                    "nature": ":rainbow:",
+                    "food": ":hotdog:",
+                    "symbols": ":musical_note:",
+                    "flags": ":flag_ac:",
+                    "custom": ':penguin:'
+                } },
+                async function (_converse) {
+
+            // Register hook to add custom emojis with overlapping shortnames
+            // (e.g. :penguin: and :penguin3:) before emojis are initialized.
+            // https://github.com/conversejs/converse.js/issues/3502
+            _converse.api.listen.on('loadEmojis', (_context, json) => {
+                json.custom = json.custom || {};
+                json.custom[':penguin:'] = {
+                    'sn': ':penguin:',
+                    'url': 'https://example.com/penguin.png',
+                    'c': 'custom'
+                };
+                json.custom[':penguin3:'] = {
+                    'sn': ':penguin3:',
+                    'url': 'https://example.com/penguin3.png',
+                    'c': 'custom'
+                };
+                return json;
+            });
+
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+
+            // Send a message using the longer shortname :penguin3:
+            const textarea = view.querySelector('textarea.chat-textarea');
+            textarea.value = 'Look at :penguin3: here';
+            const message_form = view.querySelector('converse-message-form');
+            message_form.onKeyDown({
+                target: textarea,
+                preventDefault: function preventDefault () {},
+                key: "Enter",
+            });
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            const body = view.querySelector('converse-chat-message-body');
+            // :penguin3: should render as the penguin3 custom emoji image,
+            // NOT as the :penguin: emoji followed by a literal "3"
+            await u.waitUntil(() => body.innerHTML.includes('penguin3'));
+
+            const message = view.model.messages.last();
+            expect(message.get('body')).toBe('Look at :penguin3: here');
+        }));
     });
 });

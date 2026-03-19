@@ -5,7 +5,7 @@ import tplFormUsername from "templates/form_username.js";
 import tplChooseProvider from "./templates/choose_provider.js";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { setActiveForm } from './utils.js';
+import { setActiveForm, fetchXMPPProviders } from './utils.js';
 
 import './styles/register.scss';
 
@@ -31,6 +31,8 @@ class RegistrationForm extends CustomElement {
             service_url: { type: String },
             alert_message: { type: String },
             alert_type: { type: String },
+            xmpp_providers: { type: Array },
+            expanded_provider: { type: String },
         }
     }
 
@@ -40,6 +42,8 @@ class RegistrationForm extends CustomElement {
         this.fields = {};
         this.domain = null;
         this.alert_type = 'info';
+        this.xmpp_providers = [];
+        this.expanded_provider = null;
         this.setErrorMessage = /** @param {string} m */(m) => this.setMessage(m, 'danger');
         this.setFeedbackMessage = /** @param {string} m */(m) => this.setMessage(m, 'info');
     }
@@ -56,6 +60,13 @@ class RegistrationForm extends CustomElement {
             this.fetchRegistrationForm(domain);
         } else {
             this.status = CHOOSE_PROVIDER;
+            // Fetch the XMPP providers list so autocomplete suggestions
+            // are ready when the user starts typing.
+            if (api.settings.get('xmpp_providers_url')) {
+                fetchXMPPProviders().then((providers) => {
+                    this.xmpp_providers = providers;
+                });
+            }
         }
     }
 
@@ -184,6 +195,27 @@ class RegistrationForm extends CustomElement {
         } else {
             this.onProviderChosen(form);
         }
+    }
+
+    /**
+     * Called when a user clicks a provider from the categorized provider list.
+     * Sets the domain and immediately fetches the registration form.
+     * @param {string} jid - The provider's JID (domain)
+     */
+    onProviderSelected (jid) {
+        if (jid) {
+            this.fetchRegistrationForm(jid.trim());
+        }
+    }
+
+    /**
+     * Toggles the expanded detail panel for a provider row.
+     * @param {Event} ev
+     * @param {string} jid - The provider's JID (domain)
+     */
+    onToggleProviderDetails (ev, jid) {
+        ev?.preventDefault?.();
+        this.expanded_provider = this.expanded_provider === jid ? null : jid;
     }
 
     /**

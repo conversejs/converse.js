@@ -1,5 +1,4 @@
 import { converse } from '@converse/headless';
-import { __ } from 'i18n';
 
 const { Strophe } = converse.env;
 

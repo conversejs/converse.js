@@ -361,7 +361,7 @@ class RosterContacts extends Collection {
 
         const ask = item.getAttribute('ask');
         const nickname = item.getAttribute('name');
-        const groups = [...new Set(sizzle('group', item).map((e) => e.textContent))];
+        const groups = [...new Set(sizzle('group', item).map((e) => e.textContent?.trim()).filter((n) => n))];
 
         if (contact) {
             // We only find out about requesting contacts via the

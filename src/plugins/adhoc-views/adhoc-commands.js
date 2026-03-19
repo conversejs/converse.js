@@ -1,4 +1,4 @@
-import { api, converse, log } from '@converse/headless';
+import { _converse, api, converse, log } from '@converse/headless';
 import 'shared/autocomplete/index.js';
 import tplAdhoc from './templates/ad-hoc.js';
 import { CustomElement } from 'shared/components/element.js';
@@ -20,6 +20,7 @@ export default class AdHocCommands extends CustomElement {
             alert_type: { type: String },
             commands: { type: Array },
             fetching: { type: Boolean },
+            jid: { type: String },
             showform: { type: String },
             view: { type: String },
         };
@@ -30,6 +31,7 @@ export default class AdHocCommands extends CustomElement {
         this.view = 'choose-service';
         this.fetching = false;
         this.showform = '';
+        this.jid = _converse.session?.get('domain') ?? '';
         this.commands = /** @type {AdHocCommandUIProps[]} */ ([]);
     }
 
@@ -187,7 +189,11 @@ export default class AdHocCommands extends CustomElement {
             this.alert_type = 'primary';
             this.alert = __('Completed');
             this.note = note;
-            this.clearCommand(cmd);
+            if (response.type === 'result') {
+                Object.assign(cmd, { fields, instructions, actions, status });
+            } else {
+                this.clearCommand(cmd);
+            }
         } else {
             log.error(`Unexpected status for ad-hoc command: ${status}`);
             cmd.alert = __('Completed');

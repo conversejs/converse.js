@@ -74,7 +74,7 @@ export default function DragResizable<T extends import("shared/components/types"
         enableUpdating(_requestedUpdate: boolean): void;
         attributeChangedCallback(name: string, _old: string | null, value: string | null): void;
         __propertyToAttribute: any;
-        requestUpdate(name?: PropertyKey, oldValue?: unknown, options?: import("lit").PropertyDeclaration): void;
+        requestUpdate(name?: PropertyKey, oldValue?: unknown, options?: import("lit").PropertyDeclaration, useNewValue?: boolean, newValue?: unknown): void;
         __enqueueUpdate: any;
         scheduleUpdate(): void | Promise<unknown>;
         performUpdate(): void;

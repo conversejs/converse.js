@@ -21,8 +21,7 @@ converse.plugins.add('converse-omemo-views', {
      * @param {import('@converse/headless/types/shared/_converse.d.js').ConversePrivateGlobal} _converse
      */
     enabled(_converse) {
-        const plugins = _converse.pluggable.plugins;
-        return plugins['converse-bosh']?.enabled();
+        return _converse.pluggable.plugins['converse-omemo']?.enabled(_converse);
     },
 
     dependencies: ['converse-chatview', 'converse-omemo'],

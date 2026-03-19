@@ -1,7 +1,11 @@
 import { html } from 'lit';
 import { api } from '@converse/headless';
 import { __ } from 'i18n';
-import { getGroupsAutoCompleteList, getJIDsAutoCompleteList, getNamesAutoCompleteList } from '../../utils.js';
+import {
+    getGroupsAutoCompleteList,
+    getJIDsAutoCompleteListWithProviders,
+    getNamesAutoCompleteList,
+} from '../../utils.js';
 import 'shared/autocomplete/index.js';
 
 /**
@@ -35,7 +39,7 @@ export default (el) => {
                                 name="jid"
                             ></converse-autocomplete>`
                           : html`<converse-autocomplete
-                                .list="${getJIDsAutoCompleteList()}"
+                                .getAutoCompleteList="${getJIDsAutoCompleteListWithProviders}"
                                 .data="${(text, input) => `${input.slice(0, input.indexOf('@'))}@${text}`}"
                                 position="below"
                                 min_chars="2"
@@ -46,7 +50,6 @@ export default (el) => {
                                 name="jid"
                             ></converse-autocomplete>`}
                   </div>`}
-
             ${!using_xhr
                 ? html`
                       <div class="mb-3">
@@ -71,12 +74,8 @@ export default (el) => {
 
             ${el.contact
                 ? html`<div class="mb-3 d-flex justify-content-between">
-                      <label class="form-label clearfix w-100" for="jid-display"
-                          >${i18n_xmpp_address}:</label
-                      >
-                      <p class="form-control-plaintext text-end" id="jid-display">
-                          ${el.contact.get('jid')}
-                      </p>
+                      <label class="form-label clearfix w-100" for="jid-display">${i18n_xmpp_address}:</label>
+                      <p class="form-control-plaintext text-end" id="jid-display">${el.contact.get('jid')}</p>
                   </div>`
                 : ''}
 

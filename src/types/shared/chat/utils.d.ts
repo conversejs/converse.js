@@ -20,7 +20,9 @@ export function getHeadingStandaloneButton(promise_or_data: Promise<HeadingButto
 /**
  * @param {Promise<Array<HeadingButtonAttributes>>} promise
  */
-export function getStandaloneButtons(promise: Promise<Array<HeadingButtonAttributes>>): Promise<import("lit-html/directive.js").DirectiveResult<typeof import("lit-html/directives/until.js").UntilDirective>[]>;
+export function getStandaloneButtons(promise: Promise<Array<HeadingButtonAttributes>>): Promise<import("lit-html/directive.js").DirectiveResult<{
+    new (_partInfo: import("lit-html/directive.js").PartInfo): import("lit-html/directives/until.js").UntilDirective<string | Promise<TemplateResult>>;
+}>[]>;
 /**
  * @param {Promise<Array<object>>} promise
  */

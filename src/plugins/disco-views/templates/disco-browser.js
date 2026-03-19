@@ -1,6 +1,5 @@
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
-import { _converse } from '@converse/headless';
 import { __ } from 'i18n';
 import { getJIDsAutoCompleteList } from 'plugins/rosterview/utils';
 

@@ -1,7 +1,9 @@
-import { _converse, api, log } from '@converse/headless';
+import { _converse, api, converse, log, u } from '@converse/headless';
 import BaseModal from 'plugins/modal/modal.js';
 import tplNewChat from './templates/new-chat.js';
 import { __ } from 'i18n';
+
+const { Strophe } = converse.env;
 
 export default class NewChatModal extends BaseModal {
     initialize() {
@@ -11,7 +13,7 @@ export default class NewChatModal extends BaseModal {
         this.addEventListener(
             'shown.bs.modal',
             () => /** @type {HTMLInputElement} */ (this.querySelector('input[name="jid"]'))?.focus(),
-            false
+            false,
         );
     }
 
@@ -27,7 +29,7 @@ export default class NewChatModal extends BaseModal {
      * @param {string} jid
      */
     validateSubmission(jid) {
-        if (!jid || jid.split('@').filter((s) => !!s).length < 2) {
+        if (!u.isValidJIDInput(jid)) {
             this.model.set('error', __('Please enter a valid XMPP address'));
             return false;
         }
@@ -58,7 +60,10 @@ export default class NewChatModal extends BaseModal {
         ev.preventDefault();
         const form = /** @type {HTMLFormElement} */ (ev.target);
         const data = new FormData(form);
-        const jid = /** @type {string} */ (data.get('jid') || '').trim();
+        let jid = /** @type {string} */ (data.get('jid') || '').trim();
+
+        // Append configured domain if user entered just a username
+        jid = u.maybeAppendDomain(jid);
 
         if (this.validateSubmission(jid)) {
             this.afterSubmission(form, jid);

@@ -75,7 +75,7 @@ describe("A Chat Message", function () {
         });
         el = await u.waitUntil(() => view.querySelector(
             `converse-chat-message div[data-from="${contact_jid}"] converse-avatar svg image`
-        ));
+        ), 1000);
         expect(el.getAttribute('href')).toBe(`data:image/svg+xml;base64,${image}`);
 
         // Change contact avatar and check that it reflects

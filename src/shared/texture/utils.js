@@ -1,13 +1,24 @@
-import { html } from "lit";
-import { u } from "@converse/headless";
-import { bracketing_directives, dont_escape, styling_directives, styling_map } from "./constants";
+import { u } from '@converse/headless';
+import { html } from 'lit';
+import { bracketing_directives, dont_escape, styling_directives, styling_map } from './constants';
+
+const URL_REGEXES = {
+    // valid "scheme://" or "www."
+    start: /(\b|_)(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi,
+    // everything up to the next whitespace
+    end: /[\s\r\n]|$/,
+    // trim trailing punctuation captured by end RegExp
+    trim: /[`!()\[\]{};:'".,<>?«»""„'']+$/,
+    // balanced parens inclusion (), [], {}, <>
+    parens: /(\([^\)]*\)|\[[^\]]*\]|\{[^}]*\}|<[^>]*>)/g,
+};
 
 /**
  * @param {any} s
  * @returns {boolean} - Returns true if the input is a string, otherwise false.
  */
 export function isString(s) {
-    return typeof s === "string";
+    return typeof s === 'string';
 }
 
 /**
@@ -17,7 +28,7 @@ export function isString(s) {
 export function isSpotifyTrack(url) {
     try {
         const { hostname, pathname } = u.getURL(url);
-        return hostname === "open.spotify.com" && pathname.startsWith("/track/");
+        return hostname === 'open.spotify.com' && pathname.startsWith('/track/');
     } catch (e) {
         console.debug(`Could not create URL object from ${url}`);
         return false;
@@ -30,7 +41,7 @@ export function isSpotifyTrack(url) {
  */
 export async function getHeaders(url) {
     try {
-        const response = await fetch(url, { method: "HEAD" });
+        const response = await fetch(url, { method: 'HEAD' });
         return response.headers;
     } catch (e) {
         console.debug(`Error calling HEAD on url ${url}: ${e}`);
@@ -49,7 +60,7 @@ export async function getHeaders(url) {
 export function collapseLineBreaks(text) {
     return text.replace(/\n(\u200B*\n)+/g, (m) => {
         if (m.length > 2) {
-            return `\n${"\u200B".repeat(m.length - 2)}\n`;
+            return `\n${'\u200B'.repeat(m.length - 2)}\n`;
         } else if (m.length === 2) {
             return '\n\u200B';
         } else if (m.length === 1) {
@@ -77,12 +88,12 @@ function isValidDirective(d, text, i, opening) {
     // Ignore directives that are parts of words
     // More info on the Regexes used here: https://javascript.info/regexp-unicode#unicode-properties-p
     if (opening) {
-        const regex = RegExp(dont_escape.includes(d) ? `^(\\p{L}|\\p{N})${d}` : `^(\\p{L}|\\p{N})\\${d}`, "u");
+        const regex = RegExp(dont_escape.includes(d) ? `^(\\p{L}|\\p{N})${d}` : `^(\\p{L}|\\p{N})\\${d}`, 'u');
         if (i > 1 && regex.test(text.slice(i - 1))) {
             return false;
         }
         const is_quote = isQuoteDirective(d);
-        if (is_quote && i > 0 && text[i - 1] !== "\n") {
+        if (is_quote && i > 0 && text[i - 1] !== '\n') {
             // Quote directives must be on newlines
             return false;
         } else if (bracketing_directives.includes(d) && text[i + 1] === d) {
@@ -90,7 +101,7 @@ function isValidDirective(d, text, i, opening) {
             return false;
         }
     } else {
-        const regex = RegExp(dont_escape.includes(d) ? `^${d}(\\p{L}|\\p{N})` : `^\\${d}(\\p{L}|\\p{N})`, "u");
+        const regex = RegExp(dont_escape.includes(d) ? `^${d}(\\p{L}|\\p{N})` : `^\\${d}(\\p{L}|\\p{N})`, 'u');
         if (i < text.length - 1 && regex.test(text.slice(i))) {
             return false;
         }
@@ -114,7 +125,7 @@ function getDirective(text, i, opening = true) {
 
     if (
         /(^```[\s,\u200B]*\n)|(^```[\s,\u200B]*$)/.test(text.slice(i)) &&
-        (i === 0 || text[i - 1] === ">" || /\n\u200B{0,2}$/.test(text.slice(0, i)))
+        (i === 0 || text[i - 1] === '>' || /\n\u200B{0,2}$/.test(text.slice(0, i)))
     ) {
         d = text.slice(i, i + 3);
     } else if (styling_directives.includes(text.slice(i, i + 1))) {
@@ -155,8 +166,8 @@ function getDirectiveLength(d, text, i) {
             .split(/\n\u200B*[^>\u200B]/)
             .shift().length;
         return i - begin;
-    } else if (styling_map[d].type === "span") {
-        const line = text.slice(i).split("\n").shift();
+    } else if (styling_map[d].type === 'span') {
+        const line = text.slice(i).split('\n').shift();
         let j = 0;
         let idx = line.indexOf(d);
         while (idx !== -1) {
@@ -185,7 +196,7 @@ function getDirectiveLength(d, text, i) {
  * @param {string} d
  */
 export function isQuoteDirective(d) {
-    return [">", "&gt;"].includes(d);
+    return ['>', '&gt;'].includes(d);
 }
 
 /**
@@ -201,3 +212,61 @@ export function containsDirectives(text) {
     return false;
 }
 
+/**
+ * Detects URL ranges in a text string.
+ * @param {string} string - The input string to search for URLs
+ * @returns {Array<[number, number]>} - Array of [start, end] index pairs for detected URLs
+ */
+export function getURLRanges(string) {
+    /** @type {Array<[number, number]>} */
+    const ranges = [];
+    const _start = URL_REGEXES.start;
+    const _end = URL_REGEXES.end;
+    const _trim = URL_REGEXES.trim;
+    const _parens = URL_REGEXES.parens;
+
+    _start.lastIndex = 0;
+    while (true) {
+        const match = _start.exec(string);
+        if (!match) break;
+
+        const triggered_by_underscore = match[1] === '_';
+        // If the match was triggered by a leading underscore (XEP-0393 emphasis),
+        // the URL itself starts one character after match.index.
+        const start = triggered_by_underscore ? match.index + 1 : match.index;
+        let end = match.index + string.slice(match.index).search(_end);
+        let slice = string.slice(start, end);
+        let parensEnd = -1;
+
+        while (true) {
+            const parensMatch = _parens.exec(slice);
+            if (!parensMatch) break;
+
+            const parensMatchEnd = parensMatch.index + parensMatch[0].length;
+            parensEnd = Math.max(parensEnd, parensMatchEnd);
+        }
+
+        if (parensEnd > -1) {
+            slice = slice.slice(0, parensEnd) + slice.slice(parensEnd).replace(_trim, '');
+        } else {
+            slice = slice.replace(_trim, '');
+        }
+
+        // If triggered by a leading underscore and the URL ends with a closing
+        // underscore, strip it too — both are XEP-0393 emphasis directives.
+        if (triggered_by_underscore && slice.endsWith('_')) {
+            slice = slice.slice(0, -1);
+        }
+
+        if (slice.length <= match[0].length) continue;
+
+        end = start + slice.length;
+        ranges.push([start, end]);
+        _start.lastIndex = end;
+    }
+
+    _start.lastIndex = 0;
+    return ranges;
+}
+
+export default Object.assign(u, { getURLRanges });

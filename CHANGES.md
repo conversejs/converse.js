@@ -2,15 +2,27 @@
 
 ## Next release
 
+- #1855: Use default or locked domain when adding contacts or starting new chats
+- #2311: Strip locked MUC domain from room address input to avoid mangled JIDs
+- #2740: Add autocomplete of possible XMPP servers when registering a new account
+- #2857: Fix underscores and other styling directives inside URLs being mistakenly treated as emphasis markers
+- #2929: Add XMPP providers autocomplete when adding contacts (new `autocomplete_providers_url` setting)
+- #3023: Fix empty roster group name treated as a valid group instead of "Ungrouped"
 - #3382: Fix audio player accessibility for screen reader users (NVDA, JAWS)
 - #2398: Add support for XEP-0444: Message Reactions (see [XEP-0444](https://xmpp.org/extensions/xep-0444.html))
+- #3502: Fix custom emoji shortnames overlapping with built-in emoji shortnames
 - #3815: Removal of boomark leads to new bookmark named `Symbol(lit-nothing)`
 - #3824: Dates and times are not translated 
 - #3829: Rich text from LibreOffice Calc is sent as screenshots
 - #3830: The message textarea blocks undo of the pasted text
+- #3839: Fix contacts menu displayed off-screen in fullscreen mode
 - #3863: Shift `unescapeHTML` helper function (used to set `isOnlyEmoji` on a message) to converse-headless
+- #3885: Don't show contact approval alerts when `allow_contact_requests` is false (e.g. anonymous mode)
+- #3886: Don't show OMEMO padlock icon when libsignal is not available (e.g. anonymous mode)
 - #3889: MUC join: Use room jids localpart as name in case name or identity not found
 - #3916: Add support for XEP-0461 Message Replies, allowing users to reply to specific messages
+- #3939: Don't show invitations to groupchats in which the user is already present
+- #3941: add adhoc completed command result and text-multi as merged lines of text
 - Don't render unfurls for retracted messages.
 
 ## 12.0.0 (2025-08-28)
@@ -266,7 +278,6 @@ Adding more types of chats:
 - #3007: Fix links becoming text when a message is edited
 - #3018: Fix MUC icons not functioning.
 - #3028: Fix encrypted media from Conversations/Quicksy not properly decrypting
-
 
 ## 9.1.1 (2022-05-05)
 
@@ -1293,13 +1304,6 @@ More info here: https://github.com/LeaVerou/awesomplete/pull/17082
 
 ## 3.0.2 (2017-04-23)
 
-*Dependency updates*:
-- Jasmine 2.5.3
-- Phantomjs 2.1.14
-- moment 2.18.1
-- sinon 2.1.0
-- eslint 3.19.0
-
 - Don't rerender the text input when filtering contacts. [jcbrand]
 - Show the MUC server in a bookmarked room's info view (in the bookmarks list). [jcbrand]
 - Enable creation of `dist/converse-muc-embedded.js` build file for the
@@ -1631,7 +1635,6 @@ More info here: https://github.com/LeaVerou/awesomplete/pull/17082
 - #510 MUC room memberlist is being cleared with page reload when keepalive option is set. [jcbrand]
 - Add the ability to also drag-resize chat boxes horizontally. [jcbrand]
 - Updated Sass files and created a new style. [jcbrand]
-
 
 ## 0.9.6 (2015-10-12)
 

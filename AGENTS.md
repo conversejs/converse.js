@@ -67,14 +67,10 @@ npm run cdn                   # Build for CDN deployment
 
 ```bash
 # Run tests
-npm test                      # Run main tests (Karma)
-npm run test:all              # Run both headless and main tests
-npm run test:headless         # Run headless tests only
-cd src/headless && npm test   # Alternative way to run headless tests
-
-# Single run (for CI)
-npm test -- --single-run
-npm run test:all              # Already includes --single-run
+npm test -- --single-run                    # Run main tests (Karma)
+npm run test:all                            # Run both headless and main tests
+npm run test:headless -- --single-run       # Run headless tests only
+cd src/headless && npm test                 # Alternative way to run headless tests
 
 # Full test suite (as used in CI)
 make check                    # Runs lint + types + all tests
@@ -113,9 +109,9 @@ make serve                    # Serve on port 8008
 Converse.js uses a **plugin-based architecture** powered by `pluggable.js`:
 
 - **Headless plugins** (`src/headless/plugins/`): Core XMPP logic, no UI
-  - Examples: `chat`, `muc`, `disco`, `roster`, `ping`, `bookmarks`
+    - Examples: `chat`, `muc`, `disco`, `roster`, `ping`, `bookmarks`
 - **UI plugins** (`src/plugins/`): Visual components that depend on headless
-  - Examples: `chatview`, `muc-views`, `rosterview`, `controlbox`
+    - Examples: `chatview`, `muc-views`, `rosterview`, `controlbox`
 
 ### Plugin Structure
 
@@ -126,24 +122,26 @@ import { _converse, api, converse } from '@converse/headless';
 
 converse.plugins.add('plugin-name', {
     dependencies: ['other-plugin-1', 'other-plugin-2'], // Required plugins
-    
-    initialize () {
+
+    initialize() {
         // Configure plugin settings
         api.settings.extend({
             'some_setting': 'default_value',
         });
-        
+
         // Export models/views for other plugins
         const exports = { MyClass, myFunction };
-        Object.assign(_converse, exports);        // DEPRECATED pattern
+        Object.assign(_converse, exports); // DEPRECATED pattern
         Object.assign(_converse.exports, exports); // Current pattern
-        
+
         // Extend API
         Object.assign(api, my_api_methods);
-        
+
         // Register event listeners
-        api.listen.on('connected', () => { /* ... */ });
-    }
+        api.listen.on('connected', () => {
+            /* ... */
+        });
+    },
 });
 ```
 
@@ -186,6 +184,7 @@ by means of Models and Collections of Models.
 ### Why Skeletor?
 
 As Converse.js evolved, the team created @converse/skeletor as a fork of Backbone.js to:
+
 - Maintain compatibility with existing code while allowing customization
 - Remove unused Backbone features to reduce bundle size
 - Enable better TypeScript integration
@@ -196,7 +195,7 @@ As Converse.js evolved, the team created @converse/skeletor as a fork of Backbon
 // Creating a model instance
 const chatroom = new _converse.exports.ChatRoom({
     jid: 'room@muc.example.com',
-    nick: 'user123'
+    nick: 'user123',
 });
 
 // Accessing model attributes
@@ -208,7 +207,7 @@ chatroom.on('change:subject', () => {
 });
 
 // Saving model changes
-chatroom.save({'subject': 'New Subject'});
+chatroom.save({ 'subject': 'New Subject' });
 ```
 
 ### Working with Collections
@@ -238,14 +237,14 @@ class ChatRoomView extends CustomElement {
     async initialize() {
         // Wait for model to be ready
         await this.model.initialized;
-        
+
         // Listen to model changes to trigger re-render
         this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.listenTo(this.model.messages, 'add', () => this.requestUpdate());
-        
+
         this.requestUpdate();
     }
-    
+
     render() {
         return html`
             <div class="chatroom">
@@ -317,13 +316,13 @@ export default class MyComponent extends CustomElement {
             some_state: { state: true }, // Internal state
         };
     }
-    
+
     async initialize() {
         await this.model.initialized;
         this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.requestUpdate();
     }
-    
+
     render() {
         return html`<div>...</div>`;
     }
@@ -422,24 +421,24 @@ const { api } = converse;
 const u = converse.env.utils;
 const sizzle = converse.env.sizzle;
 
-describe("My Feature", function () {
-    it("does something", mock.initConverse(['chatBoxesFetched'], 
-        { view_mode: 'fullscreen' }, 
-        async function (_converse) {
+describe('My Feature', function () {
+    it(
+        'does something',
+        mock.initConverse(['chatBoxesFetched'], { view_mode: 'fullscreen' }, async function (_converse) {
             // Setup
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
-            
+
             // Test action
             const jid = 'user@example.com';
             await mock.openChatBoxFor(_converse, jid);
             const view = _converse.chatboxviews.get(jid);
-            
+
             // Assertions
             await u.waitUntil(() => sizzle('.chat-msg', view).length === 1);
             expect(view.querySelector('.chat-msg__text').textContent).toBe('hello');
-        }
-    ));
+        })
+    );
 });
 ```
 
@@ -474,15 +473,15 @@ npm test  # Runs karma with src/headless/karma.conf.js
 
 ```scss
 // Import Bootstrap utilities
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
 
 // Component styles
 .chat-content {
     &__messages {
         overflow-y: auto;
     }
-    
+
     &__notifications {
         padding: 1rem;
     }
@@ -562,8 +561,8 @@ ASSET_PATH=https://cdn.conversejs.org/dist/  # CDN path
 Models and collections are initialized asynchronously:
 
 ```javascript
-await this.model.initialized;        // Wait for model
-await this.model.messages.fetched;   // Wait for data fetch
+await this.model.initialized; // Wait for model
+await this.model.messages.fetched; // Wait for data fetch
 ```
 
 ### 2. Event Listening
@@ -589,15 +588,27 @@ await api.waitUntil('connected');
 ```javascript
 import { _converse, api, converse } from '@converse/headless';
 
-// Access global state (use sparingly, prefer api)
-_converse.chatboxes.get(jid);
+// Access global state via `_converse.state` (use sparingly, prefer api)
+const { chatboxes } = _converse.state;
+const chatbox = chatboxes.get(jid);
 
-// Access libraries
-const { Strophe, $msg, $iq, dayjs, sizzle, u } = converse.env;
+// Access 3rd party libraries
+const { Strophe, $msg, $iq, $pres, $build, stx } = converse.env;
 
-// XMPP stanzas
-const stanza = $msg({ to: jid, type: 'chat' })
-    .c('body').t('Hello').up()
+// XML stanzas (prefer stx template literal over old $msg, $pres, $iq, $build functions)
+// The stx template literal is the current preferred method for creating XML stanzas
+// When using stx, the `xmlns` attribute always needs to be set to "jabber:client".
+const stanza_stx = stx`
+    <message to="${jid}" type="chat" xmlns="jabber:client">
+        <body>Hello</body>
+        <active xmlns="${Strophe.NS.CHATSTATES}"/>
+    </message>`;
+
+// Legacy methods ($msg, $pres, $iq, $build) are deprecated - use stx instead
+const stanza_legacy = $msg({ to: jid, type: 'chat' })
+    .c('body')
+    .t('Hello')
+    .up()
     .c('active', { xmlns: Strophe.NS.CHATSTATES });
 ```
 
@@ -606,14 +617,16 @@ const stanza = $msg({ to: jid, type: 'chat' })
 Always define custom elements:
 
 ```javascript
-class MyElement extends CustomElement { /* ... */ }
+class MyElement extends CustomElement {
+    /* ... */
+}
 customElements.define('my-element', MyElement);
 ```
 
 Use in HTML:
 
 ```javascript
-html`<my-element .model="${this.model}"></my-element>`
+html`<my-element .model="${this.model}"></my-element>`;
 ```
 
 ### 6. Lit Property Binding
@@ -663,6 +676,7 @@ make check  # Runs: eslint + types + tests (headless + main)
 ```
 
 This command:
+
 1. Runs `npm run lint` (ESLint)
 2. Runs `npm run types` (generate types)
 3. Checks for uncommitted type changes
@@ -674,17 +688,23 @@ This command:
 ### Development Tools
 
 ```javascript
-// Access converse object in browser console
-window.converse
+// Access global converse object in browser console
+window.converse;
+
+// Internal state (as represented by Models and Collections)
+_converse.state;
+
+// Namespace for storing code that might be useful to 3rd party
+// plugins. We want to make it possible for 3rd party plugins to have
+// access to code (e.g. classes) without having to add converse.js
+// as a dependency.
+_converse.exports;
 
 // API methods
-converse.api.user.jid()
-converse.api.settings.get('jid')
-converse.api.chatboxes.get('user@example.com')
-
-// Internal state
-converse._converse
-converse._converse.chatboxes.models
+const { api } = _converse;
+api.user.jid();
+api.settings.get('jid');
+api.chatboxes.get('user@example.com');
 ```
 
 ### Debug Logging

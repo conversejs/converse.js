@@ -53,7 +53,8 @@ describe("The Registration Form", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         const { api } = _converse;
@@ -89,13 +90,47 @@ describe("The Registration Form", function () {
         api.connection.destroy();
     }));
 
+    it("shows a provider list when xmpp_providers_url is set",
+        mock.initConverse(
+            ['chatBoxesInitialized'],
+            { auto_login: false,
+              discover_connection_methods: false,
+              allow_registration: true },
+            async function (_converse) {
+
+        const { api } = _converse;
+
+        const toggle = await u.waitUntil(() => document.querySelector(".toggle-controlbox"));
+        toggle.click();
+
+        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
+        await u.waitUntil(() => u.isVisible(cbview));
+
+        cbview.querySelector('.toggle-register-login').click();
+
+        const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+        spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
+
+        // Check the form layout - should have no domain input
+        const form = cbview.querySelector('#converse-register');
+        expect(form).toBeDefined();
+        expect(form.querySelector('input[name=domain]')).toBeNull();
+
+        // Select a provider via the provider list
+        registerview.onProviderSelected('conversejs.org');
+        expect(registerview.fetchRegistrationForm).toHaveBeenCalled();
+
+        api.connection.destroy();
+    }));
+
     it("allows the user to choose an XMPP provider's domain in fullscreen view mode",
         mock.initConverse(
             ['chatBoxesInitialized'], {
                 auto_login: false,
                 view_mode: 'fullscreen',
                 discover_connection_methods: false,
-                allow_registration: true
+                allow_registration: true,
+                xmpp_providers_url: ''
             },
             async function (_converse) {
 
@@ -110,7 +145,7 @@ describe("The Registration Form", function () {
 
         expect(registerview._registering).toBeFalsy();
         expect(_converse.api.connection.connected()).toBeFalsy();
-        registerview.querySelector('input[name=domain]').value  = 'conversejs.org';
+        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
         registerview.querySelector('input[type=submit]').click();
         expect(registerview.onProviderChosen).toHaveBeenCalled();
         expect(registerview._registering).toBeTruthy();
@@ -149,7 +184,8 @@ describe("The Registration Form", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         await mock.toggleControlBox();
@@ -166,7 +202,7 @@ describe("The Registration Form", function () {
 
         expect(registerview._registering).toBeFalsy();
         expect(_converse.api.connection.connected()).toBeFalsy();
-        registerview.querySelector('input[name=domain]').value  = 'conversejs.org';
+        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
         registerview.querySelector('input[type=submit]').click();
         expect(registerview.onProviderChosen).toHaveBeenCalled();
         expect(registerview._registering).toBeTruthy();
@@ -205,7 +241,8 @@ describe("The Registration Form", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
@@ -220,7 +257,6 @@ describe("The Registration Form", function () {
         login_form.click();
 
         const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
-        spyOn(registerview, 'onProviderChosen').and.callThrough();
         spyOn(registerview, 'getRegistrationFields').and.callThrough();
         spyOn(registerview, 'onRegistrationFields').and.callThrough();
         spyOn(registerview, 'renderRegistrationForm').and.callThrough();
@@ -269,7 +305,8 @@ describe("The Registration Form", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
@@ -282,7 +319,6 @@ describe("The Registration Form", function () {
         login_form.click();
 
         const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
-        spyOn(registerview, 'onProviderChosen').and.callThrough();
         spyOn(registerview, 'getRegistrationFields').and.callThrough();
         spyOn(registerview, 'onRegistrationFields').and.callThrough();
         spyOn(registerview, 'renderRegistrationForm').and.callThrough();
@@ -350,7 +386,8 @@ describe("The Registration Form", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
@@ -416,7 +453,8 @@ describe("The Registration Form", function () {
             { auto_login: false,
               view_mode: 'fullscreen',
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
@@ -478,7 +516,8 @@ describe("The Registration Form", function () {
             { auto_login: false,
               view_mode: 'fullscreen',
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
@@ -563,7 +602,8 @@ describe("The Registration Form", function () {
             { auto_login: false,
               view_mode: 'fullscreen',
               discover_connection_methods: false,
-              allow_registration: true },
+              allow_registration: true,
+              xmpp_providers_url: '' },
             async function (_converse) {
 
         await mock.toggleControlBox();
@@ -576,7 +616,7 @@ describe("The Registration Form", function () {
 
         expect(registerview._registering).toBeFalsy();
         expect(_converse.api.connection.connected()).toBeFalsy();
-        registerview.querySelector('input[name=domain]').value  = 'conversejs.org';
+        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
         registerview.querySelector('input[type=submit]').click();
         expect(registerview._registering).toBeTruthy();
         await u.waitUntil(() => registerview.fetchRegistrationForm.calls.count());

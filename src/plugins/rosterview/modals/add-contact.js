@@ -1,4 +1,4 @@
-import { _converse, converse, api, log } from '@converse/headless';
+import { _converse, converse, api, log, u } from '@converse/headless';
 import BaseModal from 'plugins/modal/modal.js';
 import tplAddContactModal from './templates/add-contact.js';
 import { __ } from 'i18n';
@@ -20,7 +20,7 @@ export default class AddContactModal extends BaseModal {
         this.addEventListener(
             'shown.bs.modal',
             () => /** @type {HTMLInputElement} */ (this.querySelector('input[name="jid"]'))?.focus(),
-            false
+            false,
         );
     }
 
@@ -36,7 +36,7 @@ export default class AddContactModal extends BaseModal {
      * @param {string} jid
      */
     validateSubmission(jid) {
-        if (!jid || jid.split('@').filter((s) => !!s).length < 2) {
+        if (!u.isValidJIDInput(jid)) {
             this.alert(__('Please enter a valid XMPP address'), 'danger', false);
             return false;
         } else if (!this.contact && _converse.state.roster.get(Strophe.getBareJidFromJid(jid))) {
@@ -76,6 +76,9 @@ export default class AddContactModal extends BaseModal {
         const data = new FormData(form);
         let jid = /** @type {string} */ (data.get('jid') || '').trim();
 
+        // Append configured domain if user entered just a username
+        jid = u.maybeAppendDomain(jid);
+
         let name;
         if (api.settings.get('xhr_user_search_url')) {
             // In this case, the value of `jid` is something like `John Doe <john@chat.com>`
@@ -89,10 +92,10 @@ export default class AddContactModal extends BaseModal {
             } else {
                 this.alert(
                     __(
-                        'Invalid value for the name and XMPP address. Please use the format "Name <username@example.org>".'
+                        'Invalid value for the name and XMPP address. Please use the format "Name <username@example.org>".',
                     ),
                     'danger',
-                    false
+                    false,
                 );
                 return;
             }

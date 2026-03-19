@@ -131,7 +131,13 @@ export async function onDirectMUCInvitation(message) {
         reason = x_el.getAttribute('reason');
 
     let result;
-    if (api.settings.get('auto_join_on_invite')) {
+
+    const { api } = _converse;
+    const room = await api.rooms.get(room_jid);
+
+    if (room) {
+        result = false;
+    } else if (api.settings.get('auto_join_on_invite')) {
         result = true;
     } else {
         // Invite request might come from someone not your roster list

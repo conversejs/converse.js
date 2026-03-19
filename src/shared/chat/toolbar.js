@@ -2,6 +2,7 @@ import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 import { _converse, api, converse } from '@converse/headless';
 import './emoji-picker.js';
+import './location-button.js';
 import 'shared/chat/message-limit.js';
 import tplToolbar from './templates/toolbar.js';
 import { CustomElement } from 'shared/components/element.js';
@@ -22,6 +23,7 @@ export class ChatToolbar extends CustomElement {
             model: { type: Object },
             show_call_button: { type: Boolean },
             show_emoji_button: { type: Boolean },
+            show_location_button: { type: Boolean },
             show_send_button: { type: Boolean },
             show_spoiler_button: { type: Boolean },
         }
@@ -36,6 +38,7 @@ export class ChatToolbar extends CustomElement {
         this.show_spoiler_button = false;
         this.show_call_button = false;
         this.show_emoji_button = false;
+        this.show_location_button = false;
     }
 
     connectedCallback () {
@@ -81,6 +84,13 @@ export class ChatToolbar extends CustomElement {
 
         if (this.show_spoiler_button) {
             buttons.push(this.getSpoilerButton());
+        }
+
+        if (this.show_location_button) {
+            buttons.push(html`<converse-location-button
+                .model=${this.model}
+                ?is_groupchat=${this.is_groupchat}>
+            </converse-location-button>`);
         }
 
         const domain = _converse.session.get('domain');
@@ -161,6 +171,7 @@ export class ChatToolbar extends CustomElement {
             return html`${until(spoilers_promise.then(() => markup), '')}`;
         }
     }
+
 
     /** @param {MouseEvent} ev */
     toggleFileUpload (ev) {

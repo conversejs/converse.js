@@ -29,4 +29,10 @@ export function isErrorObject(o: unknown): boolean;
  * @returns {import('@converse/skeletor').BrowserStorage}
  */
 export function isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").BrowserStorage;
+/**
+ * Check if an object is empty (null, undefined, not an object, or has no own keys).
+ * @param {Object|undefined|null} obj
+ * @returns {boolean} True if the object is empty.
+ */
+export function isEmpty(obj: any | undefined | null): boolean;
 //# sourceMappingURL=object.d.ts.map

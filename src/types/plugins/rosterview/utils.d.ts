@@ -69,6 +69,25 @@ export function getGroupsAutoCompleteList(): string[];
  */
 export function getJIDsAutoCompleteList(): string[];
 /**
+ * Clears the cached XMPP providers list.
+ * Useful for testing or when the providers URL is changed.
+ */
+export function clearXMPPProvidersCache(): void;
+/**
+ * Fetches the list of XMPP providers from the configured URL.
+ * Results are cached after the first successful fetch.
+ * @returns {Promise<string[]>}
+ */
+export function fetchXMPPProviders(): Promise<string[]>;
+/**
+ * Returns a combined list of JID domains from the user's roster and XMPP providers.
+ * Used for autocomplete when adding a contact.
+ * This function fetches providers asynchronously and caches them for future use.
+ * @param {string} _query - The current input value (unused, filtering is done by the autocomplete component)
+ * @returns {Promise<string[]>}
+ */
+export function getJIDsAutoCompleteListWithProviders(_query: string): Promise<string[]>;
+/**
  * @param {string} query
  */
 export function getNamesAutoCompleteList(query: string): Promise<any[]>;

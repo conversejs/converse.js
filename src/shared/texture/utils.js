@@ -1,5 +1,5 @@
-import { html } from 'lit';
 import { u } from '@converse/headless';
+import { html } from 'lit';
 import { bracketing_directives, dont_escape, styling_directives, styling_map } from './constants';
 
 const URL_REGEXES = {
@@ -200,6 +200,19 @@ export function isQuoteDirective(d) {
 }
 
 /**
+ * @param {import('./texture').Texture} text
+ * @returns {boolean}
+ */
+export function containsDirectives(text) {
+    for (let i = 0; i < styling_directives.length; i++) {
+        if (text.includes(styling_directives[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * Detects URL ranges in a text string.
  * @param {string} string - The input string to search for URLs
  * @returns {Array<[number, number]>} - Array of [start, end] index pairs for detected URLs
@@ -217,8 +230,11 @@ export function getURLRanges(string) {
         const match = _start.exec(string);
         if (!match) break;
 
-        const start = match.index;
-        let end = start + string.slice(start).search(_end);
+        const triggered_by_underscore = match[1] === '_';
+        // If the match was triggered by a leading underscore (XEP-0393 emphasis),
+        // the URL itself starts one character after match.index.
+        const start = triggered_by_underscore ? match.index + 1 : match.index;
+        let end = match.index + string.slice(match.index).search(_end);
         let slice = string.slice(start, end);
         let parensEnd = -1;
 
@@ -236,6 +252,12 @@ export function getURLRanges(string) {
             slice = slice.replace(_trim, '');
         }
 
+        // If triggered by a leading underscore and the URL ends with a closing
+        // underscore, strip it too — both are XEP-0393 emphasis directives.
+        if (triggered_by_underscore && slice.endsWith('_')) {
+            slice = slice.slice(0, -1);
+        }
+
         if (slice.length <= match[0].length) continue;
 
         end = start + slice.length;
@@ -247,15 +269,4 @@ export function getURLRanges(string) {
     return ranges;
 }
 
-/**
- * @param {import('./texture').Texture} text
- * @returns {boolean}
- */
-export function containsDirectives(text) {
-    for (let i = 0; i < styling_directives.length; i++) {
-        if (text.includes(styling_directives[i])) {
-            return true;
-        }
-    }
-    return false;
-}
+export default Object.assign(u, { getURLRanges });

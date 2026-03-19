@@ -1,4 +1,6 @@
-import { getURLRanges } from '../utils.js';
+/*global converse */
+
+const { getURLRanges } = converse.env.u;
 
 describe('getURLRanges', function () {
     it('returns an empty array for text without URLs', function () {
@@ -37,8 +39,15 @@ describe('getURLRanges', function () {
         expect(text.slice(ranges[0][0], ranges[0][1])).toBe('https://example.com');
     });
 
-    it('strips a trailing underscore from a URL', function () {
+    it('keeps a trailing underscore as part of the URL when there is no matching opening underscore', function () {
         const text = 'link: https://example.com/path_';
+        const ranges = getURLRanges(text);
+        expect(ranges.length).toBe(1);
+        expect(text.slice(ranges[0][0], ranges[0][1])).toBe('https://example.com/path_');
+    });
+
+    it('strips surrounding underscores from a URL when used as XEP-0393 emphasis directives', function () {
+        const text = '_https://example.com/path_';
         const ranges = getURLRanges(text);
         expect(ranges.length).toBe(1);
         expect(text.slice(ranges[0][0], ranges[0][1])).toBe('https://example.com/path');

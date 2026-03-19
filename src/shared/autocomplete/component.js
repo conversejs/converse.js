@@ -66,6 +66,7 @@ export default class AutoCompleteComponent extends CustomElement {
             position: { type: String },
             renderItem: { type: Function },
             required: { type: Boolean },
+            suffix: { type: String },
             triggers: { type: String },
             validate: { type: Function },
             value: { type: String },
@@ -91,6 +92,7 @@ export default class AutoCompleteComponent extends CustomElement {
         this.renderItem = getAutoCompleteItem;
 
         this.required = false;
+        this.suffix = " ";
         this.triggers = "";
         this.validate = null;
         this.value = "";
@@ -143,6 +145,7 @@ export default class AutoCompleteComponent extends CustomElement {
             list: this.list ?? (/** @param {string} q */(q) => this.getAutoCompleteList(q)),
             data: this.data,
             match_current_word: true,
+            suffix: this.suffix,
             max_items: this.max_items,
             min_chars: this.min_chars,
             item: this.renderItem,

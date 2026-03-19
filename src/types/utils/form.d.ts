@@ -30,8 +30,9 @@ export function getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, in
 /**
  * @param {HTMLInputElement} input - The HTMLElement in which text is being entered
  * @param {string} new_value
+ * @param {string} [suffix=' '] - String to append after the value
  */
-export function replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
+export function replaceCurrentWord(input: HTMLInputElement, new_value: string, suffix?: string): void;
 /**
  * Validates a JID for user input scenarios where locked_domain or default_domain
  * may be configured. When these settings are present, users can enter just a username

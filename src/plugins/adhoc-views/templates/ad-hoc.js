@@ -32,6 +32,7 @@ export default (el) => {
                         required
                         placeholder="${i18n_jid_placeholder}"
                         name="jid"
+                        value="${el.jid}"
                     >
                     </converse-autocomplete>
                 </label>

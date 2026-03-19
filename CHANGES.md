@@ -19,6 +19,7 @@
 - #3885: Don't show contact approval alerts when `allow_contact_requests` is false (e.g. anonymous mode)
 - #3886: Don't show OMEMO padlock icon when libsignal is not available (e.g. anonymous mode)
 - #3889: MUC join: Use room jids localpart as name in case name or identity not found
+- #3710: Fix autocomplete adding a trailing space when selecting a group name with the mouse
 - #3916: Add support for XEP-0461 Message Replies, allowing users to reply to specific messages
 - #3939: Don't show invitations to groupchats in which the user is already present
 - #3941: add adhoc completed command result and text-multi as merged lines of text

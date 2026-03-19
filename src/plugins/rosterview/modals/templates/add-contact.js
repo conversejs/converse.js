@@ -69,7 +69,7 @@ export default (el) => {
                 <div class="mb-1">
                     <small class="form-text text-muted">${i18n_groups_help}</small>
                 </div>
-                <converse-autocomplete .list=${getGroupsAutoCompleteList()} name="groups"></converse-autocomplete>
+                <converse-autocomplete .list=${getGroupsAutoCompleteList()} name="groups" suffix=""></converse-autocomplete>
             </div>
 
             ${el.contact

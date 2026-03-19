@@ -89,6 +89,9 @@ export default class AutoCompleteComponent extends CustomElement {
         required: {
             type: BooleanConstructor;
         };
+        suffix: {
+            type: StringConstructor;
+        };
         triggers: {
             type: StringConstructor;
         };
@@ -115,6 +118,7 @@ export default class AutoCompleteComponent extends CustomElement {
     position: string;
     renderItem: typeof getAutoCompleteItem;
     required: boolean;
+    suffix: string;
     triggers: string;
     validate: any;
     value: string;

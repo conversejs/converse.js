@@ -22,6 +22,7 @@ export class AutoComplete extends EventEmitter(Object) {
         this.suggestions = [];
         this.is_opened = false;
         this.match_current_word = false; // Match only the current word, otherwise all input is matched
+        this.suffix = ' '; // String to append after the autocompleted value
         this.sort = config.sort === false ? null : SORT_BY_QUERY_POSITION;
         this.filter = FILTER_CONTAINS;
         this.ac_triggers = []; // Array of keys (`ev.key`) values that will trigger auto-complete
@@ -146,7 +147,7 @@ export class AutoComplete extends EventEmitter(Object) {
      */
     insertValue(suggestion) {
         if (this.match_current_word) {
-            u.replaceCurrentWord(this.input, suggestion.value);
+            u.replaceCurrentWord(this.input, suggestion.value, this.suffix);
         } else {
             this.input.value = suggestion.value;
         }

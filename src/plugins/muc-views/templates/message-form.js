@@ -17,7 +17,6 @@ export default (el) => {
     const show_send_button = api.settings.get("show_send_button");
     const show_toolbar = api.settings.get("show_toolbar");
     return html`
-        <converse-reply-preview .model=${el.model}></converse-reply-preview>
         <form class="setNicknameButtonForm hidden">
             <input type="submit" class="btn btn-primary" name="join" value="Join" />
         </form>

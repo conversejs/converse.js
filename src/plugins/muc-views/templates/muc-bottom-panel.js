@@ -13,12 +13,22 @@ export default (el) => {
     const conn_status = el.model.session.get('connection_status');
     const i18n_not_allowed = __("You're not allowed to send messages in this room");
     if (conn_status === converse.ROOMSTATUS.ENTERED) {
-        return html` ${el.model.ui.get('scrolled') && el.model.get('num_unread_general')
-            ? html`<div class="new-msgs-indicator" @click=${(ev) => el.viewUnreadMessages(ev)}>▼ ${unread_msgs} ▼</div>`
-            : ''}
-        ${el.model.canPostMessages()
-            ? html`<converse-muc-message-form .model=${el.model}></converse-muc-message-form>`
-            : html`<span class="muc-bottom-panel muc-bottom-panel--muted">${i18n_not_allowed}</span>`}`;
+        return html`
+            ${el.model.ui.get('scrolled') && el.model.get('num_unread_general')
+                ? html`<div
+                      class="new-msgs-indicator"
+                      @click=${/** @param {MouseEvent} ev */ (ev) => el.viewUnreadMessages(ev)}
+                  >
+                      ▼ ${unread_msgs} ▼
+                  </div>`
+                : ''}
+
+            <converse-reply-preview .model=${el.model}></converse-reply-preview>
+
+            ${el.model.canPostMessages()
+                ? html`<converse-muc-message-form .model=${el.model}></converse-muc-message-form>`
+                : html`<span class="muc-bottom-panel muc-bottom-panel--muted">${i18n_not_allowed}</span>`}
+        `;
     } else if (conn_status == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
         if (api.settings.get('muc_show_logs_before_join')) {
             return html`<span class="muc-bottom-panel muc-bottom-panel--nickname">

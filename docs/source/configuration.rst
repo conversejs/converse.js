@@ -2189,6 +2189,50 @@ Adds a button to the chat which can be clicked or tapped in order to send the
 message.
 
 
+show_entity_time
+----------------
+
+* Default: ``true``
+
+If enabled, Converse will query contacts for their local time (per `XEP-0202 <https://xmpp.org/extensions/xep-0202.html>`_)
+and show a warning bar in private chats when the contact is in "off-hours"
+(e.g., nighttime in their timezone).
+
+This is useful for distributed teams to avoid messaging colleagues at inappropriate times.
+
+Related settings: ``entity_time_warning_start``, ``entity_time_warning_end``,
+``entity_time_min_diff_hours``.
+
+
+entity_time_warning_start
+-------------------------
+
+* Default: ``22``
+
+The hour (0-23) at which the "off-hours" warning period starts.
+Default is 22 (10 PM).
+
+
+entity_time_warning_end
+-----------------------
+
+* Default: ``7``
+
+The hour (0-23) at which the "off-hours" warning period ends.
+Default is 7 (7 AM).
+
+
+entity_time_min_diff_hours
+--------------------------
+
+* Default: ``0``
+
+Minimum timezone difference (in hours) before showing the warning.
+
+- ``0``: Show warning for any different timezone (default)
+- ``3``: Only show warning if contact is 3+ hours ahead/behind
+
+
 show_tab_notifications
 ----------------------
 

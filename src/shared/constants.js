@@ -27,7 +27,8 @@ export const VIEW_PLUGINS = [
     'converse-roomslist',
     'converse-rootview',
     'converse-rosterview',
-    'converse-singleton'
+    'converse-singleton',
+    'converse-time-views'
 ];
 
 /**
@@ -41,13 +42,13 @@ export const VIEW_PLUGINS = [
  * @property {string} online
  */
 export const PRETTY_CHAT_STATUS = {
-    offline:      __('Offline'),
-    unavailable:  __('Unavailable'),
-    xa:           __('Extended Away'),
-    away:         __('Away'),
-    dnd:          __('Do not disturb'),
-    chat:         __('Chatty'),
-    online:       __('Online')
+    offline: __('Offline'),
+    unavailable: __('Unavailable'),
+    xa: __('Extended Away'),
+    away: __('Away'),
+    dnd: __('Do not disturb'),
+    chat: __('Chatty'),
+    online: __('Online')
 };
 
 

@@ -27,6 +27,7 @@ module.exports = function(config) {
       { pattern: "plugins/roster/tests/*.js", type: 'module' },
       { pattern: "plugins/smacks/tests/*.js", type: 'module' },
       { pattern: "plugins/status/tests/*.js", type: 'module' },
+      { pattern: "plugins/time/tests/*.js", type: 'module' },
     ],
     client: {
       jasmine: {

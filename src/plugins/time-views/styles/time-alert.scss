@@ -1,0 +1,44 @@
+.chat-body {
+    converse-entity-time-alert {
+        display: block;
+
+        .entity-time-alert {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            padding: 0.625em 0.875em;
+            font-size: 0.8125em;
+            color: #1d1c1d;
+            background-color: #fff8e6;
+            border-top: 1px solid #e8d89e;
+
+            converse-icon {
+                color: #e0a500;
+                flex-shrink: 0;
+            }
+
+            .entity-time-alert__message {
+                flex: 1;
+            }
+
+            .entity-time-alert__dismiss {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 1.5em;
+                height: 1.5em;
+                padding: 0;
+                border: none;
+                border-radius: 4px;
+                background: transparent;
+                color: #616061;
+                cursor: pointer;
+                transition: background 0.15s;
+
+                &:hover {
+                    background: rgba(0, 0, 0, 0.08);
+                }
+            }
+        }
+    }
+}

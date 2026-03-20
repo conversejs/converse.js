@@ -117,6 +117,7 @@ Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
 Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
 Strophe.addNamespace('STANZAS', 'urn:ietf:params:xml:ns:xmpp-stanzas');
 Strophe.addNamespace('STYLING', 'urn:xmpp:styling:0');
+Strophe.addNamespace('TIME', 'urn:xmpp:time');
 Strophe.addNamespace('VCARD', 'vcard-temp');
 Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
@@ -143,6 +144,7 @@ export const CORE_PLUGINS = [
     'converse-roster',
     'converse-smacks',
     'converse-status',
+    'converse-time',
     'converse-vcard',
     'converse-omemo',
 ];

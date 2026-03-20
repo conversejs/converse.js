@@ -7,9 +7,10 @@ import { __ } from 'i18n';
 const { Strophe } = converse.env;
 
 /**
- * Tracks which message models currently have their reaction picker open.
- * Keyed by message model instance so state is naturally scoped and garbage-collected.
- * @type {WeakMap<object, boolean>}
+ * Tracks which message models currently have their reaction picker open,
+ * storing the anchor button's DOMRect so the picker can position itself
+ * near the button that was clicked.
+ * @type {WeakMap<object, DOMRect|null>}
  */
 const picker_state = new WeakMap();
 
@@ -39,12 +40,14 @@ converse.plugins.add('converse-reaction-views', {
         api.listen.on('reconnected', () => registerRestrictedReactionsHandler(this.allowed_emojis));
 
         api.listen.on('getMessageActionButtons', (el, buttons) => {
-            buttons.push({
+            buttons.unshift({
                 'i18n_text': __('Add Reaction'),
                 'handler': (ev) => {
                     ev?.preventDefault?.();
                     ev?.stopPropagation?.();
-                    picker_state.set(el.model, !picker_state.get(el.model));
+                    const btn = /** @type {HTMLElement} */ (ev.currentTarget ?? ev.target);
+                    const anchor_rect = btn?.getBoundingClientRect() ?? null;
+                    picker_state.set(el.model, !picker_state.get(el.model) ? anchor_rect : null);
                     const dropdown = el.renderRoot?.querySelector('converse-dropdown');
                     dropdown?.dropdown?.hide?.();
                     el.requestUpdate();
@@ -58,11 +61,13 @@ converse.plugins.add('converse-reaction-views', {
         });
 
         api.listen.on('getMessageActionContent', (el, content) => {
-            if (!picker_state.get(el.model)) return content;
+            const anchor_rect = picker_state.get(el.model);
+            if (!anchor_rect) return content;
             return html`${content}<converse-reaction-picker
                     .model=${el.model}
+                    .anchor_rect=${anchor_rect}
                     @closePicker=${() => {
-                        picker_state.set(el.model, false);
+                        picker_state.delete(el.model);
                         el.requestUpdate();
                     }}
                 ></converse-reaction-picker>`;

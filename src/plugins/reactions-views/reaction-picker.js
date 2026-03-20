@@ -20,6 +20,7 @@ export default class ReactionPicker extends CustomElement {
         return {
             'model': { type: Object },
             'emoji_picker_state': { type: Object },
+            'anchor_rect': { type: Object },
             'dropup': { type: Boolean },
             'shifted': { type: Boolean },
             'closing': { type: Boolean },
@@ -30,6 +31,7 @@ export default class ReactionPicker extends CustomElement {
         super();
         this.model = null;
         this.emoji_picker_state = null;
+        this.anchor_rect = null;
         this.picker_id = u.getUniqueId('reaction-picker');
         this.dropup = false;
         this.shifted = false;
@@ -53,39 +55,42 @@ export default class ReactionPicker extends CustomElement {
         const picker = /** @type {HTMLElement} */ (this.querySelector('.reaction-picker'));
         if (!picker) return;
 
+        // Find the nearest position:relative ancestor to use as the offset parent.
+        // The message body has position:relative and serves as the coordinate origin.
+        const offset_parent = /** @type {HTMLElement} */ (
+            this.closest('[style*="position: relative"]') ?? this.offsetParent ?? this.parentElement
+        );
+        if (!offset_parent) return;
+        const parent_rect = offset_parent.getBoundingClientRect();
+
+        // Use the anchor button rect if provided, otherwise fall back to this element's rect.
+        const anchor = this.anchor_rect ?? this.getBoundingClientRect();
+
         const threshold = 150;
-        const hostRect = this.getBoundingClientRect();
         const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-        const spaceBelow = windowHeight - hostRect.bottom;
+        const spaceBelow = windowHeight - anchor.bottom;
+        const dropup = spaceBelow < threshold;
 
-        let needsUpdate = false;
-
-        if (spaceBelow < threshold) {
-            if (!this.dropup) {
-                this.dropup = true;
-                needsUpdate = true;
-            }
-        } else {
-            if (this.dropup) {
-                this.dropup = false;
-                needsUpdate = true;
-            }
+        if (dropup !== this.dropup) {
+            this.dropup = dropup;
+            this.requestUpdate();
         }
+
+        // Convert anchor viewport coordinates to parent-relative coordinates.
+        const right = parent_rect.right - anchor.right;
+        const top = anchor.bottom - parent_rect.top;
+        const bottom = parent_rect.bottom - anchor.top;
 
         picker.style.position = 'absolute';
-        picker.style.right = '0';
         picker.style.left = 'auto';
+        picker.style.right = `${right}px`;
 
-        if (this.dropup) {
+        if (dropup) {
             picker.style.top = 'auto';
-            picker.style.bottom = '100%';
+            picker.style.bottom = `${bottom}px`;
         } else {
             picker.style.bottom = 'auto';
-            picker.style.top = '100%';
-        }
-
-        if (needsUpdate) {
-            this.requestUpdate();
+            picker.style.top = `${top}px`;
         }
     }
 
@@ -117,7 +122,7 @@ export default class ReactionPicker extends CustomElement {
                 () => {
                     this.dispatchEvent(new CustomEvent('closePicker', { bubbles: true, composed: true }));
                 },
-                { once: true }
+                { once: true },
             );
         } else {
             this.dispatchEvent(new CustomEvent('closePicker', { bubbles: true, composed: true }));

@@ -26,20 +26,20 @@ class MessageActions extends CustomElement {
      * @typedef {import('@converse/headless/types/utils/types').MediaURLMetadata} MediaURLMetadata
      */
 
-    static get properties () {
+    static get properties() {
         return {
             is_retracted: { type: Boolean },
-            model: { type: Object }
+            model: { type: Object },
         };
     }
 
-    constructor () {
+    constructor() {
         super();
         this.model = null;
         this.is_retracted = null;
     }
 
-    initialize () {
+    initialize() {
         const settings = api.settings.get();
         this.listenTo(settings, 'change:allowed_audio_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());
@@ -53,52 +53,66 @@ class MessageActions extends CustomElement {
         this.listenTo(this.model.chatbox.occupants, 'add', this.updateIfOwnOccupant);
         this.listenTo(this.model.chatbox.occupants, 'change:role', this.updateIfOwnOccupant);
         this.listenTo(this.model.chatbox.session, 'change:connection_status', () => this.requestUpdate());
-
     }
 
-    updateIfOwnOccupant (o) {
+    updateIfOwnOccupant(o) {
         const bare_jid = _converse.session.get('bare_jid');
         if (o.get('jid') === bare_jid) {
             this.requestUpdate();
         }
     }
 
-    render () {
+    render() {
         return html`${until(this.renderActions(), '')}`;
     }
 
-    async renderActions () {
+    async renderActions() {
         // This can be called before the model has been added to the collection
         // when requesting an update on change:connection_status.
         // This line allows us to pass tests.
         if (!this.model.collection) return '';
 
         const buttons = await this.getActionButtons();
-        const items = buttons.map(b => MessageActions.getActionsDropdownItem(b));
-        if (items.length) {
-            return html`<converse-dropdown
-                class="chat-msg__actions btn-group dropstart"
-                .items=${items}
-            ></converse-dropdown>`;
+        const items = buttons.map((b) => MessageActions.getActionsDropdownItem(b));
+
+        /**
+         * *Hook* which allows plugins to add extra content alongside the
+         * message actions dropdown (e.g. pickers, panels).
+         * The hook receives the `MessageActions` element as context and an
+         * accumulating Lit template as `data`. Return the (possibly augmented)
+         * template from your listener.
+         * @event _converse#getMessageActionContent
+         * @example
+         *  api.listen.on('getMessageActionContent', (el, content) => {
+         *      return html`${content}<my-custom-element .model=${el.model}></my-custom-element>`;
+         *  });
+         */
+        const extra_content = await api.hook('getMessageActionContent', this, html``);
+
+        if (items.length || extra_content) {
+            return html` ${items.length
+                ? html`<converse-dropdown
+                      class="chat-msg__actions btn-group dropstart"
+                      .items=${items}
+                  ></converse-dropdown>`
+                : ''}
+            ${extra_content}`;
         } else {
             return '';
         }
     }
 
-    static getActionsDropdownItem (o) {
+    static getActionsDropdownItem(o) {
         return html`
             <button type="button" class="dropdown-item chat-msg__action ${o.button_class}" @click=${o.handler}>
-                <converse-icon
-                    class="${o.icon_class}"
-                    color="var(--foreground-color)"
-                    size="1em"
-                ></converse-icon>&nbsp;${o.i18n_text}
+                <converse-icon class="${o.icon_class}" color="var(--foreground-color)" size="1em"></converse-icon
+                >&nbsp;${o.i18n_text}
             </button>
         `;
     }
 
     /** @param {MouseEvent} ev */
-    async onMessageEditButtonClicked (ev) {
+    async onMessageEditButtonClicked(ev) {
         ev.preventDefault();
         const currently_correcting = this.model.collection.findWhere('correcting');
         // TODO: Use state instead of DOM querying
@@ -107,7 +121,7 @@ class MessageActions extends CustomElement {
         if (unsent_text && (!currently_correcting || currently_correcting.getMessageText() !== unsent_text)) {
             const result = await api.confirm(
                 __('Confirm'),
-                __('You have an unsent message which will be lost if you continue. Are you sure?')
+                __('You have an unsent message which will be lost if you continue. Are you sure?'),
             );
             if (!result) return;
         }
@@ -119,14 +133,14 @@ class MessageActions extends CustomElement {
         }
     }
 
-    async onDirectMessageRetractButtonClicked () {
+    async onDirectMessageRetractButtonClicked() {
         if (this.model.get('sender') !== 'me') {
             return log.error("onMessageRetractButtonClicked called for someone else's message!");
         }
         const retraction_warning = __(
             'Be aware that other XMPP/Jabber clients (and servers) may ' +
                 'not yet support retractions and that this message may not ' +
-                'be removed everywhere.'
+                'be removed everywhere.',
         );
         const messages = [__('Are you sure you want to retract this message?')];
         if (api.settings.get('show_retraction_warning')) {
@@ -143,7 +157,7 @@ class MessageActions extends CustomElement {
      * Retract someone else's message in this groupchat.
      * @param {string} [reason] - The reason for retracting the message.
      */
-    async retractOtherMessage (reason) {
+    async retractOtherMessage(reason) {
         const chatbox = this.model.collection.chatbox;
         const result = await chatbox.retractOtherMessage(this.model, reason);
         if (result === null) {
@@ -158,11 +172,11 @@ class MessageActions extends CustomElement {
         }
     }
 
-    async onMUCMessageRetractButtonClicked () {
+    async onMUCMessageRetractButtonClicked() {
         const retraction_warning = __(
             'Be aware that other XMPP/Jabber clients (and servers) may ' +
                 'not yet support retractions and that this message may not ' +
-                'be removed everywhere.'
+                'be removed everywhere.',
         );
 
         if (this.model.mayBeRetracted()) {
@@ -199,7 +213,7 @@ class MessageActions extends CustomElement {
     }
 
     /** @param {MouseEvent} [ev] */
-    onMessageRetractButtonClicked (ev) {
+    onMessageRetractButtonClicked(ev) {
         ev?.preventDefault?.();
         const chatbox = this.model.collection.chatbox;
         if (chatbox.get('type') === CHATROOMS_TYPE) {
@@ -210,7 +224,7 @@ class MessageActions extends CustomElement {
     }
 
     /** @param {MouseEvent} [ev] */
-    onMediaToggleClicked (ev) {
+    onMediaToggleClicked(ev) {
         ev?.preventDefault?.();
 
         if (this.hasHiddenMedia(this.getMediaURLs())) {
@@ -240,7 +254,7 @@ class MessageActions extends CustomElement {
      * @param { Array<String> } media_urls
      * @returns { Boolean }
      */
-    hasHiddenMedia (media_urls) {
+    hasHiddenMedia(media_urls) {
         if (typeof this.model.get('hide_url_previews') === 'boolean') {
             return this.model.get('hide_url_previews');
         }
@@ -252,14 +266,14 @@ class MessageActions extends CustomElement {
         }
     }
 
-    getMediaURLs () {
+    getMediaURLs() {
         const unfurls_to_show = (this.model.get('ogp_metadata') || [])
-            .map(o => ({ 'url': o['og:image'], 'is_image': true }))
-            .filter(o => isMediaURLDomainAllowed(o));
+            .map((o) => ({ 'url': o['og:image'], 'is_image': true }))
+            .filter((o) => isMediaURLDomainAllowed(o));
 
         const url_strings = getMediaURLs(this.model.get('media_urls') || [], this.model.get('body'));
-        const media_urls = /** @type {MediaURLMetadata[]} */(url_strings.filter(o => isMediaURLDomainAllowed(o)));
-        return [...new Set([...media_urls.map(o => o.url), ...unfurls_to_show.map(o => o.url)])];
+        const media_urls = /** @type {MediaURLMetadata[]} */ (url_strings.filter((o) => isMediaURLDomainAllowed(o)));
+        return [...new Set([...media_urls.map((o) => o.url), ...unfurls_to_show.map((o) => o.url)])];
     }
 
     /**
@@ -277,13 +291,13 @@ class MessageActions extends CustomElement {
      *
      * @param { Array<MessageActionAttributes> } buttons - An array of objects representing action buttons
      */
-    addMediaRenderingToggle (buttons) {
+    addMediaRenderingToggle(buttons) {
         const urls = this.getMediaURLs();
         if (urls.length) {
             const hidden = this.hasHiddenMedia(urls);
             buttons.push({
                 'i18n_text': hidden ? __('Show media') : __('Hide media'),
-                'handler': ev => this.onMediaToggleClicked(ev),
+                'handler': (ev) => this.onMediaToggleClicked(ev),
                 'button_class': 'chat-msg__action-hide-previews',
                 'icon_class': hidden ? 'fas fa-eye' : 'fas fa-eye-slash',
                 'name': 'hide',
@@ -292,13 +306,13 @@ class MessageActions extends CustomElement {
     }
 
     /** @param {MouseEvent} [ev] */
-    async onMessageCopyButtonClicked (ev) {
+    async onMessageCopyButtonClicked(ev) {
         ev?.preventDefault?.();
         await navigator.clipboard.writeText(this.model.getMessageText());
     }
 
     /** @param {MouseEvent} [ev] */
-    onMessageQuoteButtonClicked (ev) {
+    onMessageQuoteButtonClicked(ev) {
         ev?.preventDefault?.();
         const chatbox = this.model.collection.chatbox;
         const idx = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea')?.selectionEnd;
@@ -318,7 +332,7 @@ class MessageActions extends CustomElement {
      * For other message types, use msgid.
      * @returns {string|undefined}
      */
-    getReplyToId () {
+    getReplyToId() {
         const message_type = this.model.get('type');
         if (message_type === 'groupchat') {
             // For groupchat, use the stanza_id assigned by the MUC
@@ -335,7 +349,7 @@ class MessageActions extends CustomElement {
      * Check if this message can be replied to based on XEP-0461 rules.
      * @returns {boolean}
      */
-    canReply () {
+    canReply() {
         const message_type = this.model.get('type');
         if (message_type === 'groupchat') {
             // For groupchat, we need a stanza_id to reply
@@ -347,7 +361,7 @@ class MessageActions extends CustomElement {
     }
 
     /** @param {MouseEvent} [ev] */
-    onMessageReplyButtonClicked (ev) {
+    onMessageReplyButtonClicked(ev) {
         ev?.preventDefault?.();
         const chatbox = this.model.collection.chatbox;
         // Get the message ID to reply to based on XEP-0461 rules
@@ -364,20 +378,22 @@ class MessageActions extends CustomElement {
         textarea?.focus();
     }
 
-    async getActionButtons () {
+    async getActionButtons() {
         const buttons = [];
         if (this.model.get('editable')) {
-            buttons.push(/** @type {MessageActionAttributes} */({
-                'i18n_text': this.model.get('correcting') ? __('Cancel Editing') : __('Edit'),
-                'handler': (ev) => this.onMessageEditButtonClicked(ev),
-                'button_class': 'chat-msg__action-edit',
-                'icon_class': 'fa fa-pencil-alt',
-                'name': 'edit',
-            }));
+            buttons.push(
+                /** @type {MessageActionAttributes} */ ({
+                    'i18n_text': this.model.get('correcting') ? __('Cancel Editing') : __('Edit'),
+                    'handler': (ev) => this.onMessageEditButtonClicked(ev),
+                    'button_class': 'chat-msg__action-edit',
+                    'icon_class': 'fa fa-pencil-alt',
+                    'name': 'edit',
+                }),
+            );
         }
 
-        const may_be_moderated = ['groupchat', 'mep'].includes(this.model.get('type')) &&
-            (await this.model.mayBeModerated());
+        const may_be_moderated =
+            ['groupchat', 'mep'].includes(this.model.get('type')) && (await this.model.mayBeModerated());
         const retractable = !this.is_retracted && (this.model.mayBeRetracted() || may_be_moderated);
         if (retractable) {
             buttons.push({

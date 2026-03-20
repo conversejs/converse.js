@@ -82,14 +82,20 @@ export default (el) => {
                               >
                           </span>
                           ${hats.map((h) => html`<span class="badge badge-secondary">${h.title}</span>`)}
-                          <time title="${pretty_date}" timestamp="${edited || time}" class="chat-msg__time">${pretty_time}</time>
+                          <time title="${pretty_date}" timestamp="${edited || time}" class="chat-msg__time"
+                              >${pretty_time}</time
+                          >
                           ${el.model.get('is_encrypted')
                               ? html`<converse-icon class="fa fa-lock" size="1.1em"></converse-icon>`
                               : ''}
                       </span>`
                     : ''}
-
-                ${el.model.get('reply_to_id') ? html`<converse-reply-context .model=${el.model} .model_with_messages=${el.model_with_messages}></converse-reply-context>` : ''}
+                ${el.model.get('reply_to_id')
+                    ? html`<converse-reply-context
+                          .model=${el.model}
+                          .model_with_messages=${el.model_with_messages}
+                      ></converse-reply-context>`
+                    : ''}
 
                 <div
                     class="chat-msg__body chat-msg__body--${el.model.get('message_type')} ${el.model.get('received')
@@ -99,7 +105,9 @@ export default (el) => {
                 >
                     <div class="chat-msg__message">
                         ${is_action
-                            ? html`<time title="${pretty_date}" timestamp="${edited || time}" class="chat-msg__time">${pretty_time}</time>
+                            ? html`<time title="${pretty_date}" timestamp="${edited || time}" class="chat-msg__time"
+                                      >${pretty_time}</time
+                                  >
                                   ${is_me_message
                                       ? html`<span class="chat-msg__author" style="${author_style}"
                                                 >${is_me_message ? '**' : ''}${username}</span
@@ -112,29 +120,30 @@ export default (el) => {
                         .model=${el.model}
                         ?is_retracted=${is_retracted}
                     ></converse-message-actions>
-                    ${el.show_reaction_picker
-                        ? html`<converse-reaction-picker
-                            .model=${el.model}
-                            @closePicker=${el.onReactionPickerClose}
-                        ></converse-reaction-picker>`
-                        : ''}
                 </div>
 
                 <converse-reactions .model=${el.model}></converse-reactions>
 
-                ${!is_retracted ? el.model.get('ogp_metadata')?.map((m) =>
-                    el.model.get('hide_url_previews') === true ? '' :
-                    html`<converse-message-unfurl
-                        @animationend="${el.onUnfurlAnimationEnd}"
-                        class="${el.model.get('url_preview_transition')}"
-                        jid="${el.model_with_messages?.get('jid')}"
-                        description="${m['og:description'] || ''}"
-                        title="${m['og:title'] || ''}"
-                        image="${(m['og:image'] && shouldRenderMediaFromURL(m['og:image'], 'image')) ? m['og:image'] : nothing}"
-                        site_name="${m['og:site_name'] || ''}"
-                        url="${m['og:url'] || ''}"
-                    ></converse-message-unfurl>`
-                ) : ''}
+                ${!is_retracted
+                    ? el.model
+                          .get('ogp_metadata')
+                          ?.map((m) =>
+                              el.model.get('hide_url_previews') === true
+                                  ? ''
+                                  : html`<converse-message-unfurl
+                                        @animationend="${el.onUnfurlAnimationEnd}"
+                                        class="${el.model.get('url_preview_transition')}"
+                                        jid="${el.model_with_messages?.get('jid')}"
+                                        description="${m['og:description'] || ''}"
+                                        title="${m['og:title'] || ''}"
+                                        image="${m['og:image'] && shouldRenderMediaFromURL(m['og:image'], 'image')
+                                            ? m['og:image']
+                                            : nothing}"
+                                        site_name="${m['og:site_name'] || ''}"
+                                        url="${m['og:url'] || ''}"
+                                    ></converse-message-unfurl>`,
+                          )
+                    : ''}
             </div>
         </div>`;
 };

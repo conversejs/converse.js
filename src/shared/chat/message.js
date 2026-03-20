@@ -1,4 +1,4 @@
-import { api, converse, constants, _converse } from  '@converse/headless';
+import { api, converse, constants, _converse } from '@converse/headless';
 import './message-actions.js';
 import './message-body.js';
 import 'shared/components/dropdown.js';
@@ -19,30 +19,27 @@ import { __ } from 'i18n';
 const { Strophe } = converse.env;
 const { SUCCESS } = constants;
 
-
 export default class Message extends ObservableElement {
     /**
      * @typedef {import('shared/components/types').ObservableProperty} ObservableProperty
      */
 
-    constructor () {
+    constructor() {
         super();
         this.model_with_messages = null;
         this.model = null;
-        this.observable = /** @type {ObservableProperty} */ ("once");
-        this.show_reaction_picker = false;
+        this.observable = /** @type {ObservableProperty} */ ('once');
     }
 
-    static get properties () {
+    static get properties() {
         return {
             ...super.properties,
             model_with_messages: { type: Object },
             model: { type: Object },
-            show_reaction_picker: { type: Boolean, state: true }
-        }
+        };
     }
 
-    async initialize () {
+    async initialize() {
         super.initialize();
         await this.model_with_messages.initialized;
         await this.model_with_messages.messages.fetched;
@@ -50,7 +47,7 @@ export default class Message extends ObservableElement {
         const settings = api.settings.get();
         this.listenTo(settings, 'change:render_media', () => {
             // Reset individual show/hide state of media
-            this.model.save('hide_url_previews', undefined)
+            this.model.save('hide_url_previews', undefined);
             this.requestUpdate();
         });
 
@@ -59,12 +56,12 @@ export default class Message extends ObservableElement {
         this.listenTo(this.model, 'contact:change', () => this.requestUpdate());
         this.listenTo(this.model, 'occupant:add', () => this.requestUpdate());
         this.listenTo(this.model, 'occupant:change', () => this.requestUpdate());
-        this.listenTo(this.model, 'vcard:add',  () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
         this.requestUpdate();
     }
 
-    render () {
+    render() {
         if (!this.model) {
             return '';
         } else if (this.show_spinner) {
@@ -80,23 +77,23 @@ export default class Message extends ObservableElement {
         }
     }
 
-    renderRetraction () {
+    renderRetraction() {
         return tplRetraction(this);
     }
 
-    renderMessageText () {
+    renderMessageText() {
         return tplMessageText(this);
     }
 
-    renderMEPMessage () {
+    renderMEPMessage() {
         return tplMepMessage(this);
     }
 
-    renderInfoMessage () {
+    renderInfoMessage() {
         return tplInfoMessage(this);
     }
 
-    renderFileProgress () {
+    renderFileProgress() {
         if (!this.model.file) {
             // Can happen when file upload failed and page was reloaded
             return '';
@@ -104,52 +101,56 @@ export default class Message extends ObservableElement {
         return tplFileProgress(this);
     }
 
-    renderChatMessage () {
+    renderChatMessage() {
         return tplMessage(this);
     }
 
-    shouldShowAvatar () {
-        return api.settings.get('show_message_avatar') &&
+    shouldShowAvatar() {
+        return (
+            api.settings.get('show_message_avatar') &&
             !this.model.isMeCommand() &&
-            ['chat', 'groupchat', 'normal'].includes(this.model.get('type'));
+            ['chat', 'groupchat', 'normal'].includes(this.model.get('type'))
+        );
     }
 
-    onImgClick (ev) {
+    onImgClick(ev) {
         ev.preventDefault();
         api.modal.show('converse-image-modal', { src: ev.target.src }, ev);
     }
 
-    onUnfurlAnimationEnd () {
+    onUnfurlAnimationEnd() {
         if (this.model.get('url_preview_transition') === 'fade-out') {
             this.model.save({
                 'hide_url_previews': true,
-                'url_preview_transition': 'fade-in'
+                'url_preview_transition': 'fade-in',
             });
         }
     }
 
-    async onRetryClicked () {
+    async onRetryClicked() {
         this.show_spinner = true;
         this.requestUpdate();
-        await api.trigger(this.model.get('retry_event_id'), {'synchronous': true});
+        await api.trigger(this.model.get('retry_event_id'), { 'synchronous': true });
         this.model.destroy();
         this.parentElement.removeChild(this);
     }
 
-    hasMentions () {
+    hasMentions() {
         const is_groupchat = this.model.get('type') === 'groupchat';
-        return is_groupchat && this.model.get('sender') === 'them' && this.model_with_messages.isUserMentioned(this.model);
+        return (
+            is_groupchat && this.model.get('sender') === 'them' && this.model_with_messages.isUserMentioned(this.model)
+        );
     }
 
-    getOccupantAffiliation () {
+    getOccupantAffiliation() {
         return this.model.occupant?.get('affiliation');
     }
 
-    getOccupantRole () {
+    getOccupantRole() {
         return this.model.occupant?.get('role');
     }
 
-    getExtraMessageClasses () {
+    getExtraMessageClasses() {
         const is_action = this.model.isMeCommand() || this.model.isRetracted();
         const extra_classes = [
             this.model.isFollowup() ? 'chat-msg--followup' : null,
@@ -158,7 +159,7 @@ export default class Message extends ObservableElement {
             this.model.isRetracted() ? 'chat-msg--retracted' : null,
             this.model.get('type'),
             this.shouldShowAvatar() ? 'chat-msg--with-avatar' : null,
-        ].map(c => c);
+        ].map((c) => c);
 
         if (this.model.get('type') === 'groupchat') {
             extra_classes.push(this.getOccupantRole() ?? '');
@@ -168,28 +169,28 @@ export default class Message extends ObservableElement {
             }
         }
         this.model.get('correcting') && extra_classes.push('correcting');
-        return extra_classes.filter(c => c).join(" ");
+        return extra_classes.filter((c) => c).join(' ');
     }
 
-    getRetractionText () {
+    getRetractionText() {
         if (['groupchat', 'mep'].includes(this.model.get('type')) && this.model.get('moderated_by')) {
             const retracted_by_mod = this.model.get('moderated_by');
             if (!this.model.mod) {
                 const { occupants } = this.model_with_messages;
                 this.model.mod =
-                    occupants.findOccupant({'jid': retracted_by_mod}) ||
-                    occupants.findOccupant({'nick': Strophe.getResourceFromJid(retracted_by_mod)});
+                    occupants.findOccupant({ 'jid': retracted_by_mod }) ||
+                    occupants.findOccupant({ 'nick': Strophe.getResourceFromJid(retracted_by_mod) });
             }
             const modname = this.model.mod ? this.model.mod.getDisplayName() : __('A moderator');
             return __('%1$s has removed a message', modname);
         } else {
-            return this.model.get('sender') === 'me' ?
-                __('You have removed a message') :
-                __('%1$s has removed a message', this.model.getDisplayName());
+            return this.model.get('sender') === 'me'
+                ? __('You have removed a message')
+                : __('%1$s has removed a message', this.model.getDisplayName());
         }
     }
 
-    showUserModal (ev) {
+    showUserModal(ev) {
         if (this.model.get('sender') === 'me') {
             api.modal.show('converse-profile-modal', { model: _converse.state.xmppstatus }, ev);
         } else if (this.model.get('type') === 'groupchat') {
@@ -201,18 +202,14 @@ export default class Message extends ObservableElement {
         }
     }
 
-    showMessageVersionsModal (ev) {
+    showMessageVersionsModal(ev) {
         ev.preventDefault();
-        api.modal.show('converse-message-versions-modal', {'model': this.model}, ev);
+        api.modal.show('converse-message-versions-modal', { 'model': this.model }, ev);
     }
 
-    toggleSpoilerMessage (ev) {
+    toggleSpoilerMessage(ev) {
         ev?.preventDefault();
-        this.model.save({'is_spoiler_visible': !this.model.get('is_spoiler_visible')});
-    }
-
-    onReactionPickerClose () {
-        this.show_reaction_picker = false;
+        this.model.save({ 'is_spoiler_visible': !this.model.get('is_spoiler_visible') });
     }
 }
 

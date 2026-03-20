@@ -5,7 +5,7 @@
  * @description
  * This plugin implements XEP-0444: Message Reactions UI
  * It allows users to react to messages with emojis (similar to Slack/Discord reactions)
- * 
+ *
  * Features:
  * - Add emoji reactions to messages
  * - Display reaction picker with popular emojis + full emoji selector
@@ -16,12 +16,19 @@ import { converse, api, _converse } from '@converse/headless';
 import { registerRestrictedReactionsHandler } from './utils.js';
 import './reaction-picker.js';
 
+import { html } from 'lit';
 import { __ } from 'i18n';
 
 const { Strophe } = converse.env;
 
-converse.plugins.add('converse-reaction-views', {
+/**
+ * Tracks which message models currently have their reaction picker open.
+ * Keyed by message model instance so state is naturally scoped and garbage-collected.
+ * @type {WeakMap<object, boolean>}
+ */
+const picker_state = new WeakMap();
 
+converse.plugins.add('converse-reaction-views', {
     dependencies: ['converse-reactions', 'converse-disco', 'converse-chatview', 'converse-muc-views'],
 
     /**
@@ -31,14 +38,14 @@ converse.plugins.add('converse-reaction-views', {
      * - Handling reaction picker interactions
      * - Disco feature advertisement and restrictions
      */
-    initialize () {
+    initialize() {
         this.allowed_emojis = new Map();
 
         api.settings.extend({
-            'popular_reactions': [':thumbsup:', ':heart:', ':joy:', ':open_mouth:']
+            'popular_reactions': [':thumbsup:', ':heart:', ':joy:', ':open_mouth:'],
         });
 
-        // Advertise reactions support 
+        // Advertise reactions support
         api.listen.on('addClientFeatures', () => {
             api.disco.own.features.add(Strophe.NS.REACTIONS);
         });
@@ -52,12 +59,10 @@ converse.plugins.add('converse-reaction-views', {
                 'handler': (ev) => {
                     ev?.preventDefault?.();
                     ev?.stopPropagation?.();
-                    const message = el.closest('converse-chat-message') || el.getRootNode()?.host;
-                    if (message) {
-                        message.show_reaction_picker = !message.show_reaction_picker;
-                    }
+                    picker_state.set(el.model, !picker_state.get(el.model));
                     const dropdown = el.renderRoot?.querySelector('converse-dropdown');
                     dropdown?.dropdown?.hide?.();
+                    el.requestUpdate();
                 },
                 'button_class': 'chat-msg__action-reaction',
                 'icon_class': 'fas fa-smile',
@@ -66,5 +71,16 @@ converse.plugins.add('converse-reaction-views', {
 
             return buttons;
         });
-    }
+
+        api.listen.on('getMessageActionContent', (el, content) => {
+            if (!picker_state.get(el.model)) return content;
+            return html`${content}<converse-reaction-picker
+                    .model=${el.model}
+                    @closePicker=${() => {
+                        picker_state.set(el.model, false);
+                        el.requestUpdate();
+                    }}
+                ></converse-reaction-picker>`;
+        });
+    },
 });

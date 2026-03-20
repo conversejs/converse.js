@@ -5,7 +5,6 @@ import { getAuthorStyle } from '../../../utils/color.js';
 import { getHats } from '../utils.js';
 import { __ } from 'i18n';
 import 'shared/avatar/avatar.js';
-import 'shared/chat/reactions.js';
 import 'shared/chat/unfurl.js';
 import 'shared/chat/reply-context.js';
 

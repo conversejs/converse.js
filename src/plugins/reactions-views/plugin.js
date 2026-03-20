@@ -1,20 +1,5 @@
-/**
- * @module converse-reactions
- * @copyright The Converse.js contributors
- * @license Mozilla Public License (MPLv2)
- * @description
- * This plugin implements XEP-0444: Message Reactions UI
- * It allows users to react to messages with emojis (similar to Slack/Discord reactions)
- *
- * Features:
- * - Add emoji reactions to messages
- * - Display reaction picker with popular emojis + full emoji selector
- * - Send reactions as XMPP stanzas per XEP-0444
- */
-
 import { converse, api, _converse } from '@converse/headless';
 import { registerRestrictedReactionsHandler } from './utils.js';
-import './reaction-picker.js';
 
 import { html } from 'lit';
 import { __ } from 'i18n';

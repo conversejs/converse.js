@@ -30,7 +30,7 @@ This is a **monorepo** with npm workspaces:
 
 ```bash
 # Development build (unminified, with debugger statements)
-npm run dev                    # Build everything in dev mode
+npm run dev                   # Build everything in dev mode
 npm run dev:headless          # Build only headless package
 
 # Watch mode (auto-rebuild on changes)
@@ -65,16 +65,45 @@ npm run cdn                   # Build for CDN deployment
 
 ### Testing
 
+**Always pass `--single-run`** — without it Karma waits for a browser indefinitely and hangs.
+
+**Always run `npm run dev` before running tests.** Karma tests run against the pre-built `dist/converse.js` bundle,
+not source files directly. If you skip the build, you will be testing against a stale bundle and changes to source
+files will have no effect.
+
+**The full test suite takes over a minute to run.** Avoid running it unless you need to verify that nothing has
+regressed across the entire codebase. When working on a specific feature, use `fdescribe`/`fit` instead (see below).
+
 ```bash
-# Run tests
+# Always build first, then test
+npm run dev && npm test -- --single-run
+
+# Run tests (--single-run is mandatory)
 npm test -- --single-run                    # Run main tests (Karma)
 npm run test:all                            # Run both headless and main tests
 npm run test:headless -- --single-run       # Run headless tests only
-cd src/headless && npm test                 # Alternative way to run headless tests
+cd src/headless && npm test -- --single-run # Alternative way to run headless tests
 
-# Full test suite (as used in CI)
+# Full test suite (as used in CI) — slow, use sparingly
 make check                    # Runs lint + types + all tests
 ```
+
+#### Focusing tests with `fdescribe` / `fit`
+
+**Prefer `fdescribe`/`fit` over `--grep` for running a subset of tests.** The `--grep`
+flag does a substring match on the full test name but is unreliable in practice. Instead,
+temporarily change `describe` → `fdescribe` or `it` → `fit` in the test file to focus
+only those tests, then revert before committing.
+
+```javascript
+// Focus an entire suite:
+fdescribe('Message Reactions (XEP-0444)', function () { ... });
+
+// Focus a single test:
+fit('sends a correct XEP-0444 stanza when a reaction is added', ...);
+```
+
+**Always revert `fdescribe`/`fit` back to `describe`/`it` before committing.**
 
 ### Code Quality
 
@@ -143,6 +172,103 @@ converse.plugins.add('plugin-name', {
         });
     },
 });
+```
+
+### Plugin Design Philosophy
+
+Converse.js mirrors the XMPP philosophy: a minimal core with features implemented as
+plugins corresponding to individual XEPs. This separation must be respected when adding
+new functionality.
+
+**Avoiding leaky abstractions:** Shared core code (`src/headless/shared/`, e.g.
+`model-with-messages.js`) must not contain logic specific to a particular plugin.
+
+Plugin-specific logic belongs in the plugin itself (e.g. in `src/headless/plugins/` and `src/plugins/`).
+
+Note: `src/headless/plugins/chat/` and `src/headless/plugins/muc/` are also plugins, not
+core code, even though they are foundational. They provide the basic messaging
+infrastructure that other plugins build on top of.
+
+**Use hooks and events:** When core or foundational plugin code needs to allow
+other plugins to participate in a processing flow (e.g. intercepting incoming messages,
+modifying outgoing stanzas, or reacting to state changes), it should fire **hooks** or
+**events** that plugins can listen on.
+
+- **Hooks** (`api.hook(name, context, data)`) are chainable async pipelines — each
+  listener receives the output of the previous one and can modify the data before passing
+  it along. Use hooks when the caller needs a return value or when the data should be
+  transformed by plugins.
+- **Events** (`api.trigger(name, data)`) are fire-and-forget notifications. Use events
+  when plugins need to be informed of something but the caller does not need a response.
+
+**Example — correct approach:**
+
+```javascript
+// In the foundational chat plugin (chat/model.js):
+const { handled } = await api.hook('beforeMessageCreated', this, attrs, { handled: false });
+if (handled) return;
+
+// In a higher-level plugin (e.g. reactions):
+api.listen.on('beforeMessageCreated', (chatbox, attrs, data) => {
+    if (attrs.reaction_to_id && !targetExists(chatbox, attrs)) {
+        storeDanglingReaction(chatbox, attrs);
+        return { ...data, handled: true };
+    }
+    return data;
+});
+```
+
+This way, we can expose extension points without needing to know about any
+plugin-specific code that might exist.
+
+### The @converse/headless package
+
+The code in `src/headless` form a separate NPM package called `@converse/headless`
+and can be used as the basis on which multiple different potential UIs could be implemented.
+The UI implemented in this repo being only one of them.
+
+The `@converse/headless` package resolves to the built bundle (`dist/converse-headless.js`),
+**not** to individual source files. Importing from relative paths pointing to `src/headless/`
+back into non-headless code like `src/plugins` is forbidden since they cross
+the package boundary and break the separation between the headless and UI layers.
+
+The `package.json` exports map for `@converse/headless` does not expose subpaths beyond
+`"."` and `"./dist/*"`, so deep imports like `@converse/headless/plugins/reactions/utils.js`
+would also fail at runtime. All imports from headless need to be from `@converse/headless`.
+
+#### Exposing utility functions from @converse/headless
+
+To expose utility functions from a headless plugin for use in UI plugins, assign them to
+the `u` utilities object or a namespace on that object. Several headless plugins already
+follow this pattern: `u.omemo`, `u.muc`, `u.reactions`. The namespace is populated inside
+the headless plugin's own utils file and accessed via `u.*` from any UI plugin:
+
+```javascript
+// In src/headless/plugins/reactions/utils.js — expose via u.reactions namespace:
+const { u } = converse.env;
+Object.assign(u, {
+    reactions: {
+        ...u.reactions,
+        getOwnReactionJID,
+    },
+});
+
+// In src/plugins/reactions-views/utils.js — consume via @converse/headless:
+import { converse } from '@converse/headless';
+const { u } = converse.env;
+// u.reactions.getOwnReactionJID(chatbox) is now available
+```
+
+The headless utils file must be imported somewhere in the headless plugin's initialisation
+chain (e.g. from `plugin.js` or `index.js`) so the `Object.assign` runs before any UI code
+tries to access it.
+
+**Example — wrong approach:**
+
+```javascript
+// DON'T cross the package boundary with relative paths or unexported subpaths:
+import { getOwnReactionJID } from '../../headless/plugins/reactions/utils.js'; // ❌ relative path
+import { getOwnReactionJID } from '@converse/headless/plugins/reactions/utils.js'; // ❌ unexported subpath
 ```
 
 ### Directory Structure
@@ -350,9 +476,16 @@ export default (model) => html`
 api.settings.extend({ 'my_setting': 'default' });
 api.settings.get('my_setting');
 
-// Events
+// Events (fire-and-forget notifications)
 api.listen.on('connected', callback);
 api.trigger('customEvent', data);
+
+// Hooks (chainable async pipelines — each listener receives and can modify the data)
+// Use hooks when a caller needs plugins to intercept or transform data.
+const result = await api.hook('hookName', context, data);
+api.listen.on('hookName', (context, data) => {
+    return { ...data, modified: true }; // Return modified data to pass along the chain
+});
 
 // Promises
 await api.waitUntil('connected');
@@ -437,14 +570,25 @@ describe('My Feature', function () {
             // Assertions
             await u.waitUntil(() => sizzle('.chat-msg', view).length === 1);
             expect(view.querySelector('.chat-msg__text').textContent).toBe('hello');
-        })
+        }),
     );
 });
 ```
 
-### Running Specific Tests
+### Running Tests
 
-To run a specific test file, add it to the `files` array in `karma.conf.js`:
+**Always run `npm run dev` before running tests.** Karma tests run against the pre-built `dist/converse.js` bundle,
+not source files directly. If you skip the build, you will be testing against a stale bundle and changes
+to source files will have no effect.
+
+**Always pass `--single-run`** — without it Karma waits for a browser indefinitely and hangs.
+
+```bash
+# Always build first, then test
+npm run dev && npm test -- --single-run
+```
+
+When creating a new test file, add it to the `files` array in `karma.conf.js`:
 
 ```javascript
 files: [
@@ -453,11 +597,16 @@ files: [
 ],
 ```
 
-Or run headless tests:
+#### Filtering Tests by Name
+
+Use `--grep` to run a subset of tests matched by name (Jasmine substring match against the full `"<describe> <it>"` string):
 
 ```bash
-cd src/headless
-npm test  # Runs karma with src/headless/karma.conf.js
+# Run all tests whose name contains "Message Reactions"
+npm test -- --single-run --grep "Message Reactions"
+
+# Run a single specific test
+npm test -- --single-run --grep "sends a correct XEP-0444 stanza when a reaction is added"
 ```
 
 ## Styling

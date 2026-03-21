@@ -8,7 +8,6 @@ import { CustomElement } from 'shared/components/element.js';
 import { api, u, EmojiPicker } from '@converse/headless';
 import { __ } from 'i18n';
 import tplReactionPicker from './templates/reaction-picker.js';
-import { default as BootstrapDropdown } from 'bootstrap/js/src/dropdown.js';
 import { sendReaction } from './utils.js';
 import 'shared/components/dropdown.js';
 import 'shared/chat/emoji-picker.js';
@@ -20,23 +19,31 @@ export default class ReactionPicker extends CustomElement {
         return {
             'model': { type: Object },
             'emoji_picker_state': { type: Object },
-            'anchor_rect': { type: Object },
             'dropup': { type: Boolean },
             'shifted': { type: Boolean },
-            'closing': { type: Boolean },
+            'opened': { type: Boolean },
         };
     }
+
+    /** @type {DOMRect|null} */
+    #anchor_rect = null;
 
     constructor() {
         super();
         this.model = null;
         this.emoji_picker_state = null;
-        this.anchor_rect = null;
         this.picker_id = u.getUniqueId('reaction-picker');
         this.dropup = false;
         this.shifted = false;
-        this.closing = false;
-        this.onClickOutside = this.onClickOutside.bind(this);
+        this.opened = false;
+        this.onClickOutside =
+            /** @param {MouseEvent} ev */
+            (ev) => {
+                const click_target = /** @type {Node} */ (ev.target);
+                if (!this.contains(click_target)) {
+                    this.close();
+                }
+            };
     }
 
     /**
@@ -44,88 +51,90 @@ export default class ReactionPicker extends CustomElement {
      * @returns {Object} Lit HTML template
      */
     render() {
-        return tplReactionPicker(this);
+        return this.opened ? tplReactionPicker(this) : '';
     }
 
-    firstUpdated() {
-        requestAnimationFrame(() => this.positionPicker());
-    }
-
-    positionPicker() {
-        const picker = /** @type {HTMLElement} */ (this.querySelector('.reaction-picker'));
-        if (!picker) return;
-
-        // Find the nearest position:relative ancestor to use as the offset parent.
-        // The message body has position:relative and serves as the coordinate origin.
-        const offset_parent = /** @type {HTMLElement} */ (
-            this.closest('[style*="position: relative"]') ?? this.offsetParent ?? this.parentElement
-        );
-        if (!offset_parent) return;
-        const parent_rect = offset_parent.getBoundingClientRect();
-
-        // Use the anchor button rect if provided, otherwise fall back to this element's rect.
-        const anchor = this.anchor_rect ?? this.getBoundingClientRect();
-
-        const threshold = 150;
-        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-        const spaceBelow = windowHeight - anchor.bottom;
-        const dropup = spaceBelow < threshold;
-
-        if (dropup !== this.dropup) {
-            this.dropup = dropup;
-            this.requestUpdate();
-        }
-
-        // Convert anchor viewport coordinates to parent-relative coordinates.
-        const right = parent_rect.right - anchor.right;
-        const top = anchor.bottom - parent_rect.top;
-        const bottom = parent_rect.bottom - anchor.top;
-
-        picker.style.position = 'absolute';
-        picker.style.left = 'auto';
-        picker.style.right = `${right}px`;
-
-        if (dropup) {
-            picker.style.top = 'auto';
-            picker.style.bottom = `${bottom}px`;
-        } else {
-            picker.style.bottom = 'auto';
-            picker.style.top = `${top}px`;
+    updated(changed) {
+        super.updated(changed);
+        if (changed.has('opened')) {
+            if (this.opened) {
+                requestAnimationFrame(() => {
+                    this.positionPicker();
+                    document.addEventListener('click', this.onClickOutside);
+                });
+            } else {
+                document.removeEventListener('click', this.onClickOutside);
+            }
         }
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-        setTimeout(() => document.addEventListener('click', this.onClickOutside), 0);
-    }
-
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        document.removeEventListener('click', this.onClickOutside);
-    }
-
-    /** @param {MouseEvent} ev */
-    onClickOutside(ev) {
-        const click_target = /** @type {Node} */ (ev.target);
-        if (!this.contains(click_target)) {
-            this.close();
-        }
+    async open(ev) {
+        const btn = /** @type {HTMLElement} */ (ev.currentTarget ?? ev.target);
+        this.#anchor_rect = btn?.getBoundingClientRect() ?? null;
+        await api.emojis.initialize();
+        this.opened = true;
     }
 
     close() {
-        if (this.closing) return;
-        this.closing = true;
-        const picker = this.querySelector('.reaction-picker');
-        if (picker) {
-            picker.addEventListener(
-                'animationend',
-                () => {
-                    this.dispatchEvent(new CustomEvent('closePicker', { bubbles: true, composed: true }));
-                },
-                { once: true },
-            );
+        if (!this.opened) return;
+        this.#anchor_rect = null;
+        this.opened = false;
+    }
+
+    positionPicker() {
+        if (!this.opened) return;
+
+        const offset_parent = /** @type {HTMLElement} */ (this.offsetParent ?? this.parentElement);
+        if (!offset_parent) return;
+
+        // Use the anchor button rect if provided, otherwise fall back to this element's rect.
+        const anchor = this.#anchor_rect ?? this.getBoundingClientRect();
+
+        const dropup = window.innerHeight - anchor.bottom < 150;
+        if (dropup !== this.dropup) {
+            this.dropup = dropup;
+            // Wait for Lit to re-render with the updated dropup class before applying
+            // inline styles, to avoid a one-frame inconsistency.
+            this.updateComplete.then(() => this.#applyPickerStyles(offset_parent, anchor, dropup));
+            return;
+        }
+
+        this.#applyPickerStyles(offset_parent, anchor, dropup);
+    }
+
+    /**
+     * Writes positioning styles onto the inner picker element.
+     * Only updates a style property when its value actually changes,
+     * avoiding unnecessary style recalculations.
+     * @param {HTMLElement} offset_parent
+     * @param {DOMRect} anchor
+     * @param {boolean} dropup
+     */
+    #applyPickerStyles(offset_parent, anchor, dropup) {
+        const picker = /** @type {HTMLElement} */ (this.querySelector('.reaction-picker'));
+        if (!picker) return;
+
+        // Convert anchor viewport coordinates to offset-parent-relative coordinates.
+        const parent_rect = offset_parent.getBoundingClientRect();
+        const right = parent_rect.right - anchor.right;
+
+        /** @param {string} prop @param {string} val */
+        const set = (prop, val) => {
+            if (picker.style[prop] !== val) picker.style[prop] = val;
+        };
+
+        set('position', 'absolute');
+        set('left', 'auto');
+        set('right', `${right}px`);
+
+        if (dropup) {
+            const bottom = parent_rect.bottom - anchor.top;
+            set('top', 'auto');
+            set('bottom', `${bottom}px`);
         } else {
-            this.dispatchEvent(new CustomEvent('closePicker', { bubbles: true, composed: true }));
+            const top = anchor.bottom - parent_rect.top;
+            set('bottom', 'auto');
+            set('top', `${top}px`);
         }
     }
 
@@ -139,9 +148,7 @@ export default class ReactionPicker extends CustomElement {
 
             const id = u.getUniqueId('emoji-picker');
             this.emoji_picker_state = new EmojiPicker({ id });
-
             u.initStorage(this.emoji_picker_state, id);
-
             await new Promise((resolve) => this.emoji_picker_state.fetch({ 'success': resolve, 'error': resolve }));
 
             this.requestUpdate();
@@ -151,17 +158,6 @@ export default class ReactionPicker extends CustomElement {
     onEmojiSelected(emoji) {
         sendReaction(this.model, emoji);
         this.close();
-
-        const drop_down = this.querySelector('.dropdown-menu');
-        if (drop_down && drop_down.classList.contains('show')) {
-            const drop_down_btn = /** @type {HTMLElement} */ (this.querySelector('.dropdown-toggle'));
-            if (drop_down_btn) {
-                const drop_down_instance = BootstrapDropdown.getInstance(drop_down_btn);
-                if (drop_down_instance) {
-                    drop_down_instance.hide();
-                }
-            }
-        }
     }
 }
 

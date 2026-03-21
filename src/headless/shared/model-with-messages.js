@@ -181,7 +181,7 @@ export default function ModelWithMessages(BaseModel) {
             } else {
                 new_attrs = {
                     is_archived: attrs.is_archived,
-                    time: attrs.time ? attrs.time : message.get('time'),
+                    ...(attrs.is_archived && attrs.time && { time: attrs.time }),
                 };
             }
 

@@ -37,7 +37,7 @@ converse.plugins.add('converse-reactions', {
                 return attrs;
             }
 
-            const reactions = message.get('reactions') || {};
+            const reactions = { ...(message.get('reactions') || {}) };
 
             for (const jid in incoming_reactions) {
                 if (incoming_reactions[jid]?.length) {
@@ -46,7 +46,7 @@ converse.plugins.add('converse-reactions', {
                     delete reactions[jid];
                 }
             }
-            return { ...attrs, ...{ reactions } };
+            return { ...attrs, reactions };
         });
 
         api.listen.on('getErrorAttributesForMessage', (message, new_attrs, attrs) => {

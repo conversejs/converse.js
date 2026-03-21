@@ -2066,7 +2066,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
         if (this.isOwnMessage(attrs)) {
             const stanza_id_keys = Object.keys(attrs).filter((k) => k.startsWith('stanza_id'));
-            Object.assign(new_attrs, { ...pick(attrs, stanza_id_keys) }, { body: attrs.body });
+            Object.assign(new_attrs, { ...pick(attrs, stanza_id_keys) }, attrs.body !== undefined ? { body: attrs.body } : {});
             if (!message.get('received')) {
                 new_attrs.received = new Date().toISOString();
             }

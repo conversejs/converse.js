@@ -9,21 +9,19 @@ export default (el) => {
     const anchor_name = `--reaction-anchor-${el.picker_id}`;
     const filtered_emojis = el.allowed_emojis
         ? popular_emojis.filter(
-              /** @param {string} sn */ (sn) => el.allowed_emojis.includes(u.shortnamesToEmojis(sn))
+              /** @param {string} sn */ (sn) =>
+                  el.allowed_emojis.includes(u.shortnamesToEmojis(sn, { unicode_only: true }).join('')),
           )
         : popular_emojis;
 
     return html`
-        <div
-            class="reaction-picker popular ${el.dropup ? 'dropup' : ''} ${el.shifted ? 'shifted' : ''}
-             ${el.closing ? 'closing' : ''}"
-        >
+        <div class="reaction-picker popular ${el.dropup ? 'dropup' : ''} ${el.shifted ? 'shifted' : ''}">
             ${filtered_emojis.map(
                 /** @param {string} sn */ (sn) => html`
                     <button class="reaction-item" @click=${() => el.onEmojiSelected(sn)}>
                         ${u.shortnamesToEmojis(sn)}
                     </button>
-                `
+                `,
             )}
 
             <div class="dropdown emoji-picker__dropdown">

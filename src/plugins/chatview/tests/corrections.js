@@ -192,8 +192,8 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => textarea.value === '');
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg .chat-msg__action').length >= 1);
-        let action = view.querySelector('.chat-msg .chat-msg__action');
+        await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__action-edit'));
+        let action = view.querySelector('.chat-msg .chat-msg__action-edit');
         expect(action.textContent.trim()).toBe('Edit');
 
         action.style.opacity = 1;
@@ -240,7 +240,7 @@ describe("A Chat Message", function () {
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
 
         // Test that clicking the pencil icon a second time cancels editing.
-        action = view.querySelector('.chat-msg .chat-msg__action');
+        action = view.querySelector('.chat-msg .chat-msg__action-edit');
         action.style.opacity = 1;
         action.click();
 
@@ -249,7 +249,7 @@ describe("A Chat Message", function () {
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')) === true);
 
-        action = view.querySelector('.chat-msg .chat-msg__action');
+        action = view.querySelector('.chat-msg .chat-msg__action-edit');
         action.style.opacity = 1;
         action.click();
         expect(view.model.messages.at(0).get('correcting')).toBe(false);
@@ -274,7 +274,7 @@ describe("A Chat Message", function () {
         // Test confirmation dialog
         spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        action = view.querySelector('.chat-msg .chat-msg__action');
+        action = view.querySelector('.chat-msg .chat-msg__action-edit');
         action.style.opacity = 1;
         action.click();
 

@@ -449,7 +449,7 @@ describe("A sent groupchat message", function () {
                     <origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>
                 </message>`);
 
-            const action = await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__action'));
+            const action = await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__action-edit'));
             action.style.opacity = 1;
             action.click();
 

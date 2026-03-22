@@ -2,7 +2,7 @@
 
 const { Strophe, u } = converse.env;
 
-async function submitPasswordResetForm (_converse) {
+async function submitPasswordResetForm (_converse, current_password='secret') {
     await mock.openControlBox(_converse);
     const cbview = _converse.chatboxviews.get('controlbox');
     cbview.querySelector('a.show-profile')?.click();
@@ -12,6 +12,8 @@ async function submitPasswordResetForm (_converse) {
     modal.querySelector('#passwordreset-tab').click();
     const form = await u.waitUntil(() => modal.querySelector('.passwordreset-form'));
 
+    const current_pw_input = form.querySelector('input[name="current_password"]');
+    current_pw_input.value = current_password;
     const pw_input = form.querySelector('input[name="password"]');
     pw_input.value = 'secret-password';
     const pw_check_input = form.querySelector('input[name="password_check"]');
@@ -23,6 +25,22 @@ async function submitPasswordResetForm (_converse) {
 
 
 describe('The profile modal', function () {
+    it(
+        'shows an error if the current password is incorrect',
+        mock.initConverse([], {}, async function (_converse) {
+            const modal = await submitPasswordResetForm(_converse, 'wrong-password');
+
+            const form = await u.waitUntil(() => modal.querySelector('.passwordreset-form'));
+            const error = await u.waitUntil(() => form.querySelector('span.error'));
+            expect(error.textContent).toBe('Incorrect current password');
+
+            // No IQ stanzas should have been sent
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+            const register_iqs = sent_IQs.filter(iq => iq.querySelector('query[xmlns="jabber:iq:register"]'));
+            expect(register_iqs.length).toBe(0);
+        })
+    );
+
     it(
         'allows you to reset your password',
         mock.initConverse([], {}, async function (_converse) {

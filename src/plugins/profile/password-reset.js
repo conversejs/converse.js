@@ -11,12 +11,14 @@ class PasswordReset extends CustomElement {
     static get properties () {
         return {
             passwords_mismatched: { type: Boolean },
+            current_password_error: { type: Boolean },
             alert_message: { type: String }
         }
     }
 
     initialize () {
         this.passwords_mismatched = false;
+        this.current_password_error = false;
         this.alert_message = '';
     }
 
@@ -33,9 +35,22 @@ class PasswordReset extends CustomElement {
         return this.passwords_mismatched
     }
 
+    checkCurrentPassword (ev) {
+        const form_data = new FormData(ev.target.form ?? ev.target);
+        const current_password = form_data.get('current_password');
+        const connection = api.connection.get();
+        if (connection?.pass && current_password !== connection.pass) {
+            this.current_password_error = true;
+        } else {
+            this.current_password_error = false;
+        }
+        return this.current_password_error;
+    }
+
     async onSubmit (ev) {
         ev.preventDefault();
 
+        if (this.checkCurrentPassword(ev)) return;
         if (this.checkPasswordsMatch(ev)) return;
 
         const domain = _converse.session.get('domain');

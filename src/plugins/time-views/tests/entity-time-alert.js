@@ -19,6 +19,29 @@ function findTimeIQ(stanzas) {
 describe('XEP-0202 Entity Time Views', function () {
 
     describe('The entity time alert', function () {
+        // Mock local time to 17:00 UTC for all tests in this suite
+        const MOCK_TIME = new Date('2026-03-16T17:00:00Z');
+        let OriginalDate;
+
+        beforeEach(function () {
+            OriginalDate = Date;
+            const MockDate = function (...args) {
+                if (args.length === 0) {
+                    return new OriginalDate(MOCK_TIME);
+                }
+                return new OriginalDate(...args);
+            };
+            MockDate.now = () => MOCK_TIME.getTime();
+            MockDate.parse = OriginalDate.parse;
+            MockDate.UTC = OriginalDate.UTC;
+            MockDate.prototype = OriginalDate.prototype;
+            // @ts-ignore
+            window.Date = MockDate;
+        });
+
+        afterEach(function () {
+            window.Date = OriginalDate;
+        });
 
         it('shows a warning when contact is in off-hours',
             mock.initConverse(['chatBoxesFetched'], {
@@ -31,6 +54,16 @@ describe('XEP-0202 Entity Time Views', function () {
                 await mock.openControlBox(_converse);
 
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                const full_jid = contact_jid + '/resource';
+
+                // Send presence so the component can get the full JID
+                const presence = stx`<presence from="${full_jid}" to="${_converse.jid}" xmlns="jabber:client"/>`;
+                api.connection.get()._dataRecv(mock.createRequest(presence));
+
+                // Wait for presence resource to be processed before opening chat
+                const contact = await api.contacts.get(contact_jid);
+                await u.waitUntil(() => contact.presence?.getHighestPriorityResource());
+
                 await mock.openChatBoxFor(_converse, contact_jid);
 
                 const view = _converse.chatboxviews.get(contact_jid);
@@ -40,15 +73,16 @@ describe('XEP-0202 Entity Time Views', function () {
                 // Wait for the IQ to be sent
                 const sent_iq = await u.waitUntil(() => findTimeIQ(api.connection.get().IQ_stanzas));
 
-                expect(sent_iq.getAttribute('to')).toBe(contact_jid);
+                expect(sent_iq.getAttribute('to')).toBe(full_jid);
 
-                // Simulate response with nighttime (3 AM)
+                // Simulate response: contact is at UTC+06:00
+                // Local time is 17:00 UTC, so contact's time is 23:00 (off-hours)
                 const id = sent_iq.getAttribute('id');
                 const response = stx`
-                    <iq type="result" from="${contact_jid}" to="${_converse.jid}" id="${id}" xmlns="jabber:client">
+                    <iq type="result" from="${full_jid}" to="${_converse.jid}" id="${id}" xmlns="jabber:client">
                         <time xmlns="urn:xmpp:time">
-                            <tzo>+00:00</tzo>
-                            <utc>2026-03-16T03:00:00Z</utc>
+                            <tzo>+06:00</tzo>
+                            <utc>2026-03-16T17:00:00Z</utc>
                         </time>
                     </iq>`;
                 api.connection.get()._dataRecv(mock.createRequest(response));
@@ -56,7 +90,7 @@ describe('XEP-0202 Entity Time Views', function () {
                 // Wait for alert to show
                 await u.waitUntil(() => alert_el.querySelector('.entity-time-alert'));
                 const alert_msg = alert_el.querySelector('.entity-time-alert__message');
-                expect(alert_msg.textContent).toContain('03:00');
+                expect(alert_msg.textContent).toContain('23:00');
             })
         );
 
@@ -71,6 +105,16 @@ describe('XEP-0202 Entity Time Views', function () {
                 await mock.openControlBox(_converse);
 
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                const full_jid = contact_jid + '/resource';
+
+                // Send presence so the component can get the full JID
+                const presence = stx`<presence from="${full_jid}" to="${_converse.jid}" xmlns="jabber:client"/>`;
+                api.connection.get()._dataRecv(mock.createRequest(presence));
+
+                // Wait for presence resource to be processed
+                const contact = await api.contacts.get(contact_jid);
+                await u.waitUntil(() => contact.presence?.getHighestPriorityResource());
+
                 await mock.openChatBoxFor(_converse, contact_jid);
 
                 const view = _converse.chatboxviews.get(contact_jid);
@@ -79,13 +123,14 @@ describe('XEP-0202 Entity Time Views', function () {
                 // Wait for the IQ to be sent
                 const sent_iq = await u.waitUntil(() => findTimeIQ(api.connection.get().IQ_stanzas));
 
-                // Simulate response with daytime (2 PM)
+                // Simulate response: contact is at UTC+00:00
+                // Local time is 17:00 UTC, so contact's time is also 17:00 (not off-hours)
                 const id = sent_iq.getAttribute('id');
                 const response = stx`
-                    <iq type="result" from="${contact_jid}" to="${_converse.jid}" id="${id}" xmlns="jabber:client">
+                    <iq type="result" from="${full_jid}" to="${_converse.jid}" id="${id}" xmlns="jabber:client">
                         <time xmlns="urn:xmpp:time">
                             <tzo>+00:00</tzo>
-                            <utc>2026-03-16T14:00:00Z</utc>
+                            <utc>2026-03-16T17:00:00Z</utc>
                         </time>
                     </iq>`;
                 api.connection.get()._dataRecv(mock.createRequest(response));
@@ -93,7 +138,7 @@ describe('XEP-0202 Entity Time Views', function () {
                 // Give it time to process
                 await u.waitUntil(() => alert_el.time_info !== null, 500);
 
-                // Alert should not be visible (no .entity-time-alert element rendered)
+                // Alert should not be visible (17:00 is not off-hours)
                 expect(alert_el.querySelector('.entity-time-alert')).toBeNull();
             })
         );
@@ -101,12 +146,24 @@ describe('XEP-0202 Entity Time Views', function () {
         it('can be dismissed',
             mock.initConverse(['chatBoxesFetched'], {
                 show_entity_time: true,
+                entity_time_warning_start: 22,
+                entity_time_warning_end: 7,
             }, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
                 await mock.openControlBox(_converse);
 
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                const full_jid = contact_jid + '/resource';
+
+                // Send presence so the component can get the full JID
+                const presence = stx`<presence from="${full_jid}" to="${_converse.jid}" xmlns="jabber:client"/>`;
+                api.connection.get()._dataRecv(mock.createRequest(presence));
+
+                // Wait for presence resource to be processed
+                const contact = await api.contacts.get(contact_jid);
+                await u.waitUntil(() => contact.presence?.getHighestPriorityResource());
+
                 await mock.openChatBoxFor(_converse, contact_jid);
 
                 const view = _converse.chatboxviews.get(contact_jid);
@@ -115,13 +172,14 @@ describe('XEP-0202 Entity Time Views', function () {
                 // Wait for the IQ to be sent
                 const sent_iq = await u.waitUntil(() => findTimeIQ(api.connection.get().IQ_stanzas));
 
-                // Simulate response with nighttime
+                // Simulate response: contact is at UTC+06:00
+                // Local time is 17:00 UTC, so contact's time is 23:00 (off-hours)
                 const id = sent_iq.getAttribute('id');
                 const response = stx`
-                    <iq type="result" from="${contact_jid}" to="${_converse.jid}" id="${id}" xmlns="jabber:client">
+                    <iq type="result" from="${full_jid}" to="${_converse.jid}" id="${id}" xmlns="jabber:client">
                         <time xmlns="urn:xmpp:time">
-                            <tzo>+00:00</tzo>
-                            <utc>2026-03-16T02:30:00Z</utc>
+                            <tzo>+06:00</tzo>
+                            <utc>2026-03-16T17:00:00Z</utc>
                         </time>
                     </iq>`;
                 api.connection.get()._dataRecv(mock.createRequest(response));
@@ -181,6 +239,16 @@ describe('XEP-0202 Entity Time Views', function () {
                 await mock.openControlBox(_converse);
 
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                const full_jid = contact_jid + '/resource';
+
+                // Send presence so the component can get the full JID
+                const presence = stx`<presence from="${full_jid}" to="${_converse.jid}" xmlns="jabber:client"/>`;
+                api.connection.get()._dataRecv(mock.createRequest(presence));
+
+                // Wait for presence resource to be processed
+                const contact = await api.contacts.get(contact_jid);
+                await u.waitUntil(() => contact.presence?.getHighestPriorityResource());
+
                 await mock.openChatBoxFor(_converse, contact_jid);
 
                 const view = _converse.chatboxviews.get(contact_jid);
@@ -192,7 +260,7 @@ describe('XEP-0202 Entity Time Views', function () {
                 // Simulate error response (feature not supported)
                 const id = sent_iq.getAttribute('id');
                 const response = stx`
-                    <iq type="error" from="${contact_jid}" to="${_converse.jid}" id="${id}" xmlns="jabber:client">
+                    <iq type="error" from="${full_jid}" to="${_converse.jid}" id="${id}" xmlns="jabber:client">
                         <error type="cancel">
                             <service-unavailable xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                         </error>

@@ -13,7 +13,7 @@ export default (el) => {
 
     return html`
         <div class="entity-time-alert">
-            <converse-icon class="fa fa-clock" size="1em"></converse-icon>
+            <converse-icon class="fa fa-moon entity-time-alert__icon" size="1em"></converse-icon>
             <span class="entity-time-alert__message">${i18n_time_warning}</span>
             <button
                 type="button"

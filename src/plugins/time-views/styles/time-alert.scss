@@ -1,43 +1,39 @@
-.chat-body {
-    converse-entity-time-alert {
-        display: block;
+converse-entity-time-alert {
+    display: block;
 
-        .entity-time-alert {
-            display: flex;
-            align-items: center;
-            gap: 0.5em;
-            padding: 0.625em 0.875em;
-            font-size: 0.8125em;
-            color: #1d1c1d;
-            background-color: #fff8e6;
-            border-top: 1px solid #e8d89e;
+    .entity-time-alert {
+        display: flex;
+        align-items: center;
+        padding: 0.5em 0.75em;
+        margin-bottom: 0;
+        background-color: var(--chat-head-color);
+        border-left: 3px solid var(--warning-color);
+        border-top: 1px solid var(--chat-separator-border-color, rgba(0, 0, 0, 0.1));
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+        gap: 0.5em;
 
-            converse-icon {
-                color: #e0a500;
-                flex-shrink: 0;
-            }
+        &__icon {
+            color: var(--warning-color);
+            flex-shrink: 0;
+        }
 
-            .entity-time-alert__message {
-                flex: 1;
-            }
+        &__message {
+            flex: 1;
+            font-size: 0.85em;
+            color: var(--foreground-color);
+            overflow: hidden;
+        }
 
-            .entity-time-alert__dismiss {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 1.5em;
-                height: 1.5em;
-                padding: 0;
-                border: none;
-                border-radius: 4px;
-                background: transparent;
-                color: #616061;
-                cursor: pointer;
-                transition: background 0.15s;
+        &__dismiss {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25em;
+            color: var(--foreground-color);
+            opacity: 0.7;
 
-                &:hover {
-                    background: rgba(0, 0, 0, 0.08);
-                }
+            &:hover {
+                opacity: 1;
             }
         }
     }

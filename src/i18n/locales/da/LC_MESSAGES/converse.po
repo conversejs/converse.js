@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-16 09:03+0200\n"
-"PO-Revision-Date: 2024-06-18 00:30+0000\n"
-"Last-Translator: Caleb <calebj90@gmail.com>\n"
+"PO-Revision-Date: 2026-03-24 13:09+0000\n"
+"Last-Translator: Isak <isakhhb@protonmail.com>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/conversejs/"
 "translations/da/>\n"
 "Language: da\n"
@@ -17,16 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.17-dev\n"
 
 #: dist/converse-no-dependencies.js:35408
 msgid "A timeout occurred"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:35980
-#, fuzzy
 msgid "You are blocked from sending messages."
-msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
+msgstr "Du har ikke tilladelse til at sende beskeder i dette rum."
 
 #: dist/converse-no-dependencies.js:36664
 msgid "Timeout Error"
@@ -41,14 +40,14 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38266
 #, javascript-format
 msgid "%1$s has gone offline"
-msgstr ""
+msgstr "%1$s er gået offline"
 
 #: dist/converse-no-dependencies.js:38268
 #: dist/converse-no-dependencies.js:47491
 #: dist/converse-no-dependencies.js:61448
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr ""
+msgstr "%1$s er gået væk"
 
 #: dist/converse-no-dependencies.js:38270
 #, javascript-format
@@ -58,7 +57,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38272
 #, javascript-format
 msgid "%1$s is online"
-msgstr ""
+msgstr "%1$s er online"
 
 #: dist/converse-no-dependencies.js:41338
 msgid "Smileys and emotions"
@@ -94,11 +93,11 @@ msgstr "Symboler"
 
 #: dist/converse-no-dependencies.js:41346
 msgid "Flags"
-msgstr ""
+msgstr "Flag"
 
 #: dist/converse-no-dependencies.js:41347
 msgid "Stickers"
-msgstr ""
+msgstr "Klistermærker"
 
 #: dist/converse-no-dependencies.js:42378
 msgid "Timeout while trying to fetch archived messages."
@@ -107,51 +106,55 @@ msgstr ""
 #: dist/converse-no-dependencies.js:45080
 #: dist/converse-no-dependencies.js:62419
 msgid "You're not allowed to retract your message."
-msgstr ""
+msgstr "Du har ikke tilladelse til at trække din besked tilbage."
 
 #: dist/converse-no-dependencies.js:45082
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
 msgstr ""
+"Din tilbagetrækning blev ikke leveret, fordi du ikke er tilstede i "
+"gruppechatten."
 
 #: dist/converse-no-dependencies.js:45084
 #: dist/converse-no-dependencies.js:62421
 msgid "Sorry, an error occurred while trying to retract your message."
 msgstr ""
+"Beklager, der opstod en fejl under forsøget på at trække din besked tilbage."
 
 #: dist/converse-no-dependencies.js:45089
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
+"Din besked blev ikke sendt, fordi du ikke har tilladelse til at sende den."
 
 #: dist/converse-no-dependencies.js:45091
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr ""
+msgstr "Din besked blev ikke sendt, fordi du ikke er tilstede i gruppechatten."
 
 #: dist/converse-no-dependencies.js:45093
 #: dist/converse-no-dependencies.js:62428
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr ""
+msgstr "Beklager, der opstod en fejl under forsøget på at sende din besked."
 
 #: dist/converse-no-dependencies.js:45434
-#, fuzzy
 msgid "A timeout happened while trying to retract your message."
-msgstr "En fejl opstod under forbindelsen til chatserveren."
+msgstr "En fejl opstod under forsøget på at trække din besked tilbage."
 
 #: dist/converse-no-dependencies.js:46220
 msgid "Sorry, an error happened while running the command."
-msgstr ""
+msgstr "Beklager, der skete en fejl under kørslen af kommandoen."
 
 #: dist/converse-no-dependencies.js:46220
 #: dist/converse-no-dependencies.js:123227
 msgid "Check your browser's developer console for details."
-msgstr ""
+msgstr "Tjek din browser's udvikler konsol for detaljer."
 
 #: dist/converse-no-dependencies.js:46240
 #: dist/converse-no-dependencies.js:46258
+#, fuzzy
 msgid "Error: couldn't find a groupchat participant based on your arguments"
-msgstr ""
+msgstr "Fejl: Kunne ikke finde et gruppechat medlem baseret på dine argumenter"
 
 #: dist/converse-no-dependencies.js:46248
 msgid "Error: found multiple groupchat participant based on your arguments"
@@ -185,24 +188,24 @@ msgstr ""
 #: dist/converse-no-dependencies.js:47074
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr ""
+msgstr "Emne sat af %1$s"
 
 #: dist/converse-no-dependencies.js:47074
 #, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr ""
+msgstr "Emne ryddet af %1$s"
 
 #: dist/converse-no-dependencies.js:47487
 #: dist/converse-no-dependencies.js:61444
 #, javascript-format
 msgid "%1$s is typing"
-msgstr ""
+msgstr "%1$s skriver"
 
 #: dist/converse-no-dependencies.js:47489
 #: dist/converse-no-dependencies.js:61446
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr ""
+msgstr "%1$s er stoppet med at skrive"
 
 #: dist/converse-no-dependencies.js:47493
 #, javascript-format
@@ -212,102 +215,102 @@ msgstr ""
 #: dist/converse-no-dependencies.js:47495
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr ""
+msgstr "%1$s har forladt gruppechatten"
 
 #: dist/converse-no-dependencies.js:47497
 #, javascript-format
 msgid "%1$s is now a moderator"
-msgstr ""
+msgstr "%1$s er nu en moderator"
 
 #: dist/converse-no-dependencies.js:47499
 #, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr ""
+msgstr "%1$s er ikke længere en moderator"
 
 #: dist/converse-no-dependencies.js:47501
 #, javascript-format
 msgid "%1$s has been given a voice"
-msgstr ""
+msgstr "%1$s har fået en stemme"
 
 #: dist/converse-no-dependencies.js:47503
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr ""
+msgstr "%1$s er blevet muted"
 
 #: dist/converse-no-dependencies.js:47511
 #, javascript-format
 msgid "%1$s and %2$s"
-msgstr ""
+msgstr "%1$s og %2$s"
 
 #: dist/converse-no-dependencies.js:47514
 #, javascript-format
 msgid "%1$s are typing"
-msgstr ""
+msgstr "%1$s skriver"
 
 #: dist/converse-no-dependencies.js:47516
 #, javascript-format
 msgid "%1$s have stopped typing"
-msgstr ""
+msgstr "%1$s er stoppet med at skrive"
 
 #: dist/converse-no-dependencies.js:47518
 #, javascript-format
 msgid "%1$s have gone away"
-msgstr ""
+msgstr "%1$s er gået væk"
 
 #: dist/converse-no-dependencies.js:47520
 #, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr ""
+msgstr "%1$s deltager i gruppechatten"
 
 #: dist/converse-no-dependencies.js:47522
 #, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr ""
+msgstr "%1$s har forladt gruppechatten"
 
 #: dist/converse-no-dependencies.js:47524
 #, javascript-format
 msgid "%1$s are now moderators"
-msgstr ""
+msgstr "%1$s er nu moderatorer"
 
 #: dist/converse-no-dependencies.js:47526
 #, javascript-format
 msgid "%1$s are no longer moderators"
-msgstr ""
+msgstr "%1$s er ikke længere moderatorer"
 
 #: dist/converse-no-dependencies.js:47528
 #, javascript-format
 msgid "%1$s have been given voices"
-msgstr ""
+msgstr "%1$s har fået stemmer"
 
 #: dist/converse-no-dependencies.js:47530
 #, javascript-format
 msgid "%1$s have been muted"
-msgstr ""
+msgstr "%1$s er blevet muted"
 
 #: dist/converse-no-dependencies.js:47880
 #, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr ""
+msgstr "%1$s er blevet bannet af %2$s"
 
 #: dist/converse-no-dependencies.js:47880
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr ""
+msgstr "%1$s er blevet bannet"
 
 #: dist/converse-no-dependencies.js:47882
 #, javascript-format
 msgid "%1$s's nickname has changed"
-msgstr ""
+msgstr "%1$s's kaldenavn er blevet ændret"
 
 #: dist/converse-no-dependencies.js:47884
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr ""
+msgstr "%1$s er blevet smidt ud af %2$s"
 
 #: dist/converse-no-dependencies.js:47884
 #, javascript-format
 msgid "%1$s has been kicked out"
-msgstr ""
+msgstr "%1$s er blevet smidt ud"
 
 #: dist/converse-no-dependencies.js:47886
 #, javascript-format
@@ -537,9 +540,10 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:54486
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
-msgstr "En fejl opstod under forbindelsen til chatserveren."
+msgstr ""
+"Beklager, der skete en fejl under forsøget på at tilføje %1$s som en kontakt."
 
 #: dist/converse-no-dependencies.js:54754
 msgid "This client does not allow presence subscriptions"
@@ -896,9 +900,9 @@ msgid "Invitation to a groupchat"
 msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:90146
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has invited you to join the groupchat \"%2$s\""
-msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
+msgstr "%1$s har inviteret dig til at deltage i gruppechatten \"%2$s\""
 
 #: dist/converse-no-dependencies.js:90148
 #, javascript-format
@@ -1123,9 +1127,8 @@ msgstr ""
 #: dist/converse-no-dependencies.js:94172
 #: dist/converse-no-dependencies.js:94245
 #: dist/converse-no-dependencies.js:94278
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
+msgstr "Er du sikker på du vil trække denne besked tilbage?"
 
 #: dist/converse-no-dependencies.js:94214
 msgid "A timeout occurred while trying to retract the message"
@@ -1254,9 +1257,10 @@ msgid "Are you sure you want to remove this contact?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:99469
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
-msgstr "En fejl opstod under forbindelsen til chatserveren."
+msgstr ""
+"Beklager, der skete en fejl under forsøget på at fjerne %1$s som en kontakt"
 
 #: dist/converse-no-dependencies.js:99501
 #, fuzzy
@@ -1264,9 +1268,9 @@ msgid "Remove and decline contact request"
 msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
 
 #: dist/converse-no-dependencies.js:99502
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to decline the contact request from %1$s?"
-msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
+msgstr "Er du sikker på du vil afvise kontaktanmodningen fra %1$s?"
 
 #: dist/converse-no-dependencies.js:99505
 #, fuzzy
@@ -1286,18 +1290,19 @@ msgid "Do you want to block this contact, so they cannot send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:99610
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
-msgstr "En fejl opstod under forbindelsen til chatserveren."
+msgstr "Beklager, der skete en fejl under forsøget på at blokere %1$s"
 
 #: dist/converse-no-dependencies.js:99643
 msgid "Do you want to unblock this contact, so they can send you messages?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:99675
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
-msgstr "En fejl opstod under forbindelsen til chatserveren."
+msgstr ""
+"Beklager, der skete en fejl under forsøget på at fjerne blokeringen af %1$s"
 
 #: dist/converse-no-dependencies.js:100474
 msgid "Neither of you receive presence updates"
@@ -1493,9 +1498,8 @@ msgid "Unblock user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:107965
-#, fuzzy
 msgid "Are you sure you want to unblock this user?"
-msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
+msgstr "Er du sikker på du vil fjerne blokeringen af denne bruger?"
 
 #: dist/converse-no-dependencies.js:107980
 msgid "Unblock this user"
@@ -1510,9 +1514,9 @@ msgid "Block user"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:107999
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to prevent %1$s from contacting you further?"
-msgstr "Du har ikke tilladelse til at sende beskeder i dette rum"
+msgstr "Er du sikker på du vil forhindre %1$s i at kontakte dig?"
 
 #: dist/converse-no-dependencies.js:108017
 msgid "Block this user"
@@ -2686,11 +2690,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "No"
-msgstr ""
+msgstr "Nej"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Company"
@@ -2698,7 +2702,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Professional hosting"
-msgstr ""
+msgstr "Professionel hosting"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Password reset"
@@ -2710,7 +2714,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Online since"
-msgstr ""
+msgstr "Online siden"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Message archive storage time"
@@ -2719,7 +2723,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:133696
 #, javascript-format
 msgid "%1$s days"
-msgstr ""
+msgstr "%1$s dage"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload size limit"
@@ -2739,7 +2743,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:133760
 msgid "Create your account"
-msgstr ""
+msgstr "Opret din konto"
 
 #: dist/converse-no-dependencies.js:133771
 msgid "Tip: A list of public XMPP providers is available"
@@ -3188,9 +3192,9 @@ msgstr ""
 #.
 #. ESM default export
 #: dist/converse-no-dependencies.js:141321
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Would you like to add %1$s as a contact?"
-msgstr "En fejl opstod under forbindelsen til chatserveren."
+msgstr "Vil du tilføje %1$s som en kontakt?"
 
 #: dist/converse-no-dependencies.js:141325
 msgid "Dismiss"

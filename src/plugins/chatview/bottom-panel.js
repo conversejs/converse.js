@@ -42,11 +42,7 @@ export default class ChatBottomPanel extends CustomElement {
     }
 
     render() {
-        if (!this.model) return '';
-        return tplBottomPanel({
-            'model': this.model,
-            'viewUnreadMessages': (ev) => this.viewUnreadMessages(ev),
-        });
+        return this.model ? tplBottomPanel(this) : '';
     }
 
     viewUnreadMessages(ev) {

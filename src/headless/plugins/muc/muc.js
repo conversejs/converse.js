@@ -439,14 +439,14 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 converse.ROOM_FEATURES.reduce((acc, feature) => {
                     acc[feature] = false;
                     return acc;
-                }, {})
-            )
+                }, {}),
+            ),
         );
         this.features.browserStorage = createStore(id, 'session');
         this.features.listenTo(_converse, 'beforeLogout', () => this.features.browserStorage.flush());
 
         id = `converse.muc-config-${bare_jid}-${this.get('jid')}`;
-        this.config = new Model(/** @type {import('./types').MUCConfigAttributes} */({ id }));
+        this.config = new Model(/** @type {import('./types').MUCConfigAttributes} */ ({ id }));
         this.config.browserStorage = createStore(id, 'session');
         this.config.listenTo(_converse, 'beforeLogout', () => this.config.browserStorage.flush());
     }
@@ -560,7 +560,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                         new_attrs.error = __("You're not allowed to retract your message.");
                     } else if (attrs.error_condition === 'not-acceptable') {
                         new_attrs.error = __(
-                            "Your retraction was not delivered because you're not present in the groupchat."
+                            "Your retraction was not delivered because you're not present in the groupchat.",
                         );
                     } else {
                         new_attrs.error = __('Sorry, an error occurred while trying to retract your message.');
@@ -611,7 +611,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         }
         const msgs = sizzle(
             `mentions[xmlns="${Strophe.NS.MENTIONS}"] forwarded[xmlns="${Strophe.NS.FORWARD}"] message[type="groupchat"]`,
-            stanza
+            stanza,
         );
         const muc_jid = this.get('jid');
         const mentions = msgs.filter((m) => Strophe.getBareJidFromJid(m.getAttribute('from')) === muc_jid);
@@ -625,7 +625,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                     const attrs = await parseMUCMessage(stanza, this);
                     const data = { stanza, attrs, 'chatbox': this };
                     api.trigger('message', data);
-                }
+                },
             );
         }
     }
@@ -704,7 +704,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             null,
             null,
             muc_jid,
-            { 'ignoreNamespaceFragment': true, 'matchBareFromJid': true }
+            { 'ignoreNamespaceFragment': true, 'matchBareFromJid': true },
         );
 
         this.domain_presence_handler = connection.addHandler(
@@ -716,7 +716,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             'presence',
             null,
             null,
-            muc_domain
+            muc_domain,
         );
 
         this.message_handler = connection.addHandler(
@@ -729,7 +729,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             null,
             null,
             muc_jid,
-            { 'matchBareFromJid': true }
+            { 'matchBareFromJid': true },
         );
 
         this.domain_message_handler = connection.addHandler(
@@ -741,7 +741,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             'message',
             null,
             null,
-            muc_domain
+            muc_domain,
         );
 
         this.affiliation_message_handler = connection.addHandler(
@@ -754,7 +754,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             'message',
             null,
             null,
-            muc_jid
+            muc_jid,
         );
     }
 
@@ -837,7 +837,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             null,
             'message',
             ['error', 'groupchat'],
-            id
+            id,
         );
         api.send(el);
         return promise;
@@ -981,7 +981,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                         log.error(e);
                         resolve();
                     },
-                })
+                }),
             );
         }
         // Delete disco entity
@@ -994,7 +994,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                         log.error(e);
                         resolve();
                     },
-                })
+                }),
             );
         }
     }
@@ -1037,7 +1037,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                     log.error(e);
                     success();
                 },
-            })
+            }),
         );
         return super.close();
     }
@@ -1171,7 +1171,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 type: 'groupchat',
                 original_text: text,
             },
-            await u.getMediaURLsMetadata(text)
+            await u.getMediaURLsMetadata(text),
         );
 
         // Clear reply state after capturing it
@@ -1338,7 +1338,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 acc[feature] = false;
                 return acc;
             },
-            { 'fetched': new Date().toISOString() }
+            { 'fetched': new Date().toISOString() },
         );
 
         features.each((feature) => {
@@ -1478,7 +1478,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         if (!args) {
             const message = __(
                 'Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.',
-                command
+                command,
             );
             this.createMessage({ message, 'type': 'error' });
             return false;
@@ -1593,7 +1593,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             stx`<presence xmlns="jabber:client"
                     id="${getUniqueId()}"
                     from="${api.connection.get().jid}"
-                    to="${jid}/${nick}"></presence>`
+                    to="${jid}/${nick}"></presence>`,
         );
     }
 
@@ -1668,7 +1668,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      */
     getOccupantsSortedBy(attr) {
         return Array.from(this.occupants.models).sort((a, b) =>
-            a.get(attr) < b.get(attr) ? -1 : a.get(attr) > b.get(attr) ? 1 : 0
+            a.get(attr) < b.get(attr) ? -1 : a.get(attr) > b.get(attr) ? 1 : 0,
         );
     }
 
@@ -1702,12 +1702,12 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 }
                 return [...val, ...acc];
             },
-            []
+            [],
         );
 
         await setAffiliations(
             muc_jid,
-            computeAffiliationsDelta(true, false, members, /** @type {MemberListItem[]} */ (old_members))
+            computeAffiliationsDelta(true, false, members, /** @type {MemberListItem[]} */ (old_members)),
         );
         await this.occupants.fetchMembers();
     }
@@ -1783,7 +1783,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             iq = await api.sendIQ(
                 stx`<iq to="${jid}" type="get" xmlns="jabber:client">
                     <query xmlns="${Strophe.NS.MUC_REGISTER}"/>
-                </iq>`
+                </iq>`,
             );
         } catch (e) {
             if (sizzle(`not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
@@ -1811,7 +1811,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                             </field>
                         </x>
                     </query>
-                </iq>`
+                </iq>`,
             );
         } catch (e) {
             const err = await parseErrorStanza(e);
@@ -1973,7 +1973,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         if (jids.includes(this.get('jid'))) {
             api.user.settings.set(
                 'mucs_with_hidden_subject',
-                jids.filter((jid) => jid !== muc_jid)
+                jids.filter((jid) => jid !== muc_jid),
             );
         } else {
             api.user.settings.set('mucs_with_hidden_subject', [...jids, muc_jid]);
@@ -2060,13 +2060,17 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      */
     async getUpdatedMessageAttributes(message, attrs) {
         const new_attrs = {
-            ...await super.getUpdatedMessageAttributes(message, attrs),
+            ...(await super.getUpdatedMessageAttributes(message, attrs)),
             ...pick(attrs, ['from_muc', 'occupant_id']),
         };
 
         if (this.isOwnMessage(attrs)) {
             const stanza_id_keys = Object.keys(attrs).filter((k) => k.startsWith('stanza_id'));
-            Object.assign(new_attrs, { ...pick(attrs, stanza_id_keys) }, attrs.body !== undefined ? { body: attrs.body } : {});
+            Object.assign(
+                new_attrs,
+                { ...pick(attrs, stanza_id_keys) },
+                attrs.body !== undefined ? { body: attrs.body } : {},
+            );
             if (!message.get('received')) {
                 new_attrs.received = new Date().toISOString();
             }
@@ -2103,7 +2107,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                     ...attrs,
                     to: `${this.get('jid')}/${this.get('nick')}`,
                 },
-                /** @type {Element[]|Builder[]} */ (child_nodes)?.map((c) => c?.tree() ?? c)
+                /** @type {Element[]|Builder[]} */ (child_nodes)?.map((c) => c?.tree() ?? c),
             );
             api.send(presence);
         }
@@ -2169,7 +2173,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 ({ attributes }) =>
                     attributes.moderated === 'retracted' &&
                     attributes.moderated_id === stanza_id &&
-                    attributes.moderated_by
+                    attributes.moderated_by,
             );
         }
     }
@@ -2430,7 +2434,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
         const message = this.getDuplicateMessage(attrs);
         if (message) {
-            message.get('type') === 'groupchat' && await this.updateMessage(message, attrs);
+            message.get('type') === 'groupchat' && (await this.updateMessage(message, attrs));
             return;
         } else if (attrs.receipt_id || attrs.is_marker || this.ignorableCSN(attrs)) {
             return;
@@ -2453,8 +2457,32 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         if (attrs['chat_state']) {
             this.updateNotifications(attrs.nick, attrs.chat_state);
         }
+        /**
+         * *Hook* which allows plugins to intercept an incoming MUC message stanza
+         * before it is stored as a new message. Plugins can consume the stanza
+         * entirely (e.g. to store it as a specialised placeholder) by returning
+         * `{ handled: true }`, which prevents normal message creation.
+         * @event _converse#beforeMessageCreated
+         * @param {MUC} context - The MUC chatroom for which the message was received.
+         * @param {MUCMessageAttributes} attrs - Parsed message attributes.
+         * @param {{ handled: boolean }} data - Pass `{ handled: true }` to signal
+         *   that the stanza has been fully handled and should not be processed further.
+         */
+        const { handled } = await api.hook('beforeMessageCreated', this, attrs, { handled: false });
+        if (handled) return;
+
         if (shouldCreateGroupchatMessage(attrs)) {
             const msg = (await this.handleCorrection(attrs)) || (await this.createMessage(attrs));
+            /**
+             * *Hook* which is fired after a new MUC message model has been created
+             * and persisted. Plugins can use this to reconcile any state that was
+             * stored in anticipation of this message (e.g. dangling reactions or
+             * retractions that arrived before the original message).
+             * @event _converse#afterMessageCreated
+             * @param {MUC} context - The MUC chatroom the message belongs to.
+             * @param {MUCMessage} data - The newly created message model.
+             */
+            if (msg) await api.hook('afterMessageCreated', this, msg);
             this.removeNotification(attrs.nick, ['composing', 'paused']);
             this.handleUnreadMessage(msg);
         }
@@ -2702,7 +2730,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         } else {
             this.save({
                 'nickname_validation_message': __(
-                    'The nickname you chose is reserved or ' + 'currently in use, please choose a different one.'
+                    'The nickname you chose is reserved or ' + 'currently in use, please choose a different one.',
                 ),
             });
             this.session.save({ 'connection_status': ROOMSTATUS.NICKNAME_REQUIRED });

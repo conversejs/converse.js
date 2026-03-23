@@ -1,16 +1,16 @@
-import { Model } from "@converse/skeletor";
-import log from "@converse/log";
-import api from "../../shared/api/index.js";
-import _converse from "../../shared/_converse.js";
-import converse from "../../shared/api/public.js";
-import ColorAwareModel from "../../shared/color.js";
-import ModelWithMessages from "../../shared/model-with-messages.js";
-import ModelWithVCard from "../../shared/model-with-vcard";
-import { AFFILIATIONS, ROLES } from "./constants.js";
-import MUCMessages from "./messages.js";
-import u from "../../utils/index.js";
-import { shouldCreateGroupchatMessage } from "./utils";
-import { sendChatState } from "../../shared/actions";
+import { Model } from '@converse/skeletor';
+import log from '@converse/log';
+import api from '../../shared/api/index.js';
+import _converse from '../../shared/_converse.js';
+import converse from '../../shared/api/public.js';
+import ColorAwareModel from '../../shared/color.js';
+import ModelWithMessages from '../../shared/model-with-messages.js';
+import ModelWithVCard from '../../shared/model-with-vcard';
+import { AFFILIATIONS, ROLES } from './constants.js';
+import MUCMessages from './messages.js';
+import u from '../../utils/index.js';
+import { shouldCreateGroupchatMessage } from './utils';
+import { sendChatState } from '../../shared/actions';
 
 const { Strophe, stx } = converse.env;
 
@@ -21,6 +21,8 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
     /**
      * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
      * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
+     * @typedef {import('../../shared/message.js').default} BaseMessage
+     * @typedef {import('./message.js').default} MUCMessage
      */
 
     async initialize() {
@@ -28,9 +30,9 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
         super.initialize();
 
         await this.fetchMessages();
-        this.on("change:nick", () => this.setColor());
-        this.on("change:jid", () => this.setColor());
-        this.on("change:chat_state", () => sendChatState(this.get("jid"), this.get("chat_state")));
+        this.on('change:nick', () => this.setColor());
+        this.on('change:jid', () => this.setColor());
+        this.on('change:chat_state', () => sendChatState(this.get('jid'), this.get('chat_state')));
     }
 
     defaults() {
@@ -41,7 +43,7 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
             states: [],
             hidden: true,
             num_unread: 0,
-            message_type: "chat",
+            message_type: 'chat',
         };
     }
 
@@ -50,7 +52,7 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
         if (key == null) {
             // eslint-disable-line no-eq-null
             return super.save(key, val, options);
-        } else if (typeof key === "object") {
+        } else if (typeof key === 'object') {
             attrs = key;
             options = val;
         } else {
@@ -85,7 +87,7 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
         }
 
         const attrs = /** @type {MessageAttributes} */ (attrs_or_error);
-        if (attrs.type === "error" && !(await this.shouldShowErrorMessage(attrs))) {
+        if (attrs.type === 'error' && !(await this.shouldShowErrorMessage(attrs))) {
             return;
         }
 
@@ -99,8 +101,32 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
 
         this.setEditable(attrs, attrs.time);
 
+        /**
+         * *Hook* which allows plugins to intercept an incoming MUC private message
+         * stanza before it is stored as a new message. Plugins can consume the stanza
+         * entirely (e.g. to store it as a specialised placeholder) by returning
+         * `{ handled: true }`, which prevents normal message creation.
+         * @event _converse#beforeMessageCreated
+         * @param {MUCOccupant} context - The occupant for which the message was received.
+         * @param {MessageAttributes} attrs - Parsed message attributes.
+         * @param {{ handled: boolean }} data - Pass `{ handled: true }` to signal
+         *   that the stanza has been fully handled and should not be processed further.
+         */
+        const { handled } = await api.hook('beforeMessageCreated', this, attrs, { handled: false });
+        if (handled) return;
+
         if (shouldCreateGroupchatMessage(attrs)) {
             const msg = (await this.handleCorrection(attrs)) || (await this.createMessage(attrs));
+            /**
+             * *Hook* which is fired after a new MUC occupant message model has been
+             * created and persisted. Plugins can use this to reconcile any state that
+             * was stored in anticipation of this message (e.g. dangling reactions or
+             * retractions that arrived before the original message).
+             * @event _converse#afterMessageCreated
+             * @param {MUCOccupant} context - The occupant the message belongs to.
+             * @param {MUCMessage} data - The newly created message model.
+             */
+            if (msg) await api.hook('afterMessageCreated', this, msg);
             this.handleUnreadMessage(msg);
         }
     }
@@ -109,7 +135,7 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
      * @returns {string}
      */
     getDisplayName() {
-        return this.get("nick") || this.get("jid") || "";
+        return this.get('nick') || this.get('jid') || '';
     }
 
     /**
@@ -117,11 +143,11 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
      * @returns {typeof ROLES} - An array of assignable roles
      */
     getAssignableRoles() {
-        let disabled = api.settings.get("modtools_disable_assign");
+        let disabled = api.settings.get('modtools_disable_assign');
         if (!Array.isArray(disabled)) {
             disabled = disabled ? ROLES : [];
         }
-        if (this.get("role") === "moderator") {
+        if (this.get('role') === 'moderator') {
             return ROLES.filter((r) => !disabled.includes(r));
         } else {
             return [];
@@ -133,29 +159,29 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
      * @returns {typeof AFFILIATIONS} An array of assignable affiliations
      */
     getAssignableAffiliations() {
-        let disabled = api.settings.get("modtools_disable_assign");
+        let disabled = api.settings.get('modtools_disable_assign');
         if (!Array.isArray(disabled)) {
             disabled = disabled ? AFFILIATIONS : [];
         }
-        if (this.get("affiliation") === "owner") {
+        if (this.get('affiliation') === 'owner') {
             return AFFILIATIONS.filter((a) => !disabled.includes(a));
-        } else if (this.get("affiliation") === "admin") {
-            return AFFILIATIONS.filter((a) => !["owner", "admin", ...disabled].includes(a));
+        } else if (this.get('affiliation') === 'admin') {
+            return AFFILIATIONS.filter((a) => !['owner', 'admin', ...disabled].includes(a));
         } else {
             return [];
         }
     }
 
     isMember() {
-        return ["admin", "owner", "member"].includes(this.get("affiliation"));
+        return ['admin', 'owner', 'member'].includes(this.get('affiliation'));
     }
 
     isModerator() {
-        return ["admin", "owner"].includes(this.get("affiliation")) || this.get("role") === "moderator";
+        return ['admin', 'owner'].includes(this.get('affiliation')) || this.get('role') === 'moderator';
     }
 
     isSelf() {
-        return this.get("states").includes("110");
+        return this.get('states').includes('110');
     }
 
     /**
@@ -173,20 +199,20 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
             attrs,
             {
                 body,
-                from: own_occupant.get("from"),
-                fullname: _converse.state.profile.get("fullname"),
+                from: own_occupant.get('from'),
+                fullname: _converse.state.profile.get('fullname'),
                 id: origin_id,
-                jid: this.get("jid"),
+                jid: this.get('jid'),
                 message: body,
                 msgid: origin_id,
-                nick: own_occupant.get("nickname"),
+                nick: own_occupant.get('nickname'),
                 origin_id,
-                sender: "me",
+                sender: 'me',
                 time: new Date().toISOString(),
-                to: this.get("from") ?? `${muc.get("jid")}/${this.get("nick")}`,
-                type: "chat",
+                to: this.get('from') ?? `${muc.get('jid')}/${this.get('nick')}`,
+                type: 'chat',
             },
-            await u.getMediaURLsMetadata(text)
+            await u.getMediaURLsMetadata(text),
         );
 
         /**
@@ -198,7 +224,7 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
          * @param {MessageAttributes} attrs
          *      The message attributes, from which the stanza will be created.
          */
-        attrs = await api.hook("getOutgoingMessageAttributes", this, attrs);
+        attrs = await api.hook('getOutgoingMessageAttributes', this, attrs);
         return attrs;
     }
 

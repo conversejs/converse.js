@@ -21,6 +21,9 @@ export default class EmojiPicker extends CustomElement {
         render_emojis: {
             type: BooleanConstructor;
         };
+        allowed_emojis: {
+            type: ArrayConstructor;
+        };
     };
     state: any;
     model: any;
@@ -28,6 +31,7 @@ export default class EmojiPicker extends CustomElement {
     render_emojis: any;
     _search_results: any[];
     debouncedFilter: import("lodash").DebouncedFunc<(input: HTMLInputElement) => any>;
+    allowed_emojis: any;
     initialize(): void;
     dropdown: Element;
     firstUpdated(changed: any): void;

@@ -93,8 +93,8 @@ declare const ChatBox_base: {
         fetchMessages(): any;
         afterMessagesFetched(): void;
         onMessage(_attrs_or_error: import("../../shared/types").MessageAttributes | Error): Promise<void>;
-        getUpdatedMessageAttributes(message: import("../../shared/message").default, attrs: import("../../shared/types").MessageAttributes): object;
-        updateMessage(message: import("../../shared/message").default, attrs: import("../../shared/types").MessageAttributes): void;
+        getUpdatedMessageAttributes(message: import("../../shared/message").default, attrs: import("../../shared/types").MessageAttributes): Promise<object>;
+        updateMessage(message: import("../../shared/message").default, attrs: import("../../shared/types").MessageAttributes): Promise<void>;
         handleCorrection(attrs: import("../../shared/types").MessageAttributes | import("../muc/types.js").MUCMessageAttributes): Promise<import("../../shared/message").default | void>;
         queueMessage(attrs: import("../../shared/types").MessageAttributes): any;
         msg_chain: any;
@@ -124,6 +124,13 @@ declare const ChatBox_base: {
             origin_id: any;
             from: any;
         };
+        getReactionQueryAttrs(attrs: object): ({
+            origin_id: any;
+            msgid?: undefined;
+        } | {
+            msgid: any;
+            origin_id?: undefined;
+        })[];
         getStanzaIdQueryAttrs(attrs: object): {}[];
         getMessageBodyQueryAttrs(attrs: object): {
             from: any;

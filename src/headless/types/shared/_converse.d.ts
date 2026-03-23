@@ -19,7 +19,6 @@ declare const ConversePrivateGlobal_base: (new (...args: any[]) => {
  * @namespace _converse
  */
 export class ConversePrivateGlobal extends ConversePrivateGlobal_base {
-    disco_entities: any;
     constructor();
     initialize(): void;
     VERSION_NAME: string;

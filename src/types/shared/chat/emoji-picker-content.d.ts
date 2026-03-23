@@ -12,11 +12,15 @@ export default class EmojiPickerContent extends CustomElement {
         query: {
             type: StringConstructor;
         };
+        allowed_emojis: {
+            type: ArrayConstructor;
+        };
     };
     model: any;
     current_skintone: any;
     query: any;
     search_results: any;
+    allowed_emojis: any;
     render(): import("lit-html").TemplateResult<1>;
     firstUpdated(): void;
     initIntersectionObserver(): void;
@@ -27,7 +31,15 @@ export default class EmojiPickerContent extends CustomElement {
      */
     insertEmoji(ev: MouseEvent): void;
     /**
+     * Helper method for the template which decides whether an
+     * emoji should be hidden.
+     * It filters based on:
+     * - Whether the emoji is allowed (if restrictions apply)
+     * - The current skin tone
+     * - The current search query
+     *
      * @param {string} shortname
+     * @returns {boolean}
      */
     shouldBeHidden(shortname: string): boolean;
 }

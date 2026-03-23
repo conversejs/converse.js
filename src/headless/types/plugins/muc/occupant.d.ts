@@ -93,51 +93,58 @@ declare const MUCOccupant_base: {
         fetchMessages(): any;
         afterMessagesFetched(): void;
         onMessage(_attrs_or_error: import("../../shared/types").MessageAttributes | Error): Promise<void>;
-        getUpdatedMessageAttributes(message: import("../../shared/message").default, attrs: import("../../shared/types").MessageAttributes): object;
-        updateMessage(message: import("../../shared/message").default, attrs: import("../../shared/types").MessageAttributes): void;
-        handleCorrection(attrs: import("../../shared/types").MessageAttributes | import("./types.js").MUCMessageAttributes): Promise<import("../../shared/message").default | void>;
+        getUpdatedMessageAttributes(message: import("../../shared/message.js").default, attrs: import("../../shared/types").MessageAttributes): Promise<object>;
+        updateMessage(message: import("../../shared/message.js").default, attrs: import("../../shared/types").MessageAttributes): Promise<void>;
+        handleCorrection(attrs: import("../../shared/types").MessageAttributes | import("./types.js").MUCMessageAttributes): Promise<import("../../shared/message.js").default | void>;
         queueMessage(attrs: import("../../shared/types").MessageAttributes): any;
         msg_chain: any;
         getOutgoingMessageAttributes(_attrs?: import("../../shared/types").MessageAttributes): Promise<import("../../shared/types").MessageAttributes>;
-        sendMessage(attrs?: any): Promise<import("../../shared/message").default>;
-        retractOwnMessage(message: import("../../shared/message").default): void;
+        sendMessage(attrs?: any): Promise<import("../../shared/message.js").default>;
+        retractOwnMessage(message: import("../../shared/message.js").default): void;
         sendFiles(files: File[]): Promise<void>;
         setEditable(attrs: any, send_time: string): void;
         setChatState(state: string, options?: object): any;
         chat_state_timeout: NodeJS.Timeout;
-        onMessageAdded(message: import("../../shared/message").default): void;
-        onMessageUploadChanged(message: import("../../shared/message").default): Promise<void>;
-        onMessageCorrecting(message: import("../../shared/message").default): void;
+        onMessageAdded(message: import("../../shared/message.js").default): void;
+        onMessageUploadChanged(message: import("../../shared/message.js").default): Promise<void>;
+        onMessageCorrecting(message: import("../../shared/message.js").default): void;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
         shouldShowErrorMessage(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
-        isChatMessage(_message: import("../../shared/message").default): boolean;
-        getOldestMessage(): import("../../shared/message").default;
-        getMostRecentMessage(): import("../../shared/message").default;
+        isChatMessage(_message: import("../../shared/message.js").default): boolean;
+        getOldestMessage(): import("../../shared/message.js").default;
+        getMostRecentMessage(): import("../../shared/message.js").default;
         getMessageReferencedByError(attrs: object): any;
-        findDanglingRetraction(attrs: object): import("../../shared/message").default | null;
-        getDuplicateMessage(attrs: object): import("../../shared/message").default;
+        findDanglingRetraction(attrs: object): import("../../shared/message.js").default | null;
+        getDuplicateMessage(attrs: object): import("../../shared/message.js").default;
         getOriginIdQueryAttrs(attrs: object): {
             origin_id: any;
             from: any;
         };
+        getReactionQueryAttrs(attrs: object): ({
+            origin_id: any;
+            msgid?: undefined;
+        } | {
+            msgid: any;
+            origin_id?: undefined;
+        })[];
         getStanzaIdQueryAttrs(attrs: object): {}[];
         getMessageBodyQueryAttrs(attrs: object): {
             from: any;
             msgid: any;
         };
-        sendMarkerForMessage(msg: import("../../shared/message").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
-        handleUnreadMessage(message: import("../../shared/message").default): void;
-        getErrorAttributesForMessage(message: import("../../shared/message").default, attrs: import("../../shared/types").MessageAttributes): Promise<any>;
+        sendMarkerForMessage(msg: import("../../shared/message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
+        handleUnreadMessage(message: import("../../shared/message.js").default): void;
+        getErrorAttributesForMessage(message: import("../../shared/message.js").default, attrs: import("../../shared/types").MessageAttributes): Promise<any>;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
-        incrementUnreadMsgsCounter(message: import("../../shared/message").default): void;
+        incrementUnreadMsgsCounter(message: import("../../shared/message.js").default): void;
         clearUnreadMsgCounter(): void;
         handleRetraction(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;
         handleReceipt(attrs: import("../../shared/types").MessageAttributes): boolean;
-        createMessageStanza(message: import("../../shared/message").default): Promise<any>;
+        createMessageStanza(message: import("../../shared/message.js").default): Promise<any>;
         pruneHistory(): void;
         debouncedPruneHistory: import("lodash").DebouncedFunc<() => void>;
         isScrolledUp(): any;
@@ -291,6 +298,8 @@ declare class MUCOccupant extends MUCOccupant_base {
     /**
      * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
      * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
+     * @typedef {import('../../shared/message.js').default} BaseMessage
+     * @typedef {import('./message.js').default} MUCMessage
      */
     initialize(): Promise<void>;
     defaults(): {
@@ -328,8 +337,8 @@ declare class MUCOccupant extends MUCOccupant_base {
      */
     createMessageStanza(message: import("../chat/message").default): Promise<any>;
 }
-import { Model } from "@converse/skeletor";
-import MUCMessages from "./messages.js";
-import { ROLES } from "./constants.js";
-import { AFFILIATIONS } from "./constants.js";
+import { Model } from '@converse/skeletor';
+import MUCMessages from './messages.js';
+import { ROLES } from './constants.js';
+import { AFFILIATIONS } from './constants.js';
 //# sourceMappingURL=occupant.d.ts.map

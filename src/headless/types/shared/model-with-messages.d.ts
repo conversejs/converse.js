@@ -45,14 +45,14 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         /**
          * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
-         * @returns {object}
+         * @returns {Promise<object>}
          */
-        getUpdatedMessageAttributes(message: import("./message").default, attrs: import("./types").MessageAttributes): object;
+        getUpdatedMessageAttributes(message: import("./message").default, attrs: import("./types").MessageAttributes): Promise<object>;
         /**
          * @param {BaseMessage} message
          * @param {MessageAttributes} attrs
          */
-        updateMessage(message: import("./message").default, attrs: import("./types").MessageAttributes): void;
+        updateMessage(message: import("./message").default, attrs: import("./types").MessageAttributes): Promise<void>;
         /**
          * Determines whether the given attributes of an incoming message
          * represent a XEP-0308 correction and, if so, handles it appropriately.
@@ -176,6 +176,16 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
             origin_id: any;
             from: any;
         };
+        /**
+         * @param {object} attrs - Attributes representing a received message
+         */
+        getReactionQueryAttrs(attrs: object): ({
+            origin_id: any;
+            msgid?: undefined;
+        } | {
+            msgid: any;
+            origin_id?: undefined;
+        })[];
         /**
          * @param {object} attrs - Attributes representing a received
          */

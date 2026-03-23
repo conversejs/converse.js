@@ -58,5 +58,54 @@ converse.plugins.add('converse-reactions', {
             }
             return new_attrs;
         });
+
+        /**
+         * When a reaction stanza arrives for a message that isn't in local
+         * state yet (e.g. during MAM catch-up where messages arrive out of
+         * order), store it as a dangling reaction so it can be applied once
+         * the original message arrives.
+         */
+        api.listen.on('beforeMessageCreated', (chatbox, attrs, data) => {
+            if (!attrs.reaction_to_id) return data;
+
+            // If the target message already exists, the normal getDuplicateMessage
+            // flow will have matched it and updateMessage will be called instead
+            // so we only reach here if the target is missing.
+            attrs.dangling_reaction = true;
+            chatbox.createMessage(attrs);
+            return { ...data, handled: true };
+        });
+
+        /**
+         * When a new message is created, check whether any dangling reactions
+         * were waiting for it. If so, merge their reactions onto the new
+         * message and destroy the placeholders.
+         */
+        api.listen.on('afterMessageCreated', async (chatbox, message) => {
+            const msgid = message.get('msgid');
+            const origin_id = message.get('origin_id');
+            if (!msgid && !origin_id) return;
+
+            const danglings = chatbox.messages.models.filter(
+                (m) =>
+                    m.get('dangling_reaction') &&
+                    (m.get('reaction_to_id') === msgid || m.get('reaction_to_id') === origin_id),
+            );
+            if (!danglings.length) return;
+
+            const reactions = { ...(message.get('reactions') || {}) };
+            for (const dangling of danglings) {
+                const incoming = dangling.get('reactions') || {};
+                for (const jid in incoming) {
+                    if (incoming[jid]?.length) {
+                        reactions[jid] = incoming[jid];
+                    } else {
+                        delete reactions[jid];
+                    }
+                }
+                dangling.destroy();
+            }
+            message.save({ reactions });
+        });
     },
 });

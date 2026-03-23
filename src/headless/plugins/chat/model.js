@@ -98,8 +98,44 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
             if (attrs['chat_state'] && attrs.sender === 'them') {
                 this.notifications.set('chat_state', attrs.chat_state);
             }
+            /**
+             * *Hook* which allows plugins to intercept an incoming message stanza
+             * before it is stored as a new message. Plugins can consume the stanza
+             * entirely (e.g. to store it as a specialised placeholder) by returning
+             * `{ handled: true }`, which prevents normal message creation.
+             * @event _converse#beforeMessageCreated
+             * @param {ChatBox} context - The chatbox for which the message was received.
+             * @param {MessageAttributes} attrs - Parsed message attributes.
+             * @param {{ handled: boolean }} data - Pass `{ handled: true }` to signal
+             *   that the stanza has been fully handled and should not be processed further.
+             * @example
+             *   api.listen.on('beforeMessageCreated', (chatbox, attrs, data) => {
+             *       if (attrs.my_custom_field) {
+             *           // Handle it ourselves and stop normal processing
+             *           return { ...data, handled: true };
+             *       }
+             *       return data;
+             *   });
+             */
+            const { handled } = await api.hook('beforeMessageCreated', this, attrs, { handled: false });
+            if (handled) return;
+
             if (u.shouldCreateMessage(attrs)) {
                 const msg = (await this.handleCorrection(attrs)) || (await this.createMessage(attrs));
+                /**
+                 * *Hook* which is fired after a new message model has been created
+                 * and persisted. Plugins can use this to reconcile any state that
+                 * was stored in anticipation of this message (e.g. dangling reactions
+                 * or retractions that arrived before the original message).
+                 * @event _converse#afterMessageCreated
+                 * @param {ChatBox} context - The chatbox the message belongs to.
+                 * @param {Message} data - The newly created message model.
+                 * @example
+                 *   api.listen.on('afterMessageCreated', (chatbox, message) => {
+                 *       // e.g. apply any stored dangling reactions to this message
+                 *   });
+                 */
+                if (msg) await api.hook('afterMessageCreated', this, msg);
                 this.notifications.set({ 'chat_state': null });
                 this.handleUnreadMessage(msg);
             }
@@ -223,7 +259,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
                 time: new Date().toISOString(),
                 type: this.get('message_type'),
             },
-            await u.getMediaURLsMetadata(text)
+            await u.getMediaURLsMetadata(text),
         );
 
         // Clear reply state after capturing it

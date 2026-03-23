@@ -16,6 +16,9 @@ export default class AdHocCommands extends CustomElement {
         fetching: {
             type: BooleanConstructor;
         };
+        jid: {
+            type: StringConstructor;
+        };
         showform: {
             type: StringConstructor;
         };
@@ -26,6 +29,7 @@ export default class AdHocCommands extends CustomElement {
     view: string;
     fetching: boolean;
     showform: string;
+    jid: any;
     commands: import("./types").AdHocCommandUIProps[];
     render(): import("lit-html").TemplateResult<1>;
     /**

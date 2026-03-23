@@ -1,6 +1,6 @@
 const { Strophe, stx, u } = converse.env;
 
-fdescribe('Message Reactions (XEP-0444)', function () {
+describe('Message Reactions (XEP-0444)', function () {
     const popular_reactions = [':thumbsup:', ':heart:', ':tada:', ':joy:', ':open_mouth:'];
 
     beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
@@ -1332,7 +1332,7 @@ fdescribe('Message Reactions (XEP-0444)', function () {
         );
     });
 
-    fdescribe('restricted reactions', function () {
+    describe('restricted reactions', function () {
         it(
             'sets allowed_reactions on the chatbox when a disco#info result with restricted reactions is received',
             mock.initConverse(['chatBoxesFetched'], { popular_reactions }, async function (_converse) {
@@ -1523,6 +1523,206 @@ fdescribe('Message Reactions (XEP-0444)', function () {
                 );
                 expect(rendered_emojis).toEqual(['👍', '🎉']);
                 expect(rendered_emojis.length).toBe(2);
+            }),
+        );
+    });
+
+    describe('dangling reactions', function () {
+        it(
+            'stores a reaction as dangling when the target message is not yet in local state (1:1)',
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 1);
+                const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                await mock.openChatBoxFor(_converse, contact_jid);
+                const view = _converse.chatboxviews.get(contact_jid);
+
+                // Receive a reaction for a message that does not exist yet
+                await _converse.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${contact_jid}"
+                                to="${_converse.jid}"
+                                type="chat"
+                                id="dangling-reaction-1">
+                        <reactions xmlns="urn:xmpp:reactions:0" id="not-yet-received-msg">
+                            <reaction>👍</reaction>
+                        </reactions>
+                    </message>`,
+                );
+
+                // A dangling reaction placeholder should be stored
+                await u.waitUntil(() => view.model.messages.models.some((m) => m.get('dangling_reaction')));
+                const dangling = view.model.messages.models.find((m) => m.get('dangling_reaction'));
+                expect(dangling).toBeDefined();
+                expect(dangling.get('reaction_to_id')).toBe('not-yet-received-msg');
+
+                // It should not be rendered in the UI
+                expect(view.querySelectorAll('.chat-msg').length).toBe(0);
+            }),
+        );
+
+        it(
+            'applies a dangling reaction when the original message arrives (1:1)',
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 1);
+                const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                await mock.openChatBoxFor(_converse, contact_jid);
+                const view = _converse.chatboxviews.get(contact_jid);
+
+                // Reaction arrives first
+                await _converse.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${contact_jid}"
+                                to="${_converse.jid}"
+                                type="chat"
+                                id="dangling-reaction-2">
+                        <reactions xmlns="urn:xmpp:reactions:0" id="original-msg-1">
+                            <reaction>👍</reaction>
+                        </reactions>
+                    </message>`,
+                );
+
+                await u.waitUntil(() => view.model.messages.models.some((m) => m.get('dangling_reaction')));
+
+                // Original message arrives later
+                await _converse.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${contact_jid}"
+                                to="${_converse.jid}"
+                                type="chat"
+                                id="original-msg-1">
+                        <body>Hello</body>
+                    </message>`,
+                );
+
+                // Dangling placeholder should be gone
+                await u.waitUntil(() => !view.model.messages.models.some((m) => m.get('dangling_reaction')));
+
+                // Reaction should be on the original message
+                const msg = view.model.messages.findWhere({ 'msgid': 'original-msg-1' });
+                expect(msg).toBeDefined();
+                await u.waitUntil(() => msg.get('reactions')?.[contact_jid]?.length);
+                expect(msg.get('reactions')[contact_jid]).toEqual(['👍']);
+
+                // And rendered in the UI
+                await u.waitUntil(() => getReactionEmojis(view).includes('👍'));
+                expect(getReactionEmojis(view)).toEqual(['👍']);
+            }),
+        );
+
+        it(
+            'applies multiple dangling reactions from different users when the original message arrives',
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 2);
+                const contact_jid1 = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                const contact_jid2 = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                await mock.openChatBoxFor(_converse, contact_jid1);
+                const view = _converse.chatboxviews.get(contact_jid1);
+
+                // Two reactions from different contacts, both before the original message
+                // Note: each reaction comes from its own chatbox — we need to also open
+                // contact_jid2's chatbox so handleMessageStanza routes correctly,
+                // but we set the reaction_to_id on contact_jid1's chatbox directly
+                // by simulating both reactions as coming from contact_jid1's conversation.
+                // In practice, a group scenario uses MUC; for 1:1 we inject both via
+                // the model directly.
+                const chatbox = view.model;
+                await chatbox.messages.fetched;
+
+                chatbox.onMessage({
+                    reaction_to_id: 'original-msg-2',
+                    reactions: { [contact_jid1]: ['👍'] },
+                    from: contact_jid1,
+                    type: 'chat',
+                    msgid: 'dangling-r1',
+                    time: new Date().toISOString(),
+                    sender: 'them',
+                });
+                chatbox.onMessage({
+                    reaction_to_id: 'original-msg-2',
+                    reactions: { [contact_jid2]: ['❤️'] },
+                    from: contact_jid2,
+                    type: 'chat',
+                    msgid: 'dangling-r2',
+                    time: new Date().toISOString(),
+                    sender: 'them',
+                });
+
+                await u.waitUntil(
+                    () => view.model.messages.models.filter((m) => m.get('dangling_reaction')).length === 2,
+                );
+
+                // Original message arrives
+                await _converse.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${contact_jid1}"
+                                to="${_converse.jid}"
+                                type="chat"
+                                id="original-msg-2">
+                        <body>Hello</body>
+                    </message>`,
+                );
+
+                // Both danglings gone, both reactions on the message
+                await u.waitUntil(() => !view.model.messages.models.some((m) => m.get('dangling_reaction')));
+
+                const msg = view.model.messages.findWhere({ 'msgid': 'original-msg-2' });
+                await u.waitUntil(() => {
+                    const r = msg.get('reactions') || {};
+                    return r[contact_jid1]?.length && r[contact_jid2]?.length;
+                });
+                expect(msg.get('reactions')[contact_jid1]).toEqual(['👍']);
+                expect(msg.get('reactions')[contact_jid2]).toEqual(['❤️']);
+            }),
+        );
+
+        it(
+            'stores a dangling reaction in a MUC and applies it when the original message arrives',
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 0);
+                const muc_jid = 'lounge@montague.lit';
+                await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+                const view = _converse.chatboxviews.get(muc_jid);
+
+                // Reaction arrives before the original MUC message
+                await view.model.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${muc_jid}/juliet"
+                                to="${_converse.bare_jid}"
+                                type="groupchat"
+                                id="muc-dangling-reaction-1">
+                        <reactions xmlns="urn:xmpp:reactions:0" id="muc-original-msg-1">
+                            <reaction>🎉</reaction>
+                        </reactions>
+                    </message>`,
+                );
+
+                await u.waitUntil(() => view.model.messages.models.some((m) => m.get('dangling_reaction')));
+                const dangling = view.model.messages.models.find((m) => m.get('dangling_reaction'));
+                expect(dangling.get('reaction_to_id')).toBe('muc-original-msg-1');
+                expect(view.querySelectorAll('.chat-msg').length).toBe(0);
+
+                // Original MUC message arrives
+                await view.model.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${muc_jid}/juliet"
+                                to="${_converse.bare_jid}"
+                                type="groupchat"
+                                id="muc-original-msg-1">
+                        <body>Hello MUC</body>
+                        <stanza-id xmlns="urn:xmpp:sid:0" id="muc-stanza-id-1" by="${muc_jid}"/>
+                    </message>`,
+                );
+
+                await u.waitUntil(() => !view.model.messages.models.some((m) => m.get('dangling_reaction')));
+
+                const msg = view.model.messages.findWhere({ 'msgid': 'muc-original-msg-1' });
+                expect(msg).toBeDefined();
+                const full_jid = `${muc_jid}/juliet`;
+                await u.waitUntil(() => msg.get('reactions')?.[full_jid]?.length);
+                expect(msg.get('reactions')[full_jid]).toEqual(['🎉']);
+
+                await u.waitUntil(() => getReactionEmojis(view).includes('🎉'));
+                expect(getReactionEmojis(view)).toEqual(['🎉']);
             }),
         );
     });

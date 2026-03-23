@@ -93,8 +93,8 @@ declare const MUC_base: {
         fetchMessages(): any;
         afterMessagesFetched(): void;
         onMessage(_attrs_or_error: import("../../shared/types").MessageAttributes | Error): Promise<void>;
-        getUpdatedMessageAttributes(message: import("../../shared/message.js").default, attrs: import("../../shared/types").MessageAttributes): object;
-        updateMessage(message: import("../../shared/message.js").default, attrs: import("../../shared/types").MessageAttributes): void;
+        getUpdatedMessageAttributes(message: import("../../shared/message.js").default, attrs: import("../../shared/types").MessageAttributes): Promise<object>;
+        updateMessage(message: import("../../shared/message.js").default, attrs: import("../../shared/types").MessageAttributes): Promise<void>;
         handleCorrection(attrs: import("../../shared/types").MessageAttributes | import("./types").MUCMessageAttributes): Promise<import("../../shared/message.js").default | void>;
         queueMessage(attrs: import("../../shared/types").MessageAttributes): any;
         msg_chain: any;
@@ -124,6 +124,13 @@ declare const MUC_base: {
             origin_id: any;
             from: any;
         };
+        getReactionQueryAttrs(attrs: object): ({
+            origin_id: any;
+            msgid?: undefined;
+        } | {
+            msgid: any;
+            origin_id?: undefined;
+        })[];
         getStanzaIdQueryAttrs(attrs: object): {}[];
         getMessageBodyQueryAttrs(attrs: object): {
             from: any;
@@ -778,9 +785,9 @@ declare class MUC extends MUC_base {
     /**
      * @param {MUCMessage} message
      * @param {MUCMessageAttributes} attrs
-     * @return {object}
+     * @return {Promise<object>}
      */
-    getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./types").MUCMessageAttributes): object;
+    getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./types").MUCMessageAttributes): Promise<object>;
     /**
      * Send a MUC-0410 MUC Self-Ping stanza to room to determine
      * whether we're still joined.

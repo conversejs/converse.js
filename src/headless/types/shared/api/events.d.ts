@@ -27,9 +27,10 @@ declare namespace _default {
      * @param {...any} context - The context to which the hook applies
      *  (could be for example, a {@link _converse.ChatBox}).
      * @param {...any} data - The data structure to be intercepted and modified by the hook listeners.
+     * @param {...any} extra_args - Additional passthrough arguments for hook listeners.
      * @returns {Promise<any>} - A promise that resolves with the modified data structure.
      */
-    function hook(name: string, context: any[], data: any[]): Promise<any>;
+    function hook(name: string, context: any[], data: any[], ...extra_args: any[]): Promise<any>;
     namespace listen {
         let once: any;
         let on: any;

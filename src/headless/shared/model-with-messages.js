@@ -237,7 +237,7 @@ export default function ModelWithMessages(BaseModel) {
             if (attrs.time < message.get('time') && message.get('edited')) {
                 // This is an older message which has been corrected afterwards
                 older_versions[attrs.time] = attrs['message'];
-                message.save({ 'older_versions': older_versions });
+                message.save({ older_versions });
             } else {
                 // This is a correction of an earlier message we already received
                 if (Object.keys(older_versions).length) {

@@ -18,8 +18,8 @@ declare const ChatBoxBase_base: {
         fetchMessages(): any;
         afterMessagesFetched(): void;
         onMessage(_attrs_or_error: import("./types.js").MessageAttributes | Error): Promise<void>;
-        getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./types.js").MessageAttributes): object;
-        updateMessage(message: import("./message.js").default, attrs: import("./types.js").MessageAttributes): void;
+        getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./types.js").MessageAttributes): Promise<object>;
+        updateMessage(message: import("./message.js").default, attrs: import("./types.js").MessageAttributes): Promise<void>;
         handleCorrection(attrs: import("./types.js").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): Promise<import("./message.js").default | void>;
         queueMessage(attrs: import("./types.js").MessageAttributes): any;
         msg_chain: any;
@@ -49,6 +49,13 @@ declare const ChatBoxBase_base: {
             origin_id: any;
             from: any;
         };
+        getReactionQueryAttrs(attrs: object): ({
+            origin_id: any;
+            msgid?: undefined;
+        } | {
+            msgid: any;
+            origin_id?: undefined;
+        })[];
         getStanzaIdQueryAttrs(attrs: object): {}[];
         getMessageBodyQueryAttrs(attrs: object): {
             from: any;

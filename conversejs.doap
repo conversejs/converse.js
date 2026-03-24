@@ -152,6 +152,13 @@
     </implements>
     <implements>
       <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0202.html"/>
+        <xmpp:status>partial</xmpp:status>
+        <xmpp:note>1:1 chats only, no MUC occupant support</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0203.html"/>
       </xmpp:SupportedXep>
     </implements>

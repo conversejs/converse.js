@@ -17,23 +17,23 @@ export default (el) => {
         <div class="flyout box-flyout" style="${style || nothing}">
             ${is_overlayed ? html`<converse-dragresize></converse-dragresize>` : ''}
             ${el.model
-                ? html`
+            ? html`
                       <converse-chat-heading
                           jid="${el.model.get('jid')}"
                           class="chat-head chat-head-chatbox row g-0"
                       ></converse-chat-heading>
                       <div class="chat-body">
                           ${el.model.contact
-                              ? html`<converse-contact-approval-alert .contact="${el.model.contact}">
+                    ? html`<converse-contact-approval-alert .contact="${el.model.contact}">
                                 </converse-contact-approval-alert>`
-                              : ''}
+                    : ''}
                           <div
                               class="chat-content ${el.model.get('show_send_button') ? 'chat-content-sendbutton' : ''}"
                               aria-live="polite"
                           >
                               <converse-chat-content .model="${el.model}"></converse-chat-content>
                               ${show_help_messages
-                                  ? html`<div class="chat-content__help">
+                    ? html`<div class="chat-content__help">
                                         <converse-chat-help
                                             .model=${el.model}
                                             .messages=${help_messages}
@@ -42,13 +42,14 @@ export default (el) => {
                                             chat_type="${CHATROOMS_TYPE}"
                                         ></converse-chat-help>
                                     </div>`
-                                  : ''}
+                    : ''}
                           </div>
+                          <converse-entity-time-alert jid="${el.model.get('jid')}"></converse-entity-time-alert>
                           <converse-chat-bottom-panel .model="${el.model}" class="bottom-panel">
                           </converse-chat-bottom-panel>
                       </div>
                   `
-                : ''}
+            : ''}
         </div>
     `;
 };

@@ -113,6 +113,7 @@ Converse implements a wide range of XMPP Extensions (XEPs), making it one of the
 | [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Receipt | |
 | [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management | |
 | [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping | |
+| [XEP-0202](https://xmpp.org/extensions/xep-0202.html) | Entity Time | |
 | [XEP-0203](https://xmpp.org/extensions/xep-0203.html) | Delayed Delivery | |
 | [XEP-0206](https://xmpp.org/extensions/xep-0206.html) | XMPP Over BOSH | |
 | [XEP-0245](https://xmpp.org/extensions/xep-0245.html) | The /me Command | |

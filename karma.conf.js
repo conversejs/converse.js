@@ -66,6 +66,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/rootview/tests/*.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/*.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/requesting_contacts.js", type: 'module' },
+      { pattern: "src/plugins/time-views/tests/*.js", type: 'module' },
       { pattern: "src/shared/modals/tests/*.js", type: 'module' },
       { pattern: "src/shared/texture/tests/*.js", type: 'module' },
       { pattern: "src/utils/tests/*.js", type: 'module' },

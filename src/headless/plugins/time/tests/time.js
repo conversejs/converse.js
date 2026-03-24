@@ -51,12 +51,12 @@ describe('XEP-0202 Entity Time', function () {
             mock.initConverse(['statusInitialized'], {
                 send_entity_time: false
             }, (_converse) => {
-                const ping = u.toStanza(`
+                const time_iq = u.toStanza(`
                     <iq from="romeo@montague.lit/orchard"
                         to="${_converse.jid}" id="time-1" type="get">
                         <time xmlns="urn:xmpp:time"/>
                     </iq>`);
-                _converse.api.connection.get()._dataRecv(mock.createRequest(ping));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(time_iq));
 
                 const sent_stanza = _converse.api.connection.get().IQ_stanzas.pop();
                 expect(sent_stanza.getAttribute('type')).toBe('error');
@@ -67,8 +67,8 @@ describe('XEP-0202 Entity Time', function () {
                 expect(error_el).not.toBeNull();
                 expect(error_el.getAttribute('type')).toBe('cancel');
 
-                const unavailable = error_el.querySelector('service-unavailable');
-                expect(unavailable).not.toBeNull();
+                const unavailable = sizzle('service-unavailable[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', error_el);
+                expect(unavailable.length).toBe(1);
             })
         );
     });

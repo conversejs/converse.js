@@ -37,18 +37,34 @@ function handleTimeRequest(iq) {
 }
 
 /**
+ * Responds to incoming time requests with service-unavailable when disabled
+ * @param {Element} iq - The incoming IQ stanza
+ * @returns {boolean}
+ */
+function handleTimeRequestDisabled(iq) {
+    const from = iq.getAttribute('from');
+    const id = iq.getAttribute('id');
+
+    const response = stx`
+        <iq type="error" to="${from}" id="${id}" xmlns="jabber:client">
+            <error type="cancel">
+                <service-unavailable xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+            </error>
+        </iq>`;
+
+    api.sendIQ(response);
+    return true;
+}
+
+/**
  * Registers the XEP-0202 time handler and advertises support via disco
  */
 export function registerTimeHandler() {
-    // If not configured to respond to time requests, don't register the handler.
-    // Strophe's iqFallbackHandler will send service-unavailable.
-    if (!api.settings.get('send_entity_time')) {
-        return;
-    }
-
     const connection = api.connection.get();
-    if (connection.disco) {
-        api.disco.own.features.add(Strophe.NS.TIME);
+
+    // If not configured to respond, register handler that returns service-unavailable
+    if (!api.settings.get('send_entity_time')) {
+        return connection.addHandler(handleTimeRequestDisabled, Strophe.NS.TIME, 'iq', 'get');
     }
 
     return connection.addHandler(handleTimeRequest, Strophe.NS.TIME, 'iq', 'get');

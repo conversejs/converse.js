@@ -1,19 +1,14 @@
 /*global mock, converse */
 
-const { stx, u } = converse.env;
+const { Strophe, sizzle, stx, u } = converse.env;
 
 /**
  * Helper to find a time IQ stanza in the IQ_stanzas array.
- * Uses querySelector('time') and then checks namespaceURI because
- * querySelector('[xmlns="..."]') doesn't work for XML namespace declarations.
  * @param {Element[]} stanzas - Array of IQ stanzas
  * @returns {Element|undefined} The time IQ stanza if found
  */
 function findTimeIQ(stanzas) {
-    return stanzas.find(iq => {
-        const time = iq.querySelector('time');
-        return time && time.namespaceURI === 'urn:xmpp:time';
-    });
+    return stanzas.find(iq => sizzle(`time[xmlns="${Strophe.NS.TIME}"]`, iq).length);
 }
 
 describe('XEP-0202 Entity Time Views', function () {
@@ -218,10 +213,7 @@ describe('XEP-0202 Entity Time Views', function () {
 
                 // No IQ should have been sent
                 const time_iqs = _converse.api.connection.get().IQ_stanzas.filter(
-                    iq => {
-                        const time = iq.querySelector('time');
-                        return time && time.namespaceURI === 'urn:xmpp:time';
-                    }
+                    iq => sizzle(`time[xmlns="${Strophe.NS.TIME}"]`, iq).length
                 );
                 expect(time_iqs.length).toBe(0);
 

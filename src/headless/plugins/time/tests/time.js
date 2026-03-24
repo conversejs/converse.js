@@ -1,20 +1,15 @@
 /*global converse */
 import mock from "../../../tests/mock.js";
 
-const { Strophe, u, stx } = converse.env;
+const { Strophe, sizzle, u, stx } = converse.env;
 
 /**
  * Helper to find a time IQ stanza in the IQ_stanzas array.
- * Uses querySelector('time') and then checks namespaceURI because
- * querySelector('[xmlns="..."]') doesn't work for XML namespace declarations.
  * @param {Element[]} stanzas - Array of IQ stanzas
  * @returns {Element|undefined} The time IQ stanza if found
  */
 function findTimeIQ(stanzas) {
-    return stanzas.find(iq => {
-        const time = iq.querySelector('time');
-        return time && time.namespaceURI === 'urn:xmpp:time';
-    });
+    return stanzas.find(iq => sizzle(`time[xmlns="${Strophe.NS.TIME}"]`, iq).length);
 }
 
 describe('XEP-0202 Entity Time', function () {
@@ -49,6 +44,31 @@ describe('XEP-0202 Entity Time', function () {
 
                 // Verify UTC format (ISO 8601 without milliseconds)
                 expect(utc.textContent).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+            })
+        );
+
+        it('returns service-unavailable when send_entity_time is disabled',
+            mock.initConverse(['statusInitialized'], {
+                send_entity_time: false
+            }, (_converse) => {
+                const ping = u.toStanza(`
+                    <iq from="romeo@montague.lit/orchard"
+                        to="${_converse.jid}" id="time-1" type="get">
+                        <time xmlns="urn:xmpp:time"/>
+                    </iq>`);
+                _converse.api.connection.get()._dataRecv(mock.createRequest(ping));
+
+                const sent_stanza = _converse.api.connection.get().IQ_stanzas.pop();
+                expect(sent_stanza.getAttribute('type')).toBe('error');
+                expect(sent_stanza.getAttribute('to')).toBe('romeo@montague.lit/orchard');
+                expect(sent_stanza.getAttribute('id')).toBe('time-1');
+
+                const error_el = sent_stanza.querySelector('error');
+                expect(error_el).not.toBeNull();
+                expect(error_el.getAttribute('type')).toBe('cancel');
+
+                const unavailable = error_el.querySelector('service-unavailable');
+                expect(unavailable).not.toBeNull();
             })
         );
     });

@@ -20,7 +20,7 @@ export default {
          */
         async get(jid, timeout = 10000) {
             if (!api.connection.authenticated()) {
-                log.debug("Not querying time when we're not authenticated");
+                log.debug('Not querying time when not authenticated');
                 return null;
             }
 
@@ -52,16 +52,6 @@ export default {
                 utc: new Date(utc_str),
                 tzo: tzo
             };
-        },
-
-        /**
-         * Checks if the entity supports XEP-0202 Entity Time
-         * @method api.time.supports
-         * @param {string} jid - The JID to check
-         * @returns {Promise<boolean>}
-         */
-        async supports(jid) {
-            return api.disco.supports(Strophe.NS.TIME, jid);
         }
     }
 };

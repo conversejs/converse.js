@@ -12,12 +12,11 @@ import { registerTimeHandler } from './utils.js';
 
 const { Strophe } = converse.env;
 
-Strophe.addNamespace('TIME', 'urn:xmpp:time');
-
 converse.plugins.add('converse-time', {
 
     initialize() {
         api.settings.extend({
+            'send_entity_time': true,  // Whether to respond to time requests
             'show_entity_time': true,
             'entity_time_warning_start': 22,
             'entity_time_warning_end': 7,

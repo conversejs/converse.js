@@ -40,10 +40,17 @@ function handleTimeRequest(iq) {
  * Registers the XEP-0202 time handler and advertises support via disco
  */
 export function registerTimeHandler() {
+    // If not configured to respond to time requests, don't register the handler.
+    // Strophe's iqFallbackHandler will send service-unavailable.
+    if (!api.settings.get('send_entity_time')) {
+        return;
+    }
+
     const connection = api.connection.get();
     if (connection.disco) {
         api.disco.own.features.add(Strophe.NS.TIME);
     }
+
     return connection.addHandler(handleTimeRequest, Strophe.NS.TIME, 'iq', 'get');
 }
 
@@ -110,7 +117,7 @@ export function formatRemoteTime(now, tzo) {
  */
 export function getLocalTZOMinutes() {
     // getTimezoneOffset returns minutes behind UTC (negative for ahead)
-    // We invert it to match our convention (positive = ahead of UTC)
+    // Invert it to match the convention used here (positive = ahead of UTC)
     return -new Date().getTimezoneOffset();
 }
 

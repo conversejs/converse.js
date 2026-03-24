@@ -2180,6 +2180,23 @@ If true, you'll see yourself in your list of contacts (aka the "roster") and
 can open a chat with yourself.
 
 
+send_entity_time
+----------------
+
+* Default: ``true``
+
+If enabled, Converse will respond to entity time queries from other users
+(per `XEP-0202 <https://xmpp.org/extensions/xep-0202.html>`_), sharing your
+local timezone information.
+
+Set to ``false`` if you prefer not to share your timezone with others for
+privacy reasons. When disabled, Converse will respond with a
+``service-unavailable`` error to time queries.
+
+Note: This setting controls *outgoing* timezone information. To disable
+*incoming* time warnings, use ``show_entity_time``.
+
+
 show_send_button
 ----------------
 

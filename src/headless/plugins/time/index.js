@@ -10,8 +10,6 @@ import converse from '../../shared/api/public.js';
 import time_api from './api.js';
 import { registerTimeHandler } from './utils.js';
 
-const { Strophe } = converse.env;
-
 converse.plugins.add('converse-time', {
 
     initialize() {

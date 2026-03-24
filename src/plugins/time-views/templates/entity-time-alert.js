@@ -8,12 +8,12 @@ export default (el) => {
     const display_name = el.getDisplayName();
     const formatted_time = el.getFormattedTime();
 
-    const i18n_time_warning = __("%1$s's local time is %2$s", display_name, formatted_time);
+    const i18n_time_warning = __("It's %1$s for %2$s", formatted_time, display_name);
     const i18n_dismiss = __('Dismiss');
 
     return html`
         <div class="entity-time-alert">
-            <converse-icon class="fa fa-moon entity-time-alert__icon" size="1em"></converse-icon>
+            <converse-icon class="fa fa-clock entity-time-alert__icon" size="1em"></converse-icon>
             <span class="entity-time-alert__message">${i18n_time_warning}</span>
             <button
                 type="button"

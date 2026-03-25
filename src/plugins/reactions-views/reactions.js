@@ -1,8 +1,8 @@
-import { api } from '@converse/headless';
+import { api, u } from '@converse/headless';
 import { html, nothing } from 'lit';
 import { until } from 'lit/directives/until.js';
 import { CustomElement } from 'shared/components/element.js';
-import { sendReaction, getOwnReactionJID, getReactorNames, getEmojiKeyedReactions } from './utils.js';
+import { sendReaction, getReactorNames, getEmojiKeyedReactions } from './utils.js';
 
 export default class Reactions extends CustomElement {
     static get properties() {
@@ -39,7 +39,7 @@ export default class Reactions extends CustomElement {
 
     render() {
         const chatbox = this.model?.collection?.chatbox;
-        const my_jid = chatbox ? getOwnReactionJID(chatbox) : null;
+        const my_jid = chatbox ? u.reactions.getOwnReactionJID(chatbox) : null;
 
         const reactions = this.model?.get('reactions') || {};
         const emoji_map = getEmojiKeyedReactions(reactions);

@@ -1,3 +1,5 @@
+/*global mock, converse */
+
 const { Strophe, stx, u } = converse.env;
 
 describe('Message Reactions (XEP-0444)', function () {
@@ -1325,9 +1327,231 @@ describe('Message Reactions (XEP-0444)', function () {
                              to="${muc_jid}"
                              type="groupchat"
                              id="${sent_stanza.getAttribute('id')}">
-                        <reactions xmlns="urn:xmpp:reactions:0" id="muc-remove-own-msg"></reactions>
-                    </message>
-                `);
+                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-remove-own-msg"></reactions>
+                     </message>
+                 `);
+            }),
+        );
+
+        it(
+            'uses occupant_id as the reaction key in MUCs that support XEP-0421, deduplicating across nick changes',
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 0);
+
+                const muc_jid = 'lounge@montague.lit';
+                // Enable XEP-0421 occupant IDs for this room
+                await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [Strophe.NS.OCCUPANTID]);
+                const view = _converse.chatboxviews.get(muc_jid);
+
+                await view.model.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${muc_jid}/juliet"
+                                to="${_converse.bare_jid}"
+                                type="groupchat"
+                                id="occ-id-msg">
+                        <body>React to this</body>
+                        <stanza-id xmlns="urn:xmpp:sid:0" id="occ-id-stanza" by="${muc_jid}"/>
+                    </message>`,
+                );
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+                const msg_model = view.model.messages.findWhere({ 'msgid': 'occ-id-msg' });
+
+                const juliet_occupant_id = 'juliet-stable-occupant-id';
+
+                // Juliet reacts with 👍 using her occupant_id
+                await view.model.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${muc_jid}/juliet"
+                                to="${_converse.bare_jid}"
+                                type="groupchat"
+                                id="occ-id-react-1">
+                        <reactions xmlns="urn:xmpp:reactions:0" id="occ-id-msg">
+                            <reaction>👍</reaction>
+                        </reactions>
+                        <occupant-id xmlns="${Strophe.NS.OCCUPANTID}" id="${juliet_occupant_id}"/>
+                    </message>`,
+                );
+
+                await u.waitUntil(() => msg_model.get('reactions')?.[juliet_occupant_id]?.length);
+                expect(msg_model.get('reactions')[juliet_occupant_id]).toEqual(['👍']);
+                // Full JID should NOT be used as a key
+                expect(msg_model.get('reactions')[`${muc_jid}/juliet`]).toBeUndefined();
+
+                // Juliet changes her nick to 'julieta' and updates her reaction — same occupant_id
+                await view.model.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${muc_jid}/julieta"
+                                to="${_converse.bare_jid}"
+                                type="groupchat"
+                                id="occ-id-react-2">
+                        <reactions xmlns="urn:xmpp:reactions:0" id="occ-id-msg">
+                            <reaction>👍</reaction>
+                            <reaction>🎉</reaction>
+                        </reactions>
+                        <occupant-id xmlns="${Strophe.NS.OCCUPANTID}" id="${juliet_occupant_id}"/>
+                    </message>`,
+                );
+
+                // Same occupant_id key: should update, not create a second entry
+                await u.waitUntil(() => msg_model.get('reactions')?.[juliet_occupant_id]?.length === 2);
+                expect(Object.keys(msg_model.get('reactions'))).toEqual([juliet_occupant_id]);
+                expect(msg_model.get('reactions')[juliet_occupant_id]).toEqual(['👍', '🎉']);
+                expect(getReactionCounts(view)['👍']).toBe(1);
+                expect(getReactionCounts(view)['🎉']).toBe(1);
+            }),
+        );
+
+        it(
+            'uses the real bare JID as the reaction key in non-anonymous MUCs without XEP-0421, deduplicating across nick changes',
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 0);
+
+                const muc_jid = 'lounge@montague.lit';
+                // Non-anonymous MUC: all participants can see real JIDs
+                await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', ['muc_nonanonymous']);
+                const view = _converse.chatboxviews.get(muc_jid);
+
+                // Send juliet's presence with her real JID so the occupant model has it
+                const juliet_bare_jid = 'juliet@capulet.lit';
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(
+                        stx`<presence from="${muc_jid}/juliet"
+                                    to="${_converse.jid}"
+                                    xmlns="jabber:client">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item jid="${juliet_bare_jid}" affiliation="member" role="participant"/>
+                            </x>
+                        </presence>`,
+                    ),
+                );
+                await u.waitUntil(() => view.model.occupants.findWhere({ 'nick': 'juliet' })?.get('jid'));
+
+                await view.model.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${muc_jid}/juliet"
+                                to="${_converse.bare_jid}"
+                                type="groupchat"
+                                id="nonanon-msg">
+                        <body>React to this</body>
+                        <stanza-id xmlns="urn:xmpp:sid:0" id="nonanon-stanza" by="${muc_jid}"/>
+                    </message>`,
+                );
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+                const msg_model = view.model.messages.findWhere({ 'msgid': 'nonanon-msg' });
+
+                // Juliet reacts with 👍 — from_real_jid is resolved from the occupant model
+                await view.model.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${muc_jid}/juliet"
+                                to="${_converse.bare_jid}"
+                                type="groupchat"
+                                id="nonanon-react-1">
+                        <reactions xmlns="urn:xmpp:reactions:0" id="nonanon-msg">
+                            <reaction>👍</reaction>
+                        </reactions>
+                    </message>`,
+                );
+
+                await u.waitUntil(() => msg_model.get('reactions')?.[juliet_bare_jid]?.length);
+                expect(msg_model.get('reactions')[juliet_bare_jid]).toEqual(['👍']);
+                // Full JID should NOT be a key
+                expect(msg_model.get('reactions')[`${muc_jid}/juliet`]).toBeUndefined();
+
+                // Juliet changes nick to 'julieta' — send updated presence with same real JID
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(
+                        stx`<presence from="${muc_jid}/julieta"
+                                    to="${_converse.jid}"
+                                    xmlns="jabber:client">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item jid="${juliet_bare_jid}" affiliation="member" role="participant"/>
+                            </x>
+                        </presence>`,
+                    ),
+                );
+                await u.waitUntil(() => view.model.occupants.findWhere({ 'nick': 'julieta' })?.get('jid'));
+
+                // Juliet reacts under new nick — same bare JID, should update not duplicate
+                await view.model.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${muc_jid}/julieta"
+                                to="${_converse.bare_jid}"
+                                type="groupchat"
+                                id="nonanon-react-2">
+                        <reactions xmlns="urn:xmpp:reactions:0" id="nonanon-msg">
+                            <reaction>👍</reaction>
+                            <reaction>❤️</reaction>
+                        </reactions>
+                    </message>`,
+                );
+
+                await u.waitUntil(() => msg_model.get('reactions')?.[juliet_bare_jid]?.length === 2);
+                expect(Object.keys(msg_model.get('reactions'))).toEqual([juliet_bare_jid]);
+                expect(msg_model.get('reactions')[juliet_bare_jid]).toEqual(['👍', '❤️']);
+                expect(getReactionCounts(view)['👍']).toBe(1);
+                expect(getReactionCounts(view)['❤️']).toBe(1);
+            }),
+        );
+
+        it(
+            'falls back to full JID in semi-anonymous MUCs without XEP-0421, creating separate entries per nick',
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 0);
+
+                const muc_jid = 'lounge@montague.lit';
+                // Default mock MUC is semi-anonymous with no occupant_id support
+                await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+                const view = _converse.chatboxviews.get(muc_jid);
+
+                await view.model.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${muc_jid}/juliet"
+                                to="${_converse.bare_jid}"
+                                type="groupchat"
+                                id="semianon-msg">
+                        <body>React to this</body>
+                        <stanza-id xmlns="urn:xmpp:sid:0" id="semianon-stanza" by="${muc_jid}"/>
+                    </message>`,
+                );
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+                const msg_model = view.model.messages.findWhere({ 'msgid': 'semianon-msg' });
+
+                // Juliet reacts under nick 'juliet'
+                await view.model.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${muc_jid}/juliet"
+                                to="${_converse.bare_jid}"
+                                type="groupchat"
+                                id="semianon-react-1">
+                        <reactions xmlns="urn:xmpp:reactions:0" id="semianon-msg">
+                            <reaction>👍</reaction>
+                        </reactions>
+                    </message>`,
+                );
+
+                await u.waitUntil(() => msg_model.get('reactions')?.[`${muc_jid}/juliet`]?.length);
+                expect(msg_model.get('reactions')[`${muc_jid}/juliet`]).toEqual(['👍']);
+
+                // After a nick change, a new entry is created under the new full JID —
+                // this is the known XEP-0444 limitation for semi-anonymous MUCs without XEP-0421.
+                await view.model.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${muc_jid}/julieta"
+                                to="${_converse.bare_jid}"
+                                type="groupchat"
+                                id="semianon-react-2">
+                        <reactions xmlns="urn:xmpp:reactions:0" id="semianon-msg">
+                            <reaction>🎉</reaction>
+                        </reactions>
+                    </message>`,
+                );
+
+                await u.waitUntil(() => msg_model.get('reactions')?.[`${muc_jid}/julieta`]?.length);
+                // Two separate entries — acknowledged limitation, per XEP-0444 §4.1
+                expect(msg_model.get('reactions')[`${muc_jid}/juliet`]).toEqual(['👍']);
+                expect(msg_model.get('reactions')[`${muc_jid}/julieta`]).toEqual(['🎉']);
+                expect(getReactionCounts(view)['👍']).toBe(1);
+                expect(getReactionCounts(view)['🎉']).toBe(1);
             }),
         );
     });

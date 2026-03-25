@@ -109,7 +109,7 @@ export type CommonUtils = Record<string, Function>;
 /**
  * The utils object
  */
-export type PluginUtils = Record<"muc" | "mam" | "omemo" | "roster", CommonUtils>;
+export type PluginUtils = Record<"muc" | "mam" | "omemo" | "roster" | "reactions", CommonUtils>;
 /**
  * Call the callback once all the events have been triggered
  * @param { Array } events: An array of objects, with keys `object` and

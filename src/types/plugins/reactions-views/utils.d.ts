@@ -1,12 +1,4 @@
 /**
- * Returns the JID under which the current user's reactions are stored.
- * For MUC this is the full JID (room@domain/nick), matching the server echo.
- * For 1:1 chats this is the bare JID.
- * @param {Object} chatbox
- * @returns {string}
- */
-export function getOwnReactionJID(chatbox: any): string;
-/**
  * Helper function to update a message with reactions (JID-keyed format).
  * Used for optimistic updates when sending reactions.
  *

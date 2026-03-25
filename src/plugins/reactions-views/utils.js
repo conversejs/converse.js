@@ -4,20 +4,6 @@ import { __ } from 'i18n';
 const { Strophe, sizzle, stx } = converse.env;
 
 /**
- * Returns the JID under which the current user's reactions are stored.
- * For MUC this is the full JID (room@domain/nick), matching the server echo.
- * For 1:1 chats this is the bare JID.
- * @param {Object} chatbox
- * @returns {string}
- */
-export function getOwnReactionJID(chatbox) {
-    if (chatbox.get('type') === 'chatroom') {
-        return `${chatbox.get('jid')}/${chatbox.get('nick')}`;
-    }
-    return Strophe.getBareJidFromJid(api.connection.get().jid);
-}
-
-/**
  * Helper function to update a message with reactions (JID-keyed format).
  * Used for optimistic updates when sending reactions.
  *
@@ -30,7 +16,7 @@ export function getOwnReactionJID(chatbox) {
  */
 export function updateMessageReactions(message, emojis) {
     const chatbox = message.collection.chatbox;
-    const my_jid = getOwnReactionJID(chatbox);
+    const my_jid = u.reactions.getOwnReactionJID(chatbox);
 
     const current_reactions = message.get('reactions') || {};
     const reactions = { ...current_reactions };
@@ -71,7 +57,7 @@ export function sendReaction(message, emoji) {
         return;
     }
 
-    const my_jid = getOwnReactionJID(chatbox);
+    const my_jid = u.reactions.getOwnReactionJID(chatbox);
     const current_reactions = message.get('reactions') || {};
     const my_reactions = new Set(current_reactions[my_jid] || []);
 
@@ -142,20 +128,27 @@ export async function getReactorNames(jids, chatbox) {
     const own_bare_jid = _converse.session.get('bare_jid');
 
     /**
-     * @param {string} jid
+     * @param {string} key - occupant_id, bare JID, or full JID
      * @returns {Promise<string>}
      */
-    const resolve = async (jid) => {
+    const resolve = async (key) => {
         if (is_muc) {
-            return Strophe.getResourceFromJid(jid) || jid;
+            // Try to look up the occupant by occupant_id first, then by bare JID,
+            // then fall back to extracting the nick from the resource part of a full JID.
+            const occupants = chatbox.occupants;
+            const by_occupant_id = occupants?.findWhere({ 'occupant_id': key });
+            if (by_occupant_id) return by_occupant_id.get('nick') || key;
+            const by_jid = occupants?.findWhere({ 'jid': key });
+            if (by_jid) return by_jid.get('nick') || key;
+            return Strophe.getResourceFromJid(key) || key;
         }
-        if (Strophe.getBareJidFromJid(jid) === own_bare_jid) {
+        if (Strophe.getBareJidFromJid(key) === own_bare_jid) {
             // The reactor is the logged-in user — look up the profile directly,
             // since our own JID is not present in the roster contacts list.
-            return _converse.state.profile?.getDisplayName() ?? jid;
+            return _converse.state.profile?.getDisplayName() ?? key;
         }
-        const contact = await api.contacts.get(jid);
-        return contact?.getDisplayName() ?? jid;
+        const contact = await api.contacts.get(key);
+        return contact?.getDisplayName() ?? key;
     };
 
     const named = await Promise.all(jids.slice(0, max_named).map(resolve));

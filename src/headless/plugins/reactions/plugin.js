@@ -8,6 +8,7 @@
 import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';
 import { parseReactionsMessage } from './parsers.js';
+import { getOwnReactionJID } from './utils.js';
 
 const { Strophe } = converse.env;
 
@@ -27,9 +28,11 @@ converse.plugins.add('converse-reactions', {
         api.listen.on('parseMUCMessage', parseReactionsMessage);
 
         /**
-         * This hook handler merges the incoming single-JID reactions
-         * with all existing reactions from other JIDs, so that no
-         * reactions are lost when the message is saved.
+         * This hook handler merges the incoming single-reactor reactions
+         * with all existing reactions from other reactors, so that no
+         * reactions are lost when the message is saved. Keys are
+         * occupant_id, bare JID, or full JID depending on the context
+         * (see {@link parseReactionsMessage} for the priority chain).
          */
         api.listen.on('getUpdatedMessageAttributes', (message, attrs, original_attrs) => {
             const incoming_reactions = original_attrs?.reactions;
@@ -39,11 +42,11 @@ converse.plugins.add('converse-reactions', {
 
             const reactions = { ...(message.get('reactions') || {}) };
 
-            for (const jid in incoming_reactions) {
-                if (incoming_reactions[jid]?.length) {
-                    reactions[jid] = incoming_reactions[jid];
+            for (const key in incoming_reactions) {
+                if (incoming_reactions[key]?.length) {
+                    reactions[key] = incoming_reactions[key];
                 } else {
-                    delete reactions[jid];
+                    delete reactions[key];
                 }
             }
             return { ...attrs, reactions };
@@ -51,9 +54,12 @@ converse.plugins.add('converse-reactions', {
 
         api.listen.on('getErrorAttributesForMessage', (message, new_attrs, attrs) => {
             if (attrs.reaction_to_id) {
-                const my_jid = Strophe.getBareJidFromJid(api.connection.get().jid);
+                const chatbox = message.collection?.chatbox;
+                const my_key = chatbox
+                    ? getOwnReactionJID(chatbox)
+                    : Strophe.getBareJidFromJid(api.connection.get().jid);
                 const reactions = { ...message.get('reactions') };
-                delete reactions[my_jid];
+                delete reactions[my_key];
                 new_attrs.reactions = reactions;
             }
             return new_attrs;

@@ -8,12 +8,14 @@ export default class Reactions extends CustomElement {
     static get properties() {
         return {
             model: { type: Object },
+            emoji_map: { state: true },
         };
     }
 
     constructor() {
         super();
         this.model = null;
+        this.emoji_map = {};
     }
 
     /**
@@ -26,7 +28,12 @@ export default class Reactions extends CustomElement {
 
         this.stopListening();
         if (this.model) {
-            this.listenTo(this.model, 'change:reactions', () => this.requestUpdate());
+            this.listenTo(this.model, 'change:reactions', () => {
+                this.emoji_map = getEmojiKeyedReactions(this.model.get('reactions') || {});
+            });
+            // Compute the initial map in case reactions were already set on the model
+            // before this component's listener was attached (e.g. dangling reactions).
+            this.emoji_map = getEmojiKeyedReactions(this.model.get('reactions') || {});
         }
     }
 
@@ -41,8 +48,7 @@ export default class Reactions extends CustomElement {
         const chatbox = this.model?.collection?.chatbox;
         const my_jid = chatbox ? u.reactions.getOwnReactionJID(chatbox) : null;
 
-        const reactions = this.model?.get('reactions') || {};
-        const emoji_map = getEmojiKeyedReactions(reactions);
+        const emoji_map = this.emoji_map;
         const emojis = Object.keys(emoji_map);
 
         if (emojis.length === 0) {

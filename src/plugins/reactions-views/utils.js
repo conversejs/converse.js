@@ -123,8 +123,6 @@ export function getEmojiKeyedReactions(reactions) {
  */
 export async function getReactorNames(jids, chatbox) {
     const is_muc = chatbox.get('type') === 'chatroom';
-    const max_named = 2;
-
     const own_bare_jid = _converse.session.get('bare_jid');
 
     /**
@@ -151,6 +149,7 @@ export async function getReactorNames(jids, chatbox) {
         return contact?.getDisplayName() ?? key;
     };
 
+    const max_named = 2;
     const named = await Promise.all(jids.slice(0, max_named).map(resolve));
     const remainder = jids.length - named.length;
 

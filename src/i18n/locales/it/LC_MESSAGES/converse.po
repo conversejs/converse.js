@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-16 09:03+0200\n"
-"PO-Revision-Date: 2025-12-28 17:17+0200\n"
-"Last-Translator: albanobattistella <albanobattistella@gmail.com>\n"
+"PO-Revision-Date: 2026-03-28 18:10+0000\n"
+"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
 "translations/it/>\n"
 "Language: it\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15-dev\n"
+"X-Generator: Weblate 5.17-dev\n"
 "domain: converse\n"
 "lang: it\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1286,7 +1286,7 @@ msgstr "Copia"
 
 #: dist/converse-no-dependencies.js:94621
 msgid "Reply"
-msgstr ""
+msgstr "Rispondi"
 
 #: dist/converse-no-dependencies.js:94631
 msgid "Quote"
@@ -1298,53 +1298,51 @@ msgstr "Immagine: "
 
 #: dist/converse-no-dependencies.js:95474
 msgid "Play"
-msgstr ""
+msgstr "Avvia"
 
 #: dist/converse-no-dependencies.js:95475
 msgid "Pause"
-msgstr ""
+msgstr "Pausa"
 
 #: dist/converse-no-dependencies.js:95476
 msgid "Mute"
-msgstr ""
+msgstr "Muta"
 
 #: dist/converse-no-dependencies.js:95477
 msgid "Unmute"
-msgstr ""
+msgstr "Smuta"
 
 #: dist/converse-no-dependencies.js:95478
 msgid "Seek"
-msgstr ""
+msgstr "Cerca"
 
 #: dist/converse-no-dependencies.js:95479
 msgid "Volume"
-msgstr ""
+msgstr "Volume"
 
 #: dist/converse-no-dependencies.js:95480
 msgid "Audio player"
-msgstr ""
+msgstr "Lettore audio"
 
 #: dist/converse-no-dependencies.js:95481
 msgid "Loading audio..."
-msgstr ""
+msgstr "Caricamento audio..."
 
 #: dist/converse-no-dependencies.js:95482
 msgid "Error loading audio"
-msgstr ""
+msgstr "Errore durante il caricamento dell'audio"
 
 #: dist/converse-no-dependencies.js:95483
-#, fuzzy
 msgid "Current time"
-msgstr "Versione corrente"
+msgstr "Ora attuale"
 
 #: dist/converse-no-dependencies.js:95484
-#, fuzzy
 msgid "Duration"
-msgstr "Descrizione"
+msgstr "Durata"
 
 #: dist/converse-no-dependencies.js:95485
 msgid "Playback speed"
-msgstr ""
+msgstr "Velocità di riproduzione"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:99219
@@ -1499,14 +1497,12 @@ msgid "Retry"
 msgstr "Riprova"
 
 #: dist/converse-no-dependencies.js:101956
-#, fuzzy
 msgid "Replying to a message"
-msgstr "Invia il messaggio"
+msgstr "Rispondere a un messaggio"
 
 #: dist/converse-no-dependencies.js:101963
-#, fuzzy
 msgid "(empty message)"
-msgstr "Nuovi messaggi"
+msgstr "(messaggio vuoto)"
 
 #: dist/converse-no-dependencies.js:102291
 msgid "This message has been edited"
@@ -1652,12 +1648,11 @@ msgstr "Sei sicuro di volere pulire i messaggi da questa conversazione?"
 #: dist/converse-no-dependencies.js:108595
 #, javascript-format
 msgid "Replying to %1$s"
-msgstr ""
+msgstr "Rispondendo a %1$s"
 
 #: dist/converse-no-dependencies.js:108597
-#, fuzzy
 msgid "Cancel reply"
-msgstr "Annulla"
+msgstr "Annulla risposta"
 
 #: dist/converse-no-dependencies.js:108683
 #: dist/converse-no-dependencies.js:117634
@@ -2826,68 +2821,68 @@ msgstr "Registrati"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "XMPP Compliance"
-msgstr ""
+msgstr "Conformità XMPP"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Free of charge"
-msgstr "ruolo cambiato"
+msgstr "Gratuito"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Yes"
-msgstr ""
+msgstr "Si"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "No"
-msgstr ""
+msgstr "No"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Company"
-msgstr ""
+msgstr "Azienda"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Professional hosting"
-msgstr ""
+msgstr "Hosting professionale"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Password reset"
-msgstr "Password non corretta"
+msgstr "Reimposta la password"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "Legal notice"
-msgstr ""
+msgstr "Avviso legale"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Online since"
-msgstr "Utenti in linea"
+msgstr "Online dal"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy
 msgid "Message archive storage time"
-msgstr "Archiviazione Messaggi"
+msgstr "Tempo di conservazione dell'archivio dei messaggi"
 
 #: dist/converse-no-dependencies.js:133696
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s days"
-msgstr "%1$s dice"
+msgstr "%1$s giorni"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload size limit"
-msgstr ""
+msgstr "Limite di dimensione per il caricamento dei file"
 
 #: dist/converse-no-dependencies.js:133696
 msgid "File upload storage time"
-msgstr ""
+msgstr "Tempo di archiviazione del caricamento del file"
 
 #: dist/converse-no-dependencies.js:133752
 msgid "With these providers you can register directly inside this app."
 msgstr ""
+"Con questi providers è possibile registrarsi direttamente all'interno di "
+"questa app."
 
 #: dist/converse-no-dependencies.js:133752
 msgid "For these providers, you'll need to register externally via a web page."
 msgstr ""
+"Per questi provider, sarà necessario registrarsi esternamente tramite una "
+"pagina web."
 
 #: dist/converse-no-dependencies.js:133760
 msgid "Create your account"
@@ -2911,20 +2906,17 @@ msgstr ""
 "Per favore inserisci il fornitore del servizio XMPP con cui registrarti:"
 
 #: dist/converse-no-dependencies.js:133777
-#, fuzzy
 msgid "e.g. https://example.org/http-bind"
-msgstr "es. wss://esempio.org/xmpp-websocket"
+msgstr "per esempio https://example.org/http-bind"
 
 #. Show the categorized provider list
 #: dist/converse-no-dependencies.js:133780
-#, fuzzy
 msgid "Choose an XMPP provider to register with:"
-msgstr ""
-"Per favore inserisci il fornitore del servizio XMPP con cui registrarti:"
+msgstr "Scegli un provider XMPP con cui registrarti:"
 
 #: dist/converse-no-dependencies.js:133782
 msgid "Browse all providers"
-msgstr ""
+msgstr "Visualizza tutti i providers"
 
 #: dist/converse-no-dependencies.js:134189
 msgid "Sorry, we're unable to connect to your chosen provider."

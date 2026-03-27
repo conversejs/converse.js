@@ -18,7 +18,6 @@ export default class ReactionPicker extends CustomElement {
     static get properties() {
         return {
             'model': { type: Object },
-            'emoji_picker_state': { type: Object },
             'dropup': { type: Boolean },
             'shifted': { type: Boolean },
             'opened': { type: Boolean },
@@ -31,7 +30,6 @@ export default class ReactionPicker extends CustomElement {
     constructor() {
         super();
         this.model = null;
-        this.emoji_picker_state = null;
         this.picker_id = u.getUniqueId('reaction-picker');
         this.dropup = false;
         this.shifted = false;
@@ -143,18 +141,15 @@ export default class ReactionPicker extends CustomElement {
     }
 
     async initEmojiPicker() {
-        if (!this.emoji_picker_state) {
+        const chatbox = this.model?.collection?.chatbox;
+        if (!chatbox.emoji_picker) {
             await api.emojis.initialize();
 
-            const chatbox = this.model?.collection?.chatbox;
-            if (!chatbox.emoji_picker) {
-                const bare_jid = _converse.session.get('bare_jid');
-                const id = `converse.emoji-${bare_jid}-${chatbox.get('jid')}`;
-                chatbox.emoji_picker = new EmojiPicker({ id });
-                u.initStorage(chatbox.emoji_picker, id);
-                await new Promise((resolve) => chatbox.emoji_picker.fetch({ 'success': resolve, 'error': resolve }));
-            }
-            this.emoji_picker_state = chatbox.emoji_picker;
+            const bare_jid = _converse.session.get('bare_jid');
+            const id = `converse.emoji-${bare_jid}-${chatbox.get('jid')}`;
+            chatbox.emoji_picker = new EmojiPicker({ id });
+            u.initStorage(chatbox.emoji_picker, id);
+            await new Promise((resolve) => chatbox.emoji_picker.fetch({ 'success': resolve, 'error': resolve }));
 
             this.requestUpdate();
         }

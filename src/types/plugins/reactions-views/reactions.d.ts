@@ -3,13 +3,20 @@ export default class Reactions extends CustomElement {
         model: {
             type: ObjectConstructor;
         };
+        emoji_map: {
+            state: boolean;
+        };
     };
     model: any;
+    emoji_map: {};
+    /** @type {Map<string, Promise<string>>} */
+    _tooltip_cache: Map<string, Promise<string>>;
     /**
      * @param {string} emoji
      */
     onReactionClick(emoji: string): void;
     render(): import("lit-html").TemplateResult<1> | typeof nothing;
+    #private;
 }
 import { CustomElement } from 'shared/components/element.js';
 import { nothing } from 'lit';

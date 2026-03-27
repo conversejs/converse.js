@@ -3,9 +3,6 @@ export default class ReactionPicker extends CustomElement {
         model: {
             type: ObjectConstructor;
         };
-        emoji_picker_state: {
-            type: ObjectConstructor;
-        };
         dropup: {
             type: BooleanConstructor;
         };
@@ -17,7 +14,6 @@ export default class ReactionPicker extends CustomElement {
         };
     };
     model: any;
-    emoji_picker_state: EmojiPicker;
     picker_id: string;
     dropup: boolean;
     shifted: boolean;
@@ -38,5 +34,4 @@ export default class ReactionPicker extends CustomElement {
     #private;
 }
 import { CustomElement } from 'shared/components/element.js';
-import { EmojiPicker } from '@converse/headless';
 //# sourceMappingURL=reaction-picker.d.ts.map

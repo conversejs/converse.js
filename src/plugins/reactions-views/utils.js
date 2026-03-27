@@ -79,6 +79,87 @@ export function sendReaction(message, emoji) {
     api.send(reaction_stanza);
 
     updateMessageReactions(message, Array.from(my_reactions));
+
+    // When adding a reaction (not removing), bump it to the front of the popular
+    // reactions list and persist the updated list to the user's PEP node.
+    if (my_reactions.has(emoji_unicode)) {
+        bumpPopularReaction(emoji_unicode);
+    }
+}
+
+/**
+ * Track emoji usage frequency and update the PopularReactions model.
+ * The list is sorted by usage count (most frequently used first) and
+ * published to the user's private PEP node (XEP-0223).
+ *
+ * The list length is preserved — the least-frequently-used emoji falls off
+ * the end as new ones are added.
+ *
+ * @param {string} emoji_unicode - The unicode emoji that was just sent
+ */
+async function bumpPopularReaction(emoji_unicode) {
+    // Convert the used unicode emoji to its shortname for storage in the setting
+    const by_cp = u.getEmojisByAttribute('cp');
+    const cp = [...emoji_unicode].map((c) => c.codePointAt(0).toString(16)).join('-');
+    const shortname = by_cp[cp]?.sn ?? emoji_unicode;
+
+    // Use the PopularReactions model to track frequencies
+    const popular_reactions = _converse.exports.popular_reactions;
+    if (popular_reactions) {
+        try {
+            // Increment the usage count for this emoji
+            popular_reactions.incrementFrequency(shortname);
+
+            // Get the frequency-sorted list for publishing to PEP
+            // Use the default setting length as max to respect user's configured list size
+            const default_setting = api.settings.get('popular_reactions') ?? [];
+            const max = default_setting.length || 5;
+            const sorted = popular_reactions.getSortedEmojis(max);
+
+            // Publish to PEP node
+            await u.reactions.publishPopularReactions(
+                sorted
+                    .map((sn) => {
+                        const emoji_array = u.shortnamesToEmojis(sn, { unicode_only: true });
+                        return Array.isArray(emoji_array) ? emoji_array.join('') : emoji_array;
+                    })
+                    .filter(Boolean),
+            );
+        } catch (e) {
+            log.warn('bumpPopularReaction: failed to update popular reactions', e);
+        }
+    } else {
+        // Fallback to old behavior if model is not available
+        log.warn('bumpPopularReaction: PopularReactions model not available, falling back to frequency-based sorting');
+
+        // Build a simple frequency-sorted list without persistence
+        const current = api.settings.get('popular_reactions') ?? [];
+        const max = current.length || 5;
+
+        const current_freq = {};
+        current.forEach((sn) => {
+            current_freq[sn] = (current_freq[sn] || 0) + 1;
+        });
+        current_freq[shortname] = (current_freq[shortname] || 0) + 1;
+
+        const sorted = Object.entries(current_freq)
+            .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+            .map((entry) => entry[0])
+            .slice(0, max);
+
+        try {
+            await u.reactions.publishPopularReactions(
+                sorted
+                    .map((sn) => {
+                        const emoji_array = u.shortnamesToEmojis(sn, { unicode_only: true });
+                        return Array.isArray(emoji_array) ? emoji_array.join('') : emoji_array;
+                    })
+                    .filter(Boolean),
+            );
+        } catch (e) {
+            log.warn('bumpPopularReaction: failed to publish popular reactions', e);
+        }
+    }
 }
 
 /**

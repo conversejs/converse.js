@@ -7,25 +7,48 @@
 
 import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';
+import _converse from '../../shared/_converse.js';
 import { parseReactionsMessage } from './parsers.js';
-import { getOwnReactionJID } from './utils.js';
+import { getOwnReactionJID, onConnected } from './utils.js';
+import PopularReactions from './popular-model.js';
 
-const { Strophe } = converse.env;
+const { Strophe, u } = converse.env;
 
 Strophe.addNamespace('REACTIONS', 'urn:xmpp:reactions:0');
+Strophe.addNamespace('REACTIONS_POPULAR', 'urn:xmpp:reactions:popular:0');
 
 converse.plugins.add('converse-reactions', {
-    dependencies: ['converse-chat', 'converse-muc'],
+    dependencies: ['converse-chat', 'converse-muc', 'converse-pubsub'],
 
     /**
      * Initializes the headless reactions plugin.
      * Hooks into message parsing to extract reactions, and into
      * getUpdatedMessageAttributes to merge incoming reactions with
      * existing ones on the original message.
+     *
+     * Also manages server-side storage of the user's popular reactions
+     * via XEP-0223 (Persistent Storage of Private Data via PubSub).
      */
     initialize() {
         api.listen.on('parseMessage', parseReactionsMessage);
         api.listen.on('parseMUCMessage', parseReactionsMessage);
+
+        // Initialize the PopularReactions model for tracking usage frequencies
+        const popular_reactions = new PopularReactions();
+        // Create user-specific storage ID using bare JID
+        const bare_jid = _converse.session.get('bare_jid');
+        const storage_id = `converse.popular_reactions_frequencies.${bare_jid}`;
+        u.initStorage(popular_reactions, storage_id);
+
+        // Fetch initial frequencies from storage
+        popular_reactions.fetch();
+
+        api.listen.on('connected', () => onConnected(popular_reactions));
+        api.listen.on('reconnected', () => onConnected(popular_reactions));
+
+        // Export the model and class for use in UI plugins
+        Object.assign(_converse.exports, { PopularReactions });
+        Object.assign(_converse.state, { popular_reactions });
 
         /**
          * This hook handler merges the incoming single-reactor reactions

@@ -1,11 +1,24 @@
 import { html } from 'lit';
-import { api, u } from '@converse/headless';
+import { _converse, api, u } from '@converse/headless';
 
 /**
  * @param {import('../reaction-picker').default} el
  */
 export default (el) => {
-    const popular_emojis = api.settings.get('popular_reactions');
+    // Use the PopularReactions model if available, otherwise fall back to the setting
+    const popular_reactions = _converse.state.popular_reactions;
+    let popular_emojis;
+
+    if (popular_reactions && Object.keys(popular_reactions.getFrequencies()).length > 0) {
+        // Get the most frequently used emojis from the model
+        // Use the same length as the default setting to respect user's configured list size
+        const default_setting = api.settings.get('popular_reactions') ?? [];
+        popular_emojis = popular_reactions.getSortedEmojis(default_setting.length);
+    } else {
+        // Fall back to the default setting
+        popular_emojis = api.settings.get('popular_reactions');
+    }
+
     const anchor_name = `--reaction-anchor-${el.picker_id}`;
     const filtered_emojis = el.allowed_emojis
         ? popular_emojis.filter(
@@ -42,10 +55,10 @@ export default (el) => {
                     style="position-anchor: ${anchor_name}"
                 >
                     <li>
-                        ${el.emoji_picker_state
+                        ${el.model?.collection?.chatbox?.emoji_picker
                             ? html`
                                   <converse-emoji-picker
-                                      .state=${el.emoji_picker_state}
+                                      .state=${el.model.collection.chatbox.emoji_picker}
                                       .model=${el.model.collection.chatbox}
                                       .allowed_emojis=${el.allowed_emojis}
                                       @emojiSelected=${(ev) => {
@@ -53,9 +66,13 @@ export default (el) => {
                                           el.onEmojiSelected(ev.detail.value);
                                       }}
                                       ?render_emojis=${true}
-                                      current_category="${el.emoji_picker_state.get('current_category') || ''}"
-                                      current_skintone="${el.emoji_picker_state.get('current_skintone') || ''}"
-                                      query="${el.emoji_picker_state.get('query') || ''}"
+                                      current_category="${el.model.collection.chatbox.emoji_picker.get(
+                                          'current_category',
+                                      ) || ''}"
+                                      current_skintone="${el.model.collection.chatbox.emoji_picker.get(
+                                          'current_skintone',
+                                      ) || ''}"
+                                      query="${el.model.collection.chatbox.emoji_picker.get('query') || ''}"
                                   ></converse-emoji-picker>
                               `
                             : ''}

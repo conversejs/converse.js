@@ -17,9 +17,8 @@ converse.plugins.add('converse-reaction-views', {
      * - Disco feature advertisement and restrictions
      */
     initialize() {
-
         api.settings.extend({
-            'popular_reactions': [':thumbsup:', ':heart:', ':joy:', ':open_mouth:'],
+            'popular_reactions': [':thumbsup:', ':heart:', ':laughing:', ':joy:', ':tada:']
         });
 
         // Advertise reactions support

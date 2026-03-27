@@ -5,7 +5,7 @@
  */
 
 import { CustomElement } from 'shared/components/element.js';
-import { api, u, EmojiPicker } from '@converse/headless';
+import { api, u, _converse, EmojiPicker } from '@converse/headless';
 import { __ } from 'i18n';
 import tplReactionPicker from './templates/reaction-picker.js';
 import { sendReaction } from './utils.js';
@@ -146,10 +146,15 @@ export default class ReactionPicker extends CustomElement {
         if (!this.emoji_picker_state) {
             await api.emojis.initialize();
 
-            const id = u.getUniqueId('emoji-picker');
-            this.emoji_picker_state = new EmojiPicker({ id });
-            u.initStorage(this.emoji_picker_state, id);
-            await new Promise((resolve) => this.emoji_picker_state.fetch({ 'success': resolve, 'error': resolve }));
+            const chatbox = this.model?.collection?.chatbox;
+            if (!chatbox.emoji_picker) {
+                const bare_jid = _converse.session.get('bare_jid');
+                const id = `converse.emoji-${bare_jid}-${chatbox.get('jid')}`;
+                chatbox.emoji_picker = new EmojiPicker({ id });
+                u.initStorage(chatbox.emoji_picker, id);
+                await new Promise((resolve) => chatbox.emoji_picker.fetch({ 'success': resolve, 'error': resolve }));
+            }
+            this.emoji_picker_state = chatbox.emoji_picker;
 
             this.requestUpdate();
         }

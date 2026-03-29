@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
+ * @typedef {import('@converse/headless/types/shared/types').ChatBoxOrMUC} ChatBoxOrMUC
+ */
 import { api, u } from '@converse/headless';
 import { html, nothing } from 'lit';
 import { until } from 'lit/directives/until.js';
@@ -14,6 +18,7 @@ export default class Reactions extends CustomElement {
 
     constructor() {
         super();
+        /** @type {BaseMessage|null} */
         this.model = null;
         this.emoji_map = {};
         /** @type {Map<string, Promise<string>>} */
@@ -54,6 +59,7 @@ export default class Reactions extends CustomElement {
     }
 
     render() {
+        /** @type {ChatBoxOrMUC|undefined} */
         const chatbox = this.model?.collection?.chatbox;
         const my_jid = chatbox ? u.reactions.getOwnReactionJID(chatbox) : null;
 

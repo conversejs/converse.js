@@ -1,6 +1,8 @@
+import { html } from 'lit';
 import { ASCII_REPLACE_REGEX, CODEPOINTS_REGEX } from './regexes.js';
 import { unescapeHTML } from '../../utils/html.js';
 import converse from '../../shared/api/public.js';
+import { settings_api } from '../../shared/settings/api.js';
 
 const { u } = converse.env;
 
@@ -24,17 +26,16 @@ const ASCII_LIST = {
     '=#':'1f636', ':)':'1f642', '=]':'1f642', '=)':'1f642', ':]':'1f642'
 };
 
-
 function toCodePoint(unicode_surrogates) {
     const r = [];
-    let  p = 0;
-    let  i = 0;
+    let p = 0;
+    let i = 0;
     while (i < unicode_surrogates.length) {
         const c = unicode_surrogates.charCodeAt(i++);
         if (p) {
-            r.push((0x10000 + ((p - 0xD800) << 10) + (c - 0xDC00)).toString(16));
+            r.push((0x10000 + ((p - 0xd800) << 10) + (c - 0xdc00)).toString(16));
             p = 0;
-        } else if (0xD800 <= c && c <= 0xDBFF) {
+        } else if (0xd800 <= c && c <= 0xdbff) {
             p = c;
         } else {
             r.push(c.toString(16));
@@ -43,34 +44,29 @@ function toCodePoint(unicode_surrogates) {
     return r.join('-');
 }
 
-
-function fromCodePoint (codepoint) {
+function fromCodePoint(codepoint) {
     let code = typeof codepoint === 'string' ? parseInt(codepoint, 16) : codepoint;
     if (code < 0x10000) {
         return String.fromCharCode(code);
     }
     code -= 0x10000;
-    return String.fromCharCode(
-        0xD800 + (code >> 10),
-        0xDC00 + (code & 0x3FF)
-    );
+    return String.fromCharCode(0xd800 + (code >> 10), 0xdc00 + (code & 0x3ff));
 }
-
 
 /**
  * Converts unicode code points and code pairs to their respective characters
  * @param {string} unicode
  */
-function convert (unicode) {
-    if (unicode.indexOf("-") > -1) {
+function convert(unicode) {
+    if (unicode.indexOf('-') > -1) {
         const parts = [];
         const s = unicode.split('-');
 
         for (let i = 0; i < s.length; i++) {
             const part = parseInt(s[i], 16);
-            if (part >= 0x10000 && part <= 0x10FFFF) {
-                const hi = Math.floor((part - 0x10000) / 0x400) + 0xD800;
-                const lo = ((part - 0x10000) % 0x400) + 0xDC00;
+            if (part >= 0x10000 && part <= 0x10ffff) {
+                const hi = Math.floor((part - 0x10000) / 0x400) + 0xd800;
+                const lo = ((part - 0x10000) % 0x400) + 0xdc00;
                 parts.push(String.fromCharCode(hi) + String.fromCharCode(lo));
             } else {
                 parts.push(String.fromCharCode(part));
@@ -84,42 +80,41 @@ function convert (unicode) {
 /**
  * @param {string} str
  */
-export function convertASCII2Emoji (str) {
+export function convertASCII2Emoji(str) {
     // Replace ASCII smileys
     return str.replace(ASCII_REPLACE_REGEX, (entire, _, m2, m3) => {
-        if( (typeof m3 === 'undefined') || (m3 === '') || (!(unescapeHTML(m3) in ASCII_LIST)) ) {
+        if (typeof m3 === 'undefined' || m3 === '' || !(unescapeHTML(m3) in ASCII_LIST)) {
             // if the ascii doesn't exist just return the entire match
             return entire;
         }
         m3 = unescapeHTML(m3);
         const unicode = ASCII_LIST[m3].toUpperCase();
-        return m2+convert(unicode);
+        return m2 + convert(unicode);
     });
 }
 
 /**
  * @param {string} text
  */
-export function getShortnameReferences (text) {
+export function getShortnameReferences(text) {
     if (!converse.emojis.initialized) {
         throw new Error(
-            'getShortnameReferences called before emojis are initialized. '+
-            'To avoid this problem, first await the converse.emojis.initialized_promise'
+            'getShortnameReferences called before emojis are initialized. ' +
+                'To avoid this problem, first await the converse.emojis.initialized_promise'
         );
     }
-    const references = [...text.matchAll(converse.emojis.shortnames_regex)].filter(ref => ref[0].length > 0);
-    return references.map(ref => {
+    const references = [...text.matchAll(converse.emojis.shortnames_regex)].filter((ref) => ref[0].length > 0);
+    return references.map((ref) => {
         const cp = converse.emojis.by_sn[ref[0].toLowerCase()]?.cp;
         return {
             cp,
             'begin': ref.index,
-            'end': ref.index+ref[0].length,
+            'end': ref.index + ref[0].length,
             'shortname': ref[0],
-            'emoji': cp ? convert(cp) : null
-        }
+            'emoji': cp ? convert(cp) : null,
+        };
     });
 }
-
 
 /**
  * @param {string} str
@@ -127,7 +122,7 @@ export function getShortnameReferences (text) {
  */
 function parseStringForEmojis(str, callback) {
     const UFE0Fg = /\uFE0F/g;
-    const U200D = String.fromCharCode(0x200D);
+    const U200D = String.fromCharCode(0x200d);
     return String(str).replace(CODEPOINTS_REGEX, (emoji, _, offset) => {
         const icon_id = toCodePoint(emoji.indexOf(U200D) < 0 ? emoji.replace(UFE0Fg, '') : emoji);
         if (icon_id) callback(icon_id, emoji, offset);
@@ -135,11 +130,10 @@ function parseStringForEmojis(str, callback) {
     });
 }
 
-
 /**
  * @param {string} text
  */
-export function getCodePointReferences (text) {
+export function getCodePointReferences(text) {
     const references = [];
     parseStringForEmojis(text, (icon_id, emoji, offset) => {
         references.push({
@@ -147,7 +141,7 @@ export function getCodePointReferences (text) {
             'cp': icon_id,
             'emoji': emoji,
             'end': offset + emoji.length,
-            'shortname': getEmojisByAttribute('cp')[icon_id]?.sn || ''
+            'shortname': getEmojisByAttribute('cp')[icon_id]?.sn || '',
         });
     });
     return references;
@@ -170,8 +164,8 @@ function addEmojisMarkup (text) {
  * unicode (emoji) representation.
  * @namespace u
  * @method u.shortnamesToUnicode
- * @param { String } str - String containing the shortname(s)
- * @returns { String }
+ * @param {String} str - String containing the shortname(s)
+ * @returns {String}
  */
 function shortnamesToUnicode (str) {
     return addEmojisMarkup(convertASCII2Emoji(str)).pop();
@@ -181,15 +175,15 @@ function shortnamesToUnicode (str) {
  * Determines whether the passed in string is just a single emoji shortname;
  * @namespace u
  * @method u.isOnlyEmojis
- * @param { String } text - A string which might be just an emoji shortname
- * @returns { Boolean }
+ * @param {String} text - A string which might be just an emoji shortname
+ * @returns {Boolean}
  */
-export function isOnlyEmojis (text) {
+export function isOnlyEmojis(text) {
     const words = text.trim().split(/\s+/);
     if (words.length === 0 || words.length > 3) {
         return false;
     }
-    const emojis = words.filter(text => {
+    const emojis = words.filter((text) => {
         const refs = getCodePointReferences(u.shortnamesToUnicode(text));
         return refs.length === 1 && (text.toLowerCase() === refs[0]['shortname'] || text === refs[0]['emoji']);
     });
@@ -204,7 +198,7 @@ export function isOnlyEmojis (text) {
  * @returns { Object }
  *  Map of emojis with the passed in `attr` used as key and a list of emojis as values.
  */
-function getEmojisByAttribute (attr) {
+function getEmojisByAttribute(attr) {
     if (emojis_by_attribute[attr]) {
         return emojis_by_attribute[attr];
     }
@@ -220,11 +214,18 @@ function getEmojisByAttribute (attr) {
     return emojis_by_attribute[attr];
 }
 
-Object.assign(u, {
-    getCodePointReferences,
-    getShortnameReferences,
+const exports = {
     convertASCII2Emoji,
+    getCodePointReferences,
     getEmojisByAttribute,
+    getShortnameReferences,
     isOnlyEmojis,
     shortnamesToUnicode,
+};
+
+Object.assign(u, {
+    ...exports, // DEPRECATED
+    emojis: {
+        ...exports,
+    },
 });

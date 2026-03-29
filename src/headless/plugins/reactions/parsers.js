@@ -3,6 +3,14 @@ import converse from '../../shared/api/public.js';
 const { Strophe } = converse.env;
 
 /**
+ * @typedef {import('../../plugins/muc/muc').default} MUC
+ * @typedef {import('../../plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
+ * @typedef {import('./types').MUCMessageAttrsWithReactions} MUCMessageAttrsWithReactions
+ * @typedef {import('./types').MessageAttrsWithReactions} MessageAttrsWithReactions
+ */
+
+/**
  * Parse reactions from a message stanza and return updated attributes.
  *
  * Per XEP-0444, a reaction stanza references an existing message via
@@ -26,13 +34,12 @@ const { Strophe } = converse.env;
  * the `getUpdatedMessageAttributes` hook merges this single-reactor object
  * with existing reactions from other reactors.
  *
- * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
- * @typedef {import('../../plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
  * @param {Element} stanza - The XMPP message stanza
  * @param {MessageAttributes|MUCMessageAttributes} attrs - Current message attributes
- * @param {import('../../plugins/muc/muc.js').default} [chatbox] - The MUC chatbox,
+ * @param {MUC} [chatbox] - The MUC model,
  *   passed for MUC messages so we can inspect room features (e.g. anonymity mode).
- * @returns {Promise<import('./types').MessageAttrsWithReactions|import('./types').MUCMessageAttrsWithReactions>}
+ *   For 1:1 chats, this parameter is `undefined`.
+ * @returns {Promise<MessageAttrsWithReactions|MUCMessageAttrsWithReactions>}
  */
 export async function parseReactionsMessage(stanza, attrs, chatbox) {
     const reactions_element = stanza.getElementsByTagNameNS(Strophe.NS.REACTIONS, 'reactions')[0];
@@ -41,8 +48,8 @@ export async function parseReactionsMessage(stanza, attrs, chatbox) {
         return attrs;
     }
 
-    const id = reactions_element.getAttribute('id');
-    if (!id) {
+    const reaction_to_id = reactions_element.getAttribute('id');
+    if (!reaction_to_id) {
         return attrs;
     }
 
@@ -54,10 +61,11 @@ export async function parseReactionsMessage(stanza, attrs, chatbox) {
     let reacting_key;
     if (attrs.type === 'groupchat') {
         const muc_attrs = /** @type {MUCMessageAttributes} */ (attrs);
+        const muc_chatbox = /** @type {import('../../plugins/muc/muc.js').default|undefined} */ (chatbox);
         if (muc_attrs.occupant_id) {
             // XEP-0421: stable across nick changes, preferred in all MUC types
             reacting_key = muc_attrs.occupant_id;
-        } else if (muc_attrs.from_real_jid && chatbox?.features?.get('nonanonymous')) {
+        } else if (muc_attrs.from_real_jid && muc_chatbox?.features?.get('nonanonymous')) {
             // Non-anonymous MUC: real bare JID is visible to all participants
             // and is stable across nick changes
             reacting_key = muc_attrs.from_real_jid;
@@ -72,7 +80,7 @@ export async function parseReactionsMessage(stanza, attrs, chatbox) {
     const reactions = { [reacting_key]: emojis };
 
     return Object.assign(attrs, {
-        reaction_to_id: id,
+        reaction_to_id,
         reactions,
     });
 }

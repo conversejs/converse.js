@@ -11,12 +11,10 @@ export default class EmojiDropdown extends DropdownBase {
         };
     };
     render_emojis: boolean;
-    state: EmojiPicker;
     model: any;
     initModel(): Promise<void>;
     init_promise: Promise<void>;
     onShown(): Promise<void>;
 }
-import DropdownBase from "shared/components/dropdown.js";
-import { EmojiPicker } from "@converse/headless";
+import DropdownBase from 'shared/components/dropdown.js';
 //# sourceMappingURL=emoji-dropdown.d.ts.map

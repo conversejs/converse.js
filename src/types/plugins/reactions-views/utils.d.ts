@@ -6,17 +6,17 @@
  * For MUC the key is the full JID (room@domain/nick), matching what the
  * server will echo back. For 1:1 chats the key is the bare JID.
  *
- * @param {Object} message - The message model to update
- * @param {Array<string>} emojis - The list of emojis (can be empty for removal)
+ * @param {BaseMessage} message - The message model to update
+ * @param {string[]} emojis - The list of emojis (can be empty for removal)
  */
-export function updateMessageReactions(message: any, emojis: Array<string>): void;
+export function updateMessageReactions(message: BaseMessage, emojis: string[]): void;
 /**
  * Send a XEP-0444 reaction stanza and optimistically update the message.
  *
- * @param {Object} message - The message model to update
+ * @param {BaseMessage} message - The message model to update
  * @param {string} emoji - The selected emoji or shortname
  */
-export function sendReaction(message: any, emoji: string): void;
+export function sendReaction(message: BaseMessage, emoji: string): void;
 /**
  * Convert JID-keyed reactions to emoji-keyed format for display.
  *
@@ -41,12 +41,14 @@ export function getEmojiKeyedReactions(reactions: Record<string, string[]>): Rec
  *   "Alice, Bob and 3 others"
  *
  * @param {string[]} jids - Reactor JIDs (MUC full JIDs or 1:1 bare JIDs)
- * @param {Object} chatbox - The chatbox model
+ * @param {ChatBoxOrMUC} chatbox - The chatbox model
  * @returns {Promise<string>}
  */
-export function getReactorNames(jids: string[], chatbox: any): Promise<string>;
+export function getReactorNames(jids: string[], chatbox: ChatBoxOrMUC): Promise<string>;
 /**
  * Registers a handler for disco#info result stanzas to check for restricted reactions support.
  */
 export function registerRestrictedReactionsHandler(): void;
+export type BaseMessage = import("@converse/headless/types/shared/message").default;
+export type ChatBoxOrMUC = import("@converse/headless/types/shared/types").ChatBoxOrMUC;
 //# sourceMappingURL=utils.d.ts.map

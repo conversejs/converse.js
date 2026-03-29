@@ -1,4 +1,10 @@
-import { BrowserStorage, IEventEmitter } from "@converse/skeletor";
+import { BrowserStorage, IEventEmitter } from '@converse/skeletor';
+
+export type CommonUtils = Record<string, Function>;
+
+type PluginUtilsKeys = 'muc' | 'mam' | 'omemo' | 'roster' | 'reactions' | 'bookmarks' | 'emojis';
+
+export type PluginUtils = Record<PluginUtilsKeys, CommonUtils>;
 
 export type Credentials = {
     jid: string;
@@ -18,7 +24,7 @@ export type MediaURLIndexes = {
     url: string;
     end: number;
     start: number;
-}
+};
 
 export type MediaURLMetadata = MediaURLIndexes & {
     is_audio?: boolean;
@@ -32,4 +38,4 @@ export type StorageType = 'persistent' | 'session';
 
 export type StorageModel = IEventEmitter & {
     browserStorage: BrowserStorage;
-}
+};

@@ -1713,7 +1713,7 @@ Example:
 .. code-block:: javascript
 
     converse.initialize({
-        popular_reactions: [':thumbsup:', ':thumbsdown:', ':heart:', ':laughing:', ':tada:']
+        popular_reactions: [':thumbsup:', ':heart:', ':laughing:', ':joy:', ':tada:']
     });
 
 .. _`prebind_url`:

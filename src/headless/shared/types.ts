@@ -235,3 +235,6 @@ export type StorageKeys = {
     storage_key: string;
     fetched_flag_key: string;
 };
+
+// Common chatbox types
+export type ChatBoxOrMUC = import('../plugins/chat/model.js').default | import('../plugins/muc/muc.js').default;

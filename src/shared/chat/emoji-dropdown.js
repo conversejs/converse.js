@@ -22,7 +22,6 @@ export default class EmojiDropdown extends DropdownBase {
 
         // This is an optimization, we lazily render the emoji picker, otherwise tests slow to a crawl.
         this.render_emojis = false;
-        this.state = null;
         this.model = null;
         this.addEventListener('shown.bs.dropdown', () => this.onShown());
     }
@@ -31,18 +30,18 @@ export default class EmojiDropdown extends DropdownBase {
         if (!this.init_promise) {
             this.init_promise = (async () => {
                 await api.emojis.initialize();
-                if (!this.model.emoji_picker) {
+                const chatbox = this.model;
+                if (!chatbox.emoji_picker) {
                     const bare_jid = _converse.session.get('bare_jid');
-                    const id = `converse.emoji-${bare_jid}-${this.model.get('jid')}`;
-                    this.model.emoji_picker = new EmojiPicker({ id });
-                    initStorage(this.model.emoji_picker, id);
+                    const id = `converse.emoji-${bare_jid}-${chatbox.get('jid')}`;
+                    chatbox.emoji_picker = new EmojiPicker({ id });
+                    initStorage(chatbox.emoji_picker, id);
                     await new Promise((resolve) =>
-                        this.model.emoji_picker.fetch({ 'success': resolve, 'error': resolve }),
+                        chatbox.emoji_picker.fetch({ 'success': resolve, 'error': resolve }),
                     );
+                    // We never want still be in the autocompleting state upon page load
+                    chatbox.emoji_picker.set({ 'autocompleting': null, 'ac_position': null });
                 }
-                this.state = this.model.emoji_picker;
-                // We never want still be in the autocompleting state upon page load
-                this.state.set({ 'autocompleting': null, 'ac_position': null });
             })();
         }
         return this.init_promise;
@@ -74,13 +73,13 @@ export default class EmojiDropdown extends DropdownBase {
                         this.initModel().then(
                             () =>
                                 html` <converse-emoji-picker
-                                    .state=${this.state}
+                                    .state=${this.model.emoji_picker}
                                     .model=${this.model}
                                     @emojiSelected=${() => this.dropdown.hide()}
                                     ?render_emojis=${this.render_emojis}
-                                    current_category="${this.state.get('current_category') || ''}"
-                                    current_skintone="${this.state.get('current_skintone') || ''}"
-                                    query="${this.state.get('query') || ''}"
+                                    current_category="${this.model.emoji_picker.get('current_category') || ''}"
+                                    current_skintone="${this.model.emoji_picker.get('current_skintone') || ''}"
+                                    query="${this.model.emoji_picker.get('query') || ''}"
                                 ></converse-emoji-picker>`,
                         ),
                         '',

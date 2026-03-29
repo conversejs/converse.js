@@ -642,9 +642,13 @@ export default function ModelWithMessages(BaseModel) {
          */
         getMessageReferencedByError(attrs) {
             if (attrs.msgid) {
-                return this.messages.models.find(m => [m.get('msgid'), m.get('retraction_id'), m.get('origin_id')].includes(attrs.msgid));
+                return this.messages.models.find((m) =>
+                    [m.get('msgid'), m.get('retraction_id'), m.get('origin_id')].includes(attrs.msgid)
+                );
             } else if (attrs.reaction_to_id) {
-                return this.messages.models.find(m => [m.get('msgid'), m.get('origin_id')].includes(attrs.reaction_to_id));
+                return this.messages.models.find((m) =>
+                    [m.get('msgid'), m.get('origin_id')].includes(attrs.reaction_to_id)
+                );
             }
         }
 
@@ -680,21 +684,18 @@ export default function ModelWithMessages(BaseModel) {
         /**
          * Returns an already cached message (if it exists) based on the
          * passed in attributes map.
-         *
-         * Plugins can contribute additional query objects via the
-         * {@link getDuplicateMessageQueries} hook, which is fired before the
-         * search runs. Each query object is a plain `{ attribute: value }` map;
-         * a message matches if every key in the object equals the corresponding
-         * attribute on the stored model. The built-in queries cover stanza_id,
-         * origin_id, and body deduplication; plugins add their own criteria
-         * (e.g. the reactions plugin adds `reaction_to_id` matching) without
-         * coupling this shared method to plugin-specific logic.
-         *
          * @param {object} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
          * @returns {Promise<BaseMessage|undefined>}
          */
         async getDuplicateMessage(attrs) {
+            /**
+             * Hook to let plugins contribute additional query objects.
+             *  Each query object is a plain `{ attribute: value }` map;
+             * a message matches if every key in the object equals the corresponding
+             * attribute on the stored model. The built-in queries cover stanza_id,
+             * origin_id, and body deduplication; plugins add their own criteria.
+             */
             const extra_queries = await api.hook('getDuplicateMessageQueries', this, attrs, []);
 
             const queries = [
@@ -706,7 +707,7 @@ export default function ModelWithMessages(BaseModel) {
 
             return this.messages.models.find(
                 /** @param {BaseMessage} m */
-                (m) => queries.find((q) => Object.keys(q).every((k) => m.get(k) === q[k])),
+                (m) => queries.find((q) => Object.keys(q).every((k) => m.get(k) === q[k]))
             );
         }
 

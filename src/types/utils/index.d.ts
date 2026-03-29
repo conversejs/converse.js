@@ -86,7 +86,7 @@ declare const _default: {
     base64ToArrayBuffer(b64: any): ArrayBufferLike;
     hexToArrayBuffer(hex: any): ArrayBufferLike;
     unique<T extends unknown>(arr: Array<T>): Array<T>;
-} & import("headless/types/utils/index.js").CommonUtils & import("headless/types/utils/index.js").PluginUtils & {
+} & import("headless/types/utils/types.js").CommonUtils & import("headless/types/utils/types.js").PluginUtils & {
     isDomainWhitelisted(whitelist: string[], url: string | URL): boolean;
     isDomainAllowed(url: string | URL, setting: string): boolean;
     isMediaURLDomainAllowed(o: import("headless/types/utils/types.js").MediaURLMetadata): boolean;
@@ -195,7 +195,7 @@ declare const _default: {
         base64ToArrayBuffer(b64: any): ArrayBufferLike;
         hexToArrayBuffer(hex: any): ArrayBufferLike;
         unique<T extends unknown>(arr: Array<T>): Array<T>;
-    } & import("headless/types/utils/index.js").CommonUtils & import("headless/types/utils/index.js").PluginUtils;
+    } & import("headless/types/utils/types.js").CommonUtils & import("headless/types/utils/types.js").PluginUtils;
     getSelectValues(select: HTMLSelectElement): string[];
     webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
     placeCaretAtEnd(textarea: HTMLTextAreaElement): void;

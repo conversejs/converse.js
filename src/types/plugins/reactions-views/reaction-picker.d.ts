@@ -3,9 +3,6 @@ export default class ReactionPicker extends CustomElement {
         model: {
             type: ObjectConstructor;
         };
-        emoji_picker_state: {
-            type: ObjectConstructor;
-        };
         dropup: {
             type: BooleanConstructor;
         };
@@ -16,8 +13,8 @@ export default class ReactionPicker extends CustomElement {
             type: BooleanConstructor;
         };
     };
-    model: any;
-    emoji_picker_state: EmojiPicker;
+    /** @type {BaseMessage|null} */
+    model: BaseMessage | null;
     picker_id: string;
     dropup: boolean;
     shifted: boolean;
@@ -25,18 +22,32 @@ export default class ReactionPicker extends CustomElement {
     onClickOutside: (ev: MouseEvent) => void;
     /**
      * Render the reaction picker UI
-     * @returns {Object} Lit HTML template
+     * @returns {import('lit').TemplateResult|''}
      */
-    render(): any;
+    render(): import("lit").TemplateResult | "";
     updated(changed: any): void;
-    open(ev: any): Promise<void>;
+    /**
+     * @param {MouseEvent} ev - The click event that triggered opening
+     */
+    open(ev: MouseEvent): Promise<void>;
     close(): void;
     positionPicker(): void;
-    get allowed_emojis(): any;
+    /**
+     * @returns {string[]|undefined}
+     */
+    get allowed_emojis(): string[];
+    /**
+     * Initialize the emoji picker for this chat if it doesn't exist
+     * @returns {Promise<void>}
+     */
     initEmojiPicker(): Promise<void>;
-    onEmojiSelected(emoji: any): void;
+    /**
+     * @param {string} emoji - The selected emoji
+     */
+    onEmojiSelected(emoji: string): void;
     #private;
 }
+export type BaseMessage = import("@converse/headless/types/shared/message").default;
+export type ChatBoxOrMUC = import("@converse/headless/types/shared/types").ChatBoxOrMUC;
 import { CustomElement } from 'shared/components/element.js';
-import { EmojiPicker } from '@converse/headless';
 //# sourceMappingURL=reaction-picker.d.ts.map

@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
+ * @typedef {import('@converse/headless/types/shared/types').ChatBoxOrMUC} ChatBoxOrMUC
+ */
 import { _converse, api, converse, log, u } from '@converse/headless';
 import { __ } from 'i18n';
 
@@ -11,10 +15,11 @@ const { Strophe, sizzle, stx } = converse.env;
  * For MUC the key is the full JID (room@domain/nick), matching what the
  * server will echo back. For 1:1 chats the key is the bare JID.
  *
- * @param {Object} message - The message model to update
- * @param {Array<string>} emojis - The list of emojis (can be empty for removal)
+ * @param {BaseMessage} message - The message model to update
+ * @param {string[]} emojis - The list of emojis (can be empty for removal)
  */
 export function updateMessageReactions(message, emojis) {
+    /** @type {ChatBoxOrMUC} */
     const chatbox = message.collection.chatbox;
     const my_jid = u.reactions.getOwnReactionJID(chatbox);
 
@@ -33,18 +38,21 @@ export function updateMessageReactions(message, emojis) {
 /**
  * Send a XEP-0444 reaction stanza and optimistically update the message.
  *
- * @param {Object} message - The message model to update
+ * @param {BaseMessage} message - The message model to update
  * @param {string} emoji - The selected emoji or shortname
  */
 export function sendReaction(message, emoji) {
+    if (!emoji) return;
+
+    /** @type {ChatBoxOrMUC} */
     const chatbox = message.collection.chatbox;
-    const msg_id = message.get('msgid');
     const to_jid = chatbox.get('jid');
     const type = chatbox.get('type') === 'chatroom' ? 'groupchat' : 'chat';
 
-    if (!emoji) {
-        return;
-    }
+    // For MUC messages, use the MUC-assigned stanza_id as the reaction target id.
+    // Fall back to msgid if the MUC stanza_id is not present.
+    const muc_stanza_id = type === 'groupchat' ? message.get(`stanza_id ${to_jid}`) : null;
+    const msg_id = muc_stanza_id || message.get('msgid');
 
     let emoji_unicode = emoji;
     if (emoji.startsWith(':') && emoji.endsWith(':')) {
@@ -67,18 +75,60 @@ export function sendReaction(message, emoji) {
         my_reactions.add(emoji_unicode);
     }
 
-    const reaction_id = u.getUniqueId('reaction');
-    const reaction_stanza = stx`
-        <message to="${to_jid}" type="${type}" id="${reaction_id}" xmlns="jabber:client">
+    api.send(stx`
+        <message to="${to_jid}" type="${type}" id="${u.getUniqueId('reaction')}" xmlns="jabber:client">
             <reactions xmlns="${Strophe.NS.REACTIONS}" id="${msg_id}">
                 ${Array.from(my_reactions).map((reaction) => stx`<reaction>${reaction}</reaction>`)}
             </reactions>
+            <store xmlns="${Strophe.NS.HINTS}"/>
         </message>
-    `;
-
-    api.send(reaction_stanza);
+    `);
 
     updateMessageReactions(message, Array.from(my_reactions));
+
+    // When adding a reaction (not removing), bump it to the front of the popular
+    // reactions list and persist the updated list to the user's PEP node.
+    if (my_reactions.has(emoji_unicode)) {
+        bumpPopularReaction(emoji_unicode).catch((e) => log.error(e));
+    }
+}
+
+/**
+ * Record that an emoji was just used, update the PopularReactions model with
+ * the current timestamp and publish the updated list to the user's private
+ * PEP node (XEP-0223). Timestamps follow XEP-0082 (ISO 8601 UTC).
+ *
+ * @param {string} emoji_unicode - The unicode emoji that was just sent
+ */
+async function bumpPopularReaction(emoji_unicode) {
+    const popular_reactions = _converse.state.popular_reactions;
+    if (!popular_reactions) return;
+
+    // Convert the used unicode emoji to its shortname for storage
+    const by_cp = u.getEmojisByAttribute('cp');
+    const cp = u.reactions.emojiToCodepointKey(emoji_unicode);
+    const shortname = by_cp[cp]?.sn ?? emoji_unicode;
+
+    popular_reactions.recordUsage(shortname);
+
+    // Get the most-recently-used list for publishing to PEP.
+    // Use the default setting length as max to respect user's configured list size.
+    const default_setting = api.settings.get('popular_reactions') ?? [];
+    const max = default_setting.length || 5;
+    const sorted = popular_reactions.getSortedEmojis(max);
+    const timestamps = popular_reactions.get('timestamps') || {};
+
+    await u.reactions.publishPopularReactions(
+        sorted
+            .map(
+                /** @param {string} sn */ (sn) => {
+                    const emoji_array = u.shortnamesToEmojis(sn, { unicode_only: true });
+                    const emoji = Array.isArray(emoji_array) ? emoji_array.join('') : emoji_array;
+                    return emoji ? { emoji, stamp: timestamps[sn] } : null;
+                },
+            )
+            .filter(Boolean),
+    );
 }
 
 /**
@@ -118,7 +168,7 @@ export function getEmojiKeyedReactions(reactions) {
  *   "Alice, Bob and 3 others"
  *
  * @param {string[]} jids - Reactor JIDs (MUC full JIDs or 1:1 bare JIDs)
- * @param {Object} chatbox - The chatbox model
+ * @param {ChatBoxOrMUC} chatbox - The chatbox model
  * @returns {Promise<string>}
  */
 export async function getReactorNames(jids, chatbox) {
@@ -198,6 +248,7 @@ async function handleRestrictedReactions(stanza) {
         .map((el) => el.textContent)
         .filter(Boolean);
 
+    /** @type {ChatBoxOrMUC|undefined} */
     const chatbox = await api.chatboxes.get(bare_jid);
     chatbox?.save('allowed_reactions', allowed);
 }

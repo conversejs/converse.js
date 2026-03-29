@@ -168,5 +168,10 @@ export type FileUploadMessageAttributes = {
 };
 export type MessageMarkerType = 'displayed' | 'received' | 'acknowledged';
 export type ChatStateType = 'active' | 'composing' | 'paused' | 'inactive' | 'gone';
+export type StorageKeys = {
+    storage_key: string;
+    fetched_flag_key: string;
+};
+export type ChatBoxOrMUC = import('../plugins/chat/model.js').default | import('../plugins/muc/muc.js').default;
 export {};
 //# sourceMappingURL=types.d.ts.map

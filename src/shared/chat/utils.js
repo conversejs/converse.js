@@ -172,12 +172,8 @@ export function getTonedEmojis() {
 }
 
 /**
- * @typedef {object} EmojiMarkupOptions
- * @property {boolean} [unicode_only=false]
- * @property {boolean} [add_title_wrapper=false]
- *
  * @param {object} data
- * @param {EmojiMarkupOptions} options
+ * @param {import('./types').EmojiMarkupOptions} options
  */
 export function getEmojiMarkup(data, options = { unicode_only: false, add_title_wrapper: false }) {
     const emoji = data.emoji;
@@ -219,7 +215,7 @@ export function getEmojiMarkup(data, options = { unicode_only: false, add_title_
 
 /**
  * @param {string} text
- * @param {object} options
+ * @param {import('./types').EmojiMarkupOptions} options
  */
 export function addEmojisMarkup(text, options) {
     let list = [text];
@@ -251,16 +247,7 @@ export function addEmojisMarkup(text, options) {
  * @namespace u
  * @method u.shortnamesToEmojis
  * @param {String} str - String containing the shortname(s)
- * @param {Object} options
- * @param {Boolean} options.unicode_only - Whether emojis are rendered as
- *  unicode codepoints. If so, the returned result will be an array
- *  with containing one string, because the emojis themselves will
- *  also be strings. If set to false, emojis will be represented by
- *  lit TemplateResult objects.
- * @param {Boolean} options.add_title_wrapper - Whether unicode
- *  codepoints should be wrapped with a `<span>` element with a
- *  title, so that the shortname is shown upon hovering with the
- *  mouse.
+ * @param {import('./types').EmojiMarkupOptions} options
  * @returns {Array} An array of at least one string, or otherwise
  * strings and lit TemplateResult objects.
  */

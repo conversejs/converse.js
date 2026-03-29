@@ -41,19 +41,15 @@ export function getDayIndicator(message: Message): TemplateResult | undefined;
 export function getHats(message: MUCMessage): any[];
 export function getTonedEmojis(): any;
 /**
- * @typedef {object} EmojiMarkupOptions
- * @property {boolean} [unicode_only=false]
- * @property {boolean} [add_title_wrapper=false]
- *
  * @param {object} data
- * @param {EmojiMarkupOptions} options
+ * @param {import('./types').EmojiMarkupOptions} options
  */
-export function getEmojiMarkup(data: object, options?: EmojiMarkupOptions): any;
+export function getEmojiMarkup(data: object, options?: import("./types").EmojiMarkupOptions): any;
 /**
  * @param {string} text
- * @param {object} options
+ * @param {import('./types').EmojiMarkupOptions} options
  */
-export function addEmojisMarkup(text: string, options: object): string[];
+export function addEmojisMarkup(text: string, options: import("./types").EmojiMarkupOptions): string[];
 /**
  * Returns an emoji represented by the passed in shortname.
  * Scans the passed in text for shortnames and replaces them with
@@ -68,27 +64,11 @@ export function addEmojisMarkup(text: string, options: object): string[];
  * @namespace u
  * @method u.shortnamesToEmojis
  * @param {String} str - String containing the shortname(s)
- * @param {Object} options
- * @param {Boolean} options.unicode_only - Whether emojis are rendered as
- *  unicode codepoints. If so, the returned result will be an array
- *  with containing one string, because the emojis themselves will
- *  also be strings. If set to false, emojis will be represented by
- *  lit TemplateResult objects.
- * @param {Boolean} options.add_title_wrapper - Whether unicode
- *  codepoints should be wrapped with a `<span>` element with a
- *  title, so that the shortname is shown upon hovering with the
- *  mouse.
+ * @param {import('./types').EmojiMarkupOptions} options
  * @returns {Array} An array of at least one string, or otherwise
  * strings and lit TemplateResult objects.
  */
-export function shortnamesToEmojis(str: string, options?: {
-    unicode_only: boolean;
-    add_title_wrapper: boolean;
-}): any[];
-export type EmojiMarkupOptions = {
-    unicode_only?: boolean;
-    add_title_wrapper?: boolean;
-};
+export function shortnamesToEmojis(str: string, options?: import("./types").EmojiMarkupOptions): any[];
 export type HeadingButtonAttributes = import("plugins/chatview/types").HeadingButtonAttributes;
 export type Message = import("@converse/headless").Message;
 export type MUCMessage = import("@converse/headless").MUCMessage;

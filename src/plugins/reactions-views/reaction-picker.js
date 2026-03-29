@@ -4,6 +4,10 @@
  * @license Mozilla Public License (MPLv2)
  */
 
+/**
+ * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
+ * @typedef {import('@converse/headless/types/shared/types').ChatBoxOrMUC} ChatBoxOrMUC
+ */
 import { CustomElement } from 'shared/components/element.js';
 import { api, u, _converse, EmojiPicker } from '@converse/headless';
 import { __ } from 'i18n';
@@ -18,7 +22,6 @@ export default class ReactionPicker extends CustomElement {
     static get properties() {
         return {
             'model': { type: Object },
-            'emoji_picker_state': { type: Object },
             'dropup': { type: Boolean },
             'shifted': { type: Boolean },
             'opened': { type: Boolean },
@@ -30,8 +33,8 @@ export default class ReactionPicker extends CustomElement {
 
     constructor() {
         super();
+        /** @type {BaseMessage|null} */
         this.model = null;
-        this.emoji_picker_state = null;
         this.picker_id = u.getUniqueId('reaction-picker');
         this.dropup = false;
         this.shifted = false;
@@ -48,7 +51,7 @@ export default class ReactionPicker extends CustomElement {
 
     /**
      * Render the reaction picker UI
-     * @returns {Object} Lit HTML template
+     * @returns {import('lit').TemplateResult|''}
      */
     render() {
         return this.opened ? tplReactionPicker(this) : '';
@@ -68,6 +71,9 @@ export default class ReactionPicker extends CustomElement {
         }
     }
 
+    /**
+     * @param {MouseEvent} ev - The click event that triggered opening
+     */
     async open(ev) {
         const btn = /** @type {HTMLElement} */ (ev.currentTarget ?? ev.target);
         this.#anchor_rect = btn?.getBoundingClientRect() ?? null;
@@ -138,29 +144,41 @@ export default class ReactionPicker extends CustomElement {
         }
     }
 
+    /**
+     * @returns {string[]|undefined}
+     */
     get allowed_emojis() {
-        return this.model?.collection?.chatbox?.get('allowed_reactions');
+        /** @type {ChatBoxOrMUC|undefined} */
+        const chatbox = this.model?.collection?.chatbox;
+        return chatbox?.get('allowed_reactions');
     }
 
+    /**
+     * Initialize the emoji picker for this chat if it doesn't exist
+     * @returns {Promise<void>}
+     */
     async initEmojiPicker() {
-        if (!this.emoji_picker_state) {
+        /** @type {ChatBoxOrMUC|undefined} */
+        const chatbox = this.model?.collection?.chatbox;
+        if (!chatbox) return;
+        if (!chatbox.emoji_picker) {
             await api.emojis.initialize();
 
-            const chatbox = this.model?.collection?.chatbox;
-            if (!chatbox.emoji_picker) {
-                const bare_jid = _converse.session.get('bare_jid');
-                const id = `converse.emoji-${bare_jid}-${chatbox.get('jid')}`;
-                chatbox.emoji_picker = new EmojiPicker({ id });
-                u.initStorage(chatbox.emoji_picker, id);
-                await new Promise((resolve) => chatbox.emoji_picker.fetch({ 'success': resolve, 'error': resolve }));
-            }
-            this.emoji_picker_state = chatbox.emoji_picker;
+            const bare_jid = _converse.session.get('bare_jid');
+            const id = `converse.emoji-${bare_jid}-${chatbox.get('jid')}`;
+            chatbox.emoji_picker = new EmojiPicker({ id });
+            u.initStorage(chatbox.emoji_picker, id);
+            await new Promise((resolve) => chatbox.emoji_picker.fetch({ 'success': resolve, 'error': resolve }));
 
             this.requestUpdate();
         }
     }
 
+    /**
+     * @param {string} emoji - The selected emoji
+     */
     onEmojiSelected(emoji) {
+        if (!this.model) return;
         sendReaction(this.model, emoji);
         this.close();
     }

@@ -14,7 +14,7 @@ describe("XEP-0198 Stream Management", function () {
                 enable_smacks: true,
                 show_controlbox_by_default: true,
                 smacks_max_unacked_stanzas: 2,
-                blacklisted_plugins: ['converse-blocklist']
+                blacklisted_plugins: ['converse-blocklist', 'converse-reactions']
             },
             async function (_converse) {
 

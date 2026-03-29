@@ -138,7 +138,7 @@ declare const _default: {
     base64ToArrayBuffer(b64: any): ArrayBufferLike;
     hexToArrayBuffer(hex: any): ArrayBufferLike;
     unique<T extends unknown>(arr: Array<T>): Array<T>;
-} & import("headless/types/utils").CommonUtils & import("headless/types/utils").PluginUtils & {
+} & import("headless/types/utils/types").CommonUtils & import("headless/types/utils/types").PluginUtils & {
     getURLRanges: typeof getURLRanges;
 };
 export default _default;

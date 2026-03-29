@@ -7,7 +7,7 @@ import Bookmarks from './collection.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import { initBookmarks, getNicknameFromBookmark, handleBookmarksPush } from './utils.js';
+import { getNicknameFromBookmark, handleBookmarksPush, getStorageKeys } from './utils.js';
 import '../../plugins/muc/index.js';
 import log from '@converse/log';
 import bookmarks_api from './api.js';
@@ -127,19 +127,26 @@ converse.plugins.add('converse-bookmarks', {
             const { state } = _converse;
             if (state.bookmarks) {
                 state.bookmarks.clearStore({ silent: true });
-                _converse.state.session.set(this.fetched_flag, undefined);
+                const { fetched_flag_key } = getStorageKeys();
+                _converse.state.session.set(fetched_flag_key, undefined);
                 delete state.bookmarks;
             }
         });
 
         api.listen.on('connected', async () => {
+            if (!api.settings.get('allow_bookmarks')) return;
+
             // Add a handler for bookmarks pushed from other connected clients
             const bare_jid = _converse.session.get('bare_jid');
             const connection = api.connection.get();
             connection.addHandler(handleBookmarksPush, Strophe.NS.BOOKMARKS, 'message', 'headline', null, bare_jid);
             connection.addHandler(handleBookmarksPush, Strophe.NS.BOOKMARKS2, 'message', 'headline', null, bare_jid);
             await Promise.all([api.waitUntil('chatBoxesFetched')]);
-            initBookmarks();
+
+            if (await Bookmarks.checkBookmarksSupport()) {
+                _converse.state.bookmarks = new _converse.exports.Bookmarks();
+                Object.assign(_converse, { bookmarks: _converse.state.bookmarks }); // TODO: DEPRECATED
+            }
         });
     },
 });

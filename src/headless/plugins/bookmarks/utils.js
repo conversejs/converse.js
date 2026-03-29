@@ -1,16 +1,18 @@
+import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import log from "@converse/log";
-import Bookmarks from './collection.js';
+import converse from '../../shared/api/public.js';
 
-export async function initBookmarks() {
-    if (!api.settings.get('allow_bookmarks')) {
-        return;
-    }
-    if (await Bookmarks.checkBookmarksSupport()) {
-        _converse.state.bookmarks = new _converse.exports.Bookmarks();
-        Object.assign(_converse, { bookmarks: _converse.state.bookmarks }); // TODO: DEPRECATED
-    }
+const { u } = converse.env;
+
+/**
+ * @returns {import('shared/types').StorageKeys}
+ */
+export function getStorageKeys() {
+    const { session } = _converse;
+    const storage_key = `converse.room-bookmarks.${session.get('bare_jid')}`;
+    const fetched_flag_key = `${storage_key}-fetched`;
+    return { storage_key, fetched_flag_key };
 }
 
 /**
@@ -31,6 +33,13 @@ export function getNicknameFromBookmark(jid) {
 export function handleBookmarksPush(message) {
     api.waitUntil('bookmarksInitialized')
         .then(() => _converse.state.bookmarks.setBookmarksFromStanza(message))
-        .catch(/** @param {Error} e */(e) => log.fatal(e));
+        .catch(/** @param {Error} e */ (e) => log.fatal(e));
     return true;
 }
+
+
+Object.assign(u, {
+    bookmarks: {
+        getStorageKeys,
+    }
+});

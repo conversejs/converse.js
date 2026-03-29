@@ -1,4 +1,7 @@
-export function initBookmarks(): Promise<void>;
+/**
+ * @returns {import('shared/types').StorageKeys}
+ */
+export function getStorageKeys(): import("shared/types").StorageKeys;
 /**
  * @param {string} jid - The JID of the bookmark.
  * @returns {string|null} The nickname if found, otherwise null.

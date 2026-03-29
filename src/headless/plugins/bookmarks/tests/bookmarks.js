@@ -463,7 +463,9 @@ describe("A bookmark", function () {
                 </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(error_stanza));
 
-            const cache_key = `converse.room-bookmarksromeo@montague.litfetched`;
+            const { fetched_flag_key } = u.bookmarks.getStorageKeys();
+            const cache_key = `converse.room-bookmarks.romeo@montague.lit-fetched`;
+            expect(fetched_flag_key).toBe(cache_key);
             const result = await u.waitUntil(() => _converse.state.session.get(cache_key));
             expect(result).toBe(true);
         })

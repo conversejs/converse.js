@@ -14,6 +14,7 @@ import log from '@converse/log';
 import { initStorage } from '../../utils/storage.js';
 import { parseStanzaForBookmarks } from './parsers.js';
 import '../../plugins/muc/index.js';
+import { getStorageKeys } from './utils.js';
 
 const { Strophe, stx } = converse.env;
 
@@ -45,10 +46,9 @@ class Bookmarks extends Collection {
             }
         );
 
-        const { session } = _converse;
-        const cache_key = `converse.room-bookmarks${session.get('bare_jid')}`;
-        this.fetched_flag = cache_key + 'fetched';
-        initStorage(this, cache_key);
+        const { storage_key, fetched_flag_key } = getStorageKeys();
+        this.fetched_flag = fetched_flag_key;
+        initStorage(this, storage_key);
 
         await this.fetchBookmarks();
 

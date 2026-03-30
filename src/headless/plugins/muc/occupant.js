@@ -91,7 +91,7 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
             return;
         }
 
-        const message = this.getDuplicateMessage(attrs);
+        const message = await this.getDuplicateMessage(attrs);
         if (message) {
             await this.updateMessage(message, attrs);
             return;

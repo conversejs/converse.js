@@ -680,21 +680,33 @@ export default function ModelWithMessages(BaseModel) {
         /**
          * Returns an already cached message (if it exists) based on the
          * passed in attributes map.
+         *
+         * Plugins can contribute additional query objects via the
+         * {@link getDuplicateMessageQueries} hook, which is fired before the
+         * search runs. Each query object is a plain `{ attribute: value }` map;
+         * a message matches if every key in the object equals the corresponding
+         * attribute on the stored model. The built-in queries cover stanza_id,
+         * origin_id, and body deduplication; plugins add their own criteria
+         * (e.g. the reactions plugin adds `reaction_to_id` matching) without
+         * coupling this shared method to plugin-specific logic.
+         *
          * @param {object} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
-         * @returns {BaseMessage}
+         * @returns {Promise<BaseMessage|undefined>}
          */
-        getDuplicateMessage(attrs) {
+        async getDuplicateMessage(attrs) {
+            const extra_queries = await api.hook('getDuplicateMessageQueries', this, attrs, []);
+
             const queries = [
-                ...this.getReactionQueryAttrs(attrs),
                 ...this.getStanzaIdQueryAttrs(attrs),
                 this.getOriginIdQueryAttrs(attrs),
                 this.getMessageBodyQueryAttrs(attrs),
+                ...extra_queries,
             ].filter((s) => s);
 
             return this.messages.models.find(
                 /** @param {BaseMessage} m */
-                (m) => queries.find((q) => Object.keys(q).every((k) => m.get(k) === q[k]))
+                (m) => queries.find((q) => Object.keys(q).every((k) => m.get(k) === q[k])),
             );
         }
 
@@ -703,14 +715,6 @@ export default function ModelWithMessages(BaseModel) {
          */
         getOriginIdQueryAttrs(attrs) {
             return attrs.origin_id && { origin_id: attrs.origin_id, from: attrs.from };
-        }
-
-        /**
-         * @param {object} attrs - Attributes representing a received message
-         */
-        getReactionQueryAttrs(attrs) {
-            const { reaction_to_id } = attrs;
-            return reaction_to_id ? [{ origin_id: reaction_to_id }, { msgid: reaction_to_id }] : [];
         }
 
         /**

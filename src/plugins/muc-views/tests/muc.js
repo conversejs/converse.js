@@ -213,25 +213,6 @@ describe("Groupchats", function () {
             // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
             await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
 
-            message = stx`
-                <message xmlns="jabber:client" type="groupchat" id="918172de-d5c5-4da4-b388-446ef4a05bec" to="${_converse.jid}" xml:lang="en" from="${muc_jid}/juliet">
-                    <body>Wherefore art though?</body>
-                    <active xmlns="http://jabber.org/protocol/chatstates"/>
-                    <origin-id xmlns="urn:xmpp:sid:0" id="918172de-d5c5-4da4-b388-446ef4a05bec"/>
-                    <stanza-id xmlns="urn:xmpp:sid:0" id="88cc9c93-a8f4-4dd5-b02a-d19855eb6303" by="${muc_jid}"/>
-                    <delay xmlns="urn:xmpp:delay" stamp="2020-07-14T17:46:47Z" from="juliet@shakespeare.lit"/>
-                </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
-
-            message = stx`
-                <message xmlns="jabber:client" type="groupchat" id="awQo6a-mi-Wa6NYh" to="${_converse.jid}" from="${muc_jid}/ews000" xml:lang="en">
-                    <composing xmlns="http://jabber.org/protocol/chatstates"/>
-                    <no-store xmlns="urn:xmpp:hints"/>
-                    <no-permanent-store xmlns="urn:xmpp:hints"/>
-                    <delay xmlns="urn:xmpp:delay" stamp="2020-07-14T17:46:54Z" from="juliet@shakespeare.lit"/>
-                </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
-
             const affs = api.settings.get('muc_fetch_members');
             const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
             await mock.returnMemberLists(_converse, muc_jid, [], all_affiliations);
@@ -242,7 +223,7 @@ describe("Groupchats", function () {
                     <query queryid="${iq_get.querySelector('query').getAttribute('queryid')}" xmlns="${Strophe.NS.MAM}">
                         <x xmlns="jabber:x:data" type="submit">
                             <field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>
-                            <field var="start"><value>2020-07-14T17:46:47.000Z</value></field>
+                            <field var="start"><value>2018-01-09T06:16:23.000Z</value></field>
                         </x>
                         <set xmlns="http://jabber.org/protocol/rsm"><before></before><max>50</max></set>
                     </query>

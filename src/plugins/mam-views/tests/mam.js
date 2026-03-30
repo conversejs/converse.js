@@ -754,7 +754,7 @@ describe("Message Archive Management", function () {
                 _converse.handleMAMResult(view.model, { 'messages': [stanza.tree()] });
                 await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
                 expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
-                const result = view.model.getDuplicateMessage.calls.all()[0].returnValue
+                const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue
                 expect(result instanceof _converse.exports.MUCMessage).toBe(true);
                 expect(view.querySelectorAll('.chat-msg').length).toBe(1);
 

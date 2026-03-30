@@ -31,11 +31,11 @@ const { Strophe, stx, u } = converse.env;
  * logic leaking into shared code.
  *
  * @param {ChatBoxOrMUC} chatbox
- * @param {MessageAttrsWithReactions|MUCMessageAttrsWithReactions} attrs
  * @param {object[]} queries
+ * @param {MessageAttrsWithReactions|MUCMessageAttrsWithReactions} attrs
  * @returns {object[]}
  */
-export function getDuplicateMessageQueries(chatbox, attrs, queries) {
+export function getDuplicateMessageQueries(chatbox, queries, attrs) {
     const reaction_to_id = /** @type {string|undefined} */ (attrs.reaction_to_id);
     if (!reaction_to_id) return queries;
 

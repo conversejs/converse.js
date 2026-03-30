@@ -21,6 +21,7 @@ import {
     autoJoinRooms,
     disconnectChatRooms,
     getDefaultMUCNickname,
+    getMUCDuplicateMessageQueries,
     isInfoVisible,
     onAddClientFeatures,
     onBeforeResourceBinding,
@@ -72,7 +73,7 @@ Strophe.addNamespace('CONFINFO', 'urn:ietf:params:xml:ns:conference-info');
 converse.plugins.add('converse-muc', {
     dependencies: ['converse-chatboxes', 'converse-chat', 'converse-disco'],
 
-    initialize () {
+    initialize() {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
@@ -116,7 +117,7 @@ converse.plugins.add('converse-muc', {
 
         if (api.settings.get('locked_muc_domain') && typeof api.settings.get('muc_domain') !== 'string') {
             throw new Error(
-                'Config Error: it makes no sense to set locked_muc_domain ' + 'to true when muc_domain is not set'
+                'Config Error: it makes no sense to set locked_muc_domain ' + 'to true when muc_domain is not set',
             );
         }
 
@@ -147,11 +148,13 @@ converse.plugins.add('converse-muc', {
             '303': ___('Your nickname has been changed to %1$s'),
             '307': __('You have been kicked from this groupchat'),
             '321': __('You have been removed from this groupchat because of an affiliation change'),
-            '322': __("You have been removed from this groupchat because it has changed to members-only and you're not a member"),
+            '322': __(
+                "You have been removed from this groupchat because it has changed to members-only and you're not a member",
+            ),
             '332': __('You have been removed from this groupchat because the service hosting it is being shut down'),
             '333': __('You have exited this groupchat due to a technical problem'),
         };
-        const labels = { muc: { STATUS_CODE_MESSAGES }};
+        const labels = { muc: { STATUS_CODE_MESSAGES } };
         Object.assign(_converse.labels, labels);
         Object.assign(_converse, labels); // XXX DEPRECATED
 
@@ -181,12 +184,14 @@ converse.plugins.add('converse-muc', {
         Object.assign(_converse.exports, exports);
         Object.assign(_converse, exports); // XXX DEPRECATED
 
-        /** @type {module:shared-api.APIEndpoint} */(api.chatboxes.registry).add(CHATROOMS_TYPE, MUC);
+        /** @type {module:shared-api.APIEndpoint} */ (api.chatboxes.registry).add(CHATROOMS_TYPE, MUC);
 
         if (api.settings.get('allow_muc_invitations')) {
             api.listen.on('connected', registerDirectInvitationHandler);
             api.listen.on('reconnected', registerDirectInvitationHandler);
         }
+
+        api.listen.on('getDuplicateMessageQueries', getMUCDuplicateMessageQueries);
 
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(`${Strophe.NS.CONFINFO}+notify`));
         api.listen.on('addClientFeatures', onAddClientFeatures);

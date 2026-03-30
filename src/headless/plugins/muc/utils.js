@@ -40,6 +40,28 @@ export function shouldCreateGroupchatMessage(attrs) {
 }
 
 /**
+ * Hook handler for the `getDuplicateMessageQueries` hook.
+ *
+ * Adds a query object to match MEP (MUC Extended Presence) activity messages
+ * by their `msgid`. MEP messages carry an `activities` array and are stored
+ * with `type: 'mep'`; the standard stanza_id / origin_id queries in
+ * {@link getDuplicateMessage} do not cover this case, so we contribute the
+ * extra query here rather than overriding `getDuplicateMessage` in the MUC
+ * model.
+ *
+ * @param {import('../../shared/types').ChatBoxOrMUC} _
+ * @param {object[]} queries
+ * @param {object} attrs
+ * @returns {object[]}
+ */
+export function getMUCDuplicateMessageQueries(_, queries, attrs) {
+    if (attrs.activities?.length) {
+        return [...queries, { type: 'mep', msgid: attrs.msgid }];
+    }
+    return queries;
+}
+
+/**
  * @param {import('./occupant').default} occupant1
  * @param {import('./occupant').default} occupant2
  */
@@ -63,7 +85,7 @@ export function registerDirectInvitationHandler() {
             return true;
         },
         'jabber:x:conference',
-        'message'
+        'message',
     );
 }
 
@@ -213,7 +235,7 @@ export async function autoJoinRooms() {
                 log.error('Invalid muc criteria specified for "auto_join_rooms"');
                 return Promise.resolve();
             }
-        })
+        }),
     );
     /**
      * Triggered once any rooms that have been configured to be automatically joined,
@@ -269,6 +291,6 @@ export function onBeforeResourceBinding() {
         },
         null,
         'message',
-        'groupchat'
+        'groupchat',
     );
 }

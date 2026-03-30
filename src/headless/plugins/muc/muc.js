@@ -2402,21 +2402,6 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
-     * Returns an already cached message (if it exists) based on the
-     * passed in attributes map.
-     * @param {object} attrs - Attributes representing a received
-     *  message, as returned by {@link parseMUCMessage}
-     * @returns {Promise<MUCMessage|BaseMessage>}
-     */
-    async getDuplicateMessage(attrs) {
-        if (attrs.activities?.length) {
-            return this.messages.findWhere({ type: 'mep', msgid: attrs.msgid });
-        } else {
-            return await super.getDuplicateMessage(attrs);
-        }
-    }
-
-    /**
      * Handler for all MUC messages sent to this groupchat. This method
      * shouldn't be called directly, instead {@link MUC#queueMessage}
      * should be called.

@@ -400,7 +400,7 @@ export default function ModelWithMessages(BaseModel) {
                         : __(
                               'The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
                               file.name,
-                              size
+                              size,
                           );
                     return this.createMessage({
                         message,
@@ -463,13 +463,13 @@ export default function ModelWithMessages(BaseModel) {
                 this.chat_state_timeout = setTimeout(
                     this.setChatState.bind(this),
                     _converse.TIMEOUTS.PAUSED,
-                    constants.PAUSED
+                    constants.PAUSED,
                 );
             } else if (state === constants.PAUSED) {
                 this.chat_state_timeout = setTimeout(
                     this.setChatState.bind(this),
                     _converse.TIMEOUTS.INACTIVE,
-                    constants.INACTIVE
+                    constants.INACTIVE,
                 );
             }
             this.set('chat_state', state, options);
@@ -643,11 +643,11 @@ export default function ModelWithMessages(BaseModel) {
         getMessageReferencedByError(attrs) {
             if (attrs.msgid) {
                 return this.messages.models.find((m) =>
-                    [m.get('msgid'), m.get('retraction_id'), m.get('origin_id')].includes(attrs.msgid)
+                    [m.get('msgid'), m.get('retraction_id'), m.get('origin_id')].includes(attrs.msgid),
                 );
             } else if (attrs.reaction_to_id) {
                 return this.messages.models.find((m) =>
-                    [m.get('msgid'), m.get('origin_id')].includes(attrs.reaction_to_id)
+                    [m.get('msgid'), m.get('origin_id')].includes(attrs.reaction_to_id),
                 );
             }
         }
@@ -675,7 +675,7 @@ export default function ModelWithMessages(BaseModel) {
                     ({ attributes }) =>
                         attributes.retracted_id === attrs.origin_id &&
                         attributes.from === attrs.from &&
-                        !attributes.moderated_by
+                        !attributes.moderated_by,
                 );
             }
             return null;
@@ -684,6 +684,8 @@ export default function ModelWithMessages(BaseModel) {
         /**
          * Returns an already cached message (if it exists) based on the
          * passed in attributes map.
+         *
+         * @fires getDuplicateMessageQueries
          * @param {object} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
          * @returns {Promise<BaseMessage|undefined>}
@@ -691,12 +693,12 @@ export default function ModelWithMessages(BaseModel) {
         async getDuplicateMessage(attrs) {
             /**
              * Hook to let plugins contribute additional query objects.
-             *  Each query object is a plain `{ attribute: value }` map;
+             * Each query object is a plain `{ attribute: value }` map;
              * a message matches if every key in the object equals the corresponding
              * attribute on the stored model. The built-in queries cover stanza_id,
              * origin_id, and body deduplication; plugins add their own criteria.
              */
-            const extra_queries = await api.hook('getDuplicateMessageQueries', this, attrs, []);
+            const extra_queries = await api.hook('getDuplicateMessageQueries', this, [], attrs);
 
             const queries = [
                 ...this.getStanzaIdQueryAttrs(attrs),
@@ -707,7 +709,7 @@ export default function ModelWithMessages(BaseModel) {
 
             return this.messages.models.find(
                 /** @param {BaseMessage} m */
-                (m) => queries.find((q) => Object.keys(q).every((k) => m.get(k) === q[k]))
+                (m) => queries.find((q) => Object.keys(q).every((k) => m.get(k) === q[k])),
             );
         }
 
@@ -981,7 +983,7 @@ export default function ModelWithMessages(BaseModel) {
                                                 begin="${ref.begin}"
                                                 end="${ref.end}"
                                                 type="${ref.type}"
-                                                uri="${ref.uri}"></reference>`
+                                                uri="${ref.uri}"></reference>`,
                               )
                             : ''
                     }

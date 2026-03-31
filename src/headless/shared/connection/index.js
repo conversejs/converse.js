@@ -375,16 +375,16 @@ export class Connection extends Strophe.Connection {
             this.worker_attach_promise?.resolve(true);
 
             this.setDisconnectionCause();
+            if (this.restored) {
+                // No need to send an initial presence stanza when
+                // we're restoring an existing session (e.g. via SMACKS resume).
+                this.send_initial_presence = false;
+            }
             if (this.reconnecting) {
                 log.debug(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                 this.onConnected(true);
             } else {
                 log.debug(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
-                if (this.restored) {
-                    // No need to send an initial presence stanza when
-                    // we're restoring an existing session.
-                    this.send_initial_presence = false;
-                }
                 this.onConnected();
             }
         } else if (status === Strophe.Status.DISCONNECTED) {

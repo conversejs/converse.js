@@ -183,6 +183,54 @@ describe('XEP-0198 Stream Management', function () {
     );
 
     it(
+        'does not send a duplicate presence when a session is successfully resumed',
+        mock.initConverse(
+            ['chatBoxesInitialized'],
+            {
+                auto_login: false,
+                enable_smacks: true,
+                show_controlbox_by_default: true,
+                smacks_max_unacked_stanzas: 2,
+                blacklisted_plugins: ['converse-blocklist', 'converse-reactions'],
+            },
+            async function (_converse) {
+                await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
+
+                const sent_stanzas = _converse.api.connection.get().sent_stanzas;
+                let stanza = await u.waitUntil(
+                    () => sent_stanzas.filter((s) => s.tagName === 'enable').pop(),
+                    1000
+                );
+                expect(Strophe.serialize(stanza)).toEqual('<enable resume="true" xmlns="urn:xmpp:sm:3"/>');
+
+                let result = stx`<enabled xmlns="urn:xmpp:sm:3" id="some-long-sm-id" resume="true"/>`;
+                _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+
+                await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], [Strophe.NS.CARBONS]);
+                await mock.waitForRoster(_converse, 'current', 1);
+                await u.waitUntil(() => sent_stanzas.filter((s) => s.nodeName === 'presence').length);
+
+                // Reconnect and successfully resume the SMACKS session
+                await _converse.api.connection.reconnect();
+                stanza = await u.waitUntil(
+                    () => sent_stanzas.filter((s) => s.tagName === 'resume').pop(),
+                    1000
+                );
+
+                const conn = _converse.api.connection.get();
+                result = stx`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`;
+                _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+
+                // onResumedStanza sets connection.restored = true then synchronously
+                // calls _changeConnectStatus(CONNECTED). Our fix clears
+                // send_initial_presence at that point, before onConnected() fires.
+                // This is fully synchronous so we can assert immediately.
+                expect(conn.send_initial_presence).toBe(false);
+            }
+        )
+    );
+
+    it(
         'might not resume and the session will then be reset',
         mock.initConverse(
             ['chatBoxesInitialized'],

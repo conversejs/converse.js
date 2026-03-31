@@ -1,5 +1,5 @@
 /* global converse */
-import mock from "../../../tests/mock.js";
+import mock from '../../../tests/mock.js';
 
 const { sizzle, stx, u, errors } = converse.env;
 
@@ -19,7 +19,7 @@ describe('The pubsub API', function () {
                 const pubsub_jid = 'pubsub.shakespeare.lit';
                 const promise = api.pubsub.config.get(pubsub_jid, node);
                 const sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop()
+                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
                 );
 
                 const response = stx`
@@ -162,7 +162,7 @@ describe('The pubsub API', function () {
                     title: null,
                     type: 'urn:example:e2ee:bundle',
                 });
-            })
+            }),
         );
 
         it(
@@ -178,7 +178,7 @@ describe('The pubsub API', function () {
 
                 let promise = api.pubsub.config.get(pubsub_jid, node);
                 let sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop()
+                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
                 );
                 let response = stx`<iq type='error'
                         xmlns="jabber:client"
@@ -204,7 +204,7 @@ describe('The pubsub API', function () {
 
                 promise = api.pubsub.config.get(pubsub_jid, node);
                 sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop()
+                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
                 );
                 response = stx`<iq type='error'
                         xmlns="jabber:client"
@@ -227,7 +227,7 @@ describe('The pubsub API', function () {
 
                 promise = api.pubsub.config.get(pubsub_jid, node);
                 sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop()
+                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
                 );
                 response = stx`<iq type='error'
                         xmlns="jabber:client"
@@ -247,7 +247,7 @@ describe('The pubsub API', function () {
                         expect(third_error_thrown).toBe(true);
                     });
                 _converse.api.connection.get()._dataRecv(mock.createRequest(response));
-            })
+            }),
         );
     });
 
@@ -265,7 +265,7 @@ describe('The pubsub API', function () {
                 const promise = api.pubsub.config.set(pubsub_jid, node, { access_model: 'whitelist' });
 
                 let sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop()
+                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
                 );
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(stx`
@@ -336,13 +336,13 @@ describe('The pubsub API', function () {
                         </x>
                         </configure>
                     </pubsub>
-                </iq>`)
+                </iq>`),
                 );
 
                 sent_stanza = await u.waitUntil(() =>
                     sent_stanzas
                         .filter((iq) => iq.getAttribute('type') === 'set' && sizzle('pubsub configure', iq))
-                        .pop()
+                        .pop(),
                 );
                 expect(sent_stanza).toEqualStanza(stx`<iq xmlns="jabber:client"
                     from="${_converse.bare_jid}"
@@ -378,7 +378,7 @@ describe('The pubsub API', function () {
                         xmlns="jabber:client"
                         from='${pubsub_jid}'
                         to='${own_jid}'
-                        id="${sent_stanza.getAttribute('id')}"></iq>`)
+                        id="${sent_stanza.getAttribute('id')}"></iq>`),
                 );
 
                 const result = await promise;
@@ -398,7 +398,7 @@ describe('The pubsub API', function () {
                     subscribe: true,
                     title: null,
                 });
-            })
+            }),
         );
 
         it(
@@ -414,7 +414,7 @@ describe('The pubsub API', function () {
 
                 const promise = api.pubsub.config.set(pubsub_jid, node, { access_model: 'whitelist' });
                 let sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop()
+                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
                 );
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(stx`
@@ -438,13 +438,13 @@ describe('The pubsub API', function () {
                         </x>
                         </configure>
                     </pubsub>
-                </iq>`)
+                </iq>`),
                 );
 
                 sent_stanza = await u.waitUntil(() =>
                     sent_stanzas
                         .filter((iq) => iq.getAttribute('type') === 'set' && sizzle('pubsub configure', iq))
-                        .pop()
+                        .pop(),
                 );
 
                 const response = stx`
@@ -466,7 +466,7 @@ describe('The pubsub API', function () {
                         expect(first_error_thrown).toBe(true);
                     });
                 _converse.api.connection.get()._dataRecv(mock.createRequest(response));
-            })
+            }),
         );
     });
 
@@ -489,11 +489,11 @@ describe('The pubsub API', function () {
                     _converse,
                     pubsub_jid,
                     [{ 'category': 'pubsub', 'type': 'pep' }],
-                    ['http://jabber.org/protocol/pubsub#publish-options']
+                    ['http://jabber.org/protocol/pubsub#publish-options'],
                 );
 
                 let sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop()
+                    sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop(),
                 );
                 expect(sent_stanza).toEqualStanza(stx`
                     <iq type="set"
@@ -527,7 +527,7 @@ describe('The pubsub API', function () {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(response));
 
                 sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => iq.querySelector('pubsub configure')).pop()
+                    sent_stanzas.filter((iq) => iq.querySelector('pubsub configure')).pop(),
                 );
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(stx`
@@ -550,13 +550,13 @@ describe('The pubsub API', function () {
                         </x>
                         </configure>
                     </pubsub>
-                </iq>`)
+                </iq>`),
                 );
 
                 sent_stanza = await u.waitUntil(() =>
                     sent_stanzas
                         .filter((iq) => iq.getAttribute('type') === 'set' && iq.querySelector('pubsub configure'))
-                        .pop()
+                        .pop(),
                 );
 
                 expect(sent_stanza).toEqualStanza(stx`<iq xmlns="jabber:client"
@@ -580,14 +580,14 @@ describe('The pubsub API', function () {
                         xmlns="jabber:client"
                         from='${pubsub_jid}'
                         to='${own_jid}'
-                        id="${sent_stanza.getAttribute('id')}"></iq>`)
+                        id="${sent_stanza.getAttribute('id')}"></iq>`),
                 );
 
                 // Clear old stanzas
                 while (sent_stanzas.length) sent_stanzas.pop();
 
                 sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop()
+                    sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop(),
                 );
                 expect(sent_stanza).toEqualStanza(stx`
                     <iq type="set"
@@ -614,11 +614,11 @@ describe('The pubsub API', function () {
                         xmlns="jabber:client"
                         from='${pubsub_jid}'
                         to='${own_jid}'
-                        id="${sent_stanza.getAttribute('id')}"></iq>`)
+                        id="${sent_stanza.getAttribute('id')}"></iq>`),
                 );
 
                 await promise;
-            })
+            }),
         );
     });
 });

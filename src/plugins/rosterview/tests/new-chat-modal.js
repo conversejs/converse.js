@@ -25,7 +25,7 @@ describe('New Chat Modal', function () {
 
             await u.waitUntil(() => api.chats.get(jid));
             expect(modal.model.get('error')).toBe(null);
-        })
+        }),
     );
 
     it(
@@ -55,6 +55,6 @@ describe('New Chat Modal', function () {
             expect(modal.model.get('error')).toBeDefined();
             expect(modal.model.get('error')).toBe(err_msg);
             expect(modal.querySelector('.alert').textContent).toBe(err_msg);
-        })
+        }),
     );
 });

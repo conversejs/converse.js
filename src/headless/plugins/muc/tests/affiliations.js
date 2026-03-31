@@ -1,13 +1,13 @@
 /*global converse */
-import mock from "../../../tests/mock.js";
+import mock from '../../../tests/mock.js';
 
 const { stx } = converse.env;
 
 describe('The MUC Affiliations API', function () {
-
     beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
-    it('can be used to set affiliations in MUCs without having to join them first',
+    it(
+        'can be used to set affiliations in MUCs without having to join them first',
         mock.initConverse([], {}, async function (_converse) {
             const { api } = _converse;
             const user_jid = 'annoyingguy@montague.lit';
@@ -34,6 +34,6 @@ describe('The MUC Affiliations API', function () {
                         </item>
                     </query>
                 </iq>`);
-        })
+        }),
     );
 });

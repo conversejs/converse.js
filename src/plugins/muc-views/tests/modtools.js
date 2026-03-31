@@ -2,10 +2,10 @@
 
 const { stx, sizzle, Strophe, u } = converse.env;
 
-async function openModtools (_converse, view) {
+async function openModtools(_converse, view) {
     const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
     textarea.value = '/modtools';
-    const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, key: "Enter" };
+    const enter = { 'target': textarea, 'preventDefault': function preventDefault() {}, key: 'Enter' };
     const message_form = view.querySelector('converse-muc-message-form');
     message_form.onKeyDown(enter);
     const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
@@ -13,309 +13,357 @@ async function openModtools (_converse, view) {
     return modal;
 }
 
-describe("The groupchat moderator tool", function () {
+describe('The groupchat moderator tool', function () {
+    it(
+        'allows you to set affiliations and roles',
+        mock.initConverse([], {}, async function (_converse) {
+            const muc_jid = 'lounge@montague.lit';
 
-    it("allows you to set affiliations and roles",
-            mock.initConverse([], {}, async function (_converse) {
+            let members = [
+                { 'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member' },
+                { 'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member' },
+                { 'jid': 'wiccarocks@shakespeare.lit', 'nick': 'wiccan', 'affiliation': 'admin' },
+                { 'jid': 'crone1@shakespeare.lit', 'nick': 'thirdwitch', 'affiliation': 'owner' },
+                { 'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner' },
+            ];
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
+            const view = _converse.chatboxviews.get(muc_jid);
+            await u.waitUntil(() => view.model.occupants.length === 5, 1000);
 
-        const muc_jid = 'lounge@montague.lit';
+            const modal = await openModtools(_converse, view);
+            const tab = modal.querySelector('#affiliations-tab');
+            // Clear so that we don't match older stanzas
+            _converse.api.connection.get().IQ_stanzas = [];
+            tab.click();
+            let select = modal.querySelector('.select-affiliation');
+            expect(select.value).toBe('owner');
+            select.value = 'admin';
+            let button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
+            button.click();
+            await u.waitUntil(() => !modal.loading_users_with_affiliation);
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length);
+            let user_els = modal.querySelectorAll('.list-group--users > li');
+            expect(user_els.length).toBe(1);
+            expect(user_els[0].querySelector('.list-group-item.active').textContent.trim()).toBe(
+                'JID: wiccarocks@shakespeare.lit',
+            );
+            expect(user_els[0].querySelector('.list-group-item:nth-child(2n)').textContent.trim()).toBe(
+                'Nickname: wiccan',
+            );
+            expect(user_els[0].querySelector('.list-group-item:nth-child(3n) div').textContent.trim()).toBe(
+                'Affiliation: admin',
+            );
 
-        let members = [
-            {'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member'},
-            {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
-            {'jid': 'wiccarocks@shakespeare.lit', 'nick': 'wiccan', 'affiliation': 'admin'},
-            {'jid': 'crone1@shakespeare.lit', 'nick': 'thirdwitch', 'affiliation': 'owner'},
-            {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'},
-        ];
-        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
-        const view = _converse.chatboxviews.get(muc_jid);
-        await u.waitUntil(() => (view.model.occupants.length === 5), 1000);
+            _converse.api.connection.get().IQ_stanzas = [];
+            select.value = 'owner';
+            button.click();
+            await u.waitUntil(() => !modal.loading_users_with_affiliation);
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 2);
+            user_els = modal.querySelectorAll('.list-group--users > li');
+            expect(user_els.length).toBe(2);
+            expect(user_els[0].querySelector('.list-group-item.active').textContent.trim()).toBe(
+                'JID: romeo@montague.lit',
+            );
+            expect(user_els[0].querySelector('.list-group-item:nth-child(2n)').textContent.trim()).toBe(
+                'Nickname: romeo',
+            );
+            expect(user_els[0].querySelector('.list-group-item:nth-child(3n) div').textContent.trim()).toBe(
+                'Affiliation: owner',
+            );
 
-        const modal = await openModtools(_converse, view);
-        const tab = modal.querySelector('#affiliations-tab');
-        // Clear so that we don't match older stanzas
-        _converse.api.connection.get().IQ_stanzas = [];
-        tab.click();
-        let select = modal.querySelector('.select-affiliation');
-        expect(select.value).toBe('owner');
-        select.value = 'admin';
-        let button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
-        button.click();
-        await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length);
-        let user_els = modal.querySelectorAll('.list-group--users > li');
-        expect(user_els.length).toBe(1);
-        expect(user_els[0].querySelector('.list-group-item.active').textContent.trim()).toBe('JID: wiccarocks@shakespeare.lit');
-        expect(user_els[0].querySelector('.list-group-item:nth-child(2n)').textContent.trim()).toBe('Nickname: wiccan');
-        expect(user_els[0].querySelector('.list-group-item:nth-child(3n) div').textContent.trim()).toBe('Affiliation: admin');
+            expect(user_els[1].querySelector('.list-group-item.active').textContent.trim()).toBe(
+                'JID: crone1@shakespeare.lit',
+            );
+            expect(user_els[1].querySelector('.list-group-item:nth-child(2n)').textContent.trim()).toBe(
+                'Nickname: thirdwitch',
+            );
+            expect(user_els[1].querySelector('.list-group-item:nth-child(3n) div').textContent.trim()).toBe(
+                'Affiliation: owner',
+            );
 
-        _converse.api.connection.get().IQ_stanzas = [];
-        select.value = 'owner';
-        button.click();
-        await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 2);
-        user_els = modal.querySelectorAll('.list-group--users > li');
-        expect(user_els.length).toBe(2);
-        expect(user_els[0].querySelector('.list-group-item.active').textContent.trim()).toBe('JID: romeo@montague.lit');
-        expect(user_els[0].querySelector('.list-group-item:nth-child(2n)').textContent.trim()).toBe('Nickname: romeo');
-        expect(user_els[0].querySelector('.list-group-item:nth-child(3n) div').textContent.trim()).toBe('Affiliation: owner');
+            const toggle = user_els[1].querySelector('.list-group-item:nth-child(3n) .toggle-form');
+            const component = user_els[1].querySelector('.list-group-item:nth-child(3n) converse-muc-affiliation-form');
+            expect(u.hasClass('hidden', component)).toBeTruthy();
+            toggle.click();
+            expect(u.hasClass('hidden', component)).toBeFalsy();
 
-        expect(user_els[1].querySelector('.list-group-item.active').textContent.trim()).toBe('JID: crone1@shakespeare.lit');
-        expect(user_els[1].querySelector('.list-group-item:nth-child(2n)').textContent.trim()).toBe('Nickname: thirdwitch');
-        expect(user_els[1].querySelector('.list-group-item:nth-child(3n) div').textContent.trim()).toBe('Affiliation: owner');
+            const form = user_els[1].querySelector('.list-group-item:nth-child(3n) .affiliation-form');
+            select = form.querySelector('.select-affiliation');
+            expect(select.value).toBe('owner');
+            select.value = 'admin';
+            const input = form.querySelector('input[name="reason"]');
+            input.value = "You're an admin now";
+            const submit = form.querySelector('.btn-primary');
+            submit.click();
 
-        const toggle = user_els[1].querySelector('.list-group-item:nth-child(3n) .toggle-form');
-        const component = user_els[1].querySelector('.list-group-item:nth-child(3n) converse-muc-affiliation-form');
-        expect(u.hasClass('hidden', component)).toBeTruthy();
-        toggle.click();
-        expect(u.hasClass('hidden', component)).toBeFalsy();
+            spyOn(_converse.MUCOccupants.prototype, 'fetchMembers').and.callThrough();
+            const sent_IQ = _converse.api.connection.get().IQ_stanzas.pop();
+            expect(Strophe.serialize(sent_IQ)).toBe(
+                `<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">` +
+                    `<query xmlns="http://jabber.org/protocol/muc#admin">` +
+                    `<item affiliation="admin" jid="crone1@shakespeare.lit">` +
+                    `<reason>You&apos;re an admin now</reason>` +
+                    `</item>` +
+                    `</query>` +
+                    `</iq>`,
+            );
 
-        const form = user_els[1].querySelector('.list-group-item:nth-child(3n) .affiliation-form');
-        select = form.querySelector('.select-affiliation');
-        expect(select.value).toBe('owner');
-        select.value = 'admin';
-        const input = form.querySelector('input[name="reason"]');
-        input.value = "You're an admin now";
-        const submit = form.querySelector('.btn-primary');
-        submit.click();
+            _converse.api.connection.get().IQ_stanzas = [];
+            const stanza = stx`
+            <iq type="result"
+                id="${sent_IQ.getAttribute('id')}"
+                from="${view.model.get('jid')}"
+                to="${_converse.api.connection.get().jid}"
+                xmlns="jabber:client"/>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            await u.waitUntil(() => view.model.occupants.fetchMembers.calls.count());
 
-        spyOn(_converse.MUCOccupants.prototype, 'fetchMembers').and.callThrough();
-        const sent_IQ = _converse.api.connection.get().IQ_stanzas.pop();
-        expect(Strophe.serialize(sent_IQ)).toBe(
-            `<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
-                `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                    `<item affiliation="admin" jid="crone1@shakespeare.lit">`+
-                        `<reason>You&apos;re an admin now</reason>`+
-                    `</item>`+
-                `</query>`+
-            `</iq>`);
+            members = [
+                { 'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member' },
+                { 'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member' },
+                { 'jid': 'wiccarocks@shakespeare.lit', 'nick': 'wiccan', 'affiliation': 'admin' },
+                { 'jid': 'crone1@shakespeare.lit', 'nick': 'thirdwitch', 'affiliation': 'admin' },
+                { 'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner' },
+            ];
+            await mock.returnMemberLists(_converse, muc_jid, members);
+            await u.waitUntil(
+                () => view.model.occupants.pluck('affiliation').filter((o) => o === 'owner').length === 1,
+            );
+            const alert = modal.querySelector('.alert-primary');
+            expect(alert.textContent.trim()).toBe('Affiliation changed');
 
-        _converse.api.connection.get().IQ_stanzas = [];
-        const stanza = $iq({
-            'type': 'result',
-            'id': sent_IQ.getAttribute('id'),
-            'from': view.model.get('jid'),
-            'to': _converse.api.connection.get().jid,
-            'xmlns': 'jabber:client'
-        });
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => view.model.occupants.fetchMembers.calls.count());
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 1);
+            user_els = modal.querySelectorAll('.list-group--users > li');
+            expect(user_els.length).toBe(1);
+            expect(user_els[0].querySelector('.list-group-item.active').textContent.trim()).toBe(
+                'JID: romeo@montague.lit',
+            );
+            expect(user_els[0].querySelector('.list-group-item:nth-child(2n)').textContent.trim()).toBe(
+                'Nickname: romeo',
+            );
+            expect(user_els[0].querySelector('.list-group-item:nth-child(3n) div').textContent.trim()).toBe(
+                'Affiliation: owner',
+            );
 
-        members = [
-            {'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member'},
-            {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
-            {'jid': 'wiccarocks@shakespeare.lit', 'nick': 'wiccan', 'affiliation': 'admin'},
-            {'jid': 'crone1@shakespeare.lit', 'nick': 'thirdwitch', 'affiliation': 'admin'},
-            {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'},
-        ];
-        await mock.returnMemberLists(_converse, muc_jid, members);
-        await u.waitUntil(() => view.model.occupants.pluck('affiliation').filter(o => o === 'owner').length === 1);
-        const alert = modal.querySelector('.alert-primary');
-        expect(alert.textContent.trim()).toBe('Affiliation changed');
+            modal.querySelector('#roles-tab').click();
+            select = modal.querySelector('.select-role');
+            await u.waitUntil(() => u.isVisible(select));
 
-        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 1);
-        user_els = modal.querySelectorAll('.list-group--users > li');
-        expect(user_els.length).toBe(1);
-        expect(user_els[0].querySelector('.list-group-item.active').textContent.trim()).toBe('JID: romeo@montague.lit');
-        expect(user_els[0].querySelector('.list-group-item:nth-child(2n)').textContent.trim()).toBe('Nickname: romeo');
-        expect(user_els[0].querySelector('.list-group-item:nth-child(3n) div').textContent.trim()).toBe('Affiliation: owner');
+            expect(select.value).toBe('moderator');
+            button = modal.querySelector('.btn-primary[name="users_with_role"]');
+            button.click();
 
-        modal.querySelector('#roles-tab').click();
-        select = modal.querySelector('.select-role');
-        await u.waitUntil(() => u.isVisible(select));
+            const roles_panel = modal.querySelector('#roles-tabpanel');
+            await u.waitUntil(() => roles_panel.querySelectorAll('.list-group--users > li').length === 1);
+            select.value = 'participant';
+            button.click();
+            await u.waitUntil(() => !modal.loading_users_with_affiliation);
+            await u.waitUntil(
+                () =>
+                    roles_panel.querySelectorAll('.list-group--users > li')[0]?.textContent.trim() ===
+                    'No users with that role found.',
+            );
+        }),
+    );
 
-        expect(select.value).toBe('moderator');
-        button = modal.querySelector('.btn-primary[name="users_with_role"]');
-        button.click();
+    fit(
+        'allows you to filter affiliation search results',
+        mock.initConverse([], {}, async function (_converse) {
+            const muc_jid = 'lounge@montague.lit';
+            const members = [
+                { 'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member' },
+                { 'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member' },
+                { 'jid': 'wiccarocks@shakespeare.lit', 'nick': 'wiccan', 'affiliation': 'member' },
+                { 'jid': 'crone1@shakespeare.lit', 'nick': 'thirdwitch', 'affiliation': 'member' },
+                { 'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'member' },
+                { 'jid': 'juliet@capulet.lit', 'nick': 'juliet', 'affiliation': 'member' },
+            ];
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
+            const view = _converse.chatboxviews.get(muc_jid);
+            await u.waitUntil(() => view.model.occupants.length === 6, 1000);
 
-        const roles_panel = modal.querySelector('#roles-tabpanel');
-        await u.waitUntil(() => roles_panel.querySelectorAll('.list-group--users > li').length === 1);
-        select.value = 'participant';
-        button.click();
-        await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        await u.waitUntil(() => roles_panel.querySelectorAll('.list-group--users > li')[0]?.textContent.trim() === 'No users with that role found.');
+            // Clear so that we don't match older stanzas
+            _converse.api.connection.get().IQ_stanzas = [];
+            const modal = await openModtools(_converse, view);
+            const select = modal.querySelector('.select-affiliation');
+            expect(select.value).toBe('owner');
+            select.value = 'member';
+            const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
+            button.click();
+            await u.waitUntil(() => !modal.loading_users_with_affiliation);
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 6);
 
-    }));
+            const nicks = Array.from(modal.querySelectorAll('.list-group--users > li')).map((el) =>
+                el.getAttribute('data-nick'),
+            );
+            expect(nicks.join(' ')).toBe('gower juliet romeo thirdwitch wiccan witch');
 
-    it("allows you to filter affiliation search results",
-            mock.initConverse([], {}, async function (_converse) {
+            const filter = modal.querySelector('[name="filter"]');
+            expect(filter).not.toBe(null);
 
-        const muc_jid = 'lounge@montague.lit';
-        const members = [
-            {'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member'},
-            {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
-            {'jid': 'wiccarocks@shakespeare.lit', 'nick': 'wiccan', 'affiliation': 'member'},
-            {'jid': 'crone1@shakespeare.lit', 'nick': 'thirdwitch', 'affiliation': 'member'},
-            {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'member'},
-            {'jid': 'juliet@capulet.lit', 'nick': 'juliet', 'affiliation': 'member'},
-        ];
-        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
-        const view = _converse.chatboxviews.get(muc_jid);
-        await u.waitUntil(() => (view.model.occupants.length === 6), 1000);
+            filter.value = 'romeo';
+            u.triggerEvent(filter, 'keyup', 'KeyboardEvent');
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 1);
 
-        // Clear so that we don't match older stanzas
-        _converse.api.connection.get().IQ_stanzas = [];
-        const modal = await openModtools(_converse, view);
-        const select = modal.querySelector('.select-affiliation');
-        expect(select.value).toBe('owner');
-        select.value = 'member';
-        const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
-        button.click();
-        await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 6);
+            filter.value = 'r';
+            u.triggerEvent(filter, 'keyup', 'KeyboardEvent');
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 3);
 
-        const nicks = Array.from(modal.querySelectorAll('.list-group--users > li')).map(el => el.getAttribute('data-nick'));
-        expect(nicks.join(' ')).toBe('gower juliet romeo thirdwitch wiccan witch');
+            filter.value = 'gower';
+            u.triggerEvent(filter, 'keyup', 'KeyboardEvent');
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 1);
 
-        const filter = modal.querySelector('[name="filter"]');
-        expect(filter).not.toBe(null);
+            filter.value = 'RoMeO';
+            u.triggerEvent(filter, 'keyup', 'KeyboardEvent');
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 1);
+        }),
+    );
 
-        filter.value = 'romeo';
-        u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 1));
-
-        filter.value = 'r';
-        u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 3));
-
-        filter.value = 'gower';
-        u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 1));
-
-        filter.value = 'RoMeO';
-        u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 1));
-
-    }));
-
-    it("allows you to filter role search results",
-            mock.initConverse([], {}, async function (_converse) {
-
-        const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', []);
-        const view = _converse.chatboxviews.get(muc_jid);
-        _converse.api.connection.get()._dataRecv(mock.createRequest(
-            stx`<presence to="${_converse.jid}" from="${muc_jid}/nomorenicks" xmlns="jabber:client">
+    fit(
+        'allows you to filter role search results',
+        mock.initConverse([], {}, async function (_converse) {
+            const muc_jid = 'lounge@montague.lit';
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', []);
+            const view = _converse.chatboxviews.get(muc_jid);
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    stx`<presence to="${_converse.jid}" from="${muc_jid}/nomorenicks" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="nomorenicks@montague.lit" role="participant"/>
                     </x>
-                </presence>`
-        ));
-        _converse.api.connection.get()._dataRecv(mock.createRequest(
-            stx`<presence to="${_converse.jid}" from="${muc_jid}/newb" xmlns="jabber:client">
+                </presence>`,
+                ),
+            );
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    stx`<presence to="${_converse.jid}" from="${muc_jid}/newb" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="newb@montague.lit" role="participant"/>
                     </x>
-                </presence>`
-        ));
-        _converse.api.connection.get()._dataRecv(mock.createRequest(
-            stx`<presence to="${_converse.jid}" from="${muc_jid}/some1" xmlns="jabber:client">
+                </presence>`,
+                ),
+            );
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    stx`<presence to="${_converse.jid}" from="${muc_jid}/some1" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="some1@montague.lit" role="participant"/>
                     </x>
-                </presence>`
-        ));
-        _converse.api.connection.get()._dataRecv(mock.createRequest(
-            stx`<presence to="${_converse.jid}" from="${muc_jid}/oldhag" xmlns="jabber:client">
+                </presence>`,
+                ),
+            );
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    stx`<presence to="${_converse.jid}" from="${muc_jid}/oldhag" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="oldhag@montague.lit" role="participant"/>
                     </x>
-                </presence>`
-        ));
-        _converse.api.connection.get()._dataRecv(mock.createRequest(
-            stx`<presence to="${_converse.jid}" from="${muc_jid}/crone" xmlns="jabber:client">
+                </presence>`,
+                ),
+            );
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    stx`<presence to="${_converse.jid}" from="${muc_jid}/crone" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="crone@montague.lit" role="participant"/>
                     </x>
-                </presence>`
-        ));
-        _converse.api.connection.get()._dataRecv(mock.createRequest(
-            stx`<presence to="${_converse.jid}" from="${muc_jid}/tux" xmlns="jabber:client">
+                </presence>`,
+                ),
+            );
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    stx`<presence to="${_converse.jid}" from="${muc_jid}/tux" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="tux@montague.lit" role="participant"/>
                     </x>
-                </presence>`
-        ));
-        await u.waitUntil(() => (view.model.occupants.length === 7), 1000);
+                </presence>`,
+                ),
+            );
+            await u.waitUntil(() => view.model.occupants.length === 7, 1000);
 
-        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-        textarea.value = '/modtools';
-        const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, key: "Enter" };
-        const message_form = view.querySelector('converse-muc-message-form');
-        message_form.onKeyDown(enter);
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
+            textarea.value = '/modtools';
+            const enter = { 'target': textarea, 'preventDefault': function preventDefault() {}, key: 'Enter' };
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown(enter);
 
-        const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
-        await u.waitUntil(() => u.isVisible(modal), 1000);
+            const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
+            await u.waitUntil(() => u.isVisible(modal), 1000);
 
-        const tab = modal.querySelector('#roles-tab');
-        tab.click();
+            const tab = modal.querySelector('#roles-tab');
+            tab.click();
 
-        // Clear so that we don't match older stanzas
-        _converse.api.connection.get().IQ_stanzas = [];
+            // Clear so that we don't match older stanzas
+            _converse.api.connection.get().IQ_stanzas = [];
 
-        const select = modal.querySelector('.select-role');
-        expect(select.value).toBe('moderator');
-        select.value = 'participant';
+            const select = modal.querySelector('.select-role');
+            expect(select.value).toBe('moderator');
+            select.value = 'participant';
 
-        const button = modal.querySelector('.btn-primary[name="users_with_role"]');
-        button.click();
-        await u.waitUntil(() => !modal.loading_users_with_role);
-        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 6);
+            const button = modal.querySelector('.btn-primary[name="users_with_role"]');
+            button.click();
+            await u.waitUntil(() => !modal.loading_users_with_role);
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 6);
 
-        const nicks = Array.from(modal.querySelectorAll('.list-group--users > li')).map(el => el.getAttribute('data-nick'));
-        expect(nicks.join(' ')).toBe('crone newb nomorenicks oldhag some1 tux');
+            const nicks = Array.from(modal.querySelectorAll('.list-group--users > li')).map((el) =>
+                el.getAttribute('data-nick'),
+            );
+            expect(nicks.join(' ')).toBe('crone newb nomorenicks oldhag some1 tux');
 
-        const filter = modal.querySelector('[name="filter"]');
-        expect(filter).not.toBe(null);
+            const filter = modal.querySelector('[name="filter"]');
+            expect(filter).not.toBe(null);
 
-        filter.value = 'tux';
-        u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 1));
+            filter.value = 'tux';
+            u.triggerEvent(filter, 'keyup', 'KeyboardEvent');
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 1);
 
-        filter.value = 'r';
-        u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 2));
+            filter.value = 'r';
+            u.triggerEvent(filter, 'keyup', 'KeyboardEvent');
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 2);
 
-        filter.value = 'crone';
-        u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 1));
-    }));
+            filter.value = 'crone';
+            u.triggerEvent(filter, 'keyup', 'KeyboardEvent');
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 1);
+        }),
+    );
 
-    it("shows an error message if a particular affiliation list may not be retrieved",
-            mock.initConverse([], {}, async function (_converse) {
+    fit(
+        'shows an error message if a particular affiliation list may not be retrieved',
+        mock.initConverse([], {}, async function (_converse) {
+            const muc_jid = 'lounge@montague.lit';
+            const members = [
+                { 'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member' },
+                { 'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member' },
+                { 'jid': 'wiccarocks@shakespeare.lit', 'nick': 'wiccan', 'affiliation': 'admin' },
+                { 'jid': 'crone1@shakespeare.lit', 'nick': 'thirdwitch', 'affiliation': 'owner' },
+                { 'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner' },
+            ];
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
+            const view = _converse.chatboxviews.get(muc_jid);
+            await u.waitUntil(() => view.model.occupants.length === 5);
+            const modal = await openModtools(_converse, view);
+            const tab = modal.querySelector('#affiliations-tab');
 
-        const muc_jid = 'lounge@montague.lit';
-        const members = [
-            {'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member'},
-            {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
-            {'jid': 'wiccarocks@shakespeare.lit', 'nick': 'wiccan', 'affiliation': 'admin'},
-            {'jid': 'crone1@shakespeare.lit', 'nick': 'thirdwitch', 'affiliation': 'owner'},
-            {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'},
-        ];
-        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
-        const view = _converse.chatboxviews.get(muc_jid);
-        await u.waitUntil(() => (view.model.occupants.length === 5));
-        const modal = await openModtools(_converse, view);
-        const tab = modal.querySelector('#affiliations-tab');
+            // Clear so that we don't match older stanzas
+            _converse.api.connection.get().IQ_stanzas = [];
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+            tab.click();
+            const select = modal.querySelector('.select-affiliation');
+            select.value = 'outcast';
+            const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
+            button.click();
 
-        // Clear so that we don't match older stanzas
-        _converse.api.connection.get().IQ_stanzas = [];
-        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-        tab.click();
-        const select = modal.querySelector('.select-affiliation');
-        select.value = 'outcast';
-        const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
-        button.click();
+            const iq_query = await u.waitUntil(() =>
+                IQ_stanzas.filter(
+                    (s) =>
+                        sizzle(
+                            `iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="outcast"]`,
+                            s,
+                        ).length,
+                ).pop(),
+            );
 
-        const iq_query = await u.waitUntil(() => IQ_stanzas.filter(
-            s => sizzle(
-                `iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="outcast"]`,
-                s
-            ).length
-        ).pop());
-
-        const error =
-            stx`<iq from="${muc_jid}"
+            const error = stx`<iq from="${muc_jid}"
                     id="${iq_query.getAttribute('id')}"
                     type="error"
                     to="${_converse.jid}"
@@ -324,69 +372,72 @@ describe("The groupchat moderator tool", function () {
                     <forbidden xmlns="${Strophe.NS.STANZAS}"/>
                  </error>
             </iq>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(error));
-        await u.waitUntil(() => !modal.loading_users_with_affiliation);
+            _converse.api.connection.get()._dataRecv(mock.createRequest(error));
+            await u.waitUntil(() => !modal.loading_users_with_affiliation);
 
-        const alert = await u.waitUntil(() => modal.querySelector('.alert'));
-        expect(alert.textContent.trim()).toBe('Error: not allowed to fetch outcast list for MUC lounge@montague.lit');
+            const alert = await u.waitUntil(() => modal.querySelector('.alert'));
+            expect(alert.textContent.trim()).toBe(
+                'Error: not allowed to fetch outcast list for MUC lounge@montague.lit',
+            );
 
-        const user_els = modal.querySelectorAll('.list-group--users > li');
-        expect(user_els.length).toBe(1);
-        expect(user_els[0].textContent.trim()).toBe('No users with that affiliation found.');
-    }));
+            const user_els = modal.querySelectorAll('.list-group--users > li');
+            expect(user_els.length).toBe(1);
+            expect(user_els[0].textContent.trim()).toBe('No users with that affiliation found.');
+        }),
+    );
 
-    it("shows an error message if a particular affiliation may not be set",
-            mock.initConverse([], {}, async function (_converse) {
+    fit(
+        'shows an error message if a particular affiliation may not be set',
+        mock.initConverse([], {}, async function (_converse) {
+            const muc_jid = 'lounge@montague.lit';
+            const members = [
+                { 'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member' },
+                { 'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner' },
+            ];
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
+            const view = _converse.chatboxviews.get(muc_jid);
+            await u.waitUntil(() => view.model.occupants.length === 2);
+            const modal = await openModtools(_converse, view);
+            // Clear so that we don't match older stanzas
+            _converse.api.connection.get().IQ_stanzas = [];
 
-        const muc_jid = 'lounge@montague.lit';
-        const members = [
-            {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
-            {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'},
-        ];
-        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
-        const view = _converse.chatboxviews.get(muc_jid);
-        await u.waitUntil(() => (view.model.occupants.length === 2));
-        const modal = await openModtools(_converse, view);
-        // Clear so that we don't match older stanzas
-        _converse.api.connection.get().IQ_stanzas = [];
+            const tab = modal.querySelector('#affiliations-tab');
+            tab.click();
+            const select = modal.querySelector('.select-affiliation');
+            select.value = 'member';
+            const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
+            button.click();
+            await u.waitUntil(() => !modal.loading_users_with_affiliation);
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 1);
 
-        const tab = modal.querySelector('#affiliations-tab');
-        tab.click();
-        const select = modal.querySelector('.select-affiliation');
-        select.value = 'member';
-        const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
-        button.click();
-        await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 1);
+            const user_els = modal.querySelectorAll('.list-group--users > li');
+            const toggle = user_els[0].querySelector('.list-group-item:nth-child(3n) .toggle-form');
+            const component = user_els[0].querySelector('.list-group-item:nth-child(3n) converse-muc-affiliation-form');
+            expect(u.hasClass('hidden', component)).toBeTruthy();
+            toggle.click();
+            expect(u.hasClass('hidden', component)).toBeFalsy();
 
-        const user_els = modal.querySelectorAll('.list-group--users > li');
-        const toggle = user_els[0].querySelector('.list-group-item:nth-child(3n) .toggle-form');
-        const component = user_els[0].querySelector('.list-group-item:nth-child(3n) converse-muc-affiliation-form');
-        expect(u.hasClass('hidden', component)).toBeTruthy();
-        toggle.click();
-        expect(u.hasClass('hidden', component)).toBeFalsy();
+            const form = user_els[0].querySelector('.list-group-item:nth-child(3n) .affiliation-form');
+            const change_affiliation_dropdown = form.querySelector('.select-affiliation');
+            expect(change_affiliation_dropdown.value).toBe('member');
+            change_affiliation_dropdown.value = 'admin';
+            const input = form.querySelector('input[name="reason"]');
+            input.value = "You're an admin now";
+            const submit = form.querySelector('.btn-primary');
+            submit.click();
 
-        const form = user_els[0].querySelector('.list-group-item:nth-child(3n) .affiliation-form');
-        const change_affiliation_dropdown = form.querySelector('.select-affiliation');
-        expect(change_affiliation_dropdown.value).toBe('member');
-        change_affiliation_dropdown.value = 'admin';
-        const input = form.querySelector('input[name="reason"]');
-        input.value = "You're an admin now";
-        const submit = form.querySelector('.btn-primary');
-        submit.click();
+            const sent_IQ = _converse.api.connection.get().IQ_stanzas.pop();
+            expect(Strophe.serialize(sent_IQ)).toBe(
+                `<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">` +
+                    `<query xmlns="http://jabber.org/protocol/muc#admin">` +
+                    `<item affiliation="admin" jid="gower@shakespeare.lit">` +
+                    `<reason>You&apos;re an admin now</reason>` +
+                    `</item>` +
+                    `</query>` +
+                    `</iq>`,
+            );
 
-        const sent_IQ = _converse.api.connection.get().IQ_stanzas.pop();
-        expect(Strophe.serialize(sent_IQ)).toBe(
-            `<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
-                `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                    `<item affiliation="admin" jid="gower@shakespeare.lit">`+
-                        `<reason>You&apos;re an admin now</reason>`+
-                    `</item>`+
-                `</query>`+
-            `</iq>`);
-
-        const error =
-            stx`<iq from="${muc_jid}"
+            const error = stx`<iq from="${muc_jid}"
                     id="${sent_IQ.getAttribute('id')}"
                     type="error"
                     to="${_converse.jid}"
@@ -395,74 +446,83 @@ describe("The groupchat moderator tool", function () {
                     <not-allowed xmlns="${Strophe.NS.STANZAS}"/>
                  </error>
             </iq>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(error));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(error));
+        }),
+    );
 
-    }));
+    fit(
+        "doesn't allow admins to make more admins",
+        mock.initConverse([], {}, async function (_converse) {
+            const muc_jid = 'lounge@montague.lit';
+            const members = [
+                { 'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member' },
+                { 'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member' },
+                { 'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'admin' },
+            ];
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
+            const view = _converse.chatboxviews.get(muc_jid);
+            await u.waitUntil(() => view.model.occupants.length === 3);
+            const modal = await openModtools(_converse, view);
+            const tab = modal.querySelector('#affiliations-tab');
+            // Clear so that we don't match older stanzas
+            _converse.api.connection.get().IQ_stanzas = [];
+            tab.click();
+            const show_affiliation_dropdown = modal.querySelector('.select-affiliation');
+            show_affiliation_dropdown.value = 'member';
+            const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
+            button.click();
 
+            await u.waitUntil(() => !modal.loading_users_with_affiliation);
+            await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 2);
 
-    it("doesn't allow admins to make more admins",
-            mock.initConverse([], {}, async function (_converse) {
+            const user_els = modal.querySelectorAll('.list-group--users > li');
+            let change_affiliation_dropdown = user_els[0].querySelector('.select-affiliation');
+            expect(Array.from(change_affiliation_dropdown.options).map((o) => o.value)).toEqual([
+                'member',
+                'outcast',
+                'none',
+            ]);
 
-        const muc_jid = 'lounge@montague.lit';
-        const members = [
-            {'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member'},
-            {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
-            {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'admin'},
-        ];
-        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
-        const view = _converse.chatboxviews.get(muc_jid);
-        await u.waitUntil(() => (view.model.occupants.length === 3));
-        const modal = await openModtools(_converse, view);
-        const tab = modal.querySelector('#affiliations-tab');
-        // Clear so that we don't match older stanzas
-        _converse.api.connection.get().IQ_stanzas = [];
-        tab.click();
-        const show_affiliation_dropdown = modal.querySelector('.select-affiliation');
-        show_affiliation_dropdown.value = 'member';
-        const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
-        button.click();
+            change_affiliation_dropdown = user_els[1].querySelector('.select-affiliation');
+            expect(Array.from(change_affiliation_dropdown.options).map((o) => o.value)).toEqual([
+                'member',
+                'outcast',
+                'none',
+            ]);
+        }),
+    );
 
-        await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 2);
+    fit(
+        'lets the assignable affiliations and roles be configured via modtools_disable_assign',
+        mock.initConverse([], {}, async function (_converse) {
+            const muc_jid = 'lounge@montague.lit';
+            const members = [{ 'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner' }];
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
+            const view = _converse.chatboxviews.get(muc_jid);
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
+            textarea.value = '/modtools';
+            const enter = { 'target': textarea, 'preventDefault': function preventDefault() {}, key: 'Enter' };
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown(enter);
 
-        const user_els = modal.querySelectorAll('.list-group--users > li');
-        let change_affiliation_dropdown = user_els[0].querySelector('.select-affiliation');
-        expect(Array.from(change_affiliation_dropdown.options).map(o => o.value)).toEqual(['member', 'outcast', 'none']);
+            await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
+            const occupant = view.model.occupants.findWhere({ 'jid': _converse.bare_jid });
 
-        change_affiliation_dropdown = user_els[1].querySelector('.select-affiliation');
-        expect(Array.from(change_affiliation_dropdown.options).map(o => o.value)).toEqual(['member', 'outcast', 'none']);
-    }));
+            expect(occupant.getAssignableAffiliations()).toEqual(['owner', 'admin', 'member', 'outcast', 'none']);
 
-    it("lets the assignable affiliations and roles be configured via modtools_disable_assign",
-            mock.initConverse([], {}, async function (_converse) {
+            _converse.api.settings.set('modtools_disable_assign', ['owner']);
+            expect(occupant.getAssignableAffiliations()).toEqual(['admin', 'member', 'outcast', 'none']);
 
-        const muc_jid = 'lounge@montague.lit';
-        const members = [{'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'}];
-        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
-        const view = _converse.chatboxviews.get(muc_jid);
-        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-        textarea.value = '/modtools';
-        const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, key: "Enter" };
-        const message_form = view.querySelector('converse-muc-message-form');
-        message_form.onKeyDown(enter);
+            _converse.api.settings.set('modtools_disable_assign', ['owner', 'admin']);
+            expect(occupant.getAssignableAffiliations()).toEqual(['member', 'outcast', 'none']);
 
-        await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
-        const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
+            _converse.api.settings.set('modtools_disable_assign', ['owner', 'admin', 'outcast']);
+            expect(occupant.getAssignableAffiliations()).toEqual(['member', 'none']);
 
-        expect(occupant.getAssignableAffiliations()).toEqual(['owner', 'admin', 'member', 'outcast', 'none']);
+            expect(occupant.getAssignableRoles()).toEqual(['moderator', 'participant', 'visitor']);
 
-        _converse.api.settings.set('modtools_disable_assign', ['owner']);
-        expect(occupant.getAssignableAffiliations()).toEqual(['admin', 'member', 'outcast', 'none']);
-
-        _converse.api.settings.set('modtools_disable_assign', ['owner', 'admin']);
-        expect(occupant.getAssignableAffiliations()).toEqual(['member', 'outcast', 'none']);
-
-        _converse.api.settings.set('modtools_disable_assign', ['owner', 'admin', 'outcast']);
-        expect(occupant.getAssignableAffiliations()).toEqual(['member', 'none']);
-
-        expect(occupant.getAssignableRoles()).toEqual(['moderator', 'participant', 'visitor']);
-
-        _converse.api.settings.set('modtools_disable_assign', ['admin', 'moderator']);
-        expect(occupant.getAssignableRoles()).toEqual(['participant', 'visitor']);
-    }));
+            _converse.api.settings.set('modtools_disable_assign', ['admin', 'moderator']);
+            expect(occupant.getAssignableRoles()).toEqual(['participant', 'visitor']);
+        }),
+    );
 });

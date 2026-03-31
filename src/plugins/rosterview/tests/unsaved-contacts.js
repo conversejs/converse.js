@@ -22,12 +22,12 @@ describe('An unsaved Contact', function () {
 
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(
-                () => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length
+                () => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length,
             );
             expect(rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length).toBe(1);
             const el = rosterview.querySelector(`ul[data-group="Unsaved contacts"] li .contact-name`);
             expect(el.textContent).toBe('Mercutio');
-        })
+        }),
     );
 
     it(
@@ -66,12 +66,12 @@ describe('An unsaved Contact', function () {
             await _converse.handleMessageStanza(msg);
 
             await u.waitUntil(
-                () => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length
+                () => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length,
             );
             expect(rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length).toBe(1);
             const el = rosterview.querySelector(`ul[data-group="Unsaved contacts"] li .contact-name`);
             expect(el.textContent).toBe('Mercutio');
-        })
+        }),
     );
 
     it(
@@ -95,7 +95,7 @@ describe('An unsaved Contact', function () {
 
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(
-                () => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length
+                () => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length,
             );
             expect(rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li .open-chat`).length).toBe(1);
             const el = rosterview.querySelector(`ul[data-group="Unsaved contacts"] li .contact-name`);
@@ -104,7 +104,7 @@ describe('An unsaved Contact', function () {
             const chat = await api.chats.get(sender_jid);
             chat.close();
             await u.waitUntil(() => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li`).length === 0);
-        })
+        }),
     );
 });
 
@@ -138,7 +138,7 @@ describe('A chat with an unsaved contact', function () {
             expect(alert.textContent).toContain('Would you like to add Mercutio as a contact?');
             expect(alert.querySelector('.btn-success')).toBeTruthy();
             expect(alert.querySelector('.btn-danger')).toBeTruthy();
-        })
+        }),
     );
 
     it(
@@ -180,7 +180,7 @@ describe('A chat with an unsaved contact', function () {
             const sent_stanza = await u.waitUntil(() =>
                 sent_stanzas
                     .filter((iq) => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`, iq).length)
-                    .pop()
+                    .pop(),
             );
             expect(sent_stanza).toEqualStanza(stx`
                 <iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
@@ -188,7 +188,7 @@ describe('A chat with an unsaved contact', function () {
                         <item jid="${sender_jid}"></item>
                     </query>
                 </iq>`);
-        })
+        }),
     );
 
     it(
@@ -221,6 +221,6 @@ describe('A chat with an unsaved contact', function () {
             await u.waitUntil(() => contact.save.calls.count());
             expect(contact.save).toHaveBeenCalledWith({ hide_contact_add_alert: true });
             await u.waitUntil(() => !view.querySelector('converse-contact-approval-alert').childElementCound);
-        })
+        }),
     );
 });

@@ -1,36 +1,36 @@
 /*global mock, converse */
 const { Strophe, sizzle, u } = converse.env;
 
-describe("Message Archive Management", function () {
-
+describe('Message Archive Management', function () {
     beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
-    describe("A placeholder message", function () {
-
-        it("is created to indicate a gap in the history",
+    describe('A placeholder message', function () {
+        it(
+            'is created to indicate a gap in the history',
             mock.initConverse(
                 ['discoInitialized'],
                 {
                     auto_fill_history_gaps: false,
                     archived_messages_page_size: 2,
                     persistent_store: 'localStorage',
-                    mam_request_all_pages: false
+                    mam_request_all_pages: false,
                 },
                 async function (_converse) {
+                    const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+                    const muc_jid = 'orchard@chat.shakespeare.lit';
+                    const msgid = u.getUniqueId();
+                    const conn = _converse.api.connection.get();
 
-            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-            const muc_jid = 'orchard@chat.shakespeare.lit';
-            const msgid = u.getUniqueId();
-            const conn = _converse.api.connection.get();
+                    // We put an already cached message in localStorage
+                    const key_prefix = `converse-test-persistent/${_converse.bare_jid}`;
+                    let key = `${key_prefix}/converse.messages-${muc_jid}-${_converse.bare_jid}`;
+                    localStorage.setItem(key, `["converse.messages-${muc_jid}-${_converse.bare_jid}-${msgid}"]`);
 
-            // We put an already cached message in localStorage
-            const key_prefix = `converse-test-persistent/${_converse.bare_jid}`;
-            let key = `${key_prefix}/converse.messages-${muc_jid}-${_converse.bare_jid}`;
-            localStorage.setItem(key, `["converse.messages-${muc_jid}-${_converse.bare_jid}-${msgid}"]`);
-
-            key = `${key_prefix}/converse.messages-${muc_jid}-${_converse.bare_jid}-${msgid}`;
-            const msgtxt = "existing cached message";
-            localStorage.setItem(key, `{
+                    key = `${key_prefix}/converse.messages-${muc_jid}-${_converse.bare_jid}-${msgid}`;
+                    const msgtxt = 'existing cached message';
+                    localStorage.setItem(
+                        key,
+                        `{
                 "body": "${msgtxt}",
                 "message": "${msgtxt}",
                 "editable":true,
@@ -47,16 +47,19 @@ describe("Message Archive Management", function () {
                 "time": "2021-06-15T11:17:15.424Z",
                 "type": "groupchat",
                 "msgid": "${msgid}"
-            }`);
+            }`,
+                    );
 
-            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
-            const view = _converse.chatboxviews.get(muc_jid);
+                    await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+                    const view = _converse.chatboxviews.get(muc_jid);
 
-            let iq_get = await u.waitUntil(() => sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop());
-            const first_msg_id = conn.getUniqueId();
-            const second_msg_id = conn.getUniqueId();
-            const third_msg_id = conn.getUniqueId();
-            let message = stx`
+                    let iq_get = await u.waitUntil(() =>
+                        sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop(),
+                    );
+                    const first_msg_id = conn.getUniqueId();
+                    const second_msg_id = conn.getUniqueId();
+                    const third_msg_id = conn.getUniqueId();
+                    let message = stx`
                 <message xmlns="jabber:client"
                         to="romeo@montague.lit/orchard"
                         from="${muc_jid}">
@@ -69,9 +72,9 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`;
-            conn._dataRecv(mock.createRequest(message));
+                    conn._dataRecv(mock.createRequest(message));
 
-            message = stx`
+                    message = stx`
                 <message xmlns="jabber:client"
                         to="romeo@montague.lit/orchard"
                         from="${muc_jid}">
@@ -84,12 +87,14 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`;
-            conn._dataRecv(mock.createRequest(message));
+                    conn._dataRecv(mock.createRequest(message));
 
-            // Clear so that we don't match the older query
-            while (sent_IQs.length) { sent_IQs.pop(); }
+                    // Clear so that we don't match the older query
+                    while (sent_IQs.length) {
+                        sent_IQs.pop();
+                    }
 
-            let result = stx`
+                    let result = stx`
                 <iq type='result' id='${iq_get.getAttribute('id')}' xmlns="jabber:client">
                     <fin xmlns='urn:xmpp:mam:2'>
                         <set xmlns='http://jabber.org/protocol/rsm'>
@@ -99,25 +104,27 @@ describe("Message Archive Management", function () {
                         </set>
                     </fin>
                 </iq>`;
-            conn._dataRecv(mock.createRequest(result));
-            await u.waitUntil(() => view.model.messages.length === 5);
+                    conn._dataRecv(mock.createRequest(result));
+                    await u.waitUntil(() => view.model.messages.length === 5);
 
-            expect(view.model.messages.at(0) instanceof _converse.MAMPlaceholderMessage).toBe(true);
-            expect(view.model.messages.at(0).get('time')).toBe('2021-06-15T11:17:15.423Z');
-            expect(view.model.messages.at(1).get('body')).toBe('existing cached message');
-            expect(view.model.messages.at(2) instanceof _converse.MAMPlaceholderMessage).toBe(true);
-            expect(view.model.messages.at(2).get('time')).toBe('2021-06-15T11:18:22.999Z');
-            expect(view.model.messages.at(3).get('body')).toBe('2nd MAM Message');
-            expect(view.model.messages.at(4).get('body')).toBe('3rd MAM Message');
+                    expect(view.model.messages.at(0) instanceof _converse.MAMPlaceholderMessage).toBe(true);
+                    expect(view.model.messages.at(0).get('time')).toBe('2021-06-15T11:17:15.423Z');
+                    expect(view.model.messages.at(1).get('body')).toBe('existing cached message');
+                    expect(view.model.messages.at(2) instanceof _converse.MAMPlaceholderMessage).toBe(true);
+                    expect(view.model.messages.at(2).get('time')).toBe('2021-06-15T11:18:22.999Z');
+                    expect(view.model.messages.at(3).get('body')).toBe('2nd MAM Message');
+                    expect(view.model.messages.at(4).get('body')).toBe('3rd MAM Message');
 
-            const placeholder_el = [...view.querySelectorAll('converse-mam-placeholder')].pop();
-            placeholder_el.firstElementChild.click();
+                    const placeholder_el = [...view.querySelectorAll('converse-mam-placeholder')].pop();
+                    placeholder_el.firstElementChild.click();
 
-            await u.waitUntil(() => view.querySelector('converse-mam-placeholder .spinner-grow'));
+                    await u.waitUntil(() => view.querySelector('converse-mam-placeholder .spinner-grow'));
 
-            iq_get = await u.waitUntil(() => sent_IQs.filter((iq) => sizzle(`iq query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop());
-            expect(iq_get).toEqualStanza(
-                stx`<iq id="${iq_get.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">
+                    iq_get = await u.waitUntil(() =>
+                        sent_IQs.filter((iq) => sizzle(`iq query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop(),
+                    );
+                    expect(iq_get).toEqualStanza(
+                        stx`<iq id="${iq_get.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">
                     <query queryid="${iq_get.querySelector('query').getAttribute('queryid')}" xmlns="urn:xmpp:mam:2">
                         <x xmlns="jabber:x:data" type="submit">
                             <field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>
@@ -128,9 +135,10 @@ describe("Message Archive Management", function () {
                             <max>2</max>
                         </set>
                     </query>
-                </iq>`);
+                </iq>`,
+                    );
 
-            message = stx`
+                    message = stx`
                 <message xmlns="jabber:client"
                         to="romeo@montague.lit/orchard"
                         from="${muc_jid}">
@@ -143,12 +151,14 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`;
-            conn._dataRecv(mock.createRequest(message));
+                    conn._dataRecv(mock.createRequest(message));
 
-            // Clear so that we don't match the older query
-            while (sent_IQs.length) { sent_IQs.pop(); }
+                    // Clear so that we don't match the older query
+                    while (sent_IQs.length) {
+                        sent_IQs.pop();
+                    }
 
-            result = stx`
+                    result = stx`
                 <iq type='result' id='${iq_get.getAttribute('id')}' xmlns="jabber:client">
                     <fin xmlns='urn:xmpp:mam:2' complete='true'>
                         <set xmlns='http://jabber.org/protocol/rsm'>
@@ -158,24 +168,27 @@ describe("Message Archive Management", function () {
                         </set>
                     </fin>
                 </iq>`;
-            conn._dataRecv(mock.createRequest(result));
-            await u.waitUntil(() => view.model.messages.length === 5);
-            await u.waitUntil(() => view.querySelectorAll('converse-mam-placeholder').length === 1);
-        }));
+                    conn._dataRecv(mock.createRequest(result));
+                    await u.waitUntil(() => view.model.messages.length === 5);
+                    await u.waitUntil(() => view.querySelectorAll('converse-mam-placeholder').length === 1);
+                },
+            ),
+        );
 
-        it("is not created when the full RSM result set is returned",
-                mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2},
-                async function (_converse) {
+        it(
+            'is not created when the full RSM result set is returned',
+            mock.initConverse(['discoInitialized'], { 'archived_messages_page_size': 2 }, async function (_converse) {
+                const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+                const muc_jid = 'orchard@chat.shakespeare.lit';
+                await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+                const view = _converse.chatboxviews.get(muc_jid);
+                const iq_get = await u.waitUntil(() =>
+                    sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop(),
+                );
 
-            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-            const muc_jid = 'orchard@chat.shakespeare.lit';
-            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
-            const view = _converse.chatboxviews.get(muc_jid);
-            const iq_get = await u.waitUntil(() => sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop());
-
-            const first_msg_id = _converse.api.connection.get().getUniqueId();
-            const last_msg_id = _converse.api.connection.get().getUniqueId();
-            let message = stx`
+                const first_msg_id = _converse.api.connection.get().getUniqueId();
+                const last_msg_id = _converse.api.connection.get().getUniqueId();
+                let message = stx`
                 <message xmlns="jabber:client"
                         to="romeo@montague.lit/orchard"
                         from="${muc_jid}">
@@ -188,9 +201,9 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
-            message = stx`
+                message = stx`
                 <message xmlns="jabber:client"
                         to="romeo@montague.lit/orchard"
                         from="${muc_jid}">
@@ -203,12 +216,14 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
-            // Clear so that we don't match the older query
-            while (sent_IQs.length) { sent_IQs.pop(); }
+                // Clear so that we don't match the older query
+                while (sent_IQs.length) {
+                    sent_IQs.pop();
+                }
 
-            const result = stx`
+                const result = stx`
                 <iq type='result' id='${iq_get.getAttribute('id')}' xmlns="jabber:client">
                     <fin xmlns='urn:xmpp:mam:2' complete='true'>
                         <set xmlns='http://jabber.org/protocol/rsm'>
@@ -217,9 +232,10 @@ describe("Message Archive Management", function () {
                         </set>
                     </fin>
                 </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
-            await u.waitUntil(() => view.model.messages.length === 2);
-            expect(view.model.messages.pluck('id').join(',')).toBe(`${first_msg_id},${last_msg_id}`);
-        }));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+                await u.waitUntil(() => view.model.messages.length === 2);
+                expect(view.model.messages.pluck('id').join(',')).toBe(`${first_msg_id},${last_msg_id}`);
+            }),
+        );
     });
 });

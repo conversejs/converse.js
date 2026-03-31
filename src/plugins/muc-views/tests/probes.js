@@ -27,14 +27,14 @@ describe('Groupchats', function () {
 
                 const sent_stanzas = _converse.api.connection.get().sent_stanzas;
                 let probe = await u.waitUntil(() =>
-                    sent_stanzas.filter((s) => s.matches('presence[type="probe"]')).pop()
+                    sent_stanzas.filter((s) => s.matches('presence[type="probe"]')).pop(),
                 );
                 expect(probe).toEqualStanza(
                     stx`<presence to="${muc_jid}/ralphm" type="probe" xmlns="jabber:client">
                         <priority>0</priority>
                         <x xmlns="vcard-temp:x:update"/>
                         <c hash="sha-1" node="https://conversejs.org" ver="Hbd4V8rlZualGDSkxW/4bVlnudc=" xmlns="http://jabber.org/protocol/caps"/>
-                    </presence>`
+                    </presence>`,
                 );
 
                 let presence = stx`<presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/ralphm">
@@ -61,14 +61,14 @@ describe('Groupchats', function () {
                 expect(occupant.get('role')).toBeUndefined();
 
                 probe = await u.waitUntil(() =>
-                    sent_stanzas.filter((s) => s.matches(`presence[to="${muc_jid}/gonePhising"]`)).pop()
+                    sent_stanzas.filter((s) => s.matches(`presence[to="${muc_jid}/gonePhising"]`)).pop(),
                 );
                 expect(probe).toEqualStanza(
                     stx`<presence to="${muc_jid}/gonePhising" type="probe" xmlns="jabber:client">
                         <priority>0</priority>
                         <x xmlns="vcard-temp:x:update"/>
                         <c hash="sha-1" node="https://conversejs.org" ver="Hbd4V8rlZualGDSkxW/4bVlnudc=" xmlns="http://jabber.org/protocol/caps"/>
-                    </presence>`
+                    </presence>`,
                 );
 
                 presence = stx`<presence xmlns="jabber:client" type="unavailable" to="${_converse.jid}" from="${muc_jid}/gonePhising">
@@ -81,7 +81,7 @@ describe('Groupchats', function () {
                 expect(view.model.occupants.length).toBe(3);
                 await u.waitUntil(() => occupant.get('affiliation') === 'member');
                 expect(occupant.get('role')).toBe('participant');
-            })
+            }),
         );
     });
 });

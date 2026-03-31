@@ -20,7 +20,7 @@ describe('A sent chat message', function () {
             expect(message.get('editable')).toBeTruthy();
 
             const retract_button = await u.waitUntil(() =>
-                view.querySelector('.chat-msg__content .chat-msg__action-retract')
+                view.querySelector('.chat-msg__content .chat-msg__action-retract'),
             );
             retract_button.click();
             await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals converse-confirm-modal')));
@@ -32,7 +32,7 @@ describe('A sent chat message', function () {
 
             const msg_obj = view.model.messages.at(0);
             const retraction_stanza = await u.waitUntil(() =>
-                sent_stanzas.filter((s) => s.querySelector('message retract')).pop()
+                sent_stanzas.filter((s) => s.querySelector('message retract')).pop(),
             );
             expect(retraction_stanza).toEqualStanza(stx`
                 <message id="${retraction_stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
@@ -48,7 +48,7 @@ describe('A sent chat message', function () {
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
             expect(el.firstElementChild.textContent.trim()).toBe('You have removed a message');
-        })
+        }),
     );
 });
 
@@ -97,7 +97,7 @@ describe('A received chat message', function () {
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
             expect(msg_el.firstElementChild.textContent.trim()).toBe('Mercutio has removed a message');
-        })
+        }),
     );
 
     it(
@@ -143,7 +143,7 @@ describe('A received chat message', function () {
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
             expect(msg_el.firstElementChild.textContent.trim()).toBe('Mercutio has removed a message');
-        })
+        }),
     );
 });
 
@@ -198,7 +198,7 @@ describe('A message retraction', function () {
             expect(message.get('origin_id')).toBe('2e972ea0-0050-44b7-a830-f6638a2595b3');
             expect(message.get('time')).toBe(date);
             expect(message.get('type')).toBe('chat');
-        })
+        }),
     );
 
     it(
@@ -210,7 +210,7 @@ describe('A message retraction', function () {
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const stanza = await u.waitUntil(() =>
-                sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop()
+                sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop(),
             );
             const queryid = stanza.querySelector('query').getAttribute('queryid');
             const view = _converse.chatboxviews.get(contact_jid);
@@ -285,7 +285,7 @@ describe('A message retraction', function () {
             const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
             expect(el.firstElementChild.textContent.trim()).toBe('Mercutio has removed a message');
             expect(u.hasClass('chat-msg--followup', el.parentElement)).toBe(false);
-        })
+        }),
     );
 });
 
@@ -353,6 +353,6 @@ describe('A Received Chat Message', function () {
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction span');
             expect(msg_el.textContent.trim()).toBe('Mercutio has removed a message');
-        })
+        }),
     );
 });

@@ -23,10 +23,10 @@ import {
 const mock = {};
 const converse = window.converse;
 converse.load();
-const { u, $iq } = converse.env;
+const { u } = converse.env;
 
 function getContactJID(index) {
-    return mock.cur_names[index].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+    return mock.cur_names[index].replace(/ /g, '.').toLowerCase() + '@montague.lit';
 }
 
 async function checkHeaderToggling(group) {
@@ -41,20 +41,23 @@ async function checkHeaderToggling(group) {
     expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeTruthy();
     expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeFalsy();
     toggle.click();
-    await u.waitUntil(() => group.querySelectorAll('li .open-chat').length ===
-        Array.from(group.querySelectorAll('li .open-chat')).filter(u.isVisible).length);
+    await u.waitUntil(
+        () =>
+            group.querySelectorAll('li .open-chat').length ===
+            Array.from(group.querySelectorAll('li .open-chat')).filter(u.isVisible).length,
+    );
 
     expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeFalsy();
     expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeTruthy();
-};
-
-function closeAllChatBoxes (_converse) {
-    return Promise.all(_converse.chatboxviews.map(view => view.close()));
 }
 
-function toggleControlBox () {
-    const toggle = document.querySelector(".toggle-controlbox");
-    if (!u.isVisible(document.querySelector("#controlbox"))) {
+function closeAllChatBoxes(_converse) {
+    return Promise.all(_converse.chatboxviews.map((view) => view.close()));
+}
+
+function toggleControlBox() {
+    const toggle = document.querySelector('.toggle-controlbox');
+    if (!u.isVisible(document.querySelector('#controlbox'))) {
         if (!u.isVisible(toggle)) {
             u.removeClass('hidden', toggle);
         }
@@ -69,12 +72,12 @@ async function openControlBox(_converse) {
     return model;
 }
 
-function closeControlBox () {
-    const view = document.querySelector("#controlbox");
-    u.isVisible(view) && view.querySelector(".controlbox-heading__btn.close")?.click();
+function closeControlBox() {
+    const view = document.querySelector('#controlbox');
+    u.isVisible(view) && view.querySelector('.controlbox-heading__btn.close')?.click();
 }
 
-async function waitUntilBlocklistInitialized (_converse, blocklist=[]) {
+async function waitUntilBlocklistInitialized(_converse, blocklist = []) {
     window.sessionStorage.removeItem('converse.blocklist-romeo@montague.lit-fetched');
 
     const { api } = _converse;
@@ -82,13 +85,14 @@ async function waitUntilBlocklistInitialized (_converse, blocklist=[]) {
         _converse,
         _converse.domain,
         [{ 'category': 'server', 'type': 'IM' }],
-        ['urn:xmpp:blocking']
+        ['urn:xmpp:blocking'],
     );
     const connection = api.connection.get();
     const IQ_stanzas = connection.IQ_stanzas;
     const sent_stanza = await u.waitUntil(() => IQ_stanzas.find((s) => s.querySelector('iq blocklist')));
 
-    connection._dataRecv(mock.createRequest(stx`
+    connection._dataRecv(
+        mock.createRequest(stx`
             <iq xmlns="jabber:client"
                 to="${connection.jid}"
                 type="result"
@@ -96,25 +100,26 @@ async function waitUntilBlocklistInitialized (_converse, blocklist=[]) {
             <blocklist xmlns='urn:xmpp:blocking'>
                 ${blocklist.map((jid) => stx`<item jid='${jid}'/>`)}
             </blocklist>
-        </iq>`));
+        </iq>`),
+    );
 
     return await api.waitUntil('blocklistInitialized');
 }
 
-function openChatBoxes (converse, amount) {
-    for (let i=0; i<amount; i++) {
-        const jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+function openChatBoxes(converse, amount) {
+    for (let i = 0; i < amount; i++) {
+        const jid = cur_names[i].replace(/ /g, '.').toLowerCase() + '@montague.lit';
         converse.roster.get(jid).openChat();
     }
 }
 
-async function openChatBoxFor (_converse, jid) {
+async function openChatBoxFor(_converse, jid) {
     await _converse.api.waitUntil('rosterContactsFetched');
     _converse.roster.get(jid).openChat();
     return u.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
 }
 
-async function openAddMUCModal (_converse) {
+async function openAddMUCModal(_converse) {
     await mock.openControlBox(_converse);
     const controlbox = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
     controlbox.querySelector('converse-rooms-list .show-add-muc-modal').click();
@@ -123,29 +128,32 @@ async function openAddMUCModal (_converse) {
     return modal;
 }
 
-async function createContact (_converse, name, ask, requesting, subscription) {
-    const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
+async function createContact(_converse, name, ask, requesting, subscription) {
+    const jid = name.replace(/ /g, '.').toLowerCase() + '@montague.lit';
     if (_converse.roster.get(jid)) {
         return Promise.resolve();
     }
     const contact = await new Promise((success, error) => {
-        _converse.roster.create({
-            'fullname': name,
-            ask,
-            jid,
-            requesting,
-            subscription,
-        }, {success, error});
+        _converse.roster.create(
+            {
+                'fullname': name,
+                ask,
+                jid,
+                requesting,
+                subscription,
+            },
+            { success, error },
+        );
     });
     return contact;
 }
 
-async function createContacts (_converse, type, length) {
+async function createContacts(_converse, type, length) {
     /* Create current (as opposed to requesting or pending) contacts
-        * for the user's roster.
-        *
-        * These contacts are not grouped. See below.
-        */
+     * for the user's roster.
+     *
+     * These contacts are not grouped. See below.
+     */
     await _converse.api.waitUntil('rosterContactsFetched');
     let names, subscription, requesting, ask;
     if (type === 'requesting') {
@@ -165,26 +173,25 @@ async function createContacts (_converse, type, length) {
         ask = null;
     } else if (type === 'all') {
         await this.createContacts(_converse, 'current');
-        await this.createContacts(_converse, 'requesting')
+        await this.createContacts(_converse, 'requesting');
         await this.createContacts(_converse, 'pending');
         return this;
     } else {
-        throw Error("Need to specify the type of contact to create");
+        throw Error('Need to specify the type of contact to create');
     }
-    const promises = names.slice(0, length).map(n => this.createContact(_converse, n, ask, requesting, subscription));
+    const promises = names.slice(0, length).map((n) => this.createContact(_converse, n, ask, requesting, subscription));
     await Promise.all(promises);
 }
 
-
-async function sendMessage (view, message) {
-    const promise = new Promise(resolve => view.model.messages.once('rendered', resolve));
+async function sendMessage(view, message) {
+    const promise = new Promise((resolve) => view.model.messages.once('rendered', resolve));
     const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
     textarea.value = message;
     const message_form = view.querySelector('converse-message-form') || view.querySelector('converse-muc-message-form');
     message_form.onKeyDown({
         target: view.querySelector('textarea.chat-textarea'),
         preventDefault: () => {},
-        key: "Enter",
+        key: 'Enter',
     });
     return promise;
 }
@@ -197,28 +204,30 @@ window.libsignal = {
     'SessionCipher': function (storage, remote_address) {
         this.remoteAddress = remote_address;
         this.storage = storage;
-        this.encrypt = () => Promise.resolve({
-            'type': 1,
-            'body': 'c1ph3R73X7',
-            'registrationId': '1337'
-        });
+        this.encrypt = () =>
+            Promise.resolve({
+                'type': 1,
+                'body': 'c1ph3R73X7',
+                'registrationId': '1337',
+            });
         this.decryptPreKeyWhisperMessage = (key_and_tag) => {
             return Promise.resolve(key_and_tag);
         };
         this.decryptWhisperMessage = (key_and_tag) => {
             return Promise.resolve(key_and_tag);
-        }
+        };
     },
-    'SessionBuilder': function (storage, remote_address) { // eslint-disable-line no-unused-vars
+    'SessionBuilder': function (storage, remote_address) {
+        // eslint-disable-line no-unused-vars
         this.processPreKey = function () {
             return Promise.resolve();
-        }
+        };
     },
     'KeyHelper': {
         'generateIdentityKeyPair': function () {
             return Promise.resolve({
                 'pubKey': new TextEncoder('utf-8').encode('1234'),
-                'privKey': new TextEncoder('utf-8').encode('4321')
+                'privKey': new TextEncoder('utf-8').encode('4321'),
             });
         },
         'generateRegistrationId': function () {
@@ -229,8 +238,8 @@ window.libsignal = {
                 'keyId': keyid,
                 'keyPair': {
                     'pubKey': new TextEncoder('utf-8').encode('1234'),
-                    'privKey': new TextEncoder('utf-8').encode('4321')
-                }
+                    'privKey': new TextEncoder('utf-8').encode('4321'),
+                },
             });
         },
         'generateSignedPreKey': function (identity_keypair, keyid) {
@@ -239,20 +248,19 @@ window.libsignal = {
                 'keyId': keyid,
                 'keyPair': {
                     'pubKey': new TextEncoder('utf-8').encode('1234'),
-                    'privKey': new TextEncoder('utf-8').encode('4321')
-                }
+                    'privKey': new TextEncoder('utf-8').encode('4321'),
+                },
             });
-        }
-    }
-}
-
+        },
+    },
+};
 
 const map = current_contacts_map;
 const groups_map = {};
-Object.keys(map).forEach(k => {
-    const groups = map[k].length ? map[k] : ["Ungrouped"];
-    Object.values(groups).forEach(g => {
-        groups_map[g] = groups_map[g] ? [...groups_map[g], k] : [k]
+Object.keys(map).forEach((k) => {
+    const groups = map[k].length ? map[k] : ['Ungrouped'];
+    Object.values(groups).forEach((g) => {
+        groups_map[g] = groups_map[g] ? [...groups_map[g], k] : [k];
     });
 });
 
@@ -266,28 +274,29 @@ const groups = {
     'friends & acquaintances': 3,
     'Family': 4,
     'ænemies': 3,
-    'Ungrouped': 2
-}
-
+    'Ungrouped': 2,
+};
 
 // TODO: need to also test other roles and affiliations
 const chatroom_roles = {
-    'Anne Ebersbacher': { affiliation: "owner", role: "moderator" },
-    'Dirk Theissen': { affiliation: "admin", role: "moderator" },
-    'Dyon van de Wege': { affiliation: "member", role: "occupant" },
-    'Felix Hofmann': { affiliation: "member", role: "occupant" },
-    'Ka Lek': { affiliation: "member", role: "occupant" },
-    'Thomas Kalb': { affiliation: "member", role: "occupant" }
-}
+    'Anne Ebersbacher': { affiliation: 'owner', role: 'moderator' },
+    'Dirk Theissen': { affiliation: 'admin', role: 'moderator' },
+    'Dyon van de Wege': { affiliation: 'member', role: 'occupant' },
+    'Felix Hofmann': { affiliation: 'member', role: 'occupant' },
+    'Ka Lek': { affiliation: 'member', role: 'occupant' },
+    'Thomas Kalb': { affiliation: 'member', role: 'occupant' },
+};
 
 const event = {
-    'preventDefault': function () {}
-}
+    'preventDefault': function () {},
+};
 
-async function deviceListFetched (_converse, jid, device_ids) {
+async function deviceListFetched(_converse, jid, device_ids) {
     const selector = `iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`;
-    const iq_stanza = await u.waitUntil(
-        () => Array.from(_converse.api.connection.get().IQ_stanzas).filter(iq => iq.querySelector(selector)).pop()
+    const iq_stanza = await u.waitUntil(() =>
+        Array.from(_converse.api.connection.get().IQ_stanzas)
+            .filter((iq) => iq.querySelector(selector))
+            .pop(),
     );
     await u.waitUntil(() => _converse.state.devicelists.get(jid));
     if (Array.isArray(device_ids)) {
@@ -311,38 +320,38 @@ async function deviceListFetched (_converse, jid, device_ids) {
     return iq_stanza;
 }
 
-function ownDeviceHasBeenPublished (_converse) {
-    return Array.from(_converse.api.connection.get().IQ_stanzas).filter(
-        iq => iq.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]')
-    ).pop();
+function ownDeviceHasBeenPublished(_converse) {
+    return Array.from(_converse.api.connection.get().IQ_stanzas)
+        .filter((iq) =>
+            iq.querySelector(
+                'iq[from="' + _converse.bare_jid + '"] publish[node="eu.siacs.conversations.axolotl.devicelist"]',
+            ),
+        )
+        .pop();
 }
 
-function bundleHasBeenPublished (_converse) {
+function bundleHasBeenPublished(_converse) {
     const selector = 'publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]';
-    return Array.from(_converse.api.connection.get().IQ_stanzas).filter(iq => iq.querySelector(selector)).pop();
+    return Array.from(_converse.api.connection.get().IQ_stanzas)
+        .filter((iq) => iq.querySelector(selector))
+        .pop();
 }
 
 function bundleIQRequestSent(_converse, jid, device_id) {
-    return Array.from(_converse.api.connection.get().IQ_stanzas).filter(
-        iq => iq.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.bundles:${device_id}"]`)
-    ).pop();
+    return Array.from(_converse.api.connection.get().IQ_stanzas)
+        .filter((iq) =>
+            iq.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.bundles:${device_id}"]`),
+        )
+        .pop();
 }
 
 async function bundleFetched(
     _converse,
-    {
-        jid,
-        device_id,
-        identity_key,
-        signed_prekey_id,
-        signed_prekey_public,
-        signed_prekey_sig,
-        prekeys,
-    }
+    { jid, device_id, identity_key, signed_prekey_id, signed_prekey_public, signed_prekey_sig, prekeys },
 ) {
     const iq_stanza = await u.waitUntil(() => bundleIQRequestSent(_converse, jid, device_id));
     const stanza = stx`<iq from="${jid}"
-            id="${iq_stanza.getAttribute("id")}"
+            id="${iq_stanza.getAttribute('id')}"
             to="${_converse.bare_jid}"
             xmlns="jabber:server"
             type="result">
@@ -367,28 +376,26 @@ async function bundleFetched(
 async function initializedOMEMO(
     _converse,
     identities = [{ 'category': 'pubsub', 'type': 'pep' }],
-    features = ['http://jabber.org/protocol/pubsub#publish-options']
+    features = ['http://jabber.org/protocol/pubsub#publish-options'],
 ) {
     await waitUntilDiscoConfirmed(_converse, _converse.bare_jid, identities, features);
     await deviceListFetched(_converse, _converse.bare_jid, ['482886413b977930064a5888b92134fe']);
     let iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse));
 
-    let stanza = $iq({
-        'from': _converse.bare_jid,
-        'id': iq_stanza.getAttribute('id'),
-        'to': _converse.bare_jid,
-        'type': 'result',
-    });
+    let stanza = stx`<iq from="${_converse.bare_jid}"
+                          id="${iq_stanza.getAttribute('id')}"
+                          to="${_converse.bare_jid}"
+                          type="result"
+                          xmlns="jabber:client"/>`;
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
 
     iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse));
 
-    stanza = $iq({
-        'from': _converse.bare_jid,
-        'id': iq_stanza.getAttribute('id'),
-        'to': _converse.bare_jid,
-        'type': 'result',
-    });
+    stanza = stx`<iq from="${_converse.bare_jid}"
+                          id="${iq_stanza.getAttribute('id')}"
+                          to="${_converse.bare_jid}"
+                          type="result"
+                          xmlns="jabber:client"/>`;
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
     await _converse.api.waitUntil('OMEMOInitialized');
 }
@@ -437,7 +444,7 @@ Object.assign(mock, {
     waitForRoster,
     waitUntilBlocklistInitialized,
     waitUntilBookmarksReturned,
-    waitUntilDiscoConfirmed
+    waitUntilDiscoConfirmed,
 });
 
 window.mock = mock;

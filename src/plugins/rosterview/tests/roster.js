@@ -1,5 +1,4 @@
 /*global mock, converse, _ */
-const $pres = converse.env.$pres;
 const Strophe = converse.env.Strophe;
 const sizzle = converse.env.sizzle;
 const u = converse.env.utils;

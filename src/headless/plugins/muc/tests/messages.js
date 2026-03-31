@@ -1,7 +1,7 @@
 /*global converse */
 import mock from '../../../tests/mock.js';
 
-const { Strophe, u, $msg, stx } = converse.env;
+const { Strophe, u, stx } = converse.env;
 
 describe('A MUC message', function () {
     it(
@@ -50,15 +50,14 @@ describe('A MUC message', function () {
         mock.initConverse([], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
-            const msg = $msg({
-                from: 'lounge@montague.lit/romeo',
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat',
-            })
-                .c('body')
-                .t('I wrote this message!')
-                .tree();
+            const msg = stx`
+                <message from="lounge@montague.lit/romeo"
+                         id="${u.getUniqueId()}"
+                         to="romeo@montague.lit"
+                         type="groupchat"
+                         xmlns="jabber:client">
+                    <body>I wrote this message!</body>
+                </message>`;
             await model.handleMessageStanza(msg);
             await u.waitUntil(() => model.messages.last()?.get('received'));
             expect(model.messages.last().get('sender')).toBe('me');

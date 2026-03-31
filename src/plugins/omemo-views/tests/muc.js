@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $iq, $msg, $pres, Strophe, sizzle, stx, omemo } = converse.env;
+const { Strophe, sizzle, stx, omemo } = converse.env;
 const u = converse.env.utils;
 
 describe('The OMEMO module', function () {
@@ -187,17 +187,15 @@ describe('The OMEMO module', function () {
             await u.waitUntil(() => mock.initializedOMEMO(_converse));
 
             const contact_jid = 'newguy@montague.lit';
-            let stanza = $pres({
-                'to': 'romeo@montague.lit/orchard',
-                'from': 'lounge@montague.lit/newguy',
-            })
-                .c('x', { xmlns: Strophe.NS.MUC_USER })
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': 'newguy@montague.lit/_converse.js-290929789',
-                    'role': 'participant',
-                })
-                .tree();
+            let stanza = stx`<presence to="romeo@montague.lit/orchard"
+                            from="lounge@montague.lit/newguy"
+                            xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none"
+                            jid="newguy@montague.lit/_converse.js-290929789"
+                            role="participant"/>
+                    </x>
+                </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             const toolbar = await u.waitUntil(() => view.querySelector('.chat-toolbar'));
@@ -230,65 +228,46 @@ describe('The OMEMO module', function () {
             let iq_stanza = await u.waitUntil(() =>
                 mock.bundleIQRequestSent(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'),
             );
-            stanza = $iq({
-                'from': _converse.bare_jid,
-                'id': iq_stanza.getAttribute('id'),
-                'to': _converse.bare_jid,
-                'type': 'result',
-            })
-                .c('pubsub', {
-                    'xmlns': 'http://jabber.org/protocol/pubsub',
-                })
-                .c('items', { 'node': 'eu.siacs.conversations.axolotl.bundles:482886413b977930064a5888b92134fe' })
-                .c('item')
-                .c('bundle', { 'xmlns': 'eu.siacs.conversations.axolotl' })
-                .c('signedPreKeyPublic', { 'signedPreKeyId': '4223' })
-                .t(btoa('100000'))
-                .up()
-                .c('signedPreKeySignature')
-                .t(btoa('200000'))
-                .up()
-                .c('identityKey')
-                .t(btoa('300000'))
-                .up()
-                .c('prekeys')
-                .c('preKeyPublic', { 'preKeyId': '1' })
-                .t(btoa('1991'))
-                .up()
-                .c('preKeyPublic', { 'preKeyId': '2' })
-                .t(btoa('1992'))
-                .up()
-                .c('preKeyPublic', { 'preKeyId': '3' })
-                .t(btoa('1993'));
+            stanza = stx`<iq from="${_converse.bare_jid}"
+                          id="${iq_stanza.getAttribute('id')}"
+                          to="${_converse.bare_jid}"
+                          type="result"
+                          xmlns="jabber:client">
+                    <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                        <items node="eu.siacs.conversations.axolotl.bundles:482886413b977930064a5888b92134fe">
+                            <item>
+                                <bundle xmlns="eu.siacs.conversations.axolotl">
+                                    <signedPreKeyPublic signedPreKeyId="4223">${btoa('100000')}</signedPreKeyPublic>
+                                    <signedPreKeySignature>${btoa('200000')}</signedPreKeySignature>
+                                    <identityKey>${btoa('300000')}</identityKey>
+                                    <prekeys>
+                                        <preKeyPublic preKeyId="1">${btoa('1991')}</preKeyPublic>
+                                        <preKeyPublic preKeyId="2">${btoa('1992')}</preKeyPublic>
+                                        <preKeyPublic preKeyId="3">${btoa('1993')}</preKeyPublic>
+                                    </prekeys>
+                                </bundle>
+                            </item>
+                        </items>
+                    </pubsub>
+                </iq>`;
 
             iq_stanza = await u.waitUntil(() =>
                 mock.bundleIQRequestSent(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'),
             );
 
-            /* <iq xmlns="jabber:client" to="jc@opkode.com/converse.js-34183907" type="error" id="945c8ab3-b561-4d8a-92da-77c226bb1689:sendIQ" from="joris@konuro.net">
-             *     <pubsub xmlns="http://jabber.org/protocol/pubsub">
-             *         <items node="eu.siacs.conversations.axolotl.bundles:7580"/>
-             *     </pubsub>
-             *     <error code="401" type="auth">
-             *         <presence-subscription-required xmlns="http://jabber.org/protocol/pubsub#errors"/>
-             *         <not-authorized xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
-             *     </error>
-             * </iq>
-             */
-            stanza = $iq({
-                'from': contact_jid,
-                'id': iq_stanza.getAttribute('id'),
-                'to': _converse.bare_jid,
-                'type': 'result',
-            })
-                .c('pubsub', { 'xmlns': 'http://jabber.org/protocol/pubsub' })
-                .c('items', { 'node': 'eu.siacs.conversations.axolotl.bundles:4e30f35051b7b8b42abe083742187228' })
-                .up()
-                .up()
-                .c('error', { 'code': '401', 'type': 'auth' })
-                .c('presence-subscription-required', { 'xmlns': 'http://jabber.org/protocol/pubsub#errors' })
-                .up()
-                .c('not-authorized', { 'xmlns': 'urn:ietf:params:xml:ns:xmpp-stanzas' });
+            stanza = stx`<iq from="${contact_jid}"
+                          id="${iq_stanza.getAttribute('id')}"
+                          to="${_converse.bare_jid}"
+                          type="error"
+                          xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <items node="eu.siacs.conversations.axolotl.bundles:4e30f35051b7b8b42abe083742187228"/>
+                </pubsub>
+                <error code="401" type="auth">
+                    <presence-subscription-required xmlns="http://jabber.org/protocol/pubsub#errors"/>
+                    <not-authorized xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                </error>
+            </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             await u.waitUntil(() => document.querySelectorAll('.alert-danger').length, 2000);
@@ -350,17 +329,16 @@ describe('The OMEMO module', function () {
             expect(u.hasClass('fa-lock', toolbar.querySelector('.toggle-omemo converse-icon'))).toBe(true);
 
             let contact_jid = 'newguy@montague.lit';
-            let stanza = $pres({
-                to: 'romeo@montague.lit/orchard',
-                from: 'lounge@montague.lit/newguy',
-            })
-                .c('x', { xmlns: Strophe.NS.MUC_USER })
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': 'newguy@montague.lit/_converse.js-290929789',
-                    'role': 'participant',
-                })
-                .tree();
+            let stanza = stx`
+                <presence to="romeo@montague.lit/orchard"
+                          from="lounge@montague.lit/newguy"
+                          xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none"
+                              jid="newguy@montague.lit/_converse.js-290929789"
+                              role="participant"/>
+                    </x>
+                </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
@@ -372,19 +350,23 @@ describe('The OMEMO module', function () {
                     `</iq>`,
             );
 
-            stanza = $iq({
-                'from': contact_jid,
-                'id': iq_stanza.getAttribute('id'),
-                'to': _converse.bare_jid,
-                'type': 'result',
-            })
-                .c('pubsub', { 'xmlns': 'http://jabber.org/protocol/pubsub' })
-                .c('items', { 'node': 'eu.siacs.conversations.axolotl.devicelist' })
-                .c('item', { 'xmlns': 'http://jabber.org/protocol/pubsub' }) // TODO: must have an id attribute
-                .c('list', { 'xmlns': 'eu.siacs.conversations.axolotl' })
-                .c('device', { 'id': '4e30f35051b7b8b42abe083742187228' })
-                .up()
-                .c('device', { 'id': 'ae890ac52d0df67ed7cfdf51b644e901' });
+            stanza = stx`
+                <iq from="${contact_jid}"
+                    id="${iq_stanza.getAttribute('id')}"
+                    to="${_converse.bare_jid}"
+                    type="result"
+                    xmlns="jabber:client">
+                    <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                        <items node="eu.siacs.conversations.axolotl.devicelist">
+                            <item xmlns="http://jabber.org/protocol/pubsub">
+                                <list xmlns="eu.siacs.conversations.axolotl">
+                                    <device id="4e30f35051b7b8b42abe083742187228"/>
+                                    <device id="ae890ac52d0df67ed7cfdf51b644e901"/>
+                                </list>
+                            </item>
+                        </items>
+                    </pubsub>
+                </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => _converse.state.omemo_store);
             expect(_converse.state.devicelists.length).toBe(2);
@@ -438,17 +420,16 @@ describe('The OMEMO module', function () {
             // Someone enters the room who doesn't have OMEMO support, while we
             // have OMEMO activated...
             contact_jid = 'oldguy@montague.lit';
-            stanza = $pres({
-                to: 'romeo@montague.lit/orchard',
-                from: 'lounge@montague.lit/oldguy',
-            })
-                .c('x', { xmlns: Strophe.NS.MUC_USER })
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': `${contact_jid}/_converse.js-290929788`,
-                    'role': 'participant',
-                })
-                .tree();
+            stanza = stx`
+                <presence to="romeo@montague.lit/orchard"
+                          from="lounge@montague.lit/oldguy"
+                          xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none"
+                              jid="${contact_jid}/_converse.js-290929788"
+                              role="participant"/>
+                    </x>
+                </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
             expect(Strophe.serialize(iq_stanza)).toBe(
@@ -459,14 +440,16 @@ describe('The OMEMO module', function () {
                     `</iq>`,
             );
 
-            stanza = $iq({
-                'from': contact_jid,
-                'id': iq_stanza.getAttribute('id'),
-                'to': _converse.bare_jid,
-                'type': 'error',
-            })
-                .c('error', { 'type': 'cancel' })
-                .c('item-not-found', { 'xmlns': 'urn:ietf:params:xml:ns:xmpp-stanzas' });
+            stanza = stx`
+                <iq from="${contact_jid}"
+                    id="${iq_stanza.getAttribute('id')}"
+                    to="${_converse.bare_jid}"
+                    type="error"
+                    xmlns="jabber:client">
+                    <error type="cancel">
+                        <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                    </error>
+                </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             await u.waitUntil(() => !view.model.get('omemo_supported'));

@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $msg, u } = converse.env;
+const { stx, u } = converse.env;
 
 describe('A Chat Message', function () {
     it(
@@ -34,17 +34,14 @@ describe('A Chat Message', function () {
             // Test messages from other users
             const secondMessageText = 'Hello';
             _converse.handleMessageStanza(
-                $msg({
-                    'from': contact_jid,
-                    'to': api.connection.get().jid,
-                    'type': 'chat',
-                    'id': u.getUniqueId(),
-                })
-                    .c('body')
-                    .t(secondMessageText)
-                    .up()
-                    .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                    .tree(),
+                stx`<message from="${contact_jid}"
+                             to="${api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                    <body>${secondMessageText}</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                </message>`,
             );
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
             const copyActions = view.querySelectorAll('.chat-msg__action-copy');
@@ -98,17 +95,14 @@ describe('A Chat Message', function () {
 
             const secondMessageText = 'Hello';
             _converse.handleMessageStanza(
-                $msg({
-                    'from': contact_jid,
-                    'to': api.connection.get().jid,
-                    'type': 'chat',
-                    'id': u.getUniqueId(),
-                })
-                    .c('body')
-                    .t(secondMessageText)
-                    .up()
-                    .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                    .tree(),
+                stx`<message from="${contact_jid}"
+                             to="${api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                    <body>${secondMessageText}</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                </message>`,
             );
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
 

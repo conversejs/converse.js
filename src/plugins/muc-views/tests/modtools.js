@@ -166,7 +166,7 @@ describe('The groupchat moderator tool', function () {
         }),
     );
 
-    fit(
+    it(
         'allows you to filter affiliation search results',
         mock.initConverse([], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
@@ -219,7 +219,7 @@ describe('The groupchat moderator tool', function () {
         }),
     );
 
-    fit(
+    it(
         'allows you to filter role search results',
         mock.initConverse([], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
@@ -327,7 +327,7 @@ describe('The groupchat moderator tool', function () {
         }),
     );
 
-    fit(
+    it(
         'shows an error message if a particular affiliation list may not be retrieved',
         mock.initConverse([], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
@@ -386,7 +386,7 @@ describe('The groupchat moderator tool', function () {
         }),
     );
 
-    fit(
+    it(
         'shows an error message if a particular affiliation may not be set',
         mock.initConverse([], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
@@ -450,7 +450,7 @@ describe('The groupchat moderator tool', function () {
         }),
     );
 
-    fit(
+    it(
         "doesn't allow admins to make more admins",
         mock.initConverse([], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
@@ -492,7 +492,7 @@ describe('The groupchat moderator tool', function () {
         }),
     );
 
-    fit(
+    it(
         'lets the assignable affiliations and roles be configured via modtools_disable_assign',
         mock.initConverse([], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';

@@ -1,5 +1,5 @@
 /*global mock, converse */
-const { stx, Strophe, $iq, u } = converse.env;
+const { stx, Strophe, u } = converse.env;
 
 describe('XEP-0363: HTTP File Upload', function () {
     describe('Discovering support', function () {

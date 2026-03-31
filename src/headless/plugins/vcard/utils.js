@@ -14,7 +14,7 @@ import log from '@converse/log';
 import { shouldClearCache } from '../../utils/session.js';
 import { isElement } from '../../utils/html.js';
 import { parseErrorStanza } from '../../shared/parsers.js';
-import {parseVCardResultStanza} from './parsers.js';
+import { parseVCardResultStanza } from './parsers.js';
 
 const { Strophe, $iq, sizzle, stx } = converse.env;
 
@@ -197,7 +197,7 @@ export function unregisterPresenceHandler() {
 }
 
 export function registerPresenceHandler() {
-    // unregisterPresenceHandler();
+    unregisterPresenceHandler();
     const connection = api.connection.get();
     presence_ref = connection.addHandler(
         /** @param {Element} pres */
@@ -211,7 +211,7 @@ export function registerPresenceHandler() {
         },
         null,
         'presence',
-        null
+        null,
     );
 }
 

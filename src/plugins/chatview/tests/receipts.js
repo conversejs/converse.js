@@ -1,6 +1,6 @@
 /*global mock, converse, _ */
 
-const { Strophe, $msg, sizzle } = converse.env;
+const { Strophe, stx, sizzle } = converse.env;
 const u = converse.env.utils;
 
 describe('A delivery receipt', function () {
@@ -13,17 +13,14 @@ describe('A delivery receipt', function () {
             const msg_id = u.getUniqueId();
             const sent_stanzas = [];
             spyOn(api.connection.get(), 'send').and.callFake((stanza) => sent_stanzas.push(stanza));
-            const msg = $msg({
-                'from': sender_jid,
-                'to': api.connection.get().jid,
-                'type': 'chat',
-                'id': msg_id,
-            })
-                .c('body')
-                .t('Message!')
-                .up()
-                .c('request', { 'xmlns': Strophe.NS.RECEIPTS })
-                .tree();
+            const msg = stx`<message from="${sender_jid}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     id="${msg_id}"
+                                     xmlns="jabber:client">
+                <body>Message!</body>
+                <request xmlns="${Strophe.NS.RECEIPTS}"/>
+            </message>`;
             await _converse.handleMessageStanza(msg);
             const sent_messages = sent_stanzas
                 .map((s) => (u.isElement(s) ? s : s.nodeTree))
@@ -49,26 +46,24 @@ describe('A delivery receipt', function () {
             const sent_stanzas = [];
             spyOn(api.connection.get(), 'send').and.callFake((stanza) => sent_stanzas.push(stanza));
 
-            const msg = $msg({
-                'from': bare_jid,
-                'to': api.connection.get().jid,
-                'type': 'chat',
-                'id': u.getUniqueId(),
-            })
-                .c('received', { 'xmlns': 'urn:xmpp:carbons:2' })
-                .c('forwarded', { 'xmlns': 'urn:xmpp:forward:0' })
-                .c('message', {
-                    'xmlns': 'jabber:client',
-                    'from': sender_jid,
-                    'to': bare_jid + '/another-resource',
-                    'type': 'chat',
-                    'id': msg_id,
-                })
-                .c('body')
-                .t('Message!')
-                .up()
-                .c('request', { 'xmlns': Strophe.NS.RECEIPTS })
-                .tree();
+            const msg = stx`<message from="${bare_jid}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     id="${u.getUniqueId()}"
+                                     xmlns="jabber:client">
+                <received xmlns="urn:xmpp:carbons:2">
+                    <forwarded xmlns="urn:xmpp:forward:0">
+                        <message xmlns="jabber:client"
+                                 from="${sender_jid}"
+                                 to="${bare_jid}/another-resource"
+                                 type="chat"
+                                 id="${msg_id}">
+                            <body>Message!</body>
+                            <request xmlns="${Strophe.NS.RECEIPTS}"/>
+                        </message>
+                    </forwarded>
+                </received>
+            </message>`;
             await _converse.handleMessageStanza(msg);
 
             const sent_messages = sent_stanzas
@@ -142,14 +137,12 @@ describe('A delivery receipt', function () {
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
             let msg_obj = chatbox.messages.models[0];
             let msg_id = msg_obj.get('msgid');
-            let msg = $msg({
-                'from': contact_jid,
-                'to': api.connection.get().jid,
-                'id': u.getUniqueId(),
-            })
-                .c('received', { 'id': msg_id, xmlns: Strophe.NS.RECEIPTS })
-                .up()
-                .tree();
+            let msg = stx`<message from="${contact_jid}"
+                                   to="${api.connection.get().jid}"
+                                   id="${u.getUniqueId()}"
+                                   xmlns="jabber:client">
+                <received id="${msg_id}" xmlns="${Strophe.NS.RECEIPTS}"/>
+            </message>`;
             api.connection.get()._dataRecv(mock.createRequest(msg));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__receipt').length === 1);
 
@@ -165,15 +158,13 @@ describe('A delivery receipt', function () {
 
             msg_obj = chatbox.messages.models[1];
             msg_id = msg_obj.get('msgid');
-            msg = $msg({
-                'from': contact_jid,
-                'type': 'chat',
-                'to': api.connection.get().jid,
-                'id': u.getUniqueId(),
-            })
-                .c('received', { 'id': msg_id, xmlns: Strophe.NS.RECEIPTS })
-                .up()
-                .tree();
+            msg = stx`<message from="${contact_jid}"
+                               type="chat"
+                               to="${api.connection.get().jid}"
+                               id="${u.getUniqueId()}"
+                               xmlns="jabber:client">
+                <received id="${msg_id}" xmlns="${Strophe.NS.RECEIPTS}"/>
+            </message>`;
             api.connection.get()._dataRecv(mock.createRequest(msg));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__receipt').length === 2);
             expect(_converse.exports.handleMessageStanza.calls.count()).toBe(1);

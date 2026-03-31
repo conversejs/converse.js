@@ -1,6 +1,6 @@
 /* global mock, converse */
 
-const { $msg, u, Strophe, $iq, sizzle } = converse.env;
+const { u, Strophe, sizzle, stx } = converse.env;
 
 describe('A list of open groupchats', function () {
     beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
@@ -77,15 +77,14 @@ describe('A list of open groupchats', function () {
 
             const nick = mock.chatroom_names[0];
             await view.model.handleMessageStanza(
-                $msg({
-                    from: muc_jid + '/' + nick,
-                    id: u.getUniqueId(),
-                    to: 'romeo@montague.lit',
-                    type: 'groupchat',
-                })
-                    .c('body')
-                    .t(message)
-                    .tree(),
+                stx`
+                    <message from="${muc_jid + '/' + nick}"
+                             id="${u.getUniqueId()}"
+                             to="romeo@montague.lit"
+                             type="groupchat"
+                             xmlns="jabber:client">
+                        <body>${message}</body>
+                    </message>`,
             );
             await u.waitUntil(() => view.model.messages.length);
             expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
@@ -93,15 +92,14 @@ describe('A list of open groupchats', function () {
             expect(roomspanel.querySelector('.msgs-indicator').textContent.trim()).toBe('1');
 
             await view.model.handleMessageStanza(
-                $msg({
-                    'from': muc_jid + '/' + nick,
-                    'id': u.getUniqueId(),
-                    'to': 'romeo@montague.lit',
-                    'type': 'groupchat',
-                })
-                    .c('body')
-                    .t(message)
-                    .tree(),
+                stx`
+                    <message from="${muc_jid + '/' + nick}"
+                             id="${u.getUniqueId()}"
+                             to="romeo@montague.lit"
+                             type="groupchat"
+                             xmlns="jabber:client">
+                        <body>${message}</body>
+                    </message>`,
             );
             await u.waitUntil(() => view.model.messages.length > 1);
             expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
@@ -211,34 +209,27 @@ describe('A groupchat shown in the groupchats list', function () {
                 /* Server responds with the configuration form.
                  * See: // https://xmpp.org/extensions/xep-0045.html#example-165
                  */
-                const config_stanza = $iq({
-                    from: 'coven@chat.shakespeare.lit',
-                    'id': iq.getAttribute('id'),
-                    'to': jid,
-                    'type': 'result',
-                })
-                    .c('query', { 'xmlns': 'http://jabber.org/protocol/muc#owner' })
-                    .c('x', { 'xmlns': 'jabber:x:data', 'type': 'form' })
-                    .c('title')
-                    .t('Configuration for "coven" Room')
-                    .up()
-                    .c('instructions')
-                    .t('Complete this form to modify the configuration of your room.')
-                    .up()
-                    .c('field', { 'type': 'hidden', 'var': 'FORM_TYPE' })
-                    .c('value')
-                    .t('http://jabber.org/protocol/muc#roomconfig')
-                    .up()
-                    .up()
-                    .c('field', {
-                        'label': 'Natural-Language Room Name',
-                        'type': 'text-single',
-                        'var': 'muc#roomconfig_roomname',
-                    })
-                    .c('value')
-                    .t('Coven')
-                    .up()
-                    .up();
+                const config_stanza = stx`
+                    <iq from="coven@chat.shakespeare.lit"
+                        id="${iq.getAttribute('id')}"
+                        to="${jid}"
+                        type="result"
+                        xmlns="jabber:client">
+                        <query xmlns="http://jabber.org/protocol/muc#owner">
+                            <x xmlns="jabber:x:data" type="form">
+                                <title>Configuration for "coven" Room</title>
+                                <instructions>Complete this form to modify the configuration of your room.</instructions>
+                                <field type="hidden" var="FORM_TYPE">
+                                    <value>http://jabber.org/protocol/muc#roomconfig</value>
+                                </field>
+                                <field label="Natural-Language Room Name"
+                                       type="text-single"
+                                       var="muc#roomconfig_roomname">
+                                    <value>Coven</value>
+                                </field>
+                            </x>
+                        </query>
+                    </iq>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(config_stanza));
 
                 const modal = _converse.api.modal.get('converse-muc-config-modal');
@@ -250,13 +241,12 @@ describe('A groupchat shown in the groupchats list', function () {
                     IQ_stanzas.filter((iq) => iq.matches(`iq[to="${muc_jid}"][type="set"]`)).pop(),
                 );
                 IQ_stanzas.length = 0; // Empty the array
-                const result = $iq({
-                    'xmlns': 'jabber:client',
-                    'type': 'result',
-                    'to': jid,
-                    'from': muc_jid,
-                    'id': iq.getAttribute('id'),
-                });
+                const result = stx`
+                    <iq xmlns="jabber:client"
+                        type="result"
+                        to="${jid}"
+                        from="${muc_jid}"
+                        id="${iq.getAttribute('id')}"/>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
                 iq = await u.waitUntil(() =>
@@ -265,19 +255,18 @@ describe('A groupchat shown in the groupchats list', function () {
                     ).pop(),
                 );
 
-                const features_stanza = $iq({
-                    'from': muc_jid,
-                    'id': iq.getAttribute('id'),
-                    'to': 'romeo@montague.lit/desktop',
-                    'type': 'result',
-                })
-                    .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info' })
-                    .c('identity', {
-                        'category': 'conference',
-                        'name': 'New room name',
-                        'type': 'text',
-                    })
-                    .up();
+                const features_stanza = stx`
+                    <iq from="${muc_jid}"
+                        id="${iq.getAttribute('id')}"
+                        to="romeo@montague.lit/desktop"
+                        type="result"
+                        xmlns="jabber:client">
+                        <query xmlns="http://jabber.org/protocol/disco#info">
+                            <identity category="conference"
+                                      name="New room name"
+                                      type="text"/>
+                        </query>
+                    </iq>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
                 await u.waitUntil(() => new Promise((success) => muc_el.model.features.on('change', success)));
@@ -363,7 +352,7 @@ describe('A groupchat shown in the groupchats list', function () {
                 allow_bookmarks: false, // Makes testing easier, otherwise we have to mock stanza traffic.
             },
             async (_converse) => {
-                const { $msg, u } = converse.env;
+                const { u, stx } = converse.env;
                 await mock.openControlBox(_converse);
                 const room_jid = 'kitchen@conference.shakespeare.lit';
                 const rooms_list = document.querySelector('converse-rooms-list');
@@ -373,15 +362,14 @@ describe('A groupchat shown in the groupchats list', function () {
                 u.minimize(view.model);
                 const nick = mock.chatroom_names[0];
                 await view.model.handleMessageStanza(
-                    $msg({
-                        from: room_jid + '/' + nick,
-                        id: u.getUniqueId(),
-                        to: 'romeo@montague.lit',
-                        type: 'groupchat',
-                    })
-                        .c('body')
-                        .t('foo')
-                        .tree(),
+                    stx`
+                        <message from="${room_jid + '/' + nick}"
+                                 id="${u.getUniqueId()}"
+                                 to="romeo@montague.lit"
+                                 type="groupchat"
+                                 xmlns="jabber:client">
+                            <body>foo</body>
+                        </message>`,
                 );
 
                 // If the user isn't mentioned, the counter doesn't get incremented, but the text of the groupchat is bold
@@ -392,15 +380,14 @@ describe('A groupchat shown in the groupchats list', function () {
 
                 // If the user is mentioned, the counter also gets updated
                 await view.model.handleMessageStanza(
-                    $msg({
-                        from: room_jid + '/' + nick,
-                        id: u.getUniqueId(),
-                        to: 'romeo@montague.lit',
-                        type: 'groupchat',
-                    })
-                        .c('body')
-                        .t('romeo: Your attention is required')
-                        .tree(),
+                    stx`
+                        <message from="${room_jid + '/' + nick}"
+                                 id="${u.getUniqueId()}"
+                                 to="romeo@montague.lit"
+                                 type="groupchat"
+                                 xmlns="jabber:client">
+                            <body>romeo: Your attention is required</body>
+                        </message>`,
                 );
 
                 let indicator_el = await u.waitUntil(() => lview.querySelector('.msgs-indicator'));
@@ -408,15 +395,14 @@ describe('A groupchat shown in the groupchats list', function () {
 
                 spyOn(view.model, 'handleUnreadMessage').and.callThrough();
                 await view.model.handleMessageStanza(
-                    $msg({
-                        from: room_jid + '/' + nick,
-                        id: u.getUniqueId(),
-                        to: 'romeo@montague.lit',
-                        type: 'groupchat',
-                    })
-                        .c('body')
-                        .t('romeo: and another thing...')
-                        .tree(),
+                    stx`
+                        <message from="${room_jid + '/' + nick}"
+                                 id="${u.getUniqueId()}"
+                                 to="romeo@montague.lit"
+                                 type="groupchat"
+                                 xmlns="jabber:client">
+                            <body>romeo: and another thing...</body>
+                        </message>`,
                 );
                 await u.waitUntil(() => view.model.handleUnreadMessage.calls.count());
                 await u.waitUntil(() => lview.querySelector('.msgs-indicator').textContent === '2', 1000);

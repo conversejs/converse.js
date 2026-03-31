@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const $iq = converse.env.$iq;
+const { stx } = converse.env;
 const Strophe = converse.env.Strophe;
 const sizzle = converse.env.sizzle;
 const u = converse.env.utils;
@@ -53,11 +53,10 @@ describe('XEP-0357 Push Notifications', function () {
                 );
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(
-                        $iq({
-                            'to': _converse.api.connection.get().jid,
-                            'type': 'result',
-                            'id': stanza.getAttribute('id'),
-                        }),
+                        stx`<iq to="${_converse.api.connection.get().jid}"
+                                type="result"
+                                id="${stanza.getAttribute('id')}"
+                                xmlns="jabber:client"/>`,
                     ),
                 );
                 await u.waitUntil(() => _converse.session.get('push_enabled'));
@@ -133,11 +132,10 @@ describe('XEP-0357 Push Notifications', function () {
                 );
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(
-                        $iq({
-                            'to': _converse.api.connection.get().jid,
-                            'type': 'result',
-                            'id': iq.getAttribute('id'),
-                        }),
+                        stx`<iq to="${_converse.api.connection.get().jid}"
+                                type="result"
+                                id="${iq.getAttribute('id')}"
+                                xmlns="jabber:client"/>`,
                     ),
                 );
                 await u.waitUntil(() => _converse.session.get('push_enabled').includes('chat.shakespeare.lit'));
@@ -182,11 +180,10 @@ describe('XEP-0357 Push Notifications', function () {
                 );
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(
-                        $iq({
-                            'to': _converse.api.connection.get().jid,
-                            'type': 'result',
-                            'id': stanza.getAttribute('id'),
-                        }),
+                        stx`<iq to="${_converse.api.connection.get().jid}"
+                                type="result"
+                                id="${stanza.getAttribute('id')}"
+                                xmlns="jabber:client"/>`,
                     ),
                 );
                 await u.waitUntil(() => _converse.session.get('push_enabled'));
@@ -244,11 +241,10 @@ describe('XEP-0357 Push Notifications', function () {
                 );
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(
-                        $iq({
-                            'to': _converse.api.connection.get().jid,
-                            'type': 'result',
-                            'id': stanza.getAttribute('id'),
-                        }),
+                        stx`<iq to="${_converse.api.connection.get().jid}"
+                                type="result"
+                                id="${stanza.getAttribute('id')}"
+                                xmlns="jabber:client"/>`,
                     ),
                 );
                 await u.waitUntil(() => _converse.session.get('push_enabled'));

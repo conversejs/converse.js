@@ -74,44 +74,37 @@ export async function waitForRoster(_converse, type = 'current', length = -1, in
         _converse.api.connection
             .get()
             .IQ_stanzas.filter((iq) => sizzle(s, iq).length)
-            .pop()
+            .pop(),
     );
 
-    const result = $iq({
-        'to': _converse.api.connection.get().jid,
-        'type': 'result',
-        'id': iq.getAttribute('id'),
-    }).c('query', {
-        'xmlns': 'jabber:iq:roster',
-    });
-    if (type === 'pending' || type === 'all') {
-        (length > -1 ? pend_names.slice(0, length) : pend_names).map((name) =>
-            result
-                .c('item', {
-                    jid: `${name.replace(/ /g, '.').toLowerCase()}@${domain}`,
-                    name: include_nick ? name : undefined,
-                    subscription: 'none',
-                    ask: 'subscribe',
-                })
-                .up()
-        );
-    }
-    if (type === 'current' || type === 'all') {
-        const cur_names = Object.keys(current_contacts_map);
-        const names = length > -1 ? cur_names.slice(0, length) : cur_names;
-        names.forEach((name) => {
-            result.c('item', {
-                jid: `${name.replace(/ /g, '.').toLowerCase()}@${domain}`,
-                name: include_nick ? name : undefined,
-                subscription: 'both',
-                ask: null,
-            });
-            if (grouped) {
-                current_contacts_map[name].forEach((g) => result.c('group').t(g).up());
-            }
-            result.up();
-        });
-    }
+    const pending_names =
+        type === 'pending' || type === 'all' ? (length > -1 ? pend_names.slice(0, length) : pend_names) : [];
+    const current_names =
+        type === 'current' || type === 'all'
+            ? length > -1
+                ? Object.keys(current_contacts_map).slice(0, length)
+                : Object.keys(current_contacts_map)
+            : [];
+    const result = stx`<iq to="${_converse.api.connection.get().jid}"
+                           type="result"
+                           id="${iq.getAttribute('id')}"
+                           xmlns="jabber:client">
+        <query xmlns="jabber:iq:roster">
+            ${pending_names.map(
+                (name) => stx`<item jid="${name.replace(/ /g, '.').toLowerCase()}@${domain}"
+                ${include_nick ? stx`name="${name}"` : ''}
+                subscription="none"
+                ask="subscribe"/>`,
+            )}
+            ${current_names.map(
+                (name) => stx`<item jid="${name.replace(/ /g, '.').toLowerCase()}@${domain}"
+                ${include_nick ? stx`name="${name}"` : ''}
+                subscription="both">
+                ${grouped ? current_contacts_map[name].map((g) => stx`<group>${g}</group>`) : ''}
+            </item>`,
+            )}
+        </query>
+    </iq>`;
     _converse.api.connection.get()._dataRecv(createRequest(result));
     await _converse.api.waitUntil('rosterContactsFetched');
 }
@@ -122,7 +115,7 @@ export async function waitUntilDiscoConfirmed(
     identities,
     features = [],
     items = [],
-    type = 'info'
+    type = 'info',
 ) {
     const { u, sizzle } = window.converse.env;
     const sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`;
@@ -155,9 +148,9 @@ export async function waitForNewMUCDiscoInfo(_converse, muc_jid) {
     const stanza = await u.waitUntil(() =>
         stanzas
             .filter((iq) =>
-                iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`)
+                iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`),
             )
-            .pop()
+            .pop(),
     );
     const features_stanza = stx`<iq from="${muc_jid}"
                 id="${stanza.getAttribute('id')}"
@@ -179,13 +172,13 @@ export async function waitUntilBookmarksReturned(
         'http://jabber.org/protocol/pubsub#config-node-max',
         'urn:xmpp:bookmarks:1#compat',
     ],
-    node = 'urn:xmpp:bookmarks:1'
+    node = 'urn:xmpp:bookmarks:1',
 ) {
     const { u, sizzle } = window.converse.env;
     await waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [{ 'category': 'pubsub', 'type': 'pep' }], features);
     const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
     const sent_stanza = await u.waitUntil(() =>
-        IQ_stanzas.filter((s) => sizzle(`items[node="${node}"]`, s).length).pop()
+        IQ_stanzas.filter((s) => sizzle(`items[node="${node}"]`, s).length).pop(),
     );
 
     let stanza;
@@ -205,7 +198,7 @@ export async function waitUntilBookmarksReturned(
                         (b) => stx`
                         <conference name="${b.name}" autojoin="${b.autojoin}" jid="${b.jid}">
                             ${b.nick ? stx`<nick>${b.nick}</nick>` : ''}
-                        </conference>`
+                        </conference>`,
                     )}
                 </items>
             </pubsub>
@@ -227,7 +220,7 @@ export async function waitUntilBookmarksReturned(
                             ${b.nick ? stx`<nick>${b.nick}</nick>` : ''}
                             ${b.password ? stx`<password>${b.password}</password>` : ''}
                         </conference>
-                    </item>`
+                    </item>`,
                 )};
                 </items>
             </pubsub>
@@ -244,14 +237,14 @@ export async function receiveOwnMUCPresence(
     nick,
     affiliation = 'owner',
     role = 'moderator',
-    features = []
+    features = [],
 ) {
     const { u } = window.converse.env;
     const sent_stanzas = _converse.api.connection.get().sent_stanzas;
     await u.waitUntil(
         () =>
             sent_stanzas.filter((s) => s.nodeName === 'presence' && s.getAttribute('to') === `${muc_jid}/${nick}`)
-                .length
+                .length,
     );
 
     _converse.api.connection.get()._dataRecv(
@@ -270,7 +263,7 @@ export async function receiveOwnMUCPresence(
                     : ''
             }
             ${_converse.state.profile.get('show') ? stx`<show>${_converse.state.profile.get('show')}</show>` : ''}
-        </presence>`)
+        </presence>`),
     );
 }
 
@@ -285,15 +278,15 @@ export async function waitForReservedNick(_converse, muc_jid, nick) {
 
     // The XMPP server returns the reserved nick for this user.
     const IQ_id = iq.getAttribute('id');
-    const stanza = $iq({
-        'type': 'result',
-        'id': IQ_id,
-        'from': muc_jid,
-        'to': _converse.api.connection.get().jid,
-    }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item' });
-    if (nick) {
-        stanza.c('identity', { 'category': 'conference', 'name': nick, 'type': 'text' });
-    }
+    const stanza = stx`<iq type="result"
+                           id="${IQ_id}"
+                           from="${muc_jid}"
+                           to="${_converse.api.connection.get().jid}"
+                           xmlns="jabber:client">
+        <query xmlns="http://jabber.org/protocol/disco#info" node="x-roomuser-item">
+            ${nick ? stx`<identity category="conference" name="${nick}" type="text"/>` : ''}
+        </query>
+    </iq>`;
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
     if (nick) {
         return u.waitUntil(() => nick);
@@ -309,9 +302,9 @@ export async function waitForMUCDiscoInfo(_converse, muc_jid, features = [], set
     const stanza = await u.waitUntil(() =>
         stanzas
             .filter((iq) =>
-                iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`)
+                iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`),
             )
-            .pop()
+            .pop(),
     );
     features = features.length ? features : default_muc_features;
 
@@ -350,26 +343,20 @@ export async function returnMemberLists(_converse, muc_jid, members = [], affili
                     (s) =>
                         sizzle(
                             `iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="member"]`,
-                            s
-                        ).length
+                            s,
+                        ).length,
                 )
-                .pop()
+                .pop(),
         );
-        const member_list_stanza = $iq({
-            'from': 'coven@chat.shakespeare.lit',
-            'id': member_IQ.getAttribute('id'),
-            'to': 'romeo@montague.lit/orchard',
-            'type': 'result',
-        }).c('query', { 'xmlns': Strophe.NS.MUC_ADMIN });
-        members
-            .filter((m) => m.affiliation === 'member')
-            .forEach((m) => {
-                member_list_stanza.c('item', {
-                    'affiliation': m.affiliation,
-                    'jid': m.jid,
-                    'nick': m.nick,
-                });
-            });
+        const member_list_stanza = stx`<iq from="coven@chat.shakespeare.lit"
+                                          id="${member_IQ.getAttribute('id')}"
+                                          to="romeo@montague.lit/orchard"
+                                          type="result"
+                                          xmlns="jabber:client">
+            <query xmlns="${Strophe.NS.MUC_ADMIN}">
+                ${members.filter((m) => m.affiliation === 'member').map((m) => stx`<item affiliation="${m.affiliation}" jid="${m.jid}" nick="${m.nick}"/>`)}
+            </query>
+        </iq>`;
         _converse.api.connection.get()._dataRecv(createRequest(member_list_stanza));
     }
 
@@ -380,26 +367,20 @@ export async function returnMemberLists(_converse, muc_jid, members = [], affili
                     (s) =>
                         sizzle(
                             `iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="admin"]`,
-                            s
-                        ).length
+                            s,
+                        ).length,
                 )
-                .pop()
+                .pop(),
         );
-        const admin_list_stanza = $iq({
-            'from': 'coven@chat.shakespeare.lit',
-            'id': admin_IQ.getAttribute('id'),
-            'to': 'romeo@montague.lit/orchard',
-            'type': 'result',
-        }).c('query', { 'xmlns': Strophe.NS.MUC_ADMIN });
-        members
-            .filter((m) => m.affiliation === 'admin')
-            .forEach((m) => {
-                admin_list_stanza.c('item', {
-                    'affiliation': m.affiliation,
-                    'jid': m.jid,
-                    'nick': m.nick,
-                });
-            });
+        const admin_list_stanza = stx`<iq from="coven@chat.shakespeare.lit"
+                                          id="${admin_IQ.getAttribute('id')}"
+                                          to="romeo@montague.lit/orchard"
+                                          type="result"
+                                          xmlns="jabber:client">
+            <query xmlns="${Strophe.NS.MUC_ADMIN}">
+                ${members.filter((m) => m.affiliation === 'admin').map((m) => stx`<item affiliation="${m.affiliation}" jid="${m.jid}" nick="${m.nick}"/>`)}
+            </query>
+        </iq>`;
         _converse.api.connection.get()._dataRecv(createRequest(admin_list_stanza));
     }
 
@@ -410,26 +391,20 @@ export async function returnMemberLists(_converse, muc_jid, members = [], affili
                     (s) =>
                         sizzle(
                             `iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="owner"]`,
-                            s
-                        ).length
+                            s,
+                        ).length,
                 )
-                .pop()
+                .pop(),
         );
-        const owner_list_stanza = $iq({
-            'from': 'coven@chat.shakespeare.lit',
-            'id': owner_IQ.getAttribute('id'),
-            'to': 'romeo@montague.lit/orchard',
-            'type': 'result',
-        }).c('query', { 'xmlns': Strophe.NS.MUC_ADMIN });
-        members
-            .filter((m) => m.affiliation === 'owner')
-            .forEach((m) => {
-                owner_list_stanza.c('item', {
-                    'affiliation': m.affiliation,
-                    'jid': m.jid,
-                    'nick': m.nick,
-                });
-            });
+        const owner_list_stanza = stx`<iq from="coven@chat.shakespeare.lit"
+                                          id="${owner_IQ.getAttribute('id')}"
+                                          to="romeo@montague.lit/orchard"
+                                          type="result"
+                                          xmlns="jabber:client">
+            <query xmlns="${Strophe.NS.MUC_ADMIN}">
+                ${members.filter((m) => m.affiliation === 'owner').map((m) => stx`<item affiliation="${m.affiliation}" jid="${m.jid}" nick="${m.nick}"/>`)}
+            </query>
+        </iq>`;
         _converse.api.connection.get()._dataRecv(createRequest(owner_list_stanza));
     }
     return new Promise((resolve) => _converse.api.listen.on('membersFetched', resolve));
@@ -444,7 +419,7 @@ export async function openAndEnterMUC(
     force_open = true,
     settings = {},
     own_affiliation = 'owner',
-    own_role = 'moderator'
+    own_role = 'moderator',
 ) {
     const { u } = window.converse.env;
     const { api } = _converse;
@@ -478,19 +453,15 @@ async function openChatBoxFor(_converse, jid) {
 }
 
 export function createChatMessage(_converse, sender_jid, message, type = 'chat') {
-    return $msg({
-        from: sender_jid,
-        to: _converse.api.connection.get().jid,
-        type,
-        id: new Date().getTime(),
-    })
-        .c('body')
-        .t(message)
-        .up()
-        .c('markable', { 'xmlns': Strophe.NS.MARKERS })
-        .up()
-        .c('active', { 'xmlns': Strophe.NS.CHATSTATES })
-        .tree();
+    return stx`<message from="${sender_jid}"
+                        to="${_converse.api.connection.get().jid}"
+                        type="${type}"
+                        id="${new Date().getTime()}"
+                        xmlns="jabber:client">
+        <body>${message}</body>
+        <markable xmlns="${Strophe.NS.MARKERS}"/>
+        <active xmlns="${Strophe.NS.CHATSTATES}"/>
+    </message>`;
 }
 
 function getMockVcardFetcher(settings) {
@@ -516,8 +487,14 @@ function getMockVcardFetcher(settings) {
             name[last] = name[last].charAt(0).toUpperCase() + name[last].slice(1);
             fullname = name.join(' ');
         }
-        const vcard = $iq().c('vCard').c('FN').t(fullname).up();
-        if (nickname) vcard.c('NICKNAME').t(nickname);
+        const vcard = stx`
+            <iq xmlns="jabber:client">
+                <vCard xmlns="vcard-temp">
+                    <FN>${fullname}</FN>
+                    ${nickname ? stx`<NICKNAME>${nickname}</NICKNAME>` : ''}
+                </vCard>
+            </iq>`;
+
         const vcard_el = vcard.tree();
 
         return Promise.resolve({
@@ -558,7 +535,7 @@ function clearIndexedDB() {
 
 function clearStores() {
     [localStorage, sessionStorage].forEach((s) =>
-        Object.keys(s).forEach((k) => k.match(/^converse-test-/) && s.removeItem(k))
+        Object.keys(s).forEach((k) => k.match(/^converse-test-/) && s.removeItem(k)),
     );
     const cache_key = `converse.room-bookmarksromeo@montague.lit`;
     window.sessionStorage.removeItem(cache_key + 'fetched');
@@ -599,8 +576,8 @@ async function _initConverse(converse, settings) {
                 use_emojione: false,
                 view_mode,
             },
-            settings || {}
-        )
+            settings || {},
+        ),
     );
 
     window._converse = _converse;

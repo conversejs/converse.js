@@ -1,5 +1,5 @@
 /*global mock, converse */
-const { $iq, Strophe, u, stx } = converse.env;
+const { Strophe, u, stx } = converse.env;
 
 describe('A Groupchat', function () {
     beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));

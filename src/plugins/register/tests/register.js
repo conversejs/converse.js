@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { stx, Strophe, $iq, sizzle, u } = converse.env;
+const { stx, Strophe, sizzle, u } = converse.env;
 
 describe('The Registration Form', function () {
     beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
@@ -163,19 +163,14 @@ describe('The Registration Form', function () {
 
                 expect(registerview.getRegistrationFields).toHaveBeenCalled();
 
-                stanza = $iq({
-                    'type': 'result',
-                    'id': 'reg1',
-                })
-                    .c('query', { 'xmlns': 'jabber:iq:register' })
-                    .c('instructions')
-                    .t('Please choose a username, password and provide your email address')
-                    .up()
-                    .c('username')
-                    .up()
-                    .c('password')
-                    .up()
-                    .c('email');
+                stanza = stx`<iq type="result" id="reg1" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:register">
+                        <instructions>Please choose a username, password and provide your email address</instructions>
+                        <username/>
+                        <password/>
+                        <email/>
+                    </query>
+                </iq>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 expect(registerview.renderRegistrationForm).toHaveBeenCalled();
 
@@ -223,19 +218,14 @@ describe('The Registration Form', function () {
 
                 expect(registerview.getRegistrationFields).toHaveBeenCalled();
 
-                stanza = $iq({
-                    'type': 'result',
-                    'id': 'reg1',
-                })
-                    .c('query', { 'xmlns': 'jabber:iq:register' })
-                    .c('instructions')
-                    .t('Please choose a username, password and provide your email address')
-                    .up()
-                    .c('username')
-                    .up()
-                    .c('password')
-                    .up()
-                    .c('email');
+                stanza = stx`<iq type="result" id="reg1" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:register">
+                        <instructions>Please choose a username, password and provide your email address</instructions>
+                        <username/>
+                        <password/>
+                        <email/>
+                    </query>
+                </iq>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 expect(registerview.onRegistrationFields).toHaveBeenCalled();
                 expect(registerview.renderRegistrationForm).toHaveBeenCalled();
@@ -280,19 +270,14 @@ describe('The Registration Form', function () {
                     .up()
                     .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
                 _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
-                stanza = $iq({
-                    'type': 'result',
-                    'id': 'reg1',
-                })
-                    .c('query', { 'xmlns': 'jabber:iq:register' })
-                    .c('instructions')
-                    .t('Please choose a username, password and provide your email address')
-                    .up()
-                    .c('username')
-                    .up()
-                    .c('password')
-                    .up()
-                    .c('email');
+                stanza = stx`<iq type="result" id="reg1" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:register">
+                        <instructions>Please choose a username, password and provide your email address</instructions>
+                        <username/>
+                        <password/>
+                        <email/>
+                    </query>
+                </iq>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 expect(registerview.form_type).toBe('legacy');
 
@@ -347,30 +332,17 @@ describe('The Registration Form', function () {
                     .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
                 _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
-                stanza = $iq({
-                    'type': 'result',
-                    'id': 'reg1',
-                })
-                    .c('query', { 'xmlns': 'jabber:iq:register' })
-                    .c('instructions')
-                    .t('Using xform data')
-                    .up()
-                    .c('x', { 'xmlns': 'jabber:x:data', 'type': 'form' })
-                    .c('instructions')
-                    .t('xform instructions')
-                    .up()
-                    .c('field', { 'type': 'text-single', 'var': 'username' })
-                    .c('required')
-                    .up()
-                    .up()
-                    .c('field', { 'type': 'text-private', 'var': 'password' })
-                    .c('required')
-                    .up()
-                    .up()
-                    .c('field', { 'type': 'text-single', 'var': 'email' })
-                    .c('required')
-                    .up()
-                    .up();
+                stanza = stx`<iq type="result" id="reg1" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:register">
+                        <instructions>Using xform data</instructions>
+                        <x xmlns="jabber:x:data" type="form">
+                            <instructions>xform instructions</instructions>
+                            <field type="text-single" var="username"><required/></field>
+                            <field type="text-private" var="password"><required/></field>
+                            <field type="text-single" var="email"><required/></field>
+                        </x>
+                    </query>
+                </iq>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 expect(registerview.form_type).toBe('xform');
 
@@ -681,24 +653,16 @@ describe('The Registration Form', function () {
                     .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
                 _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
-                stanza = $iq({
-                    'type': 'result',
-                    'id': 'reg1',
-                })
-                    .c('query', { 'xmlns': 'jabber:iq:register' })
-                    .c('instructions')
-                    .t('Using xform data')
-                    .up()
-                    .c('x', { 'xmlns': 'jabber:x:data', 'type': 'form' })
-                    .c('instructions')
-                    .t('Please enter a username and password')
-                    .up()
-                    .c('field', { 'type': 'text-single', 'var': 'username' })
-                    .c('required')
-                    .up()
-                    .up()
-                    .c('field', { 'type': 'text-private', 'var': 'password' })
-                    .c('required');
+                stanza = stx`<iq type="result" id="reg1" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:register">
+                        <instructions>Using xform data</instructions>
+                        <x xmlns="jabber:x:data" type="form">
+                            <instructions>Please enter a username and password</instructions>
+                            <field type="text-single" var="username"><required/></field>
+                            <field type="text-private" var="password"><required/></field>
+                        </x>
+                    </query>
+                </iq>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 await u.waitUntil(() => registerview.querySelectorAll('input').length === 4);
 

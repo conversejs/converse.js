@@ -1,7 +1,5 @@
 /*global mock, converse */
 const { stx, u, Model, Strophe, sizzle, dayjs } = converse.env;
-const $iq = converse.env.$iq;
-const $msg = converse.env.$msg;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 // See: https://xmpp.org/rfcs/rfc3921.html
 

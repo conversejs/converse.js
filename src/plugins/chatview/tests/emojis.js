@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $msg } = converse.env;
+const { stx } = converse.env;
 const u = converse.env.utils;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
@@ -35,17 +35,14 @@ describe('Emojis', function () {
                 await mock.waitForRoster(_converse, 'current');
                 const sender_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 _converse.handleMessageStanza(
-                    $msg({
-                        'from': sender_jid,
-                        'to': _converse.api.connection.get().jid,
-                        'type': 'chat',
-                        'id': _converse.api.connection.get().getUniqueId(),
-                    })
-                        .c('body')
-                        .t('😇')
-                        .up()
-                        .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                        .tree(),
+                    stx`<message from="${sender_jid}"
+                                 to="${_converse.api.connection.get().jid}"
+                                 type="chat"
+                                 id="${_converse.api.connection.get().getUniqueId()}"
+                                 xmlns="jabber:client">
+                        <body>😇</body>
+                        <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`,
                 );
                 await new Promise((resolve) => _converse.on('chatBoxViewInitialized', resolve));
                 const view = _converse.chatboxviews.get(sender_jid);
@@ -53,17 +50,14 @@ describe('Emojis', function () {
                 await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.querySelector('.chat-msg__text')));
 
                 _converse.handleMessageStanza(
-                    $msg({
-                        'from': sender_jid,
-                        'to': _converse.api.connection.get().jid,
-                        'type': 'chat',
-                        'id': _converse.api.connection.get().getUniqueId(),
-                    })
-                        .c('body')
-                        .t('😇 Hello world! 😇 😇')
-                        .up()
-                        .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                        .tree(),
+                    stx`<message from="${sender_jid}"
+                                 to="${_converse.api.connection.get().jid}"
+                                 type="chat"
+                                 id="${_converse.api.connection.get().getUniqueId()}"
+                                 xmlns="jabber:client">
+                        <body>😇 Hello world! 😇 😇</body>
+                        <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`,
                 );
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
 
@@ -137,17 +131,14 @@ describe('Emojis', function () {
                 await mock.waitForRoster(_converse, 'current');
                 const contact_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 _converse.handleMessageStanza(
-                    $msg({
-                        'from': contact_jid,
-                        'to': _converse.api.connection.get().jid,
-                        'type': 'chat',
-                        'id': _converse.api.connection.get().getUniqueId(),
-                    })
-                        .c('body')
-                        .t('😇')
-                        .up()
-                        .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                        .tree(),
+                    stx`<message from="${contact_jid}"
+                                 to="${_converse.api.connection.get().jid}"
+                                 type="chat"
+                                 id="${_converse.api.connection.get().getUniqueId()}"
+                                 xmlns="jabber:client">
+                        <body>😇</body>
+                        <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`,
                 );
                 await new Promise((resolve) => _converse.on('chatBoxViewInitialized', resolve));
                 const view = _converse.chatboxviews.get(contact_jid);

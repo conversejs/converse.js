@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $pres, sizzle, u } = converse.env;
+const { sizzle, stx, u } = converse.env;
 
 describe('The occupants sidebar', function () {
     it(
@@ -22,18 +22,15 @@ describe('The occupants sidebar', function () {
                 const name = mock.chatroom_names[i];
                 const role = mock.chatroom_roles[name].role;
                 // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                const presence = $pres({
-                    to: 'romeo@montague.lit/pda',
-                    from: 'lounge@montague.lit/' + name,
-                })
-                    .c('x')
-                    .attrs({ xmlns: 'http://jabber.org/protocol/muc#user' })
-                    .c('item')
-                    .attrs({
-                        affiliation: mock.chatroom_roles[name].affiliation,
-                        jid: name.replace(/ /g, '.').toLowerCase() + '@montague.lit',
-                        role: role,
-                    });
+                const presence = stx`<presence to="romeo@montague.lit/pda"
+                                               from="lounge@montague.lit/${name}"
+                                               xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="${mock.chatroom_roles[name].affiliation}"
+                              jid="${name.replace(/ /g, '.').toLowerCase()}@montague.lit"
+                              role="${role}"/>
+                    </x>
+                </presence>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             }
 
@@ -53,34 +50,26 @@ describe('The occupants sidebar', function () {
             for (let i = mock.chatroom_names.length - 1; i > -1; i--) {
                 const name = mock.chatroom_names[i];
                 // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                const presence = $pres({
-                    to: 'romeo@montague.lit/pda',
-                    from: 'lounge@montague.lit/' + name,
-                    type: 'unavailable',
-                })
-                    .c('x')
-                    .attrs({ xmlns: 'http://jabber.org/protocol/muc#user' })
-                    .c('item')
-                    .attrs({
-                        affiliation: mock.chatroom_roles[name].affiliation,
-                        jid: name.replace(/ /g, '.').toLowerCase() + '@montague.lit',
-                        role: 'none',
-                    }).nodeTree;
+                const presence = stx`<presence to="romeo@montague.lit/pda"
+                                               from="lounge@montague.lit/${name}"
+                                               type="unavailable"
+                                               xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="${mock.chatroom_roles[name].affiliation}"
+                              jid="${name.replace(/ /g, '.').toLowerCase()}@montague.lit"
+                              role="none"/>
+                    </x>
+                </presence>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
                 expect(occupants.querySelectorAll('li').length).toBe(8);
             }
-            const presence = $pres({
-                to: 'romeo@montague.lit/pda',
-                from: 'lounge@montague.lit/nonmember',
-            })
-                .c('x')
-                .attrs({ xmlns: 'http://jabber.org/protocol/muc#user' })
-                .c('item')
-                .attrs({
-                    affiliation: null,
-                    jid: 'servant@montague.lit',
-                    role: 'visitor',
-                });
+            const presence = stx`<presence to="romeo@montague.lit/pda"
+                                           from="lounge@montague.lit/nonmember"
+                                           xmlns="jabber:client">
+                <x xmlns="http://jabber.org/protocol/muc#user">
+                    <item affiliation="" jid="servant@montague.lit" role="visitor"/>
+                </x>
+            </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => occupants.querySelectorAll('li').length > 8, 500);
             expect(occupants.querySelectorAll('li').length).toBe(9);
@@ -104,20 +93,16 @@ describe('The occupants sidebar', function () {
             for (var i = 0; i < mock.chatroom_names.length; i++) {
                 const name = mock.chatroom_names[i];
                 // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                const presence = $pres({
-                    to: 'romeo@montague.lit/pda',
-                    from: 'lounge@montague.lit/' + name,
-                })
-                    .c('x')
-                    .attrs({ xmlns: 'http://jabber.org/protocol/muc#user' })
-                    .c('item')
-                    .attrs({
-                        affiliation: 'none',
-                        jid: name.replace(/ /g, '.').toLowerCase() + '@montague.lit',
-                        role: 'participant',
-                    })
-                    .up()
-                    .c('status');
+                const presence = stx`<presence to="romeo@montague.lit/pda"
+                                               from="lounge@montague.lit/${name}"
+                                               xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="none"
+                              jid="${name.replace(/ /g, '.').toLowerCase()}@montague.lit"
+                              role="participant"/>
+                    </x>
+                    <status/>
+                </presence>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             }
 
@@ -135,19 +120,16 @@ describe('The occupants sidebar', function () {
             for (i = mock.chatroom_names.length - 1; i > -1; i--) {
                 const name = mock.chatroom_names[i];
                 // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                const presence = $pres({
-                    to: 'romeo@montague.lit/pda',
-                    from: 'lounge@montague.lit/' + name,
-                    type: 'unavailable',
-                })
-                    .c('x')
-                    .attrs({ xmlns: 'http://jabber.org/protocol/muc#user' })
-                    .c('item')
-                    .attrs({
-                        affiliation: 'none',
-                        jid: name.replace(/ /g, '.').toLowerCase() + '@montague.lit',
-                        role: 'none',
-                    });
+                const presence = stx`<presence to="romeo@montague.lit/pda"
+                                               from="lounge@montague.lit/${name}"
+                                               type="unavailable"
+                                               xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="none"
+                              jid="${name.replace(/ /g, '.').toLowerCase()}@montague.lit"
+                              role="none"/>
+                    </x>
+                </presence>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             }
             await u.waitUntil(() => occupants.querySelectorAll('li').length === 1);
@@ -172,21 +154,14 @@ describe('The occupants sidebar', function () {
             expect(sizzle('.badge:last', occupants[0]).pop().textContent.trim()).toBe('MO');
             expect(sizzle('.badge:last', occupants[0]).pop().getAttribute('title').trim()).toBe('Moderator');
 
-            var presence = $pres({
-                to: 'romeo@montague.lit/pda',
-                from: 'lounge@montague.lit/moderatorman',
-            })
-                .c('x')
-                .attrs({ xmlns: 'http://jabber.org/protocol/muc#user' })
-                .c('item')
-                .attrs({
-                    affiliation: 'admin',
-                    jid: contact_jid,
-                    role: 'moderator',
-                })
-                .up()
-                .c('status')
-                .attrs({ code: '110' }).nodeTree;
+            var presence = stx`<presence to="romeo@montague.lit/pda"
+                                           from="lounge@montague.lit/moderatorman"
+                                           xmlns="jabber:client">
+                <x xmlns="http://jabber.org/protocol/muc#user">
+                    <item affiliation="admin" jid="${contact_jid}" role="moderator"/>
+                </x>
+                <status code="110"/>
+            </presence>`;
 
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length > 1, 500);
@@ -206,20 +181,14 @@ describe('The occupants sidebar', function () {
             expect(occupants[0].querySelectorAll('.badge')[1].getAttribute('aria-label').trim()).toBe('Moderator');
 
             contact_jid = mock.cur_names[3].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-            presence = $pres({
-                to: 'romeo@montague.lit/pda',
-                from: 'lounge@montague.lit/visitorwoman',
-            })
-                .c('x')
-                .attrs({ xmlns: 'http://jabber.org/protocol/muc#user' })
-                .c('item')
-                .attrs({
-                    jid: contact_jid,
-                    role: 'visitor',
-                })
-                .up()
-                .c('status')
-                .attrs({ code: '110' }).nodeTree;
+            presence = stx`<presence to="romeo@montague.lit/pda"
+                                       from="lounge@montague.lit/visitorwoman"
+                                       xmlns="jabber:client">
+                <x xmlns="http://jabber.org/protocol/muc#user">
+                    <item jid="${contact_jid}" role="visitor"/>
+                </x>
+                <status code="110"/>
+            </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length > 2, 500);

@@ -1,17 +1,16 @@
 /* global converse */
-import mock from "../../../tests/mock.js";
+import mock from '../../../tests/mock.js';
 
 // See: https://xmpp.org/rfcs/rfc3921.html
 
-describe("A received presence stanza", function () {
-
-    it("has its priority taken into account",
+describe('A received presence stanza', function () {
+    it(
+        'has its priority taken into account',
         mock.initConverse([], {}, async (_converse) => {
-
-        await mock.waitForRoster(_converse, 'current');
-        const contact_jid = mock.cur_names[8].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        const contact = await _converse.api.contacts.get(contact_jid);
-        let stanza = stx`
+            await mock.waitForRoster(_converse, 'current');
+            const contact_jid = mock.cur_names[8].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            const contact = await _converse.api.contacts.get(contact_jid);
+            let stanza = stx`
             <presence xmlns="jabber:client"
                     to="romeo@montague.lit/converse.js-21770972"
                     from="${contact_jid}/priority-1-resource">
@@ -20,14 +19,14 @@ describe("A received presence stanza", function () {
                     ver="AcN1/PEN8nq7AHD+9jpxMV4U6YM=" node="http://pidgin.im/"/>
                 <delay xmlns="urn:xmpp:delay" stamp="2017-02-15T20:26:05Z" from="${contact_jid}/priority-1-resource"/>
             </presence>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(contact.presence.getStatus()).toBe('online');
-        expect(contact.presence.resources.length).toBe(1);
-        expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
-        expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
-        expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            expect(contact.presence.getStatus()).toBe('online');
+            expect(contact.presence.resources.length).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
+            expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
 
-        stanza = stx`
+            stanza = stx`
             <presence xmlns="jabber:client"
                     to="romeo@montague.lit/converse.js-21770972"
                     from="${contact_jid}/priority-0-resource">
@@ -38,65 +37,65 @@ describe("A received presence stanza", function () {
                     node="http://www.igniterealtime.org/projects/smack/"/>
                 <delay xmlns="urn:xmpp:delay" stamp="2017-02-15T17:02:24Z" from="'+contact_jid+'/priority-0-resource"/>
             </presence>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(contact.presence.getStatus()).toBe('online');
-        expect(contact.presence.resources.length).toBe(2);
-        expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
-        expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
-        expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
-        expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
-        expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
-        expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            expect(contact.presence.getStatus()).toBe('online');
+            expect(contact.presence.resources.length).toBe(2);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
+            expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
 
-        stanza = stx`
+            stanza = stx`
             <presence xmlns="jabber:client"
                       to="romeo@montague.lit/converse.js-21770972"
                       from="${contact_jid}/priority-2-resource">
                 <priority>2</priority>
                 <show>dnd</show>
             </presence>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(contact.presence.getStatus()).toBe('dnd');
-        expect(contact.presence.resources.length).toBe(3);
-        expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
-        expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
-        expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            expect(contact.presence.getStatus()).toBe('dnd');
+            expect(contact.presence.resources.length).toBe(3);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
-        expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
-        expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
+            expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('priority-2-resource').get('priority')).toBe(2);
-        expect(contact.presence.resources.get('priority-2-resource').get('show')).toBe('dnd');
-        expect(contact.presence.resources.get('priority-2-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-2-resource').get('priority')).toBe(2);
+            expect(contact.presence.resources.get('priority-2-resource').get('show')).toBe('dnd');
+            expect(contact.presence.resources.get('priority-2-resource').get('presence')).toBe('online');
 
-        stanza = stx`
+            stanza = stx`
             <presence xmlns="jabber:client"
                     to="romeo@montague.lit/converse.js-21770972"
                     from="${contact_jid}/priority-3-resource">
                 <priority>3</priority>
                 <show>away</show>
             </presence>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('away');
-        expect(contact.presence.resources.length).toBe(4);
-        expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
-        expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
-        expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('away');
+            expect(contact.presence.resources.length).toBe(4);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
-        expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
-        expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
+            expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('priority-2-resource').get('priority')).toBe(2);
-        expect(contact.presence.resources.get('priority-2-resource').get('show')).toBe('dnd');
-        expect(contact.presence.resources.get('priority-2-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-2-resource').get('priority')).toBe(2);
+            expect(contact.presence.resources.get('priority-2-resource').get('show')).toBe('dnd');
+            expect(contact.presence.resources.get('priority-2-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('priority-3-resource').get('priority')).toBe(3);
-        expect(contact.presence.resources.get('priority-3-resource').get('show')).toBe('away');
-        expect(contact.presence.resources.get('priority-3-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-3-resource').get('priority')).toBe(3);
+            expect(contact.presence.resources.get('priority-3-resource').get('show')).toBe('away');
+            expect(contact.presence.resources.get('priority-3-resource').get('presence')).toBe('online');
 
-        stanza = stx`
+            stanza = stx`
             <presence xmlns="jabber:client"
                     to="romeo@montague.lit/converse.js-21770972"
                     from="${contact_jid}/older-priority-1-resource">
@@ -104,113 +103,114 @@ describe("A received presence stanza", function () {
                 <show>dnd</show>
                 <delay xmlns="urn:xmpp:delay" stamp="2017-02-15T15:02:24Z" from="${contact_jid}/older-priority-1-resource"/>
             </presence>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('away');
-        expect(contact.presence.resources.length).toBe(5);
-        expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
-        expect(contact.presence.resources.get('older-priority-1-resource').get('show')).toBe('dnd');
-        expect(contact.presence.resources.get('older-priority-1-resource').get('presence')).toBe('online');
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('away');
+            expect(contact.presence.resources.length).toBe(5);
+            expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('older-priority-1-resource').get('show')).toBe('dnd');
+            expect(contact.presence.resources.get('older-priority-1-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
-        expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
-        expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
-        expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
-        expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
+            expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('priority-2-resource').get('priority')).toBe(2);
-        expect(contact.presence.resources.get('priority-2-resource').get('show')).toBe('dnd');
-        expect(contact.presence.resources.get('priority-2-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-2-resource').get('priority')).toBe(2);
+            expect(contact.presence.resources.get('priority-2-resource').get('show')).toBe('dnd');
+            expect(contact.presence.resources.get('priority-2-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('priority-3-resource').get('priority')).toBe(3);
-        expect(contact.presence.resources.get('priority-3-resource').get('show')).toBe('away');
-        expect(contact.presence.resources.get('priority-3-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-3-resource').get('priority')).toBe(3);
+            expect(contact.presence.resources.get('priority-3-resource').get('show')).toBe('away');
+            expect(contact.presence.resources.get('priority-3-resource').get('presence')).toBe('online');
 
-        stanza = stx`
+            stanza = stx`
             <presence xmlns="jabber:client"
                       to="romeo@montague.lit/converse.js-21770972"
                       type="unavailable"
                       from="${contact_jid}/priority-3-resource">
             </presence>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('dnd');
-        expect(contact.presence.resources.length).toBe(4);
-        expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
-        expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
-        expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('dnd');
+            expect(contact.presence.resources.length).toBe(4);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
-        expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
-        expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
+            expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('priority-2-resource').get('priority')).toBe(2);
-        expect(contact.presence.resources.get('priority-2-resource').get('show')).toBe('dnd');
-        expect(contact.presence.resources.get('priority-2-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-2-resource').get('priority')).toBe(2);
+            expect(contact.presence.resources.get('priority-2-resource').get('show')).toBe('dnd');
+            expect(contact.presence.resources.get('priority-2-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
-        expect(contact.presence.resources.get('older-priority-1-resource').get('show')).toBe('dnd');
-        expect(contact.presence.resources.get('older-priority-1-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('older-priority-1-resource').get('show')).toBe('dnd');
+            expect(contact.presence.resources.get('older-priority-1-resource').get('presence')).toBe('online');
 
-        stanza = stx`
+            stanza = stx`
             <presence xmlns="jabber:client"
                       to="romeo@montague.lit/converse.js-21770972"
                       type="unavailable"
                       from="${contact_jid}/priority-2-resource">
             </presence>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('online');
-        expect(contact.presence.resources.length).toBe(3);
-        expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
-        expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
-        expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('online');
+            expect(contact.presence.resources.length).toBe(3);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
-        expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
-        expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBeUndefined();
+            expect(contact.presence.resources.get('priority-1-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
-        expect(contact.presence.resources.get('older-priority-1-resource').get('show')).toBe('dnd');
-        expect(contact.presence.resources.get('older-priority-1-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('older-priority-1-resource').get('show')).toBe('dnd');
+            expect(contact.presence.resources.get('older-priority-1-resource').get('presence')).toBe('online');
 
-        stanza = stx`
+            stanza = stx`
             <presence xmlns="jabber:client"
                       to="romeo@montague.lit/converse.js-21770972"
                       type="unavailable"
                       from="${contact_jid}/priority-1-resource">
             </presence>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('dnd');
-        expect(contact.presence.resources.length).toBe(2);
-        expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
-        expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
-        expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('dnd');
+            expect(contact.presence.resources.length).toBe(2);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
 
-        expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
-        expect(contact.presence.resources.get('older-priority-1-resource').get('show')).toBe('dnd');
-        expect(contact.presence.resources.get('older-priority-1-resource').get('presence')).toBe('online');
+            expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('older-priority-1-resource').get('show')).toBe('dnd');
+            expect(contact.presence.resources.get('older-priority-1-resource').get('presence')).toBe('online');
 
-        stanza = stx`
+            stanza = stx`
             <presence xmlns="jabber:client"
                       to="romeo@montague.lit/converse.js-21770972"
                       type="unavailable"
                       from="${contact_jid}/older-priority-1-resource">
             </presence>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('xa');
-        expect(contact.presence.resources.length).toBe(1);
-        expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
-        expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
-        expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('xa');
+            expect(contact.presence.resources.length).toBe(1);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-0-resource').get('presence')).toBe('online');
 
-        stanza = stx`
+            stanza = stx`
             <presence xmlns="jabber:client"
                       to="romeo@montague.lit/converse.js-21770972"
                       type="unavailable"
                       from="${contact_jid}/priority-0-resource">
             </presence>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('offline');
-        expect(contact.presence.resources.length).toBe(0);
-    }));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('offline');
+            expect(contact.presence.resources.length).toBe(0);
+        }),
+    );
 });

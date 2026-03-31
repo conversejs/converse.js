@@ -10,7 +10,7 @@ describe('The Blocklist Modal', function () {
             const modal = await _converse.api.modal.show('converse-blocklist-modal');
             await u.waitUntil(() => modal.querySelector('p'));
             expect(modal.querySelector('p').textContent.trim()).toBe('No blocked XMPP addresses');
-        })
+        }),
     );
 
     it(
@@ -121,6 +121,6 @@ describe('The Blocklist Modal', function () {
                 type: 'success',
                 body: 'Successfully unblocked 6 XMPP addresses',
             });
-        })
+        }),
     );
 });

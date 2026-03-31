@@ -1,4 +1,4 @@
-const { sizzle, u } = converse.env;
+const { stx, sizzle, u } = converse.env;
 
 describe('Requesting Contacts', function () {
     beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
@@ -25,12 +25,12 @@ describe('Requesting Contacts', function () {
                         nickname: name,
                     });
                     return u.waitUntil(() => contact.initialized);
-                })
+                }),
             );
             await u.waitUntil(() => rosterview.querySelectorAll(`ul[data-group="Contact requests"] li`).length, 700);
             // Check that they are sorted alphabetically
             const children = rosterview.querySelectorAll(
-                `ul[data-group="Contact requests"] .requesting-xmpp-contact .contact-name`
+                `ul[data-group="Contact requests"] .requesting-xmpp-contact .contact-name`,
             );
             names = [];
             Array.from(children).forEach(addName);
@@ -38,9 +38,9 @@ describe('Requesting Contacts', function () {
                 mock.req_names
                     .slice(0, mock.req_names.length + 1)
                     .sort()
-                    .join('')
+                    .join(''),
             );
-        })
+        }),
     );
 
     it(
@@ -53,7 +53,7 @@ describe('Requesting Contacts', function () {
             const accept_btn = roster_el.querySelector('.dropdown-item.accept-xmpp-request');
             accept_btn.click();
             await u.waitUntil(() => document.querySelector('converse-accept-contact-request-modal'));
-        })
+        }),
     );
 
     it(
@@ -63,7 +63,7 @@ describe('Requesting Contacts', function () {
                 _converse,
                 _converse.domain,
                 [{ 'category': 'server', 'type': 'IM' }],
-                ['urn:xmpp:blocking']
+                ['urn:xmpp:blocking'],
             );
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.openControlBox(_converse);
@@ -79,7 +79,7 @@ describe('Requesting Contacts', function () {
             decline_btn.click();
             await u.waitUntil(() => _converse.api.confirm.calls.count);
             await u.waitUntil(() => contact.unauthorize.calls.count());
-        })
+        }),
     );
 
     it(
@@ -91,7 +91,7 @@ describe('Requesting Contacts', function () {
                 _converse,
                 _converse.domain,
                 [{ 'category': 'server', 'type': 'IM' }],
-                ['urn:xmpp:blocking']
+                ['urn:xmpp:blocking'],
             );
 
             const name = mock.req_names[0];
@@ -109,7 +109,7 @@ describe('Requesting Contacts', function () {
             expect(
                 sizzle('.roster-group', rosterview)
                     .filter(u.isVisible)
-                    .map((e) => e.querySelector('li')).length
+                    .map((e) => e.querySelector('li')).length,
             ).toBe(1);
             sizzle('.roster-group', rosterview)
                 .filter(u.isVisible)
@@ -118,7 +118,7 @@ describe('Requesting Contacts', function () {
 
             await u.waitUntil(() => _converse.api.confirm.calls.count);
             await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Contact requests"]`) === null);
-        })
+        }),
     );
 
     it(
@@ -131,7 +131,7 @@ describe('Requesting Contacts', function () {
             await u.waitUntil(() => sizzle('.roster-group', rosterview).filter(u.isVisible).length, 700);
             const el = await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Contact requests"]`));
             await mock.checkHeaderToggling.apply(_converse, [el.parentElement]);
-        })
+        }),
     );
 
     it(
@@ -172,7 +172,7 @@ describe('Requesting Contacts', function () {
                                 <group>Veronese</group>
                             </item>
                         </query>
-                    </iq>`
+                    </iq>`,
             );
 
             const result = stx`
@@ -180,16 +180,16 @@ describe('Requesting Contacts', function () {
             api.connection.get()._dataRecv(mock.createRequest(result));
 
             stanza = await u.waitUntil(() =>
-                sent_stanzas.filter((s) => s.matches('presence[type="subscribed"]')).pop()
+                sent_stanzas.filter((s) => s.matches('presence[type="subscribed"]')).pop(),
             );
             expect(stanza).toEqualStanza(
-                stx`<presence to="${contact.get('jid')}" type="subscribed" xmlns="jabber:client"/>`
+                stx`<presence to="${contact.get('jid')}" type="subscribed" xmlns="jabber:client"/>`,
             );
 
             await u.waitUntil(() => contact.authorize.calls.count());
             expect(contact.authorize).toHaveBeenCalled();
             expect(contact.get('groups')).toEqual(['Princes', 'Veronese']);
-        })
+        }),
     );
 
     it(
@@ -199,7 +199,7 @@ describe('Requesting Contacts', function () {
                 _converse,
                 _converse.domain,
                 [{ 'category': 'server', 'type': 'IM' }],
-                ['urn:xmpp:blocking']
+                ['urn:xmpp:blocking'],
             );
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.createContacts(_converse, 'requesting');
@@ -212,14 +212,14 @@ describe('Requesting Contacts', function () {
             spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
             spyOn(contact, 'unauthorize').and.callFake(() => contact);
             const req_contact = await u.waitUntil(() =>
-                sizzle(".contact-name:contains('" + name + "')", rosterview).pop()
+                sizzle(".contact-name:contains('" + name + "')", rosterview).pop(),
             );
             req_contact.parentElement.parentElement.querySelector('.decline-xmpp-request').click();
             await u.waitUntil(() => _converse.api.confirm.calls.count);
             await u.waitUntil(() => contact.unauthorize.calls.count());
             // There should now be one less contact
             expect(_converse.roster.length).toEqual(mock.req_names.length - 1);
-        })
+        }),
     );
 
     it(
@@ -229,7 +229,7 @@ describe('Requesting Contacts', function () {
 
             const { IQ_stanzas } = _converse.api.connection.get();
             const stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((iq) => sizzle('iq query[xmlns="jabber:iq:roster"]', iq).length).pop()
+                IQ_stanzas.filter((iq) => sizzle('iq query[xmlns="jabber:iq:roster"]', iq).length).pop(),
             );
 
             // Taken from the spec
@@ -247,7 +247,10 @@ describe('Requesting Contacts', function () {
                 </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
-            const pres = $pres({ from: 'data@enterprise/resource', type: 'subscribe' });
+            const pres = stx`
+                <presence from="data@enterprise/resource"
+                          type="subscribe"
+                          xmlns="jabber:client"/>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
 
             expect(_converse.roster.pluck('jid').length).toBe(1);
@@ -267,7 +270,7 @@ describe('Requesting Contacts', function () {
             expect(_converse.roster.data.get('version')).toBe('ver34');
             expect(_converse.roster.models.length).toBe(4);
             expect(_converse.roster.pluck('jid').includes('data@enterprise')).toBeTruthy();
-        })
+        }),
     );
 });
 
@@ -291,7 +294,7 @@ describe('A chat with a requesting contact', function () {
             expect(alert.textContent).toContain(`${name} would like to be your contact`);
             expect(alert.querySelector('.btn-success')).toBeTruthy();
             expect(alert.querySelector('.btn-danger')).toBeTruthy();
-        })
+        }),
     );
 
     it(
@@ -324,7 +327,7 @@ describe('A chat with a requesting contact', function () {
                         <query xmlns="jabber:iq:roster">
                             <item jid="${contact.get('jid')}" name="Escalus, prince of Verona"></item>
                         </query>
-                    </iq>`
+                    </iq>`,
             );
 
             const result = stx`
@@ -332,15 +335,15 @@ describe('A chat with a requesting contact', function () {
             api.connection.get()._dataRecv(mock.createRequest(result));
 
             stanza = await u.waitUntil(() =>
-                sent_stanzas.filter((s) => s.matches('presence[type="subscribed"]')).pop()
+                sent_stanzas.filter((s) => s.matches('presence[type="subscribed"]')).pop(),
             );
             expect(stanza).toEqualStanza(
-                stx`<presence to="${contact.get('jid')}" type="subscribed" xmlns="jabber:client"/>`
+                stx`<presence to="${contact.get('jid')}" type="subscribed" xmlns="jabber:client"/>`,
             );
 
             await u.waitUntil(() => contact.authorize.calls.count());
             expect(contact.authorize).toHaveBeenCalled();
-        })
+        }),
     );
 
     it(
@@ -351,7 +354,7 @@ describe('A chat with a requesting contact', function () {
                 _converse,
                 _converse.domain,
                 [{ 'category': 'server', 'type': 'IM' }],
-                ['urn:xmpp:blocking']
+                ['urn:xmpp:blocking'],
             );
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.createContacts(_converse, 'requesting', 1);
@@ -370,10 +373,10 @@ describe('A chat with a requesting contact', function () {
             await u.waitUntil(() => api.confirm.calls.count());
 
             let stanza = await u.waitUntil(() =>
-                sent_stanzas.filter((s) => s.matches('presence[type="unsubscribed"]')).pop()
+                sent_stanzas.filter((s) => s.matches('presence[type="unsubscribed"]')).pop(),
             );
             expect(stanza).toEqualStanza(stx`<presence to="${jid}" type="unsubscribed" xmlns="jabber:client"/>`);
             await u.waitUntil(() => !view.querySelector('converse-contact-approval-alert').childElementCound);
-        })
+        }),
     );
 });

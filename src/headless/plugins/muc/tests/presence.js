@@ -19,7 +19,7 @@ describe('MUC presence history element', function () {
             let sent_stanza = await u.waitUntil(() =>
                 sent_stanzas
                     .filter((s) => s.nodeName === 'presence' && s.getAttribute('to') === `${muc_jid}/${nick}`)
-                    .pop()
+                    .pop(),
             );
             expect(sent_stanza).toEqualStanza(stx`
               <presence to="${muc_jid}/${nick}" xmlns="jabber:client" id="${sent_stanza.getAttribute('id')}" from="${jid}">
@@ -36,13 +36,13 @@ describe('MUC presence history element', function () {
             sent_stanza = await u.waitUntil(() =>
                 sent_stanzas
                     .filter((s) => s.nodeName === 'presence' && s.getAttribute('to') === `${muc2_jid}/${nick}`)
-                    .pop()
+                    .pop(),
             );
             expect(sent_stanza).toEqualStanza(stx`
               <presence to="${muc2_jid}/${nick}" xmlns="jabber:client" id="${sent_stanza.getAttribute('id')}" from="${jid}">
                 <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                 <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org" ver="5xpk8wyeMSdAjnSeIv3fwIjd1r0="/>
               </presence>`);
-        })
+        }),
     );
 });

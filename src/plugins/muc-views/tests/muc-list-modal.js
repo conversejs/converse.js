@@ -3,8 +3,8 @@
 const { Strophe, sizzle, u, stx } = converse.env;
 
 describe('The "Groupchats" List modal', function () {
-
-    it('can be opened from a link in the "Groupchats" section of the controlbox',
+    it(
+        'can be opened from a link in the "Groupchats" section of the controlbox',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             await mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
@@ -26,7 +26,7 @@ describe('The "Groupchats" List modal', function () {
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter(s => sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"]`, s).length).pop()
+                IQ_stanzas.filter((s) => sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"]`, s).length).pop(),
             );
             const id = sent_stanza.getAttribute('id');
             expect(Strophe.serialize(sent_stanza)).toBe(
@@ -34,8 +34,8 @@ describe('The "Groupchats" List modal', function () {
                     `to="chat.shakespeare.lit" ` +
                     `type="get" ` +
                     `xmlns="jabber:client">` +
-                        `<query xmlns="http://jabber.org/protocol/disco#items"/>` +
-                    `</iq>`
+                    `<query xmlns="http://jabber.org/protocol/disco#items"/>` +
+                    `</iq>`,
             );
 
             const iq = stx`
@@ -82,10 +82,11 @@ describe('The "Groupchats" List modal', function () {
             expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
             const view = _converse.chatboxviews.get('inverness@chat.shakespeare.lit');
             expect(view.querySelector('.chatbox-title__text').textContent.trim()).toBe("Macbeth's Castle");
-        })
+        }),
     );
 
-    it('is pre-filled with the muc_domain',
+    it(
+        'is pre-filled with the muc_domain',
         mock.initConverse(['chatBoxesFetched'], { 'muc_domain': 'muc.example.org' }, async function (_converse) {
             await mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
@@ -96,17 +97,20 @@ describe('The "Groupchats" List modal', function () {
             await u.waitUntil(() => u.isVisible(modal), 1000);
             const server_input = modal.querySelector('input[name="server"]');
             expect(server_input.value).toBe('muc.example.org');
-        })
+        }),
     );
 
-    it("doesn't let you set the MUC domain if it's locked",
+    it(
+        "doesn't let you set the MUC domain if it's locked",
         mock.initConverse(
             ['chatBoxesFetched'],
             { 'muc_domain': 'chat.shakespeare.lit', 'locked_muc_domain': true },
             async function (_converse) {
                 await mock.openControlBox(_converse);
                 const cbview = _converse.chatboxviews.get('controlbox');
-                const button = await u.waitUntil(() => cbview.querySelector('converse-rooms-list .show-list-muc-modal'));
+                const button = await u.waitUntil(() =>
+                    cbview.querySelector('converse-rooms-list .show-list-muc-modal'),
+                );
                 button.click();
                 mock.closeControlBox(_converse);
                 const modal = _converse.api.modal.get('converse-muc-list-modal');
@@ -117,15 +121,18 @@ describe('The "Groupchats" List modal', function () {
                 expect(modal.querySelector('input[type="submit"]')).toBe(null);
                 await u.waitUntil(() => _converse.chatboxes.length);
                 const sent_stanza = await u.waitUntil(() =>
-                    _converse.api.connection.get().sent_stanzas
-                        .filter(s => sizzle(`query[xmlns="http://jabber.org/protocol/disco#items"]`, s).length)
-                        .pop()
+                    _converse.api.connection
+                        .get()
+                        .sent_stanzas.filter(
+                            (s) => sizzle(`query[xmlns="http://jabber.org/protocol/disco#items"]`, s).length,
+                        )
+                        .pop(),
                 );
                 expect(Strophe.serialize(sent_stanza)).toBe(
                     `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" ` +
                         `to="chat.shakespeare.lit" type="get" xmlns="jabber:client">` +
-                            `<query xmlns="http://jabber.org/protocol/disco#items"/>` +
-                        `</iq>`
+                        `<query xmlns="http://jabber.org/protocol/disco#items"/>` +
+                        `</iq>`,
                 );
                 const iq = stx`
                     <iq from="muc.montague.lit"
@@ -147,7 +154,7 @@ describe('The "Groupchats" List modal', function () {
                 expect(rooms[1].textContent.trim()).toBe('A Lonely Heath');
                 expect(rooms[2].textContent.trim()).toBe('A Dark Cave');
                 expect(rooms[3].textContent.trim()).toBe('The Palace');
-            }
-        )
+            },
+        ),
     );
 });

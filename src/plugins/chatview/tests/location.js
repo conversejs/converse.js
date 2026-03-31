@@ -34,7 +34,7 @@ describe('The Location Button', function () {
                 () =>
                     _converse.api.connection
                         .get()
-                        .sent_stanzas.filter((s) => s.nodeName === 'message' && s.querySelector('body')).length
+                        .sent_stanzas.filter((s) => s.nodeName === 'message' && s.querySelector('body')).length,
             );
 
             const sent = _converse.api.connection
@@ -42,6 +42,6 @@ describe('The Location Button', function () {
                 .sent_stanzas.filter((s) => s.nodeName === 'message' && s.querySelector('body'))
                 .pop();
             expect(sent.querySelector('body').textContent).toBe('geo:51.507400,-0.127800');
-        })
+        }),
     );
 });

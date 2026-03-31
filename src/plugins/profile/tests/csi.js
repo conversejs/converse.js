@@ -22,7 +22,7 @@ describe('A chat state indication', function () {
             expect(Strophe.serialize(sent_stanza)).toBe('<inactive xmlns="urn:xmpp:csi:0"/>');
             _converse.onUserActivity();
             expect(Strophe.serialize(sent_stanza)).toBe('<active xmlns="urn:xmpp:csi:0"/>');
-        })
+        }),
     );
 });
 
@@ -89,6 +89,6 @@ describe('Automatic status change', function () {
 
             _converse.onUserActivity();
             expect(await _converse.api.user.status.get()).toBe('dnd');
-        })
+        }),
     );
 });

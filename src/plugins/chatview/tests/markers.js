@@ -2,19 +2,17 @@
 // See: https://xmpp.org/rfcs/rfc3921.html
 const { Strophe, u, stx } = converse.env;
 
-
-describe("A XEP-0333 Chat Marker", function () {
-
+describe('A XEP-0333 Chat Marker', function () {
     beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
-    it("is sent when a markable message is received from a roster contact",
-            mock.initConverse([], {}, async function (_converse) {
-
-        await mock.waitForRoster(_converse, 'current', 1);
-        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        await mock.openChatBoxFor(_converse, contact_jid);
-        const msgid = u.getUniqueId();
-        const stanza = u.toStanza(`
+    it(
+        'is sent when a markable message is received from a roster contact',
+        mock.initConverse([], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const msgid = u.getUniqueId();
+            const stanza = u.toStanza(`
             <message from='${contact_jid}'
                 id='${msgid}'
                 type="chat"
@@ -23,26 +21,28 @@ describe("A XEP-0333 Chat Marker", function () {
               <markable xmlns='urn:xmpp:chat-markers:0'/>
             </message>`);
 
-        const sent_stanzas = [];
-        spyOn(_converse.api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => sent_stanzas.length === 2);
-        expect(Strophe.serialize(sent_stanzas[0])).toBe(
-            `<message from="romeo@montague.lit/orchard" `+
-                    `id="${sent_stanzas[0].getAttribute('id')}" `+
-                    `to="${contact_jid}" type="chat" xmlns="jabber:client">`+
-            `<received id="${msgid}" xmlns="urn:xmpp:chat-markers:0"/>`+
-            `</message>`);
-    }));
+            const sent_stanzas = [];
+            spyOn(_converse.api.connection.get(), 'send').and.callFake((s) => sent_stanzas.push(s?.nodeTree ?? s));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            await u.waitUntil(() => sent_stanzas.length === 2);
+            expect(Strophe.serialize(sent_stanzas[0])).toBe(
+                `<message from="romeo@montague.lit/orchard" ` +
+                    `id="${sent_stanzas[0].getAttribute('id')}" ` +
+                    `to="${contact_jid}" type="chat" xmlns="jabber:client">` +
+                    `<received id="${msgid}" xmlns="urn:xmpp:chat-markers:0"/>` +
+                    `</message>`,
+            );
+        }),
+    );
 
-    it("is not sent when a markable message is received from someone not on the roster",
-            mock.initConverse([], { allow_non_roster_messaging: true }, async function (_converse) {
-
-        await mock.waitForRoster(_converse, 'current', 0);
-        await mock.waitUntilBlocklistInitialized(_converse);
-        const contact_jid = 'someone@montague.lit';
-        const msgid = u.getUniqueId();
-        const stanza = stx`
+    it(
+        'is not sent when a markable message is received from someone not on the roster',
+        mock.initConverse([], { allow_non_roster_messaging: true }, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBlocklistInitialized(_converse);
+            const contact_jid = 'someone@montague.lit';
+            const msgid = u.getUniqueId();
+            const stanza = stx`
             <message
                 xmlns="jabber:client"
                 from='${contact_jid}'
@@ -53,42 +53,40 @@ describe("A XEP-0333 Chat Marker", function () {
               <markable xmlns='urn:xmpp:chat-markers:0'/>
             </message>`;
 
-        const sent_stanzas = [];
-        spyOn(_converse.api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s));
-        await _converse.handleMessageStanza(stanza);
-        const sent_messages = sent_stanzas
-            .map(s => s?.nodeTree ?? s)
-            .filter(e => e.nodeName === 'message');
+            const sent_stanzas = [];
+            spyOn(_converse.api.connection.get(), 'send').and.callFake((s) => sent_stanzas.push(s));
+            await _converse.handleMessageStanza(stanza);
+            const sent_messages = sent_stanzas.map((s) => s?.nodeTree ?? s).filter((e) => e.nodeName === 'message');
 
-        await u.waitUntil(() => sent_messages.length === 2);
-        expect(sent_messages[0]).toEqualStanza(stx`
+            await u.waitUntil(() => sent_messages.length === 2);
+            expect(sent_messages[0]).toEqualStanza(stx`
             <message id="${sent_messages[0].getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
                 <active xmlns="http://jabber.org/protocol/chatstates"/>
                 <no-store xmlns="urn:xmpp:hints"/>
                 <no-permanent-store xmlns="urn:xmpp:hints"/>
-            </message>`
-        );
+            </message>`);
 
-        expect(sent_messages[1]).toEqualStanza(stx`
+            expect(sent_messages[1]).toEqualStanza(stx`
             <message xmlns="jabber:client"
                     from="romeo@montague.lit/orchard"
                     id="${sent_messages[1].getAttribute('id')}"
                     to="someone@montague.lit" type="chat">
                 <displayed xmlns="urn:xmpp:chat-markers:0" id="${sent_messages[1].querySelector('displayed')?.getAttribute('id')}"/>
             </message>`);
-    }));
+        }),
+    );
 
-    it("is ignored if it's a carbon copy of one that I sent from a different client",
+    it(
+        "is ignored if it's a carbon copy of one that I sent from a different client",
         mock.initConverse([], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
 
-        await mock.waitForRoster(_converse, 'current', 1);
-        await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
 
-        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.chatboxviews.get(contact_jid);
-
-        let stanza = u.toStanza(`
+            let stanza = u.toStanza(`
             <message xmlns="jabber:client"
                      to="${_converse.bare_jid}"
                      type="chat"
@@ -99,13 +97,13 @@ describe("A XEP-0333 Chat Marker", function () {
                 <origin-id xmlns="urn:xmpp:sid:0" id="2e972ea0-0050-44b7-a830-f6638a2595b3"/>
                 <stanza-id xmlns="urn:xmpp:sid:0" id="IxVDLJ0RYbWcWvqC" by="${_converse.bare_jid}"/>
             </message>`);
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.model.messages.length).toBe(1);
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+            expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.model.messages.length).toBe(1);
 
-        stanza = u.toStanza(
-            `<message xmlns="jabber:client" to="${_converse.bare_jid}" type="chat" from="${contact_jid}">
+            stanza = u.toStanza(
+                `<message xmlns="jabber:client" to="${_converse.bare_jid}" type="chat" from="${contact_jid}">
                 <sent xmlns="urn:xmpp:carbons:2">
                     <forwarded xmlns="urn:xmpp:forward:0">
                         <message xmlns="jabber:client" to="${contact_jid}" type="chat" from="${_converse.bare_jid}/other-resource">
@@ -115,11 +113,13 @@ describe("A XEP-0333 Chat Marker", function () {
                         </message>
                     </forwarded>
                 </sent>
-            </message>`);
-        spyOn(_converse.api, "trigger").and.callThrough();
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.api.trigger.calls.count(), 500);
-        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.model.messages.length).toBe(1);
-    }));
+            </message>`,
+            );
+            spyOn(_converse.api, 'trigger').and.callThrough();
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            await u.waitUntil(() => _converse.api.trigger.calls.count(), 500);
+            expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.model.messages.length).toBe(1);
+        }),
+    );
 });

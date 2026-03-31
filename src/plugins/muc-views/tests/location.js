@@ -30,7 +30,7 @@ describe('The Location Button', function () {
             ]);
 
             await u.waitUntil(
-                () => _converse.api.connection.get().sent_stanzas.filter((s) => s.nodeName === 'message').length
+                () => _converse.api.connection.get().sent_stanzas.filter((s) => s.nodeName === 'message').length,
             );
 
             const sent = _converse.api.connection
@@ -38,7 +38,7 @@ describe('The Location Button', function () {
                 .sent_stanzas.filter((s) => s.nodeName === 'message')
                 .pop();
             expect(sent.querySelector('body').textContent).toBe('geo:51.507400,-0.127800');
-        })
+        }),
     );
 
     it(
@@ -66,7 +66,7 @@ describe('The Location Button', function () {
                     <x xmlns="http://jabber.org/protocol/muc#user">
                         <item affiliation="owner" role="moderator"/>
                     </x>
-                    </presence>`)
+                    </presence>`),
             );
             await u.waitUntil(() => view.querySelectorAll('.occupant-list converse-avatar').length === 2);
 
@@ -75,7 +75,7 @@ describe('The Location Button', function () {
 
             // Wait for the occupant panel to render with toolbar
             const location_button = await u.waitUntil(() =>
-                view.querySelector('converse-muc-occupant converse-location-button')
+                view.querySelector('converse-muc-occupant converse-location-button'),
             );
             expect(location_button).not.toBeNull();
 
@@ -88,7 +88,7 @@ describe('The Location Button', function () {
             ]);
 
             await u.waitUntil(
-                () => _converse.api.connection.get().sent_stanzas.filter((s) => s.nodeName === 'message').length
+                () => _converse.api.connection.get().sent_stanzas.filter((s) => s.nodeName === 'message').length,
             );
 
             const sent = _converse.api.connection
@@ -96,6 +96,6 @@ describe('The Location Button', function () {
                 .sent_stanzas.filter((s) => s.nodeName === 'message')
                 .pop();
             expect(sent.querySelector('body').textContent).toBe('geo:40.712800,-74.006000');
-        })
+        }),
     );
 });

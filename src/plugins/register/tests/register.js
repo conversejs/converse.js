@@ -2,418 +2,451 @@
 
 const { stx, Strophe, $iq, sizzle, u } = converse.env;
 
-
-describe("The Registration Form", function () {
-
+describe('The Registration Form', function () {
     beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
     afterEach(() => {
         // Remove the hash
-        history.pushState("", document.title, window.location.pathname + window.location.search);
+        history.pushState('', document.title, window.location.pathname + window.location.search);
     });
 
-    it("is not available unless allow_registration=true",
+    it(
+        'is not available unless allow_registration=true',
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { auto_login: false,
-              allow_registration: false },
+            { auto_login: false, allow_registration: false },
             async function (_converse) {
+                await mock.toggleControlBox();
+                const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
+                expect(cbview.querySelectorAll('a.register-account').length).toBe(0);
+            },
+        ),
+    );
 
-        await mock.toggleControlBox();
-        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
-        expect(cbview.querySelectorAll('a.register-account').length).toBe(0);
-    }));
-
-    it("can be opened by clicking on the registration tab",
+    it(
+        'can be opened by clicking on the registration tab',
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { auto_login: false,
-              allow_registration: true },
+            { auto_login: false, allow_registration: true },
             async function (_converse) {
+                const toggle = await u.waitUntil(() => document.querySelector('.toggle-controlbox'));
+                if (!u.isVisible(document.querySelector('#controlbox'))) {
+                    if (!u.isVisible(toggle)) {
+                        u.removeClass('hidden', toggle);
+                    }
+                    toggle.click();
+                }
+                const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
+                expect(cbview.querySelector('converse-registration-form')).toBe(null);
 
-        const toggle = await u.waitUntil(() => document.querySelector(".toggle-controlbox"));
-        if (!u.isVisible(document.querySelector("#controlbox"))) {
-            if (!u.isVisible(toggle)) {
-                u.removeClass('hidden', toggle);
-            }
-            toggle.click();
-        }
-        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
-        expect(cbview.querySelector('converse-registration-form')).toBe(null);
+                const register_link = await u.waitUntil(() => cbview.querySelector('a.register-account'));
+                expect(register_link.textContent).toBe('Create an account');
+                register_link.click();
 
-        const register_link = await u.waitUntil(() => cbview.querySelector('a.register-account'));
-        expect(register_link.textContent).toBe("Create an account");
-        register_link.click();
+                expect(cbview.querySelector('converse-registration-form')).toBeDefined();
+            },
+        ),
+    );
 
-        expect(cbview.querySelector('converse-registration-form')).toBeDefined();
-    }));
-
-    it("allows the user to choose an XMPP provider's domain",
+    it(
+        "allows the user to choose an XMPP provider's domain",
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { auto_login: false,
-              discover_connection_methods: false,
-              allow_registration: true,
-              xmpp_providers_url: '' },
+            { auto_login: false, discover_connection_methods: false, allow_registration: true, xmpp_providers_url: '' },
             async function (_converse) {
+                const { api } = _converse;
 
-        const { api } = _converse;
+                const toggle = await u.waitUntil(() => document.querySelector('.toggle-controlbox'));
+                toggle.click();
 
-        const toggle = await u.waitUntil(() => document.querySelector(".toggle-controlbox"));
-        toggle.click();
+                const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
+                await u.waitUntil(() => u.isVisible(cbview));
 
-        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
-        await u.waitUntil(() => u.isVisible(cbview));
+                cbview.querySelector('.toggle-register-login').click();
 
-        cbview.querySelector('.toggle-register-login').click();
+                const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+                spyOn(registerview, 'onProviderChosen').and.callThrough();
+                spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
 
-        const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
-        spyOn(registerview, 'onProviderChosen').and.callThrough();
-        spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
+                // Check the form layout
+                const form = cbview.querySelector('#converse-register');
+                expect(form.querySelectorAll('input').length).toEqual(2);
+                expect(form.querySelectorAll('input')[0].getAttribute('name')).toEqual('domain');
+                expect(sizzle('input:last', form).pop().getAttribute('type')).toEqual('submit');
+                // Check that the input[type=domain] input is required
+                const submit_button = form.querySelector('input[type=submit]');
+                submit_button.click();
+                expect(registerview.onProviderChosen).not.toHaveBeenCalled();
 
-        // Check the form layout
-        const form = cbview.querySelector('#converse-register');
-        expect(form.querySelectorAll('input').length).toEqual(2);
-        expect(form.querySelectorAll('input')[0].getAttribute('name')).toEqual('domain');
-        expect(sizzle('input:last', form).pop().getAttribute('type')).toEqual('submit');
-        // Check that the input[type=domain] input is required
-        const submit_button = form.querySelector('input[type=submit]');
-        submit_button.click();
-        expect(registerview.onProviderChosen).not.toHaveBeenCalled();
+                // Check that the form is accepted if input[type=domain] has a value
+                form.querySelector('input[name=domain]').value = 'conversejs.org';
+                submit_button.click();
+                expect(registerview.onProviderChosen).toHaveBeenCalled();
+                expect(registerview.fetchRegistrationForm).toHaveBeenCalled();
 
-        // Check that the form is accepted if input[type=domain] has a value
-        form.querySelector('input[name=domain]').value = 'conversejs.org';
-        submit_button.click();
-        expect(registerview.onProviderChosen).toHaveBeenCalled();
-        expect(registerview.fetchRegistrationForm).toHaveBeenCalled();
+                api.connection.destroy();
+            },
+        ),
+    );
 
-        api.connection.destroy();
-    }));
-
-    it("shows a provider list when xmpp_providers_url is set",
+    it(
+        'shows a provider list when xmpp_providers_url is set',
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { auto_login: false,
-              discover_connection_methods: false,
-              allow_registration: true },
+            { auto_login: false, discover_connection_methods: false, allow_registration: true },
             async function (_converse) {
+                const { api } = _converse;
 
-        const { api } = _converse;
+                const toggle = await u.waitUntil(() => document.querySelector('.toggle-controlbox'));
+                toggle.click();
 
-        const toggle = await u.waitUntil(() => document.querySelector(".toggle-controlbox"));
-        toggle.click();
+                const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
+                await u.waitUntil(() => u.isVisible(cbview));
 
-        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
-        await u.waitUntil(() => u.isVisible(cbview));
+                cbview.querySelector('.toggle-register-login').click();
 
-        cbview.querySelector('.toggle-register-login').click();
+                const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+                spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
 
-        const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
-        spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
+                // Check the form layout - should have no domain input
+                const form = cbview.querySelector('#converse-register');
+                expect(form).toBeDefined();
+                expect(form.querySelector('input[name=domain]')).toBeNull();
 
-        // Check the form layout - should have no domain input
-        const form = cbview.querySelector('#converse-register');
-        expect(form).toBeDefined();
-        expect(form.querySelector('input[name=domain]')).toBeNull();
+                // Select a provider via the provider list
+                registerview.onProviderSelected('conversejs.org');
+                expect(registerview.fetchRegistrationForm).toHaveBeenCalled();
 
-        // Select a provider via the provider list
-        registerview.onProviderSelected('conversejs.org');
-        expect(registerview.fetchRegistrationForm).toHaveBeenCalled();
+                api.connection.destroy();
+            },
+        ),
+    );
 
-        api.connection.destroy();
-    }));
-
-    it("allows the user to choose an XMPP provider's domain in fullscreen view mode",
+    it(
+        "allows the user to choose an XMPP provider's domain in fullscreen view mode",
         mock.initConverse(
-            ['chatBoxesInitialized'], {
+            ['chatBoxesInitialized'],
+            {
                 auto_login: false,
                 view_mode: 'fullscreen',
                 discover_connection_methods: false,
                 allow_registration: true,
-                xmpp_providers_url: ''
+                xmpp_providers_url: '',
             },
             async function (_converse) {
+                const cbview = _converse.api.controlbox.get();
+                cbview.querySelector('.toggle-register-login').click();
 
-        const cbview = _converse.api.controlbox.get();
-        cbview.querySelector('.toggle-register-login').click();
+                const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+                spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
+                spyOn(registerview, 'onProviderChosen').and.callThrough();
+                spyOn(registerview, 'getRegistrationFields').and.callThrough();
+                spyOn(registerview, 'renderRegistrationForm').and.callThrough();
 
-        const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
-        spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
-        spyOn(registerview, 'onProviderChosen').and.callThrough();
-        spyOn(registerview, 'getRegistrationFields').and.callThrough();
-        spyOn(registerview, 'renderRegistrationForm').and.callThrough();
+                expect(registerview._registering).toBeFalsy();
+                expect(_converse.api.connection.connected()).toBeFalsy();
+                registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+                registerview.querySelector('input[type=submit]').click();
+                expect(registerview.onProviderChosen).toHaveBeenCalled();
+                expect(registerview._registering).toBeTruthy();
 
-        expect(registerview._registering).toBeFalsy();
-        expect(_converse.api.connection.connected()).toBeFalsy();
-        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
-        registerview.querySelector('input[type=submit]').click();
-        expect(registerview.onProviderChosen).toHaveBeenCalled();
-        expect(registerview._registering).toBeTruthy();
+                await u.waitUntil(() => registerview.fetchRegistrationForm.calls.count());
 
-        await u.waitUntil(() => registerview.fetchRegistrationForm.calls.count());
-
-        let stanza = new Strophe.Builder("stream:features", {
-                    'xmlns:stream': "http://etherx.jabber.org/streams",
-                    'xmlns': "jabber:client"
+                let stanza = new Strophe.Builder('stream:features', {
+                    'xmlns:stream': 'http://etherx.jabber.org/streams',
+                    'xmlns': 'jabber:client',
                 })
-            .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
-            .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                    .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
+                    .up()
+                    .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
+                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
-        expect(registerview.getRegistrationFields).toHaveBeenCalled();
+                expect(registerview.getRegistrationFields).toHaveBeenCalled();
 
-        stanza = $iq({
-                'type': 'result',
-                'id': 'reg1'
-            }).c('query', {'xmlns': 'jabber:iq:register'})
-                .c('instructions')
-                    .t('Please choose a username, password and provide your email address').up()
-                .c('username').up()
-                .c('password').up()
-                .c('email');
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(registerview.renderRegistrationForm).toHaveBeenCalled();
+                stanza = $iq({
+                    'type': 'result',
+                    'id': 'reg1',
+                })
+                    .c('query', { 'xmlns': 'jabber:iq:register' })
+                    .c('instructions')
+                    .t('Please choose a username, password and provide your email address')
+                    .up()
+                    .c('username')
+                    .up()
+                    .c('password')
+                    .up()
+                    .c('email');
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                expect(registerview.renderRegistrationForm).toHaveBeenCalled();
 
-        await u.waitUntil(() => registerview.querySelectorAll('input').length === 5);
-        expect(registerview.querySelectorAll('input[type=submit]').length).toBe(1);
-        expect(registerview.querySelectorAll('input[type=button]').length).toBe(1);
-    }));
+                await u.waitUntil(() => registerview.querySelectorAll('input').length === 5);
+                expect(registerview.querySelectorAll('input[type=submit]').length).toBe(1);
+                expect(registerview.querySelectorAll('input[type=button]').length).toBe(1);
+            },
+        ),
+    );
 
-    it("will render a registration form as received from the XMPP provider",
+    it(
+        'will render a registration form as received from the XMPP provider',
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { auto_login: false,
-              discover_connection_methods: false,
-              allow_registration: true,
-              xmpp_providers_url: '' },
+            { auto_login: false, discover_connection_methods: false, allow_registration: true, xmpp_providers_url: '' },
             async function (_converse) {
+                await mock.toggleControlBox();
+                const cbview = _converse.api.controlbox.get();
+                const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
+                login_form.click();
 
-        await mock.toggleControlBox();
-        const cbview = _converse.api.controlbox.get();
-        const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
-        login_form.click();
+                const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+                spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
+                spyOn(registerview, 'onProviderChosen').and.callThrough();
+                spyOn(registerview, 'getRegistrationFields').and.callThrough();
+                spyOn(registerview, 'onRegistrationFields').and.callThrough();
+                spyOn(registerview, 'renderRegistrationForm').and.callThrough();
 
-        const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
-        spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
-        spyOn(registerview, 'onProviderChosen').and.callThrough();
-        spyOn(registerview, 'getRegistrationFields').and.callThrough();
-        spyOn(registerview, 'onRegistrationFields').and.callThrough();
-        spyOn(registerview, 'renderRegistrationForm').and.callThrough();
+                expect(registerview._registering).toBeFalsy();
+                expect(_converse.api.connection.connected()).toBeFalsy();
+                registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+                registerview.querySelector('input[type=submit]').click();
+                expect(registerview.onProviderChosen).toHaveBeenCalled();
+                expect(registerview._registering).toBeTruthy();
+                await u.waitUntil(() => registerview.fetchRegistrationForm.calls.count());
 
-        expect(registerview._registering).toBeFalsy();
-        expect(_converse.api.connection.connected()).toBeFalsy();
-        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
-        registerview.querySelector('input[type=submit]').click();
-        expect(registerview.onProviderChosen).toHaveBeenCalled();
-        expect(registerview._registering).toBeTruthy();
-        await u.waitUntil(() => registerview.fetchRegistrationForm.calls.count());
-
-        let stanza = new Strophe.Builder("stream:features", {
-                    'xmlns:stream': "http://etherx.jabber.org/streams",
-                    'xmlns': "jabber:client"
+                let stanza = new Strophe.Builder('stream:features', {
+                    'xmlns:stream': 'http://etherx.jabber.org/streams',
+                    'xmlns': 'jabber:client',
                 })
-            .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
-            .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                    .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
+                    .up()
+                    .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
+                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
-        expect(registerview.getRegistrationFields).toHaveBeenCalled();
+                expect(registerview.getRegistrationFields).toHaveBeenCalled();
 
-        stanza = $iq({
-                'type': 'result',
-                'id': 'reg1'
-            }).c('query', {'xmlns': 'jabber:iq:register'})
-                .c('instructions')
-                    .t('Please choose a username, password and provide your email address').up()
-                .c('username').up()
-                .c('password').up()
-                .c('email');
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(registerview.onRegistrationFields).toHaveBeenCalled();
-        expect(registerview.renderRegistrationForm).toHaveBeenCalled();
+                stanza = $iq({
+                    'type': 'result',
+                    'id': 'reg1',
+                })
+                    .c('query', { 'xmlns': 'jabber:iq:register' })
+                    .c('instructions')
+                    .t('Please choose a username, password and provide your email address')
+                    .up()
+                    .c('username')
+                    .up()
+                    .c('password')
+                    .up()
+                    .c('email');
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                expect(registerview.onRegistrationFields).toHaveBeenCalled();
+                expect(registerview.renderRegistrationForm).toHaveBeenCalled();
 
-        await u.waitUntil(() => registerview.querySelectorAll('input').length === 5);
-        expect(registerview.querySelectorAll('input[type=submit]').length).toBe(1);
-        expect(registerview.querySelectorAll('input[type=button]').length).toBe(1);
-    }));
+                await u.waitUntil(() => registerview.querySelectorAll('input').length === 5);
+                expect(registerview.querySelectorAll('input[type=submit]').length).toBe(1);
+                expect(registerview.querySelectorAll('input[type=button]').length).toBe(1);
+            },
+        ),
+    );
 
-    it("will set form_type to legacy and submit it as legacy",
+    it(
+        'will set form_type to legacy and submit it as legacy',
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { auto_login: false,
-              discover_connection_methods: false,
-              allow_registration: true,
-              xmpp_providers_url: '' },
+            { auto_login: false, discover_connection_methods: false, allow_registration: true, xmpp_providers_url: '' },
             async function (_converse) {
+                const toggle = document.querySelector('.toggle-controlbox');
+                if (!u.isVisible(document.querySelector('#controlbox'))) {
+                    if (!u.isVisible(toggle)) {
+                        u.removeClass('hidden', toggle);
+                    }
+                    toggle.click();
+                }
+                const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
+                const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
+                login_form.click();
 
-        const toggle = document.querySelector(".toggle-controlbox");
-        if (!u.isVisible(document.querySelector("#controlbox"))) {
-            if (!u.isVisible(toggle)) {
-                u.removeClass('hidden', toggle);
-            }
-            toggle.click();
-        }
-        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
-        const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
-        login_form.click();
+                const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+                spyOn(registerview, 'getRegistrationFields').and.callThrough();
+                spyOn(registerview, 'onRegistrationFields').and.callThrough();
+                spyOn(registerview, 'renderRegistrationForm').and.callThrough();
 
-        const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
-        spyOn(registerview, 'getRegistrationFields').and.callThrough();
-        spyOn(registerview, 'onRegistrationFields').and.callThrough();
-        spyOn(registerview, 'renderRegistrationForm').and.callThrough();
+                registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+                registerview.querySelector('input[type=submit]').click();
 
-        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
-        registerview.querySelector('input[type=submit]').click();
-
-        let stanza = new Strophe.Builder("stream:features", {
-                    'xmlns:stream': "http://etherx.jabber.org/streams",
-                    'xmlns': "jabber:client"
+                let stanza = new Strophe.Builder('stream:features', {
+                    'xmlns:stream': 'http://etherx.jabber.org/streams',
+                    'xmlns': 'jabber:client',
                 })
-            .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
-            .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
-        stanza = $iq({
-                'type': 'result',
-                'id': 'reg1'
-            }).c('query', {'xmlns': 'jabber:iq:register'})
-                .c('instructions')
-                    .t('Please choose a username, password and provide your email address').up()
-                .c('username').up()
-                .c('password').up()
-                .c('email');
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(registerview.form_type).toBe('legacy');
+                    .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
+                    .up()
+                    .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
+                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                stanza = $iq({
+                    'type': 'result',
+                    'id': 'reg1',
+                })
+                    .c('query', { 'xmlns': 'jabber:iq:register' })
+                    .c('instructions')
+                    .t('Please choose a username, password and provide your email address')
+                    .up()
+                    .c('username')
+                    .up()
+                    .c('password')
+                    .up()
+                    .c('email');
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                expect(registerview.form_type).toBe('legacy');
 
-        const username_input = await u.waitUntil(() => registerview.querySelector('input[name=username]'));
+                const username_input = await u.waitUntil(() => registerview.querySelector('input[name=username]'));
 
-        username_input.value = 'testusername';
-        registerview.querySelector('input[name=password]').value = 'testpassword';
-        registerview.querySelector('input[name=email]').value = 'test@email.local';
+                username_input.value = 'testusername';
+                registerview.querySelector('input[name=password]').value = 'testpassword';
+                registerview.querySelector('input[name=email]').value = 'test@email.local';
 
-        spyOn(_converse.api.connection.get(), 'send');
-        registerview.querySelector('input[type=submit]').click();
+                spyOn(_converse.api.connection.get(), 'send');
+                registerview.querySelector('input[type=submit]').click();
 
-        expect(_converse.api.connection.get().send).toHaveBeenCalled();
-        stanza = _converse.api.connection.get().send.calls.argsFor(0)[0].tree();
-        expect(stanza.querySelector('query').childNodes.length).toBe(3);
-        expect(stanza.querySelector('query').firstElementChild.tagName).toBe('username');
+                expect(_converse.api.connection.get().send).toHaveBeenCalled();
+                stanza = _converse.api.connection.get().send.calls.argsFor(0)[0].tree();
+                expect(stanza.querySelector('query').childNodes.length).toBe(3);
+                expect(stanza.querySelector('query').firstElementChild.tagName).toBe('username');
 
-        _converse.api.connection.destroy();
-    }));
+                _converse.api.connection.destroy();
+            },
+        ),
+    );
 
-    it("will set form_type to xform and submit it as xform",
+    it(
+        'will set form_type to xform and submit it as xform',
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { auto_login: false,
-              discover_connection_methods: false,
-              allow_registration: true,
-              xmpp_providers_url: '' },
+            { auto_login: false, discover_connection_methods: false, allow_registration: true, xmpp_providers_url: '' },
             async function (_converse) {
+                const toggle = document.querySelector('.toggle-controlbox');
+                if (!u.isVisible(document.querySelector('#controlbox'))) {
+                    if (!u.isVisible(toggle)) u.removeClass('hidden', toggle);
+                    toggle.click();
+                }
+                const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
+                const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
+                login_form.click();
 
-        const toggle = document.querySelector(".toggle-controlbox");
-        if (!u.isVisible(document.querySelector("#controlbox"))) {
-            if (!u.isVisible(toggle)) u.removeClass('hidden', toggle);
-            toggle.click();
-        }
-        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
-        const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
-        login_form.click();
+                const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+                spyOn(registerview, 'getRegistrationFields').and.callThrough();
+                spyOn(registerview, 'onRegistrationFields').and.callThrough();
+                spyOn(registerview, 'renderRegistrationForm').and.callThrough();
 
-        const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
-        spyOn(registerview, 'getRegistrationFields').and.callThrough();
-        spyOn(registerview, 'onRegistrationFields').and.callThrough();
-        spyOn(registerview, 'renderRegistrationForm').and.callThrough();
+                registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+                registerview.querySelector('input[type=submit]').click();
 
-        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
-        registerview.querySelector('input[type=submit]').click();
-
-        let stanza = new Strophe.Builder("stream:features", {
-                    'xmlns:stream': "http://etherx.jabber.org/streams",
-                    'xmlns': "jabber:client"
+                let stanza = new Strophe.Builder('stream:features', {
+                    'xmlns:stream': 'http://etherx.jabber.org/streams',
+                    'xmlns': 'jabber:client',
                 })
-            .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
-            .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                    .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
+                    .up()
+                    .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
+                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
-        stanza = $iq({
-                'type': 'result',
-                'id': 'reg1'
-            }).c('query', {'xmlns': 'jabber:iq:register'})
-                .c('instructions')
-                    .t('Using xform data').up()
-                .c('x', { 'xmlns': 'jabber:x:data', 'type': 'form' })
-                    .c('instructions').t('xform instructions').up()
-                    .c('field', {'type': 'text-single', 'var': 'username'}).c('required').up().up()
-                    .c('field', {'type': 'text-private', 'var': 'password'}).c('required').up().up()
-                    .c('field', {'type': 'text-single', 'var': 'email'}).c('required').up().up();
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(registerview.form_type).toBe('xform');
+                stanza = $iq({
+                    'type': 'result',
+                    'id': 'reg1',
+                })
+                    .c('query', { 'xmlns': 'jabber:iq:register' })
+                    .c('instructions')
+                    .t('Using xform data')
+                    .up()
+                    .c('x', { 'xmlns': 'jabber:x:data', 'type': 'form' })
+                    .c('instructions')
+                    .t('xform instructions')
+                    .up()
+                    .c('field', { 'type': 'text-single', 'var': 'username' })
+                    .c('required')
+                    .up()
+                    .up()
+                    .c('field', { 'type': 'text-private', 'var': 'password' })
+                    .c('required')
+                    .up()
+                    .up()
+                    .c('field', { 'type': 'text-single', 'var': 'email' })
+                    .c('required')
+                    .up()
+                    .up();
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                expect(registerview.form_type).toBe('xform');
 
-        const username_input = await u.waitUntil(() => registerview.querySelector('input[name=username]'));
+                const username_input = await u.waitUntil(() => registerview.querySelector('input[name=username]'));
 
-        username_input.value = 'testusername';
-        registerview.querySelector('input[name=password]').value = 'testpassword';
-        registerview.querySelector('input[name=email]').value = 'test@email.local';
+                username_input.value = 'testusername';
+                registerview.querySelector('input[name=password]').value = 'testpassword';
+                registerview.querySelector('input[name=email]').value = 'test@email.local';
 
-        spyOn(_converse.api.connection.get(), 'send');
+                spyOn(_converse.api.connection.get(), 'send');
 
-        registerview.querySelector('input[type=submit]').click();
+                registerview.querySelector('input[type=submit]').click();
 
-        expect(_converse.api.connection.get().send).toHaveBeenCalled();
-        stanza = _converse.api.connection.get().send.calls.argsFor(0)[0].tree();
-        expect(Strophe.serialize(stanza).toLocaleString().trim().replace(/(\n|\s{2,})/g, '')).toEqual(
-            '<iq id="'+stanza.getAttribute('id')+'" type="set" xmlns="jabber:client">'+
-                '<query xmlns="jabber:iq:register">'+
-                    '<x type="submit" xmlns="jabber:x:data">'+
-                        '<field var="username">'+
-                            '<value>testusername</value>'+
-                        '</field>'+
-                        '<field var="password">'+
-                            '<value>testpassword</value>'+
-                        '</field>'+
-                        '<field var="email">'+
-                            '<value>test@email.local</value>'+
-                        '</field>'+
-                    '</x>'+
-                '</query>'+
-            '</iq>'
-        );
+                expect(_converse.api.connection.get().send).toHaveBeenCalled();
+                stanza = _converse.api.connection.get().send.calls.argsFor(0)[0].tree();
+                expect(
+                    Strophe.serialize(stanza)
+                        .toLocaleString()
+                        .trim()
+                        .replace(/(\n|\s{2,})/g, ''),
+                ).toEqual(
+                    '<iq id="' +
+                        stanza.getAttribute('id') +
+                        '" type="set" xmlns="jabber:client">' +
+                        '<query xmlns="jabber:iq:register">' +
+                        '<x type="submit" xmlns="jabber:x:data">' +
+                        '<field var="username">' +
+                        '<value>testusername</value>' +
+                        '</field>' +
+                        '<field var="password">' +
+                        '<value>testpassword</value>' +
+                        '</field>' +
+                        '<field var="email">' +
+                        '<value>test@email.local</value>' +
+                        '</field>' +
+                        '</x>' +
+                        '</query>' +
+                        '</iq>',
+                );
 
-        _converse.api.connection.destroy();
-    }));
+                _converse.api.connection.destroy();
+            },
+        ),
+    );
 
-    it("renders the account registration form",
+    it(
+        'renders the account registration form',
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { auto_login: false,
-              discover_connection_methods: false,
-              allow_registration: true,
-              xmpp_providers_url: '' },
+            { auto_login: false, discover_connection_methods: false, allow_registration: true, xmpp_providers_url: '' },
             async function (_converse) {
+                const toggle = document.querySelector('.toggle-controlbox');
+                if (!u.isVisible(document.querySelector('#controlbox'))) {
+                    if (!u.isVisible(toggle)) {
+                        u.removeClass('hidden', toggle);
+                    }
+                    toggle.click();
+                }
+                const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
+                const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
+                login_form.click();
 
-        const toggle = document.querySelector(".toggle-controlbox");
-        if (!u.isVisible(document.querySelector("#controlbox"))) {
-            if (!u.isVisible(toggle)) {
-                u.removeClass('hidden', toggle);
-            }
-            toggle.click();
-        }
-        const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
-        const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
-        login_form.click();
+                const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+                registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+                registerview.querySelector('input[type=submit]').click();
 
-        const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
-        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
-        registerview.querySelector('input[type=submit]').click();
-
-        let stanza = new Strophe.Builder("stream:features", {
-                    'xmlns:stream': "http://etherx.jabber.org/streams",
-                    'xmlns': "jabber:client"
+                let stanza = new Strophe.Builder('stream:features', {
+                    'xmlns:stream': 'http://etherx.jabber.org/streams',
+                    'xmlns': 'jabber:client',
                 })
-            .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
-            .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                    .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
+                    .up()
+                    .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
+                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
-        stanza = stx`
+                stanza = stx`
             <iq xmlns="jabber:client" type="result" from="conversations.im" id="ad1e0d50-5adb-4397-a997-5feab56fe418:sendIQ" xml:lang="en">
                 <query xmlns="jabber:iq:register">
                     <x xmlns="jabber:x:data" type="form">
@@ -437,49 +470,56 @@ describe("The Registration Form", function () {
                     <instructions>You need a client that supports x:data and CAPTCHA to register</instructions>
                 </query>
             </iq>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-        await u.waitUntil(() => registerview.querySelectorAll('#converse-register input[required]').length === 3);
-        expect(registerview.form_type).toBe('xform');
+                await u.waitUntil(
+                    () => registerview.querySelectorAll('#converse-register input[required]').length === 3,
+                );
+                expect(registerview.form_type).toBe('xform');
 
-        // Hide the controlbox so that we can see whether the test passed or failed
-        u.addClass('hidden', _converse.chatboxviews.get('controlbox'));
-        _converse.api.connection.destroy();
-    }));
+                // Hide the controlbox so that we can see whether the test passed or failed
+                u.addClass('hidden', _converse.chatboxviews.get('controlbox'));
+                _converse.api.connection.destroy();
+            },
+        ),
+    );
 
-    it("lets you choose a different provider",
+    it(
+        'lets you choose a different provider',
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { auto_login: false,
-              view_mode: 'fullscreen',
-              discover_connection_methods: false,
-              allow_registration: true,
-              xmpp_providers_url: '' },
+            {
+                auto_login: false,
+                view_mode: 'fullscreen',
+                discover_connection_methods: false,
+                allow_registration: true,
+                xmpp_providers_url: '',
+            },
             async function (_converse) {
+                const toggle = document.querySelector('.toggle-controlbox');
+                if (!u.isVisible(document.querySelector('#controlbox'))) {
+                    if (!u.isVisible(toggle)) {
+                        u.removeClass('hidden', toggle);
+                    }
+                    toggle.click();
+                }
+                const cbview = _converse.chatboxviews.get('controlbox');
+                cbview.querySelector('.toggle-register-login').click();
+                const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
 
-        const toggle = document.querySelector(".toggle-controlbox");
-        if (!u.isVisible(document.querySelector("#controlbox"))) {
-            if (!u.isVisible(toggle)) {
-                u.removeClass('hidden', toggle);
-            }
-            toggle.click();
-        }
-        const cbview = _converse.chatboxviews.get('controlbox');
-        cbview.querySelector('.toggle-register-login').click();
-        const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+                registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+                registerview.querySelector('input[type=submit]').click();
 
-        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
-        registerview.querySelector('input[type=submit]').click();
-
-        let stanza = new Strophe.Builder("stream:features", {
-                    'xmlns:stream': "http://etherx.jabber.org/streams",
-                    'xmlns': "jabber:client"
+                let stanza = new Strophe.Builder('stream:features', {
+                    'xmlns:stream': 'http://etherx.jabber.org/streams',
+                    'xmlns': 'jabber:client',
                 })
-            .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
-            .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                    .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
+                    .up()
+                    .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
+                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
-        stanza = stx`
+                stanza = stx`
             <iq xmlns="jabber:client" type="result" from="conversations.im" id="ad1e0d50-5adb-4397-a997-5feab56fe418:sendIQ" xml:lang="en">
                 <query xmlns="jabber:iq:register">
                     <x xmlns="jabber:x:data" type="form">
@@ -493,56 +533,63 @@ describe("The Registration Form", function () {
                     </x>
                 </query>
             </iq>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-        await u.waitUntil(() => registerview.querySelectorAll('#converse-register input[required]').length === 2);
-        expect(registerview.form_type).toBe('xform');
+                await u.waitUntil(
+                    () => registerview.querySelectorAll('#converse-register input[required]').length === 2,
+                );
+                expect(registerview.form_type).toBe('xform');
 
-        const button = await u.waitUntil(() => registerview.querySelector('.btn-secondary'));
-        expect(button.value).toBe("Choose a different provider");
-        button.click();
+                const button = await u.waitUntil(() => registerview.querySelector('.btn-secondary'));
+                expect(button.value).toBe('Choose a different provider');
+                button.click();
 
-        await u.waitUntil(() => registerview.querySelector('input[name="domain"]'));
-        expect(registerview.querySelectorAll('input[required]').length).toBe(1);
+                await u.waitUntil(() => registerview.querySelector('input[name="domain"]'));
+                expect(registerview.querySelectorAll('input[required]').length).toBe(1);
 
-        // Hide the controlbox so that we can see whether the test passed or failed
-        u.addClass('hidden', _converse.chatboxviews.get('controlbox'));
-        _converse.api.connection.destroy();
-    }));
+                // Hide the controlbox so that we can see whether the test passed or failed
+                u.addClass('hidden', _converse.chatboxviews.get('controlbox'));
+                _converse.api.connection.destroy();
+            },
+        ),
+    );
 
-    it("renders errors",
+    it(
+        'renders errors',
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { auto_login: false,
-              view_mode: 'fullscreen',
-              discover_connection_methods: false,
-              allow_registration: true,
-              xmpp_providers_url: '' },
+            {
+                auto_login: false,
+                view_mode: 'fullscreen',
+                discover_connection_methods: false,
+                allow_registration: true,
+                xmpp_providers_url: '',
+            },
             async function (_converse) {
+                const toggle = document.querySelector('.toggle-controlbox');
+                if (!u.isVisible(document.querySelector('#controlbox'))) {
+                    if (!u.isVisible(toggle)) {
+                        u.removeClass('hidden', toggle);
+                    }
+                    toggle.click();
+                }
+                const cbview = _converse.chatboxviews.get('controlbox');
+                cbview.querySelector('.toggle-register-login').click();
+                const view = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
 
-        const toggle = document.querySelector(".toggle-controlbox");
-        if (!u.isVisible(document.querySelector("#controlbox"))) {
-            if (!u.isVisible(toggle)) {
-                u.removeClass('hidden', toggle);
-            }
-            toggle.click();
-        }
-        const cbview = _converse.chatboxviews.get('controlbox');
-        cbview.querySelector('.toggle-register-login').click();
-        const view = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+                view.querySelector('input[name=domain]').value = 'conversejs.org';
+                view.querySelector('input[type=submit]').click();
 
-        view.querySelector('input[name=domain]').value = 'conversejs.org';
-        view.querySelector('input[type=submit]').click();
-
-        let stanza = new Strophe.Builder("stream:features", {
-                    'xmlns:stream': "http://etherx.jabber.org/streams",
-                    'xmlns': "jabber:client"
+                let stanza = new Strophe.Builder('stream:features', {
+                    'xmlns:stream': 'http://etherx.jabber.org/streams',
+                    'xmlns': 'jabber:client',
                 })
-            .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
-            .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                    .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
+                    .up()
+                    .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
+                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
-        stanza = stx`
+                stanza = stx`
             <iq xmlns="jabber:client" type="result" from="conversejs.org" id="ad1e0d50-5adb-4397-a997-5feab56fe418:sendIQ" xml:lang="en">
                 <query xmlns="jabber:iq:register">
                     <x xmlns="jabber:x:data" type="form">
@@ -566,20 +613,20 @@ describe("The Registration Form", function () {
                     <instructions>You need a client that supports x:data and CAPTCHA to register</instructions>
                 </query>
             </iq>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-        spyOn(view, 'submitRegistrationForm').and.callThrough();
+                spyOn(view, 'submitRegistrationForm').and.callThrough();
 
-        const username_input = await u.waitUntil(() => view.querySelector('[name="username"]'));
-        username_input.value = 'romeo';
-        const password_input = view.querySelector('[name="password"]');
-        password_input.value = 'secret';
-        const ocr_input = view.querySelector('[name="ocr"]');
-        ocr_input.value = '8m9D88';
-        view.querySelector('[type="submit"]').click();
-        expect(view.submitRegistrationForm).toHaveBeenCalled();
+                const username_input = await u.waitUntil(() => view.querySelector('[name="username"]'));
+                username_input.value = 'romeo';
+                const password_input = view.querySelector('[name="password"]');
+                password_input.value = 'secret';
+                const ocr_input = view.querySelector('[name="ocr"]');
+                ocr_input.value = '8m9D88';
+                view.querySelector('[type="submit"]').click();
+                expect(view.submitRegistrationForm).toHaveBeenCalled();
 
-        const response_IQ = stx`
+                const response_IQ = stx`
             <iq xml:lang='en' from='conversejs.org' type='error' id='d9917b7a-588f-4ef6-8a56-0d6d3ad538ae:sendIQ' xmlns="jabber:client">
                 <query xmlns='jabber:iq:register'/>
                 <error code='500' type='wait'>
@@ -587,77 +634,94 @@ describe("The Registration Form", function () {
                     <text xml:lang='en' xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'>Too many CAPTCHA requests</text>
                 </error>
             </iq>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(response_IQ));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(response_IQ));
 
-        const alert = await u.waitUntil(() => view.querySelector('.alert'));
-        expect(alert.textContent.trim()).toBe('Registration failed.\nToo many CAPTCHA requests');
-        // Hide the controlbox so that we can see whether the test passed or failed
-        u.addClass('hidden', _converse.chatboxviews.get('controlbox'));
-        _converse.api.connection.destroy();
-    }));
+                const alert = await u.waitUntil(() => view.querySelector('.alert'));
+                expect(alert.textContent.trim()).toBe('Registration failed.\nToo many CAPTCHA requests');
+                // Hide the controlbox so that we can see whether the test passed or failed
+                u.addClass('hidden', _converse.chatboxviews.get('controlbox'));
+                _converse.api.connection.destroy();
+            },
+        ),
+    );
 
-    it("properly escapes an ampersand from an input field",
+    it(
+        'properly escapes an ampersand from an input field',
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { auto_login: false,
-              view_mode: 'fullscreen',
-              discover_connection_methods: false,
-              allow_registration: true,
-              xmpp_providers_url: '' },
+            {
+                auto_login: false,
+                view_mode: 'fullscreen',
+                discover_connection_methods: false,
+                allow_registration: true,
+                xmpp_providers_url: '',
+            },
             async function (_converse) {
+                await mock.toggleControlBox();
+                const cbview = _converse.api.controlbox.get();
+                const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
+                login_form.click();
 
-        await mock.toggleControlBox();
-        const cbview = _converse.api.controlbox.get();
-        const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
-        login_form.click();
+                const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+                spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
 
-        const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
-        spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
+                expect(registerview._registering).toBeFalsy();
+                expect(_converse.api.connection.connected()).toBeFalsy();
+                registerview.querySelector('input[name=domain]').value = 'conversejs.org';
+                registerview.querySelector('input[type=submit]').click();
+                expect(registerview._registering).toBeTruthy();
+                await u.waitUntil(() => registerview.fetchRegistrationForm.calls.count());
 
-        expect(registerview._registering).toBeFalsy();
-        expect(_converse.api.connection.connected()).toBeFalsy();
-        registerview.querySelector('input[name=domain]').value = 'conversejs.org';
-        registerview.querySelector('input[type=submit]').click();
-        expect(registerview._registering).toBeTruthy();
-        await u.waitUntil(() => registerview.fetchRegistrationForm.calls.count());
-
-        let stanza = new Strophe.Builder("stream:features", {
-                    'xmlns:stream': "http://etherx.jabber.org/streams",
-                    'xmlns': "jabber:client"
+                let stanza = new Strophe.Builder('stream:features', {
+                    'xmlns:stream': 'http://etherx.jabber.org/streams',
+                    'xmlns': 'jabber:client',
                 })
-            .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
-            .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                    .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
+                    .up()
+                    .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
+                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
-        stanza = $iq({
-                'type': 'result',
-                'id': 'reg1'
-            }).c('query', {'xmlns': 'jabber:iq:register'})
-                .c('instructions')
-                    .t('Using xform data').up()
-                .c('x', { 'xmlns': 'jabber:x:data', 'type': 'form' })
-                    .c('instructions').t('Please enter a username and password').up()
-                    .c('field', {'type': 'text-single', 'var': 'username'}).c('required').up().up()
-                    .c('field', {'type': 'text-private', 'var': 'password'}).c('required');
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => registerview.querySelectorAll('input').length === 4);
+                stanza = $iq({
+                    'type': 'result',
+                    'id': 'reg1',
+                })
+                    .c('query', { 'xmlns': 'jabber:iq:register' })
+                    .c('instructions')
+                    .t('Using xform data')
+                    .up()
+                    .c('x', { 'xmlns': 'jabber:x:data', 'type': 'form' })
+                    .c('instructions')
+                    .t('Please enter a username and password')
+                    .up()
+                    .c('field', { 'type': 'text-single', 'var': 'username' })
+                    .c('required')
+                    .up()
+                    .up()
+                    .c('field', { 'type': 'text-private', 'var': 'password' })
+                    .c('required');
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                await u.waitUntil(() => registerview.querySelectorAll('input').length === 4);
 
-        const username = registerview.querySelector('input[name="username"]');
-        const password = registerview.querySelector('input[name="password"]');
+                const username = registerview.querySelector('input[name="username"]');
+                const password = registerview.querySelector('input[name="password"]');
 
-        username.value = 'me';
-        password.value = '123&456';
+                username.value = 'me';
+                password.value = '123&456';
 
-        const form = registerview.querySelector('#converse-register');
-        const submit_button = form.querySelector('input[type=submit]');
+                const form = registerview.querySelector('#converse-register');
+                const submit_button = form.querySelector('input[type=submit]');
 
-        const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-        while (sent_stanzas.length) { sent_stanzas.pop(); }
+                const sent_stanzas = _converse.api.connection.get().sent_stanzas;
+                while (sent_stanzas.length) {
+                    sent_stanzas.pop();
+                }
 
-        submit_button.click();
+                submit_button.click();
 
-        const iq = await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('x[type="submit"]', iq).length).pop());
-        expect(iq).toEqualStanza(stx`
+                const iq = await u.waitUntil(() =>
+                    sent_stanzas.filter((iq) => sizzle('x[type="submit"]', iq).length).pop(),
+                );
+                expect(iq).toEqualStanza(stx`
             <iq type="set" id="${iq.getAttribute('id')}" xmlns="jabber:client">
                 <query xmlns="jabber:iq:register">
                     <x xmlns="jabber:x:data" type="submit">
@@ -665,7 +729,8 @@ describe("The Registration Form", function () {
                         <field var="password"><value>123&amp;456</value></field>
                     </x>
                 </query>
-            </iq>`
-        );
-    }));
+            </iq>`);
+            },
+        ),
+    );
 });

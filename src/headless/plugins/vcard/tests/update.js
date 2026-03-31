@@ -21,12 +21,12 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
                             <x xmlns='vcard-temp:x:update'>
                                 <photo>01b87fcd030b72895ff8e88db57ec525450f000d</photo>
                             </x>
-                        </presence>`
-                )
+                        </presence>`,
+                ),
             );
             const sent_stanza = await u.waitUntil(
                 () => IQ_stanzas.filter((s) => sizzle('vCard', s).length).pop(),
-                1000
+                1000,
             );
             expect(sent_stanza).toEqualStanza(stx`
                 <iq type="get"
@@ -64,7 +64,7 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
                             <BINVAL>${base64Image}</BINVAL>
                         </PHOTO>
                     </vCard>
-                </iq>`)
+                </iq>`),
             );
 
             const { vcard } = await api.contacts.get(contact_jid);
@@ -79,8 +79,8 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
                             <x xmlns='vcard-temp:x:update'>
                                 <photo>6d52ba485d3fd69c96b8d424ceaf8082a7a00e51</photo>
                             </x>
-                        </presence>`
-                )
+                        </presence>`,
+                ),
             );
 
             return new Promise((resolve) => {
@@ -89,7 +89,7 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
                     resolve();
                 }, 251);
             });
-        })
+        }),
     );
 
     it(
@@ -112,11 +112,11 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
                         type='result'
                         id='${sent_stanza.getAttribute('id')}'>
                     <vCard xmlns='vcard-temp'></vCard>
-                </iq>`)
+                </iq>`),
             );
 
             sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle(`iq[to="${contact_jid}"] vCard`, s).length).pop()
+                IQ_stanzas.filter((s) => sizzle(`iq[to="${contact_jid}"] vCard`, s).length).pop(),
             );
             expect(sent_stanza).toEqualStanza(stx`
                 <iq type="get"
@@ -150,7 +150,7 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
                             <BINVAL>${base64Image}</BINVAL>
                         </PHOTO>
                     </vCard>
-                </iq>`)
+                </iq>`),
             );
 
             const contact = await api.contacts.get(contact_jid);
@@ -167,8 +167,8 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
                             <x xmlns='vcard-temp:x:update'>
                                 <photo></photo>
                             </x>
-                        </presence>`
-                )
+                        </presence>`,
+                ),
             );
 
             sent_stanza = await u.waitUntil(() => IQ_stanzas.filter((s) => sizzle('vCard', s).length).pop(), 500);
@@ -195,12 +195,12 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
                         <EMAIL><USERID>mercutio@shakespeare.lit</USERID></EMAIL>
                         <PHOTO></PHOTO>
                     </vCard>
-                </iq>`)
+                </iq>`),
             );
 
             await u.waitUntil(() => !contact.vcard.get('image'));
             expect(contact.vcard.get('image_hash')).toBeUndefined();
-        })
+        }),
     );
 });
 
@@ -227,7 +227,7 @@ describe('An outgoing presence with a XEP-0153 vcard:update element', function (
                         type='result'
                         id='${sent_stanza.getAttribute('id')}'>
                     <vCard xmlns='vcard-temp'></vCard>
-                </iq>`)
+                </iq>`),
             );
 
             const vcard = await u.waitUntil(() => _converse.state.vcards.get(own_bare_jid));
@@ -277,8 +277,8 @@ describe('An outgoing presence with a XEP-0153 vcard:update element', function (
                             <x xmlns='vcard-temp:x:update'>
                                 <photo>${image_hash}</photo>
                             </x>
-                        </presence>`
-                )
+                        </presence>`,
+                ),
             );
 
             _converse.api.connection.get()._dataRecv(
@@ -287,14 +287,11 @@ describe('An outgoing presence with a XEP-0153 vcard:update element', function (
                         xmlns="jabber:client"
                         to='${own_jid}'
                         type='result'
-                        id='${sent_stanza.getAttribute('id')}'></iq>`)
+                        id='${sent_stanza.getAttribute('id')}'></iq>`),
             );
 
             // A new get IQ is sent out to fetch the latest VCard
-            sent_stanza = await u.waitUntil(
-                () => IQ_stanzas.filter((s) => sizzle('vCard', s).length).pop(),
-                1000
-            );
+            sent_stanza = await u.waitUntil(() => IQ_stanzas.filter((s) => sizzle('vCard', s).length).pop(), 1000);
             expect(sent_stanza).toEqualStanza(stx`
                 <iq type="get" xmlns="jabber:client" id="${sent_stanza.getAttribute('id')}">
                     <vCard xmlns="vcard-temp"/>
@@ -322,13 +319,13 @@ describe('An outgoing presence with a XEP-0153 vcard:update element', function (
                             <BINVAL>${base64Image}</BINVAL>
                         </PHOTO>
                     </vCard>
-                </iq>`)
+                </iq>`),
             );
 
             await u.waitUntil(() => vcard.get('vcard_updated'));
             expect(vcard.get('image')).toBe(base64Image);
             expect(vcard.get('image_hash')).toBe(image_hash);
             expect(vcard.get('image_type')).toBe(blob.type);
-        })
+        }),
     );
 });

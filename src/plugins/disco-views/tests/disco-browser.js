@@ -16,7 +16,7 @@ describe('DiscoBrowser', function () {
             await u.waitUntil(() => modal.querySelector('converse-disco-browser'));
             const el = modal.querySelector('converse-disco-browser');
             expect(el._entity_jids).toEqual([_converse.session.get('domain')]);
-        })
+        }),
     );
 
     it(
@@ -42,8 +42,8 @@ describe('DiscoBrowser', function () {
                 connection.IQ_stanzas.filter(
                     (iq) =>
                         iq.getAttribute('type') === 'get' &&
-                        iq.querySelector('query[xmlns="http://jabber.org/protocol/disco#info"]')
-                ).pop()
+                        iq.querySelector('query[xmlns="http://jabber.org/protocol/disco#info"]'),
+                ).pop(),
             );
 
             connection._dataRecv(
@@ -56,13 +56,13 @@ describe('DiscoBrowser', function () {
                     <error type="cancel">
                         <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                     </error>
-                </iq>`
-                )
+                </iq>`,
+                ),
             );
 
             const alert = await u.waitUntil(() => modal.querySelector('.alert-danger'));
             expect(alert.textContent).toBe('No service found with that XMPP address');
-        })
+        }),
     );
 
     it(
@@ -80,7 +80,7 @@ describe('DiscoBrowser', function () {
                 return (
                     IQ_stanzas.filter(function (iq) {
                         return iq.querySelector(
-                            'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]'
+                            'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]',
                         );
                     }).length > 0
                 );
@@ -118,7 +118,7 @@ describe('DiscoBrowser', function () {
             });
 
             stanza = IQ_stanzas.find((iq) =>
-                iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]')
+                iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]'),
             );
             const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 
@@ -137,7 +137,7 @@ describe('DiscoBrowser', function () {
                     <item node='montague.lit' name='Wear your literary taste with pride'/>
                     <item jid='montague.lit' node='music' name='Music from the time of Shakespeare'/>
                 </query>
-            </iq>`)
+            </iq>`),
             );
 
             await u.waitUntil(() => modal.querySelector('.items-list'));
@@ -174,7 +174,7 @@ describe('DiscoBrowser', function () {
                 expect(items[4].textContent).toBe('Wear your literary taste with pride <montague.lit>');
                 expect(items[5].textContent).toBe('Music from the time of Shakespeare <montague.lit>');
             */
-        })
+        }),
     );
 
     it(
@@ -193,7 +193,7 @@ describe('DiscoBrowser', function () {
             await u.waitUntil(() => el._entity_jids.length === 2);
             expect(el._entity_jids).toEqual(['domain1', 'domain2']);
             expect(ev.preventDefault).toHaveBeenCalled();
-        })
+        }),
     );
 
     it(
@@ -217,6 +217,6 @@ describe('DiscoBrowser', function () {
             await u.waitUntil(() => el._entity_jids[0] === 'new.domain');
             expect(el._entity_jids).toEqual(['new.domain']);
             expect(submitEvent.preventDefault).toHaveBeenCalled();
-        })
+        }),
     );
 });

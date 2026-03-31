@@ -27,10 +27,11 @@ describe('Groupchats', () => {
                 });
                 const el = await u.waitUntil(() => view.querySelector(`.chat-head converse-avatar svg image`));
                 expect(el.getAttribute('href')).toBe(`data:image/svg+xml;base64,${image}`);
-            })
+            }),
         );
 
-        it('has an avatar which opens a details modal when clicked',
+        it(
+            'has an avatar which opens a details modal when clicked',
             mock.initConverse(
                 ['chatBoxesFetched'],
                 {
@@ -48,7 +49,7 @@ describe('Groupchats', () => {
 
                     const selector = `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
                     const features_query = await u.waitUntil(() =>
-                        IQ_stanzas.filter((iq) => iq.querySelector(selector)).pop()
+                        IQ_stanzas.filter((iq) => iq.querySelector(selector)).pop(),
                     );
 
                     const features_stanza = stx`
@@ -84,7 +85,7 @@ describe('Groupchats', () => {
 
                     const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
                     await u.waitUntil(
-                        () => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING
+                        () => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING,
                     );
                     let presence = stx`
                         <presence to="${_converse.api.connection.get().jid}"
@@ -98,8 +99,8 @@ describe('Groupchats', () => {
                         </presence>`;
                     _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
-                    const avatar_el = await u.waitUntil(
-                        () => view.querySelector('converse-muc-heading converse-avatar')
+                    const avatar_el = await u.waitUntil(() =>
+                        view.querySelector('converse-muc-heading converse-avatar'),
                     );
 
                     const initials_el = avatar_el.querySelector('.avatar-initials');
@@ -120,7 +121,7 @@ describe('Groupchats', () => {
 
                     expect(els[1].querySelector('strong').textContent.trim()).toBe('XMPP address:');
                     expect(els[1].querySelector('converse-texture').textContent.trim()).toBe(
-                        'xmpp:coven@chat.shakespeare.lit?join'
+                        'xmpp:coven@chat.shakespeare.lit?join',
                     );
                     expect(els[2].querySelector('strong').textContent).toBe('Description:');
                     expect(els[2].querySelector('converse-texture').textContent.trim()).toBe('This is the description');
@@ -129,11 +130,11 @@ describe('Groupchats', () => {
                     const features_list = modal.querySelector('.features-list');
                     expect(features_list.textContent.replace(/(\n|\s{2,})/g, '').trim()).toBe(
                         'Password protected - This groupchat requires a password before entry' +
-                        'Hidden - This groupchat is not publicly searchable' +
-                        'Open - Anyone can join this groupchat' +
-                        'Temporary - This groupchat will disappear once the last person leaves ' +
-                        'Not anonymous - All other groupchat participants can see your XMPP address' +
-                        'Not moderated - Participants entering this groupchat can write right away'
+                            'Hidden - This groupchat is not publicly searchable' +
+                            'Open - Anyone can join this groupchat' +
+                            'Temporary - This groupchat will disappear once the last person leaves ' +
+                            'Not anonymous - All other groupchat participants can see your XMPP address' +
+                            'Not moderated - Participants entering this groupchat can write right away',
                     );
                     presence = stx`
                         <presence to="romeo@montague.lit/_converse.js-29092160"
@@ -156,18 +157,18 @@ describe('Groupchats', () => {
                     expect(els[0].textContent).toBe('Name: A Dark Cave');
                     expect(els[1].querySelector('strong').textContent.trim()).toBe('XMPP address:');
                     expect(els[1].querySelector('converse-texture').textContent.trim()).toBe(
-                        'xmpp:coven@chat.shakespeare.lit?join'
+                        'xmpp:coven@chat.shakespeare.lit?join',
                     );
                     expect(els[2].querySelector('strong').textContent.trim()).toBe('Description:');
                     expect(els[2].querySelector('converse-texture').textContent.trim()).toBe('This is the description');
                     expect(els[3].querySelector('strong').textContent.trim()).toBe('Topic:');
                     await u.waitUntil(
-                        () => els[3].querySelector('converse-texture').textContent === 'Hatching dark plots'
+                        () => els[3].querySelector('converse-texture').textContent === 'Hatching dark plots',
                     );
                     expect(els[4].textContent).toBe('Topic author: someone');
                     expect(els[5].textContent).toBe('Online users: 2');
-                }
-            )
+                },
+            ),
         );
     });
 });

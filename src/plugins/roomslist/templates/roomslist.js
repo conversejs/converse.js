@@ -103,9 +103,15 @@ function tplRoomDomainGroup (el, domain, rooms) {
  * @param {MUC[]} rooms
  */
 function tplRoomDomainGroupList (el, rooms) {
-    // The rooms should stay sorted as they are iterated and added in order
+    // Sort rooms alphabetically by display name first
+    const sorted_rooms = [...rooms].sort((a, b) => {
+        const nameA = a.getDisplayName().toLowerCase();
+        const nameB = b.getDisplayName().toLowerCase();
+        return nameA <= nameB ? -1 : 1;
+    });
+
     const grouped_rooms = new Map();
-    for (const room of rooms) {
+    for (const room of sorted_rooms) {
         const roomdomain = room.get('jid').split('@').at(-1).toLowerCase();
         if (grouped_rooms.has(roomdomain)) {
             grouped_rooms.get(roomdomain).push(room);

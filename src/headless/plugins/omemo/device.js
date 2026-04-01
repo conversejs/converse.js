@@ -48,6 +48,9 @@ class Device extends Model {
         } catch (iq) {
             log.error(`Could not fetch bundle for device ${this.get("id")} from ${this.get("jid")}`);
             log.error(iq);
+            if (iq && iq.querySelector('error')) {
+                throw new IQError('Could not fetch bundle', iq);
+            }
             return null;
         }
         if (iq.querySelector("error")) {

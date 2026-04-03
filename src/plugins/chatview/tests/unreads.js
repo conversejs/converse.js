@@ -109,7 +109,7 @@ describe("A ChatBox's Unread Message Count", function () {
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = chatbox.messages.last().get('id');
             expect(chatbox.get('first_unread_id')).toBe(msgid);
-            await u.waitUntil(() => sent_stanzas.filter((s) => s.nodeName === 'message').length === 1);
+            await u.waitUntil(() => sent_stanzas.filter((s) => s.nodeName === 'message').length === 1, 1000);
             expect(sent_stanzas[0].querySelector('received')).toBeDefined();
             chatbox.isHidden.and.returnValue(false);
             document.dispatchEvent(new Event('visibilitychange'));

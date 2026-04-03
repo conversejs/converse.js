@@ -168,7 +168,6 @@ export default {
             api.waitUntil('VCardsInitialized');
             const data = await this.get(model, force);
             if (data === null) {
-                log.debug('api.vcard.update: null data returned, not updating the vcard');
                 return;
             }
             model = typeof model === 'string' ? _converse.state.vcards.get(model) : model;

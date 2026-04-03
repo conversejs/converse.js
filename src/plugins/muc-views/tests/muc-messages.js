@@ -331,6 +331,7 @@ describe('A Groupchat Message', function () {
             const msg_obj = view.model.messages.at(0);
             const stanza = stx`
             <message xmlns="jabber:client"
+                     id="${msg_obj.get('origin_id')}"
                      from="${msg_obj.get('from')}"
                      to="${_converse.api.connection.get().jid}"
                      type="groupchat">
@@ -375,6 +376,7 @@ describe('A Groupchat Message', function () {
             const msg_obj = view.model.messages.at(0);
             let stanza = stx`
             <message xmlns="jabber:client"
+                     id="${msg_obj.get('origin_id')}"
                      from="${msg_obj.get('from')}"
                      to="${_converse.api.connection.get().jid}"
                      type="groupchat">

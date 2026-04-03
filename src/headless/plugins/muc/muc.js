@@ -2054,6 +2054,18 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
+     * Determines whether the incoming message stanza is a MUC reflection
+     * of a message we previously sent. A MUC reflection is the server
+     * echoing back our own message with the same `msgid`.
+     * @param {MUCMessage} message - The existing cached message model
+     * @param {MUCMessageAttributes} attrs - Attributes of the incoming stanza
+     * @returns {boolean}
+     */
+    isMUCReflectedMessage(message, attrs) {
+        return this.isOwnMessage(attrs) && attrs.msgid === message.get('msgid');
+    }
+
+    /**
      * @param {MUCMessage} message
      * @param {MUCMessageAttributes} attrs
      * @return {Promise<object>}
@@ -2064,7 +2076,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             ...pick(attrs, ['from_muc', 'occupant_id']),
         };
 
-        if (this.isOwnMessage(attrs)) {
+        if (this.isMUCReflectedMessage(message, attrs)) {
             const stanza_id_keys = Object.keys(attrs).filter((k) => k.startsWith('stanza_id'));
             Object.assign(
                 new_attrs,

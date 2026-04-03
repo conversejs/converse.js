@@ -7,6 +7,7 @@ async function sendAndThenRetractMessage(_converse, view) {
     const msg_obj = view.model.messages.last();
     const reflection_stanza = stx`
         <message xmlns="jabber:client"
+                id="${msg_obj.get('origin_id')}"
                 from="${msg_obj.get('from')}"
                 to="${_converse.api.connection.get().jid}"
                 type="groupchat">
@@ -696,6 +697,7 @@ describe('Message Retractions', function () {
                 const msg_obj = view.model.messages.at(0);
                 const reflection_stanza = stx`
                 <message xmlns="jabber:client"
+                        id="${msg_obj.get('origin_id')}"
                         from="${msg_obj.get('from')}"
                         to="${_converse.api.connection.get().jid}"
                         type="groupchat">
@@ -757,16 +759,17 @@ describe('Message Retractions', function () {
                     const stanza_id = 'retraction-id-1';
                     const msg_obj = view.model.messages.at(0);
                     const reflection_stanza = stx`
-                <message xmlns="jabber:client"
-                        from="${msg_obj.get('from')}"
-                        to="${_converse.api.connection.get().jid}"
-                        type="groupchat">
-                    <msg_body>${msg_obj.get('message')}</msg_body>
-                    <stanza-id xmlns="urn:xmpp:sid:0"
-                            id="${stanza_id}"
-                            by="lounge@montague.lit"/>
-                    <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
-                </message>`;
+                        <message xmlns="jabber:client"
+                                id="${msg_obj.get('origin_id')}"
+                                from="${msg_obj.get('from')}"
+                                to="${_converse.api.connection.get().jid}"
+                                type="groupchat">
+                            <msg_body>${msg_obj.get('message')}</msg_body>
+                            <stanza-id xmlns="urn:xmpp:sid:0"
+                                    id="${stanza_id}"
+                                    by="lounge@montague.lit"/>
+                            <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
+                        </message>`;
 
                     await view.model.handleMessageStanza(reflection_stanza);
                     await u.waitUntil(

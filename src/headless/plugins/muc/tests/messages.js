@@ -78,6 +78,7 @@ describe('A MUC message', function () {
 
             const stanza = u.toStanza(`
             <message xmlns="jabber:client"
+                     id="${msg.get('origin_id')}"
                      from="room@muc.example.com/romeo"
                      to="${_converse.api.connection.get().jid}"
                      type="groupchat">
@@ -152,6 +153,52 @@ describe('A MUC message', function () {
             await model.handleMessageStanza(received_stanza);
             await u.waitUntil(() => model.messages.last());
             expect(model.messages.last().get('body')).toBe('> ping\n    pong');
+        }),
+    );
+
+    it(
+        'does not overwrite its stanza-id when a follow-up message (e.g. reaction) arrives',
+        mock.initConverse([], {}, async function (_converse) {
+            const muc_jid = 'room@muc.example.com';
+            const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+
+            // Receive an original MUC message with a server-assigned stanza-id
+            await model.handleMessageStanza(stx`
+                <message xmlns="jabber:client"
+                         from="${muc_jid}/juliet"
+                         to="${_converse.bare_jid}"
+                         type="groupchat"
+                         id="original-msg">
+                    <body>Hello world</body>
+                    <stanza-id xmlns="urn:xmpp:sid:0"
+                               id="original-stanza-id"
+                               by="${muc_jid}"/>
+                </message>`);
+
+            await u.waitUntil(() => model.messages.length === 1);
+            const msg = model.messages.at(0);
+            expect(msg.get(`stanza_id ${muc_jid}`)).toBe('original-stanza-id');
+
+            // Receive a follow-up message (e.g. reaction) that references the original
+            // and has its own stanza-id
+            await model.handleMessageStanza(stx`
+                <message xmlns="jabber:client"
+                         from="${muc_jid}/juliet"
+                         to="${_converse.bare_jid}"
+                         type="groupchat"
+                         id="reaction-msg">
+                    <reactions xmlns="urn:xmpp:reactions:0" id="original-msg">
+                        <reaction>👍</reaction>
+                    </reactions>
+                    <stanza-id xmlns="urn:xmpp:sid:0"
+                               id="reaction-stanza-id"
+                               by="${muc_jid}"/>
+                </message>`);
+
+            // The original message's stanza_id should NOT be overwritten
+            expect(msg.get(`stanza_id ${muc_jid}`)).toBe('original-stanza-id');
+            // The reaction should be applied
+            expect(msg.get('reactions')).toBeTruthy();
         }),
     );
 });

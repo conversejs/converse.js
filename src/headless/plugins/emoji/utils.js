@@ -1,8 +1,6 @@
-import { html } from 'lit';
 import { ASCII_REPLACE_REGEX, CODEPOINTS_REGEX } from './regexes.js';
 import { unescapeHTML } from '../../utils/html.js';
 import converse from '../../shared/api/public.js';
-import { settings_api } from '../../shared/settings/api.js';
 
 const { u } = converse.env;
 

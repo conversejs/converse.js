@@ -21,7 +21,7 @@ declare namespace _default {
          *     // Failure, e is your error object
          * }).
          */
-        function set(jid: string, data: import("./types").VCardData): Promise<any>;
+        function set(jid: string, data: import('./types').VCardData): Promise<any>;
         /**
          * @method _converse.api.vcard.get
          * @param {Model|string} model Either a `Model` instance, or a string JID.
@@ -43,7 +43,7 @@ declare namespace _default {
          *     );
          * });
          */
-        function get(model: Model | string, force?: boolean): Promise<import("./types").VCardResult | null>;
+        function get(model: Model | string, force?: boolean): Promise<import('./types').VCardResult | null>;
         /**
          * Fetches the VCard associated with a particular `Model` instance
          * (by using its `jid` or `muc_jid` attribute) and then updates the model with the
@@ -62,8 +62,22 @@ declare namespace _default {
          * });
          */
         function update(model: Model, force?: boolean): Promise<any>;
+        /**
+         * Removes VCards from the cache that don't belong to any active entity:
+         * roster contacts, MUC occupants, or open chats.
+         *
+         * @method _converse.api.vcard.prune
+         * @returns {Promise<number>} A promise which resolves with the number of VCards removed.
+         * @example
+         * const { api } = _converse;
+         * api.waitUntil('VCardsInitialized').then(async () => {
+         *     const removed = await api.vcard.prune();
+         *     console.log(`Removed ${removed} stale VCards`);
+         * });
+         */
+        function prune(): Promise<number>;
     }
 }
 export default _default;
-export type Model = import("@converse/skeletor").Model;
+export type Model = import('@converse/skeletor').Model;
 //# sourceMappingURL=api.d.ts.map

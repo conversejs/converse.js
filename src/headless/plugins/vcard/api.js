@@ -111,13 +111,13 @@ export default {
          * });
          */
         async get(model, force) {
-            api.waitUntil("VCardsInitialized");
+            api.waitUntil('VCardsInitialized');
 
-            if (typeof model === "string") return fetchVCard(model);
+            if (typeof model === 'string') return fetchVCard(model);
 
             const jid = model.get('jid');
-            const vcard_updated = model.get("vcard_updated");
-            const vcard_error = model.get("vcard_error");
+            const vcard_updated = model.get('vcard_updated');
+            const vcard_error = model.get('vcard_error');
 
             if (vcard_updated || vcard_error) {
                 const muc = _converse.state.chatboxes.get(jid);
@@ -131,9 +131,9 @@ export default {
                 const { random, round } = Math;
                 const subtract_flag = round(random());
                 const recent_date = dayjs()
-                    .subtract(7, "days")
-                    .subtract(round(random() * 24) * subtract_flag, "hours")
-                    .add(round(random() * 24) * (!subtract_flag ? 1 : 0), "hours");
+                    .subtract(7, 'days')
+                    .subtract(round(random() * 24) * subtract_flag, 'hours')
+                    .add(round(random() * 24) * (!subtract_flag ? 1 : 0), 'hours');
 
                 const updated_recently = dayjs(vcard_updated).isAfter(recent_date);
                 if (!force && updated_recently) return null;
@@ -180,6 +180,24 @@ export default {
                 u.safeSave(model, data);
             }
             return model;
+        },
+
+        /**
+         * Removes VCards from the cache that don't belong to any active entity:
+         * roster contacts, MUC occupants, or open chats.
+         *
+         * @method _converse.api.vcard.prune
+         * @returns {Promise<number>} A promise which resolves with the number of VCards removed.
+         * @example
+         * const { api } = _converse;
+         * api.waitUntil('VCardsInitialized').then(async () => {
+         *     const removed = await api.vcard.prune();
+         *     console.log(`Removed ${removed} stale VCards`);
+         * });
+         */
+        async prune() {
+            await api.waitUntil('VCardsInitialized');
+            return _converse.state.vcards.pruneVCards();
         },
     },
 };

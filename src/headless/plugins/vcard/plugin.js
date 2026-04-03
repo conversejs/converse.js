@@ -43,7 +43,7 @@ converse.plugins.add('converse-vcard', {
             'chatRoomInitialized',
             /** @param {import('../muc/muc').default} m */ (m) => {
                 m.listenTo(m.occupants, 'change:image_hash', (o) => onOccupantAvatarChanged(o));
-            }
+            },
         );
 
         api.listen.on('addClientFeatures', () => {
@@ -66,5 +66,13 @@ converse.plugins.add('converse-vcard', {
         api.listen.on('presencesInitialized', () => registerPresenceHandler());
         api.listen.on('beforeTearDown', () => unregisterPresenceHandler());
         api.listen.on('constructedPresence', (_, p) => updatePresence(p));
+
+        // Prune stale VCards after roster and chatboxes are loaded
+        api.listen.on('chatBoxesFetched', () => {
+            api.waitUntil('rosterContactsFetched').then(async () => {
+                await api.waitUntil('VCardsInitialized');
+                await _converse.state.vcards.pruneVCards();
+            });
+        });
     },
 });

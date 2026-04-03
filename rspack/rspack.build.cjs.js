@@ -1,9 +1,10 @@
 const { merge } = require('webpack-merge');
-const common = require('../rspack/rspack.build.js');
+const buildConfig = require('../rspack/rspack.build.js');
 
-module.exports = merge(common, {
-    output: {
-        filename: '[name].js',
-        chunkFilename: 'chunkjs.cjs/[name].js',
-    },
-});
+module.exports = (env, argv) =>
+    merge(buildConfig(env, argv), {
+        output: {
+            filename: '[name].js',
+            chunkFilename: 'chunkjs.cjs/[name].js',
+        },
+    });

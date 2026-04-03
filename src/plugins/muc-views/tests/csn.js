@@ -114,11 +114,10 @@ describe('Groupchats', function () {
                     await u.waitUntil(() => !view.querySelector('.chat-content__notifications').textContent, 1000);
 
                     // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
-
                     const remove_notifications_timeouts = [];
                     const setTimeout = window.setTimeout;
                     spyOn(window, 'setTimeout').and.callFake((f, w) => {
-                        if (f.toString() === '()=>this.removeNotification(e,t)') {
+                        if (f.toString().includes('this.removeNotification')) {
                             remove_notifications_timeouts.push(f);
                         }
                         setTimeout(f, w);

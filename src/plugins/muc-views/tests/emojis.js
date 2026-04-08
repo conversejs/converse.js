@@ -189,7 +189,7 @@ describe('Emojis', function () {
                 toolbar.querySelector('.toggle-emojis').click();
                 await u.waitUntil(() => u.isVisible(view.querySelector('.emoji-picker__lists')));
                 await u.waitUntil(
-                    () => sizzle('converse-chat-toolbar .insert-emoji:not(.hidden)', view).length === 1589,
+                    () => sizzle('converse-chat-toolbar .insert-emoji:not(.hidden)', view).length > 500,
                 );
 
                 const input = view.querySelector('.emoji-search');

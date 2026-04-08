@@ -1,9 +1,8 @@
-import log from '@converse/log';
 import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';
 import _converse from '../../shared/_converse.js';
 
-const { Strophe, stx, u } = converse.env;
+const { Strophe, u } = converse.env;
 
 /**
  * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
@@ -47,40 +46,6 @@ export function getDuplicateMessageQueries(chatbox, queries, attrs) {
     }
 
     return [...queries, ...extra];
-}
-
-export function registerPEPPushHandler() {
-    const bare_jid = _converse.session.get('bare_jid');
-    api.connection.get().addHandler(
-        /** @param {Element} stanza */
-        (stanza) => {
-            const { popular_reactions } = _converse.state;
-            popular_reactions?.applyPopularReactionsFromStanza(stanza);
-            return true;
-        },
-        Strophe.NS.REACTIONS_POPULAR,
-        'message',
-        'headline',
-        null,
-        bare_jid,
-    );
-}
-
-/**
- * @returns {import('shared/types').StorageKeys}
- */
-export function getStorageKeys() {
-    const { session } = _converse;
-    const storage_key = `converse.popular_reactions_frequencies.${session.get('bare_jid')}`;
-    const fetched_flag_key = `${storage_key}-fetched`;
-    return { storage_key, fetched_flag_key };
-}
-
-/**
- * Clear the popular reactions session data.
- */
-export function clearSession() {
-    delete _converse.state.popular_reactions;
 }
 
 /**
@@ -240,52 +205,10 @@ export function getOwnReactionJID(chatbox) {
     return Strophe.getBareJidFromJid(api.connection.get().jid);
 }
 
-/**
- * Convert a unicode emoji string to its codepoint key as used in the emoji data
- * (e.g. '❤️' → '2764', '👍' → '1f44d').
- * Variation selectors (U+FE0F, U+FE0E) are stripped since the emoji data keys
- * do not include them.
- * @param {string} emoji
- * @returns {string}
- */
-export function emojiToCodepointKey(emoji) {
-    return [...emoji]
-        .filter((c) => c.codePointAt(0) !== 0xfe0f && c.codePointAt(0) !== 0xfe0e)
-        .map((c) => c.codePointAt(0).toString(16))
-        .join('-');
-}
-
-/**
- * Publish the given list of emoji+timestamp pairs as the user's popular reactions
- * to their private PEP node (XEP-0223). Timestamps follow the XEP-0082 datetime
- * profile (ISO 8601 UTC), as used by XEP-0203 delayed delivery.
- *
- * @param {Array<{emoji: string, stamp: string}>} reactions - Emoji/timestamp pairs to store, sorted most-recent first
- */
-export async function publishPopularReactions(reactions) {
-    const item = stx`
-        <item id="current">
-            <popular-reactions xmlns="${Strophe.NS.REACTIONS_POPULAR}">
-                ${reactions.map(({ emoji, stamp }) => stx`<reaction stamp="${stamp}">${emoji}</reaction>`)}
-            </popular-reactions>
-        </item>`;
-
-    try {
-        await api.pubsub.publish(null, Strophe.NS.REACTIONS_POPULAR, item, {
-            'persist_items': 'true',
-            'access_model': 'whitelist',
-        });
-    } catch (e) {
-        log.warn('publishPopularReactions: failed to update popular reactions');
-        log.error(e);
-    }
-}
 
 Object.assign(u, {
     reactions: {
         ...u.reactions,
-        emojiToCodepointKey,
         getOwnReactionJID,
-        publishPopularReactions,
     },
 });

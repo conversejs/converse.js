@@ -164,11 +164,13 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         /**
          * Returns an already cached message (if it exists) based on the
          * passed in attributes map.
+         *
+         * @fires getDuplicateMessageQueries
          * @param {object} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
-         * @returns {BaseMessage}
+         * @returns {Promise<BaseMessage|undefined>}
          */
-        getDuplicateMessage(attrs: object): import("./message").default;
+        getDuplicateMessage(attrs: object): Promise<import("./message").default | undefined>;
         /**
          * @param {object} attrs - Attributes representing a received
          */
@@ -176,16 +178,6 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
             origin_id: any;
             from: any;
         };
-        /**
-         * @param {object} attrs - Attributes representing a received message
-         */
-        getReactionQueryAttrs(attrs: object): ({
-            origin_id: any;
-            msgid?: undefined;
-        } | {
-            msgid: any;
-            origin_id?: undefined;
-        })[];
         /**
          * @param {object} attrs - Attributes representing a received
          */

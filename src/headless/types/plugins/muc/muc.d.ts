@@ -119,18 +119,11 @@ declare const MUC_base: {
         getMostRecentMessage(): import("../../shared/message.js").default;
         getMessageReferencedByError(attrs: object): any;
         findDanglingRetraction(attrs: object): import("../../shared/message.js").default | null;
-        getDuplicateMessage(attrs: object): import("../../shared/message.js").default;
+        getDuplicateMessage(attrs: object): Promise<import("../../shared/message.js").default | undefined>;
         getOriginIdQueryAttrs(attrs: object): {
             origin_id: any;
             from: any;
         };
-        getReactionQueryAttrs(attrs: object): ({
-            origin_id: any;
-            msgid?: undefined;
-        } | {
-            msgid: any;
-            origin_id?: undefined;
-        })[];
         getStanzaIdQueryAttrs(attrs: object): {}[];
         getMessageBodyQueryAttrs(attrs: object): {
             from: any;
@@ -783,6 +776,15 @@ declare class MUC extends MUC_base {
      */
     isOwnMessage(msg: any | Element | import("./message.js").default): boolean;
     /**
+     * Determines whether the incoming message stanza is a MUC reflection
+     * of a message we previously sent. A MUC reflection is the server
+     * echoing back our own message with the same `msgid`.
+     * @param {MUCMessage} message - The existing cached message model
+     * @param {MUCMessageAttributes} attrs - Attributes of the incoming stanza
+     * @returns {boolean}
+     */
+    isMUCReflectedMessage(message: import("./message.js").default, attrs: import("./types").MUCMessageAttributes): boolean;
+    /**
      * @param {MUCMessage} message
      * @param {MUCMessageAttributes} attrs
      * @return {Promise<object>}
@@ -862,14 +864,6 @@ declare class MUC extends MUC_base {
      * @returns {boolean}
      */
     handleMEPNotification(attrs: import("./types").MUCMessageAttributes): boolean;
-    /**
-     * Returns an already cached message (if it exists) based on the
-     * passed in attributes map.
-     * @param {object} attrs - Attributes representing a received
-     *  message, as returned by {@link parseMUCMessage}
-     * @returns {MUCMessage|BaseMessage}
-     */
-    getDuplicateMessage(attrs: object): import("./message.js").default | import("../../shared/message.js").default;
     /**
      * Handler for all MUC messages sent to this groupchat. This method
      * shouldn't be called directly, instead {@link MUC#queueMessage}

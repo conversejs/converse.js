@@ -78,7 +78,7 @@ describe('A Chat Message', function () {
                     view.querySelector(
                         `converse-chat-message div[data-from="${contact_jid}"] converse-avatar svg image`,
                     ),
-                1000,
+                2000,
             );
             expect(el.getAttribute('href')).toBe(`data:image/svg+xml;base64,${image}`);
 

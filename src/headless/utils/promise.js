@@ -1,22 +1,35 @@
-import log from "@converse/log";
-import { getOpenPromise } from "@converse/openpromise";
+import log from '@converse/log';
+import { getOpenPromise } from '@converse/openpromise';
 
 export { getOpenPromise };
 
 /**
  * Debounces a function by waiting for the timeout period before calling it.
  * If the function gets called again, the timeout period resets.
+ * The returned function has a `.flush()` method to invoke immediately.
  * @param {Function} func
  * @param {number} timeout
  */
 export function debounce(func, timeout) {
     let timer;
-    return function (...args) {
+    let lastArgs = [];
+    let lastThis;
+
+    function debounced(...args) {
+        lastArgs = args;
+        lastThis = this;
         clearTimeout(timer);
         timer = setTimeout(() => {
-            func.apply(this, args);
+            func.apply(lastThis, lastArgs);
         }, timeout);
+    }
+
+    debounced.flush = function () {
+        clearTimeout(timer);
+        func.apply(lastThis, lastArgs);
     };
+
+    return debounced;
 }
 
 /**

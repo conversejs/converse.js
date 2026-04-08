@@ -61,8 +61,6 @@ export function addEmojisMarkup(text: string, options: import("./types").EmojiMa
  * and needs to have either a `cp` attribute for the codepoint, or
  * an `url` attribute which points to the source for the image.
  *
- * @namespace u
- * @method u.shortnamesToEmojis
  * @param {String} str - String containing the shortname(s)
  * @param {import('./types').EmojiMarkupOptions} options
  * @returns {Array} An array of at least one string, or otherwise

@@ -119,18 +119,11 @@ declare const ChatBox_base: {
         getMostRecentMessage(): import("../../shared/message").default;
         getMessageReferencedByError(attrs: object): any;
         findDanglingRetraction(attrs: object): import("../../shared/message").default | null;
-        getDuplicateMessage(attrs: object): import("../../shared/message").default;
+        getDuplicateMessage(attrs: object): Promise<import("../../shared/message").default | undefined>;
         getOriginIdQueryAttrs(attrs: object): {
             origin_id: any;
             from: any;
         };
-        getReactionQueryAttrs(attrs: object): ({
-            origin_id: any;
-            msgid?: undefined;
-        } | {
-            msgid: any;
-            origin_id?: undefined;
-        })[];
         getStanzaIdQueryAttrs(attrs: object): {}[];
         getMessageBodyQueryAttrs(attrs: object): {
             from: any;

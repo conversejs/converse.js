@@ -8,6 +8,41 @@ import { __ } from 'i18n';
 const { Strophe, sizzle, stx } = converse.env;
 
 /**
+ * Use the PopularReactions model if available, otherwise fall back to the setting
+ * @param {string[]} allowed_emojis
+ * @returns {string[]}
+ */
+export function getPopularReactions(allowed_emojis) {
+    const popular_emojis = _converse.state.popular_emojis;
+
+    const by_sn = converse.emojis.by_sn || {};
+    const default_reactions = (api.settings.get('popular_emojis') ?? [])
+        .map((sn) => {
+            const data = by_sn[sn];
+            return data?.cp ? u.emojis.convert(data.cp) : null;
+        })
+        .filter(Boolean);
+
+    let frequent_reactions;
+
+    if (popular_emojis && Object.keys(popular_emojis.get('timestamps') || {}).length > 0) {
+        const sorted = popular_emojis.getSortedEmojis(default_reactions.length);
+        const padded = [...sorted];
+        for (const e of default_reactions) {
+            if (padded.length >= default_reactions.length) break;
+            if (!padded.includes(e)) padded.push(e);
+        }
+        frequent_reactions = padded;
+    } else {
+        frequent_reactions = default_reactions;
+    }
+
+    return allowed_emojis
+        ? frequent_reactions.filter((e) => allowed_emojis.includes(e))
+        : frequent_reactions;
+}
+
+/**
  * Helper function to update a message with reactions (JID-keyed format).
  * Used for optimistic updates when sending reactions.
  *
@@ -87,48 +122,10 @@ export function sendReaction(message, emoji) {
     updateMessageReactions(message, Array.from(my_reactions));
 
     // When adding a reaction (not removing), bump it to the front of the popular
-    // reactions list and persist the updated list to the user's PEP node.
+    // emojis list and schedule a debounced publish to the user's PEP node.
     if (my_reactions.has(emoji_unicode)) {
-        bumpPopularReaction(emoji_unicode).catch((e) => log.error(e));
+        _converse.state.popular_emojis?.recordUsage([emoji_unicode]);
     }
-}
-
-/**
- * Record that an emoji was just used, update the PopularReactions model with
- * the current timestamp and publish the updated list to the user's private
- * PEP node (XEP-0223). Timestamps follow XEP-0082 (ISO 8601 UTC).
- *
- * @param {string} emoji_unicode - The unicode emoji that was just sent
- */
-async function bumpPopularReaction(emoji_unicode) {
-    const popular_reactions = _converse.state.popular_reactions;
-    if (!popular_reactions) return;
-
-    // Convert the used unicode emoji to its shortname for storage
-    const by_cp = u.getEmojisByAttribute('cp');
-    const cp = u.reactions.emojiToCodepointKey(emoji_unicode);
-    const shortname = by_cp[cp]?.sn ?? emoji_unicode;
-
-    popular_reactions.recordUsage(shortname);
-
-    // Get the most-recently-used list for publishing to PEP.
-    // Use the default setting length as max to respect user's configured list size.
-    const default_setting = api.settings.get('popular_reactions') ?? [];
-    const max = default_setting.length || 5;
-    const sorted = popular_reactions.getSortedEmojis(max);
-    const timestamps = popular_reactions.get('timestamps') || {};
-
-    await u.reactions.publishPopularReactions(
-        sorted
-            .map(
-                /** @param {string} sn */ (sn) => {
-                    const emoji_array = u.shortnamesToEmojis(sn, { unicode_only: true });
-                    const emoji = Array.isArray(emoji_array) ? emoji_array.join('') : emoji_array;
-                    return emoji ? { emoji, stamp: timestamps[sn] } : null;
-                },
-            )
-            .filter(Boolean),
-    );
 }
 
 /**

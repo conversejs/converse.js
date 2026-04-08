@@ -1,4 +1,10 @@
 /**
+ * Use the PopularReactions model if available, otherwise fall back to the setting
+ * @param {string[]} allowed_emojis
+ * @returns {string[]}
+ */
+export function getPopularReactions(allowed_emojis: string[]): string[];
+/**
  * Helper function to update a message with reactions (JID-keyed format).
  * Used for optimistic updates when sending reactions.
  *

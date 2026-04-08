@@ -93,7 +93,10 @@ declare const _default: {
     shouldClearCache(_converse: ConversePrivateGlobal): boolean;
     tearDown(_converse: ConversePrivateGlobal): Promise<any>;
     clearSession(_converse: ConversePrivateGlobal): any;
-    debounce(func: Function, timeout: number): (...args: any[]) => void;
+    debounce(func: Function, timeout: number): {
+        (...args: any[]): void;
+        flush(): void;
+    };
     waitUntil(func: Function, max_wait?: number, check_delay?: number): Promise<any>;
     getOpenPromise: typeof import("@converse/openpromise").getOpenPromise;
     merge(dst: any, src: any): void;

@@ -11,7 +11,6 @@ import { MOBILE_CUTOFF } from 'shared/constants.js';
 import tplNewDay from './templates/new-day.js';
 
 const { dayjs, u } = converse.env;
-const { convertASCII2Emoji, getShortnameReferences, getCodePointReferences } = u;
 
 export function isMobileViewport() {
     return window.innerWidth <= MOBILE_CUTOFF;
@@ -219,7 +218,7 @@ export function getEmojiMarkup(data, options = { unicode_only: false, add_title_
  */
 export function addEmojisMarkup(text, options) {
     let list = [text];
-    [...getShortnameReferences(text), ...getCodePointReferences(text)]
+    [...u.emojis.getShortnameReferences(text), ...u.emojis.getCodePointReferences(text)]
         .sort((a, b) => b.begin - a.begin)
         .forEach((ref) => {
             const text = list.shift();
@@ -244,15 +243,13 @@ export function addEmojisMarkup(text, options) {
  * and needs to have either a `cp` attribute for the codepoint, or
  * an `url` attribute which points to the source for the image.
  *
- * @namespace u
- * @method u.shortnamesToEmojis
  * @param {String} str - String containing the shortname(s)
  * @param {import('./types').EmojiMarkupOptions} options
  * @returns {Array} An array of at least one string, or otherwise
  * strings and lit TemplateResult objects.
  */
 export function shortnamesToEmojis(str, options = { unicode_only: false, add_title_wrapper: false }) {
-    str = convertASCII2Emoji(str);
+    str = u.emojis.convertASCII2Emoji(str);
     return addEmojisMarkup(str, options);
 }
 

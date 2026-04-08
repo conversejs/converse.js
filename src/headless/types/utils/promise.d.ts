@@ -1,10 +1,14 @@
 /**
  * Debounces a function by waiting for the timeout period before calling it.
  * If the function gets called again, the timeout period resets.
+ * The returned function has a `.flush()` method to invoke immediately.
  * @param {Function} func
  * @param {number} timeout
  */
-export function debounce(func: Function, timeout: number): (...args: any[]) => void;
+export function debounce(func: Function, timeout: number): {
+    (...args: any[]): void;
+    flush(): void;
+};
 /**
  * Creates a {@link Promise} that resolves if the passed in function returns a truthy value.
  * Rejects if it throws or does not return truthy within the given max_wait.
@@ -19,5 +23,5 @@ export function debounce(func: Function, timeout: number): (...args: any[]) => v
  */
 export function waitUntil(func: Function, max_wait?: number, check_delay?: number): Promise<any>;
 export { getOpenPromise };
-import { getOpenPromise } from "@converse/openpromise";
+import { getOpenPromise } from '@converse/openpromise';
 //# sourceMappingURL=promise.d.ts.map

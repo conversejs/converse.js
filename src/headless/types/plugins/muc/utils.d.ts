@@ -8,6 +8,22 @@ export function getDefaultMUCService(): Promise<string | undefined>;
 export function isChatRoom(model: import("@converse/skeletor").Model): boolean;
 export function shouldCreateGroupchatMessage(attrs: any): any;
 /**
+ * Hook handler for the `getDuplicateMessageQueries` hook.
+ *
+ * Adds a query object to match MEP (MUC Extended Presence) activity messages
+ * by their `msgid`. MEP messages carry an `activities` array and are stored
+ * with `type: 'mep'`; the standard stanza_id / origin_id queries in
+ * {@link getDuplicateMessage} do not cover this case, so we contribute the
+ * extra query here rather than overriding `getDuplicateMessage` in the MUC
+ * model.
+ *
+ * @param {import('../../shared/types').ChatBoxOrMUC} _
+ * @param {object[]} queries
+ * @param {object} attrs
+ * @returns {object[]}
+ */
+export function getMUCDuplicateMessageQueries(_: import("../../shared/types").ChatBoxOrMUC, queries: object[], attrs: object): object[];
+/**
  * @param {import('./occupant').default} occupant1
  * @param {import('./occupant').default} occupant2
  */

@@ -118,7 +118,10 @@ export default class AutoCompleteComponent extends CustomElement {
     triggers: string;
     validate: any;
     value: string;
-    evaluate: (...args: any[]) => void;
+    evaluate: {
+        (...args: any[]): void;
+        flush(): void;
+    };
     render(): import("lit-html").TemplateResult<1>;
     firstUpdated(): void;
     auto_complete: AutoComplete;

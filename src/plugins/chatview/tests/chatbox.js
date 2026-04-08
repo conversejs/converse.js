@@ -272,7 +272,7 @@ describe('Chatboxes', function () {
                     const picker = await u.waitUntil(() => view.querySelector('.emoji-picker__lists'));
                     const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji a'));
                     item.click();
-                    await u.waitUntil(() => counter.textContent === '179');
+                    await u.waitUntil(() => counter.textContent === '177');
 
                     const textarea = view.querySelector('.chat-textarea');
                     const ev = {

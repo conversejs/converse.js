@@ -233,7 +233,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         const is_spoiler = !!this.get('composing_spoiler');
         const origin_id = u.getUniqueId();
         const text = attrs?.body;
-        const body = text ? u.shortnamesToUnicode(text) : undefined;
+        const body = text ? u.emojis.shortnamesToUnicode(text) : undefined;
 
         // Get reply attributes from chatbox model if replying to a message
         const reply_to_id = this.get('reply_to_id');

@@ -1145,7 +1145,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             [text, references] = this.parseTextForReferences(attrs.body);
         }
         const origin_id = getUniqueId();
-        const body = text ? u.shortnamesToUnicode(text) : undefined;
+        const body = text ? u.emojis.shortnamesToUnicode(text) : undefined;
 
         // Get reply attributes from chatbox model if replying to a message
         const reply_to_id = this.get('reply_to_id');

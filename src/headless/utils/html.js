@@ -40,7 +40,13 @@ function stripEmptyTextNodes(el) {
  * @returns {Boolean}
  */
 export function isEqualNode(actual, expected) {
-    if (!isElement(actual)) throw new Error('Element being compared must be an Element!');
+    if (!isElement(actual)) {
+        if (actual instanceof Strophe.Builder) {
+            actual = actual.tree();
+        } else {
+            throw new Error('Element being compared must be an Element!');
+        }
+    }
 
     expected = stripEmptyTextNodes(expected);
     actual = stripEmptyTextNodes(actual);

@@ -6,15 +6,28 @@
  * @typedef {import('../../shared/types').ChatBoxOrMUC} ChatBoxOrMUC
  * @typedef {import('../../shared/message').default} BaseMessage
  */
-export function registerPEPPushHandler(): void;
 /**
- * @returns {import('shared/types').StorageKeys}
+ * Hook handler for the `getDuplicateMessageQueries` hook.
+ *
+ * Adds query objects so that incoming reaction stanzas can be matched against
+ * the message they target. Per XEP-0444, the `<reactions id="...">` attribute
+ * contains the id of the original message. Different clients use different id
+ * types for this reference:
+ *
+ * - The sender's client-assigned stanza id (`msgid` / `origin_id`).
+ * - The MUC-assigned stanza_id (`stanza_id <muc-jid>`), as used by Conversations
+ *   and other compliant clients.
+ *
+ * By contributing all three query objects here we ensure a single O(n) scan
+ * in {@link getDuplicateMessage} covers all cases, with no reaction-specific
+ * logic leaking into shared code.
+ *
+ * @param {ChatBoxOrMUC} chatbox
+ * @param {object[]} queries
+ * @param {MessageAttrsWithReactions|MUCMessageAttrsWithReactions} attrs
+ * @returns {object[]}
  */
-export function getStorageKeys(): import("shared/types").StorageKeys;
-/**
- * Clear the popular reactions session data.
- */
-export function clearSession(): void;
+export function getDuplicateMessageQueries(chatbox: ChatBoxOrMUC, queries: object[], attrs: MessageAttrsWithReactions | MUCMessageAttrsWithReactions): object[];
 /**
  * This hook handler merges the incoming single-reactor reactions
  * with all existing reactions from other reactors, so that no
@@ -94,26 +107,6 @@ export function onAfterMessageCreated(chatbox: ChatBoxOrMUC, message: BaseMessag
  * @returns {string}
  */
 export function getOwnReactionJID(chatbox: ChatBoxOrMUC): string;
-/**
- * Convert a unicode emoji string to its codepoint key as used in the emoji data
- * (e.g. '❤️' → '2764', '👍' → '1f44d').
- * Variation selectors (U+FE0F, U+FE0E) are stripped since the emoji data keys
- * do not include them.
- * @param {string} emoji
- * @returns {string}
- */
-export function emojiToCodepointKey(emoji: string): string;
-/**
- * Publish the given list of emoji+timestamp pairs as the user's popular reactions
- * to their private PEP node (XEP-0223). Timestamps follow the XEP-0082 datetime
- * profile (ISO 8601 UTC), as used by XEP-0203 delayed delivery.
- *
- * @param {Array<{emoji: string, stamp: string}>} reactions - Emoji/timestamp pairs to store, sorted most-recent first
- */
-export function publishPopularReactions(reactions: Array<{
-    emoji: string;
-    stamp: string;
-}>): Promise<void>;
 export type MessageAttributes = import("../../shared/types").MessageAttributes;
 export type MUCMessageAttributes = import("../../plugins/muc/types").MUCMessageAttributes;
 export type MessageAttrsWithReactions = import("./types").MessageAttrsWithReactions;

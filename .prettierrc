@@ -5,5 +5,13 @@
   "spaceBeforeFunctionParen": true,
   "tabWidth": 4,
   "useTabs": false,
-  "bracketSpacing": true
+  "bracketSpacing": true,
+  "overrides": [
+    {
+      "files": "*.json",
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
 }

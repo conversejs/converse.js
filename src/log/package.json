@@ -17,6 +17,7 @@
       }
     }
   },
+  "type": "module",
   "main": "index.js",
   "types": "types/index.d.ts",
   "module": "index.js",
@@ -26,7 +27,7 @@
     "types/**/*.d.ts"
   ],
   "scripts": {
-    "test": "echo \"Error: no tests yet\" && exit 1",
+    "test": "node --test test.js",
     "types": "tsc"
   },
   "keywords": [
@@ -48,6 +49,7 @@
     "node": ">=16.0.0"
   },
   "devDependencies": {
+    "@types/node": "^22.0.0",
     "typescript": "^5.5.4"
   }
 }

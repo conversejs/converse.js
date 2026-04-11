@@ -1,9 +1,4 @@
 /**
- * @param {unknown} el - The value to check
- * @returns {boolean} True if the value is an Element or Document
- */
-export function isElement(el: unknown): boolean;
-/**
  * @type {Object.<string, number>}
  */
 export const LEVELS: {
@@ -19,36 +14,31 @@ declare namespace log {
      */
     function setLogLevel(level: string | number): void;
     /**
-     * Logs a message at the specified level with optional CSS styling
-     * @param {any} message - The message to log
+     * Logs a message at the specified level.
+     * Accepts the same arguments as the corresponding console method.
      * @param {keyof LEVELS} level - The log level to use
-     * @param {string} [style=""] - Optional CSS styles to apply to the log message
+     * @param  {...any} args - Arguments passed through to the console method
      */
-    function log(message: any, level: string | number, style?: string): void;
+    function log(level: string | number, ...args: any[]): void;
     /**
-     * @param {any} message - The message to log
-     * @param {string} [style=""] - Optional CSS styles to apply to the log message
+     * @param  {...any} args - Arguments passed through to console.debug
      */
-    function debug(message: any, style?: string): void;
+    function debug(...args: any[]): void;
     /**
-     * @param {any} message - The message to log
-     * @param {string} [style=""] - Optional CSS styles to apply to the log message
+     * @param  {...any} args - Arguments passed through to console.error
      */
-    function error(message: any, style?: string): void;
+    function error(...args: any[]): void;
     /**
-     * @param {any} message - The message to log
-     * @param {string} [style=""] - Optional CSS styles to apply to the log message
+     * @param  {...any} args - Arguments passed through to console.info
      */
-    function info(message: any, style?: string): void;
+    function info(...args: any[]): void;
     /**
-     * @param {any} message - The message to log
-     * @param {string} [style=""] - Optional CSS styles to apply to the log message
+     * @param  {...any} args - Arguments passed through to console.warn
      */
-    function warn(message: any, style?: string): void;
+    function warn(...args: any[]): void;
     /**
-     * @param {any} message - The message to log
-     * @param {string} [style=""] - Optional CSS styles to apply to the log message
+     * @param  {...any} args - Arguments passed through to console.error
      */
-    function fatal(message: any, style?: string): void;
+    function fatal(...args: any[]): void;
 }
 //# sourceMappingURL=index.d.ts.map

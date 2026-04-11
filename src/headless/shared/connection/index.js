@@ -31,13 +31,13 @@ export class Connection extends Strophe.Connection {
     }
 
     /** @param {Element} body */
-    xmlInput (body) {
-        log.debug(body.outerHTML, 'color: darkgoldenrod');
+    xmlInput(body) {
+        log.debug('%c%s', 'color: darkgoldenrod', body.outerHTML);
     }
 
     /** @param {Element} body */
-    xmlOutput (body) {
-        log.debug(body.outerHTML, 'color: darkcyan');
+    xmlOutput(body) {
+        log.debug('%c%s', 'color: darkcyan', body.outerHTML);
     }
 
     async bind () {

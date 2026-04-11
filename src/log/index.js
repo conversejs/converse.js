@@ -9,16 +9,6 @@ export const LEVELS = {
     fatal: 4,
 };
 
-const logger = Object.assign(
-    {
-        debug: console?.log ? console.log.bind(console) : function noop() {},
-        error: console?.log ? console.log.bind(console) : function noop() {},
-        info: console?.log ? console.log.bind(console) : function noop() {},
-        warn: console?.log ? console.log.bind(console) : function noop() {},
-    },
-    console
-);
-
 /**
  * Logs messages to the console.
  * Available loglevels are:
@@ -27,12 +17,11 @@ const logger = Object.assign(
  *      - 2: 'warn',
  *      - 3: 'error'
  *      - 4: 'fatal'.
- * When using the 'error' or 'warn' loglevels, a full stacktrace will be logged as well.
  * @namespace log
  */
 const log = {
     /** @type {keyof LEVELS} The current log level */
-    loglevel: "info",
+    loglevel: 'info',
 
     /**
      * Sets the current log level which determines which messages are logged
@@ -40,94 +29,69 @@ const log = {
      * @throws {Error} If an invalid log level is provided
      */
     setLogLevel(level) {
-        if (!["debug", "info", "warn", "error", "fatal"].includes(/** @type {string} */ (level))) {
+        if (!['debug', 'info', 'warn', 'error', 'fatal'].includes(/** @type {string} */ (level))) {
             throw new Error(`Invalid loglevel: ${level}`);
         }
         this.loglevel = level;
     },
 
     /**
-     * Logs a message at the specified level with optional CSS styling
-     * @param {any} message - The message to log
+     * Logs a message at the specified level.
+     * Accepts the same arguments as the corresponding console method.
      * @param {keyof LEVELS} level - The log level to use
-     * @param {string} [style=""] - Optional CSS styles to apply to the log message
+     * @param  {...any} args - Arguments passed through to the console method
      */
-    log(message, level, style = "") {
+    log(level, ...args) {
         if (LEVELS[level] < LEVELS[this.loglevel]) {
             return;
         }
-        if (level === "error" || level === "fatal") {
-            style = style || "color: maroon";
-        } else if (level === "debug") {
-            style = style || "color: green";
+
+        const [msg, ...rest] = args;
+        let formattedMsg = msg;
+        if (msg instanceof Error) {
+            formattedMsg = msg.stack;
+        } else if (typeof Element !== 'undefined' && msg instanceof Element) {
+            formattedMsg = msg.outerHTML;
         }
 
-        if (message instanceof Error) {
-            message = message.stack;
-        } else if (isElement(message)) {
-            message = /** @type {Element} */ (message).outerHTML;
-        }
-        const prefix = style ? "%c" : "";
-        if (level === "error") {
-            logger.error(`${prefix} ERROR: ${message}`, style);
-        } else if (level === "warn") {
-            logger.warn(`${prefix} ${new Date().toISOString()} WARNING: ${message}`, style);
-        } else if (level === "fatal") {
-            logger.error(`${prefix} FATAL: ${message}`, style);
-        } else if (level === "debug") {
-            logger.debug(`${prefix} ${new Date().toISOString()} DEBUG: ${message}`, style);
-        } else {
-            logger.info(`${prefix} ${new Date().toISOString()} INFO: ${message}`, style);
-        }
+        const method = level === 'fatal' ? 'error' : level;
+        console[method](formattedMsg, ...rest);
     },
 
     /**
-     * @param {any} message - The message to log
-     * @param {string} [style=""] - Optional CSS styles to apply to the log message
+     * @param  {...any} args - Arguments passed through to console.debug
      */
-    debug(message, style) {
-        this.log(message, "debug", style);
+    debug(...args) {
+        this.log('debug', ...args);
     },
 
     /**
-     * @param {any} message - The message to log
-     * @param {string} [style=""] - Optional CSS styles to apply to the log message
+     * @param  {...any} args - Arguments passed through to console.error
      */
-    error(message, style) {
-        this.log(message, "error", style);
+    error(...args) {
+        this.log('error', ...args);
     },
 
     /**
-     * @param {any} message - The message to log
-     * @param {string} [style=""] - Optional CSS styles to apply to the log message
+     * @param  {...any} args - Arguments passed through to console.info
      */
-    info(message, style) {
-        this.log(message, "info", style);
+    info(...args) {
+        this.log('info', ...args);
     },
 
     /**
-     * @param {any} message - The message to log
-     * @param {string} [style=""] - Optional CSS styles to apply to the log message
+     * @param  {...any} args - Arguments passed through to console.warn
      */
-    warn(message, style) {
-        this.log(message, "warn", style);
+    warn(...args) {
+        this.log('warn', ...args);
     },
 
     /**
-     * @param {any} message - The message to log
-     * @param {string} [style=""] - Optional CSS styles to apply to the log message
+     * @param  {...any} args - Arguments passed through to console.error
      */
-    fatal(message, style) {
-        this.log(message, "fatal", style);
+    fatal(...args) {
+        this.log('fatal', ...args);
     },
 };
-
-/**
- * @param {unknown} el - The value to check
- * @returns {boolean} True if the value is an Element or Document
- */
-export function isElement(el) {
-    return el instanceof Element || el instanceof Document;
-}
 
 export default log;

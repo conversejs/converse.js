@@ -1,28 +1,64 @@
 # Converse.js Agent Guidelines
 
-**Converse.js** is a modern, feature-rich XMPP chat client that runs in web browsers.
-It's a plugin-based architecture written in JavaScript with TypeScript type definitions,
-using the Lit framework for UI components.
+**Converse.js** is an XMPP chat client built with JavaScript and web tech.
+It has a plugin-based architecture, uses JSDoc TypeScript type definitions,
+Bootstrap 5 and Lit UI components.
 
 ## Project Overview
 
 - **Type**: XMPP/Jabber web-based chat client
-- **License**: MPL-2.0
 - **Build Tool**: Rspack (Webpack-compatible)
 - **UI Framework**: Lit (Web Components)
 - **Testing**: Karma + Jasmine
 - **Styling**: SCSS with Bootstrap 5
 - **Language**: JavaScript
-- **Type System**: TypeScript via JSDoc annotations (allowJs + checkJs)
-- **Package Manager**: npm with workspaces
+- **Type System**: TypeScript via JSDoc annotations
 
-## Workspace Structure
+## Monorepo
 
-This is a **monorepo** with npm workspaces:
+Three npm workspaces:
+- **Root** (`/`): Main package with UI plugins (`src/plugins/`)
+- **Headless** (`src/headless/`): Core XMPP logic and state management, separate package `@converse/headless`
+    The `@converse/headless` package resolves to the built bundle (`dist/converse-headless.js`),
+    **not** to individual source files. Importing from relative paths pointing to `src/headless/`
+    back into the main package like `src/plugins` is forbidden since they cross the package boundary.
 
-- **Root** (`/`): Main Converse.js package with UI plugins
-- **Headless** (`src/headless/`): Core XMPP logic without UI (separate npm package `@converse/headless`)
-- **Log** (`src/log/`): Logging utility (separate npm package `@converse/log`)
+    Read: src/headless/AGENTS.md
+
+- **Log** (`src/log/`): Logging utility, separate package `@converse/log`
+
+### Key Entry Points
+
+- `src/index.js` — Main entry (imports all plugins)
+- `src/headless/index.js` — Headless entry
+- `src/entry.js` — Alternative entry
+- `rspack/` — Build configs
+
+### Directory Structure
+
+```
+src/
+├── headless/             # Core XMPP logic (separate package @converse/headless)
+│   ├── plugins/          # Headless plugins (chat, muc, roster, etc.)
+│   ├── shared/           # Shared headless utilities
+│   ├── types/            # Generated TypeScript definitions
+│   └── dist/             # Built headless package
+├── plugins/              # UI plugins
+│   ├── chatview/         # Chat UI
+│   ├── muc-views/        # Multi-user chat UI
+│   ├── rosterview/       # Contact list UI
+│   └── controlbox/       # Main control panel
+├── shared/               # Shared UI components
+│   ├── components/       # Reusable Lit components
+│   ├── chat/             # Chat-related shared components
+│   ├── modals/           # Modal dialogs
+│   └── styles/           # Shared SCSS files
+├── templates/            # Lit template functions
+├── i18n/                 # Internationalization
+│   └── locales/          # Translation files (.po)
+├── types/                # Generated TypeScript definitions
+└── utils/                # Utility functions
+```
 
 ## Essential Commands
 
@@ -65,6 +101,11 @@ npm run cdn                   # Build for CDN deployment
 
 ### Testing
 
+- **Framework**: Karma + Jasmine
+- **Test files**: Located in `tests/` subdirectory of each plugin
+- **Naming**: `*.js` (e.g., `chatbox.js`, `actions.js`, `corrections.js`)
+- **Mock data**: `src/headless/tests/mock.js` and `src/shared/tests/mock.js`
+
 **Always pass `--single-run`** — without it Karma waits for a browser indefinitely and hangs.
 
 **Always run `npm run dev` before running tests.** Karma tests run against the pre-built `dist/converse.js` bundle,
@@ -91,7 +132,6 @@ cd src/headless && npm test -- --single-run # Alternative way to run headless te
 > working in that area. `npm test` only covers the UI plugins under `src/plugins/`.
 
 ```bash
-
 # Full test suite (as used in CI) — slow, use sparingly
 make check                    # Runs lint + types + all tests
 ```
@@ -133,22 +173,22 @@ npm run lint                  # Run ESLint on all source files
 # Type checking
 npm run types:check           # TypeScript type checking (no emit)
 npm run types                 # Generate type definitions
-
-# Clean
-npm run clean                 # Remove node_modules, dist, builds
 ```
 
-### Make Targets (Alternative)
+## Code Style and Conventions
 
-```bash
-make dev                      # Same as npm run dev
-make devserver                # Same as npm run devserver
-make watch                    # Same as npm run watch
-make check                    # Lint + types + tests (full CI suite)
-make test                     # Run tests
-make test-headless            # Run headless tests
-make serve                    # Serve on port 8008
-```
+### Formatting (Prettier)
+
+- **Files**: `kebab-case.js`
+- **Variables**: `snake_case` (`camelCase` for variables referring to functions)
+- **Classes**: `PascalCase`
+- **Constants**: `UPPER_CASE`
+- **Private methods**: `#privateMethod()`
+- **Templates**: `tplPlaceholder`
+- **Unused vars**: prefix with `_`
+- **Logging**: use `log.debug/info/warn/error` from `@converse/log`, not `console`
+- **Prettier**: single quotes, 120 line width, 4-space indent, `spaceBeforeFunctionParen`
+- **Line endings**: LF
 
 ## Architecture
 
@@ -169,18 +209,17 @@ Every plugin follows this pattern:
 import { _converse, api, converse } from '@converse/headless';
 
 converse.plugins.add('plugin-name', {
-    dependencies: ['other-plugin-1', 'other-plugin-2'], // Required plugins
+    dependencies: ['other-plugin-1', 'other-plugin-2'], // Other plugins that should be loaded first
 
     initialize() {
-        // Configure plugin settings
+        // Extend Converse's settings with new plugin-specific ones.
         api.settings.extend({
-            'some_setting': 'default_value',
+            some_setting: 'default_value',
         });
 
         // Export models/views for other plugins
         const exports = { MyClass, myFunction };
-        Object.assign(_converse, exports); // DEPRECATED pattern
-        Object.assign(_converse.exports, exports); // Current pattern
+        Object.assign(_converse.exports, exports);
 
         // Extend API
         Object.assign(api, my_api_methods);
@@ -201,17 +240,11 @@ new functionality.
 
 **Avoiding leaky abstractions:** Shared core code (`src/headless/shared/`, e.g.
 `model-with-messages.js`) must not contain logic specific to a particular plugin.
+Plugin-specific logic belongs in the plugin itself.
 
-Plugin-specific logic belongs in the plugin itself (e.g. in `src/headless/plugins/` and `src/plugins/`).
-
-Note: `src/headless/plugins/chat/` and `src/headless/plugins/muc/` are also plugins, not
-core code, even though they are foundational. They provide the basic messaging
-infrastructure that other plugins build on top of.
-
-**Use hooks and events:** When core or foundational plugin code needs to allow
-other plugins to participate in a processing flow (e.g. intercepting incoming messages,
-modifying outgoing stanzas, or reacting to state changes), it should fire **hooks** or
-**events** that plugins can listen on.
+**Use hooks and events:** When you need to allow other plugins to participate in a processing flow
+(e.g. intercepting incoming messages, modifying outgoing stanzas, or reacting to state changes),
+you can fire **hooks** or **events** that those plugins can listen on.
 
 - **Hooks** (`api.hook(name, context, data)`) are chainable async pipelines — each
   listener receives the output of the previous one and can modify the data before passing
@@ -237,194 +270,6 @@ api.listen.on('beforeMessageCreated', (chatbox, attrs, data) => {
 });
 ```
 
-This way, we can expose extension points without needing to know about any
-plugin-specific code that might exist.
-
-### The @converse/headless package
-
-The code in `src/headless` form a separate NPM package called `@converse/headless`
-and can be used as the basis on which multiple different potential UIs could be implemented.
-The UI implemented in this repo being only one of them.
-
-The `@converse/headless` package resolves to the built bundle (`dist/converse-headless.js`),
-**not** to individual source files. Importing from relative paths pointing to `src/headless/`
-back into non-headless code like `src/plugins` is forbidden since they cross
-the package boundary and break the separation between the headless and UI layers.
-
-The `package.json` exports map for `@converse/headless` does not expose subpaths beyond
-`"."` and `"./dist/*"`, so deep imports like `@converse/headless/plugins/reactions/utils.js`
-would also fail at runtime. All imports from headless need to be from `@converse/headless`.
-
-#### Exposing utility functions from @converse/headless
-
-To expose utility functions from a headless plugin for use in UI plugins, assign them to
-the `u` utilities object or a namespace on that object. Several headless plugins already
-follow this pattern: `u.omemo`, `u.muc`, `u.reactions`. The namespace is populated inside
-the headless plugin's own utils file and accessed via `u.*` from any UI plugin:
-
-```javascript
-// In src/headless/plugins/reactions/utils.js — expose via u.reactions namespace:
-const { u } = converse.env;
-Object.assign(u, {
-    reactions: {
-        ...u.reactions,
-        getOwnReactionJID,
-    },
-});
-
-// In src/plugins/reactions-views/utils.js — consume via @converse/headless:
-import { converse } from '@converse/headless';
-const { u } = converse.env;
-// u.reactions.getOwnReactionJID(chatbox) is now available
-```
-
-The headless utils file must be imported somewhere in the headless plugin's initialisation
-chain (e.g. from `plugin.js` or `index.js`) so the `Object.assign` runs before any UI code
-tries to access it.
-
-**Example — wrong approach:**
-
-```javascript
-// DON'T cross the package boundary with relative paths or unexported subpaths:
-import { getOwnReactionJID } from '../../headless/plugins/reactions/utils.js'; // ❌ relative path
-import { getOwnReactionJID } from '@converse/headless/plugins/reactions/utils.js'; // ❌ unexported subpath
-```
-
-### Directory Structure
-
-```
-src/
-├── headless/             # Core XMPP logic (separate package)
-│   ├── plugins/          # Headless plugins (chat, muc, roster, etc.)
-│   ├── shared/           # Shared headless utilities
-│   ├── types/            # Generated TypeScript definitions
-│   └── dist/             # Built headless package
-├── plugins/              # UI plugins
-│   ├── chatview/         # Chat UI
-│   ├── muc-views/        # Multi-user chat UI
-│   ├── rosterview/       # Contact list UI
-│   └── controlbox/       # Main control panel
-├── shared/               # Shared UI components
-│   ├── components/       # Reusable Lit components
-│   ├── chat/             # Chat-related shared components
-│   ├── modals/           # Modal dialogs
-│   └── styles/           # Shared SCSS files
-├── templates/            # Lit template functions
-├── i18n/                 # Internationalization
-│   └── locales/          # Translation files (.po)
-├── types/                # Generated TypeScript definitions
-└── utils/                # Utility functions
-```
-
-## State Management
-
-Converse.js uses a custom fork of Backbone.js called **@converse/skeletor** for state management
-by means of Models and Collections of Models.
-
-### Key Concepts
-
-- **Models**: Represent individual data entities with attributes and methods for manipulating that data
-- **Collections**: Ordered sets of models with methods for managing groups of models
-
-### Why Skeletor?
-
-As Converse.js evolved, the team created @converse/skeletor as a fork of Backbone.js to:
-
-- Maintain compatibility with existing code while allowing customization
-- Remove unused Backbone features to reduce bundle size
-- Enable better TypeScript integration
-
-### Working with Models
-
-```javascript
-// Creating a model instance
-const chatroom = new _converse.exports.ChatRoom({
-    jid: 'room@muc.example.com',
-    nick: 'user123',
-});
-
-// Accessing model attributes
-const jid = chatroom.get('jid');
-
-// Listening to model changes
-chatroom.on('change:subject', () => {
-    console.log('Room subject changed');
-});
-
-// Saving model changes
-chatroom.save({ 'subject': 'New Subject' });
-```
-
-### Working with Collections
-
-```javascript
-// Accessing the chatboxes collection
-const chatboxes = _converse.state.chatboxes;
-
-// Finding a specific model in a collection
-const chatbox = chatboxes.get('user@example.com');
-
-// Adding a model to a collection
-chatboxes.add(new _converse.ChatBox({...}));
-
-// Listening to collection events
-chatboxes.on('add', (chatbox) => {
-    console.log('New chatbox added:', chatbox.get('jid'));
-});
-```
-
-### Integration with Lit Components
-
-While UI components use Lit, they integrate with Skeletor models:
-
-```javascript
-class ChatRoomView extends CustomElement {
-    async initialize() {
-        // Wait for model to be ready
-        await this.model.initialized;
-
-        // Listen to model changes to trigger re-render
-        this.listenTo(this.model, 'change', () => this.requestUpdate());
-        this.listenTo(this.model.messages, 'add', () => this.requestUpdate());
-
-        this.requestUpdate();
-    }
-
-    render() {
-        return html`
-            <div class="chatroom">
-                <header>${this.model.get('name')}</header>
-                <!-- Render messages, participants, etc. -->
-            </div>
-        `;
-    }
-}
-```
-
-## Code Style and Conventions
-
-### Formatting (Prettier)
-
-```javascript
-{
-  "singleQuote": true,           // Use single quotes
-  "printWidth": 120,             // Max line length 120 chars
-  "tabWidth": 4,                 // 4-space indentation
-  "useTabs": false,              // Spaces, not tabs
-  "spaceBeforeFunctionParen": true  // function () not function()
-}
-```
-
-### Naming Conventions
-
-- **Files**: `kebab-case.js` (e.g., `chat-content.js`, `message-history.js`)
-- **Variables**: `snake_case` (e.g., `muc_jid`)
-- **Variables/Functions**: `camelCase` (e.g., `getMessage`, `chatBoxView`)
-- **Classes**: `PascalCase` (e.g., `ChatBox`, `CustomElement`)
-- **Constants**: `UPPER_CASE` (e.g., `PRIVATE_CHAT_TYPE`, `WINDOW_SIZE`)
-- **Private methods**: Prefix with `#` (e.g., `#markScrolled()`)
-- **Templates**: Prefix with `tpl` (e.g., `tplPlaceholder`)
-
 ### Import Patterns
 
 ```javascript
@@ -446,6 +291,23 @@ import { u } from '@converse/headless'; // Utility functions
 const { dayjs, Strophe, sizzle } = converse.env; // Common libraries
 ```
 
+#### Using utility functions from @converse/headless
+
+Headless utility methods are exposed via the `u` object from `@converse/headless`/
+
+```javascript
+import { converse } from '@converse/headless';
+const { u } = converse.env;
+```
+
+**Wrong approach:**
+
+```javascript
+// DON'T cross the package boundary with relative paths or unexported subpaths:
+import { getOwnReactionJID } from '../../headless/plugins/reactions/utils.js'; // ❌ relative path
+import { getOwnReactionJID } from '@converse/headless/plugins/reactions/utils.js'; // ❌ unexported subpath
+```
+
 ### Component Patterns
 
 **Lit Components** extend `CustomElement`:
@@ -464,6 +326,7 @@ export default class MyComponent extends CustomElement {
 
     async initialize() {
         await this.model.initialized;
+        // Listen to model changes to trigger re-render
         this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.requestUpdate();
     }
@@ -509,9 +372,6 @@ api.listen.on('hookName', (context, data) => {
 // Promises
 await api.waitUntil('connected');
 
-// Disco features
-api.disco.own.features.add(Strophe.NS.SPOILER);
-
 // User interaction
 const confirmed = await api.confirm('Are you sure?');
 await api.alert('Something happened');
@@ -519,79 +379,17 @@ await api.alert('Something happened');
 
 ## TypeScript and Type Definitions
 
-### Configuration
-
-- **Target**: ES2020
-- **Module**: ESNext
-- **Type Generation**: `allowJs: true`, `checkJs: true`, `declaration: true`
-- **Files**: `.js` for implementation, `.d.ts` generated automatically
-- **Location**: Generated types go in `src/types/` and `src/headless/types/`
+See `tsconfig.json`
 
 ### JSDoc for Types
 
 Add JSDoc comments to document types in `.js` files:
-
-```javascript
-/**
- * @typedef {Object} MessageAttributes
- * @property {string} body - Message body text
- * @property {string} from - Sender JID
- * @property {string} type - Message type
- */
-
-/**
- * @param {string} jid - The JID to check
- * @returns {Promise<boolean>}
- */
-async function isContact(jid) {
-    // ...
-}
-```
 
 ### Type Checking
 
 ```bash
 npm run types:check  # Check types without generating files
 npm run types        # Generate type definitions
-```
-
-## Testing
-
-### Test Structure
-
-- **Framework**: Karma + Jasmine
-- **Test files**: Located in `tests/` subdirectory of each plugin
-- **Naming**: `*.js` (e.g., `chatbox.js`, `actions.js`, `corrections.js`)
-- **Mock data**: `src/headless/tests/mock.js` and `src/shared/tests/mock.js`
-
-### Test Patterns
-
-```javascript
-/*global mock, converse */
-
-const { api } = converse;
-const u = converse.env.utils;
-const sizzle = converse.env.sizzle;
-
-describe('My Feature', function () {
-    it(
-        'does something',
-        mock.initConverse(['chatBoxesFetched'], { view_mode: 'fullscreen' }, async function (_converse) {
-            // Setup
-            await mock.waitForRoster(_converse, 'current', 1);
-            await mock.openControlBox(_converse);
-
-            // Test action
-            const jid = 'user@example.com';
-            await mock.openChatBoxFor(_converse, jid);
-            const view = _converse.chatboxviews.get(jid);
-
-            // Assertions
-            await u.waitUntil(() => sizzle('.chat-msg', view).length === 1);
-            expect(view.querySelector('.chat-msg__text').textContent).toBe('hello');
-        }),
-    );
-});
 ```
 
 ## Styling
@@ -602,25 +400,6 @@ describe('My Feature', function () {
 - **Location**: Component-specific styles in plugin directories
 - **Shared styles**: `src/shared/styles/` (alerts, badges, buttons, forms, etc.)
 - **Import paths**: Rspack configured with `node_modules/` and `src/` as includePaths
-
-### Style Patterns
-
-```scss
-// Import Bootstrap utilities
-@import 'bootstrap/scss/functions';
-@import 'bootstrap/scss/variables';
-
-// Component styles
-.chat-content {
-    &__messages {
-        overflow-y: auto;
-    }
-
-    &__notifications {
-        padding: 1rem;
-    }
-}
-```
 
 ### CSS Loading
 
@@ -638,7 +417,6 @@ Rspack uses `style-loader` + `css-loader` + `postcss-loader` + `sass-loader` to 
 
 - **Library**: Jed (Gettext for JavaScript)
 - **Format**: PO files in `src/i18n/locales/*/LC_MESSAGES/converse.po`
-- **40+ languages** supported (ar, ca, de, es, fr, ja, ru, zh, etc.)
 
 ### Using Translations
 
@@ -646,46 +424,6 @@ Rspack uses `style-loader` + `css-loader` + `postcss-loader` + `sass-loader` to 
 import { __ } from '@converse/headless';
 
 const message = __('Hello, %1$s!', username);
-const plural = __('%1$d messages', count);
-```
-
-### Translation Workflow
-
-```bash
-# Extract strings from source
-npm run nodeps  # Builds converse-no-dependencies.js
-make pot        # Generates src/i18n/converse.pot
-
-# Update existing translations
-make po         # Merges pot into all locale .po files
-```
-
-## Build System (Rspack)
-
-### Configuration Files
-
-- `rspack/rspack.common.js` - Shared config (loaders, plugins)
-- `rspack/rspack.build.js` - Main build
-- `rspack/rspack.build.cjs.js` - CommonJS build
-- `rspack/rspack.build.esm.js` - ESM build
-- `rspack/rspack.headless.js` - Headless build
-- `rspack/rspack.serve.js` - Dev server config
-- `rspack/rspack.nodeps.js` - Build without dependencies
-
-### Important Loaders
-
-- **po-loader**: Converts `.po` translation files to Jed format
-- **sass-loader**: Compiles SCSS to CSS
-- **style-loader**: Injects CSS into DOM
-- **css-loader**: Resolves `@import` and `url()` in CSS
-- **postcss-loader**: Autoprefixer for vendor prefixes
-
-### Environment Variables
-
-```bash
-DROP_DEBUGGER=true     # Remove debugger statements (production)
-ASSET_PATH=/dist/      # Public path for assets (default)
-ASSET_PATH=https://cdn.conversejs.org/dist/  # CDN path
 ```
 
 ## Common Patterns and Gotchas
@@ -728,160 +466,16 @@ const chatbox = chatboxes.get(jid);
 
 // Access 3rd party libraries
 const { Strophe, $msg, $iq, $pres, $build, stx } = converse.env;
-
-// XML stanzas (prefer stx template literal over old $msg, $pres, $iq, $build functions)
-// The stx template literal is the current preferred method for creating XML stanzas
-// When using stx, the `xmlns` attribute always needs to be set to "jabber:client".
-const stanza_stx = stx`
-    <message to="${jid}" type="chat" xmlns="jabber:client">
-        <body>Hello</body>
-        <active xmlns="${Strophe.NS.CHATSTATES}"/>
-    </message>`;
-
-// Legacy methods ($msg, $pres, $iq, $build) are deprecated - use stx instead
-const stanza_legacy = $msg({ to: jid, type: 'chat' })
-    .c('body')
-    .t('Hello')
-    .up()
-    .c('active', { xmlns: Strophe.NS.CHATSTATES });
 ```
 
-### 5. Custom Elements
-
-Always define custom elements:
-
-```javascript
-class MyElement extends CustomElement {
-    /* ... */
-}
-customElements.define('my-element', MyElement);
-```
-
-Use in HTML:
-
-```javascript
-html`<my-element .model="${this.model}"></my-element>`;
-```
-
-### 6. Lit Property Binding
-
-```javascript
-// Set properties with . prefix
-.model="${this.model}"
-
-// Set attributes with regular syntax
-id="my-id"
-class="my-class"
-
-// Boolean attributes with ?
-?disabled="${this.isDisabled}"
-
-// Event handlers with @
-@click="${this.handleClick}"
-```
-
-### 7. Memory Leaks Prevention
+### 5. Memory Leaks Prevention
 
 - Always use `listenTo` instead of `on` (auto-cleanup on disconnect)
 - Call `stopListening()` in `disconnectedCallback()`
-- Use `u.debounce()` for frequent operations
-
-### 8. ESLint Rules
-
-- **Unused vars**: Prefix with `_` to ignore (e.g., `_unused`)
-- **No console**: Allowed (use `log.debug()`, `log.info()`, `log.error()` instead)
-- **Prefer const**: Use `const` by default, `let` when reassignment needed
-- **Max line length**: 120 characters (ignores comments, strings, URLs)
-- **Unix line endings**: LF not CRLF
-
-## CI/CD
-
-### GitHub Actions
-
-- **Workflow**: `.github/workflows/karma-tests.yml`
-- **Node version**: 22.x
-- **Command**: `make check ARGS=--single-run`
-- **Environment**: Ubuntu with Xvfb (for Chrome headless)
-
-### CI Test Command
-
-```bash
-make check  # Runs: eslint + types + tests (headless + main)
-```
-
-This command:
-
-1. Runs `npm run lint` (ESLint)
-2. Runs `npm run types` (generate types)
-3. Checks for uncommitted type changes
-4. Runs headless tests: `cd src/headless && npm run test -- --single-run`
-5. Runs main tests: `npm run test -- --single-run`
-
-## Debugging
-
-### Development Tools
-
-```javascript
-// Access global converse object in browser console
-window.converse;
-
-// Internal state (as represented by Models and Collections)
-_converse.state;
-
-// Namespace for storing code that might be useful to 3rd party
-// plugins. We want to make it possible for 3rd party plugins to have
-// access to code (e.g. classes) without having to add converse.js
-// as a dependency.
-_converse.exports;
-
-// API methods
-const { api } = _converse;
-api.user.jid();
-api.settings.get('jid');
-api.chatboxes.get('user@example.com');
-```
-
-### Debug Logging
-
-```javascript
-import { log } from '@converse/log';
-
-log.debug('Debug message');
-log.info('Info message');
-log.warn('Warning message');
-log.error('Error message');
-```
-
-Set log level in settings:
-
-```javascript
-converse.initialize({
-    loglevel: 'debug', // 'debug', 'info', 'warn', 'error'
-});
-```
-
-### Common Issues
-
-1. **Import errors**: Check path aliases in `rspack.common.js` resolve section
-2. **Style not applying**: Make sure SCSS import is at top of plugin entry file
-3. **Component not rendering**: Check `customElements.define()` is called
-4. **Tests failing**: Ensure `await mock.waitForRoster()` and other setup completes
-5. **Type errors**: Run `npm run types` to regenerate definitions
 
 ## Release Process
 
-See `Makefile` and `RELEASE.md` for full details:
-
-```bash
-# Update version in all files
-make version VERSION=12.1.0
-
-# Create release
-make publish BRANCH=master
-
-# Post-release (bump to dev version)
-make postrelease VERSION=12.1.0
-```
+Read: RELEASE.md
 
 ## Documentation
 
@@ -897,25 +491,3 @@ make docsdev  # Install Python dependencies
 make doc      # Build HTML documentation
 ```
 
-## Key Files to Know
-
-- `package.json` - Main package config, scripts, dependencies
-- `src/headless/package.json` - Headless package config
-- `karma.conf.js` - Main test configuration
-- `src/headless/karma.conf.js` - Headless test configuration
-- `eslint.config.mjs` - ESLint rules
-- `.prettierrc` - Prettier formatting rules
-- `tsconfig.json` - TypeScript configuration
-- `Makefile` - Build targets and release automation
-- `src/index.js` - Main entry point (imports all plugins)
-- `src/headless/index.js` - Headless entry point
-- `src/entry.js` - Alternative entry point
-
-## Additional Resources
-
-- **Main docs**: https://conversejs.org/docs/html/
-- **Plugin development**: https://conversejs.org/docs/html/plugin_development.html
-- **Configuration**: https://conversejs.org/docs/html/configuration.html
-- **API reference**: https://conversejs.org/docs/html/api_reference.html
-- **Chat room**: xmpp:discuss@conference.conversejs.org?join
-- **GitHub**: https://github.com/conversejs/converse.js

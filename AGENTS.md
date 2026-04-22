@@ -235,16 +235,13 @@ converse.plugins.add('plugin-name', {
 ### Plugin Design Philosophy
 
 Converse.js mirrors the XMPP philosophy: a minimal core with features implemented as
-plugins corresponding to individual XEPs. This separation must be respected when adding
-new functionality.
+plugins corresponding to individual XEPs.
 
 **Avoiding leaky abstractions:** Shared core code (`src/headless/shared/`, e.g.
 `model-with-messages.js`) must not contain logic specific to a particular plugin.
 Plugin-specific logic belongs in the plugin itself.
 
-**Use hooks and events:** When you need to allow other plugins to participate in a processing flow
-(e.g. intercepting incoming messages, modifying outgoing stanzas, or reacting to state changes),
-you can fire **hooks** or **events** that those plugins can listen on.
+**Use hooks and events:** When you need to allow other plugins to participate in a processing flow.
 
 - **Hooks** (`api.hook(name, context, data)`) are chainable async pipelines — each
   listener receives the output of the previous one and can modify the data before passing
@@ -253,7 +250,7 @@ you can fire **hooks** or **events** that those plugins can listen on.
 - **Events** (`api.trigger(name, data)`) are fire-and-forget notifications. Use events
   when plugins need to be informed of something but the caller does not need a response.
 
-**Example — correct approach:**
+**Example:**
 
 ```javascript
 // In the foundational chat plugin (chat/model.js):

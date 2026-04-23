@@ -21,6 +21,7 @@ export class AutoComplete extends AutoComplete_base {
     suggestions: any[];
     is_opened: boolean;
     match_current_word: boolean;
+    suffix: string;
     sort: (a: any, b: any) => number;
     filter: typeof FILTER_CONTAINS;
     ac_triggers: any[];

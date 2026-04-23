@@ -201,7 +201,7 @@ declare const _default: {
     placeCaretAtEnd(textarea: HTMLTextAreaElement): void;
     isMentionBoundary(s: string): boolean;
     getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;
-    replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
+    replaceCurrentWord(input: HTMLInputElement, new_value: string, suffix?: string): void;
     isValidJIDInput(jid: string): boolean;
     isImageWithAlphaChannel(image_file: File): Promise<boolean>;
     compressImage(file: File, options?: import("./types.js").CompressionOptions): Promise<Blob>;

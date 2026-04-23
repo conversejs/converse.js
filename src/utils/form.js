@@ -97,14 +97,15 @@ export function getCurrentWord(input, index, delineator) {
 /**
  * @param {HTMLInputElement} input - The HTMLElement in which text is being entered
  * @param {string} new_value
+ * @param {string} [suffix=' '] - String to append after the value
  */
-export function replaceCurrentWord(input, new_value) {
+export function replaceCurrentWord(input, new_value, suffix = ' ') {
     const caret = input.selectionEnd || undefined;
     const current_word = input.value.slice(0, caret).split(/\s/).pop();
     const value = input.value;
     const mention_boundary = isMentionBoundary(current_word[0]) ? current_word[0] : '';
-    input.value = value.slice(0, caret - current_word.length) + mention_boundary + `${new_value} ` + value.slice(caret);
-    const selection_end = caret - current_word.length + new_value.length + 1;
+    input.value = value.slice(0, caret - current_word.length) + mention_boundary + `${new_value}${suffix}` + value.slice(caret);
+    const selection_end = caret - current_word.length + new_value.length + suffix.length;
     input.selectionEnd = mention_boundary ? selection_end + 1 : selection_end;
 }
 

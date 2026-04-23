@@ -50,11 +50,19 @@ export default {
                 // Optimistically update the vcard with image data. Otherwise some servers (e.g. Ejabberd)
                 // could send a XEP-0153 vcard:update presence which would cause us to refetch the vcard again.
                 const buffer = u.base64ToArrayBuffer(data.image);
-                const hash_ab = await crypto.subtle.digest('SHA-1', buffer);
+                // Check if crypto.subtle is available (requires secure context/HTTPS)
+                let image_hash;
+                if (window.isSecureContext) {
+                    const hash_ab = await crypto.subtle.digest('SHA-1', buffer);
+                    image_hash = u.arrayBufferToHex(hash_ab);
+                } else {
+                    // Fallback for non-HTTPS contexts: use base64 as pseudo-hash
+                    image_hash = data.image.substring(0, 32);
+                }
                 vcard.save({
                     image: data.image,
                     image_type: data.image_type,
-                    image_hash: u.arrayBufferToHex(hash_ab),
+                    image_hash: image_hash,
                 });
             }
 

@@ -233,17 +233,7 @@ eslint: node_modules
 check: eslint | src/headless/dist/converse-headless.js dist/converse.js dist/converse.css
 	npm run types
 	make check-git-clean
-	cd src/log && npm test
-	cd src/headless && npm run test -- --single-run
-	npm run test -- --single-run
-
-.PHONY: test-headless
-test-headless:
-	cd src/headless && npm run test -- $(ARGS)
-
-.PHONY: test
-test:
-	npm run test -- $(ARGS)
+	npm run test:all
 
 ########################################################################
 ## Documentation

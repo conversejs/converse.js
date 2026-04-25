@@ -43,7 +43,11 @@ describe('The MUC occupants filter', function () {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             }
 
-            const occupants = view.querySelector('.occupant-list');
+            if (view.model.get('hidden_occupants')) {
+                // Happens in headless chrome due to smaller viewport size
+                view.model.save('hidden_occupants', false);
+            }
+            const occupants = await u.waitUntil(() => view.querySelector('.occupant-list'));
             await u.waitUntil(() => occupants.querySelectorAll('li').length > 3);
             expect(occupants.querySelectorAll('li').length).toBe(3 + mock.chatroom_names.length);
             expect(view.model.occupants.length).toBe(3 + mock.chatroom_names.length);

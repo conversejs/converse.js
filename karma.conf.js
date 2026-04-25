@@ -47,6 +47,9 @@ module.exports = function(config) {
       // Ideally this should go into the headless test runner
       { pattern: "src/headless/plugins/vcard/tests/update.js", type: 'module' },
 
+      // Run earlier, otherwise it fails (times out) with the message avatar not updating for some reason
+      { pattern: "src/plugins/chatview/tests/message-avatar.js", type: 'module' },
+
       { pattern: "src/i18n/tests/i18n.js", type: 'module' },
       { pattern: "src/plugins/adhoc-views/tests/*.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/*.js", type: 'module' },

@@ -40,7 +40,7 @@ describe('A MUC', function () {
                     stx`<presence from="${_converse.jid}"
                 id="${sent_stanza.getAttribute('id')}"
                 to="${muc_jid}/${newnick}"
-                xmlns="jabber:client"/>`,
+                xmlns="jabber:client"/>`
                 );
 
                 // clear sent stanzas
@@ -65,8 +65,8 @@ describe('A MUC', function () {
                 <status code='303'/>
                 <status code='110'/>
             </x>
-            </presence>`,
-                    ),
+            </presence>`
+                    )
                 );
 
                 await u.waitUntil(() => model.get('nick') === newnick);
@@ -86,8 +86,8 @@ describe('A MUC', function () {
                     role='participant'/>
                 <status code='110'/>
             </x>
-            </presence>`,
-                    ),
+            </presence>`
+                    )
                 );
 
                 await u.waitUntil(() => model.occupants.at(0).get('nick') === newnick);
@@ -95,15 +95,15 @@ describe('A MUC', function () {
 
                 let stanza = await u.waitUntil(() =>
                     IQ_stanzas.find(
-                        (iq) => sizzle(`iq[type="get"] query[xmlns="${Strophe.NS.MUC_REGISTER}"]`, iq).length,
-                    ),
+                        (iq) => sizzle(`iq[type="get"] query[xmlns="${Strophe.NS.MUC_REGISTER}"]`, iq).length
+                    )
                 );
 
                 expect(stanza).toEqualStanza(
                     stx`<iq to="lounge@montague.lit"
                     type="get"
                     xmlns="jabber:client"
-                    id="${stanza.getAttribute('id')}"><query xmlns="jabber:iq:register"/></iq>`,
+                    id="${stanza.getAttribute('id')}"><query xmlns="jabber:iq:register"/></iq>`
                 );
 
                 _converse.api.connection.get()._dataRecv(
@@ -128,14 +128,14 @@ describe('A MUC', function () {
                 </field>
                 </x>
             </query>
-            </iq>`,
-                    ),
+            </iq>`
+                    )
                 );
 
                 stanza = await u.waitUntil(() =>
                     IQ_stanzas.find(
-                        (iq) => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.MUC_REGISTER}"]`, iq).length,
-                    ),
+                        (iq) => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.MUC_REGISTER}"]`, iq).length
+                    )
                 );
 
                 expect(stanza).toEqualStanza(
@@ -146,10 +146,10 @@ describe('A MUC', function () {
                     <field var="muc#register_roomnick"><value>loverboy</value></field>
                 </x>
                 </query>
-            </iq>`,
+            </iq>`
                 );
-            },
-        ),
+            }
+        )
     );
 
     it(
@@ -194,6 +194,11 @@ describe('A MUC', function () {
             await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'oldnick');
 
             const view = _converse.chatboxviews.get('lounge@montague.lit');
+
+            if (view.model.get('hidden_occupants')) {
+                // Happens in headless chrome due to smaller viewport size
+                view.model.save('hidden_occupants', false);
+            }
             await u.waitUntil(() => view.querySelectorAll('li .occupant-nick').length, 500);
             let occupants = view.querySelector('.occupant-list');
             expect(occupants.querySelectorAll('.occupant-nick').length).toBe(1);
@@ -223,7 +228,7 @@ describe('A MUC', function () {
             await u.waitUntil(() => view.querySelectorAll('.chat-info').length);
 
             expect(sizzle('div.chat-info:last').pop().textContent.trim()).toBe(
-                __(_converse.labels.muc.STATUS_CODE_MESSAGES['303'], 'newnick'),
+                __(_converse.labels.muc.STATUS_CODE_MESSAGES['303'], 'newnick')
             );
             expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
 
@@ -248,13 +253,13 @@ describe('A MUC', function () {
             expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
             expect(view.querySelectorAll('div.chat-info').length).toBe(1);
             expect(sizzle('div.chat-info', view)[0].textContent.trim()).toBe(
-                __(_converse.labels.muc.STATUS_CODE_MESSAGES['303'], 'newnick'),
+                __(_converse.labels.muc.STATUS_CODE_MESSAGES['303'], 'newnick')
             );
             occupants = view.querySelector('.occupant-list');
             await u.waitUntil(() => sizzle('.occupant-nick:first', occupants).pop().textContent.trim() === 'newnick');
             expect(view.model.occupants.length).toBe(1);
             expect(view.model.get('nick')).toBe('newnick');
-        }),
+        })
     );
 
     describe('when being entered', function () {
@@ -268,8 +273,8 @@ describe('A MUC', function () {
 
                 const iq = await u.waitUntil(() =>
                     IQ_stanzas.filter(
-                        (s) => sizzle(`iq[to="${muc_jid}"] query[node="x-roomuser-item"]`, s).length,
-                    ).pop(),
+                        (s) => sizzle(`iq[to="${muc_jid}"] query[node="x-roomuser-item"]`, s).length
+                    ).pop()
                 );
 
                 expect(iq).toEqualStanza(stx`
@@ -321,7 +326,7 @@ describe('A MUC', function () {
                 await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-info').length);
                 const info_text = sizzle('.chat-content .chat-info:first', view).pop().textContent.trim();
                 expect(info_text).toBe('Your nickname has been automatically set to thirdwitch');
-            }),
+            })
         );
 
         it(
@@ -340,8 +345,8 @@ describe('A MUC', function () {
                     await mock.waitForReservedNick(_converse, muc_jid, '');
                     const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
                     expect(view.model.get('nick')).toBe('Benedict-Cucumberpatch');
-                },
-            ),
+                }
+            )
         );
 
         it(
@@ -364,15 +369,15 @@ describe('A MUC', function () {
                     <error by="${muc_jid}" type="cancel">
                         <conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                     </error>
-                </presence>`),
+                </presence>`)
                 );
 
                 const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
                 const el = await u.waitUntil(() => view.querySelector('.muc-nickname-form .validation-message'));
                 expect(el.textContent.trim()).toBe(
-                    'The nickname you chose is reserved or currently in use, please choose a different one.',
+                    'The nickname you chose is reserved or currently in use, please choose a different one.'
                 );
-            }),
+            })
         );
 
         it(
@@ -390,7 +395,7 @@ describe('A MUC', function () {
                 await u.waitUntil(() =>
                     sent_stanzas
                         .filter((s) => s.nodeName === 'presence' && s.getAttribute('to').startsWith(muc_jid))
-                        .pop(),
+                        .pop()
                 );
 
                 const { IQ_stanzas } = api.connection.get();
@@ -418,7 +423,7 @@ describe('A MUC', function () {
                 let sent_stanza = await u.waitUntil(() =>
                     sent_stanzas
                         .filter((s) => s.nodeName === 'presence' && s.getAttribute('to').startsWith(muc_jid))
-                        .pop(),
+                        .pop()
                 );
                 expect(sent_stanza).toEqualStanza(stx`
                 <presence id="${sent_stanza.getAttribute('id')}"
@@ -452,7 +457,7 @@ describe('A MUC', function () {
                 sent_stanza = await u.waitUntil(() =>
                     sent_stanzas
                         .filter((s) => s.nodeName === 'presence' && s.getAttribute('to').startsWith(muc_jid))
-                        .pop(),
+                        .pop()
                 );
                 expect(sent_stanza).toEqualStanza(stx`
                 <presence id="${sent_stanza.getAttribute('id')}"
@@ -486,7 +491,7 @@ describe('A MUC', function () {
                 sent_stanza = await u.waitUntil(() =>
                     sent_stanzas
                         .filter((s) => s.nodeName === 'presence' && s.getAttribute('to').startsWith(muc_jid))
-                        .pop(),
+                        .pop()
                 );
                 expect(sent_stanza).toEqualStanza(stx`
                 <presence id="${sent_stanza.getAttribute('id')}"
@@ -497,7 +502,7 @@ describe('A MUC', function () {
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
                         ver="Hbd4V8rlZualGDSkxW/4bVlnudc="/>>
                 </presence>`);
-            }),
+            })
         );
 
         it(
@@ -524,10 +529,10 @@ describe('A MUC', function () {
 
                 const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
                 const el = await u.waitUntil(() =>
-                    view.querySelector('.chatroom-body converse-muc-disconnected .disconnect-msg:last-child'),
+                    view.querySelector('.chatroom-body converse-muc-disconnected .disconnect-msg:last-child')
                 );
                 expect(el.textContent.trim()).toBe("Your nickname doesn't conform to this groupchat's policies.");
-            }),
+            })
         );
 
         it(
@@ -558,8 +563,8 @@ describe('A MUC', function () {
                     await u.waitUntil(() => _converse.chatboxes.length > 1);
                     const chatroom = _converse.chatboxes.get(muc_jid);
                     expect(chatroom.get('nick')).toBe('romeo');
-                },
-            ),
+                }
+            )
         );
 
         it(
@@ -582,8 +587,8 @@ describe('A MUC', function () {
                     expect(label_nick.textContent.trim()).toBe('Nickname:');
                     const nick_input = modal.querySelector('input[name="nickname"]');
                     expect(nick_input.value).toBe('romeo');
-                },
-            ),
+                }
+            )
         );
     });
 });

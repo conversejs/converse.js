@@ -34,7 +34,11 @@ describe('The occupants sidebar', function () {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             }
 
-            const occupants = view.querySelector('.occupant-list');
+            if (view.model.get('hidden_occupants')) {
+                // Happens in headless chrome due to smaller viewport size
+                view.model.save('hidden_occupants', false);
+            }
+            const occupants = await u.waitUntil(() => view.querySelector('.occupant-list'));
             await u.waitUntil(() => occupants.querySelectorAll('li').length > 2, 500);
             expect(occupants.querySelectorAll('li').length).toBe(2 + mock.chatroom_names.length);
             expect(view.model.occupants.length).toBe(2 + mock.chatroom_names.length);
@@ -81,7 +85,7 @@ describe('The occupants sidebar', function () {
             expect(view.model.occupants.length).toBe(8);
             view.model.session.set('connection_status', converse.ROOMSTATUS.ENTERED); // Hack
             await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length === 8);
-        }),
+        })
     );
 
     it(
@@ -89,7 +93,6 @@ describe('The occupants sidebar', function () {
         mock.initConverse([], {}, async function (_converse) {
             await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
             var view = _converse.chatboxviews.get('lounge@montague.lit');
-            const occupants = view.querySelector('.occupant-list');
             for (var i = 0; i < mock.chatroom_names.length; i++) {
                 const name = mock.chatroom_names[i];
                 // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
@@ -106,7 +109,12 @@ describe('The occupants sidebar', function () {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             }
 
-            await u.waitUntil(() => occupants.querySelectorAll('li').length > 1, 500);
+            if (view.model.get('hidden_occupants')) {
+                // Happens in headless chrome due to smaller viewport size
+                view.model.save('hidden_occupants', false);
+            }
+            const occupants = await u.waitUntil(() => view.querySelector('.occupant-list'));
+            await u.waitUntil(() => occupants.querySelectorAll('li').length > 1);
             expect(occupants.querySelectorAll('li').length).toBe(1 + mock.chatroom_names.length);
 
             mock.chatroom_names.forEach((name) => {
@@ -133,7 +141,7 @@ describe('The occupants sidebar', function () {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             }
             await u.waitUntil(() => occupants.querySelectorAll('li').length === 1);
-        }),
+        })
     );
 
     it(
@@ -143,6 +151,10 @@ describe('The occupants sidebar', function () {
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             let contact_jid = mock.cur_names[2].replace(/ /g, '.').toLowerCase() + '@montague.lit';
 
+            if (view.model.get('hidden_occupants')) {
+                // Happens in headless chrome due to smaller viewport size
+                view.model.save('hidden_occupants', false);
+            }
             await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length, 500);
             let occupants = view.querySelectorAll('.occupant-list li');
             expect(occupants.length).toBe(1);
@@ -169,7 +181,7 @@ describe('The occupants sidebar', function () {
             expect(occupants.length).toBe(2);
             expect(occupants[0].querySelector('.occupant-nick').textContent.trim()).toBe('moderatorman');
             expect(occupants[0].querySelector('.occupant-nick').getAttribute('title')).toBe(
-                contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.',
+                contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.'
             );
             expect(occupants[1].querySelector('.occupant-nick').textContent.trim()).toBe('romeo');
             expect(occupants[0].querySelectorAll('.badge').length).toBe(2);
@@ -197,11 +209,11 @@ describe('The occupants sidebar', function () {
             expect(occupants[2].querySelector('.occupant-nick').textContent.trim()).toBe('visitorwoman');
             expect(occupants[2].querySelector('.occupant-nick').getAttribute('title')).toBe(
                 contact_jid +
-                    ' This user can NOT send messages in this groupchat. Click to mention visitorwoman in your message.',
+                    ' This user can NOT send messages in this groupchat. Click to mention visitorwoman in your message.'
             );
             expect(occupants[2].querySelectorAll('.badge').length).toBe(1);
             expect(sizzle('.badge', occupants[2]).pop().textContent.trim()).toBe('V');
             expect(sizzle('.badge', occupants[2]).pop().getAttribute('title').trim()).toBe('Visitor');
-        }),
+        })
     );
 });

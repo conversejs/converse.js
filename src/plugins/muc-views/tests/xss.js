@@ -21,6 +21,10 @@ describe('XSS', function () {
 
                 _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
+                if (view.model.get('hidden_occupants')) {
+                    // Happens in headless chrome due to smaller viewport size
+                    view.model.save('hidden_occupants', false);
+                }
                 await u.waitUntil(() => view.querySelectorAll('.occupant-list .occupant-nick').length === 2);
                 const occupants = view.querySelectorAll('.occupant-list li .occupant-nick');
                 expect(occupants.length).toBe(2);

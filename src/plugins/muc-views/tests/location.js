@@ -68,6 +68,11 @@ describe('The Location Button', function () {
                     </x>
                     </presence>`),
             );
+
+            if (view.model.get('hidden_occupants')) {
+                // Happens in headless chrme
+                view.model.save('hidden_occupants', false);
+            }
             await u.waitUntil(() => view.querySelectorAll('.occupant-list converse-avatar').length === 2);
 
             // Click the occupant avatar to open the PM panel in the sidebar

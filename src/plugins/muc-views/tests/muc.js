@@ -1634,6 +1634,11 @@ describe('Groupchats', function () {
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 expect(view.model.getOwnAffiliation()).toBe('owner');
                 expect(view.model.features.get('open')).toBe(false);
+
+                if (view.model.get('hidden_occupants')) {
+                    // Happens in headless chrome due to smaller viewport size
+                    view.model.save('hidden_occupants', false);
+                }
                 await u.waitUntil(() => view.querySelector('.open-invite-modal'));
 
                 // Members can't invite if the room isn't open

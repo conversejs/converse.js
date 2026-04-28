@@ -339,11 +339,9 @@ export class Connection extends Strophe.Connection {
                 this.disconnection_cause === LOGOUT ||
                 reason === Strophe.ErrorCondition.NO_AUTH_MECH ||
                 reason === "host-unknown" ||
-                reason === "remote-connection-failed"
+                reason === "remote-connection-failed" ||
+                reason === "not-well-formed"
             ) {
-                return this.finishDisconnection();
-            } else if (this.disconnection_cause === Strophe.Status.CONNFAIL && this.disconnection_reason  === 'not-well-formed') {
-                // Don't try to automatically reconnect on a not-well-formed error
                 return this.finishDisconnection();
             }
             api.connection.reconnect();

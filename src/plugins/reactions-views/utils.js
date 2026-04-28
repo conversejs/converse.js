@@ -8,38 +8,18 @@ import { __ } from 'i18n';
 const { Strophe, sizzle, stx } = converse.env;
 
 /**
- * Use the PopularReactions model if available, otherwise fall back to the setting
+ * Delegate to {@link PopularEmojis#getPopularEmojis} to avoid duplicating the
+ * sorted-emojis + defaults-fallback logic.
  * @param {string[]} allowed_emojis
- * @returns {string[]}
+ * @returns {Promise<string[]>}
  */
-export function getPopularReactions(allowed_emojis) {
+export async function getPopularReactions(allowed_emojis) {
     const popular_emojis = _converse.state.popular_emojis;
+    if (!popular_emojis) return [];
 
-    const by_sn = converse.emojis.by_sn || {};
-    const default_reactions = (api.settings.get('popular_emojis') ?? [])
-        .map((sn) => {
-            const data = by_sn[sn];
-            return data?.cp ? u.emojis.convert(data.cp) : null;
-        })
-        .filter(Boolean);
-
-    let frequent_reactions;
-
-    if (popular_emojis && Object.keys(popular_emojis.get('timestamps') || {}).length > 0) {
-        const sorted = popular_emojis.getSortedEmojis(default_reactions.length);
-        const padded = [...sorted];
-        for (const e of default_reactions) {
-            if (padded.length >= default_reactions.length) break;
-            if (!padded.includes(e)) padded.push(e);
-        }
-        frequent_reactions = padded;
-    } else {
-        frequent_reactions = default_reactions;
-    }
-
-    return allowed_emojis
-        ? frequent_reactions.filter((e) => allowed_emojis.includes(e))
-        : frequent_reactions;
+    const data = await popular_emojis.getPopularEmojis();
+    const emojis = Object.keys(data);
+    return allowed_emojis ? emojis.filter((e) => allowed_emojis.includes(e)) : emojis;
 }
 
 /**

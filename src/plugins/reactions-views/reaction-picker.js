@@ -12,7 +12,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { api, u, _converse, EmojiPicker } from '@converse/headless';
 import { __ } from 'i18n';
 import tplReactionPicker from './templates/reaction-picker.js';
-import { sendReaction } from './utils.js';
+import { sendReaction, getPopularReactions } from './utils.js';
 import 'shared/components/dropdown.js';
 import 'shared/chat/emoji-picker.js';
 import 'shared/chat/styles/emoji.scss';
@@ -25,6 +25,7 @@ export default class ReactionPicker extends CustomElement {
             'dropup': { type: Boolean },
             'shifted': { type: Boolean },
             'opened': { type: Boolean },
+            'popular_reactions_promise': { state: true },
         };
     }
 
@@ -39,6 +40,7 @@ export default class ReactionPicker extends CustomElement {
         this.dropup = false;
         this.shifted = false;
         this.opened = false;
+        this.popular_reactions_promise = null;
         this.onClickOutside =
             /** @param {MouseEvent} ev */
             (ev) => {
@@ -78,12 +80,14 @@ export default class ReactionPicker extends CustomElement {
         const btn = /** @type {HTMLElement} */ (ev.currentTarget ?? ev.target);
         this.#anchor_rect = btn?.getBoundingClientRect() ?? null;
         await api.emojis.initialize();
+        this.popular_reactions_promise = getPopularReactions(this.allowed_emojis);
         this.opened = true;
     }
 
     close() {
         if (!this.opened) return;
         this.#anchor_rect = null;
+        this.popular_reactions_promise = null;
         this.opened = false;
     }
 

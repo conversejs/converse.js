@@ -1,19 +1,23 @@
 import { html } from 'lit';
-import { getPopularReactions } from '../utils';
+import { until } from 'lit/directives/until.js';
 
 /**
  * @param {import('../reaction-picker').default} el
  */
 export default (el) => {
     const anchor_name = `--reaction-anchor-${el.picker_id}`;
-    const popular_reactions = getPopularReactions(el.allowed_emojis);
+
+    const renderReactions = async () => {
+        const popular_reactions = await el.popular_reactions_promise;
+        return html`${popular_reactions.map(
+            /** @param {string} sn */ (sn) =>
+                html`<button class="reaction-item" @click=${() => el.onEmojiSelected(sn)}>${sn}</button>`
+        )}`;
+    };
 
     return html`
         <div class="reaction-picker popular ${el.dropup ? 'dropup' : ''} ${el.shifted ? 'shifted' : ''}">
-            ${popular_reactions.map(
-                /** @param {string} sn */ (sn) =>
-                    html` <button class="reaction-item" @click=${() => el.onEmojiSelected(sn)}>${sn}</button>`
-            )}
+            ${until(renderReactions(), html``)}
 
             <div class="dropdown emoji-picker__dropdown">
                 <button

@@ -1,9 +1,10 @@
 /**
- * Use the PopularReactions model if available, otherwise fall back to the setting
+ * Delegate to {@link PopularEmojis#getPopularEmojis} to avoid duplicating the
+ * sorted-emojis + defaults-fallback logic.
  * @param {string[]} allowed_emojis
- * @returns {string[]}
+ * @returns {Promise<string[]>}
  */
-export function getPopularReactions(allowed_emojis: string[]): string[];
+export function getPopularReactions(allowed_emojis: string[]): Promise<string[]>;
 /**
  * Helper function to update a message with reactions (JID-keyed format).
  * Used for optimistic updates when sending reactions.

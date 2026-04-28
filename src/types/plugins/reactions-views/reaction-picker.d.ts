@@ -12,6 +12,9 @@ export default class ReactionPicker extends CustomElement {
         opened: {
             type: BooleanConstructor;
         };
+        popular_reactions_promise: {
+            state: boolean;
+        };
     };
     /** @type {BaseMessage|null} */
     model: BaseMessage | null;
@@ -19,6 +22,7 @@ export default class ReactionPicker extends CustomElement {
     dropup: boolean;
     shifted: boolean;
     opened: boolean;
+    popular_reactions_promise: Promise<string[]>;
     onClickOutside: (ev: MouseEvent) => void;
     /**
      * Render the reaction picker UI

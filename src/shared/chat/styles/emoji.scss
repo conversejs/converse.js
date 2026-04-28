@@ -69,11 +69,13 @@
             }
             .emoji-skintone-picker {
                 display: flex;
+                margin-top: 0.3em;
                 padding: 0.5em 0 0.5em 0.5em;
                 color: var(--secondary-color);
                 background-color: var(--background-color);
                 width: 100%;
                 font-size: var(--font-size);
+                box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
                 ul {
                     display: flex;
                     flex-direction: row;
@@ -129,8 +131,9 @@
                 width: 100%;
                 display: flex;
                 flex-direction: column;
-                padding: 0.1em 0;
+                margin: 0.4em 0;
                 background-color: var(--background-color);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 .emoji-search {
                     width: auto;
                     margin: 1em 0.25em 0.5em;
@@ -143,7 +146,7 @@
                     padding-inline-start: 0;
 
                     .emoji-category {
-                        padding: 0.25em 0;
+                        padding: 0.1em 0;
                         font-size: var(--font-size-huge);
                         &.picked a {
                             background-color: var(--heading-color);

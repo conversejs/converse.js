@@ -5,7 +5,7 @@
  */
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import { enableStreamManagement, initSessionData, sendEnableStanza, onStanzaSent } from './utils.js';
+import { enableStreamManagement, initSessionData, onWillReconnect, sendEnableStanza, onStanzaSent } from './utils.js';
 
 const { Strophe } = converse.env;
 
@@ -23,6 +23,7 @@ converse.plugins.add('converse-smacks', {
         });
         api.listen.on('afterResourceBinding', sendEnableStanza);
         api.listen.on('beforeResourceBinding', enableStreamManagement);
+        api.listen.on('will-reconnect', onWillReconnect);
         api.listen.on('send', onStanzaSent);
         api.listen.on('userSessionInitialized', initSessionData);
     }

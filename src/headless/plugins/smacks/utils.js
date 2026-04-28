@@ -84,6 +84,7 @@ function resetSessionData() {
     const { session } = _converse;
     u.safeSave(session, {
         smacks_enabled: false,
+        smacks_stream_id: null,
         num_stanzas_handled: 0,
         num_stanzas_handled_by_server: 0,
         num_stanzas_since_last_ack: 0,
@@ -168,6 +169,8 @@ function onResumedStanza(el) {
     connection.do_bind = false; // No need to bind our resource anymore
     connection.authenticated = true;
     connection.restored = true;
+    // Store in session so we know on reconnect that we had resumed
+    _converse.session.save("smacks_resumed", true);
     connection._changeConnectStatus(Strophe.Status.CONNECTED, null);
 }
 
@@ -252,5 +255,11 @@ export function onStanzaSent(stanza) {
             }
             _converse.session.save({ "num_stanzas_since_last_ack": num });
         }
+    }
+}
+
+export function onWillReconnect() {
+    if (_converse.session.get("smacks_resumed")) {
+        resetSessionData();
     }
 }

@@ -12,6 +12,7 @@ export default defineConfig({
             },
             components: {
                 Footer: './src/components/Footer.astro',
+                Hero: './src/components/Hero.astro',
             },
             social: [
                 { icon: 'github', label: 'GitHub', href: 'https://github.com/conversejs/converse.js' },
@@ -28,11 +29,10 @@ export default defineConfig({
                 {
                     label: 'Development',
                     items: [
-                        { label: 'Overview', slug: 'development/overview' },
+                        { label: 'Development Documentation', slug: 'development/overview' },
                         { label: 'Setting up a Dev Environment', slug: 'development/setup-dev-environment' },
                         { label: 'Writing a Plugin', slug: 'development/plugin-development' },
                         { label: 'Automated Tests', slug: 'development/testing' },
-                        { label: 'Integrating into Other Frameworks', slug: 'development/other-frameworks' },
                         { label: 'Generating Builds', slug: 'development/builds' },
                         { label: 'Software Style Guide', slug: 'development/style-guide' },
                     ],

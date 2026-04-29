@@ -10,11 +10,11 @@ import DefaultFooter from '@astrojs/starlight/components/Footer.astro';
         const updateSponsorLogos = () => {
             const isDarkMode = document.documentElement.classList.contains('dark');
             const logos = document.querySelectorAll('.sponsor-logo');
-            
+
             logos.forEach(img => {
                 const lightSrc = img.getAttribute('data-light-src');
                 const darkSrc = img.getAttribute('data-dark-src');
-                
+
                 img.src = isDarkMode ? darkSrc : lightSrc;
             });
         };
@@ -39,7 +39,7 @@ import DefaultFooter from '@astrojs/starlight/components/Footer.astro';
 </script>
 
 <section class="sponsors">
-    <p class="sponsors-heading">A big thank you to our sponsors</p>
+    <p class="sponsors-heading">Thank you to our sponsors</p>
     <div class="sponsors-logos">
         <a href="https://bairesdev.com/sponsoring-open-source-projects/?utm_source=conversejs" target="_blank" rel="noopener">
             <img class="sponsor-logo" data-light-src="https://conversejs.org/media/logos/BairesDev_logo-orange.png" data-dark-src="https://conversejs.org/media/logos/bairesdev-dark.png" alt="BairesDev" />
@@ -52,9 +52,6 @@ import DefaultFooter from '@astrojs/starlight/components/Footer.astro';
         </a>
         <a href="https://www.keycdn.com?utm_source=conversejs" target="_blank" rel="noopener">
             <img class="sponsor-logo" data-light-src="https://conversejs.org/logo/keycdn.png" data-dark-src="https://conversejs.org/logo/keycdn.png" alt="KeyCDN" />
-        </a>
-        <a href="https://weblate.org?utm_source=conversejs" target="_blank" rel="noopener">
-            <img class="sponsor-logo" data-light-src="https://conversejs.org/logo/weblate-button.svg" data-dark-src="https://conversejs.org/logo/weblate-button.svg" alt="Weblate" />
         </a>
     </div>
     <p class="sponsors-cta">

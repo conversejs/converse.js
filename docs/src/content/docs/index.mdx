@@ -3,7 +3,11 @@ title: Converse Documentation
 description: Official documentation for Converse, a free and open-source XMPP chat client.
 template: splash
 hero:
-  tagline: A free and open-source XMPP chat client written in JavaScript
+  tagline: The web-native XMPP client
+  image:
+    file: ../../assets/logo.svg
+    alt: Converse.js logo
+    placement: left
   actions:
     - text: Quickstart
       link: /quickstart/
@@ -18,13 +22,29 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 ## Introduction
 
-Converse is a free and open-source [XMPP](https://xmpp.org/about-xmpp/) chat client written in JavaScript which can be tightly integrated into any website.
+Converse brings modern, real-time chat to the web. Built on the open [XMPP](https://xmpp.org/about-xmpp/) protocol,
+it works as a standalone client or embeds directly into your website, giving your users a
+seamless chat experience that stays under your control.
 
-The benefit of using Converse as opposed to relying on a SaaS (software-as-a-service) solution, is that your users can have a much more customized, streamlined and integrated webchat experience and that you have control over the data. The latter being a requirement for many sites dealing with sensitive information.
+### Why Converse?
 
-You'll likely want users who are authenticated on your website to also automatically be authenticated on the XMPP server. In order to do this, you'll have to add some server-side code for your website.
+**Your data, your rules.** Unlike SaaS chat solutions that lock you into their platform and
+harvest your users' data, Converse runs on your infrastructure. You control the server, the
+storage, and the privacy policy. This matters for healthcare, finance, education, and any
+organization that takes data sovereignty seriously.
 
-The [Setup and Integration](/setup/#an-xmpp-server) and [Session Management](/session/) sections provide more information on how to achieve this.
+**Ship faster, customize everything.** Converse integrates with your existing auth system,
+matches your brand, and adapts to your workflow. Add file sharing, OMEMO encryption, bots,
+or custom plugins. Or strip it down to exactly what you need.
+
+**Open standard, zero lock-in.** XMPP is a mature, battle-tested protocol with
+interoperability across dozens of clients and servers.
+
+### Get started in minutes
+
+The [Quickstart](/quickstart/) guide will have you running a demo instance in under five minutes.
+For production deployments, see [Setup and Integration](/setup/) to connect Converse to your
+XMPP server and wire up automatic authentication for your logged-in users.
 
 <CardGrid>
   <Card title="Quickstart" icon="rocket">

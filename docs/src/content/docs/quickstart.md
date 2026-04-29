@@ -1,127 +1,115 @@
 ---
 title: Quickstart
-description: Get Converse up and running quickly.
+description: Get Converse up and running in under 5 minutes.
 ---
 
-You can use the latest version of Converse at [conversejs.org](https://conversejs.org/fullscreen.html).
+## Chat now
 
-There are several ways to run Converse yourself or to add it to your website or web app:
+Start chatting immediately at [chat.conversejs.org](https://chat.conversejs.org).
 
-## Option 1: Host it via your XMPP Server
+Log in with any existing XMPP account, or create a new one via the registration form.
 
-If you run your own XMPP server, check if it has a plugin for hosting Converse.
+## Host your own instance
 
-For example, the following XMPP servers have plugins available:
+To run your own instance, follow the steps below. You'll need:
+- An XMPP server (or an account on a public server like [conversations.im](https://conversations.im) or [jabber.de](https://jabber.de))
+- A web server (or just a local HTML file for testing)
 
+## Step 1: Get the files
+
+### Fastest: Use the CDN
+
+Add these lines to your HTML `<head>`:
+
+```html
+<link rel="stylesheet" href="https://cdn.conversejs.org/dist/converse.min.css">
+<script src="https://cdn.conversejs.org/dist/converse.min.js"></script>
+```
+
+You can also pin to a specific version:
+
+```html
+<link rel="stylesheet" href="https://cdn.conversejs.org/12.0.0/dist/converse.min.css">
+<script src="https://cdn.conversejs.org/12.0.0/dist/converse.min.js"></script>
+```
+
+### Alternative: Self-host
+
+If you prefer to host the files yourself, either:
+- **Download** the latest [release archive](https://github.com/conversejs/converse.js/releases) and extract the `dist/` folder, or
+- **Build from source** — see [Generating Builds](/development/builds/)
+
+:::note
+When self-hosting, all files in the `dist/` directory must be available. Converse loads additional assets dynamically from this path. Use [`assets_path`](/configuration/#assets_path) to change it.
+:::
+
+### Already run an XMPP server?
+
+Many servers have built-in plugins that serve Converse for you:
 - **Openfire**: [inverse plugin](https://www.igniterealtime.org/projects/openfire/plugin-archive.jsp?plugin=inverse)
 - **Prosody**: [mod_conversejs](https://modules.prosody.im/mod_conversejs.html)
 - **ejabberd**: [mod_conversejs](https://docs.ejabberd.im/admin/configuration/modules/#mod_conversejs)
 
-:::caution
-When configuring one of these plugins in production, it's good practice to use a specific version of the Converse resources to avoid breaking changes.
-:::
+Check your server's documentation — this is often the easiest path.
 
-For instance, this will configure ejabberd's mod_conversejs to fetch a specific version instead of whichever is the latest one.
+## Step 2: Initialize Converse
 
-```yaml
-modules:
-  mod_conversejs:
-    conversejs_css: https://cdn.conversejs.org/12.0.0/dist/converse.min.css
-    conversejs_script: https://cdn.conversejs.org/12.0.0/dist/converse.min.js
-```
-
-## Option 2: Self-hosting
-
-### Getting the necessary files
-
-You can host Converse on your own server without requiring any XMPP server.
-There are three ways to get the necessary files:
-
-#### A. Using the CDN (Recommended)
-
-Converse provides a CDN (via [KeyCDN](https://www.keycdn.com/)) for easy integration.
-
-To use it, add these lines to your HTML page's `<head>` section:
-
-```html
-<!-- Replace 12.0.0 with your desired version -->
-<link rel="stylesheet" href="https://cdn.conversejs.org/12.0.0/dist/converse.min.css">
-<script src="https://cdn.conversejs.org/12.0.0/dist/converse.min.js" charset="utf-8"></script>
-```
-
-:::caution
-Always specify a version number in production to avoid breaking changes.
-:::
-
-#### B. Download Pre-built Files
-
-1. Download the latest release from the [Converse GitHub releases page](https://github.com/conversejs/converse.js/releases)
-2. Extract the archive file
-3. Include the minified files in your HTML:
-
-```html
-<link rel="stylesheet" href="path/to/converse.min.css">
-<script src="path/to/converse.min.js" charset="utf-8"></script>
-```
-
-:::note
-- All the files from the `dist` directory need to be available and hosted on your server
-- Converse will dynamically load additional files from this directory
-- To use a different path, change the [`assets_path`](/configuration/#assets_path) setting
-:::
-
-#### C. Build from Source
-
-For custom builds and development, run the following commands:
-
-1. `git clone git@github.com:conversejs/converse.js.git` to clone the repo.
-2. `cd converse.js && npm install` to install dependencies
-3. `npm run build` to build distribution files to the `./dist` folder
-4. `npm run serve` to start a local server at port `8080`.
-5. You can now access Converse at http://localhost:8080/dev.html in your browser.
-
-See the [Generating Builds](/development/builds/) section for detailed build instructions and customization options.
-
-:::tip
-You can run `npm run watch` to automatically rebuild the dist files whenever a source file changes.
-:::
-
-### Initializing Converse
-
-After building and including the necessary files, you need to initialize Converse:
+Add this before your closing `</body>` tag:
 
 ```html
 <script>
-    converse.initialize();
+    converse.initialize({
+        // Replace with your XMPP server's BOSH or WebSocket URL
+        bosh_service_url: 'https://your-xmpp-server:5280/bosh',
+        // Or use WebSocket:
+        // websocket_url: 'wss://your-xmpp-server:5280/ws',
+    });
 </script>
 ```
 
-See the [Configuration](/configuration/) section for all available initialization options and the
-[index.html](https://github.com/jcbrand/converse.js/blob/master/index.html) file in the repository for a complete example.
+### Complete minimal example
 
-#### Display Modes
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Chat</title>
+    <link rel="stylesheet" href="https://cdn.conversejs.org/12.0.0/dist/converse.min.css">
+    <script src="https://cdn.conversejs.org/12.0.0/dist/converse.min.js"></script>
+</head>
+<body>
+    <script>
+        converse.initialize({
+            bosh_service_url: 'https://conversejs.org/http-bind/',
+        });
+    </script>
+</body>
+</html>
+```
 
-Converse supports different display modes:
+Save this as `index.html` and open it in your browser. You'll see a login screen where you can enter any XMPP account.
 
-- **Full page mode** (default): Chat takes up the entire page
-- **Overlay mode**: Chat appears in a corner of your page
-- **Embedded mode**: Chat appears embedded inside a container element in your page
+## Step 3: Choose your display mode
 
-To use fullscreen mode, simply set the `view_mode` parameter:
+Converse supports three layouts:
+
+| Mode | Description | Best for |
+|------|-------------|----------|
+| `fullscreen` | Chat fills the entire page | Standalone chat apps |
+| `overlay` | Chat floats in a corner, toggleable | Adding chat to an existing site |
+| `embedded` | Chat lives inside a specific `<div>` | Custom page layouts |
 
 ```javascript
 converse.initialize({
-    view_mode: 'fullscreen' // other options are `overlay` and `embedded`
+    view_mode: 'fullscreen', // or 'overlay' or 'embedded'
 });
 ```
 
-## Further reading
+See the [live demos](https://conversejs.org) for examples of each mode.
 
-Now that you have Converse running, you might want to:
+## What's next?
 
-- Explore available [Features](/features/) (some require additional setup)
-- Implement [Session Management](/session/) for single sign-on between your site and XMPP
-- Enable [OMEMO encryption](/features/#end-to-end-message-encryption-xep-0384-omemo) (requires loading [libsignal-protocol.js](https://github.com/signalapp/libsignal-protocol-javascript))
-- Create [custom builds](/development/builds/) with specific features
-- Customize the appearance with [Theming](/theming/)
-- Dive into [Development](/development/overview/) to contribute or extend Converse
+- **[Configuration](/configuration/)** — All available options for `converse.initialize()`
+- **[Session Management](/session/)** — Auto-login users who are already authenticated on your site
+- **[Features](/features/)** — File sharing, OMEMO encryption, group chats, and more
+- **[Setup and Integration](/setup/)** — Production deployment guide with server-side auth

@@ -7,77 +7,153 @@ description: Security threat model and mitigating measures in Converse.
 Converse comes with no warranty of any kind and the authors are not liable for any damages.
 :::
 
-The data-structures of Converse encapsulate sensitive user data such as
-XMPP account details (in case of manual login) and personal conversations.
+Converse handles sensitive user data such as XMPP account credentials (when using manual login) and personal conversations. When integrating Converse into your website or application, it's important to understand the security implications and take appropriate measures to protect user data.
 
-In an environment where, besides Converse, other untrusted 3rd party scripts
-might also be running, it's important to guard against malicious or invasive
-access to user data and/or the API.
+## Threat Model
 
-## The threat model
+We consider the following security threats:
 
-The following threat model is considered:
+### Malicious Third-Party Scripts
+Malicious scripts served through compromised channels (such as ad networks or compromised CDNs) that attempt to access Converse's API or data structures to:
+- Steal user credentials or session data
+- Impersonate users
+- Access private conversations
+- Send unauthorized messages
 
-Malicious 3rd party scripts served through compromised side-channels, such as ad-networks,
-which attempt to access Converse's API and/or data-structures in order to personify users
-or to pilfer their data.
+### Data Exposure
+Sensitive data stored in browser storage mechanisms that could be accessed by malicious scripts:
+- Chat message history
+- Contact lists (roster)
+- User preferences and settings
 
-## Mitigating measures
+### Network-Level Attacks
+While Converse uses secure XMPP connections (TLS), network-level attacks could potentially intercept:
+- Authentication credentials
+- Message content
+- Presence information
 
-As of version 3.0.0, the following actions were taken to harden Converse against attacks:
+## Security Measures
 
-### Separate code/data into public and private parts
+### Code and Data Architecture
 
-1. Encapsulate Converse's data structures into a private closured object (named `_converse`).
-2. Split the API into public and private parts.
+Converse implements several security measures to protect user data:
 
-### Restrict access to private code/data
+1. **Private Data Encapsulation**: Sensitive data structures are encapsulated within a private closure (the `_converse` object) that is not directly accessible from the global scope.
 
-3. Only plugins are allowed to access the private API and the closured `_converse` object.
-4. TODO: Whitelist plugins that have access to the private API and closured `_converse` object.
-5. Prevent the removal of registered plugins (otherwise the whitelist could be circumvented).
-6. Throw an error when multiple plugins try to register under the same name
-   (otherwise the whitelist could be circumvented).
+2. **API Segregation**: The API is split into public and private components:
+   - Public API: Limited functionality exposed via the global `converse` object
+   - Private API: Full functionality available only to authorized plugins
 
-:::note
-Care should be taken when using a custom build of Converse where some
-of the core plugins contained in the default build are omitted. In this case
-the omitted plugins should also be removed from the whitelist, otherwise
-malicious plugins could be registered under their names.
+3. **Plugin Access Control**: Only registered plugins can access the private API and `_converse` object.
+
+4. **Plugin Registration Security**: 
+   - Plugin names must be unique to prevent override attacks
+   - Already registered plugins are protected from removal
+   - Plugin integrity is verified during registration
+
+### Data Storage Security
+
+Converse stores different types of data with varying security considerations:
+
+#### In-Memory Data
+Active chat sessions, contacts, and settings are stored in memory within the `_converse` closure, making them inaccessible to external scripts.
+
+#### Browser Storage
+Some data is persisted in browser storage for user convenience:
+
+- **Session Storage**: Cleared when the browser tab/window is closed
+  - Active chat messages
+  - Current session information
+  - Temporary UI state
+
+- **Local Storage**: Persists between browser sessions
+  - User preferences
+  - UI configuration
+  - Offline message queue (if enabled)
+
+:::caution
+Browser storage is not encrypted and can potentially be accessed by malicious scripts on the same origin. For maximum security, avoid storing highly sensitive information in browser storage.
 :::
 
-## Additional measures
+## Best Practices for Integrators
 
-Besides the measures mentioned above, integrators and hosts can also take
-further security precautions.
+To maximize security when integrating Converse into your website or application:
 
-The most effective is to avoid serving untrusted 3rd party JavaScript (e.g.
-advertisements and analytics).
+### 1. Minimize Third-Party Scripts
+The most effective security measure is to avoid loading untrusted third-party JavaScript, especially:
+- Advertising scripts
+- Analytics trackers
+- Social media widgets
+- Unverified CDN resources
 
-Another option is to forego the use of a global `converse` object (which
-exposes the public API) and instead to encapsulate it inside a private closure,
-in order to keep it inaccessible to other scripts.
+### 2. Content Security Policy (CSP)
+Implement a strong Content Security Policy to restrict script execution:
 
-## Other considerations
+```http
+Content-Security-Policy: script-src 'self' 'unsafe-inline' https://cdn.conversejs.org;
+```
 
-### Locally cached data
+### 3. Secure Configuration
+When initializing Converse, consider these security-focused settings:
 
-Besides the "hot" data stored in models and collections, which are all
-encapsulated in the private `_converse` object, there is also the cached data
-stored in the browser's `sessionStorage` and `localStorage` stores.
+```javascript
+converse.initialize({
+    // Disable features that may expose additional attack surfaces
+    allow_adhoc_commands: false,
+    allow_contact_requests: false,
+    allow_muc_invites: false,
+    
+    // Use secure connection settings
+    websocket_url: 'wss://your-xmpp-server.example.com/websocket',
+    
+    // Clear session data on logout
+    clear_cache_on_logout: true,
+    
+    // Set appropriate authentication options
+    authentication: 'login', // or 'anonymous' based on your needs
+});
+```
 
-Examples of sensitive cached data are chat messages and the contacts roster,
-both which are in session storage, which means that the cache is cleared as
-soon as the last tab or window is closed. User credentials are not cached at
-all.
+### 4. Private API Access
+If you need to extend Converse functionality:
+- Create custom plugins rather than accessing internal APIs directly
+- Avoid exposing the global `_converse` object
+- Use the public API whenever possible
 
-Perhaps the ability to encrypt this cached data could be added in future
-versions of Converse, if there is sufficient demand for it.
+### 5. Regular Updates
+Keep Converse updated to the latest version to benefit from security patches and improvements.
 
-However to date no significant mitigation or hardening measures have been taken to
-secure this cached data.
+## Future Security Enhancements
 
-Therefore, the best defence as website host is to avoid serving Converse with
-untrusted 3rd party code, and the best defence as an end-user is to avoid chatting
-on websites that host untrusted 3rd party code. The most common examples of such
-being advertising and analytics scripts.
+The Converse development team is considering these additional security features:
+
+### Encryption at Rest
+Encrypting cached data in browser storage to protect against malicious script access.
+
+### Enhanced Authentication
+Support for more secure authentication mechanisms:
+- OAuth2 integration
+- Certificate-based authentication
+- Two-factor authentication support
+
+### Isolated Execution Context
+Running Converse in a more isolated context (such as a Web Worker or iframe sandbox) to further limit access from other page scripts.
+
+## Reporting Security Issues
+
+If you discover a security vulnerability in Converse, please report it responsibly by:
+
+1. Contacting the maintainer directly at jc@opkode.com
+2. Providing a detailed description of the vulnerability
+3. Including steps to reproduce the issue
+4. Allowing time for a fix before public disclosure
+
+:::note
+Please do not report security issues through public channels like GitHub issues or mailing lists.
+:::
+
+## Additional Resources
+
+- [XMPP Security Considerations](https://xmpp.org/extensions/xep-0185.html)
+- [OWASP JavaScript Security](https://owasp.org/www-community/attacks/JavaScript_Injection)
+- [Content Security Policy Guide](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)

@@ -10,12 +10,12 @@ logged in to your website will also automatically be logged in on the XMPP serve
 
 Once a user is logged in, the session will be kept alive across page loads.
 
-There are a few ways to let your users be automatically authenticated to an
+There are several ways to let your users be automatically authenticated to an
 XMPP server once they've logged in to your site.
 
 ### Option 1: Server-side authentication via BOSH prebinding
 
-To **prebind** refers to a technique whereby your web application sets up an
+**Prebinding** refers to a technique whereby your web application sets up an
 authenticated BOSH session with the XMPP server or a standalone [BOSH](https://xmpp.org/about-xmpp/technology-overview/bosh/)
 connection manager.
 
@@ -45,11 +45,9 @@ This is however not the case if you for example use LDAP or Active Directory as
 your authentication backend, since you could then configure your XMPP server to
 use that as well.
 
-To prebind you will require a BOSH-enabled XMPP server for Converse to connect to
-(see the [`bosh_service_url`](/configuration/#bosh_service_url) under [Configuration](/configuration/))
-as well as a BOSH client in your web application (written for example in
-Python, Ruby or PHP) that will set up an authenticated BOSH session, which
-Converse can then attach to.
+To prebind you will require:
+- A BOSH-enabled XMPP server for Converse to connect to (see the [`bosh_service_url`](/configuration/#bosh_service_url) under [Configuration](/configuration/))
+- A BOSH client in your web application (written for example in Python, Ruby or PHP) that will set up an authenticated BOSH session, which Converse can then attach to
 
 :::note
 A BOSH server acts as a bridge between HTTP, the protocol of the web, and
@@ -67,15 +65,10 @@ about this and even provides an
 to demonstrate it.
 
 When you authenticate to the XMPP server on your backend application (for
-example via a BOSH client in Django), you'll receive two tokens, RID (request ID) and SID (session ID).
+example via a BOSH client in Django), you'll receive two tokens:
 
-The **Session ID (SID)** is a unique identifier for the current *session*. This
-number stays constant for the entire session.
-
-The **Request ID (RID)** is a unique identifier for the current *request* (i.e.
-page load). Each page load is a new request which requires a new unique RID.
-The best way to achieve this is to simply increment the RID with each page
-load.
+- **Session ID (SID)**: A unique identifier for the current *session*. This number stays constant for the entire session.
+- **Request ID (RID)**: A unique identifier for the current *request* (i.e. page load). Each page load is a new request which requires a new unique RID. The best way to achieve this is to simply increment the RID with each page load.
 
 You'll need to configure Converse with the [`prebind_url`](/configuration/#prebind_url) setting.
 
@@ -89,12 +82,10 @@ needs to be done.
 
 ### Option 2: Delegated authentication (external authentication)
 
-Delegated authentication refers to the usecase where the XMPP server delegates
+Delegated authentication refers to the use case where the XMPP server delegates
 authentication to some other service.
 
-This could be to LDAP or Active Directory (as shown in the diagram at the top
-of the page), or it could be to an OAuth provider, a SQL server or a specific
-website.
+This could be to LDAP or Active Directory, or it could be to an OAuth provider, a SQL server or a specific website.
 
 The Prosody webserver has various user-contributed modules which delegate
 authentication to external services. They are listed in the [Prosody community modules page](https://modules.prosody.im/). Other XMPP servers have similar plugin modules.
@@ -103,7 +94,7 @@ If your web-application has access to the same credentials, it can send those
 credentials to Converse so that users are automatically logged in when the
 page loads.
 
-This can be done by setting [`auto_login`](/configuration/#auto_login) to true and configuring the
+This can be done by setting [`auto_login`](/configuration/#auto_login) to `true` and configuring the
 [`credentials_url`](/configuration/#credentials_url) setting.
 
 ### Option 3: Temporary authentication tokens
@@ -175,7 +166,7 @@ security implications of storing plaintext passwords in localStorage.
 
 ### Storing the SASL SCRAM-SHA1 hash in IndexedDB
 
-Another suggestion is to store the SCRAM-SHA1 computed
+Another approach is to store the SCRAM-SHA1 computed
 `clientKey` in localStorage and to use that upon page reload to log the user in again.
 
 This has been implemented since version 10, see documentation on [`reuse_scram_keys`](/configuration/#reuse_scram_keys).

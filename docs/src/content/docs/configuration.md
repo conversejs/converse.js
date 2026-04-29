@@ -15,6 +15,37 @@ Please refer to the [Configuration settings](#configuration-settings) section be
 
 ## Configuration settings
 
+### autocomplete_providers_url
+
+* Default: `https://data.xmpp.net/providers/v2/providers-Ds.json`
+
+This setting specifies the URL from which to fetch a list of XMPP provider domains
+for autocomplete suggestions when adding a new contact.
+
+When a user types an XMPP address in the "Add a Contact" modal (e.g., `user@jab`),
+the autocomplete will suggest domains from both:
+
+1. The user's existing roster contacts
+2. The XMPP Providers list fetched from this URL
+
+The URL should return a JSON array of domain strings, for example:
+
+```json
+    ["jabber.de", "jabber.fr", "conversations.im", "disroot.org"]
+```
+
+This uses the [XMPP Providers](https://providers.xmpp.net/) project's Category D list,
+which includes all known XMPP providers regardless of quality rating.
+
+To disable this feature and only show domains from the user's roster, set this to an empty string:
+
+```javascript
+    converse.initialize({
+        autocomplete_providers_url: ''
+    });
+```
+
+
 ### allowed_audio_domains
 
 - Default: `null`
@@ -1181,6 +1212,24 @@ Inside the `./sounds` directory of the Converse repo you'll see MP3 and Ogg form
 You can set the URL where the sound files are hosted with the [sounds_path](#sounds_path) option.
 
 Requires the <span class="title-ref">src/converse-notification.js</span> plugin.
+
+### popular_emojis
+
+- Default: `[':thumbsup:', ':heart:', ':laughing:', ':joy:', ':tada:']`
+
+An array of emoji shortnames that are displayed as quick-access reaction buttons
+in the emoji and message reaction pickers (see [XEP-0444: Message Reactions](https://xmpp.org/extensions/xep-0444.html)).
+
+These emojis are shown as the first row of buttons in the reaction picker,
+allowing users to quickly react to messages without opening the full emoji selector.
+
+Example:
+
+```javascript
+converse.initialize({
+    popular_emojis: [':thumbsup:', ':heart:', ':laughing:', ':joy:', ':tada:']
+});
+```
 
 ### prebind_url
 

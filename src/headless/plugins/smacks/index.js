@@ -12,19 +12,19 @@ const { Strophe } = converse.env;
 Strophe.addNamespace('SM', 'urn:xmpp:sm:3');
 
 converse.plugins.add('converse-smacks', {
-    initialize () {
+    initialize() {
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
         api.settings.extend({
-            'enable_smacks': true,
-            'smacks_max_unacked_stanzas': 5
+            enable_smacks: true,
+            smacks_max_unacked_stanzas: 5,
         });
         api.listen.on('afterResourceBinding', sendEnableStanza);
         api.listen.on('beforeResourceBinding', enableStreamManagement);
         api.listen.on('will-reconnect', onWillReconnect);
         api.listen.on('send', onStanzaSent);
         api.listen.on('userSessionInitialized', initSessionData);
-    }
+    },
 });

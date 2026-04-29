@@ -1,161 +1,77 @@
 ---
 title: Features
-description: Overview of Converse features including file sharing, OMEMO encryption, notifications, and more.
+description: A complete overview of Converse's capabilities.
 ---
 
-## File sharing (XEP-0363 HTTP File Upload)
+Converse is a full-featured XMPP client that runs in any modern browser. Below is an overview of what it offers.
 
-Converse supports file sharing by first uploading the file to a file server and
-then sending the file's URL to the recipient.
+## Core chat
 
-The file server that is used is configured by the XMPP server admin, and is not
-something that Converse has any control over.
+- **One-to-one messaging** — Private chats with delivery receipts, typing indicators, and message corrections
+- **Group chats (MUC)** — Multi-user chatrooms with moderation, bookmarks, and persistent history
+- **Message reactions** — React to messages with emojis
+- **Message corrections & retractions** — Edit or delete sent messages
+- **Chat states** — See when contacts are typing, composing, or inactive
+- **URL previews** — Links in messages can be rendered as clickable previews
 
-Often when people report file sharing not working, it's because the file server
-is not configured to allow file uploads from other domains.
+## Security & privacy
 
-The file server needs to be configured for [Cross-Origin resource sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
-(known by the acronym CORS). Specifically, it needs to add a
-`Access-Control-Allow-Origin` header which includes the domain hosting
-Converse.
+- **OMEMO encryption** — End-to-end encrypted messaging as well as encrypted file sharing.
+- **Client certificate auth** — Passwordless login via SASL-EXTERNAL and x509 certificates.
+- **Untrusted device mode** — Check "This is not a trusted device" at login to use sessionStorage instead of localStorage, clearing all data on logout
 
-## End to end message encryption (XEP-0384 OMEMO)
+## File sharing
 
-:::note
-Converse versions older than 8.0.0 do NOT support encryption or decryption
-of uploaded files. Files will be uploaded WITHOUT ENCRYPTION, even when
-OMEMO is enabled.
+Upload and share files directly in chat via HTTP File Upload (XEP-0363). The file server is configured by your XMPP server admin.
+
+:::tip
+If file sharing isn't working, the most common cause is missing CORS headers on the file server. It must include an `Access-Control-Allow-Origin` header that allows the domain hosting Converse. See the [CORS documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) for details.
 :::
 
-:::note
-For end-to-end encryption via OMEMO, you'll need to load [libsignal-protocol.js](https://github.com/signalapp/libsignal-protocol-javascript) separately in
-your page. Take a look at the section on [libsignal](/development/setup-dev-environment/#libsignal) and the
-security considerations below.
-:::
+## Integration
 
-Converse supports OMEMO encryption based on the
-[Signal Protocol](https://github.com/signalapp/libsignal-protocol-javascript).
-
-The Signal Protocol is session-oriented. Clients establish a session, which is
-then used for all subsequent encrypt/decrypt operations. There is no need to
-ever tear down a session once one has been established.
-
-This means that a session needs to be stored permanently after logging out.
-
-Converse stores this session information in the browser's [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
-or [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage)
-database, depending on the value provided to [`persistent_store`](/configuration/#persistent_store).
-
-If you've checked the "This is not a trusted device" checkbox when logging in,
-then [sessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage)
-is used instead of localStorage and all data is cleared when you log out.
-
-For this reason, OMEMO is disabled when you've indicated that you're using
-an untrusted device. You would in any case not be able to decrypt previously
-received OMEMO messages, due to the Signal Protocol's forward secrecy and the
-fact that you don't have a pre-existing session.
-
-### Security considerations for browser-based crypto
-
-Crypto apps deployed via regular web hosting can be described as relying on
-"host-based" security.
-
-Host-based security services require you to trust the host every time you access
-it, whereas with installable desktop software you trust the host when you
-download/install the software (and whenever it gets updated).
-
-The dynamic nature of "host-based" systems makes it impractical for security
-researchers to do security audits because the hosted code can change at any
-time.
-
-In such a setup you need to fully trust the host that serves you the JavaScript code.
-
-The host that serves the JavaScript code is not necessarily the same host that
-stores and processes your chat messages. So using OMEMO can still protect your
-messages from snooping on the XMPP server where they're stored encrypted.
-
-In other words, you do have to trust the webserver that hosts Converse for you,
-but you don't necessarily have to trust the XMPP server (if it's on a different host),
-because it never gets hold of your private key.
-
-One way to improve this situation is to host Converse yourself, especially if
-you host it locally on your own machine. If you're not able to do that, then
-at least make sure you use a reputable host that serves files over HTTPS and
-that set [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy)
-headers.
-
-Due to these reasons, it's NOT a good idea to use encrypted messaging with a
-browser-based solution in life-threatening situations.
-
-Security can be increased by using an installable app (like [Converse Desktop](https://github.com/conversejs/converse-desktop)).
-
-For further reading on the challenges of web-based crypto, take a look at these
-articles:
-
-- [What's wrong with webcrypto?](https://tonyarcieri.com/whats-wrong-with-webcrypto)
-- [Heartbleed and JavaScript crypto](https://tankredhase.com/2014/04/13/heartbleed-and-javascript-crypto/)
-
-### OMEMO in Multi-user chats (MUC)
-
-Converse supports OMEMO encryption in groupchats, but only if the groupchat is
-set to `members only` and `non-anonymous`. This is the same criteria used by
-the popular Android XMPP client [Conversations](https://conversations.im/).
-
-If the groupchat is configured properly, you'll see the lock icon in the
-toolbar.
-
-## Open chats via URL
-
-From version 3.3.0, Converse has the ability to open chats (private or
-groupchat) based on the URL fragment.
-
-A room (aka groupchat) can be opened with a URL fragment such as `#converse/room?jid=room@domain`
-and a private chat with a URL fragment such as
-`#converse/chat?jid=user@domain`.
+- **Embeddable** — Run as a standalone page, a floating overlay, or embedded inside a `<div>`
+- **URL-based chat opening** — Link directly to a chat or room with URL fragments like `#converse/chat?jid=user@domain`
+- **Session management** — Auto-login users already authenticated on your website
+- **Plugin system** — Extend or customize behavior with plugins
 
 ## Notifications
 
-From version 0.8.1 Converse can play a sound notification when you receive a
-message.
+- **Sound alerts** — Play a sound when new messages arrive
+- **Desktop notifications** — Browser notifications when the tab isn't visible
 
-For more info, refer to the [`play_sounds`](/configuration/#play_sounds) configuration setting.
+## Internationalization
 
-It can also show [desktop notification messages](https://developer.mozilla.org/en-US/docs/Web/API/notification)
-when the browser is not currently visible.
+Converse is translated into 30+ languages, with translations loaded on demand from JSON files. Contribute or update translations on [Weblate](https://hosted.weblate.org/projects/conversejs/).
 
-For more info, refer to the [`show_desktop_notifications`](/configuration/#show_desktop_notifications) configuration setting.
+## Chatroom moderation
 
-## Multilingual Support
+Moderators can use these slash commands in group chats:
 
-Converse is translated into over 30 languages. Translations can be added or
-updated on [Weblate](https://hosted.weblate.org/projects/conversejs/).
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/ban` | Ban a user permanently | `/ban $nickname` |
+| `/kick` | Remove a user (they can rejoin) | `/kick $nickname [$reason]` |
+| `/mute` | Prevent a user from posting | `/mute $nickname [$reason]` |
+| `/voice` | Unmute a user | `/voice $nickname [$reason]` |
+| `/op` | Grant moderator status | `/op $nickname [$reason]` |
+| `/deop` | Remove moderator status | `/deop $nickname [$reason]` |
+| `/topic` | Set the room topic | `/topic New topic` |
+| `/nick` | Change your nickname | `/nick NewNick` |
+| `/me` | Speak in third person | `/me waves hello` |
+| `/clear` | Clear visible messages | `/clear` |
+| `/help` | Show available commands | `/help` |
 
-Translations are supplied in JSON format and are loaded on demand. Converse will expect to find the
-translations in the `/dist/locales` path of your site. This path can be
-changed via the [`assets_path`](/configuration/#assets_path) configuration setting.
+## Security considerations
 
-## Moderating chatrooms
+Converse uses "host-based" security — you trust the server that delivers the JavaScript each time you load the page. This differs from desktop apps where you trust the binary at install time.
 
-Here are the different commands that may be used to moderate a chatroom:
+**What this means:**
+- You must trust the web server hosting Converse, but not necessarily the XMPP server (they can be different hosts)
+- OMEMO protects messages from the XMPP server since it never sees your private key
+- The dynamic nature of web delivery makes independent security audits more difficult
 
-| Command | When is it triggered? | Example |
-|---------|----------------------|---------|
-| **ban** | Ban a user from the chatroom. They will not be able to join again. | `/ban $nickname` |
-| **clear** | Clear the messages shown in the chatroom. | `/clear` |
-| **deop** | Make a moderator a normal occupant. | `/deop $nickname [$reason]` |
-| **help** | Show the list of available commands. | `/help` |
-| **kick** | Kick a user out of a room. They will be able to join again. | `/kick $nickname [$reason]` |
-| **me** | Speak in the 3rd person. | `/me $message` |
-| **mute** | Remove a user's ability to post messages to the room. They will still be able to observe. | `/mute $nickname [$reason]` |
-| **nick** | Change your nickname. | `/nick $nickname` |
-| **op** | Make a normal occupant a moderator. | `/op $nickname [$reason]` |
-| **topic** | Set the topic of the chatroom. | `/topic ${topic text}` |
-| **voice** | Allow a muted user to post messages to the room. | `/voice $nickname [$reason]` |
-
-## Passwordless login with client certificates
-
-Converse supports the SASL-EXTERNAL authentication mechanism, which can be
-used together with x509 client certificates to enable passwordless login or
-even 2-factor authentication.
-
-For more info, [read this blog post](https://opkode.com/blog/strophe_converse_sasl_external/).
+**How to improve security:**
+- Host Converse yourself, ideally on your own infrastructure
+- Use HTTPS and set strict [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy) headers
+- For high-threat scenarios, use [Converse Desktop](https://github.com/conversejs/converse-desktop) instead

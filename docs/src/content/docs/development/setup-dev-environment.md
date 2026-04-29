@@ -3,87 +3,78 @@ title: Setting up a Dev Environment
 description: How to set up a development environment for Converse.
 ---
 
-## Installing the 3rd party dependencies
+## Prerequisites
 
-To develop and customize Converse, you'll first need to check out Converse's Git
-repository:
+To develop and customize Converse, you'll first need to check out Converse's Git repository:
 
-```
+```bash
 git clone https://github.com/conversejs/converse.js.git
 cd converse.js
 ```
 
-We use development tools which depend on Node.js and NPM (the Node package manager).
+We use development tools which depend on Node.js and NPM (the Node package manager). Make sure you have these installed on your system.
 
-It's recommended that you use [NVM](https://github.com/nvm-sh/nvm) (the Node version manager)
-to make sure you have the right version of Node.
+It's recommended that you use [NVM](https://github.com/nvm-sh/nvm) (the Node version manager) to ensure you're using the correct version of Node specified in the project.
 
-Refer to the [NVM Github page](https://github.com/nvm-sh/nvm#install--update-script) for instructions on how to install it.
+Refer to the [NVM GitHub page](https://github.com/nvm-sh/nvm#install--update-script) for installation instructions.
 
-To set up a Converse development environment, you now run the following:
+## Setting Up Your Development Environment
 
-```
+Once you have the repository cloned and Node.js installed, run the following commands to set up your development environment:
+
+```bash
 npm install
 npm run serve &
 npm run watch
 ```
 
-Alternatively, if you have GNU Make installed, you can run:
+Alternatively, if you have GNU Make installed, you can use these equivalent commands:
 
-```
+```bash
 make serve_bg
 make watch
 ```
 
-Then go to http://localhost:8000/dev.html to load Converse.
+After running these commands, visit http://localhost:8000/dev.html to load Converse in your browser.
 
-Modify [dev.html](https://github.com/conversejs/converse.js/blob/master/dev.html)
-so that `converse.initialize()` is called with the relevant settings.
+To customize the Converse configuration, modify [dev.html](https://github.com/conversejs/converse.js/blob/master/dev.html) and update the settings passed to `converse.initialize()`.
 
-Webpack will "watch" the source files and automatically recreate the build if they
-are modified. So you don't have to do anything to rebuild whenever you've
-changed something in a file but you will have to manually reload the browser tab
-to see the changes in the browser.
+## Development Workflow
 
-### Live reloading
+RSPack will automatically monitor ("watch") the source files and rebuild the project whenever you make changes.
+You don't need to manually trigger rebuilds, but you will need to reload the browser tab to see your changes.
 
-If you want to have live reloading whenever any of the source files change, you
-can run `make devserver` (or `npm run devserver`) which uses [webpack-dev-server](https://github.com/webpack/webpack-dev-server).
+## Live Reloading
 
-Then go to http://localhost:8080.
+For a more seamless development experience with automatic browser refreshes, you can try the RSPack development server:
 
-Instead of `dev.html`, [webpack.html](https://github.com/conversejs/converse.js/blob/master/webpack.html)
-is now being used as the served HTML file, and you'll need to modify that file to
-change the settings passed to `converse.initialize`.
+```bash
+make devserver
+# or alternatively
+npm run devserver
+```
 
-### Troubleshooting
+Then visit http://localhost:8080.
 
-After running `make watch`, you should now have a new *node_modules* directory
-which contains all the external dependencies of Converse.
+## Troubleshooting
 
-If this directory does NOT exist, something must have gone wrong.
+After running `npm install`, you should see a new *node_modules* directory containing all the external dependencies
+of Converse.
 
-Double-check the output of `make watch` to see if there are any errors
-listed.
+If this directory doesn't exist or appears empty, something went wrong during installation.
 
-For support, you can ask in our chatroom: [discuss@conference.conversejs.org](xmpp:discuss@conference.conversejs.org).
+Check the terminal output from your `npm install` command for any error messages.
 
-If you don't have an XMPP client installed, follow this link to
-[conversejs.org](https://conversejs.org/fullscreen#converse/room?jid=discuss@conference.conversejs.org)
-where you can log in and be taken directly to the chatroom.
+For additional help, you can join our community chatroom: [discuss@conference.conversejs.org](xmpp:discuss@conference.conversejs.org).
 
-### libsignal
+If you don't have an XMPP client installed, you can access the chatroom directly through [conversejs.org](https://conversejs.org/fullscreen#converse/room?jid=discuss@conference.conversejs.org) where you can log in and join the conversation.
 
-If you want OMEMO encryption, you need to load [libsignal](https://github.com/signalapp/libsignal-protocol-javascript) separately in your page.
+## Optional: Enabling OMEMO Encryption
 
-For example:
+If you want to develop with OMEMO end-to-end encryption support, you'll need to load [libsignal](https://github.com/signalapp/libsignal-protocol-javascript) separately in your page:
 
 ```html
 <script src="3rdparty/libsignal-protocol-javascript/dist/libsignal-protocol.js"></script>
 ```
 
-The reason libsignal needs to be loaded separately is because it's released
-under the [GPLv3](https://github.com/signalapp/libsignal-protocol-javascript/blob/master/LICENSE)
-which requires all other dependent JavaScript code to also be open sourced under the same
-license. You might not be willing to adhere to those terms, which is why you
-need to decide for yourself whether you're going to load libsignal or not.
+Libsignal is loaded separately because it's released under the [GPLv3 license](https://github.com/signalapp/libsignal-protocol-javascript/blob/master/LICENSE), which requires all dependent JavaScript code to also be open-sourced under the same license. Loading it separately gives you the choice of whether to include it based on your licensing requirements.

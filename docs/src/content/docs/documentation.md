@@ -3,9 +3,7 @@ title: Writing Documentation
 description: How to contribute to the Converse documentation.
 ---
 
-:::note
 Contributions to the documentation are much appreciated.
-:::
 
 ## What is used to write the documentation?
 

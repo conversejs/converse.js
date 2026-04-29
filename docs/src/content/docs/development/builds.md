@@ -10,77 +10,63 @@ explain how to create custom bundles.
 
 :::note
 Please make sure to read the section [Development](/development/overview/) and that you have installed
-all development dependencies (long story short, you should be able to just run `make dev`).
+all development dependencies.
 :::
 
 ## Creating JavaScript and CSS bundles and distribution files
 
-Converse uses [webpack](https://webpack.js.org/) to create the final JavaScript and CSS distribution files.
+Converse uses [RSPack](https://www.rspack.dev/) to create the final JavaScript and CSS distribution files.
 
 The generated distribution files are all placed in the `./dist` directory.
 The Converse repository does not include `dist` directory by default.
 
-To generate the `./dist` directory and all CSS and JavaScript bundles, simply run `make dist`.
+To generate the `./dist` directory and all CSS and JavaScript bundles, simply run:
 
-When you're developing, and constantly changing code, you can run `make watch`
-to let the bundles be automatically generated as soon as you edit a file.
+```bash
+npm run build
+```
+
+When you're developing, and constantly changing code, you can run:
+
+```bash
+npm run watch
+```
+
+This will let the bundles be automatically generated as soon as you edit a file.
 
 :::note
-If you're on Windows or don't have GNU Make installed, you can run `npm build`
-to build all the distribution files.
+If you have GNU Make installed, you can also run `make dist` to build all distribution files,
+or `make watch` for the watch mode.
 :::
 
-## Creating custom bundles
+## Development builds
 
-One reason you might want to create your own bundles, is because you want to
-remove some of the core plugins of Converse, or perhaps you want to include
-your own.
+For development, you can use:
 
-To add or remove plugins from the build, you need to modify
-[src/index.js](https://github.com/conversejs/converse.js/blob/master/src/index.js) or
-[src/headless/index.js](https://github.com/conversejs/converse.js/blob/master/src/index.js).
+- `npm run dev` - Creates unminified development builds
+- `npm run watch` - Watches for changes and rebuilds automatically
+- `npm run devserver` - Starts the RSPack development server with live reloading
 
-You'll find a section marked `/* START: Removable components` and
-`/* END: Removable components */`.
+## Production builds
 
-In this section is listed the Converse plugins that will make up a bundle.
+For production builds, you can use:
 
-You could for example decide to disable the ControlBox altogether by removing
-the `converse-controlbox` plugin.
+- `npm run build` - Creates minified production builds (ESM and CJS)
+- `npm run build:headless` - Builds the headless package
+- `npm run build:esm` - Builds only the ESM bundle
+- `npm run build:cjs` - Builds only the CommonJS bundle
 
-After doing so, you need to run `make dist` again in the root of your
-Converse repository, in order to generate the new build.
-
-Be aware that some plugins might have dependencies on other plugins, so if you
-remove a certain plugin but other included plugins still depend on it, then it
-will still be included in your build.
-
-To see which other plugins a particular plugin depends on, open it up in your
-text editor and look at the list specified as the second parameter to the
-`define` call, near the top of the file. This list specifies the dependencies
-of that plugin.
-
-Besides the standard build, the Converse repository includes configuration
-for certain other non-standard builds, which we'll now mention below.
-
-### Excluding all 3rd party dependencies
-
-The `dist/converse-no-dependencies.js` bundle contains only the core Converse
-code and none of the 3rd party dependencies. This might be useful if you need
-to load the dependencies separately.
-
-To generate this bundle, you can run:
-
-```
-make dist/converse-no-dependencies.js
-make dist/converse-no-dependencies.min.js
-```
+## Special builds
 
 ### Headless build
 
-Converse also has a special build called the `headless build`.
+Converse has a special build called the `headless build`.
 
-You can generate it by running `make dist/converse-headless.js`
+You can generate it by running:
+
+```bash
+npm run build:headless
+```
 
 The headless build is a bundle of all the non-UI parts of Converse, and its aim
 is to provide you with an XMPP library (and application) on which you can build
@@ -90,5 +76,66 @@ It's also installable as [@converse/headless](https://www.npmjs.com/package/@con
 
 The main distribution of Converse relies on the headless build.
 
-The file [src/headless/headless.js](https://github.com/jcbrand/converse.js/blob/master/src/headless/headless.js)
+The file [src/headless/index.js](https://github.com/jcbrand/converse.js/blob/master/src/headless/index.js)
 is used to determine which plugins are included in the build.
+
+### CDN build
+
+To create a build suitable for CDN deployment with absolute paths, run:
+
+```bash
+npm run cdn
+```
+
+## Creating custom bundles
+
+One reason you might want to create your own bundles, is because you want to
+remove some of the core plugins of Converse, or perhaps you want to include
+your own.
+
+To add or remove plugins from the build, you need to modify
+[src/index.js](https://github.com/conversejs/converse.js/blob/master/src/index.js) or
+[src/headless/index.js](https://github.com/conversejs/converse.js/blob/master/src/headless/index.js).
+
+You'll find sections where plugins are imported and registered. You can comment
+out or remove plugins you don't need.
+
+After doing so, you need to run `npm run build` again in the root of your
+Converse repository, in order to generate the new build.
+
+Be aware that some plugins might have dependencies on other plugins, so if you
+remove a certain plugin but other included plugins still depend on it, then it
+will still be included in your build.
+
+To see which other plugins a particular plugin depends on, open it up in your
+text editor and look at the import statements and plugin dependencies.
+
+## Build configuration files
+
+The RSPack build configuration files are located in the `rspack/` directory:
+
+- `rspack.common.js` - Shared configuration used by all builds
+- `rspack.build.js` - Main production build configuration
+- `rspack.build.esm.js` - ESM-specific build configuration
+- `rspack.build.cjs.js` - CommonJS-specific build configuration
+- `rspack.headless.js` - Headless build configuration
+- `rspack.nodeps.js` - No-dependencies build configuration
+- `rspack.serve.js` - Development server configuration
+
+## Output files
+
+After building, the following files will be generated in the `dist/` directory:
+
+- `converse.js` - Main CommonJS bundle
+- `converse.min.js` - Minified CommonJS bundle
+- `converse.esm.js` - Main ESM bundle
+- `converse.min.esm.js` - Minified ESM bundle
+- `converse.css` - Main CSS bundle
+- `converse.min.css` - Minified CSS bundle
+
+The headless build generates files in `src/headless/dist/`:
+
+- `converse-headless.js` - Headless CommonJS bundle
+- `converse-headless.min.js` - Minified headless CommonJS bundle
+- `converse-headless.esm.js` - Headless ESM bundle
+- `converse-headless.min.esm.js` - Minified headless ESM bundle

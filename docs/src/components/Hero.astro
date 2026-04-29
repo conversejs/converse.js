@@ -1,0 +1,36 @@
+---
+import Default from '@astrojs/starlight/components/Hero.astro';
+---
+
+<Default>
+	<slot />
+</Default>
+
+<style is:global>
+@media (min-width: 50rem) {
+	.hero {
+		grid-template-columns: 12.5rem 1fr !important;
+		align-items: start !important;
+		gap: 2rem !important;
+		padding-block: 2rem !important;
+	}
+	.hero > img,
+	.hero > .hero-html {
+		order: 1 !important;
+		width: 100% !important;
+		height: auto !important;
+		margin-inline: 0 !important;
+		padding: 0 !important;
+		transform: rotate(45deg) !important;
+	}
+	[data-theme="dark"] .hero > img {
+		filter: invert(1) !important;
+	}
+	.hero > .stack {
+		order: 2 !important;
+	}
+	.hero h1 {
+		margin-left: -6px !important;
+	}
+}
+</style>

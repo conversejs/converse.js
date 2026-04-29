@@ -116,19 +116,10 @@ function onFailedStanza(el) {
     api.trigger("streamResumptionFailed");
 
     if (el.querySelector("item-not-found")) {
-        // Stream resumption must happen before resource binding but
-        // enabling a new stream must happen after resource binding.
-        // Since resumption failed, we simply continue.
-        //
-        // After resource binding, sendEnableStanza will be called
-        // based on the afterResourceBinding event.
         log.warn("Could not resume previous SMACKS session, session id not found. A new session will be established.");
     } else {
-        log.error("Failed to enable stream management");
-        log.error(el.outerHTML);
-
-        const connection = api.connection.get();
-        connection._changeConnectStatus(Strophe.Status.DISCONNECTED, null);
+        log.warn("Failed to resume previous SMACKS session. A new session will be established.");
+        log.warn(el.outerHTML);
     }
     return true;
 }

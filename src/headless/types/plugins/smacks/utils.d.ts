@@ -1,5 +1,9 @@
 export function initSessionData(): void;
 export function sendEnableStanza(): Promise<void>;
 export function enableStreamManagement(): Promise<void>;
-export function onStanzaSent(stanza: any): void;
+/**
+ * @param {Element} stanza
+ */
+export function onStanzaSent(stanza: Element): void;
+export function onWillReconnect(): void;
 //# sourceMappingURL=utils.d.ts.map

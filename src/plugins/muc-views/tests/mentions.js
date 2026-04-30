@@ -2,8 +2,6 @@
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('An incoming groupchat message', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'is specially marked when you are mentioned in it',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
@@ -199,8 +197,6 @@ describe('An incoming groupchat message', function () {
 });
 
 describe('A sent groupchat message', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('in which someone is mentioned', function () {
         it(
             'gets parsed for mentions which get turned into references',

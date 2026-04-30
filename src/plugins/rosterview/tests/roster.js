@@ -4,8 +4,6 @@ const sizzle = converse.env.sizzle;
 const u = converse.env.utils;
 
 describe('The Contacts Roster', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'verifies the origin of roster pushes',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
@@ -1176,11 +1174,9 @@ describe('The Contacts Roster', function () {
                 expect(_converse.api.confirm).toHaveBeenCalled();
                 await u.waitUntil(() => sent_IQ);
 
-                expect(Strophe.serialize(sent_IQ)).toBe(
-                    `<iq type="set" xmlns="jabber:client">` +
-                        `<query xmlns="jabber:iq:roster"><item jid="mercutio@montague.lit" subscription="remove"/></query>` +
-                        `</iq>`,
-                );
+                expect(sent_IQ).toEqualStanza(stx`<iq type="set" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:roster"><item jid="mercutio@montague.lit" subscription="remove"/></query>
+                </iq>`);
                 expect(contact.sendRosterRemoveStanza).toHaveBeenCalled();
                 await u.waitUntil(() => sizzle(".open-chat:contains('" + name + "')", rosterview).length === 0);
             }),

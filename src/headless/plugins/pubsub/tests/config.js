@@ -4,8 +4,6 @@ import mock from '../../../tests/mock.js';
 const { sizzle, stx, u, errors } = converse.env;
 
 describe('The pubsub API', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('fetching a nodes config settings', function () {
         it(
             "can be used to fetch a nodes's configuration settings",

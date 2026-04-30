@@ -3,8 +3,6 @@
 const { Strophe, u, stx } = converse.env;
 
 describe('A XEP-0333 Chat Marker', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'is sent when a markable message is received from a roster contact',
         mock.initConverse([], {}, async function (_converse) {
@@ -25,13 +23,9 @@ describe('A XEP-0333 Chat Marker', function () {
             spyOn(_converse.api.connection.get(), 'send').and.callFake((s) => sent_stanzas.push(s?.nodeTree ?? s));
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => sent_stanzas.length === 2);
-            expect(Strophe.serialize(sent_stanzas[0])).toBe(
-                `<message from="romeo@montague.lit/orchard" ` +
-                    `id="${sent_stanzas[0].getAttribute('id')}" ` +
-                    `to="${contact_jid}" type="chat" xmlns="jabber:client">` +
-                    `<received id="${msgid}" xmlns="urn:xmpp:chat-markers:0"/>` +
-                    `</message>`,
-            );
+            expect(sent_stanzas[0]).toEqualStanza(stx`<message from="romeo@montague.lit/orchard" id="${sent_stanzas[0].getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
+                <received id="${msgid}" xmlns="urn:xmpp:chat-markers:0"/>
+            </message>`);
         }),
     );
 

@@ -27,11 +27,9 @@ describe('Chatrooms', function () {
                         )
                         .pop(),
                 );
-                expect(Strophe.serialize(stanza)).toBe(
-                    `<iq id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" ` +
-                        `type="get" xmlns="jabber:client">` +
-                        `<query xmlns="jabber:iq:register"/></iq>`,
-                );
+                expect(stanza).toEqualStanza(stx`<iq id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:register"/>
+                </iq>`);
 
                 const result = stx`
                 <iq from="${view.model.get('jid')}"
@@ -58,16 +56,14 @@ describe('Chatrooms', function () {
                         .pop(),
                 );
 
-                expect(Strophe.serialize(stanza)).toBe(
-                    `<iq id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">` +
-                        `<query xmlns="jabber:iq:register">` +
-                        `<x type="submit" xmlns="jabber:x:data">` +
-                        `<field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#register</value></field>` +
-                        `<field var="muc#register_roomnick"><value>romeo</value></field>` +
-                        `</x>` +
-                        `</query>` +
-                        `</iq>`,
-                );
+                expect(stanza).toEqualStanza(stx`<iq id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:register">
+                        <x type="submit" xmlns="jabber:x:data">
+                            <field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#register</value></field>
+                            <field var="muc#register_roomnick"><value>romeo</value></field>
+                        </x>
+                    </query>
+                </iq>`);
             }),
         );
     });

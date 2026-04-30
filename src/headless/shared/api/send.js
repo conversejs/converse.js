@@ -1,5 +1,5 @@
 import _converse from '../_converse.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import { Strophe } from 'strophe.js';
 import { TimeoutError } from '../errors.js';
 
@@ -21,7 +21,7 @@ export default {
         if (!api.connection.connected()) {
             // TODO: queue unsent messages and send once we're connected again
             log.warn("Not sending stanza because we're not connected!");
-            log.warn(Strophe.serialize(stanza));
+            log.warn(stanza);
             return;
         }
         const el = stanza instanceof Element ? stanza : stanza.tree();
@@ -62,9 +62,8 @@ export default {
                 promise = new Promise((resolve, reject) => connection.sendIQ(el, resolve, reject, timeout));
                 promise.catch((e) => {
                     if (e === null) {
-                        throw new TimeoutError(
-                            `Timeout error after ${timeout}ms for the following IQ stanza: ${Strophe.serialize(el)}`
-                        );
+                        log.error(el);
+                        throw new TimeoutError(`Timeout error after ${timeout}ms for IQ stanza`);
                     }
                 });
             } else {

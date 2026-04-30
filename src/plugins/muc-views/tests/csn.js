@@ -3,8 +3,6 @@
 const { Strophe, stx, u } = converse.env;
 
 describe('Groupchats', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('A XEP-0085 Chat Status Notification', function () {
         it(
             'is is not sent out to a MUC if the user is a visitor in a moderated room',

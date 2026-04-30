@@ -2,8 +2,6 @@
 const { u, Strophe, stx } = converse.env;
 
 describe('A XEP-0316 MEP notification', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'is rendered as an info message',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {

@@ -5,7 +5,6 @@ const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 // Implements the protocol defined in https://xmpp.org/extensions/xep-0313.html#config
 describe('Message Archive Management', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
     beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
     afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
@@ -979,8 +978,6 @@ describe('Message Archive Management', function () {
 });
 
 describe('Chatboxes', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('A Chatbox', function () {
         it(
             "will fetch archived messages once it's opened",

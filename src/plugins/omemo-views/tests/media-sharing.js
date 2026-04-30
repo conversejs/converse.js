@@ -2,8 +2,6 @@
 const { omemo, Strophe, stx, u, sizzle } = converse.env;
 
 describe('The OMEMO module', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         "shows an error when it can't download a received encrypted file",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {

@@ -1,8 +1,6 @@
 const { u } = converse.env;
 
 describe('The Blocklist Modal', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'shows a message when there are no blocked users',
         mock.initConverse([], {}, async function (_converse) {

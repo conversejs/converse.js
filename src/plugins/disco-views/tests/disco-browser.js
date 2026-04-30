@@ -1,8 +1,6 @@
 const { u } = converse.env;
 
 describe('DiscoBrowser', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'initializes with the session domain as the first entity',
         mock.initConverse([], {}, async function (_converse) {

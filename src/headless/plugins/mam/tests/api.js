@@ -9,8 +9,6 @@ const sizzle = converse.env.sizzle;
 
 describe('Message Archive Management', function () {
     describe('The archive.query API', function () {
-        beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
         it(
             'can be used to query for all archived messages',
             mock.initConverse(['discoInitialized'], {}, async function (_converse) {

@@ -3,8 +3,6 @@
 const { Strophe, stx, u } = converse.env;
 
 describe('Groupchats', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('when muc_send_probes is true', function () {
         it(
             'sends presence probes when muc_send_probes is true',

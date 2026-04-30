@@ -3,8 +3,6 @@
 const { u, Strophe, sizzle, stx } = converse.env;
 
 describe('A list of open groupchats', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'is shown in controlbox',
         mock.initConverse(
@@ -198,11 +196,9 @@ describe('A groupchat shown in the groupchats list', function () {
                 let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
                 // Check that an IQ is sent out, asking for the configuration form.
-                expect(Strophe.serialize(iq)).toBe(
-                    `<iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">` +
-                        `<query xmlns="http://jabber.org/protocol/muc#owner"/>` +
-                        `</iq>`,
-                );
+                expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#owner"/>
+                </iq>`);
 
                 const jid = _converse.session.get('jid');
 

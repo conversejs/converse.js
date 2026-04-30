@@ -2,8 +2,6 @@
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('Groupchats', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('An instant groupchat', function () {
         it(
             'will be created when muc_instant_rooms is set to true',

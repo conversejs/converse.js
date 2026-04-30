@@ -2,8 +2,6 @@
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('The OMEMO module', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'adds methods for encrypting and decrypting messages via AES GCM',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {

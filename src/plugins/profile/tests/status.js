@@ -4,8 +4,6 @@ const u = converse.env.utils;
 const Strophe = converse.env.Strophe;
 
 describe('The Controlbox', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('The Status Widget', function () {
         it(
             "shows the user's chat status, which is online by default",

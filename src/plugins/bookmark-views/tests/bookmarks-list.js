@@ -3,8 +3,6 @@
 const { Strophe, u, sizzle } = converse.env;
 
 describe('The bookmarks list modal', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'shows a list of bookmarks',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {

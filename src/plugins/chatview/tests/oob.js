@@ -2,8 +2,6 @@
 const { Strophe, u, stx } = converse.env;
 
 describe('A Chat Message', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('which contains an OOB URL', function () {
         it(
             'will render audio from oob mp3 URLs using accessible audio player',

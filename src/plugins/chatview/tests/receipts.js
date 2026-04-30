@@ -29,7 +29,7 @@ describe('A delivery receipt', function () {
             // A chat state message is also included
             expect(sent_messages.length).toBe(2);
             const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_messages[1]).pop();
-            expect(Strophe.serialize(receipt)).toBe(`<received id="${msg_id}" xmlns="${Strophe.NS.RECEIPTS}"/>`);
+            expect(receipt).toEqualStanza(stx`<received id="${msg_id}" xmlns="${Strophe.NS.RECEIPTS}"/>`);
         }),
     );
 

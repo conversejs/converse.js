@@ -1,8 +1,6 @@
 const { stx, sizzle, u } = converse.env;
 
 describe('Requesting Contacts', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'can be added to the roster and they will be sorted alphabetically',
         mock.initConverse([], {}, async function (_converse) {
@@ -275,8 +273,6 @@ describe('Requesting Contacts', function () {
 });
 
 describe('A chat with a requesting contact', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'shows an approval alert when chatting with a requesting contact',
         mock.initConverse([], { lazy_load_vcards: false }, async function (_converse) {

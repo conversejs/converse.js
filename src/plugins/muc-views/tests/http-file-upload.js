@@ -3,8 +3,6 @@
 const { Strophe, sizzle, u, stx } = converse.env;
 
 describe('XEP-0363: HTTP File Upload', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('When not supported', function () {
         describe('A file upload toolbar button', function () {
             it(
@@ -124,19 +122,9 @@ describe('XEP-0363: HTTP File Upload', function () {
                                     .length,
                         );
                         const iq = IQ_stanzas.pop();
-                        expect(Strophe.serialize(iq)).toBe(
-                            `<iq from="romeo@montague.lit/orchard" ` +
-                                `id="${iq.getAttribute('id')}" ` +
-                                `to="upload.montague.tld" ` +
-                                `type="get" ` +
-                                `xmlns="jabber:client">` +
-                                `<request ` +
-                                `content-type="image/jpeg" ` +
-                                `filename="my-juliet.jpg" ` +
-                                `size="23456" ` +
-                                `xmlns="urn:xmpp:http:upload:0"/>` +
-                                `</iq>`,
-                        );
+                        expect(iq).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="upload.montague.tld" type="get" xmlns="jabber:client">
+                            <request content-type="image/jpeg" filename="my-juliet.jpg" size="23456" xmlns="urn:xmpp:http:upload:0"/>
+                        </iq>`);
 
                         const message = base_url + '/logo/conversejs-filled.svg';
                         const stanza = stx`

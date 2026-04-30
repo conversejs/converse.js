@@ -2,8 +2,6 @@
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('Groupchats', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('Each chat groupchat can take special commands', function () {
         it(
             'takes /help to show the available commands',
@@ -691,15 +689,13 @@ describe('Groupchats', function () {
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2);
                 expect(view.model.setRole).toHaveBeenCalled();
-                expect(Strophe.serialize(sent_IQ)).toBe(
-                    `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">` +
-                        `<query xmlns="http://jabber.org/protocol/muc#admin">` +
-                        `<item nick="annoying guy" role="none">` +
-                        `<reason>You&apos;re annoying</reason>` +
-                        `</item>` +
-                        `</query>` +
-                        `</iq>`,
-                );
+                expect(sent_IQ).toEqualStanza(stx`<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#admin">
+                        <item nick="annoying guy" role="none">
+                            <reason>You're annoying</reason>
+                        </item>
+                    </query>
+                </iq>`);
 
                 presence = stx`<presence
                     from="lounge@montague.lit/annoying guy"
@@ -787,15 +783,13 @@ describe('Groupchats', function () {
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2);
                 expect(view.model.setRole).toHaveBeenCalled();
-                expect(Strophe.serialize(sent_IQ)).toBe(
-                    `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">` +
-                        `<query xmlns="http://jabber.org/protocol/muc#admin">` +
-                        `<item nick="trustworthyguy" role="moderator">` +
-                        `<reason>You&apos;re trustworthy</reason>` +
-                        `</item>` +
-                        `</query>` +
-                        `</iq>`,
-                );
+                expect(sent_IQ).toEqualStanza(stx`<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#admin">
+                        <item nick="trustworthyguy" role="moderator">
+                            <reason>You're trustworthy</reason>
+                        </item>
+                    </query>
+                </iq>`);
 
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(

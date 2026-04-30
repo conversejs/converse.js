@@ -4,8 +4,6 @@ import mock from '../../../tests/mock.js';
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('Popular Emojis', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('PopularEmojis Model', function () {
         it(
             'records usage timestamps correctly',

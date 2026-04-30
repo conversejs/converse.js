@@ -2,8 +2,6 @@
 const { Strophe, u, stx, dayjs, sizzle } = converse.env;
 
 describe('A sent chat message', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'can be retracted',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {

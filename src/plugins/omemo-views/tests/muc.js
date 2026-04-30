@@ -4,8 +4,6 @@ const { Strophe, sizzle, stx, omemo } = converse.env;
 const u = converse.env.utils;
 
 describe('The OMEMO module', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'enables encrypted groupchat messages to be sent and received',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
@@ -342,13 +340,12 @@ describe('The OMEMO module', function () {
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
-            expect(Strophe.serialize(iq_stanza)).toBe(
-                `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute('id')}" to="${contact_jid}" type="get" xmlns="jabber:client">` +
-                    `<pubsub xmlns="http://jabber.org/protocol/pubsub">` +
-                    `<items node="eu.siacs.conversations.axolotl.devicelist"/>` +
-                    `</pubsub>` +
-                    `</iq>`,
-            );
+            expect(iq_stanza).toEqualStanza(
+                stx`<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute('id')}" to="${contact_jid}" type="get" xmlns="jabber:client">
+                        <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                            <items node="eu.siacs.conversations.axolotl.devicelist"/>
+                        </pubsub>
+                    </iq>`);
 
             stanza = stx`
                 <iq from="${contact_jid}"
@@ -432,13 +429,12 @@ describe('The OMEMO module', function () {
                 </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
-            expect(Strophe.serialize(iq_stanza)).toBe(
-                `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute('id')}" to="${contact_jid}" type="get" xmlns="jabber:client">` +
-                    `<pubsub xmlns="http://jabber.org/protocol/pubsub">` +
-                    `<items node="eu.siacs.conversations.axolotl.devicelist"/>` +
-                    `</pubsub>` +
-                    `</iq>`,
-            );
+            expect(iq_stanza).toEqualStanza(
+                stx`<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute('id')}" to="${contact_jid}" type="get" xmlns="jabber:client">
+                        <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                            <items node="eu.siacs.conversations.axolotl.devicelist"/>
+                        </pubsub>
+                    </iq>`);
 
             stanza = stx`
                 <iq from="${contact_jid}"

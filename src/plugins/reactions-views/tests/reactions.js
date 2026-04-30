@@ -4,9 +4,6 @@ const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('Message Reactions (XEP-0444)', function () {
     const popular_emojis = [':thumbsup:', ':heart:', ':tada:', ':joy:', ':open_mouth:'];
-
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('sending reactions in a 1:1 chat', function () {
         it(
             'logs an error and sends nothing when given an unknown shortname',
@@ -2056,9 +2053,6 @@ describe('Message Reactions (XEP-0444)', function () {
 
 describe('Popular Reactions PEP publishing', function () {
     const popular_emojis = [':thumbsup:', ':heart:', ':tada:', ':joy:', ':open_mouth:'];
-
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'only publishes reacted emojis to PEP, but pads the picker display with configured defaults',
         mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {

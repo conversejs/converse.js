@@ -4,8 +4,6 @@ import mock from '../../../tests/mock.js';
 const { stx, u } = converse.env;
 
 describe('MUC presence history element', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'includes history when maxstanzas is set',
         mock.initConverse(['statusInitialized'], { muc_history_max_stanzas: 5 }, async function (_converse) {

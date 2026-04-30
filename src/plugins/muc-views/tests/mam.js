@@ -2,8 +2,6 @@
 const { Strophe, stx, u, sizzle } = converse.env;
 
 describe('MAM archived messages', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'will be fetched newest first and will automatically fetch again if the placeholder message becomes visible',
 

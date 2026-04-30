@@ -3,8 +3,6 @@
 const { Strophe, sizzle, u, stx } = converse.env;
 
 describe('Ad-hoc commands', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'can be queried for via a modal',
         mock.initConverse([], {}, async (_converse) => {
@@ -86,11 +84,9 @@ describe('Ad-hoc commands', function () {
             sel = `iq[to="${entity_jid}"][type="set"] command`;
             iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
-            expect(Strophe.serialize(iq)).toBe(
-                `<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">` +
-                    `<command action="execute" node="adduser" xmlns="http://jabber.org/protocol/commands"/>` +
-                    `</iq>`,
-            );
+            expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
+                <command action="execute" node="adduser" xmlns="http://jabber.org/protocol/commands"/>
+            </iq>`);
 
             _converse.api.connection.get()._dataRecv(
                 mock.createRequest(stx`
@@ -202,11 +198,9 @@ describe('Ad-hoc commands', function () {
             sel = `iq[to="${entity_jid}"][type="set"] command`;
             iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
-            expect(Strophe.serialize(iq)).toBe(
-                `<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">` +
-                    `<command action="execute" node="uptime" xmlns="http://jabber.org/protocol/commands"/>` +
-                    `</iq>`,
-            );
+            expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
+                <command action="execute" node="uptime" xmlns="http://jabber.org/protocol/commands"/>
+            </iq>`);
 
             const uptime_text =
                 'This service has been running for 143 days, ' +
@@ -296,11 +290,9 @@ describe('Ad-hoc commands', function () {
             sel = `iq[to="${entity_jid}"][type="set"] command`;
             iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
-            expect(Strophe.serialize(iq)).toBe(
-                `<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">` +
-                    `<command action="execute" node="list" xmlns="http://jabber.org/protocol/commands"/>` +
-                    `</iq>`,
-            );
+            expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
+                <command action="execute" node="list" xmlns="http://jabber.org/protocol/commands"/>
+            </iq>`);
 
             _converse.api.connection.get()._dataRecv(
                 mock.createRequest(stx`
@@ -440,11 +432,9 @@ describe('Ad-hoc commands', function () {
             sel = `iq[to="${entity_jid}"][type="set"] command`;
             iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
-            expect(Strophe.serialize(iq)).toBe(
-                `<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">` +
-                    `<command action="execute" node="list" xmlns="http://jabber.org/protocol/commands"/>` +
-                    `</iq>`,
-            );
+            expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
+                <command action="execute" node="list" xmlns="http://jabber.org/protocol/commands"/>
+            </iq>`);
 
             _converse.api.connection.get()._dataRecv(
                 mock.createRequest(stx`
@@ -507,8 +497,6 @@ describe('Ad-hoc commands', function () {
 });
 
 describe('Ad-hoc commands consisting of multiple steps', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'can be queried and executed via a modal',
         mock.initConverse([], {}, async (_converse) => {

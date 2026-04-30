@@ -5,7 +5,6 @@ const { u, stx } = converse.env;
 
 describe('A blocklist', function () {
     beforeEach(() => {
-        jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza });
     });
 
     it(

@@ -59,13 +59,9 @@ describe('XEP-0363: HTTP File Upload', function () {
 
                 selector = 'iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]';
                 stanza = await u.waitUntil(() => IQ_stanzas.filter((iq) => iq.querySelector(selector)).pop(), 1000);
-                expect(Strophe.serialize(stanza)).toBe(
-                    `<iq from="romeo@montague.lit/orchard" id="` +
-                        stanza.getAttribute('id') +
-                        `" to="upload.montague.lit" type="get" xmlns="jabber:client">` +
-                        `<query xmlns="http://jabber.org/protocol/disco#info"/>` +
-                        `</iq>`,
-                );
+                expect(stanza).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="upload.montague.lit" type="get" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/disco#info"/>
+                </iq>`);
 
                 // Upload service responds and reports a maximum file size of 5MiB
                 stanza = stx`
@@ -217,19 +213,9 @@ describe('XEP-0363: HTTP File Upload', function () {
                                     .length,
                         );
                         const iq = IQ_stanzas.pop();
-                        expect(Strophe.serialize(iq)).toBe(
-                            `<iq from="romeo@montague.lit/orchard" ` +
-                                `id="${iq.getAttribute('id')}" ` +
-                                `to="upload.montague.tld" ` +
-                                `type="get" ` +
-                                `xmlns="jabber:client">` +
-                                `<request ` +
-                                `content-type="image/jpeg" ` +
-                                `filename="my-juliet.jpg" ` +
-                                `size="23456" ` +
-                                `xmlns="urn:xmpp:http:upload:0"/>` +
-                                `</iq>`,
-                        );
+                        expect(iq).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="upload.montague.tld" type="get" xmlns="jabber:client">
+                            <request content-type="image/jpeg" filename="my-juliet.jpg" size="23456" xmlns="urn:xmpp:http:upload:0"/>
+                        </iq>`);
 
                         const message = base_url + '/logo/conversejs-filled.svg';
 
@@ -272,21 +258,15 @@ describe('XEP-0363: HTTP File Upload', function () {
                         api.connection.get()._dataRecv(mock.createRequest(stanza));
 
                         await u.waitUntil(() => sent_stanza, 1000);
-                        expect(Strophe.serialize(sent_stanza)).toBe(
-                            `<message from="romeo@montague.lit/orchard" ` +
-                                `id="${sent_stanza.getAttribute('id')}" ` +
-                                `to="lady.montague@montague.lit" ` +
-                                `type="chat" ` +
-                                `xmlns="jabber:client">` +
-                                `<body>${message}</body>` +
-                                `<active xmlns="http://jabber.org/protocol/chatstates"/>` +
-                                `<request xmlns="urn:xmpp:receipts"/>` +
-                                `<x xmlns="jabber:x:oob">` +
-                                `<url>${message}</url>` +
-                                `</x>` +
-                                `<origin-id id="${sent_stanza.querySelector('origin-id').getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>` +
-                                `</message>`,
-                        );
+                        expect(sent_stanza).toEqualStanza(stx`<message from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" to="lady.montague@montague.lit" type="chat" xmlns="jabber:client">
+                            <body>${message}</body>
+                            <active xmlns="http://jabber.org/protocol/chatstates"/>
+                            <request xmlns="urn:xmpp:receipts"/>
+                            <x xmlns="jabber:x:oob">
+                                <url>${message}</url>
+                            </x>
+                            <origin-id id="${sent_stanza.querySelector('origin-id').getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>
+                        </message>`);
                         const img_link_el = await u.waitUntil(
                             () => view.querySelector('converse-chat-message-body .chat-image__link'),
                             1000,
@@ -400,11 +380,9 @@ describe('XEP-0363: HTTP File Upload', function () {
                             ),
                         );
                         const IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-                        expect(Strophe.serialize(stanza)).toBe(
-                            `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" to="upload.montague.lit" type="get" xmlns="jabber:client">` +
-                                `<query xmlns="http://jabber.org/protocol/disco#info"/>` +
-                                `</iq>`,
-                        );
+                        expect(stanza).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${IQ_id}" to="upload.montague.lit" type="get" xmlns="jabber:client">
+                            <query xmlns="http://jabber.org/protocol/disco#info"/>
+                        </iq>`);
 
                         // Upload service responds and reports a maximum file size of 5MiB
                         stanza = stx`
@@ -502,19 +480,9 @@ describe('XEP-0363: HTTP File Upload', function () {
                             IQ_stanzas.filter((iq) => iq.querySelector('iq[to="upload.montague.tld"] request')).length,
                     );
                     const iq = IQ_stanzas.pop();
-                    expect(Strophe.serialize(iq)).toBe(
-                        `<iq from="romeo@montague.lit/orchard" ` +
-                            `id="${iq.getAttribute('id')}" ` +
-                            `to="upload.montague.tld" ` +
-                            `type="get" ` +
-                            `xmlns="jabber:client">` +
-                            `<request ` +
-                            `content-type="image/jpeg" ` +
-                            `filename="my-juliet.jpg" ` +
-                            `size="23456" ` +
-                            `xmlns="urn:xmpp:http:upload:0"/>` +
-                            `</iq>`,
-                    );
+                    expect(iq).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="upload.montague.tld" type="get" xmlns="jabber:client">
+                        <request content-type="image/jpeg" filename="my-juliet.jpg" size="23456" xmlns="urn:xmpp:http:upload:0"/>
+                    </iq>`);
 
                     const base_url = 'https://conversejs.org';
                     const message = base_url + '/logo/conversejs-filled.svg';

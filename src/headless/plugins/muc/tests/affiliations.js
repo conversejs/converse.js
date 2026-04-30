@@ -4,8 +4,6 @@ import mock from '../../../tests/mock.js';
 const { stx } = converse.env;
 
 describe('The MUC Affiliations API', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'can be used to set affiliations in MUCs without having to join them first',
         mock.initConverse([], {}, async function (_converse) {

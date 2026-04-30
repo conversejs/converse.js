@@ -109,8 +109,6 @@ describe('An unsaved Contact', function () {
 });
 
 describe('A chat with an unsaved contact', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'shows an unsaved contact alert when chatting with an unsaved contact',
         mock.initConverse([], { lazy_load_vcards: false }, async function (_converse) {

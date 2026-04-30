@@ -2,7 +2,7 @@ const { Strophe } = converse.env;
 
 describe('A chat state indication', function () {
     it(
-        'are sent out when the client becomes or stops being idle',
+        'is sent out when the client becomes or stops being idle',
         mock.initConverse(['discoInitialized'], {}, (_converse) => {
             let i = 0;
             const domain = _converse.session.get('domain');
@@ -19,9 +19,9 @@ describe('A chat state indication', function () {
                 _converse.exports.onEverySecond();
                 i++;
             }
-            expect(Strophe.serialize(sent_stanza)).toBe('<inactive xmlns="urn:xmpp:csi:0"/>');
+            expect(sent_stanza).toEqualStanza(stx`<inactive xmlns="urn:xmpp:csi:0"/>`);
             _converse.onUserActivity();
-            expect(Strophe.serialize(sent_stanza)).toBe('<active xmlns="urn:xmpp:csi:0"/>');
+            expect(sent_stanza).toEqualStanza(stx`<active xmlns="urn:xmpp:csi:0"/>`);
         }),
     );
 });

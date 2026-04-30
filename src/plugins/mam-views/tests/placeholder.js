@@ -2,8 +2,6 @@
 const { Strophe, sizzle, u } = converse.env;
 
 describe('Message Archive Management', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('A placeholder message', function () {
         it(
             'is created to indicate a gap in the history',

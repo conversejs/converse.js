@@ -416,13 +416,11 @@ describe('Chatboxes', function () {
                         const stanza = await u.waitUntil(() =>
                             sent_stanzas.filter((s) => sizzle(`active`, s).length).pop(),
                         );
-                        expect(Strophe.serialize(stanza)).toBe(
-                            `<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">` +
-                                `<active xmlns="http://jabber.org/protocol/chatstates"/>` +
-                                `<no-store xmlns="urn:xmpp:hints"/>` +
-                                `<no-permanent-store xmlns="urn:xmpp:hints"/>` +
-                                `</message>`,
-                        );
+                        expect(stanza).toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
+                            <active xmlns="http://jabber.org/protocol/chatstates"/>
+                            <no-store xmlns="urn:xmpp:hints"/>
+                            <no-permanent-store xmlns="urn:xmpp:hints"/>
+                        </message>`);
                     }),
                 );
             });
@@ -625,26 +623,22 @@ describe('Chatboxes', function () {
                             1000,
                         );
 
-                        expect(Strophe.serialize(stanza)).toBe(
-                            `<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">` +
-                                `<composing xmlns="http://jabber.org/protocol/chatstates"/>` +
-                                `<no-store xmlns="urn:xmpp:hints"/>` +
-                                `<no-permanent-store xmlns="urn:xmpp:hints"/>` +
-                                `</message>`,
-                        );
+                        expect(stanza).toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
+                            <composing xmlns="http://jabber.org/protocol/chatstates"/>
+                            <no-store xmlns="urn:xmpp:hints"/>
+                            <no-permanent-store xmlns="urn:xmpp:hints"/>
+                        </message>`);
 
                         await u.waitUntil(() => view.model.get('chat_state') === 'paused', 500);
 
                         stanza = await u.waitUntil(() =>
                             sent_stanzas.filter((s) => sizzle(`[xmlns="${xmlns}"]`, s)).pop(),
                         );
-                        expect(Strophe.serialize(stanza)).toBe(
-                            `<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">` +
-                                `<paused xmlns="http://jabber.org/protocol/chatstates"/>` +
-                                `<no-store xmlns="urn:xmpp:hints"/>` +
-                                `<no-permanent-store xmlns="urn:xmpp:hints"/>` +
-                                `</message>`,
-                        );
+                        expect(stanza).toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
+                            <paused xmlns="http://jabber.org/protocol/chatstates"/>
+                            <no-store xmlns="urn:xmpp:hints"/>
+                            <no-permanent-store xmlns="urn:xmpp:hints"/>
+                        </message>`);
 
                         // Test #359. A paused notification should not be sent
                         // out if the user simply types longer than the
@@ -755,13 +749,11 @@ describe('Chatboxes', function () {
                         expect(view.model.get('chat_state')).toBe('active');
 
                         const messages = sent_stanzas.filter((s) => s.matches('message'));
-                        expect(Strophe.serialize(messages[0])).toBe(
-                            `<message id="${messages[0].getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">` +
-                                `<active xmlns="http://jabber.org/protocol/chatstates"/>` +
-                                `<no-store xmlns="urn:xmpp:hints"/>` +
-                                `<no-permanent-store xmlns="urn:xmpp:hints"/>` +
-                                `</message>`,
-                        );
+                        expect(messages[0]).toEqualStanza(stx`<message id="${messages[0].getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">
+                            <active xmlns="http://jabber.org/protocol/chatstates"/>
+                            <no-store xmlns="urn:xmpp:hints"/>
+                            <no-permanent-store xmlns="urn:xmpp:hints"/>
+                        </message>`);
 
                         const message_form = view.querySelector('converse-message-form');
                         message_form.onKeyDown({
@@ -772,37 +764,31 @@ describe('Chatboxes', function () {
                         let stanza = await u.waitUntil(() =>
                             sent_stanzas.filter((s) => s.querySelector('message composing')).pop(),
                         );
-                        expect(Strophe.serialize(stanza)).toBe(
-                            `<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">` +
-                                `<composing xmlns="http://jabber.org/protocol/chatstates"/>` +
-                                `<no-store xmlns="urn:xmpp:hints"/>` +
-                                `<no-permanent-store xmlns="urn:xmpp:hints"/>` +
-                                `</message>`,
-                        );
+                        expect(stanza).toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">
+                            <composing xmlns="http://jabber.org/protocol/chatstates"/>
+                            <no-store xmlns="urn:xmpp:hints"/>
+                            <no-permanent-store xmlns="urn:xmpp:hints"/>
+                        </message>`);
 
                         await u.waitUntil(() => view.model.get('chat_state') === 'paused', 600);
                         stanza = await u.waitUntil(() =>
                             sent_stanzas.filter((s) => s.querySelector('message paused')).pop(),
                         );
-                        expect(Strophe.serialize(stanza)).toBe(
-                            `<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">` +
-                                `<paused xmlns="http://jabber.org/protocol/chatstates"/>` +
-                                `<no-store xmlns="urn:xmpp:hints"/>` +
-                                `<no-permanent-store xmlns="urn:xmpp:hints"/>` +
-                                `</message>`,
-                        );
+                        expect(stanza).toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">
+                            <paused xmlns="http://jabber.org/protocol/chatstates"/>
+                            <no-store xmlns="urn:xmpp:hints"/>
+                            <no-permanent-store xmlns="urn:xmpp:hints"/>
+                        </message>`);
 
                         await u.waitUntil(() => view.model.get('chat_state') === 'inactive', 600);
                         stanza = await u.waitUntil(() =>
                             sent_stanzas.filter((s) => s.querySelector('message inactive')).pop(),
                         );
-                        expect(Strophe.serialize(stanza)).toBe(
-                            `<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">` +
-                                `<inactive xmlns="http://jabber.org/protocol/chatstates"/>` +
-                                `<no-store xmlns="urn:xmpp:hints"/>` +
-                                `<no-permanent-store xmlns="urn:xmpp:hints"/>` +
-                                `</message>`,
-                        );
+                        expect(stanza).toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">
+                            <inactive xmlns="http://jabber.org/protocol/chatstates"/>
+                            <no-store xmlns="urn:xmpp:hints"/>
+                            <no-permanent-store xmlns="urn:xmpp:hints"/>
+                        </message>`);
                     }),
                 );
 

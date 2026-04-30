@@ -3,7 +3,6 @@
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe('A sent presence stanza', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
     beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
     afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 

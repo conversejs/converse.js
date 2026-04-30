@@ -3,8 +3,6 @@
 const { stx, Strophe, sizzle, u } = converse.env;
 
 describe('The Registration Form', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     afterEach(() => {
         // Remove the hash
         history.pushState('', document.title, window.location.pathname + window.location.search);
@@ -358,30 +356,21 @@ describe('The Registration Form', function () {
 
                 expect(_converse.api.connection.get().send).toHaveBeenCalled();
                 stanza = _converse.api.connection.get().send.calls.argsFor(0)[0].tree();
-                expect(
-                    Strophe.serialize(stanza)
-                        .toLocaleString()
-                        .trim()
-                        .replace(/(\n|\s{2,})/g, ''),
-                ).toEqual(
-                    '<iq id="' +
-                        stanza.getAttribute('id') +
-                        '" type="set" xmlns="jabber:client">' +
-                        '<query xmlns="jabber:iq:register">' +
-                        '<x type="submit" xmlns="jabber:x:data">' +
-                        '<field var="username">' +
-                        '<value>testusername</value>' +
-                        '</field>' +
-                        '<field var="password">' +
-                        '<value>testpassword</value>' +
-                        '</field>' +
-                        '<field var="email">' +
-                        '<value>test@email.local</value>' +
-                        '</field>' +
-                        '</x>' +
-                        '</query>' +
-                        '</iq>',
-                );
+                expect(stanza).toEqualStanza(stx`<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:register">
+                        <x type="submit" xmlns="jabber:x:data">
+                            <field var="username">
+                                <value>testusername</value>
+                            </field>
+                            <field var="password">
+                                <value>testpassword</value>
+                            </field>
+                            <field var="email">
+                                <value>test@email.local</value>
+                            </field>
+                        </x>
+                    </query>
+                </iq>`);
 
                 _converse.api.connection.destroy();
             },

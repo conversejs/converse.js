@@ -3,8 +3,6 @@ import mock from '../../../tests/mock.js';
 const { sizzle, stx, u } = converse.env;
 
 describe('A chat room', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'is automatically bookmarked when opened',
         mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
@@ -85,8 +83,6 @@ describe('A chat room', function () {
 });
 
 describe('A bookmark', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'has autojoin set to false upon leaving',
         mock.initConverse([], {}, async function (_converse) {

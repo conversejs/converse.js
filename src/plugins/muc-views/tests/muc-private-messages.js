@@ -2,8 +2,6 @@
 const { stx, u } = converse.env;
 
 describe('MUC Private Messages', () => {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'cannot be sent when the intended recipient is not in the MUC',
         mock.initConverse(['chatBoxesFetched'], { view_mode: 'fullscreen' }, async (_converse) => {

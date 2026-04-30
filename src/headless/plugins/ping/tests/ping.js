@@ -1,22 +1,21 @@
 /*global converse */
 import mock from '../../../tests/mock.js';
 
-const { Strophe, u } = converse.env;
-
 describe('XMPP Ping', function () {
     describe('An IQ stanza', function () {
         it(
             'is returned when converse.js gets pinged',
             mock.initConverse(['statusInitialized'], {}, (_converse) => {
-                const ping = u.toStanza(`
-                <iq from="${_converse.domain}"
-                    to="${_converse.jid}" id="s2c1" type="get">
-                    <ping xmlns="urn:xmpp:ping"/>
-                </iq>`);
+                const ping = stx`
+                    <iq from="${_converse.domain}"
+                        xmlns="jabber:client"
+                        to="${_converse.jid}" id="s2c1" type="get">
+                        <ping xmlns="urn:xmpp:ping"/>
+                    </iq>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(ping));
                 const sent_stanza = _converse.api.connection.get().IQ_stanzas.pop();
-                expect(Strophe.serialize(sent_stanza)).toBe(
-                    `<iq id="s2c1" to="${_converse.domain}" type="result" xmlns="jabber:client"/>`,
+                expect(sent_stanza).toEqualStanza(
+                    stx`<iq id="s2c1" to="${_converse.domain}" type="result" xmlns="jabber:client"/>`,
                 );
             }),
         );
@@ -26,10 +25,10 @@ describe('XMPP Ping', function () {
             mock.initConverse(['statusInitialized'], {}, (_converse) => {
                 _converse.api.ping();
                 const sent_stanza = _converse.api.connection.get().IQ_stanzas.pop();
-                expect(Strophe.serialize(sent_stanza)).toBe(
-                    `<iq id="${sent_stanza.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">` +
-                        `<ping xmlns="urn:xmpp:ping"/>` +
-                        `</iq>`,
+                expect(sent_stanza).toEqualStanza(
+                    stx`<iq id="${sent_stanza.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">
+                            <ping xmlns="urn:xmpp:ping"/>
+                        </iq>`,
                 );
             }),
         );

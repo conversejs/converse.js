@@ -69,15 +69,12 @@ describe('A Chat Message', function () {
             api.connection.get()._dataRecv(mock.createRequest(received_stanza));
             const sent_stanzas = api.connection.get().sent_stanzas;
             const sent_stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.querySelector('error')).pop());
-            expect(Strophe.serialize(sent_stanza)).toBe(
-                `<message id="${received_stanza.tree().getAttribute('id')}" to="${contact_jid}" type="error" xmlns="jabber:client">` +
-                    '<error type="cancel">' +
-                    '<not-allowed xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>' +
-                    '<text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">' +
-                    'Forwarded messages not part of an encapsulating protocol are not supported</text>' +
-                    '</error>' +
-                    '</message>',
-            );
+            expect(sent_stanza).toEqualStanza(stx`<message id="${received_stanza.tree().getAttribute('id')}" to="${contact_jid}" type="error" xmlns="jabber:client">
+                <error type="cancel">
+                    <not-allowed xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                    <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Forwarded messages not part of an encapsulating protocol are not supported</text>
+                </error>
+            </message>`);
             models = await _converse.api.chats.get();
             expect(models.length).toBe(1);
         }),

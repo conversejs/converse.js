@@ -5,8 +5,6 @@
 const { u, sizzle, Strophe, stx } = converse.env;
 
 describe('Presence subscriptions', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('Integration of Roster Items and Presence Subscriptions', function () {
         /* Some level of integration between roster items and presence
          * subscriptions is normally expected by an instant messaging user
@@ -223,10 +221,7 @@ describe('Presence subscriptions', function () {
 
                 _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 // Check that the IQ set was acknowledged.
-                expect(Strophe.serialize(sent_stanza)).toBe(
-                    // Strophe adds the xmlns attr (although not in spec)
-                    `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="result" xmlns="jabber:client"/>`,
-                );
+                expect(sent_stanza).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="result" xmlns="jabber:client"/>`);
 
                 // The contact should now be visible as an existing contact (but still offline).
                 await u.waitUntil(() => {
@@ -382,20 +377,16 @@ describe('Presence subscriptions', function () {
                  * sending a presence stanza of type "unsubscribe
                  */
                 expect(contact.ackUnsubscribe).toHaveBeenCalled();
-                expect(Strophe.serialize(sent_stanza)).toBe(
-                    `<presence to="contact@example.org" type="unsubscribe" xmlns="jabber:client"/>`,
-                );
+                expect(sent_stanza).toEqualStanza(stx`<presence to="contact@example.org" type="unsubscribe" xmlns="jabber:client"/>`);
 
                 /* _converse.js will then also automatically remove the
                  * contact from the user's roster.
                  */
-                expect(Strophe.serialize(sent_IQ)).toBe(
-                    `<iq type="set" xmlns="jabber:client">` +
-                        `<query xmlns="jabber:iq:roster">` +
-                        `<item jid="contact@example.org" subscription="remove"/>` +
-                        `</query>` +
-                        `</iq>`,
-                );
+                expect(sent_IQ).toEqualStanza(stx`<iq type="set" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:roster">
+                        <item jid="contact@example.org" subscription="remove"/>
+                    </query>
+                </iq>`);
             }),
         );
 

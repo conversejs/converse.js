@@ -2,8 +2,6 @@
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('A chat room', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('when bookmarked', function () {
         it(
             'will use the nickname from the bookmark',
@@ -31,8 +29,6 @@ describe('A chat room', function () {
 });
 
 describe('Bookmarks', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'can be pushed from the XMPP server',
         mock.initConverse(['connected', 'chatBoxesFetched'], {}, async function (_converse) {

@@ -2,8 +2,6 @@
 const { sizzle, u } = converse.env;
 
 describe('The "Groupchats" Add modal', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'can be opened from a link in the "Groupchats" section of the controlbox',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {

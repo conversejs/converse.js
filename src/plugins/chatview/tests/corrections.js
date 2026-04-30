@@ -2,8 +2,6 @@
 const { Strophe, sizzle, u } = converse.env;
 
 describe('A Chat Message', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'can be sent as a correction by using the up arrow',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {

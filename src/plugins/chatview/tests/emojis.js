@@ -6,8 +6,6 @@ const { Strophe, sizzle } = converse.env;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe('Emojis', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('Emoji PubSub', function () {
         beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000));
         afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));

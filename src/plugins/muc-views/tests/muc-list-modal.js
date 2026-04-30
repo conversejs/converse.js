@@ -29,14 +29,9 @@ describe('The "Groupchats" List modal', function () {
                 IQ_stanzas.filter((s) => sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"]`, s).length).pop(),
             );
             const id = sent_stanza.getAttribute('id');
-            expect(Strophe.serialize(sent_stanza)).toBe(
-                `<iq from="romeo@montague.lit/orchard" id="${id}" ` +
-                    `to="chat.shakespeare.lit" ` +
-                    `type="get" ` +
-                    `xmlns="jabber:client">` +
-                    `<query xmlns="http://jabber.org/protocol/disco#items"/>` +
-                    `</iq>`,
-            );
+            expect(sent_stanza).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${id}" to="chat.shakespeare.lit" type="get" xmlns="jabber:client">
+                <query xmlns="http://jabber.org/protocol/disco#items"/>
+            </iq>`);
 
             const iq = stx`
                 <iq from="muc.montague.lit"
@@ -128,12 +123,9 @@ describe('The "Groupchats" List modal', function () {
                         )
                         .pop(),
                 );
-                expect(Strophe.serialize(sent_stanza)).toBe(
-                    `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" ` +
-                        `to="chat.shakespeare.lit" type="get" xmlns="jabber:client">` +
-                        `<query xmlns="http://jabber.org/protocol/disco#items"/>` +
-                        `</iq>`,
-                );
+                expect(sent_stanza).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" to="chat.shakespeare.lit" type="get" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/disco#items"/>
+                </iq>`);
                 const iq = stx`
                     <iq from="muc.montague.lit"
                         to="romeo@montague.lit/pda"

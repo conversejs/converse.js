@@ -3,8 +3,6 @@
 const { Strophe, u, stx } = converse.env;
 
 describe('A Groupchat Message', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'can be replaced with a correction',
         mock.initConverse([], {}, async function (_converse) {

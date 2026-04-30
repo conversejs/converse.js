@@ -4,8 +4,6 @@ import mock from '../../../tests/mock.js';
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('Groupchats', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'keeps track of unread messages and mentions',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
@@ -127,10 +125,10 @@ describe('Groupchats', function () {
                 const iq = await u.waitUntil(() =>
                     sent_stanzas.filter((s) => sizzle(`[xmlns="${Strophe.NS.PING}"]`, s).length).pop(),
                 );
-                expect(Strophe.serialize(iq)).toBe(
-                    `<iq id="${iq.getAttribute('id')}" to="coven@chat.shakespeare.lit/romeo" type="get" xmlns="jabber:client">` +
-                        `<ping xmlns="urn:xmpp:ping"/>` +
-                        `</iq>`,
+                expect(iq).toEqualStanza(
+                    stx`<iq id="${iq.getAttribute('id')}" to="coven@chat.shakespeare.lit/romeo" type="get" xmlns="jabber:client">
+                            <ping xmlns="urn:xmpp:ping"/>
+                        </iq>`,
                 );
 
                 const result = stx`

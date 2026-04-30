@@ -5,7 +5,6 @@ const sizzle = converse.env.sizzle;
 
 describe("The 'Add Contact' widget", function () {
     beforeEach(() => {
-        jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza });
         // Clear the XMPP providers cache before each test
         u.rosterview.clearXMPPProvidersCache();
     });

@@ -2,8 +2,6 @@
 const { Strophe, u, stx, sizzle } = converse.env;
 
 describe('A Groupchat Message', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'will render an unfurl based on OGP data',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {

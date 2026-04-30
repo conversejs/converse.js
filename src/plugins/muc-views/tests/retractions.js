@@ -30,8 +30,6 @@ async function sendAndThenRetractMessage(_converse, view) {
 }
 
 describe('Message Retractions', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('A groupchat message retraction', function () {
         it(
             "is not applied if it's not from the right author",

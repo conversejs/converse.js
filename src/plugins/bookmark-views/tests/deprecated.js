@@ -2,8 +2,6 @@
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('Bookmarks', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'can be pushed from the XMPP server',
         mock.initConverse(['connected', 'chatBoxesFetched'], {}, async function (_converse) {
@@ -133,8 +131,6 @@ describe('Bookmarks', function () {
 });
 
 describe('The bookmarks list modal', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'shows a list of bookmarks',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {

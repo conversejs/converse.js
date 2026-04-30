@@ -1,6 +1,4 @@
 describe('An incoming presence with a XEP-0153 vcard:update element', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'will cause a VCard avatar to be replaced',
         mock.initConverse(['chatBoxesFetched'], { no_vcard_mocks: true }, async function (_converse) {
@@ -205,8 +203,6 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
 });
 
 describe('An outgoing presence with a XEP-0153 vcard:update element', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'is sent when the user updates their VCard avatar',
         mock.initConverse(['chatBoxesFetched'], { no_vcard_mocks: true }, async function (_converse) {

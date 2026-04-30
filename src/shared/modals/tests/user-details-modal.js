@@ -2,8 +2,6 @@
 const { sizzle, u } = converse.env;
 
 describe('The User Details Modal', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         "can be used to set a contact's name and groups",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {

@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Strophe, u } = converse.env;
+const { Strophe, u, stx } = converse.env;
 
 async function submitPasswordResetForm(_converse) {
     await mock.openControlBox(_converse);
@@ -31,11 +31,9 @@ describe('The profile modal', function () {
             const query_iq = await u.waitUntil(() =>
                 sent_IQs.filter((iq) => iq.querySelector('iq[type="get"] query[xmlns="jabber:iq:register"]')).pop(),
             );
-            expect(Strophe.serialize(query_iq)).toBe(
-                `<iq id="${query_iq.getAttribute('id')}" to="${_converse.domain}" type="get" xmlns="jabber:client">` +
-                    `<query xmlns="jabber:iq:register"/>` +
-                    `</iq>`,
-            );
+            expect(query_iq).toEqualStanza(stx`<iq id="${query_iq.getAttribute('id')}" to="${_converse.domain}" type="get" xmlns="jabber:client">
+                <query xmlns="jabber:iq:register"/>
+            </iq>`);
 
             _converse.api.connection.get()._dataRecv(
                 mock.createRequest(
@@ -52,14 +50,12 @@ describe('The profile modal', function () {
             const set_iq = await u.waitUntil(() =>
                 sent_IQs.filter((iq) => iq.querySelector('iq[type="set"] query[xmlns="jabber:iq:register"]')).pop(),
             );
-            expect(Strophe.serialize(set_iq)).toBe(
-                `<iq id="${set_iq.getAttribute('id')}" to="${_converse.domain}" type="set" xmlns="jabber:client">` +
-                    `<query xmlns="jabber:iq:register">` +
-                    `<username>romeo@montague.lit</username>` +
-                    `<password>secret-password</password>` +
-                    `</query>` +
-                    `</iq>`,
-            );
+            expect(set_iq).toEqualStanza(stx`<iq id="${set_iq.getAttribute('id')}" to="${_converse.domain}" type="set" xmlns="jabber:client">
+                <query xmlns="jabber:iq:register">
+                    <username>romeo@montague.lit</username>
+                    <password>secret-password</password>
+                </query>
+            </iq>`);
 
             _converse.api.connection
                 .get()
@@ -81,11 +77,9 @@ describe('The profile modal', function () {
                 sent_IQs.filter((iq) => iq.querySelector('query[xmlns="jabber:iq:register"]')).pop(),
             );
 
-            expect(Strophe.serialize(query_iq)).toBe(
-                `<iq id="${query_iq.getAttribute('id')}" to="${_converse.domain}" type="get" xmlns="jabber:client">` +
-                    `<query xmlns="jabber:iq:register"/>` +
-                    `</iq>`,
-            );
+            expect(query_iq).toEqualStanza(stx`<iq id="${query_iq.getAttribute('id')}" to="${_converse.domain}" type="get" xmlns="jabber:client">
+                <query xmlns="jabber:iq:register"/>
+            </iq>`);
 
             _converse.api.connection.get()._dataRecv(
                 mock.createRequest(
@@ -111,11 +105,9 @@ describe('The profile modal', function () {
                 sent_IQs.filter((iq) => iq.querySelector('query[xmlns="jabber:iq:register"]')).pop(),
             );
 
-            expect(Strophe.serialize(query_iq)).toBe(
-                `<iq id="${query_iq.getAttribute('id')}" to="${_converse.domain}" type="get" xmlns="jabber:client">` +
-                    `<query xmlns="jabber:iq:register"/>` +
-                    `</iq>`,
-            );
+            expect(query_iq).toEqualStanza(stx`<iq id="${query_iq.getAttribute('id')}" to="${_converse.domain}" type="get" xmlns="jabber:client">
+                <query xmlns="jabber:iq:register"/>
+            </iq>`);
 
             _converse.api.connection.get()._dataRecv(
                 mock.createRequest(
@@ -132,14 +124,12 @@ describe('The profile modal', function () {
             const set_iq = await u.waitUntil(() =>
                 sent_IQs.filter((iq) => iq.querySelector('iq[type="set"] query[xmlns="jabber:iq:register"]')).pop(),
             );
-            expect(Strophe.serialize(set_iq)).toBe(
-                `<iq id="${set_iq.getAttribute('id')}" to="${_converse.domain}" type="set" xmlns="jabber:client">` +
-                    `<query xmlns="jabber:iq:register">` +
-                    `<username>romeo@montague.lit</username>` +
-                    `<password>secret-password</password>` +
-                    `</query>` +
-                    `</iq>`,
-            );
+            expect(set_iq).toEqualStanza(stx`<iq id="${set_iq.getAttribute('id')}" to="${_converse.domain}" type="set" xmlns="jabber:client">
+                <query xmlns="jabber:iq:register">
+                    <username>romeo@montague.lit</username>
+                    <password>secret-password</password>
+                </query>
+            </iq>`);
 
             _converse.api.connection.get()._dataRecv(
                 mock.createRequest(

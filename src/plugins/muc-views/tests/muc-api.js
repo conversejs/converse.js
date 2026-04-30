@@ -194,10 +194,9 @@ describe('Groupchats', function () {
                 const iq = await u.waitUntil(() =>
                     IQ_stanzas.filter((s) => sizzle(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`, s).length).pop(),
                 );
-                expect(Strophe.serialize(iq)).toBe(
-                    `<iq id="${iq.getAttribute('id')}" to="room@conference.example.org" type="get" xmlns="jabber:client">` +
-                        `<query xmlns="http://jabber.org/protocol/muc#owner"/></iq>`,
-                );
+                expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="room@conference.example.org" type="get" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#owner"/>
+                </iq>`);
 
                 const node = stx`
                <iq xmlns="jabber:client"

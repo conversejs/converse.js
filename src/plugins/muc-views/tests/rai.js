@@ -4,8 +4,6 @@ const { Strophe, u, stx, sizzle } = converse.env;
 // See: https://xmpp.org/rfcs/rfc3921.html
 
 describe('XEP-0437 Room Activity Indicators', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'will be activated for a MUC that becomes hidden',
         mock.initConverse(

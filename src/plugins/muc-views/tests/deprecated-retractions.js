@@ -2,8 +2,6 @@
 const { Strophe, u, stx, sizzle } = converse.env;
 
 describe('Deprecated Message Retractions', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('A groupchat message retraction', function () {
         it(
             "is not applied if it's not from the right author",

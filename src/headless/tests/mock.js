@@ -44,6 +44,10 @@ jasmine.toEqualStanza = function toEqualStanza() {
     };
 };
 
+// Register toEqualStanza globally so all test files can use it without
+// needing to call jasmine.addMatchers themselves
+beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
 export const domain = 'montague.lit';
 
 export const current_contacts_map = {

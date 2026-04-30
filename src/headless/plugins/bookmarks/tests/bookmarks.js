@@ -3,8 +3,6 @@ import mock from '../../../tests/mock.js';
 const { sizzle, stx, u } = converse.env;
 
 describe('A bookmark', function () {
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'is automatically created when a MUC is entered',
         mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {

@@ -3,8 +3,6 @@
 const { Strophe, sizzle, stx, u, omemo } = converse.env;
 
 describe('An OMEMO encrypted message', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'can be edited',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
@@ -209,8 +207,6 @@ describe('An OMEMO encrypted message', function () {
 });
 
 describe('An OMEMO encrypted MUC message', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'can be edited',
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {

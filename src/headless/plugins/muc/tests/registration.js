@@ -4,8 +4,6 @@ import mock from '../../../tests/mock.js';
 const { Strophe, sizzle, u } = converse.env;
 
 describe('Groupchats', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     describe('The auto_register_muc_nickname option', function () {
         it(
             'allows you to automatically register your nickname when joining a room',

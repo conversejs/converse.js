@@ -3,8 +3,6 @@
 const { Strophe, sizzle, u, stx } = converse.env;
 
 describe('A MUC', function () {
-    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
-
     it(
         'allows you to change your nickname via a modal',
         mock.initConverse(

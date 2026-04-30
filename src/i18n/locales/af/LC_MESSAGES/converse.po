@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-30 10:13+0200\n"
-"PO-Revision-Date: 2026-02-17 08:09+0000\n"
+"PO-Revision-Date: 2026-05-01 08:47+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16\n"
+"X-Generator: Weblate 5.17.1\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -66,7 +66,7 @@ msgstr "%1$s aangemeld"
 
 #: dist/converse-no-dependencies.js:41398
 msgid "Frequently used"
-msgstr ""
+msgstr "Dikwels gebruik"
 
 #: dist/converse-no-dependencies.js:41399
 msgid "Smileys and emotions"
@@ -1277,7 +1277,7 @@ msgstr "Kopieer"
 
 #: dist/converse-no-dependencies.js:95902
 msgid "Reply"
-msgstr ""
+msgstr "Antwoord"
 
 #: dist/converse-no-dependencies.js:95912
 msgid "Quote"
@@ -1289,53 +1289,51 @@ msgstr "Beeld: "
 
 #: dist/converse-no-dependencies.js:96755
 msgid "Play"
-msgstr ""
+msgstr "Speel"
 
 #: dist/converse-no-dependencies.js:96756
 msgid "Pause"
-msgstr ""
+msgstr "Pouse"
 
 #: dist/converse-no-dependencies.js:96757
 msgid "Mute"
-msgstr ""
+msgstr "Stom"
 
 #: dist/converse-no-dependencies.js:96758
 msgid "Unmute"
-msgstr ""
+msgstr "Ontstom"
 
 #: dist/converse-no-dependencies.js:96759
 msgid "Seek"
-msgstr ""
+msgstr "Soek"
 
 #: dist/converse-no-dependencies.js:96760
 msgid "Volume"
-msgstr ""
+msgstr "Volume"
 
 #: dist/converse-no-dependencies.js:96761
 msgid "Audio player"
-msgstr ""
+msgstr "Klankspeler"
 
 #: dist/converse-no-dependencies.js:96762
 msgid "Loading audio..."
-msgstr ""
+msgstr "Laai klanklêer..."
 
 #: dist/converse-no-dependencies.js:96763
 msgid "Error loading audio"
-msgstr ""
+msgstr "Fout tydens laai van klanklêer"
 
 #: dist/converse-no-dependencies.js:96764
-#, fuzzy
 msgid "Current time"
-msgstr "Huidige weergawe"
+msgstr "Huidige tydstip"
 
 #: dist/converse-no-dependencies.js:96765
-#, fuzzy
 msgid "Duration"
-msgstr "Beskrywing"
+msgstr "Durasie"
 
 #: dist/converse-no-dependencies.js:96766
 msgid "Playback speed"
-msgstr ""
+msgstr "Terugspeelspoed"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:100672
@@ -1490,14 +1488,12 @@ msgid "Retry"
 msgstr "Probeer weer"
 
 #: dist/converse-no-dependencies.js:103571
-#, fuzzy
 msgid "Replying to a message"
-msgstr "Stuur die boodskap"
+msgstr "Antwoord op 'n boodskap"
 
 #: dist/converse-no-dependencies.js:103578
-#, fuzzy
 msgid "(empty message)"
-msgstr "Nuwe boodskappe"
+msgstr "(leë boodskap)"
 
 #: dist/converse-no-dependencies.js:103907
 msgid "This message has been edited"
@@ -1547,38 +1543,40 @@ msgstr "Voeg 'n emoji by"
 
 #: dist/converse-no-dependencies.js:108985
 msgid "Getting location..."
-msgstr ""
+msgstr "Verkry ligging..."
 
 #: dist/converse-no-dependencies.js:108985
 msgid "Share current location"
-msgstr ""
+msgstr "Deel huidige ligging"
 
 #: dist/converse-no-dependencies.js:109001
 #: dist/converse-no-dependencies.js:109042
 msgid "Location Error"
-msgstr ""
+msgstr "Liggingfout"
 
 #: dist/converse-no-dependencies.js:109002
-#, fuzzy
 msgid "Your browser or device does not support sharing your location."
-msgstr "U bediener ondersteun nie wagwoord terugstelling nie"
+msgstr "U bediener of toestel ondersteun nie die deel van u ligging nie"
 
 #: dist/converse-no-dependencies.js:109011
-#, fuzzy
 msgid "Are you sure you'd like to share your location in the chat?"
-msgstr "Is u seker u wil hierdie kontak verwyder?"
+msgstr "Wil 'n werklik u ligging in die klets deel?"
 
 #: dist/converse-no-dependencies.js:109031
 msgid ""
 "Location access was denied. Please allow location permissions in your "
 "browser settings and try again."
 msgstr ""
+"Toegang tot u ligging is geweier. Verstel asseblief u webblaaier om die deel "
+"van u ligging toe te laat."
 
 #: dist/converse-no-dependencies.js:109034
 msgid ""
 "Your current location could not be determined. Please check your device's "
 "location services and try again."
 msgstr ""
+"U huidige ligging kon nie bepaal word nie. Kontroleer u toestel se "
+"liggingsdienste en konfigurasie en probeer dan weer."
 
 #: dist/converse-no-dependencies.js:109037
 msgid ""

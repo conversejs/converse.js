@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 9.1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-16 09:03+0200\n"
+"POT-Creation-Date: 2026-04-30 10:13+0200\n"
 "PO-Revision-Date: 2025-05-11 17:04+0000\n"
 "Last-Translator: Abduqadir Abliz <sahranbay@gmail.com>\n"
 "Language-Team: Uyghur <https://hosted.weblate.org/projects/conversejs/"
@@ -19,19 +19,19 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.12-dev\n"
 
-#: dist/converse-no-dependencies.js:35408
+#: dist/converse-no-dependencies.js:35359
 msgid "A timeout occurred"
 msgstr "ۋاقىت ھالقىش كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:35980
+#: dist/converse-no-dependencies.js:35919
 msgid "You are blocked from sending messages."
 msgstr "سىز ئۇچۇر يوللاشتىن توسۇلدىڭىز."
 
-#: dist/converse-no-dependencies.js:36664
+#: dist/converse-no-dependencies.js:36597
 msgid "Timeout Error"
 msgstr "ۋاقىت ئۆتۈش خاتالىقى"
 
-#: dist/converse-no-dependencies.js:36665
+#: dist/converse-no-dependencies.js:36598
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
@@ -39,127 +39,131 @@ msgstr ""
 "بۇ مۇلازىمىتىر سىزنىڭ خەتكۈچلىرىڭىزنى ۋاقتىدا يوللىمىدى. سىز بۇ بەتنى قايتا "
 "چۈشۈرۈش ئارقىلىق ئۇلارنى قايتا تەلەپ قىلالايسىز."
 
-#: dist/converse-no-dependencies.js:38266
+#: dist/converse-no-dependencies.js:38234
 #, javascript-format
 msgid "%1$s has gone offline"
 msgstr "%1$s توردىن چىقىپ كەتتى"
 
-#: dist/converse-no-dependencies.js:38268
-#: dist/converse-no-dependencies.js:47491
-#: dist/converse-no-dependencies.js:61448
+#: dist/converse-no-dependencies.js:38236
+#: dist/converse-no-dependencies.js:47986
+#: dist/converse-no-dependencies.js:62355
 #, javascript-format
 msgid "%1$s has gone away"
 msgstr "%1$s كىتىپ قالدى"
 
-#: dist/converse-no-dependencies.js:38270
+#: dist/converse-no-dependencies.js:38238
 #, javascript-format
 msgid "%1$s is busy"
 msgstr "%1$s ئالدىراش"
 
-#: dist/converse-no-dependencies.js:38272
+#: dist/converse-no-dependencies.js:38240
 #, javascript-format
 msgid "%1$s is online"
 msgstr "%1$s توردا"
 
-#: dist/converse-no-dependencies.js:41338
+#: dist/converse-no-dependencies.js:41398
+msgid "Frequently used"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:41399
 msgid "Smileys and emotions"
 msgstr "كۈلۈمسىرەشلەر ھەمدە ھىسسىياتلار"
 
-#: dist/converse-no-dependencies.js:41339
+#: dist/converse-no-dependencies.js:41400
 msgid "People"
 msgstr "كىشلەر"
 
-#: dist/converse-no-dependencies.js:41340
+#: dist/converse-no-dependencies.js:41401
 msgid "Activities"
 msgstr "پائالىيەتلەر"
 
-#: dist/converse-no-dependencies.js:41341
+#: dist/converse-no-dependencies.js:41402
 msgid "Travel"
 msgstr "ساياھەت"
 
-#: dist/converse-no-dependencies.js:41342
+#: dist/converse-no-dependencies.js:41403
 msgid "Objects"
 msgstr "شەيئىلەر"
 
-#: dist/converse-no-dependencies.js:41343
+#: dist/converse-no-dependencies.js:41404
 msgid "Animals and nature"
 msgstr "ھايۋاناتلار ۋە تەبىئەت"
 
-#: dist/converse-no-dependencies.js:41344
+#: dist/converse-no-dependencies.js:41405
 msgid "Food and drink"
 msgstr "يېمەك-ئىچمەك"
 
-#: dist/converse-no-dependencies.js:41345
+#: dist/converse-no-dependencies.js:41406
 msgid "Symbols"
 msgstr "بەلگىلەر"
 
-#: dist/converse-no-dependencies.js:41346
+#: dist/converse-no-dependencies.js:41407
 msgid "Flags"
 msgstr "بايراقلار"
 
-#: dist/converse-no-dependencies.js:41347
+#: dist/converse-no-dependencies.js:41408
 msgid "Stickers"
 msgstr "چاپلاق"
 
-#: dist/converse-no-dependencies.js:42378
+#: dist/converse-no-dependencies.js:42858
 msgid "Timeout while trying to fetch archived messages."
 msgstr "ئارخىپلانغان ئۇچۇرلارنى تاپشۇرۋاتقاندا ۋاقىت-ئۆتۈش خاتالىقى كۆرۈلدى."
 
-#: dist/converse-no-dependencies.js:45080
-#: dist/converse-no-dependencies.js:62419
+#: dist/converse-no-dependencies.js:45536
+#: dist/converse-no-dependencies.js:63398
 msgid "You're not allowed to retract your message."
 msgstr "سىز ئۇچۇرىڭىزنى قايتۇرۋېلىشقا رۇخسەت قىلىنمىدىڭىز."
 
-#: dist/converse-no-dependencies.js:45082
+#: dist/converse-no-dependencies.js:45538
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
 msgstr "سىزنىڭ قايتۇرۋېلىش تەلىپىڭىز ئەۋەتىلمىدى چۈنكى سىز بۇ توپتا ئەمەس."
 
-#: dist/converse-no-dependencies.js:45084
-#: dist/converse-no-dependencies.js:62421
+#: dist/converse-no-dependencies.js:45540
+#: dist/converse-no-dependencies.js:63400
 msgid "Sorry, an error occurred while trying to retract your message."
 msgstr "كەچۈرۈڭ، ئۇچۇرىڭىزنى قايتۇرۋاتقاندا بىر خاتالىق كۆرۈلدى."
 
-#: dist/converse-no-dependencies.js:45089
+#: dist/converse-no-dependencies.js:45545
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr "ئۇچۇرىڭىز يەتكۈزۈلمىدى چۈنكى سىز ئۇنى يوللاشقا رۇخسەت قىلىنمىدىڭىز."
 
-#: dist/converse-no-dependencies.js:45091
+#: dist/converse-no-dependencies.js:45547
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
 msgstr "ئۇچۇرىڭىز ئەۋەتىلمىدى چۈنكى سىز بۇ توپتا ئەمەس."
 
-#: dist/converse-no-dependencies.js:45093
-#: dist/converse-no-dependencies.js:62428
+#: dist/converse-no-dependencies.js:45549
+#: dist/converse-no-dependencies.js:63407
 msgid "Sorry, an error occurred while trying to send your message."
 msgstr "كەچۈرۈڭ، ئۇچۇرىڭىزنى يوللاۋاتقاندا بىر خاتالىق كۆرۈلدى."
 
-#: dist/converse-no-dependencies.js:45434
+#: dist/converse-no-dependencies.js:45890
 msgid "A timeout happened while trying to retract your message."
 msgstr "ئۇچۇرىڭىزنى قايتۇرۇۋاتقاندا ۋاقىت ھالقىش خاتالىقى كۆرۈلدى."
 
-#: dist/converse-no-dependencies.js:46220
+#: dist/converse-no-dependencies.js:46676
 msgid "Sorry, an error happened while running the command."
 msgstr "كەچۈرۈڭ، بۇ بۇيرۇقنى يۈرگۈزىۋاتقاندا بىر خاتالىق كۈرۈلدى."
 
-#: dist/converse-no-dependencies.js:46220
-#: dist/converse-no-dependencies.js:123227
+#: dist/converse-no-dependencies.js:46676
+#: dist/converse-no-dependencies.js:125705
 msgid "Check your browser's developer console for details."
 msgstr "تەپسىلاتىنى تور كۆرگۈچىڭىزنىڭ لايىھەلىگۈچى تاختىسىدىن كۆرۈڭ."
 
-#: dist/converse-no-dependencies.js:46240
-#: dist/converse-no-dependencies.js:46258
+#: dist/converse-no-dependencies.js:46696
+#: dist/converse-no-dependencies.js:46714
 msgid "Error: couldn't find a groupchat participant based on your arguments"
 msgstr ""
 "خاتالىق: سىزنىڭ شەرتىڭىزگە ئاساسەن بىرەر توپپاراڭ قاتناشقۇچىسى تېپىلمىدى"
 
-#: dist/converse-no-dependencies.js:46248
+#: dist/converse-no-dependencies.js:46704
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
 "خاتالىق: سىزنىڭ شەرتىڭىز ئاساسىدا كۆپلىگەن توپپاراڭ قاتناشقۇچىسى تېپىلدى"
 
-#: dist/converse-no-dependencies.js:46273
+#: dist/converse-no-dependencies.js:46729
 #, javascript-format
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
@@ -168,302 +172,303 @@ msgstr ""
 "خاتالىق : \"%1$s\" بۇيرۇقى ئىككى پارامىتىرنى تەلەپ قىلىدۇ، ئىشلەتكۈچىنىڭ "
 "تەخەللۇسى ھەمدە ئىختىيارى ھالدا بىر سەۋەپ."
 
-#: dist/converse-no-dependencies.js:46358
+#: dist/converse-no-dependencies.js:46814
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
 msgstr "چەكلەندى: سىزنىڭ ئۇنى قىلىشقا لازىملىق يانداشمىڭىز يوق."
 
-#: dist/converse-no-dependencies.js:46389
+#: dist/converse-no-dependencies.js:46845
 msgid "Forbidden: you do not have the necessary role in order to do that."
 msgstr "خاتالىق: سىزنىڭ ئۇنى قىلىشقا تىگىشلىك لازىملىق رولىڭىز يوق."
 
-#: dist/converse-no-dependencies.js:46738
+#: dist/converse-no-dependencies.js:47194
 msgid "You're not allowed to register yourself in this groupchat."
 msgstr "سىز ئۆزىڭىزنى بۇ توپپاراڭدا تىزىمغا ئالدۇرۇشقا رۇخسەت قىلىنمىدىڭىز."
 
-#: dist/converse-no-dependencies.js:46740
+#: dist/converse-no-dependencies.js:47196
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
 "سىز بۇ توپپاراڭغا تىزىملىنىشقا رۇخسەت قىلىنمىدىڭىز چۈنكى ئۇ پەقەتلا "
 "ئەزالارغا-خاس."
 
-#: dist/converse-no-dependencies.js:47074
+#: dist/converse-no-dependencies.js:47530
 #, javascript-format
 msgid "Topic set by %1$s"
 msgstr "تېما %1$s تەرىپىدىن بەلگىلەندى"
 
-#: dist/converse-no-dependencies.js:47074
+#: dist/converse-no-dependencies.js:47530
 #, javascript-format
 msgid "Topic cleared by %1$s"
 msgstr "تېما %1$s تەرىپىدىن ئۆچۈرۈلدى"
 
-#: dist/converse-no-dependencies.js:47487
-#: dist/converse-no-dependencies.js:61444
+#: dist/converse-no-dependencies.js:47982
+#: dist/converse-no-dependencies.js:62351
 #, javascript-format
 msgid "%1$s is typing"
 msgstr "%1$s يېزىۋاتىدۇ"
 
-#: dist/converse-no-dependencies.js:47489
-#: dist/converse-no-dependencies.js:61446
+#: dist/converse-no-dependencies.js:47984
+#: dist/converse-no-dependencies.js:62353
 #, javascript-format
 msgid "%1$s has stopped typing"
 msgstr "%1$s يېزىشنى توختاتتى"
 
-#: dist/converse-no-dependencies.js:47493
+#: dist/converse-no-dependencies.js:47988
 #, javascript-format
 msgid "%1$s has entered the groupchat"
 msgstr "%1$s توپپاراڭغا قۇشۇلدى"
 
-#: dist/converse-no-dependencies.js:47495
+#: dist/converse-no-dependencies.js:47990
 #, javascript-format
 msgid "%1$s has left the groupchat"
 msgstr "%1$s توپپاراڭدىن چىقىپ كەتتى"
 
-#: dist/converse-no-dependencies.js:47497
+#: dist/converse-no-dependencies.js:47992
 #, javascript-format
 msgid "%1$s is now a moderator"
 msgstr "%1$s ھازىر كېلىشتۈرگۈچى"
 
-#: dist/converse-no-dependencies.js:47499
+#: dist/converse-no-dependencies.js:47994
 #, javascript-format
 msgid "%1$s is no longer a moderator"
 msgstr "%1$s ئەمدى كىلىشتۈرگۈچى ئەمەس"
 
-#: dist/converse-no-dependencies.js:47501
+#: dist/converse-no-dependencies.js:47996
 #, javascript-format
 msgid "%1$s has been given a voice"
 msgstr "%1$s غا بىر ئاۋاز بېرىلدى"
 
-#: dist/converse-no-dependencies.js:47503
+#: dist/converse-no-dependencies.js:47998
 #, javascript-format
 msgid "%1$s has been muted"
 msgstr "%1$s جىمجىتلاندى"
 
-#: dist/converse-no-dependencies.js:47511
+#: dist/converse-no-dependencies.js:48006
+#: dist/converse-no-dependencies.js:145135
 #, javascript-format
 msgid "%1$s and %2$s"
 msgstr "%1$s ھەمدە %2$s"
 
-#: dist/converse-no-dependencies.js:47514
+#: dist/converse-no-dependencies.js:48009
 #, javascript-format
 msgid "%1$s are typing"
 msgstr "%1$s يېزىۋاتىدۇ"
 
-#: dist/converse-no-dependencies.js:47516
+#: dist/converse-no-dependencies.js:48011
 #, javascript-format
 msgid "%1$s have stopped typing"
 msgstr "%1$s يېزىشنى توختاتتى"
 
-#: dist/converse-no-dependencies.js:47518
+#: dist/converse-no-dependencies.js:48013
 #, javascript-format
 msgid "%1$s have gone away"
 msgstr "%1$s كىتىپ قالدى"
 
-#: dist/converse-no-dependencies.js:47520
+#: dist/converse-no-dependencies.js:48015
 #, javascript-format
 msgid "%1$s have entered the groupchat"
 msgstr "%1$s بۇ توپپاراڭغا كىردى"
 
-#: dist/converse-no-dependencies.js:47522
+#: dist/converse-no-dependencies.js:48017
 #, javascript-format
 msgid "%1$s have left the groupchat"
 msgstr "%1$s بۇ توپپاراڭدىن چىقىپ كەتتى"
 
-#: dist/converse-no-dependencies.js:47524
+#: dist/converse-no-dependencies.js:48019
 #, javascript-format
 msgid "%1$s are now moderators"
 msgstr "%1$s بولسا ھازىرقى كىلىشتۈرگۈچىلەر"
 
-#: dist/converse-no-dependencies.js:47526
+#: dist/converse-no-dependencies.js:48021
 #, javascript-format
 msgid "%1$s are no longer moderators"
 msgstr "%1$s ئەمدى كىلىشتۈرگۈچى ئەمەس"
 
-#: dist/converse-no-dependencies.js:47528
+#: dist/converse-no-dependencies.js:48023
 #, javascript-format
 msgid "%1$s have been given voices"
 msgstr "%1$s غا ئاۋازلار بېرىلدى"
 
-#: dist/converse-no-dependencies.js:47530
+#: dist/converse-no-dependencies.js:48025
 #, javascript-format
 msgid "%1$s have been muted"
 msgstr "%1$s جىمجىتلاندى"
 
-#: dist/converse-no-dependencies.js:47880
+#: dist/converse-no-dependencies.js:48420
 #, javascript-format
 msgid "%1$s has been banned by %2$s"
 msgstr "%1$s بولسا %2$s تەرىپىدىن چەكلەندى"
 
-#: dist/converse-no-dependencies.js:47880
+#: dist/converse-no-dependencies.js:48420
 #, javascript-format
 msgid "%1$s has been banned"
 msgstr "%1$s چەكلەندى"
 
-#: dist/converse-no-dependencies.js:47882
+#: dist/converse-no-dependencies.js:48422
 #, javascript-format
 msgid "%1$s's nickname has changed"
 msgstr "%1$sنىڭ تەخەللۇسى ئۆزگەردى"
 
-#: dist/converse-no-dependencies.js:47884
+#: dist/converse-no-dependencies.js:48424
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
 msgstr "%1$s بولسا %2$s تەرىپىدىن چىقىرۋېتىلدى"
 
-#: dist/converse-no-dependencies.js:47884
+#: dist/converse-no-dependencies.js:48424
 #, javascript-format
 msgid "%1$s has been kicked out"
 msgstr "%1$s بولسا چىقىرۋېتىلدى"
 
-#: dist/converse-no-dependencies.js:47886
+#: dist/converse-no-dependencies.js:48426
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
 msgstr "%1$s بولسا يانداشما ئۆزگۈرۈشى سەۋەبىدىن ئۆچۈرۋېتىلدى"
 
-#: dist/converse-no-dependencies.js:47888
+#: dist/converse-no-dependencies.js:48428
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
 msgstr "%1$s بولسا ئەزا بولماسلىقى سەۋەبىدىن ئۆچۈرۋېتىلدى"
 
-#: dist/converse-no-dependencies.js:47911
+#: dist/converse-no-dependencies.js:48451
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
 msgstr "%1$s ئەمدى بۇ توپپاراڭنىڭ باشقۇرغۇچىسى ئەمەس"
 
-#: dist/converse-no-dependencies.js:47916
+#: dist/converse-no-dependencies.js:48456
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
 msgstr "%1$s ئەمدى بۇ توپپاراڭنىڭ ئىگىسى ئەمەس"
 
-#: dist/converse-no-dependencies.js:47921
+#: dist/converse-no-dependencies.js:48461
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
 msgstr "%1$s ئەمدى بۇ توپپاراڭدىن چەكلەنمىدى"
 
-#: dist/converse-no-dependencies.js:47927
+#: dist/converse-no-dependencies.js:48467
 #, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
 msgstr "%1$s ئەمدى بۇ توپپاراڭنىڭ ئەزاسى ئەمەس"
 
-#: dist/converse-no-dependencies.js:47933
+#: dist/converse-no-dependencies.js:48473
 #, javascript-format
 msgid "%1$s is now a member of this groupchat"
 msgstr "%1$s ھازىر بۇ توپپاراڭنىڭ ئەزاسى"
 
-#: dist/converse-no-dependencies.js:47939
+#: dist/converse-no-dependencies.js:48479
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
 msgstr "%1$s بولسا بۇ توپپاراڭنىڭ %2$s سى"
 
-#: dist/converse-no-dependencies.js:48065
+#: dist/converse-no-dependencies.js:48605
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
 "سىز تاللىغان تەخەللۇس ساقلاپ قېلىندى ياكى ئېلىنىپ بولۇندى، باشقىسىنى تاللاڭ."
 
-#: dist/converse-no-dependencies.js:48091
+#: dist/converse-no-dependencies.js:48631
 msgid "Password incorrect"
 msgstr "مەخپىي نۇمۇر خاتا"
 
-#: dist/converse-no-dependencies.js:48098
+#: dist/converse-no-dependencies.js:48638
 msgid "You are not on the member list of this groupchat."
 msgstr "سىز بۇ توپپاراڭنىڭ ئەزالار تىزىملىكىدە ئەمەس."
 
-#: dist/converse-no-dependencies.js:48106
+#: dist/converse-no-dependencies.js:48646
 msgid "You are not allowed to create new groupchats."
 msgstr "سىز يېڭى توپپاراڭنى قۇرۇشقا رۇخسەت قىلىنمىدىڭىز."
 
-#: dist/converse-no-dependencies.js:48109
+#: dist/converse-no-dependencies.js:48649
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "سىزنىڭ تەخەللۇسىڭىز بۇ توپپاراڭنىڭ قائىدىسىگە ئۇيغۇن ئەمەس."
 
-#: dist/converse-no-dependencies.js:48124
+#: dist/converse-no-dependencies.js:48664
 msgid "This groupchat does not (yet) exist."
 msgstr "بۇ توپپاراڭ تېخى مەۋجۇت ئەمەس."
 
-#: dist/converse-no-dependencies.js:48127
+#: dist/converse-no-dependencies.js:48667
 msgid "This groupchat has reached its maximum number of participants."
 msgstr "بۇ توپپاراڭ ئەڭ يۇقىرى ئەزا سانىغا يىتىپ بولدى."
 
-#: dist/converse-no-dependencies.js:48130
+#: dist/converse-no-dependencies.js:48670
 msgid "Remote server not found"
 msgstr "يىراقتىكى مۇلازىمىتىر تېپىلمىدى"
 
-#: dist/converse-no-dependencies.js:48133
+#: dist/converse-no-dependencies.js:48673
 msgid "You're not allowed to enter this groupchat"
 msgstr "سىز بۇ توپپاراڭغا كىرىشكە رۇخسەت قىلىنمىدىڭىز"
 
-#: dist/converse-no-dependencies.js:48136
+#: dist/converse-no-dependencies.js:48676
 msgid "An error happened while trying to enter this groupchat"
 msgstr "بۇ توپپاراڭغا كىرىۋاتقاندا بىر خاتالىق كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:49580
+#: dist/converse-no-dependencies.js:50168
 msgid "This groupchat is not anonymous"
 msgstr "بۇ توپپاراڭ نامسىز ئەمەس"
 
-#: dist/converse-no-dependencies.js:49581
+#: dist/converse-no-dependencies.js:50169
 msgid "This groupchat now shows unavailable members"
 msgstr "بۇ توپپاراڭ ئەمدى ئالدىراش ئەزالارنى كۆرسىتىدۇ"
 
-#: dist/converse-no-dependencies.js:49582
+#: dist/converse-no-dependencies.js:50170
 msgid "This groupchat does not show unavailable members"
 msgstr "بۇ توپپاراڭ ئالدىراش ئەزالارنى كۆرسەتمەيدۇ"
 
-#: dist/converse-no-dependencies.js:49583
+#: dist/converse-no-dependencies.js:50171
 msgid "The groupchat configuration has changed"
 msgstr "بۇ توپپاراڭ تەڭشىكى ئۆزگەردى"
 
-#: dist/converse-no-dependencies.js:49584
+#: dist/converse-no-dependencies.js:50172
 msgid "Groupchat logging is now enabled"
 msgstr "توپپاراڭ ئارخىپلاش قوزغىتىلدى"
 
-#: dist/converse-no-dependencies.js:49585
+#: dist/converse-no-dependencies.js:50173
 msgid "Groupchat logging is now disabled"
 msgstr "توپپاراڭ ئارخىپلاش ئىتىۋېتىلدى"
 
-#: dist/converse-no-dependencies.js:49586
+#: dist/converse-no-dependencies.js:50174
 msgid "This groupchat is now no longer anonymous"
 msgstr "بۇ توپپاراڭ ئەمدى نامسىز ئەمەس"
 
-#: dist/converse-no-dependencies.js:49587
+#: dist/converse-no-dependencies.js:50175
 msgid "This groupchat is now semi-anonymous"
 msgstr "بۇ توپپاراڭ ھازىر يېرىم-نامسىز"
 
-#: dist/converse-no-dependencies.js:49588
+#: dist/converse-no-dependencies.js:50176
 msgid "This groupchat is now fully-anonymous"
 msgstr "بۇ توپپاراڭ پۈتۈنلەي نامسىز"
 
-#: dist/converse-no-dependencies.js:49589
+#: dist/converse-no-dependencies.js:50177
 msgid "A new groupchat has been created"
 msgstr "بىر يېڭى توپپاراڭ قۇرۇلدى"
 
 #. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:49591
+#: dist/converse-no-dependencies.js:50179
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
 msgstr "سىزنىڭ تەخەللۇسىڭىز ئاپتۇماتىك ھالدا %1$s غا بېكىتىلدى"
 
-#: dist/converse-no-dependencies.js:49592
+#: dist/converse-no-dependencies.js:50180
 msgid "You have been banned from this groupchat"
 msgstr "سىز بۇ توپپاراڭدىن چەكلەندىڭىز"
 
 #. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:49594
+#: dist/converse-no-dependencies.js:50182
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "سىزنىڭ تەخەللۇسىڭىز %1$s غا ئۆزگەرتىلدى"
 
-#: dist/converse-no-dependencies.js:49595
+#: dist/converse-no-dependencies.js:50183
 msgid "You have been kicked from this groupchat"
 msgstr "سىز بۇ توپپاراڭدىن تىپىۋېتىلدىڭىز"
 
-#: dist/converse-no-dependencies.js:49596
+#: dist/converse-no-dependencies.js:50184
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr "سىز يانداشمىلىق ئۆزگۈرىشى سەۋەبىدىن بۇ توپپاراڭدىن چىقىرۋېتىلدىڭىز"
 
-#: dist/converse-no-dependencies.js:49597
+#: dist/converse-no-dependencies.js:50185
 msgid ""
 "You have been removed from this groupchat because it has changed to members-"
 "only and you're not a member"
@@ -471,7 +476,7 @@ msgstr ""
 "سىز بۇ توپ پاراڭدىن چىقىرىۋېتىلدىڭىز چۈنكى بۇ توپ پاراڭ ئەزالارغىلا خاس "
 "قىلىپ ئۆزگەرتىلدى ھەمدە سىز ئەزا ئەمەس"
 
-#: dist/converse-no-dependencies.js:49598
+#: dist/converse-no-dependencies.js:50186
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
@@ -479,17 +484,17 @@ msgstr ""
 "سىز بۇ توپپاراڭدىن چىقىرۋېتىلدىڭىز چۈنكى ساھىپخانلىق قىلىۋاتقان مۇلازىمەت "
 "توختىدى"
 
-#: dist/converse-no-dependencies.js:49599
+#: dist/converse-no-dependencies.js:50187
 msgid "You have exited this groupchat due to a technical problem"
 msgstr "سىز بۇ توپپاراڭدىن تېخنىكىلىق مەسىلە ۋەجىدىن چىقىرىلدىڭىز"
 
-#: dist/converse-no-dependencies.js:51026
+#: dist/converse-no-dependencies.js:51644
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr ""
 "كەچۈرۈڭ، بىر خاتالىق سەۋەبىدىن تاپشۇرۋالغان بىر OMEMO ئۇچۇرىنى "
 "شىفىرسىزلىيالمىدۇق."
 
-#: dist/converse-no-dependencies.js:51052
+#: dist/converse-no-dependencies.js:51670
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
@@ -497,7 +502,7 @@ msgstr ""
 "كەچۈرۈڭ، تاپشۇرۋالغان بىر OMEMO ئۇچۇرىنى شىفىرسىلىيالمىدۇق چۈنكى بىزدە ئۇ "
 "ئىشلەتكۈچىنىڭ XMPP ئادىرسى يوق."
 
-#: dist/converse-no-dependencies.js:52458
+#: dist/converse-no-dependencies.js:53070
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
@@ -507,7 +512,7 @@ msgstr ""
 "ئۇچۇرىنى كۆرۈش ئۈچۈەن ئۇلار سىزنىڭ ئۇلارنىڭ مەۋجۇتلۇقىغا مۇشتەرى بۇلىشىڭىزنى "
 "تەلەپ قىلىدۇ"
 
-#: dist/converse-no-dependencies.js:52460
+#: dist/converse-no-dependencies.js:53072
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
@@ -516,36 +521,36 @@ msgstr ""
 "كەچۈرۈڭ، بىز شىفىرلانغان ئۇچۇرنى ئەۋەتەلمىدۇق چۈنكى %1$s نىڭ يىراقتىكى "
 "مۇلازىمىتېرى تېپىلمىدى"
 
-#: dist/converse-no-dependencies.js:52462
+#: dist/converse-no-dependencies.js:53074
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr ""
 "ئويلىمىغان خاتالىق سەۋەبىدىن بىر شىفىرلانغان ئۇچۇرنى ئەۋەتكىلى بولمىدى."
 
-#: dist/converse-no-dependencies.js:52465
-#: dist/converse-no-dependencies.js:52467
-#: dist/converse-no-dependencies.js:94215
-#: dist/converse-no-dependencies.js:94219
-#: dist/converse-no-dependencies.js:94324
-#: dist/converse-no-dependencies.js:99468
-#: dist/converse-no-dependencies.js:99609
-#: dist/converse-no-dependencies.js:99674
-#: dist/converse-no-dependencies.js:109180
-#: dist/converse-no-dependencies.js:119694
-#: dist/converse-no-dependencies.js:119704
-#: dist/converse-no-dependencies.js:123228
-#: dist/converse-no-dependencies.js:128754
-#: dist/converse-no-dependencies.js:132527
+#: dist/converse-no-dependencies.js:53077
+#: dist/converse-no-dependencies.js:53079
+#: dist/converse-no-dependencies.js:95496
+#: dist/converse-no-dependencies.js:95500
+#: dist/converse-no-dependencies.js:95605
+#: dist/converse-no-dependencies.js:100930
+#: dist/converse-no-dependencies.js:101071
+#: dist/converse-no-dependencies.js:101136
+#: dist/converse-no-dependencies.js:111488
+#: dist/converse-no-dependencies.js:122124
+#: dist/converse-no-dependencies.js:122134
+#: dist/converse-no-dependencies.js:125706
+#: dist/converse-no-dependencies.js:131279
+#: dist/converse-no-dependencies.js:135068
 msgid "Error"
 msgstr "خاتالىق"
 
-#: dist/converse-no-dependencies.js:52643
+#: dist/converse-no-dependencies.js:53255
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
 msgstr ""
 "كەچۈرۈڭ، بىز OMEMO بىلەن شىفىرلانغان ئۇچۇرنى ئەۋەتىدىغان ھېچقانداق ئەسۋاپ "
 "تېپلىمىدى."
 
-#: dist/converse-no-dependencies.js:52915
+#: dist/converse-no-dependencies.js:53527
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
@@ -554,7 +559,7 @@ msgstr ""
 "تېخىمۇ كۆپ ئۇچۇرلارنى بۇ يەردىن كۆرۈڭ\n"
 "https://conversations.im/omemo"
 
-#: dist/converse-no-dependencies.js:53017
+#: dist/converse-no-dependencies.js:53629
 #, javascript-format
 msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
@@ -563,86 +568,86 @@ msgstr ""
 "%1$sدا ‎OMEMO قوللايدىغان بىرەر خېرىدار يوقتەك قىلىدۇ. شىفىرلانغان ئۇچۇر "
 "ئەمدى بۇ توپپاراڭدا مۇمكىن بولمايدۇ."
 
-#: dist/converse-no-dependencies.js:54486
+#: dist/converse-no-dependencies.js:55468
 #, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
 msgstr "كەچۈرۈڭ، %1$s نى ئالاقەداشقا قۇشۇۋاتقاندا بىر خاتالىق كۆرۈلدى."
 
-#: dist/converse-no-dependencies.js:54754
+#: dist/converse-no-dependencies.js:55739
 msgid "This client does not allow presence subscriptions"
 msgstr "بۇ خېرىدار مەۋجۇتلۇق ئابۇنىسى بۇلۇشنى قوللىمايدۇ"
 
-#: dist/converse-no-dependencies.js:55001
+#: dist/converse-no-dependencies.js:55978
 msgid "Unsaved contacts"
 msgstr "ساقلانمىغان ئالاقەداش"
 
-#: dist/converse-no-dependencies.js:55002
+#: dist/converse-no-dependencies.js:55979
 msgid "My contacts"
 msgstr "ئالاقىداشلىرىم"
 
-#: dist/converse-no-dependencies.js:55003
+#: dist/converse-no-dependencies.js:55980
 msgid "Pending contacts"
 msgstr "قېتىلىۋاتقان ئالاقىداشلار"
 
-#: dist/converse-no-dependencies.js:55004
+#: dist/converse-no-dependencies.js:55981
 msgid "Contact requests"
 msgstr "ئالاقىداشلىق تەلىپى"
 
-#: dist/converse-no-dependencies.js:55005
+#: dist/converse-no-dependencies.js:55982
 msgid "Ungrouped"
 msgstr "توپسىزلانغان"
 
-#: dist/converse-no-dependencies.js:55006
-#: dist/converse-no-dependencies.js:102154
+#: dist/converse-no-dependencies.js:55983
+#: dist/converse-no-dependencies.js:103770
 msgid "New messages"
 msgstr "يېڭى ئۇچۇرلار"
 
-#: dist/converse-no-dependencies.js:56312
+#: dist/converse-no-dependencies.js:57273
 #, fuzzy
 msgid "me"
 msgstr "ئىسىم"
 
-#: dist/converse-no-dependencies.js:59378
+#: dist/converse-no-dependencies.js:60302
 msgid "Could not automatically determine a connection URL"
 msgstr "باغلانما تور ئادرېسىنى ئۆزلۈكىدىن جەزملىيەلمەيدۇ"
 
-#: dist/converse-no-dependencies.js:59714
-#: dist/converse-no-dependencies.js:59770
+#: dist/converse-no-dependencies.js:60638
+#: dist/converse-no-dependencies.js:60691
 msgid "An error occurred while connecting to the chat server."
 msgstr "پاراڭ مۇلازىمېتىرىغا ئۇلاۋاتقاندا خاتالىق كۆرۈلدى."
 
-#: dist/converse-no-dependencies.js:59777
+#: dist/converse-no-dependencies.js:60698
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr "سىزنىڭ XMPP ئادىرسىڭىز ياكى/ مەخپىي نۇمۇرىڭىز خاتا. قايتا سىناپ بېقىڭ."
 
-#: dist/converse-no-dependencies.js:59786
+#: dist/converse-no-dependencies.js:60707
 #, javascript-format
 msgid "We could not connect to %1$s, is your XMPP address correct?"
 msgstr "%1$s غا باغلىنالمايمىز، XMPP ئادرېسىڭىز توغرىمۇ؟"
 
-#: dist/converse-no-dependencies.js:59788
+#: dist/converse-no-dependencies.js:60709
 msgid "The XMPP server rejected the connection because of a policy violation"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:59790
+#: dist/converse-no-dependencies.js:60711
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
 "بۇ XMPP مۇلازىمىتىرى بىرەر قوللايدىغان كىملىكىنى دەلىللەش مېخانىزىمىنى "
 "تەمىنلىمىدى"
 
-#: dist/converse-no-dependencies.js:60933
+#: dist/converse-no-dependencies.js:61844
 msgid "Undecryptable OMEMO message"
 msgstr "يەشكىلى بولمايدىغان OMEMOلۇق ئۇچۇر"
 
-#: dist/converse-no-dependencies.js:61023
+#: dist/converse-no-dependencies.js:61934
 msgid "Sorry, could not determine upload URL."
 msgstr "كەچۈرۈڭ، چىقىرىش ئۇلىنىشىنى تاپالمىدى."
 
-#: dist/converse-no-dependencies.js:61040
+#: dist/converse-no-dependencies.js:61951
 msgid "Sorry, could not determine file upload URL."
 msgstr "كەچۈرۈڭ، ھۆججەت چىقىرىش ئۇلىنىشىنى تاپالمىدى."
 
-#: dist/converse-no-dependencies.js:61116
+#: dist/converse-no-dependencies.js:62027
 #, fuzzy, javascript-format
 msgid ""
 "Sorry, could not successfully upload your file. Your server’s response: "
@@ -651,18 +656,18 @@ msgstr ""
 "كەچۈرۈڭ ھۆججىتىڭىزنى مۇۋەپپەقىيەتلىك يۈكلىيەلمىدى. مۇلازىمىتىرىڭىزنىڭ "
 "جاۋابى: «%1$s»"
 
-#: dist/converse-no-dependencies.js:61118
+#: dist/converse-no-dependencies.js:62029
 #, fuzzy
 msgid "Sorry, could not successfully upload your file."
 msgstr "كەچۈرۈڭ، ھۆججىتىڭىزنى مۇۋاپپىقىيەتلىك چىقىرالمىدۇق."
 
-#: dist/converse-no-dependencies.js:61830
-#: dist/converse-no-dependencies.js:61848
+#: dist/converse-no-dependencies.js:62775
+#: dist/converse-no-dependencies.js:62793
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr ""
 "كەچۈرۈڭ، سىزنىڭ مۇلازىمىتىرىڭىز ھۆججەت چىقىرىشنى قوللىمايدىغاندەك تۇرىدۇ."
 
-#: dist/converse-no-dependencies.js:61879
+#: dist/converse-no-dependencies.js:62824
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
@@ -670,7 +675,7 @@ msgstr ""
 "ھۆججىتىڭىزنىڭ سىغىمى، %1$s، مۇلازىمېتىر يول قويىدىغان ئەڭ چوڭ قىممەتتىن "
 "ئېشىپ كەتتى."
 
-#: dist/converse-no-dependencies.js:61879
+#: dist/converse-no-dependencies.js:62824
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
@@ -679,185 +684,186 @@ msgstr ""
 "سىزنىڭ ھۆججىتىڭىزنىڭ سىغىمى، %1$s، مۇلازىمىتىر يول قويغان %2$s سىغىمدىن "
 "ئېشىپ كەتتى."
 
-#: dist/converse-no-dependencies.js:62426
+#: dist/converse-no-dependencies.js:63405
 msgid "You're not allowed to send a message."
 msgstr "سىز ئۇچۇر يوللاشقا رۇخسەت قىلىنمىدىڭىز."
 
-#: dist/converse-no-dependencies.js:77853
+#: dist/converse-no-dependencies.js:78978
 msgid "Menu"
 msgstr "تىزىملىك"
 
-#: dist/converse-no-dependencies.js:78243
+#: dist/converse-no-dependencies.js:79368
 msgid "Click to set a new picture"
 msgstr "چېكىپ يېڭى رەسىم تەڭشىگىلى بولىدۇ"
 
-#: dist/converse-no-dependencies.js:78244
+#: dist/converse-no-dependencies.js:79369
 #, fuzzy
 msgid "Clear picture"
 msgstr "پاراڭلىشىش رايۇنىنى تازلاش"
 
-#: dist/converse-no-dependencies.js:79235
+#: dist/converse-no-dependencies.js:80360
 msgid "Older versions"
 msgstr "كونا نەشىرلىرى"
 
-#: dist/converse-no-dependencies.js:79237
+#: dist/converse-no-dependencies.js:80362
 msgid "No older versions found"
 msgstr "ھېچقانداق كونا نەشىر تېپىلمىدى"
 
-#: dist/converse-no-dependencies.js:79237
+#: dist/converse-no-dependencies.js:80362
 msgid "Current version"
 msgstr "نۆۋەتتىكى نەشىرى"
 
-#: dist/converse-no-dependencies.js:80549
-#: dist/converse-no-dependencies.js:120162
+#: dist/converse-no-dependencies.js:81675
+#: dist/converse-no-dependencies.js:122600
 msgid "Offline"
 msgstr "توردا ئەمەس"
 
-#: dist/converse-no-dependencies.js:80550
+#: dist/converse-no-dependencies.js:81676
 msgid "Unavailable"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:80551
-#: dist/converse-no-dependencies.js:120161
+#: dist/converse-no-dependencies.js:81677
+#: dist/converse-no-dependencies.js:122599
 msgid "Extended Away"
 msgstr "ئۇزارتىلدى"
 
 #. *
 #. * @param {import('../modals/profile').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:80552
-#: dist/converse-no-dependencies.js:120160
-#: dist/converse-no-dependencies.js:126679
+#. export default
+#: dist/converse-no-dependencies.js:81678
+#: dist/converse-no-dependencies.js:122598
+#: dist/converse-no-dependencies.js:129188
 msgid "Away"
 msgstr "سىرىتتا"
 
-#: dist/converse-no-dependencies.js:80553
+#: dist/converse-no-dependencies.js:81679
 msgid "Do not disturb"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:80554
-#: dist/converse-no-dependencies.js:120158
+#: dist/converse-no-dependencies.js:81680
+#: dist/converse-no-dependencies.js:122596
 msgid "Chatty"
 msgstr "پاراڭخۇمار"
 
-#: dist/converse-no-dependencies.js:80555
-#: dist/converse-no-dependencies.js:120157
-#: dist/converse-no-dependencies.js:126681
+#: dist/converse-no-dependencies.js:81681
+#: dist/converse-no-dependencies.js:122595
+#: dist/converse-no-dependencies.js:129190
 msgid "Online"
 msgstr "توردا"
 
-#: dist/converse-no-dependencies.js:82410
-#: dist/converse-no-dependencies.js:82411
-#: dist/converse-no-dependencies.js:86037
-#: dist/converse-no-dependencies.js:108032
-#: dist/converse-no-dependencies.js:114477
+#: dist/converse-no-dependencies.js:83562
+#: dist/converse-no-dependencies.js:83563
+#: dist/converse-no-dependencies.js:87205
+#: dist/converse-no-dependencies.js:110321
+#: dist/converse-no-dependencies.js:116834
 msgid "Close"
 msgstr "ئېتىش"
 
-#: dist/converse-no-dependencies.js:83244
-#: dist/converse-no-dependencies.js:90198
-#: dist/converse-no-dependencies.js:94133
-#: dist/converse-no-dependencies.js:94179
-#: dist/converse-no-dependencies.js:94252
-#: dist/converse-no-dependencies.js:94289
-#: dist/converse-no-dependencies.js:99432
-#: dist/converse-no-dependencies.js:99572
-#: dist/converse-no-dependencies.js:108280
-#: dist/converse-no-dependencies.js:124625
-#: dist/converse-no-dependencies.js:127490
-#: dist/converse-no-dependencies.js:132561
-#: dist/converse-no-dependencies.js:137093
+#: dist/converse-no-dependencies.js:84404
+#: dist/converse-no-dependencies.js:91401
+#: dist/converse-no-dependencies.js:95414
+#: dist/converse-no-dependencies.js:95460
+#: dist/converse-no-dependencies.js:95533
+#: dist/converse-no-dependencies.js:95570
+#: dist/converse-no-dependencies.js:100894
+#: dist/converse-no-dependencies.js:101034
+#: dist/converse-no-dependencies.js:109010
+#: dist/converse-no-dependencies.js:110580
+#: dist/converse-no-dependencies.js:127111
+#: dist/converse-no-dependencies.js:130007
+#: dist/converse-no-dependencies.js:135102
+#: dist/converse-no-dependencies.js:139691
 msgid "Confirm"
 msgstr "جەزىملەشتۈرۈش"
 
-#: dist/converse-no-dependencies.js:83244
-#: dist/converse-no-dependencies.js:88055
-#: dist/converse-no-dependencies.js:133655
+#: dist/converse-no-dependencies.js:84404
+#: dist/converse-no-dependencies.js:89241
+#: dist/converse-no-dependencies.js:136211
 msgid "Cancel"
 msgstr "ئەمەلدىن قالدۇرۇش"
 
-#: dist/converse-no-dependencies.js:86037
+#: dist/converse-no-dependencies.js:87205
 msgid "Converse logo"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:88028
+#: dist/converse-no-dependencies.js:89213
 msgid "Execute"
 msgstr "ئىجرا قىلىش"
 
-#: dist/converse-no-dependencies.js:88029
+#: dist/converse-no-dependencies.js:89214
 msgid "Previous"
 msgstr "ئالدىنقى"
 
-#: dist/converse-no-dependencies.js:88030
+#: dist/converse-no-dependencies.js:89215
 msgid "Next"
 msgstr "كېيىنكى"
 
-#: dist/converse-no-dependencies.js:88031
+#: dist/converse-no-dependencies.js:89216
 msgid "Complete"
 msgstr "تامام"
 
-#: dist/converse-no-dependencies.js:88320
+#: dist/converse-no-dependencies.js:89505
 #, fuzzy, javascript-format
 msgid "The profile picture of %1$s"
 msgstr "سىزنىڭ باش سۈرىتىڭىز"
 
-#: dist/converse-no-dependencies.js:88531
+#: dist/converse-no-dependencies.js:89716
 msgid "Add to Contacts"
 msgstr "ئالاقىداشلىققا قۇشۇش"
 
-#: dist/converse-no-dependencies.js:88545
-#: dist/converse-no-dependencies.js:100573
-#: dist/converse-no-dependencies.js:118048
-#: dist/converse-no-dependencies.js:124551
-#: dist/converse-no-dependencies.js:126912
-#: dist/converse-no-dependencies.js:135320
+#: dist/converse-no-dependencies.js:89730
+#: dist/converse-no-dependencies.js:102179
+#: dist/converse-no-dependencies.js:120454
+#: dist/converse-no-dependencies.js:127037
+#: dist/converse-no-dependencies.js:129421
+#: dist/converse-no-dependencies.js:137892
 msgid "Nickname"
 msgstr "تەخەللۇس"
 
-#: dist/converse-no-dependencies.js:88545
-#: dist/converse-no-dependencies.js:90654
-#: dist/converse-no-dependencies.js:100570
-#: dist/converse-no-dependencies.js:111350
-#: dist/converse-no-dependencies.js:118748
-#: dist/converse-no-dependencies.js:126911
-#: dist/converse-no-dependencies.js:138721
-#: dist/converse-no-dependencies.js:139168
-#: dist/converse-no-dependencies.js:139554
+#: dist/converse-no-dependencies.js:89730
+#: dist/converse-no-dependencies.js:91858
+#: dist/converse-no-dependencies.js:102176
+#: dist/converse-no-dependencies.js:113668
+#: dist/converse-no-dependencies.js:121163
+#: dist/converse-no-dependencies.js:129420
+#: dist/converse-no-dependencies.js:141328
+#: dist/converse-no-dependencies.js:141783
+#: dist/converse-no-dependencies.js:142177
 msgid "XMPP Address"
 msgstr "XMPP ئادىرسى"
 
-#. ESM default export
-#: dist/converse-no-dependencies.js:88545
-#: dist/converse-no-dependencies.js:89092
+#. export default
+#: dist/converse-no-dependencies.js:89730
+#: dist/converse-no-dependencies.js:90278
 msgid "Affiliation"
 msgstr "يانداشما"
 
-#: dist/converse-no-dependencies.js:88547
-#: dist/converse-no-dependencies.js:89096
-#: dist/converse-no-dependencies.js:100574
-#: dist/converse-no-dependencies.js:126913
+#: dist/converse-no-dependencies.js:89732
+#: dist/converse-no-dependencies.js:90282
+#: dist/converse-no-dependencies.js:102180
+#: dist/converse-no-dependencies.js:129422
 msgid "Role"
 msgstr "رول"
 
-#: dist/converse-no-dependencies.js:88549
+#: dist/converse-no-dependencies.js:89734
 msgid "Hats"
 msgstr "قالپاقلار"
 
-#: dist/converse-no-dependencies.js:88549
+#: dist/converse-no-dependencies.js:89734
 msgid "Occupant Id"
 msgstr "تۇرغۇچى كىملىكى"
 
-#: dist/converse-no-dependencies.js:88663
-#: dist/converse-no-dependencies.js:89374
+#: dist/converse-no-dependencies.js:89848
+#: dist/converse-no-dependencies.js:90569
 msgid "Affiliation changed"
 msgstr "خاسلىق ئۆزگەرتىلدى"
 
-#: dist/converse-no-dependencies.js:88666
+#: dist/converse-no-dependencies.js:89851
 msgid "role changed"
 msgstr "رول ئۆزگەردى"
 
-#: dist/converse-no-dependencies.js:89054
+#: dist/converse-no-dependencies.js:90240
 msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
@@ -866,20 +872,20 @@ msgstr ""
 "ئىشلەتكۈچىلەرنىڭ رولىنى ئۆزگەرتەلەيدۇ (باشقۇرغۇچىلار ۋە ئىگىدارچىلىق "
 "قىلغۇچىلارغا مۇناسىۋەتلىكلەردىن باشقا)."
 
-#: dist/converse-no-dependencies.js:89056
+#: dist/converse-no-dependencies.js:90242
 msgid "The default role, implies that you can read and write messages."
 msgstr ""
 "بۇ سۈكۈتتىكى رول سىزنىڭ ئۇچۇر يازالايدىغان ھەمدە ئۇقۇيالايدىغانلىقىڭىزدىن "
 "دېرەك بېرىدۇ."
 
-#: dist/converse-no-dependencies.js:89058
+#: dist/converse-no-dependencies.js:90244
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
 "زىيارەت قىلغۇچىلار مۇرەسسە قىلىنغان كۆپ ئەزالىق پاراڭدا خەت يېزىشقا رۇخسەت "
 "قىلىنمايدۇ."
 
-#: dist/converse-no-dependencies.js:89063
+#: dist/converse-no-dependencies.js:90249
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
@@ -887,7 +893,7 @@ msgstr ""
 "ئىگىدارچىلىق قىلىش بولسا ئەڭ يۇقىرى ھوقوق. ئىگىدارچىلىق قىلغۇچىلار باشقا "
 "روللارنى ھەمدە باشقا ئىشلەتكۈچىلەرنىڭ يانداشمىلىقىنى ئۆزگەرتەلەيدۇ."
 
-#: dist/converse-no-dependencies.js:89065
+#: dist/converse-no-dependencies.js:90251
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
@@ -895,28 +901,28 @@ msgstr ""
 "باشقۇرغۇچى بولسا ئىككىنچى چوڭ ھوقوق. باشقۇرغۇچىلار (ئىگىدارچىلىق "
 "قىلغۇچىلاردىن باشقا) ھەرقانداق روللارنى ھەمدە يانداشمىلارنى ئۆزگەرتەلەيدۇ."
 
-#: dist/converse-no-dependencies.js:89067
+#: dist/converse-no-dependencies.js:90253
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
 msgstr ""
 "بىر ئىشلەتكۈچىنى چەكلەش ئۈچۈن، ئۇلارغا \"چەتكە قېقىش\" يانداشمىسىنى بېرىڭ."
 
-#: dist/converse-no-dependencies.js:89093
+#: dist/converse-no-dependencies.js:90279
 msgid "No users with that affiliation found."
 msgstr "بۇ خاسلىق بىلەن ھېچقانداق ئىشلەتكۈچى تېپىلمىدى."
 
-#: dist/converse-no-dependencies.js:89094
+#: dist/converse-no-dependencies.js:90280
 msgid "No users with that role found."
 msgstr "بۇ رول بىلەن ھېچقانداق ئىشلەتكۈچى تېپىلمىدى."
 
-#: dist/converse-no-dependencies.js:89095
+#: dist/converse-no-dependencies.js:90281
 msgid "Type here to filter the search results"
 msgstr "بۇ يەرگە يېزىش ئارقىلىق ئىزدەش نەتىنجىلىرىنى سۈزۈڭ"
 
-#: dist/converse-no-dependencies.js:89097
+#: dist/converse-no-dependencies.js:90283
 msgid "Show users"
 msgstr "ئىشلەتكۈچىلەرنى كۆرسىتىش"
 
-#: dist/converse-no-dependencies.js:89098
+#: dist/converse-no-dependencies.js:90284
 msgid ""
 "Roles are assigned to users to grant or deny them certain abilities in a "
 "multi-user chat. They're assigned either explicitly or implicitly as part of "
@@ -929,7 +935,7 @@ msgstr ""
 "بولمىغان بىر رول پەقەت شۇ ئىشلەتكۈچىنىڭ نۆۋەتتىكى زىيارىتىنىڭ مۇددىتىدىلا "
 "ئىناۋەتلىك بۇلىدۇ."
 
-#: dist/converse-no-dependencies.js:89099
+#: dist/converse-no-dependencies.js:90285
 msgid ""
 "An affiliation is a long-lived entitlement which typically implies a certain "
 "role and which grants privileges and responsibilities. For example admins "
@@ -940,27 +946,27 @@ msgstr ""
 "ھەمدە ئىگىدارچىلىق قىلغۇچىلار ئاپتۇماتىك ھالدا مۇرەسسە قىلغۇچىلىق رولىغا "
 "ئىگە."
 
-#: dist/converse-no-dependencies.js:89379
+#: dist/converse-no-dependencies.js:90574
 msgid "Role changed"
 msgstr "رول ئۆزگەردى"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:89820
+#: dist/converse-no-dependencies.js:91015
 msgid "Moderator Tools"
 msgstr "مۇرەسسە قىلغۇچى قوراللىرى"
 
-#: dist/converse-no-dependencies.js:90146
-#: dist/converse-no-dependencies.js:90148
+#: dist/converse-no-dependencies.js:91349
+#: dist/converse-no-dependencies.js:91351
 #, fuzzy
 msgid "Invitation to a groupchat"
 msgstr "باشقىلارنى بۇ توپپاراڭغا تەكلىپ قىلىڭ"
 
-#: dist/converse-no-dependencies.js:90146
+#: dist/converse-no-dependencies.js:91349
 #, fuzzy, javascript-format
 msgid "%1$s has invited you to join the groupchat \"%2$s\""
 msgstr "%1$s سىزنى بىر توپپاراڭغا تەكلىپ قىلدى: %2$s"
 
-#: dist/converse-no-dependencies.js:90148
+#: dist/converse-no-dependencies.js:91351
 #, fuzzy, javascript-format
 msgid ""
 "%1$s has invited you to join the groupchat \"%2$s\", and left the following "
@@ -969,38 +975,38 @@ msgstr ""
 "%1$s سىزنى بۇ توپپاراڭغا قۇشۇلۇشقا تەكلىپ قىلدى: %2$s ھەمدە بۇ سەۋەپ بىلەن "
 "ئايرىلدى: %3$s"
 
-#: dist/converse-no-dependencies.js:90167
+#: dist/converse-no-dependencies.js:91370
 msgid "Are you sure you want to destroy this groupchat?"
 msgstr "سىز بۇ توپپاراڭنى ۋەيران قىلىشنى جەزىملەشتۈرەمسىز؟"
 
-#: dist/converse-no-dependencies.js:90172
+#: dist/converse-no-dependencies.js:91375
 msgid "Please enter the XMPP address of this groupchat to confirm"
 msgstr "جەزىملەشتۈرۈش ئۈچۈن بۇ توپپاراڭنىڭ XMPP ئادىرسىنى كىرگۈزۈڭ"
 
-#: dist/converse-no-dependencies.js:90174
-#: dist/converse-no-dependencies.js:138716
+#: dist/converse-no-dependencies.js:91377
+#: dist/converse-no-dependencies.js:141323
 msgid "name@example.org"
 msgstr "ئىسىم@مەسىلەن.كوم"
 
-#: dist/converse-no-dependencies.js:90179
+#: dist/converse-no-dependencies.js:91382
 msgid "Optional reason for destroying this groupchat"
 msgstr "بۇ توپپاراڭنى ۋەيران قىلىشنىڭ ئىختىيارىي سەۋەبى"
 
-#: dist/converse-no-dependencies.js:90180
-#: dist/converse-no-dependencies.js:116944
-#: dist/converse-no-dependencies.js:117363
+#: dist/converse-no-dependencies.js:91383
+#: dist/converse-no-dependencies.js:119334
+#: dist/converse-no-dependencies.js:119761
 msgid "Reason"
 msgstr "سەۋەپ"
 
-#: dist/converse-no-dependencies.js:90184
+#: dist/converse-no-dependencies.js:91387
 msgid "Optional XMPP address for a new groupchat that replaces this one"
 msgstr "بۇ توپپاراڭنى ئالماشتۇرىدىغان يېڭىسىنىڭ ئىختىيارىي XMPP ئادىرسى"
 
-#: dist/converse-no-dependencies.js:90185
+#: dist/converse-no-dependencies.js:91388
 msgid "replacement@example.org"
 msgstr "يەڭگۈشلەش@مەسىلەن.ئورگان"
 
-#: dist/converse-no-dependencies.js:90371
+#: dist/converse-no-dependencies.js:91574
 msgid ""
 "Couldn't find a participant with that nickname. They might have left the "
 "groupchat."
@@ -1009,24 +1015,27 @@ msgstr ""
 "كەتكەن بۇلىشى مۇمكىن."
 
 #. e.g. Your nickname is "coolguy69"
-#: dist/converse-no-dependencies.js:90507
+#: dist/converse-no-dependencies.js:91710
 #, javascript-format
 msgid "Your nickname is \"%1$s\""
 msgstr "سىزنىڭ تەخەللۇسىڭىز بولسا \"%1$s\""
 
-#: dist/converse-no-dependencies.js:90530
+#: dist/converse-no-dependencies.js:91733
 msgid "Error: invalid number of arguments"
 msgstr "خاتالىق: ئىناۋەتسىز سانلىق پارامىتىرلار"
 
 #. *
+#. * @typedef {import('../adhoc-commands').default} AdHocCommands
+#.
+#. *
 #. * @param {AdHocCommands} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:90650
+#. export default
+#: dist/converse-no-dependencies.js:91854
 msgid "On which entity do you want to run commands?"
 msgstr "قايسى ئورۇندا بۇيرۇقلارنى ئىجرا قىلماقچى؟"
 
-#: dist/converse-no-dependencies.js:90651
+#: dist/converse-no-dependencies.js:91855
 msgid ""
 "Certain XMPP services and entities allow privileged users to execute ad-hoc "
 "commands on them."
@@ -1034,31 +1043,31 @@ msgstr ""
 "بەلگىلىك XMPP مۇلازىمەتلىرى ھەمدە ئورۇنلار ئالاھىدە-ھوقوقلۇق ئىشلەتكۈچىلەرنى "
 "ياسالما بۇيرۇقلارنى ئۇلاردا ئىجرا قىلىشقا يول قۇيىدۇ."
 
-#: dist/converse-no-dependencies.js:90652
+#: dist/converse-no-dependencies.js:91856
 msgid "Commands found"
 msgstr "تېپىلغان بۇيرۇقلار"
 
-#: dist/converse-no-dependencies.js:90653
+#: dist/converse-no-dependencies.js:91857
 msgid "List available commands"
 msgstr "مەۋجۇت بۇيرۇقلارنى كۆرسىتىش"
 
-#: dist/converse-no-dependencies.js:90655
+#: dist/converse-no-dependencies.js:91859
 msgid "No commands found"
 msgstr "ھېچقانداق بۇيرۇق تېپىلمىدى"
 
-#: dist/converse-no-dependencies.js:90971
+#: dist/converse-no-dependencies.js:92187
 msgid "Sorry, an error occurred while looking for commands on that entity."
 msgstr "كەچۈرۈڭ، ئۇ ئورۇندىكى بۇيرۇقلارنى ئىزدەۋاتقاندا بىر خاتالىق كۆرۈلدى."
 
-#: dist/converse-no-dependencies.js:90985
+#: dist/converse-no-dependencies.js:92201
 msgid "The specified entity doesn't support ad-hoc commands"
 msgstr "كۆرسىتىلگەن ئورۇن ياسالما بۇيرۇقلارنى قوللىمايدۇ"
 
-#: dist/converse-no-dependencies.js:91048
+#: dist/converse-no-dependencies.js:92264
 msgid "An error occurred while trying to fetch the command form"
 msgstr "كەچۈرۈڭ، بۇيرۇق كۆزنىكىگە ئېرىشىۋاتقاندا بىر خاتالىق كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:91138
+#: dist/converse-no-dependencies.js:92354
 msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
@@ -1066,16 +1075,16 @@ msgstr ""
 "كەچۈرۈڭ، بۇ بۇيرۇقنى ئىجرا قىلىۋاتقاندا بىر خاتالىق كۆرۈلدى. تەپسىلاتىنى "
 "توركۆرگۈچنىڭ لايىھەلىگۈچى كۆزنىكىنىكىدىن كۆرۈڭ"
 
-#: dist/converse-no-dependencies.js:91151
+#: dist/converse-no-dependencies.js:92367
 msgid "Executing"
 msgstr "ئىجرا قىلىۋاتىدۇ"
 
-#: dist/converse-no-dependencies.js:91155
-#: dist/converse-no-dependencies.js:91160
+#: dist/converse-no-dependencies.js:92371
+#: dist/converse-no-dependencies.js:92385
 msgid "Completed"
 msgstr "تاماملاندى"
 
-#: dist/converse-no-dependencies.js:91201
+#: dist/converse-no-dependencies.js:92426
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
@@ -1083,81 +1092,84 @@ msgstr ""
 "كەچۈرۈڭ، بۇ بۇيرۇقنى ئىجرا قىلىۋاتقاندا بىر خاتالىق كۆرۈلدى. تەپسىلاتىنى "
 "توركۆرگۈنىڭ ئىجادكارلار سۇپىسىىدىن كۆرۈڭ"
 
-#: dist/converse-no-dependencies.js:91208
+#: dist/converse-no-dependencies.js:92433
 msgid "Error: unexpected result"
 msgstr "خاتالىق: كۈتۈلمىگەن نەتىجە"
 
-#: dist/converse-no-dependencies.js:91412
+#: dist/converse-no-dependencies.js:92648
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "سىز بۇ %1$s خەتكۈچنى چىقىرۋېتىشنى جەزىملەشتۈرەمسىز؟"
 
-#: dist/converse-no-dependencies.js:91479
+#: dist/converse-no-dependencies.js:92715
 msgid "Unbookmark this groupchat"
 msgstr "بۇ توپپاراڭنى خەتكۈچسىزلەش"
 
-#: dist/converse-no-dependencies.js:91480
-#: dist/converse-no-dependencies.js:136126
-#: dist/converse-no-dependencies.js:136647
+#: dist/converse-no-dependencies.js:92716
+#: dist/converse-no-dependencies.js:138716
+#: dist/converse-no-dependencies.js:139237
 msgid "Click to open this groupchat"
 msgstr "بۇ توپپاراڭنى چىكىپ ئېچىڭ"
 
 #. *
 #. * @param {import('../bookmarks-list').default} el
 #.
-#. ESM default export
+#. export default
 #. *
 #. * @param {import('shared/components/list-filter').default} el
 #.
-#. ESM default export
+#. export default
+#. *
+#. * @typedef {import('shared/components/list-filter').default} ListFilter
+#.
 #. *
 #. * @param {ListFilter} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:91521
-#: dist/converse-no-dependencies.js:120153
-#: dist/converse-no-dependencies.js:140645
+#. export default
+#: dist/converse-no-dependencies.js:92757
+#: dist/converse-no-dependencies.js:122591
+#: dist/converse-no-dependencies.js:143285
 msgid "Filter"
 msgstr "سۈزگۈچ"
 
-#: dist/converse-no-dependencies.js:91967
-#: dist/converse-no-dependencies.js:136715
+#: dist/converse-no-dependencies.js:93211
+#: dist/converse-no-dependencies.js:139305
 msgid "Bookmarks"
 msgstr "خەتكۈچلەر"
 
-#: dist/converse-no-dependencies.js:92026
+#: dist/converse-no-dependencies.js:93270
 #, javascript-format
 msgid "Bookmark for \"%1$s\""
 msgstr "%1$s نىڭ خەتكۈچى"
 
-#: dist/converse-no-dependencies.js:92027
+#: dist/converse-no-dependencies.js:93271
 msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr "سىز بۇ توپپاراڭغا قوزغالغاندىلا ئاپتۇماتىك قۇشۇلۇشنى خالامسىز؟"
 
-#: dist/converse-no-dependencies.js:92028
-#: dist/converse-no-dependencies.js:137879
-#: dist/converse-no-dependencies.js:138013
+#: dist/converse-no-dependencies.js:93272
+#: dist/converse-no-dependencies.js:140477
+#: dist/converse-no-dependencies.js:140611
 msgid "Remove"
 msgstr "چىقىرۋېتىش"
 
-#: dist/converse-no-dependencies.js:92029
-#: dist/converse-no-dependencies.js:100604
-#: dist/converse-no-dependencies.js:113686
-#: dist/converse-no-dependencies.js:123514
-#: dist/converse-no-dependencies.js:138719
-#: dist/converse-no-dependencies.js:139167
+#: dist/converse-no-dependencies.js:93273
+#: dist/converse-no-dependencies.js:102210
+#: dist/converse-no-dependencies.js:116027
+#: dist/converse-no-dependencies.js:125992
+#: dist/converse-no-dependencies.js:141326
+#: dist/converse-no-dependencies.js:141782
 msgid "Name"
 msgstr "ئىسىم"
 
-#: dist/converse-no-dependencies.js:92030
+#: dist/converse-no-dependencies.js:93274
 msgid "What should your nickname for this groupchat be?"
 msgstr "سىزنىڭ بۇ توپپاراڭدىكى تەخەللۇسىڭىز نېمە بۇلىدۇ؟"
 
-#: dist/converse-no-dependencies.js:92031
+#: dist/converse-no-dependencies.js:93275
 msgid "Password (for a protected groupchat)"
 msgstr "ئىم (بىلەن قوغدالغان توپ پاراڭ)"
 
-#: dist/converse-no-dependencies.js:92032
+#: dist/converse-no-dependencies.js:93276
 msgid ""
 "If the groupchat requires a password to enter, you can save it here. Note "
 "this is not intended to be a secure storage."
@@ -1165,30 +1177,30 @@ msgstr ""
 "ئەگەر توپ پاراڭغا ئىم ئارقىلىق كىرىش زۆرۈر بولسا، ئۇنى بۇ جايدا "
 "ساقلىيالايسىز. ئەسكەرتىش بۇ بىخەتەر ساقلاشنى مەقسەت قىلمايدۇ."
 
-#: dist/converse-no-dependencies.js:92033
-#: dist/converse-no-dependencies.js:100604
+#: dist/converse-no-dependencies.js:93277
+#: dist/converse-no-dependencies.js:102210
 msgid "Update"
 msgstr "يېڭىلاش"
 
-#: dist/converse-no-dependencies.js:92033
-#: dist/converse-no-dependencies.js:122799
+#: dist/converse-no-dependencies.js:93277
+#: dist/converse-no-dependencies.js:125269
 msgid "Save"
 msgstr "ساقلاش"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:92328
+#: dist/converse-no-dependencies.js:93572
 msgid "Bookmark"
 msgstr "خەتكۈچ"
 
-#: dist/converse-no-dependencies.js:94133
+#: dist/converse-no-dependencies.js:95414
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr ""
 "سىزنىڭ ئەگەر داۋاملاشتۇرسىڭىز يوقاپ كىتىدىغان ئەۋەتىلمىگەن ئۇچۇرىڭىز بار. "
 "جەزىملەشتۈرەمسىز؟"
 
-#: dist/converse-no-dependencies.js:94170
-#: dist/converse-no-dependencies.js:94239
+#: dist/converse-no-dependencies.js:95451
+#: dist/converse-no-dependencies.js:95520
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
@@ -1197,25 +1209,25 @@ msgstr ""
 "قايتۇرۋېلىشنى قوللىمايدىغانلىقىغا ھەمدە بۇ ئۇچۇرنىڭ ھەممە جايدىن "
 "ئۆچۈرۈلۋېتىلمەيدىغانلىقىدىن خەۋەردار بۇلۇڭ."
 
-#: dist/converse-no-dependencies.js:94172
-#: dist/converse-no-dependencies.js:94245
-#: dist/converse-no-dependencies.js:94278
+#: dist/converse-no-dependencies.js:95453
+#: dist/converse-no-dependencies.js:95526
+#: dist/converse-no-dependencies.js:95559
 msgid "Are you sure you want to retract this message?"
 msgstr "سىز بۇ ئۇچۇرنى قايتۇرۋېلىشنى جەزىملەشتۈرەمسىز؟"
 
-#: dist/converse-no-dependencies.js:94214
+#: dist/converse-no-dependencies.js:95495
 msgid "A timeout occurred while trying to retract the message"
 msgstr "ئۇچۇرىڭىزنى قايتۇرۋېلىۋاتقاندا ۋاقىت-ئۆتۈش خاتالىقى كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:94218
+#: dist/converse-no-dependencies.js:95499
 msgid "Sorry, you're not allowed to retract this message."
 msgstr "كەچۈرۈڭ، سىزنىڭ بۇ ئۇچۇرنى قايتۇرۋېلىشقا رۇخسەت قىلىنمىدىڭىز."
 
-#: dist/converse-no-dependencies.js:94299
+#: dist/converse-no-dependencies.js:95580
 msgid "You are about to retract this message."
 msgstr "سىز بۇ ئۇچۇرنى قايتۇرۋالماقچى بۇلىۋاتىسىز."
 
-#: dist/converse-no-dependencies.js:94300
+#: dist/converse-no-dependencies.js:95581
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
@@ -1223,273 +1235,273 @@ msgstr ""
 "سىز ئىختىيارىي ھالدا بىر ئۇچۇرنى قالدۇرالايسىز، قايتۇرۋېلىشنىڭ سەۋەبىنى "
 "چۈشەندۈرگەن ئاساستا."
 
-#: dist/converse-no-dependencies.js:94311
+#: dist/converse-no-dependencies.js:95592
 msgid "Message Retraction"
 msgstr "ئۇچۇر قايتۇرۋېلىش"
 
-#: dist/converse-no-dependencies.js:94311
+#: dist/converse-no-dependencies.js:95592
 msgid "Optional reason"
 msgstr "ئىختىيارىي سەۋەپ"
 
-#: dist/converse-no-dependencies.js:94323
+#: dist/converse-no-dependencies.js:95604
 msgid "Sorry, you're not allowed to retract this message"
 msgstr "كەچۈرۈڭ، سىز بۇ ئۇچۇرنى قايتۇرۋېلىشقا رۇخسەت قىلىنمىدىڭىز"
 
-#: dist/converse-no-dependencies.js:94439
+#: dist/converse-no-dependencies.js:95720
 msgid "Show media"
 msgstr "مېدىئانى كۆرسىتىش"
 
-#: dist/converse-no-dependencies.js:94439
+#: dist/converse-no-dependencies.js:95720
 msgid "Hide media"
 msgstr "مېدىئانى يۇشۇرۇش"
 
 #. * @type {MessageActionAttributes}
-#: dist/converse-no-dependencies.js:94561
+#: dist/converse-no-dependencies.js:95842
 msgid "Cancel Editing"
 msgstr "تەھرىرلەشنى ئەمەلدىن قالدۇرۇش"
 
-#: dist/converse-no-dependencies.js:94561
-#: dist/converse-no-dependencies.js:100580
+#: dist/converse-no-dependencies.js:95842
+#: dist/converse-no-dependencies.js:102186
 msgid "Edit"
 msgstr "تەھرىرلەش"
 
-#: dist/converse-no-dependencies.js:94590
+#: dist/converse-no-dependencies.js:95871
 msgid "Retract"
 msgstr "قايتۇرۋېلىش"
 
-#: dist/converse-no-dependencies.js:94609
+#: dist/converse-no-dependencies.js:95890
 msgid "Copy"
 msgstr "كۆچۈر"
 
-#: dist/converse-no-dependencies.js:94621
+#: dist/converse-no-dependencies.js:95902
 msgid "Reply"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:94631
+#: dist/converse-no-dependencies.js:95912
 msgid "Quote"
 msgstr "نەقىل"
 
-#: dist/converse-no-dependencies.js:94872
+#: dist/converse-no-dependencies.js:96153
 msgid "Image: "
 msgstr "رەسىم: "
 
-#: dist/converse-no-dependencies.js:95474
+#: dist/converse-no-dependencies.js:96755
 msgid "Play"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:95475
+#: dist/converse-no-dependencies.js:96756
 msgid "Pause"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:95476
+#: dist/converse-no-dependencies.js:96757
 msgid "Mute"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:95477
+#: dist/converse-no-dependencies.js:96758
 msgid "Unmute"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:95478
+#: dist/converse-no-dependencies.js:96759
 msgid "Seek"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:95479
+#: dist/converse-no-dependencies.js:96760
 msgid "Volume"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:95480
+#: dist/converse-no-dependencies.js:96761
 msgid "Audio player"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:95481
+#: dist/converse-no-dependencies.js:96762
 msgid "Loading audio..."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:95482
+#: dist/converse-no-dependencies.js:96763
 msgid "Error loading audio"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:95483
+#: dist/converse-no-dependencies.js:96764
 #, fuzzy
 msgid "Current time"
 msgstr "نۆۋەتتىكى نەشىرى"
 
-#: dist/converse-no-dependencies.js:95484
+#: dist/converse-no-dependencies.js:96765
 #, fuzzy
 msgid "Duration"
 msgstr "تەسۋىرلەش"
 
-#: dist/converse-no-dependencies.js:95485
+#: dist/converse-no-dependencies.js:96766
 msgid "Playback speed"
 msgstr ""
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:99219
+#: dist/converse-no-dependencies.js:100672
 msgid "Message versions"
 msgstr "ئۇچۇر نەشىرلىرى"
 
-#: dist/converse-no-dependencies.js:99432
+#: dist/converse-no-dependencies.js:100894
 msgid "Are you sure you want to remove this contact?"
 msgstr "سىز بۇ ئالاقىداشنى ئۆچۈرۈشنى جەزىملەشتۈرەمسىز؟"
 
-#: dist/converse-no-dependencies.js:99469
+#: dist/converse-no-dependencies.js:100931
 #, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
 msgstr ""
 "كەچۈرۈڭ، %1$s نى ئالاقەداش سۈپىتىدە چىقىرىۋەتمەكچى بولغاندا خاتالىق كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:99501
+#: dist/converse-no-dependencies.js:100963
 #, fuzzy
 msgid "Remove and decline contact request"
 msgstr "ئالاقىلىشىش ئىلتىماسىنى رەت قىلىدۇ"
 
-#: dist/converse-no-dependencies.js:99502
+#: dist/converse-no-dependencies.js:100964
 #, fuzzy, javascript-format
 msgid "Are you sure you want to decline the contact request from %1$s?"
 msgstr "سىز بۇ ئالاقىداشلىق تەلىپىنى رەت قىلىشنى جەزىملەشتۈرەمسىز؟"
 
-#: dist/converse-no-dependencies.js:99505
+#: dist/converse-no-dependencies.js:100967
 #, fuzzy
 msgid "Also block this user from sending you further messages"
 msgstr "بۇ ئىشلەتكۈچىنىڭ سىزگە يەنە ئۇچۇر يوللىشىنى توسىدۇ"
 
-#: dist/converse-no-dependencies.js:99530
+#: dist/converse-no-dependencies.js:100992
 msgid "Contact request declined and user blocked"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:99536
+#: dist/converse-no-dependencies.js:100998
 #, fuzzy
 msgid "Contact request declined"
 msgstr "ئالاقىداشلىق تەلىپى"
 
-#: dist/converse-no-dependencies.js:99569
+#: dist/converse-no-dependencies.js:101031
 msgid "Do you want to block this contact, so they cannot send you messages?"
 msgstr "سىزگە ئۇچۇر يوللىشىنىڭ ئالدىنى ئېلىش ئۈچۈن بۇ ئالاقەداشنى توسامسىز؟"
 
-#: dist/converse-no-dependencies.js:99610
+#: dist/converse-no-dependencies.js:101072
 #, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
 msgstr "كەچۈرۈڭ، %1$s ئالاقەداشنى توسۇشنى سىناۋاتقاندا خاتالىق كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:99643
+#: dist/converse-no-dependencies.js:101105
 msgid "Do you want to unblock this contact, so they can send you messages?"
 msgstr "سىزگە ئۇچۇر يوللىشى ئۈچۈن بۇ ئالاقەداشنى توسۇشنى بىكار قىلامسىز؟"
 
-#: dist/converse-no-dependencies.js:99675
+#: dist/converse-no-dependencies.js:101137
 #, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
 msgstr "كەچۈرۈڭ، %1$s نى توسۇشنى سىناۋاتقاندا خاتالىق كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:100474
+#: dist/converse-no-dependencies.js:102080
 msgid "Neither of you receive presence updates"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:100476
+#: dist/converse-no-dependencies.js:102082
 msgid "Only you receive presence updates"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:100478
+#: dist/converse-no-dependencies.js:102084
 msgid "Only they receive presence updates"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:100480
+#: dist/converse-no-dependencies.js:102086
 msgid "Both of you receive presence updates"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:100488
+#: dist/converse-no-dependencies.js:102094
 msgid "Remove from blocklist"
 msgstr "توسۇش تىزىمىدىن چىقىرىۋېتىدۇ"
 
-#: dist/converse-no-dependencies.js:100496
+#: dist/converse-no-dependencies.js:102102
 msgid "Add to blocklist"
 msgstr "توسۇش تىزىمىغا قوشىدۇ"
 
-#: dist/converse-no-dependencies.js:100504
+#: dist/converse-no-dependencies.js:102110
 #, fuzzy
 msgid "Add as contact"
 msgstr "بىر ئالاقىداش قۇشۇڭ"
 
-#: dist/converse-no-dependencies.js:100512
+#: dist/converse-no-dependencies.js:102118
 msgid "Remove as contact"
 msgstr "ئالاقىداشلىقتىن ئۆچۈرۈش"
 
-#: dist/converse-no-dependencies.js:100520
-#: dist/converse-no-dependencies.js:139164
+#: dist/converse-no-dependencies.js:102126
+#: dist/converse-no-dependencies.js:141779
 msgid "Accept"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:100528
+#: dist/converse-no-dependencies.js:102134
 #, fuzzy
 msgid "Decline"
 msgstr "توردا"
 
-#: dist/converse-no-dependencies.js:100571
-#: dist/converse-no-dependencies.js:126909
+#: dist/converse-no-dependencies.js:102177
+#: dist/converse-no-dependencies.js:129418
 msgid "Email"
 msgstr "ئېلىخەت"
 
-#: dist/converse-no-dependencies.js:100572
-#: dist/converse-no-dependencies.js:126910
+#: dist/converse-no-dependencies.js:102178
+#: dist/converse-no-dependencies.js:129419
 msgid "Full Name"
 msgstr "تۇلۇق ئىسمى"
 
-#: dist/converse-no-dependencies.js:100575
-#: dist/converse-no-dependencies.js:126916
+#: dist/converse-no-dependencies.js:102181
+#: dist/converse-no-dependencies.js:129425
 msgid "URL"
 msgstr "ئۇلىنىش"
 
-#: dist/converse-no-dependencies.js:100576
-#: dist/converse-no-dependencies.js:138717
-#: dist/converse-no-dependencies.js:139165
+#: dist/converse-no-dependencies.js:102182
+#: dist/converse-no-dependencies.js:141324
+#: dist/converse-no-dependencies.js:141780
 #, fuzzy
 msgid "Groups"
 msgstr "توپ"
 
-#: dist/converse-no-dependencies.js:100577
-#: dist/converse-no-dependencies.js:138718
-#: dist/converse-no-dependencies.js:139166
+#: dist/converse-no-dependencies.js:102183
+#: dist/converse-no-dependencies.js:141325
+#: dist/converse-no-dependencies.js:141781
 msgid "Use commas to separate multiple values"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:100578
-#: dist/converse-no-dependencies.js:126918
+#: dist/converse-no-dependencies.js:102184
+#: dist/converse-no-dependencies.js:129427
 msgid "OMEMO"
 msgstr "OMEMO"
 
-#: dist/converse-no-dependencies.js:100579
-#: dist/converse-no-dependencies.js:126919
+#: dist/converse-no-dependencies.js:102185
+#: dist/converse-no-dependencies.js:129428
 msgid "Profile"
 msgstr "تەرجىمال"
 
-#: dist/converse-no-dependencies.js:100598
+#: dist/converse-no-dependencies.js:102204
 msgid "Presence"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:100600
-#: dist/converse-no-dependencies.js:139435
+#: dist/converse-no-dependencies.js:102206
+#: dist/converse-no-dependencies.js:142058
 #, fuzzy
 msgid "Contact Request"
 msgstr "ئالاقىداشلىق تەلىپى"
 
-#: dist/converse-no-dependencies.js:101175
+#: dist/converse-no-dependencies.js:102790
 msgid "Uploading file:"
 msgstr "ھۆججەتنى چىقىرۋاتىدۇ:"
 
-#: dist/converse-no-dependencies.js:101248
+#: dist/converse-no-dependencies.js:102863
 msgid "Retry"
 msgstr "قايتا سىناش"
 
-#: dist/converse-no-dependencies.js:101956
+#: dist/converse-no-dependencies.js:103571
 #, fuzzy
 msgid "Replying to a message"
 msgstr "بۇ ئۇچۇرنى يوللاش"
 
-#: dist/converse-no-dependencies.js:101963
+#: dist/converse-no-dependencies.js:103578
 #, fuzzy
 msgid "(empty message)"
 msgstr "يېڭى ئۇچۇرلار"
 
-#: dist/converse-no-dependencies.js:102291
+#: dist/converse-no-dependencies.js:103907
 #, fuzzy
 msgid "This message has been edited"
 msgstr "بۇ ئۇچۇر تەھرىرلەندى"
@@ -1497,198 +1509,245 @@ msgstr "بۇ ئۇچۇر تەھرىرلەندى"
 #. *
 #. * @param {import('../message').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:102300
+#. export default
+#: dist/converse-no-dependencies.js:103916
 msgid "Show more"
 msgstr "تېخىمۇ كۆپ"
 
-#: dist/converse-no-dependencies.js:102302
+#: dist/converse-no-dependencies.js:103918
 msgid "Show less"
 msgstr "ئاز كۆرسىتىش"
 
-#: dist/converse-no-dependencies.js:102304
+#: dist/converse-no-dependencies.js:103920
 msgid "Message delivery failed."
 msgstr "ئۇچۇرنى يەتكۈزەلمىدى."
 
-#: dist/converse-no-dependencies.js:102936
+#: dist/converse-no-dependencies.js:104559
 msgid "A moderator"
 msgstr "بىر رىياسەتچى"
 
-#: dist/converse-no-dependencies.js:102937
-#: dist/converse-no-dependencies.js:102939
+#: dist/converse-no-dependencies.js:104560
+#: dist/converse-no-dependencies.js:104562
 #, javascript-format
 msgid "%1$s has removed a message"
 msgstr "%1$s بىر ئۇچۇرنى چىقىرىۋەتتى"
 
-#: dist/converse-no-dependencies.js:102939
+#: dist/converse-no-dependencies.js:104562
 msgid "You have removed a message"
 msgstr "بىر ئۇچۇرنى چىقىرىۋەتتىڭىز"
 
-#: dist/converse-no-dependencies.js:105541
+#: dist/converse-no-dependencies.js:107392
 msgid "Search results"
 msgstr "ئىزدەش نەتىنجىلىرى"
 
-#: dist/converse-no-dependencies.js:105570
+#: dist/converse-no-dependencies.js:107452
 msgid "Search"
 msgstr "ئىزدەش"
 
-#: dist/converse-no-dependencies.js:106180
+#: dist/converse-no-dependencies.js:108090
 msgid "Insert emojis"
 msgstr "ھىسسىيات ئىپادىلىرىنى قۇشۇش"
 
-#. ESM default export
-#: dist/converse-no-dependencies.js:106847
+#: dist/converse-no-dependencies.js:108985
+msgid "Getting location..."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:108985
+msgid "Share current location"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:109001
+#: dist/converse-no-dependencies.js:109042
+msgid "Location Error"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:109002
+#, fuzzy
+msgid "Your browser or device does not support sharing your location."
+msgstr "مۇلازىمېتىرىڭىز ئىم ئەسلىگە قايتۇرۇشنى قوللىمايدۇ"
+
+#: dist/converse-no-dependencies.js:109011
+#, fuzzy
+msgid "Are you sure you'd like to share your location in the chat?"
+msgstr "سىز بۇ ئالاقىداشنى ئۆچۈرۈشنى جەزىملەشتۈرەمسىز؟"
+
+#: dist/converse-no-dependencies.js:109031
+msgid ""
+"Location access was denied. Please allow location permissions in your "
+"browser settings and try again."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:109034
+msgid ""
+"Your current location could not be determined. Please check your device's "
+"location services and try again."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:109037
+msgid ""
+"The request to get your location timed out. Please check your connection and "
+"try again."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:109040
+#, fuzzy
+msgid ""
+"An unexpected error occurred while trying to retrieve your location. Please "
+"try again."
+msgstr "كەچۈرۈڭ، ئۇچۇرىڭىزنى قايتۇرۋاتقاندا بىر خاتالىق كۆرۈلدى."
+
+#. export default
+#: dist/converse-no-dependencies.js:109108
 msgid "Message characters remaining"
 msgstr "ئېشىپ قالغان ئۇچۇر ھەرىپلىرى"
 
-#: dist/converse-no-dependencies.js:107059
+#: dist/converse-no-dependencies.js:109320
 msgid "Send the message"
 msgstr "بۇ ئۇچۇرنى يوللاش"
 
-#: dist/converse-no-dependencies.js:107336
+#: dist/converse-no-dependencies.js:109610
 msgid "Start a call"
 msgstr "بىر تېلىفۇن ئۇرۇش"
 
-#: dist/converse-no-dependencies.js:107366
+#: dist/converse-no-dependencies.js:109643
 msgid "Choose a file to send"
 msgstr "يوللاش ئۈچۈن بىرەر ھۆججەت تاللاڭ"
 
-#: dist/converse-no-dependencies.js:107383
+#: dist/converse-no-dependencies.js:109660
 msgid "Click to write as a normal (non-spoiler) message"
 msgstr "بېسىش ئارقىلىق بىر نورمال(بۇزغۇنچى ئەمەس) ئۇچۇر سۈپىتىدە يېزىڭ"
 
-#: dist/converse-no-dependencies.js:107385
+#: dist/converse-no-dependencies.js:109662
 msgid "Click to write your message as a spoiler"
 msgstr "بېسىش ئارقىلىق بۇزغۇنچى ئۇچۇر سۈپىتىدە يېزىڭ"
 
-#: dist/converse-no-dependencies.js:107585
+#: dist/converse-no-dependencies.js:109865
 msgid "The User's Profile Image"
 msgstr "ئىشلەتكۈچىنىڭ باش سۈرىتى"
 
-#: dist/converse-no-dependencies.js:107921
-#: dist/converse-no-dependencies.js:124529
-#: dist/converse-no-dependencies.js:137888
+#: dist/converse-no-dependencies.js:110210
+#: dist/converse-no-dependencies.js:127015
+#: dist/converse-no-dependencies.js:140486
 msgid "Details"
 msgstr "تەپسىلاتلار"
 
-#: dist/converse-no-dependencies.js:107922
+#: dist/converse-no-dependencies.js:110211
 msgid "See more information about this person"
 msgstr "بۇ ئادەم ھەققىدە تېخىمۇ كۆپ ئۇچۇرلارنى كۆرۈش"
 
-#: dist/converse-no-dependencies.js:107964
+#: dist/converse-no-dependencies.js:110253
 msgid "Unblock user"
 msgstr "ئىشلەتكۈچىنى توسما"
 
-#: dist/converse-no-dependencies.js:107965
+#: dist/converse-no-dependencies.js:110254
 msgid "Are you sure you want to unblock this user?"
 msgstr "بۇ ئىشلەتكۈچىنى توسۇشنى راستتىنلا بىكار قىلامسىز؟"
 
-#: dist/converse-no-dependencies.js:107980
+#: dist/converse-no-dependencies.js:110269
 msgid "Unblock this user"
 msgstr "بۇ ئىشلەتكۈچىنى توسما"
 
-#: dist/converse-no-dependencies.js:107981
+#: dist/converse-no-dependencies.js:110270
 msgid "Allow this user to send you messages"
 msgstr "بۇ ئىشلەتكۈچىنىڭ سىزگە ئۇچۇر يوللىشىغا يول قويىدۇ"
 
-#: dist/converse-no-dependencies.js:107998
+#: dist/converse-no-dependencies.js:110287
 msgid "Block user"
 msgstr "ئىشلەتكۈچىنى توس"
 
-#: dist/converse-no-dependencies.js:107999
+#: dist/converse-no-dependencies.js:110288
 #, fuzzy, javascript-format
 msgid "Are you sure you want to prevent %1$s from contacting you further?"
 msgstr "سىز بۇ ئالاقىداشنى ئۆچۈرۈشنى جەزىملەشتۈرەمسىز؟"
 
-#: dist/converse-no-dependencies.js:108017
+#: dist/converse-no-dependencies.js:110306
 msgid "Block this user"
 msgstr "بۇ ئىشلەتكۈچىنى توسىدۇ"
 
-#: dist/converse-no-dependencies.js:108018
+#: dist/converse-no-dependencies.js:110307
 msgid "Prevent this user from sending you any further messages"
 msgstr "بۇ ئىشلەتكۈچىنىڭ سىزگە ھەر قانداق ئۇچۇر يوللىشىنىڭ ئالدىنى ئالىدۇ"
 
-#: dist/converse-no-dependencies.js:108033
+#: dist/converse-no-dependencies.js:110322
 msgid "Close and end this conversation"
 msgstr "بۇ پاراڭنى ئاخىرلارشتۇرۇش ھەمدە تاقاش"
 
-#. ESM default export
 #. *
 #. * @param {import('../bottom-panel').default} el
 #.
-#. ESM default export
+#. export default
 #. *
 #. * @param {import('../occupant-bottom-panel').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:108138
-#: dist/converse-no-dependencies.js:118306
-#: dist/converse-no-dependencies.js:119368
+#. export default
+#: dist/converse-no-dependencies.js:110430
+#: dist/converse-no-dependencies.js:120713
+#: dist/converse-no-dependencies.js:121790
 msgid "You have unread messages"
 msgstr "سىزنىڭ ئۇقۇمىغان ئۇچۇرلىرىڭىز بار"
 
-#: dist/converse-no-dependencies.js:108280
+#: dist/converse-no-dependencies.js:110580
 msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "سىز بۇ پاراڭدىن ئۇچۇرلارنى ئۆچۈرۋېتىشنى جەزىملەشتۈرەمسىز؟"
 
-#: dist/converse-no-dependencies.js:108595
+#: dist/converse-no-dependencies.js:110895
 #, javascript-format
 msgid "Replying to %1$s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:108597
+#: dist/converse-no-dependencies.js:110897
 #, fuzzy
 msgid "Cancel reply"
 msgstr "ئەمەلدىن قالدۇرۇش"
 
-#: dist/converse-no-dependencies.js:108683
-#: dist/converse-no-dependencies.js:117634
+#: dist/converse-no-dependencies.js:110985
+#: dist/converse-no-dependencies.js:120033
 msgid "Hidden message"
 msgstr "يۇشۇرۇن ئۇچۇر"
 
-#: dist/converse-no-dependencies.js:108683
-#: dist/converse-no-dependencies.js:117634
+#: dist/converse-no-dependencies.js:110985
+#: dist/converse-no-dependencies.js:120033
 msgid "Message"
 msgstr "ئۇچۇر"
 
-#: dist/converse-no-dependencies.js:108684
-#: dist/converse-no-dependencies.js:117635
+#: dist/converse-no-dependencies.js:110986
+#: dist/converse-no-dependencies.js:120034
 msgid "Optional hint"
 msgstr "ئىختىيارى بىشارەت"
 
-#: dist/converse-no-dependencies.js:109179
+#: dist/converse-no-dependencies.js:111487
 msgid "Sorry, the connection has been lost, and your message could not be sent"
 msgstr "كەچۈرۈڭ، ئۇلىنىش يوقاپ كەتتى، ھەمدە سىزنىڭ ئۇچۇرىڭىزنى ئەۋەتەلمىدۇق"
 
-#: dist/converse-no-dependencies.js:110766
+#: dist/converse-no-dependencies.js:113083
 msgid "Remove messages"
 msgstr "ئۇچۇرلارنى ئۆچۈرۈش"
 
-#: dist/converse-no-dependencies.js:110767
+#: dist/converse-no-dependencies.js:113084
 msgid "Close this chat"
 msgstr "بۇ پاراڭنى تاقاش"
 
-#: dist/converse-no-dependencies.js:110768
+#: dist/converse-no-dependencies.js:113085
 msgid "Write in the third person"
 msgstr "ئۈچۈنچى شەخىستە يېزىش"
 
-#: dist/converse-no-dependencies.js:110769
-#: dist/converse-no-dependencies.js:122076
+#: dist/converse-no-dependencies.js:113086
+#: dist/converse-no-dependencies.js:124538
 msgid "Show this menu"
 msgstr "بۇ تىزىملىكنى كۆرسىتىش"
 
-#: dist/converse-no-dependencies.js:110989
-#: dist/converse-no-dependencies.js:118747
-#: dist/converse-no-dependencies.js:139028
-#: dist/converse-no-dependencies.js:139825
+#: dist/converse-no-dependencies.js:113307
+#: dist/converse-no-dependencies.js:121162
+#: dist/converse-no-dependencies.js:141641
+#: dist/converse-no-dependencies.js:142455
 msgid "Please enter a valid XMPP address"
 msgstr "بىر ئىناۋەتلىك XMPP ئادىرسىنى كىرگۈزۈڭ"
 
-#: dist/converse-no-dependencies.js:111176
+#: dist/converse-no-dependencies.js:113493
 msgid "A big thank you to our sponsors 🙏"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:111329
+#: dist/converse-no-dependencies.js:113646
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1703,846 +1762,849 @@ msgstr ""
 "ئىشىنىلمىگەن ئۈسكۈنىنى ئىشلەتكەندە دىققەت قىلىڭ، OMEMO شىفىرلاش كۈچكە ئىگە "
 "ئەمەس."
 
-#: dist/converse-no-dependencies.js:111330
+#: dist/converse-no-dependencies.js:113647
 msgid "This is a trusted device"
 msgstr "بۇ بىر ئىشەنچلىك ئۈسكۈنە"
 
-#: dist/converse-no-dependencies.js:111331
+#: dist/converse-no-dependencies.js:113648
 msgid "Info"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:111334
-#: dist/converse-no-dependencies.js:133777
+#: dist/converse-no-dependencies.js:113651
+#: dist/converse-no-dependencies.js:136333
 msgid "Connection URL"
 msgstr "ئۇلايدىغان URL"
 
-#: dist/converse-no-dependencies.js:111335
+#: dist/converse-no-dependencies.js:113652
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
 msgstr ""
 "سىزنىڭ XMPP مۇلازىمىتىرىڭىزگە ئۇلاشتا ئىشلىتىلدىغان HTTP ياكى توربەت ئۇلىنىشى"
 
-#: dist/converse-no-dependencies.js:111336
+#: dist/converse-no-dependencies.js:113653
 msgid "e.g. wss://example.org/xmpp-websocket"
 msgstr "مەسىلەن: wss://example.org/xmpp-websocket"
 
-#: dist/converse-no-dependencies.js:111340
+#: dist/converse-no-dependencies.js:113658
 msgid "Password"
 msgstr "مەخپىي نۇمۇر"
 
-#: dist/converse-no-dependencies.js:111349
+#: dist/converse-no-dependencies.js:113667
 msgid "Log in"
 msgstr "كىرىش"
 
-#: dist/converse-no-dependencies.js:111353
+#: dist/converse-no-dependencies.js:113671
 msgid "Username"
 msgstr "ئىشلەتكۈچى ئىسمى"
 
-#: dist/converse-no-dependencies.js:111353
+#: dist/converse-no-dependencies.js:113671
 msgid "user@domain"
 msgstr "ئىشلەتكۈچى@دائىرە"
 
-#: dist/converse-no-dependencies.js:111360
+#: dist/converse-no-dependencies.js:113677
 msgid "Disconnected"
 msgstr "ئۈزۈلدى"
 
-#: dist/converse-no-dependencies.js:111361
+#: dist/converse-no-dependencies.js:113678
 msgid "Click here to log in anonymously"
 msgstr "بۇ يەرنى بېسىش ئارقىلىق نامسىز ھالەتتە كىرىڭ"
 
-#: dist/converse-no-dependencies.js:111949
+#: dist/converse-no-dependencies.js:114275
 #, fuzzy
 msgid "Chat"
 msgstr "پاراڭخۇمار"
 
-#: dist/converse-no-dependencies.js:112526
+#: dist/converse-no-dependencies.js:114860
 msgid "About Converse"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113232
+#: dist/converse-no-dependencies.js:115574
 msgid "Show details about this chat client"
 msgstr "بۇ پاراڭ خېرىدارىنىڭ تەپسىلاتىنى كۆرسىتىڭ"
 
-#: dist/converse-no-dependencies.js:113672
+#: dist/converse-no-dependencies.js:116013
 msgid "Discover Services"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113674
+#: dist/converse-no-dependencies.js:116015
 msgid "Inspect"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113674
+#: dist/converse-no-dependencies.js:116015
 msgid "Service"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113685
+#: dist/converse-no-dependencies.js:116026
 #, fuzzy
 msgid "Identities"
 msgstr "پائالىيەتلەر"
 
-#: dist/converse-no-dependencies.js:113686
+#: dist/converse-no-dependencies.js:116027
 msgid "Type"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113686
-#: dist/converse-no-dependencies.js:133735
+#: dist/converse-no-dependencies.js:116027
+#: dist/converse-no-dependencies.js:136291
 msgid "Category"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113690
+#: dist/converse-no-dependencies.js:116031
 msgid "Items"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113697
-#: dist/converse-no-dependencies.js:123507
+#: dist/converse-no-dependencies.js:116038
+#: dist/converse-no-dependencies.js:125985
 msgid "Features"
 msgstr "ئىقتىدارلار"
 
-#: dist/converse-no-dependencies.js:114070
+#: dist/converse-no-dependencies.js:116419
 msgid "No service found with that XMPP address"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:114077
+#: dist/converse-no-dependencies.js:116426
 #, fuzzy, javascript-format
 msgid "Error: %1$s"
 msgstr "خاتالىق"
 
-#: dist/converse-no-dependencies.js:114478
+#: dist/converse-no-dependencies.js:116835
 msgid "Close these announcements"
 msgstr "بۇ ئۇقتۇرۇشلارنى تاقاش"
 
-#: dist/converse-no-dependencies.js:114911
+#: dist/converse-no-dependencies.js:117276
 msgid "Click to open this server message"
 msgstr "بېسىش ئارقىلىق بۇ مۇلازىمىتىر ئۇچۇرىنى ئېچىڭ"
 
-#: dist/converse-no-dependencies.js:114922
+#: dist/converse-no-dependencies.js:117287
 msgid "Announcements"
 msgstr "ئۇقتۇرۇشلار"
 
-#: dist/converse-no-dependencies.js:115327
+#: dist/converse-no-dependencies.js:117700
 msgid "Click to load missing messages"
 msgstr "بېسىش ئارقىلىق يوقىغان ئۇچۇرنى چۈشۈرۈڭ"
 
-#: dist/converse-no-dependencies.js:116080
-#: dist/converse-no-dependencies.js:116102
+#: dist/converse-no-dependencies.js:118462
+#: dist/converse-no-dependencies.js:118484
 msgid "Minimize"
 msgstr "كىچىكلەشتۈرۈش"
 
-#: dist/converse-no-dependencies.js:116081
+#: dist/converse-no-dependencies.js:118463
 msgid "Minimize this chat"
 msgstr "بۇ پاراڭنى كىچىكلەشتۈرۈڭ"
 
-#: dist/converse-no-dependencies.js:116103
+#: dist/converse-no-dependencies.js:118485
 msgid "Minimize this groupchat"
 msgstr "بۇ توپپاراڭنى كىچىكلەشتۈرۈڭ"
 
-#: dist/converse-no-dependencies.js:116237
+#: dist/converse-no-dependencies.js:118619
 msgid "hidden"
 msgstr "يۇشۇرۇن"
 
 #. *
 #. * @param {import('../minimized-chat').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:116605
+#. export default
+#: dist/converse-no-dependencies.js:118995
 msgid "Click to restore this chat"
 msgstr "بېسىش ئارقىلىق بۇ پاراڭنى ئەسلىگە قايتۇرۇڭ"
 
 #. *
 #. * @param {import('../affiliation-form').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:116942
+#. export default
+#: dist/converse-no-dependencies.js:119332
 msgid "Change affiliation"
 msgstr "يانداشما ئۆزگەرتىش"
 
-#: dist/converse-no-dependencies.js:116943
+#: dist/converse-no-dependencies.js:119333
 msgid "New affiliation"
 msgstr "يېڭى يانداشما"
 
-#: dist/converse-no-dependencies.js:117251
+#: dist/converse-no-dependencies.js:119649
 msgid "Timeout error while trying to set the affiliation"
 msgstr "خاسلىق بېكىتىش جەريانىدا ۋاقىت-ئۆتۈش خاتالىقى كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:117253
+#: dist/converse-no-dependencies.js:119651
 msgid "Sorry, you're not allowed to make that change"
 msgstr "كەچۈرۈڭ، سىز ئۇ ئۆزگەرتىشنى قىلىشقا رۇخسەت قىلىنمىدىڭىز"
 
-#: dist/converse-no-dependencies.js:117255
+#: dist/converse-no-dependencies.js:119653
 msgid "Sorry, something went wrong while trying to set the affiliation"
 msgstr "كەچۈرۈڭ، بۇ خاسلىقنى بېكىتىش جەريانىدا بىر نەرسە خاتا بۇلۇپ قالدى"
 
 #. *
 #. * @param {import('../role-form').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:117361
+#. export default
+#: dist/converse-no-dependencies.js:119759
 msgid "Change role"
 msgstr "رول ئۆزگەرتىش"
 
-#: dist/converse-no-dependencies.js:117362
+#: dist/converse-no-dependencies.js:119760
 msgid "New Role"
 msgstr "يېڭى رول"
 
-#: dist/converse-no-dependencies.js:117530
+#: dist/converse-no-dependencies.js:119928
 msgid "You're not allowed to make that change"
 msgstr "سىز ئۇ ئۆزگەرتىشنى قىلىشقا رۇخسەت قىلىنمىدىڭىز"
 
-#: dist/converse-no-dependencies.js:117532
+#: dist/converse-no-dependencies.js:119930
 msgid "Sorry, something went wrong while trying to set the role"
 msgstr "كەچۈرۈڭ، بۇ رولنى بېكىتىش جەريانىدا خاتالىق كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:118049
+#: dist/converse-no-dependencies.js:120455
 msgid "Change nickname"
 msgstr "تەخەللۇس ئۆزگەرتىش"
 
-#: dist/converse-no-dependencies.js:118049
+#: dist/converse-no-dependencies.js:120455
 msgid "Enter groupchat"
 msgstr "توپپاراڭغا كىرىش"
 
-#: dist/converse-no-dependencies.js:118050
+#: dist/converse-no-dependencies.js:120456
 msgid "Choose a nickname to enter"
 msgstr "كىرىش ئۈچۈن بىر تەخەللۇس تاللاڭ"
 
-#: dist/converse-no-dependencies.js:118050
+#: dist/converse-no-dependencies.js:120456
 msgid "Please choose your nickname"
 msgstr "تەخەللۇسىڭىزنى تاللاڭ"
 
-#: dist/converse-no-dependencies.js:118308
+#: dist/converse-no-dependencies.js:120715
 msgid "You're not allowed to send messages in this room"
 msgstr "بۇ ئۆيدە ئۇچۇر ئەۋەتىشىڭىزگە يول قۇيۇلمىدى"
 
-#. ESM default export
-#: dist/converse-no-dependencies.js:118745
-#: dist/converse-no-dependencies.js:119374
+#. export default
+#: dist/converse-no-dependencies.js:121160
+#: dist/converse-no-dependencies.js:121796
 msgid "Invite"
 msgstr "تەكلىپ قىلىش"
 
-#: dist/converse-no-dependencies.js:118746
+#: dist/converse-no-dependencies.js:121161
 msgid "user@example.org"
 msgstr "ئىشلەتكۈچى@مەسىلەن.ئورگان"
 
-#: dist/converse-no-dependencies.js:118749
+#: dist/converse-no-dependencies.js:121164
 msgid "Optional reason for the invitation"
 msgstr "تەكلىپ قىلىشنىڭ ئىختىيارىي سەۋەبى"
 
-#: dist/converse-no-dependencies.js:118860
+#: dist/converse-no-dependencies.js:121275
 msgid "Invite someone to this groupchat"
 msgstr "باشقىلارنى بۇ توپپاراڭغا تەكلىپ قىلىڭ"
 
+#. *
+#. * @typedef {import('@converse/headless').MUCOccupant} MUCOccupant
+#.
 #. * @param {MUCOccupant} o
-#: dist/converse-no-dependencies.js:119116
+#: dist/converse-no-dependencies.js:121539
 #, javascript-format
 msgid "Click to mention %1$s in your message."
 msgstr "بېسىش ئارقىلىق %1$s نى ئۇچۇرىڭىزدا تىلغا ئېلىڭ."
 
-#: dist/converse-no-dependencies.js:119127
+#: dist/converse-no-dependencies.js:121550
 msgid "Owner"
 msgstr "ئىگىسى"
 
-#: dist/converse-no-dependencies.js:119131
+#: dist/converse-no-dependencies.js:121554
 msgid "Admin"
 msgstr "باشقۇرغۇچى"
 
-#: dist/converse-no-dependencies.js:119135
+#: dist/converse-no-dependencies.js:121558
 msgid "Member"
 msgstr "ئەزا"
 
-#: dist/converse-no-dependencies.js:119139
+#: dist/converse-no-dependencies.js:121562
 msgid "Moderator"
 msgstr "رىياسەتچى"
 
-#: dist/converse-no-dependencies.js:119143
+#: dist/converse-no-dependencies.js:121566
 msgid "Visitor"
 msgstr "زىيارەت قىلغۇچى"
 
-#: dist/converse-no-dependencies.js:119203
+#: dist/converse-no-dependencies.js:121625
 msgid "This user is a moderator."
 msgstr "بۇ ئىشلەتكۈچى بولسا مۇرەسسە قىلغۇچى."
 
-#: dist/converse-no-dependencies.js:119204
+#: dist/converse-no-dependencies.js:121626
 msgid "This user can send messages in this groupchat."
 msgstr "بۇ ئىشلەتكۈچى بۇ توپپاراڭدا ئۇچۇر يوللىيالايدۇ."
 
-#: dist/converse-no-dependencies.js:119205
+#: dist/converse-no-dependencies.js:121627
 msgid "This user can NOT send messages in this groupchat."
 msgstr "بۇ ئىشلەتكۈچى بۇ توپپاراڭدا ئۇچۇر يوللىيالمايدۇ."
 
-#: dist/converse-no-dependencies.js:119370
+#: dist/converse-no-dependencies.js:121792
 msgid ""
 "This user is not currently in this groupchat and can't receive messages."
 msgstr "بۇ ئىشلەتكۈچى نۆۋەتتىكى توپ پاراڭدا ئەمەس، ئۇچۇر تاپشۇرۇۋالالمايدۇ."
 
-#: dist/converse-no-dependencies.js:119371
+#: dist/converse-no-dependencies.js:121793
 msgid "Invite this user to join this groupchat"
 msgstr "بۇ ئىشلەتكۈچىنى مەزكۇر توپ پاراڭغا تەكلىپ قىلىدۇ"
 
-#: dist/converse-no-dependencies.js:119372
+#: dist/converse-no-dependencies.js:121794
 msgid "Open a one-on-one chat with this user"
 msgstr "بۇ ئىشلەتكۈچى بىلەن بىرگە بىر پاراڭلىشىشنى ئاچىدۇ"
 
-#: dist/converse-no-dependencies.js:119373
+#: dist/converse-no-dependencies.js:121795
 msgid "Open Chat"
 msgstr "پاراڭلىشىشنى ئاچ"
 
-#: dist/converse-no-dependencies.js:119702
-#: dist/converse-no-dependencies.js:126562
+#: dist/converse-no-dependencies.js:122132
+#: dist/converse-no-dependencies.js:129071
 msgid "Success"
 msgstr "مۇۋەپپەقىيەتلىك"
 
-#: dist/converse-no-dependencies.js:119702
+#: dist/converse-no-dependencies.js:122132
 msgid "The user has been invited to join this groupchat"
 msgstr "بۇ ئىشلەتكۈچى مەزكۇر توپ پاراڭغا تەكلىپ قىلىنغان"
 
-#: dist/converse-no-dependencies.js:120154
+#: dist/converse-no-dependencies.js:122592
 msgid "Filter by name"
 msgstr "ئىسىم بويىچە سۈزىدۇ"
 
-#: dist/converse-no-dependencies.js:120155
-#: dist/converse-no-dependencies.js:140648
+#: dist/converse-no-dependencies.js:122593
+#: dist/converse-no-dependencies.js:143288
 msgid "Filter by status"
 msgstr "ھالىتى بۇيىچە سۈزۈش"
 
-#: dist/converse-no-dependencies.js:120156
-#: dist/converse-no-dependencies.js:140649
+#: dist/converse-no-dependencies.js:122594
+#: dist/converse-no-dependencies.js:143289
 msgid "Any"
 msgstr "ھەرقانداق"
 
-#: dist/converse-no-dependencies.js:120159
-#: dist/converse-no-dependencies.js:126680
+#: dist/converse-no-dependencies.js:122597
+#: dist/converse-no-dependencies.js:129189
 msgid "Busy"
 msgstr "ئالدىراش"
 
 #. *
 #. * @param {import('../occupants').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:120321
+#. export default
+#: dist/converse-no-dependencies.js:122759
 msgid "Participant"
 msgstr "قاتناشقۇچى"
 
-#: dist/converse-no-dependencies.js:120321
-#: dist/converse-no-dependencies.js:120528
+#: dist/converse-no-dependencies.js:122759
+#: dist/converse-no-dependencies.js:122966
 msgid "Participants"
 msgstr "قاتناشقۇچىلار"
 
-#: dist/converse-no-dependencies.js:120322
-#: dist/converse-no-dependencies.js:120526
+#: dist/converse-no-dependencies.js:122760
+#: dist/converse-no-dependencies.js:122964
 msgid "Hide"
 msgstr "يۇشۇرۇش"
 
-#: dist/converse-no-dependencies.js:120323
-#: dist/converse-no-dependencies.js:140836
+#: dist/converse-no-dependencies.js:122761
+#: dist/converse-no-dependencies.js:143476
 msgid "Show filter"
 msgstr "سۈزگۈچ كۆرسەت"
 
-#: dist/converse-no-dependencies.js:120324
-#: dist/converse-no-dependencies.js:140837
+#: dist/converse-no-dependencies.js:122762
+#: dist/converse-no-dependencies.js:143477
 msgid "Hide filter"
 msgstr "سۈزگۈچ يوشۇر"
 
-#: dist/converse-no-dependencies.js:120326
+#: dist/converse-no-dependencies.js:122764
 msgid "Invite someone"
 msgstr "باشقىلارنى تەكلىپ قىلىش"
 
-#: dist/converse-no-dependencies.js:120327
+#: dist/converse-no-dependencies.js:122765
 msgid "Invite someone to join this groupchat"
 msgstr "باشقىلارنى بۇ توپپاراڭغا كىرىشكە تەكلىپ قىلىڭ"
 
-#: dist/converse-no-dependencies.js:120527
+#: dist/converse-no-dependencies.js:122965
 msgid "No participant data found"
 msgstr "ھېچقانداق قاتناشقۇچىنىڭ سانلىق مەلۇماتى بايقالمىدى"
 
-#: dist/converse-no-dependencies.js:120529
+#: dist/converse-no-dependencies.js:122967
 msgid "Show details"
 msgstr "تەپسىلاتىنى كۆرسەت"
 
-#: dist/converse-no-dependencies.js:122070
+#: dist/converse-no-dependencies.js:124532
 msgid "Change user's affiliation to admin"
 msgstr "ئىشلەتكۈچىنىڭ خاسلىقىنى باشقۇرغۇچىغا ئۆزگەرتىش"
 
-#: dist/converse-no-dependencies.js:122071
+#: dist/converse-no-dependencies.js:124533
 msgid "Ban user by changing their affiliation to outcast"
 msgstr "ئىشلەتكۈچىنىڭ خاسلىقىنى تىپىشكە ئۆزگەرتىش ئارقىلىق چەڭلەڭ"
 
-#: dist/converse-no-dependencies.js:122072
+#: dist/converse-no-dependencies.js:124534
 msgid "Clear the chat area"
 msgstr "پاراڭلىشىش رايۇنىنى تازلاش"
 
-#: dist/converse-no-dependencies.js:122073
+#: dist/converse-no-dependencies.js:124535
 msgid "Close this groupchat"
 msgstr "بۇ توپپاراڭنى تاقاش"
 
-#: dist/converse-no-dependencies.js:122074
+#: dist/converse-no-dependencies.js:124536
 msgid "Change user role to participant"
 msgstr "ئىشلەتكۈچى رولىنى قاتناشقۇچىغا ئۆزگەرتىش"
 
-#: dist/converse-no-dependencies.js:122075
-#: dist/converse-no-dependencies.js:124599
+#: dist/converse-no-dependencies.js:124537
+#: dist/converse-no-dependencies.js:127085
 msgid "Remove this groupchat"
 msgstr "بۇ توپپاراڭنى ئۆچۈرۈش"
 
-#: dist/converse-no-dependencies.js:122077
+#: dist/converse-no-dependencies.js:124539
 msgid "Kick user from groupchat"
 msgstr "ئىشلەتكۈچىنى توپپاراڭدىن تىپىۋېتىش"
 
-#: dist/converse-no-dependencies.js:122078
+#: dist/converse-no-dependencies.js:124540
 msgid "Write in 3rd person"
 msgstr "ئۈچۈنچى شەخىستە يېزىش"
 
-#: dist/converse-no-dependencies.js:122079
+#: dist/converse-no-dependencies.js:124541
 msgid "Grant membership to a user"
 msgstr "ئىشلەتكۈچىگە ئەزالىق سالايىھىتى بېرىش"
 
-#: dist/converse-no-dependencies.js:122080
+#: dist/converse-no-dependencies.js:124542
 msgid "Opens up the moderator tools GUI"
 msgstr "مۇرەسسە قىلغۇچى سۈرەتلىك قوراللىرىنى ئېچىش"
 
-#: dist/converse-no-dependencies.js:122081
+#: dist/converse-no-dependencies.js:124543
 msgid "Remove user's ability to post messages"
 msgstr "ئىشلەتكۈچىنىڭ ئۇچۇر چىقىرىش قابىليىتىنى يوقىتىش"
 
-#: dist/converse-no-dependencies.js:122082
-#: dist/converse-no-dependencies.js:123828
+#: dist/converse-no-dependencies.js:124544
+#: dist/converse-no-dependencies.js:126306
 msgid "Change your nickname"
 msgstr "تەخەللۇسىڭىزنى ئۆزگەرتىڭ"
 
-#: dist/converse-no-dependencies.js:122083
+#: dist/converse-no-dependencies.js:124545
 msgid "Grant moderator role to user"
 msgstr "ئىشلەتكۈچىگە كىلىشتۈرگۈچى رولىنى بېرىش"
 
-#: dist/converse-no-dependencies.js:122084
+#: dist/converse-no-dependencies.js:124546
 msgid "Grant ownership of this groupchat"
 msgstr "بۇ توپپاراڭنىڭ ئىگىدارچىلىقىنى بېرىش"
 
-#: dist/converse-no-dependencies.js:122085
+#: dist/converse-no-dependencies.js:124547
 msgid "Register your nickname"
 msgstr "تەخەللۇسىڭىزنى تىزىملىتىڭ"
 
-#: dist/converse-no-dependencies.js:122086
+#: dist/converse-no-dependencies.js:124548
 msgid "Revoke the user's current affiliation"
 msgstr "ئىشلەتكۈچىنىڭ نۆۋەتتىكى خاسلىقىنى تارتىۋېلىش"
 
-#: dist/converse-no-dependencies.js:122087
+#: dist/converse-no-dependencies.js:124549
 msgid "Set groupchat subject"
 msgstr "توپپاراڭ تېمىسىنى بېكىتىش"
 
-#: dist/converse-no-dependencies.js:122088
+#: dist/converse-no-dependencies.js:124550
 msgid "Set groupchat subject (alias for /subject)"
 msgstr "توپپاراڭ تېمىسىنى بېكىتىش (لەقەم /تېما)"
 
-#: dist/converse-no-dependencies.js:122089
+#: dist/converse-no-dependencies.js:124551
 msgid "Allow muted user to post messages"
 msgstr "جىمجىتلانغان ئىشلەتكۈچىنى ئۇچۇر ئەۋەتىشكە رۇخسەت قىلىش"
 
-#: dist/converse-no-dependencies.js:122178
+#: dist/converse-no-dependencies.js:124640
 msgid ""
 "The conversation has moved to a new address. Click the link below to enter."
 msgstr "پاراڭ يېڭى ئادىرىسقا يۆتكەلدى. تۆۋەندىكى ئۇلىنىشنى بېسىپ كىرىڭ."
 
-#. ESM default export
-#: dist/converse-no-dependencies.js:122184
+#. export default
+#: dist/converse-no-dependencies.js:124646
 msgid "This groupchat no longer exists"
 msgstr "بۇ توپپاراڭ ئەمدى مەۋجۇت ئەمەس"
 
-#: dist/converse-no-dependencies.js:122185
+#: dist/converse-no-dependencies.js:124647
 #, javascript-format
 msgid "The following reason was given: \"%1$s\""
 msgstr "تۆۋەندىكى سەۋەپ كۆرسىتىلدى: \"%1$s\""
 
-#: dist/converse-no-dependencies.js:122654
+#: dist/converse-no-dependencies.js:125124
 #, javascript-format
 msgid "This action was done by %1$s."
 msgstr "بۇ ھەركەت %1$s تەرىپىدىن ئۇرۇندالدى."
 
-#: dist/converse-no-dependencies.js:122658
+#: dist/converse-no-dependencies.js:125128
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr "كۆرسىتىلگەن سەۋەپ بولسا: \"%1$s\"."
 
-#: dist/converse-no-dependencies.js:122778
+#: dist/converse-no-dependencies.js:125248
 msgid "Loading configuration form"
 msgstr "تەڭشەك جەدىۋېلىنى چۈشۈرۋاتىدۇ"
 
-#: dist/converse-no-dependencies.js:123089
+#: dist/converse-no-dependencies.js:125567
 #, javascript-format
 msgid "Configure %1$s"
 msgstr "%1$s سەپلەش"
 
-#: dist/converse-no-dependencies.js:123227
+#: dist/converse-no-dependencies.js:125705
 msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr "كەچۈرۈڭ، تەڭشەك جەدىۋېلىنى يوللاۋاتقاندا بىر خاتالىق كۆرۈلدى."
 
-#: dist/converse-no-dependencies.js:123254
+#: dist/converse-no-dependencies.js:125732
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
 msgstr "كەچۈرۈڭ، توپ پاراڭ سىماسىنى ساقلاۋاتقاندا خاتالىق كۆرۈلدى."
 
-#: dist/converse-no-dependencies.js:123255
-#: dist/converse-no-dependencies.js:127334
+#: dist/converse-no-dependencies.js:125733
+#: dist/converse-no-dependencies.js:129851
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
 "بىرە خاتالىقنى سىز تور كۆرگۈچىڭىزنىڭ لايىھەلىگۈچى سۇپىسىدا تەكشۈرەلەيسىز."
 
-#: dist/converse-no-dependencies.js:123490
+#: dist/converse-no-dependencies.js:125968
 msgid "Topic"
 msgstr "تېما"
 
-#: dist/converse-no-dependencies.js:123491
+#: dist/converse-no-dependencies.js:125969
 msgid "Topic author"
 msgstr "تېما ئاپتۇرى"
 
-#: dist/converse-no-dependencies.js:123503
+#: dist/converse-no-dependencies.js:125981
 msgid "XMPP address"
 msgstr "XMPP ئادىرسى"
 
-#: dist/converse-no-dependencies.js:123504
+#: dist/converse-no-dependencies.js:125982
 msgid "Message archiving"
 msgstr "ئۇچۇر ئارخىپلاشتۇرۇش"
 
-#: dist/converse-no-dependencies.js:123505
+#: dist/converse-no-dependencies.js:125983
 msgid "Messages are archived on the server"
 msgstr "ئۇچۇرلار مۇلازىمىتېردا ئارخىپلىنىدۇ"
 
-#: dist/converse-no-dependencies.js:123506
+#: dist/converse-no-dependencies.js:125984
 msgid "Description"
 msgstr "تەسۋىرلەش"
 
-#: dist/converse-no-dependencies.js:123508
-#: dist/converse-no-dependencies.js:136026
+#: dist/converse-no-dependencies.js:125986
+#: dist/converse-no-dependencies.js:138616
 msgid "Hidden"
 msgstr "يۇشۇرۇن"
 
-#: dist/converse-no-dependencies.js:123509
+#: dist/converse-no-dependencies.js:125987
 msgid "This groupchat is not publicly searchable"
 msgstr "بۇ توپپاراڭنى ئاشكارە يۇسۇندا ئىزدىگىلى بولمايدۇ"
 
-#: dist/converse-no-dependencies.js:123510
+#: dist/converse-no-dependencies.js:125988
 msgid "This groupchat is restricted to members only"
 msgstr "بۇ توپپاراڭ پەقەت ئەزالارغىلا ئۇچۇق"
 
-#: dist/converse-no-dependencies.js:123511
+#: dist/converse-no-dependencies.js:125989
 msgid "Members only"
 msgstr "ئەزالارغا خاس"
 
-#: dist/converse-no-dependencies.js:123512
-#: dist/converse-no-dependencies.js:136028
+#: dist/converse-no-dependencies.js:125990
+#: dist/converse-no-dependencies.js:138618
 msgid "Moderated"
 msgstr "كىلىشتۈرۈلدى"
 
-#: dist/converse-no-dependencies.js:123513
+#: dist/converse-no-dependencies.js:125991
 msgid ""
 "Participants entering this groupchat need to request permission to write"
 msgstr "بۇ توپپاراڭغا قاتناشقۇچىلار يېزىش رۇخسىتى تەلەپ قىلىشى كېرەك"
 
-#: dist/converse-no-dependencies.js:123515
+#: dist/converse-no-dependencies.js:125993
 msgid "This groupchat does not require a password upon entry"
 msgstr "بۇ توپپاراڭ كىرىشكە مەخپىي نۇمۇر تەلەپ قىلمايدۇ"
 
-#: dist/converse-no-dependencies.js:123516
+#: dist/converse-no-dependencies.js:125994
 msgid "No password required"
 msgstr "مەخپىي نۇمۇر لازىم ئەمەس"
 
-#: dist/converse-no-dependencies.js:123517
+#: dist/converse-no-dependencies.js:125995
 msgid "Not anonymous"
 msgstr "نامسىز ئەمەس"
 
-#: dist/converse-no-dependencies.js:123518
+#: dist/converse-no-dependencies.js:125996
 msgid "All other groupchat participants can see your XMPP address"
 msgstr "توپپاراڭغا قاتناشقۇچىلارنىڭ ھەممىسى سىزنىڭ XMPP ئادىرسىڭىزنى كۆرەلەيدۇ"
 
-#: dist/converse-no-dependencies.js:123519
+#: dist/converse-no-dependencies.js:125997
 msgid "Not moderated"
 msgstr "كىلىشتۈرۈلمىدى"
 
-#: dist/converse-no-dependencies.js:123520
+#: dist/converse-no-dependencies.js:125998
 msgid "Participants entering this groupchat can write right away"
 msgstr "بۇ توپپاراڭغا قاتناشقۇچىلار دەرھاللا خەت يازالايدۇ"
 
-#: dist/converse-no-dependencies.js:123521
+#: dist/converse-no-dependencies.js:125999
 msgid "Online users"
 msgstr "توردىكى ئىشلەتكۈچىلەر"
 
-#: dist/converse-no-dependencies.js:123522
-#: dist/converse-no-dependencies.js:136030
+#: dist/converse-no-dependencies.js:126000
+#: dist/converse-no-dependencies.js:138620
 msgid "Open"
 msgstr "ئېچىش"
 
-#: dist/converse-no-dependencies.js:123523
+#: dist/converse-no-dependencies.js:126001
 msgid "Anyone can join this groupchat"
 msgstr "ھەممە ئادەم بۇ توپپاراڭغا كىرەلەيدۇ"
 
-#: dist/converse-no-dependencies.js:123524
+#: dist/converse-no-dependencies.js:126002
 msgid "This groupchat requires a password before entry"
 msgstr "بۇ توپپاراڭ كىرىشتىن بۇرۇن مەخپىي نۇمۇر تەلەپ قىلىدۇ"
 
-#: dist/converse-no-dependencies.js:123525
+#: dist/converse-no-dependencies.js:126003
 msgid "Password protected"
 msgstr "مەخپىي نۇمۇر بىلەن قوغدالغان"
 
-#: dist/converse-no-dependencies.js:123526
+#: dist/converse-no-dependencies.js:126004
 msgid "Persistent"
 msgstr "ئىزچىل"
 
-#: dist/converse-no-dependencies.js:123527
+#: dist/converse-no-dependencies.js:126005
 msgid "This groupchat persists even if it's unoccupied"
 msgstr "بۇ توپپاراڭ قاتناشقۇچىسى بولمىسىمۇ داۋالىشىدۇ"
 
-#: dist/converse-no-dependencies.js:123528
-#: dist/converse-no-dependencies.js:136032
+#: dist/converse-no-dependencies.js:126006
+#: dist/converse-no-dependencies.js:138622
 msgid "Public"
 msgstr "ئاممىۋى"
 
-#: dist/converse-no-dependencies.js:123529
+#: dist/converse-no-dependencies.js:126007
 msgid "This groupchat is publicly searchable"
 msgstr "بۇ توپپاراڭنى ئاشكارە ھالدا ئىزدىگىلى بۇلىدۇ"
 
-#: dist/converse-no-dependencies.js:123530
-#: dist/converse-no-dependencies.js:136033
+#: dist/converse-no-dependencies.js:126008
+#: dist/converse-no-dependencies.js:138623
 msgid "Semi-anonymous"
 msgstr "يېرىم-نامسىز"
 
-#: dist/converse-no-dependencies.js:123531
+#: dist/converse-no-dependencies.js:126009
 msgid "Only moderators can see your XMPP address"
 msgstr "پەقەتلا كىلىشتۈرگۈچىلەر سىزنىڭ XMPP ئادىرسىڭىزنى كۆرەلەيدۇ"
 
-#: dist/converse-no-dependencies.js:123532
-#: dist/converse-no-dependencies.js:136034
+#: dist/converse-no-dependencies.js:126010
+#: dist/converse-no-dependencies.js:138624
 msgid "Temporary"
 msgstr "ۋاقىتلىق"
 
-#: dist/converse-no-dependencies.js:123533
+#: dist/converse-no-dependencies.js:126011
 msgid "This groupchat will disappear once the last person leaves"
 msgstr "بۇ توپپاراڭ ئاخىرقى قاتناشقۇچى ئايرىلغان ھامان يوقايدۇ"
 
-#: dist/converse-no-dependencies.js:123704
+#: dist/converse-no-dependencies.js:126182
 msgid "Groupchat info"
 msgstr "توپ پاراڭ ئۇچۇرى"
 
-#: dist/converse-no-dependencies.js:124122
+#: dist/converse-no-dependencies.js:126600
 msgid "Hide the groupchat topic"
 msgstr "توپپاراڭ تېمىسىنى يۇشۇرۇش"
 
-#: dist/converse-no-dependencies.js:124125
-#: dist/converse-no-dependencies.js:136125
+#: dist/converse-no-dependencies.js:126603
+#: dist/converse-no-dependencies.js:138715
 msgid "Show more information on this groupchat"
 msgstr "بۇ توپپاراڭ توغىرسىدا تېخىمۇ كۆپ ئۇچۇرلارنىڭ كۆرسىتىش"
 
-#: dist/converse-no-dependencies.js:124530
+#: dist/converse-no-dependencies.js:127016
 msgid "Show more information about this groupchat"
 msgstr "بۇ توپپاراڭنىڭ تېخىمۇ كۆپ ئۇچۇرىنى كۆرسىتىش"
 
-#: dist/converse-no-dependencies.js:124540
+#: dist/converse-no-dependencies.js:127026
 msgid "Configure"
 msgstr "تەڭشەش"
 
-#: dist/converse-no-dependencies.js:124541
+#: dist/converse-no-dependencies.js:127027
 msgid "Configure this groupchat"
 msgstr "بۇ توپپاراڭنى تەڭشەڭ"
 
-#: dist/converse-no-dependencies.js:124552
+#: dist/converse-no-dependencies.js:127038
 msgid "Change the nickname you're using in this groupchat"
 msgstr "بۇ توپپاراڭدا ئىشلىتىدىغان تەخەللۇسىڭىزنى ئۆزگەرتىڭ"
 
-#: dist/converse-no-dependencies.js:124563
+#: dist/converse-no-dependencies.js:127049
 msgid "Show topic"
 msgstr "تېمىنى كۆرسىتىش"
 
-#: dist/converse-no-dependencies.js:124563
+#: dist/converse-no-dependencies.js:127049
 msgid "Hide topic"
 msgstr "تېمىنى يۇشۇرۇش"
 
-#: dist/converse-no-dependencies.js:124564
+#: dist/converse-no-dependencies.js:127050
 msgid "Show the topic message in the heading"
 msgstr "تېما ئۇچۇرىنى بېشىدا كۆرسىتىڭ"
 
-#: dist/converse-no-dependencies.js:124564
+#: dist/converse-no-dependencies.js:127050
 msgid "Hide the topic in the heading"
 msgstr "بېشىدىكى تېمىنى يۇشۇرۇڭ"
 
-#: dist/converse-no-dependencies.js:124574
+#: dist/converse-no-dependencies.js:127060
 msgid "Show participants"
 msgstr "قاتناشقۇچىلارنى كۆرسىتىش"
 
-#: dist/converse-no-dependencies.js:124574
+#: dist/converse-no-dependencies.js:127060
 msgid "Hide participants"
 msgstr "قاتناشقۇچىلارنى يۇشۇرۇش"
 
-#: dist/converse-no-dependencies.js:124575
+#: dist/converse-no-dependencies.js:127061
 msgid "Show the groupchat participants"
 msgstr "توپ پاراڭدىكى قاتناشقۇچىلارنى كۆرسىتىدۇ"
 
-#: dist/converse-no-dependencies.js:124575
+#: dist/converse-no-dependencies.js:127061
 msgid "Hide the groupchat participants"
 msgstr "توپ پاراڭدىكى قاتناشقۇچىلارنى يۇشۇرىدۇ"
 
-#: dist/converse-no-dependencies.js:124586
+#: dist/converse-no-dependencies.js:127072
 msgid "Moderate"
 msgstr "كىلىشتۈرۈڭ"
 
-#: dist/converse-no-dependencies.js:124587
+#: dist/converse-no-dependencies.js:127073
 msgid "Moderate this groupchat"
 msgstr "بۇ توپپاراڭنى كىلىشتۈرۈڭ"
 
-#: dist/converse-no-dependencies.js:124598
+#: dist/converse-no-dependencies.js:127084
 msgid "Destroy"
 msgstr "ۋەيران قىلىش"
 
-#: dist/converse-no-dependencies.js:124611
+#: dist/converse-no-dependencies.js:127097
 msgid "Leave"
 msgstr "ئايرىلىش"
 
-#: dist/converse-no-dependencies.js:124612
+#: dist/converse-no-dependencies.js:127098
 msgid "Leave and close this groupchat"
 msgstr "بۇ توپپاراڭدىن ئايرىلىش ھەمدە تاقاش"
 
-#: dist/converse-no-dependencies.js:124621
+#: dist/converse-no-dependencies.js:127107
 msgid "Are you sure you want to leave this groupchat?"
 msgstr "سىز بۇ توپپاراڭدىن ئايرىلىشنى جەزىملەشتۈرەمسىز؟"
 
-#. ESM default export
-#: dist/converse-no-dependencies.js:124690
+#. export default
+#: dist/converse-no-dependencies.js:127176
 msgid "This groupchat requires a password"
 msgstr "بۇ توپپاراڭ بىر مەخپىي نۇمۇر تەلەپ قىلىدۇ"
 
-#: dist/converse-no-dependencies.js:124691
+#: dist/converse-no-dependencies.js:127177
 msgid "Password: "
 msgstr "مەخپىي نۇمۇر: "
 
-#. ESM default export
-#: dist/converse-no-dependencies.js:124692
-#: dist/converse-no-dependencies.js:126253
+#. export default
+#: dist/converse-no-dependencies.js:127178
+#: dist/converse-no-dependencies.js:128754
 msgid "Submit"
 msgstr "تاپشۇرۇش"
 
-#: dist/converse-no-dependencies.js:125807
+#: dist/converse-no-dependencies.js:128308
 msgid "has gone offline"
 msgstr "توردىن ئايرىلدى"
 
-#: dist/converse-no-dependencies.js:125809
+#: dist/converse-no-dependencies.js:128310
 msgid "has gone away"
 msgstr "كىتىپ قالدى"
 
-#: dist/converse-no-dependencies.js:125811
+#: dist/converse-no-dependencies.js:128312
 msgid "is busy"
 msgstr "ئالدىراش"
 
-#: dist/converse-no-dependencies.js:125813
+#: dist/converse-no-dependencies.js:128314
 msgid "has come online"
 msgstr "تورغا چىقتى"
 
 #. workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:125845
-#: dist/converse-no-dependencies.js:125851
+#: dist/converse-no-dependencies.js:128346
+#: dist/converse-no-dependencies.js:128352
 #, javascript-format
 msgid "Notification from %1$s"
 msgstr "%1$s نىڭ ئەسكەرتىشى"
 
-#: dist/converse-no-dependencies.js:125853
-#: dist/converse-no-dependencies.js:125861
-#: dist/converse-no-dependencies.js:125864
+#: dist/converse-no-dependencies.js:128354
+#: dist/converse-no-dependencies.js:128362
+#: dist/converse-no-dependencies.js:128365
 #, javascript-format
 msgid "%1$s says"
 msgstr "%1$s دەيدۇ"
 
-#: dist/converse-no-dependencies.js:125973
+#: dist/converse-no-dependencies.js:128474
 msgid "wants to be your contact"
 msgstr "سىزنىڭ ئالاقىدىشىڭىز بولماقچى"
 
-#: dist/converse-no-dependencies.js:126050
-#: dist/converse-no-dependencies.js:126060
+#: dist/converse-no-dependencies.js:128551
+#: dist/converse-no-dependencies.js:128561
 msgid "online"
 msgstr "توردا"
 
-#: dist/converse-no-dependencies.js:126052
+#: dist/converse-no-dependencies.js:128553
 msgid "busy"
 msgstr "ئالدىراش"
 
-#: dist/converse-no-dependencies.js:126054
+#: dist/converse-no-dependencies.js:128555
 msgid "away for long"
 msgstr "ئۇزۇن ۋاقىت سىرىتتا"
 
-#: dist/converse-no-dependencies.js:126056
+#: dist/converse-no-dependencies.js:128557
 msgid "away"
 msgstr "سىرىتتا"
 
-#: dist/converse-no-dependencies.js:126058
+#: dist/converse-no-dependencies.js:128559
 msgid "offline"
 msgstr "توردا ئەمەس"
 
-#: dist/converse-no-dependencies.js:126254
+#: dist/converse-no-dependencies.js:128755
 msgid "The new passwords must match"
 msgstr "يېڭى مەخپىي نۇمۇرلار ئوخشاش بۇلىشى كېرەك"
 
-#: dist/converse-no-dependencies.js:126255
+#: dist/converse-no-dependencies.js:128756
 msgid "New password"
 msgstr "يېڭى مەخپىي نۇمۇر"
 
-#: dist/converse-no-dependencies.js:126256
+#: dist/converse-no-dependencies.js:128757
 msgid "Confirm new password"
 msgstr "يېڭى مەخپىي نۇمۇرنى جەزىملەشتۈرۈڭ"
 
-#: dist/converse-no-dependencies.js:126521
+#: dist/converse-no-dependencies.js:129030
 msgid "Timeout error"
 msgstr "ۋاقىت-ئۆتۈش خاتالىقى"
 
-#: dist/converse-no-dependencies.js:126526
+#: dist/converse-no-dependencies.js:129035
 msgid "Your server does not support password reset"
 msgstr "مۇلازىمېتىرىڭىز ئىم ئەسلىگە قايتۇرۇشنى قوللىمايدۇ"
 
-#: dist/converse-no-dependencies.js:126531
+#: dist/converse-no-dependencies.js:129040
 msgid ""
 "Your server responded with an unknown error, check the console for details"
 msgstr ""
 "مۇلازىمېتىرىڭىز بىر ناتۇنۇش خاتالىق بىلەن ئىنكاس قايتۇردى، تەپسىلاتىنى "
 "باشقۇرۇش سۇپىسىدىن تەكشۈرۈڭ"
 
-#: dist/converse-no-dependencies.js:126554
+#: dist/converse-no-dependencies.js:129063
 msgid "Timeout error while trying to set your password"
 msgstr "مەخپىي نۇمۇر بېكىتىش جەريانىدا ۋاقىت-ئۆتۈش خاتالىقى كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:126556
+#: dist/converse-no-dependencies.js:129065
 msgid "Your server does not allow password reset"
 msgstr "مۇلازىمېتىرىڭىز ئىم ئەسلىگە قايتۇرۇشقا يول قويمايدۇ"
 
-#: dist/converse-no-dependencies.js:126558
-#: dist/converse-no-dependencies.js:126560
+#: dist/converse-no-dependencies.js:129067
+#: dist/converse-no-dependencies.js:129069
 msgid "You are not allowed to change your password"
 msgstr "سىز مەخپىي نۇمۇرنى ئۆزگەرتىشكە رۇخسەت قىلىنمىدىڭىز"
 
-#: dist/converse-no-dependencies.js:126563
+#: dist/converse-no-dependencies.js:129072
 msgid "Your new password has been set"
 msgstr "سىزنىڭ يېڭى مەخپىي نۇمۇرىڭىز ئورنىتىلدى"
 
 #. *
 #. * @param {import('../modals/profile').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:126631
+#. export default
+#: dist/converse-no-dependencies.js:129140
 msgid "Log out"
 msgstr "چىكىنىش"
 
-#: dist/converse-no-dependencies.js:126682
+#: dist/converse-no-dependencies.js:129191
 #, fuzzy
 msgid "Set status"
 msgstr "پاراڭ ھالىتىنى ئۆزگەرتىش"
 
-#: dist/converse-no-dependencies.js:126683
+#: dist/converse-no-dependencies.js:129192
 msgid "Away for long"
 msgstr "ئۇزۇن ۋاقىت سىرىتتا"
 
-#: dist/converse-no-dependencies.js:126684
+#: dist/converse-no-dependencies.js:129193
 msgid "Personal status message"
 msgstr "شەخسىي ھالەت ئۇچۇرى"
 
-#: dist/converse-no-dependencies.js:126693
+#: dist/converse-no-dependencies.js:129202
 #, fuzzy
 msgid "Clear status message"
 msgstr "شەخسىي ھالەت ئۇچۇرى"
 
-#: dist/converse-no-dependencies.js:126914
+#: dist/converse-no-dependencies.js:129423
 msgid "Save and close"
 msgstr "ساقلاش ھەمدە تاقاش"
 
-#: dist/converse-no-dependencies.js:126915
+#: dist/converse-no-dependencies.js:129424
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
@@ -2550,85 +2612,85 @@ msgstr ""
 "كۆپ روللارنى پەش ئارقىلىق ئايرىڭ. سىزنىڭ روللىرىڭىز سىزنىڭ پاراڭ "
 "ئۇچۇرلىرىڭىزدىكى ئىسمىڭىزنىڭ يېنىدا كۆرسىتىلدۇ."
 
-#: dist/converse-no-dependencies.js:126917
+#: dist/converse-no-dependencies.js:129426
 msgid "Status"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:126920
+#: dist/converse-no-dependencies.js:129429
 msgid "Reset Password"
 msgstr "مەخپىي نۇمۇرنى قايتا ئورنىتىش"
 
-#: dist/converse-no-dependencies.js:127281
+#: dist/converse-no-dependencies.js:129798
 msgid "Your Profile"
 msgstr "سىزنىڭ تەرجىمالىڭىز"
 
-#: dist/converse-no-dependencies.js:127333
+#: dist/converse-no-dependencies.js:129850
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr ""
 "كەچۈرۈڭ، سىزنىڭ تەرجىمال ئۇچۇرىڭىزنى ساقلاۋاتقاندا بىر خاتالىق كۆرۈلدى."
 
-#: dist/converse-no-dependencies.js:127427
+#: dist/converse-no-dependencies.js:129944
 #, fuzzy
 msgid "Profile updated successfully"
 msgstr "مۇۋاپىقىيەتلىك تىزىملاندى"
 
-#: dist/converse-no-dependencies.js:127460
+#: dist/converse-no-dependencies.js:129977
 msgid "Status updated"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:127490
+#: dist/converse-no-dependencies.js:130007
 msgid "Are you sure you want to log out?"
 msgstr "سىز چېكىنىشنى جەزىملەشتۈرەمسىز؟"
 
-#: dist/converse-no-dependencies.js:127664
+#: dist/converse-no-dependencies.js:130181
 msgid "About"
 msgstr "ھەققىدە"
 
-#: dist/converse-no-dependencies.js:127665
+#: dist/converse-no-dependencies.js:130182
 msgid "Commands"
 msgstr "بۇيرۇقلار"
 
-#: dist/converse-no-dependencies.js:127666
+#: dist/converse-no-dependencies.js:130183
 msgid "Services"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:127683
+#: dist/converse-no-dependencies.js:130200
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
 "%2$s نىڭ Opkode %3$s تەمىنلىگەن %1$s ئوچۇق كودلۇق %2$sXMPP پاراڭ خېرىدارى"
 
-#: dist/converse-no-dependencies.js:127684
+#: dist/converse-no-dependencies.js:130201
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
 msgstr "%2$s %1$sنى سىزنىڭ تىلىڭىزغا تەرجىمە قىلدى"
 
-#: dist/converse-no-dependencies.js:127828
+#: dist/converse-no-dependencies.js:130345
 msgid "Settings"
 msgstr "تەڭشەك"
 
-#: dist/converse-no-dependencies.js:127881
+#: dist/converse-no-dependencies.js:130398
 #, javascript-format
 msgid "I am %1$s"
 msgstr "مەن بولسام %1$s"
 
-#: dist/converse-no-dependencies.js:127882
+#: dist/converse-no-dependencies.js:130399
 #, fuzzy
 msgid "Update your profile"
 msgstr "سىزنىڭ تەرجىمالىڭىز"
 
-#: dist/converse-no-dependencies.js:127883
+#: dist/converse-no-dependencies.js:130400
 msgid "Click to change your chat status"
 msgstr "بېسىش ئارقىلىق سىزنىڭ پاراڭ ھالىتىڭىزنى ئۆزگەرتىڭ"
 
-#. ESM default export
-#: dist/converse-no-dependencies.js:128136
+#. export default
+#: dist/converse-no-dependencies.js:130653
 #, javascript-format
 msgid "Download file \"%1$s\""
 msgstr "ھۆججەتنى چۈشۈرۈش \"%1$s\""
 
-#: dist/converse-no-dependencies.js:128539
+#: dist/converse-no-dependencies.js:131064
 msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
@@ -2636,7 +2698,7 @@ msgstr ""
 "خاتالىق: تاپشۇرۋالغان بىر شىفىرلانغان ھۆججەتنى شىفىرسىزلىغىلى بولمىدى، چۈنكى "
 "ئۇنى چۈشۈرگىلى بولمىدى"
 
-#: dist/converse-no-dependencies.js:128747
+#: dist/converse-no-dependencies.js:131272
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
@@ -2645,7 +2707,7 @@ msgstr ""
 "OMEMO نى قوللىمىغانلىقى سەۋەبىدىن، بۇ توپپاراڭدا باشتىن-ئاياق شىفىرلاشنى "
 "ئىشلەتكىلى بولمايدۇ."
 
-#: dist/converse-no-dependencies.js:128751
+#: dist/converse-no-dependencies.js:131276
 #, javascript-format
 msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
@@ -2654,15 +2716,15 @@ msgstr ""
 "باشتىن-ئاياق شىفىرلاشنى ئىشلەتكىلى بولمىدى چۈنكى OMEMO %1$sنى قوللىمايدىغان "
 "خېرىدارنى ئىشلىتىدۇ."
 
-#: dist/converse-no-dependencies.js:128768
+#: dist/converse-no-dependencies.js:131293
 msgid "Messages are being sent in plaintext"
 msgstr "ئۇچۇر ئۇچۇق تىكىست بىلەن ئەۋەتىلۋاتىدۇ"
 
-#: dist/converse-no-dependencies.js:128769
+#: dist/converse-no-dependencies.js:131294
 msgid "Messages are sent encrypted"
 msgstr "ئۇچۇرلار شىفىرلانغان ھالدا ئەۋەتىلدۇ"
 
-#: dist/converse-no-dependencies.js:128772
+#: dist/converse-no-dependencies.js:131297
 msgid ""
 "This groupchat needs to be members-only and non-anonymous in order to "
 "support OMEMO encrypted messages"
@@ -2670,91 +2732,91 @@ msgstr ""
 "بۇ توپپاراڭ OMEMO بىلەن شىفىرلانغان ئۇچۇرلارنى قوللاش ئۈچۈن پەقەتلار ئەزالار-"
 "ئارا ھەمدە نامسىز ئەمەس بۇلىشى كېرەك"
 
-#: dist/converse-no-dependencies.js:128774
+#: dist/converse-no-dependencies.js:131299
 msgid "OMEMO encryption is not supported"
 msgstr "OMEMO بىلەن شىفىرلاش قوللانمىدى"
 
-#: dist/converse-no-dependencies.js:128878
+#: dist/converse-no-dependencies.js:131403
 msgid "Trusted"
 msgstr "ئىشەنچلىك"
 
-#: dist/converse-no-dependencies.js:128879
+#: dist/converse-no-dependencies.js:131404
 msgid "Untrusted"
 msgstr "ئىشەنچسىز"
 
-#: dist/converse-no-dependencies.js:128880
+#: dist/converse-no-dependencies.js:131405
 msgid "Choose which devices you trust for OMEMO encrypted communication"
 msgstr "سىز ئىشىنىدىغان OMEMO شىفىرلىق ئالاقە ئۈسكۈنىسىنى تاللاڭ"
 
-#: dist/converse-no-dependencies.js:128885
-#: dist/converse-no-dependencies.js:132189
+#: dist/converse-no-dependencies.js:131410
+#: dist/converse-no-dependencies.js:134722
 msgid "Device ID"
 msgstr ""
 
 #. *
 #. * @param {import('../fingerprints').Fingerprints} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:128893
+#. export default
+#: dist/converse-no-dependencies.js:131418
 msgid "OMEMO Fingerprints"
 msgstr "OMEMO بارماق ئىزلىرى"
 
-#: dist/converse-no-dependencies.js:128894
+#: dist/converse-no-dependencies.js:131419
 msgid "No OMEMO-enabled devices found"
 msgstr "OMEMO قوللايدىغان ھېچقانداق ئەسۋاپ تېپىلمىدى"
 
-#: dist/converse-no-dependencies.js:128896
+#: dist/converse-no-dependencies.js:131421
 msgid "Show inactive devices"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:132158
+#: dist/converse-no-dependencies.js:134691
 msgid "Checkbox for selecting the following fingerprint"
 msgstr "بۇ بارماق ئىزىنى تاللايدىغان تارماق"
 
-#: dist/converse-no-dependencies.js:132162
+#: dist/converse-no-dependencies.js:134695
 msgid "Device without a fingerprint"
 msgstr "بارماق ئىزى يوق ئەسۋاپ"
 
-#: dist/converse-no-dependencies.js:132163
+#: dist/converse-no-dependencies.js:134696
 msgid "Checkbox for selecting the following device"
 msgstr "تۆۋەندىكى ئەسۋاپنى تاللايدىغان تارماق"
 
-#: dist/converse-no-dependencies.js:132173
+#: dist/converse-no-dependencies.js:134706
 msgid "Other OMEMO-enabled devices"
 msgstr "باشقا OMEMO ئېچىۋېتىلگەن ئەسۋاپلار"
 
-#: dist/converse-no-dependencies.js:132174
+#: dist/converse-no-dependencies.js:134707
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr ""
 "بۇنىڭدىن باشقا ھەرقانداق OMEMO ئەسۋاپلىرىنىڭ بارماق ئىزىنى تاللايدىغان تارماق"
 
-#: dist/converse-no-dependencies.js:132175
+#: dist/converse-no-dependencies.js:134708
 msgid "Remove checked devices and close"
 msgstr "تاللانغان ئەسۋاپلارنى چىقىرۋېتىش ھەمدە تاقاش"
 
-#: dist/converse-no-dependencies.js:132176
+#: dist/converse-no-dependencies.js:134709
 msgid "Select all"
 msgstr "ھەممىنى تاللاش"
 
-#: dist/converse-no-dependencies.js:132185
+#: dist/converse-no-dependencies.js:134718
 #, fuzzy
 msgid "This device"
 msgstr "بۇ بىر ئىشەنچلىك ئۈسكۈنە"
 
-#: dist/converse-no-dependencies.js:132186
+#: dist/converse-no-dependencies.js:134719
 #, fuzzy
 msgid "OMEMO fingerprint"
 msgstr "OMEMO بارماق ئىزلىرى"
 
-#: dist/converse-no-dependencies.js:132187
+#: dist/converse-no-dependencies.js:134720
 msgid "Generate new keys and fingerprint"
 msgstr "يېڭى ئاچقۇچ ھەمدە بارماق ئىزى پەيدا قىلىش"
 
-#: dist/converse-no-dependencies.js:132528
+#: dist/converse-no-dependencies.js:135069
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "كەچۈرۈڭ، بۇ ئەسۋاپلارنى چىقىرۋاتقاندا بىر خاتالىق كۆرۈلدى."
 
-#: dist/converse-no-dependencies.js:132561
+#: dist/converse-no-dependencies.js:135102
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
@@ -2764,140 +2826,140 @@ msgstr ""
 "بۇرۇنقى ئاچقۇچلىرىڭىزنى ئۆچۈرۋېتىدۇ ھەمدە ئىلگىرى شىفىرلىغان ئۇچۇرلىرىڭىزنى "
 "بۇ ئۈسكۈنە شىفىرسىزلىيالمايدۇ."
 
-#. ESM default export
-#: dist/converse-no-dependencies.js:133291
-#: dist/converse-no-dependencies.js:133762
+#. export default
+#: dist/converse-no-dependencies.js:135847
+#: dist/converse-no-dependencies.js:136318
 msgid "Already have a chat account?"
 msgstr "سىزنىڭ ئاللىبۇرۇن بىر پاراڭ ھېساباتىڭىز بارمۇ؟"
 
-#: dist/converse-no-dependencies.js:133292
-#: dist/converse-no-dependencies.js:133763
+#: dist/converse-no-dependencies.js:135848
+#: dist/converse-no-dependencies.js:136319
 msgid "Go back to login"
 msgstr ""
 
 #. *
 #. * @param {import('../form').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:133353
+#. export default
+#: dist/converse-no-dependencies.js:135909
 msgid "Choose a different provider"
 msgstr "باشقا تەمىنلىگۈچىنى تاللاڭ"
 
-#: dist/converse-no-dependencies.js:133354
+#: dist/converse-no-dependencies.js:135910
 msgid "Account Registration:"
 msgstr "ھېسابات تىزىملىتىش:"
 
-#: dist/converse-no-dependencies.js:133355
-#: dist/converse-no-dependencies.js:133720
-#: dist/converse-no-dependencies.js:133723
+#: dist/converse-no-dependencies.js:135911
+#: dist/converse-no-dependencies.js:136276
+#: dist/converse-no-dependencies.js:136279
 msgid "Register"
 msgstr "تىزىملىتىڭ"
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 msgid "XMPP Compliance"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 #, fuzzy
 msgid "Free of charge"
 msgstr "رول ئۆزگەردى"
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 msgid "Yes"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 msgid "No"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 msgid "Company"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 msgid "Professional hosting"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 #, fuzzy
 msgid "Password reset"
 msgstr "مەخپىي نۇمۇر خاتا"
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 msgid "Legal notice"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 #, fuzzy
 msgid "Online since"
 msgstr "توردىكى ئىشلەتكۈچىلەر"
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 #, fuzzy
 msgid "Message archive storage time"
 msgstr "ئۇچۇر ئارخىپلاشتۇرۇش"
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 #, fuzzy, javascript-format
 msgid "%1$s days"
 msgstr "%1$s دەيدۇ"
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 msgid "File upload size limit"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:133696
+#: dist/converse-no-dependencies.js:136252
 msgid "File upload storage time"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:133752
+#: dist/converse-no-dependencies.js:136308
 msgid "With these providers you can register directly inside this app."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:133752
+#: dist/converse-no-dependencies.js:136308
 msgid "For these providers, you'll need to register externally via a web page."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:133760
+#: dist/converse-no-dependencies.js:136316
 msgid "Create your account"
 msgstr "ھېساباتىڭىزنى قۇرۇڭ"
 
-#: dist/converse-no-dependencies.js:133771
+#: dist/converse-no-dependencies.js:136327
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "ئامال: بىر-مۇنچە ئاممىۋى XMPP تەمىنلىگۈچىلەر مەۋجۇت"
 
-#: dist/converse-no-dependencies.js:133772
+#: dist/converse-no-dependencies.js:136328
 msgid "here"
 msgstr "بۇ يەر"
 
-#: dist/converse-no-dependencies.js:133773
+#: dist/converse-no-dependencies.js:136329
 msgid "Fetch registration form"
 msgstr "تىزىملىتىش جەدىۋېلىنى ئەكىلىش"
 
-#: dist/converse-no-dependencies.js:133777
+#: dist/converse-no-dependencies.js:136333
 msgid "Please enter the XMPP provider to register with:"
 msgstr "سىز تىزىملاتماقچى بولغان XMPP تەمىنلىگۈچىسىنى كىرگۈزۈڭ:"
 
-#: dist/converse-no-dependencies.js:133777
+#: dist/converse-no-dependencies.js:136333
 #, fuzzy
 msgid "e.g. https://example.org/http-bind"
 msgstr "مەسىلەن: wss://example.org/xmpp-websocket"
 
 #. Show the categorized provider list
-#: dist/converse-no-dependencies.js:133780
+#: dist/converse-no-dependencies.js:136336
 #, fuzzy
 msgid "Choose an XMPP provider to register with:"
 msgstr "سىز تىزىملاتماقچى بولغان XMPP تەمىنلىگۈچىسىنى كىرگۈزۈڭ:"
 
-#: dist/converse-no-dependencies.js:133782
+#: dist/converse-no-dependencies.js:136338
 msgid "Browse all providers"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:134189
+#: dist/converse-no-dependencies.js:136754
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "كەچۈرۈڭ: بىز سىز تاللىغان تەمىنلىگۈچىگە ئۇلىيالمىدۇق."
 
-#: dist/converse-no-dependencies.js:134201
+#: dist/converse-no-dependencies.js:136766
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -2905,29 +2967,29 @@ msgstr ""
 "كەچۈرۈڭ، كۆرسىتىلگەن تەمىنلىگۈچى لىنىيە ئىچىدە ھېسابات تىزىملىتىشنى "
 "قوللىمايدۇ. باشقا تەمىنلىگۈچىنى سىناپ بېقىڭ."
 
-#: dist/converse-no-dependencies.js:134319
+#: dist/converse-no-dependencies.js:136884
 msgid "Invalid connection URL, only HTTPS and WSS accepted"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:134391
+#: dist/converse-no-dependencies.js:136956
 msgid "Now logging you in"
 msgstr "ھازىر سىزنى كىرگۈزىۋاتىمىز"
 
-#: dist/converse-no-dependencies.js:134393
+#: dist/converse-no-dependencies.js:136958
 msgid "Registered successfully"
 msgstr "مۇۋاپىقىيەتلىك تىزىملاندى"
 
-#: dist/converse-no-dependencies.js:134482
-#: dist/converse-no-dependencies.js:134489
+#: dist/converse-no-dependencies.js:137047
+#: dist/converse-no-dependencies.js:137054
 #, fuzzy
 msgid "Registration failed."
 msgstr "تىزىملىتىش جەدىۋېلىنى ئەكىلىش"
 
-#: dist/converse-no-dependencies.js:134482
+#: dist/converse-no-dependencies.js:137047
 msgid "Please try a different username."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:134493
+#: dist/converse-no-dependencies.js:137058
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -2935,62 +2997,62 @@ msgstr ""
 "بۇ تەمىنلىگۈچى سىزنىڭ تىزىملاش ئۇرۇنىشىڭىزنى رەت قىلدى. توغرا بۇلىشى ئۈچۈن "
 "سىز كىرگۈزگەن قىممەتلەرنى تەكشۈرۈڭ."
 
-#: dist/converse-no-dependencies.js:134815
+#: dist/converse-no-dependencies.js:137379
 msgid "Create an account"
 msgstr "بىر ھېسابات قۇرۇش"
 
-#: dist/converse-no-dependencies.js:134816
+#: dist/converse-no-dependencies.js:137380
 msgid "Don't have a chat account?"
 msgstr "تېخى ھېساباتىڭىز يوقمۇ؟"
 
-#: dist/converse-no-dependencies.js:134871
+#: dist/converse-no-dependencies.js:137435
 msgid " e.g. conversejs.org"
 msgstr " مەسلەن پاراڭ.ئورگان"
 
-#: dist/converse-no-dependencies.js:135321
+#: dist/converse-no-dependencies.js:137893
 msgid "This field is required"
 msgstr "بۇ ئورۇن مەجبۇرى"
 
 #. *
 #. * @param {import('../add-muc.js').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:135327
+#. export default
+#: dist/converse-no-dependencies.js:137899
 msgid "Join"
 msgstr "قاتنىشىش"
 
-#: dist/converse-no-dependencies.js:135330
+#: dist/converse-no-dependencies.js:137902
 msgid "Groupchat name"
 msgstr "توپپاراڭ ئىسمى"
 
-#: dist/converse-no-dependencies.js:135332
+#: dist/converse-no-dependencies.js:137904
 msgid "Groupchat name or address"
 msgstr "توپ پاراڭ ئىسمى ياكى ئادرېسى"
 
-#: dist/converse-no-dependencies.js:135683
+#: dist/converse-no-dependencies.js:138263
 msgid "Enter a new Groupchat"
 msgstr "يېڭى توپپاراڭنى كىرگۈزۈڭ"
 
-#: dist/converse-no-dependencies.js:135800
+#: dist/converse-no-dependencies.js:138385
 msgid "Invalid groupchat address, it cannot be empty."
 msgstr "توپ پاراڭ ئادرېسى ئىناۋەتسىز، بوش قالسا بولمايدۇ."
 
-#: dist/converse-no-dependencies.js:135807
+#: dist/converse-no-dependencies.js:138392
 msgid "Invalid groupchat address, a forward slash is not allowed."
 msgstr ""
 "توپ پاراڭ ئادرېسى ئىناۋەتسى، ئوڭغا يانتۇ سىزىق ئىشلىتىشكە يول قويمايدۇ."
 
-#: dist/converse-no-dependencies.js:135814
+#: dist/converse-no-dependencies.js:138399
 msgid "Invalid groupchat address, more than one @ sign is not allowed."
 msgstr "توپ پاراڭ ئادرېسى ئىناۋەتسىز، بىردىن كۆپ @ بەلگىسىگە يول قويۇلمايدۇ."
 
-#: dist/converse-no-dependencies.js:135820
+#: dist/converse-no-dependencies.js:138405
 msgid "Invalid groupchat address, it cannot start or end with an @ sign."
 msgstr ""
 "توپ پاراڭ ئادرېسى ئىناۋەتسىز، ئۇ @ بەلگىسى بىلەن باشلانسا ياكى ئاخىرلاشسا "
 "بولمايدۇ."
 
-#: dist/converse-no-dependencies.js:135836
+#: dist/converse-no-dependencies.js:138421
 msgid ""
 "No default groupchat service found. You'll need to specify the full address, "
 "for example room@conference.example.org"
@@ -2998,166 +3060,166 @@ msgstr ""
 "كۆڭۈلدىكى توپ پاراڭ مۇلازىمېتىرى بايقالمىدى. تولۇق ئادرېسنى بەلگىلىشىڭىز "
 "كېرەك، مەسىلەن، room@conference.example.org"
 
-#: dist/converse-no-dependencies.js:135851
+#: dist/converse-no-dependencies.js:138441
 msgid "Groupchat id is invalid."
 msgstr "توپپاراڭ نۇمۇرى ئىناۋەتسىز."
 
-#. ESM default export
-#: dist/converse-no-dependencies.js:136021
+#. export default
+#: dist/converse-no-dependencies.js:138611
 msgid "Description:"
 msgstr "تەسۋىرلەش:"
 
-#: dist/converse-no-dependencies.js:136022
+#: dist/converse-no-dependencies.js:138612
 msgid "Groupchat XMPP Address:"
 msgstr "توپپاراڭ XMPP ئادىرسى:"
 
-#: dist/converse-no-dependencies.js:136023
+#: dist/converse-no-dependencies.js:138613
 msgid "Participants:"
 msgstr "قاتناشقۇچىلار:"
 
-#: dist/converse-no-dependencies.js:136024
+#: dist/converse-no-dependencies.js:138614
 msgid "Features:"
 msgstr "ئالاھىدىلىكلەر:"
 
-#: dist/converse-no-dependencies.js:136025
+#: dist/converse-no-dependencies.js:138615
 msgid "Requires authentication"
 msgstr "كىملىكىنى دەلىللەش تەلەپ قىلىنىدۇ"
 
-#: dist/converse-no-dependencies.js:136027
+#: dist/converse-no-dependencies.js:138617
 msgid "Requires an invitation"
 msgstr "تەكلىپ قىلىش تەلەپ قىلىنىدۇ"
 
-#: dist/converse-no-dependencies.js:136029
+#: dist/converse-no-dependencies.js:138619
 msgid "Non-anonymous"
 msgstr "نامسىز ئەمەس"
 
-#: dist/converse-no-dependencies.js:136031
+#: dist/converse-no-dependencies.js:138621
 msgid "Permanent"
 msgstr "مەڭگۈلۈك"
 
-#: dist/converse-no-dependencies.js:136035
+#: dist/converse-no-dependencies.js:138625
 msgid "Unmoderated"
 msgstr "كىلىشتۈرۈلمىگەن"
 
-#: dist/converse-no-dependencies.js:136120
+#: dist/converse-no-dependencies.js:138710
 msgid "Show groupchats"
 msgstr "توپپاراڭلارنى كۆرسىتىش"
 
-#: dist/converse-no-dependencies.js:136121
+#: dist/converse-no-dependencies.js:138711
 msgid "Server address"
 msgstr "مۇلازىمىتىر ئادىرسى"
 
-#: dist/converse-no-dependencies.js:136321
+#: dist/converse-no-dependencies.js:138911
 msgid "conference.example.org"
 msgstr "يىغىن.مەسىلەن.ئورگان"
 
-#: dist/converse-no-dependencies.js:136342
+#: dist/converse-no-dependencies.js:138932
 msgid "Query for Groupchats"
 msgstr "توپپاراڭ تەلىپى"
 
-#: dist/converse-no-dependencies.js:136387
+#: dist/converse-no-dependencies.js:138977
 msgid "Groupchats found"
 msgstr "تېپىلغان توپپاراڭلار"
 
-#: dist/converse-no-dependencies.js:136395
+#: dist/converse-no-dependencies.js:138985
 msgid "No groupchats found"
 msgstr "ھېچقانداق توپپاراڭ تېپىلمىدى"
 
-#: dist/converse-no-dependencies.js:136645
+#: dist/converse-no-dependencies.js:139235
 msgid "Leave this groupchat"
 msgstr "بۇ توپپاراڭدىن چىقىپ كېتىش"
 
-#: dist/converse-no-dependencies.js:136658
+#: dist/converse-no-dependencies.js:139248
 msgid "Click to hide these rooms"
 msgstr "چېكىلسە بۇ پاراڭخانىلارنى يوشۇرىدۇ"
 
-#: dist/converse-no-dependencies.js:136711
+#: dist/converse-no-dependencies.js:139301
 msgid "Click to toggle the list of open groupchats"
 msgstr "بېسىش ئارقىلىق ئۇچۇق توپپاراڭلار تىزىملىكىنى بار-يوق قىلىڭ"
 
-#: dist/converse-no-dependencies.js:136712
+#: dist/converse-no-dependencies.js:139302
 msgid "Groupchats"
 msgstr "توپپاراڭلار"
 
-#: dist/converse-no-dependencies.js:136713
+#: dist/converse-no-dependencies.js:139303
 msgid "Query server"
 msgstr "سۈرۈشتۈرۈش مۇلازىمېتىرى"
 
-#: dist/converse-no-dependencies.js:136714
+#: dist/converse-no-dependencies.js:139304
 msgid "Add groupchat"
 msgstr "توپ پاراڭ قوش"
 
-#: dist/converse-no-dependencies.js:137093
+#: dist/converse-no-dependencies.js:139691
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "سىز بۇ %1$s توپپاراڭدىن ئايرىلىشنى جەزىملەشتۈرەمسىز؟"
 
-#: dist/converse-no-dependencies.js:137755
+#: dist/converse-no-dependencies.js:140353
 msgid "This contact is busy"
 msgstr "بۇ ئالاقىداش ئالدىراش"
 
-#: dist/converse-no-dependencies.js:137756
+#: dist/converse-no-dependencies.js:140354
 msgid "This contact is online"
 msgstr "بۇ ئالاقىداش توردا"
 
-#: dist/converse-no-dependencies.js:137757
+#: dist/converse-no-dependencies.js:140355
 msgid "This contact is offline"
 msgstr "بۇ ئالاقىداش توردا ئەمەس"
 
-#: dist/converse-no-dependencies.js:137758
+#: dist/converse-no-dependencies.js:140356
 msgid "This contact is unavailable"
 msgstr "بۇ ئالاقىداش تەييار ئەمەس"
 
-#: dist/converse-no-dependencies.js:137759
+#: dist/converse-no-dependencies.js:140357
 msgid "This contact is away for an extended period"
 msgstr "بۇ ئالاقىداش ئۇزۇن مەزگىل سىرىتتا"
 
-#: dist/converse-no-dependencies.js:137760
+#: dist/converse-no-dependencies.js:140358
 msgid "This contact is away"
 msgstr "بۇ ئالاقىداش سىرىتتا"
 
-#: dist/converse-no-dependencies.js:137876
+#: dist/converse-no-dependencies.js:140474
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
 msgstr "بېسىش ئارقىلىق%1$sنى ئالاقىداشلىقتىن چىقىرىڭ"
 
-#: dist/converse-no-dependencies.js:137885
+#: dist/converse-no-dependencies.js:140483
 #, fuzzy, javascript-format
 msgid "Click to show more details about %1$s"
 msgstr "بېسىش ئارقىلىق بۇ پاراڭنى ئەسلىگە قايتۇرۇڭ"
 
-#: dist/converse-no-dependencies.js:137913
+#: dist/converse-no-dependencies.js:140511
 msgid "Click to chat with yourself"
 msgstr "چېكىلسە ئۆزى بىلەن پاراڭلىشىدۇ"
 
-#: dist/converse-no-dependencies.js:137913
-#: dist/converse-no-dependencies.js:138005
-#: dist/converse-no-dependencies.js:138117
+#: dist/converse-no-dependencies.js:140511
+#: dist/converse-no-dependencies.js:140603
+#: dist/converse-no-dependencies.js:140715
 #, javascript-format
 msgid "Click to chat with %1$s (XMPP address: %2$s)"
 msgstr "%1$s بىلەن پاراڭلىشىش ئۈچۈن بېسىڭ(XMPP ئادىرسى: %2$s)"
 
-#: dist/converse-no-dependencies.js:138003
+#: dist/converse-no-dependencies.js:140601
 #, javascript-format
 msgid "Click to accept the contact request from %1$s (XMPP address: %2$s)"
 msgstr "چېكىلسە %1$sنىڭ ئالاقىلىشىش تەلىپىگەقوشۇلىدۇ (XMPP ئادرېس: %2$s)"
 
-#: dist/converse-no-dependencies.js:138004
+#: dist/converse-no-dependencies.js:140602
 #, javascript-format
 msgid "Click to decline the contact request from %1$s (XMPP address: %2$s)"
 msgstr "چېكىلسە %1$sنىڭ ئالاقىلىشىش تەلىپىنى رەت قىلىدۇ (XMPP ئادرېس: %2$s)"
 
-#: dist/converse-no-dependencies.js:138009
+#: dist/converse-no-dependencies.js:140607
 #, fuzzy
 msgid "Accept as contact"
 msgstr "بىر ئالاقىداش قۇشۇڭ"
 
-#: dist/converse-no-dependencies.js:138105
+#: dist/converse-no-dependencies.js:140703
 #, fuzzy, javascript-format
 msgid "Click to add %1$s as a contact"
 msgstr "بېسىش ئارقىلىق%1$sنى ئالاقىداشلىقتىن چىقىرىڭ"
 
-#: dist/converse-no-dependencies.js:138108
+#: dist/converse-no-dependencies.js:140706
 #, fuzzy
 msgid "Save as contact"
 msgstr "ئالاقىداشلىقتىن ئۆچۈرۈش"
@@ -3165,182 +3227,198 @@ msgstr "ئالاقىداشلىقتىن ئۆچۈرۈش"
 #. *
 #. * @param {import('../add-contact.js').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:138715
-#: dist/converse-no-dependencies.js:141323
+#. export default
+#: dist/converse-no-dependencies.js:141322
+#: dist/converse-no-dependencies.js:143971
 msgid "Add"
 msgstr "قۇشۇش"
 
-#: dist/converse-no-dependencies.js:138722
+#: dist/converse-no-dependencies.js:141329
 #, fuzzy
 msgid "Search name or XMPP address"
 msgstr "توپ پاراڭ ئىسمى ياكى ئادرېسى"
 
-#: dist/converse-no-dependencies.js:139017
+#: dist/converse-no-dependencies.js:141632
 msgid "Add a Contact"
 msgstr "بىر ئالاقىداش قۇشۇش"
 
-#: dist/converse-no-dependencies.js:139031
+#: dist/converse-no-dependencies.js:141644
 msgid "This contact has already been added"
 msgstr "بۇ ئالاقىداش ئاللىبۇرۇن قېتىلدى"
 
-#: dist/converse-no-dependencies.js:139056
+#: dist/converse-no-dependencies.js:141669
 #, fuzzy
 msgid "Sorry, something went wrong while adding the contact"
 msgstr "كەچۈرۈڭ، بۇ رولنى بېكىتىش جەريانىدا خاتالىق كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:139065
+#: dist/converse-no-dependencies.js:141678
 #, fuzzy
 msgid "Contact added successfully"
 msgstr "مۇۋاپىقىيەتلىك تىزىملاندى"
 
-#: dist/converse-no-dependencies.js:139097
+#: dist/converse-no-dependencies.js:141712
 msgid ""
 "Invalid value for the name and XMPP address. Please use the format \"Name "
 "<username@example.org>\"."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:139485
+#: dist/converse-no-dependencies.js:142108
 #, fuzzy
 msgid "Sorry, something went wrong while accepting the contact request"
 msgstr "كەچۈرۈڭ، بۇ رولنى بېكىتىش جەريانىدا خاتالىق كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:139497
+#: dist/converse-no-dependencies.js:142120
 msgid "Successfully accepted the contact request"
 msgstr ""
 
 #. *
 #. * @param {import('../new-chat.js').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:139553
+#. export default
+#: dist/converse-no-dependencies.js:142176
 msgid "Start Chat"
 msgstr "سۆزلىشىشنى باشلا"
 
-#: dist/converse-no-dependencies.js:139814
-#: dist/converse-no-dependencies.js:140822
+#: dist/converse-no-dependencies.js:142446
+#: dist/converse-no-dependencies.js:143462
 msgid "Start a new chat"
 msgstr "يېڭى بىر سۆزلىشىشنى باشلايدۇ"
 
-#: dist/converse-no-dependencies.js:139862
+#: dist/converse-no-dependencies.js:142492
 msgid "Sorry, something went wrong"
 msgstr "كەچۈرۈڭ، مەسىلە كۆرۈلدى"
 
-#: dist/converse-no-dependencies.js:140004
+#: dist/converse-no-dependencies.js:142636
 #, javascript-format
 msgid "%1$s blocked users shown"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:140004
+#: dist/converse-no-dependencies.js:142636
 #, fuzzy
 msgid "Unblock selected users"
 msgstr "بۇ ئىشلەتكۈچىنى توسما"
 
-#: dist/converse-no-dependencies.js:140004
+#: dist/converse-no-dependencies.js:142636
 #, fuzzy
 msgid "Filter blocked users"
 msgstr "ئىشلەتكۈچىنى توسما"
 
-#: dist/converse-no-dependencies.js:140010
+#: dist/converse-no-dependencies.js:142642
 msgid "clear"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:140012
+#: dist/converse-no-dependencies.js:142644
 #, fuzzy
 msgid "Select All"
 msgstr "ھەممىنى تاللاش"
 
-#: dist/converse-no-dependencies.js:140023
+#: dist/converse-no-dependencies.js:142655
 #, fuzzy
 msgid "No blocked XMPP addresses"
 msgstr "XMPP ئادىرسى"
 
-#: dist/converse-no-dependencies.js:140412
+#: dist/converse-no-dependencies.js:143052
 #, fuzzy
 msgid "Blocklist"
 msgstr "توسۇش تىزىمىغا قوشىدۇ"
 
-#: dist/converse-no-dependencies.js:140439
+#: dist/converse-no-dependencies.js:143079
 #, javascript-format
 msgid "Successfully unblocked %1$s XMPP addresses"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:140439
+#: dist/converse-no-dependencies.js:143079
 #, fuzzy
 msgid "Successfully unblocked one XMPP address"
 msgstr "توپ پاراڭ ئىسمى ياكى ئادرېسى"
 
-#. ESM default export
-#: dist/converse-no-dependencies.js:140574
+#. export default
+#: dist/converse-no-dependencies.js:143214
 msgid "Click to hide these contacts"
 msgstr "بېسىپ بۇ ئالاقىداشلارنى يۇشۇرۇڭ"
 
-#: dist/converse-no-dependencies.js:140646
+#: dist/converse-no-dependencies.js:143286
 msgid "Filter by contact name"
 msgstr "ئالاقىداش ئىسمى ئارقىلىق سۈزۈش"
 
-#: dist/converse-no-dependencies.js:140647
+#: dist/converse-no-dependencies.js:143287
 msgid "Filter by group name"
 msgstr "توپ ئىسمى بۇيىچە سۈزۈش"
 
-#: dist/converse-no-dependencies.js:140650
+#: dist/converse-no-dependencies.js:143290
 msgid "Unread"
 msgstr "ئۇقۇلمىغان"
 
 #. *
 #. * @param {import('../rosterview').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:140819
+#. export default
+#: dist/converse-no-dependencies.js:143459
 msgid "Contacts"
 msgstr "ئالاقىداشلار"
 
-#: dist/converse-no-dependencies.js:140820
+#: dist/converse-no-dependencies.js:143460
 msgid "Click to toggle contacts"
 msgstr "بېسىپ ئالاقىداشلارنى بار-يوق قىلىڭ"
 
-#: dist/converse-no-dependencies.js:140821
+#: dist/converse-no-dependencies.js:143461
 msgid "Add a contact"
 msgstr "بىر ئالاقىداش قۇشۇڭ"
 
-#: dist/converse-no-dependencies.js:140823
+#: dist/converse-no-dependencies.js:143463
 #, fuzzy
 msgid "Show block list"
 msgstr "توسۇش تىزىمىغا قوشىدۇ"
 
-#: dist/converse-no-dependencies.js:140859
+#: dist/converse-no-dependencies.js:143499
 msgid "Re-sync contacts"
 msgstr "ئالاقەداشنى قايتا قەدەمداشلايدۇ"
 
 #. *
 #. * @param {import('../approval-alert').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:141284
+#. export default
+#: dist/converse-no-dependencies.js:143932
 #, fuzzy, javascript-format
 msgid "%1$s would like to be your contact"
 msgstr "سىزنىڭ ئالاقىدىشىڭىز بولماقچى"
 
-#: dist/converse-no-dependencies.js:141286
+#: dist/converse-no-dependencies.js:143934
 msgid "Approve"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:141288
+#: dist/converse-no-dependencies.js:143936
 msgid "Deny"
 msgstr ""
 
 #. *
 #. * @param {import('../approval-alert').default} el
 #.
-#. ESM default export
-#: dist/converse-no-dependencies.js:141321
+#. export default
+#: dist/converse-no-dependencies.js:143969
 #, fuzzy, javascript-format
 msgid "Would you like to add %1$s as a contact?"
 msgstr "بېسىش ئارقىلىق%1$sنى ئالاقىداشلىقتىن چىقىرىڭ"
 
-#: dist/converse-no-dependencies.js:141325
+#: dist/converse-no-dependencies.js:143973
 msgid "Dismiss"
 msgstr ""
+
+#. "Alice, Bob and 1 other" / "Alice, Bob and 3 others"
+#: dist/converse-no-dependencies.js:145139
+#, fuzzy, javascript-format
+msgid "%1$s and 1 other"
+msgstr "%1$s ھەمدە %2$s"
+
+#: dist/converse-no-dependencies.js:145139
+#, fuzzy, javascript-format
+msgid "%1$s and %2$d others"
+msgstr "%1$s ھەمدە %2$s"
+
+#: dist/converse-no-dependencies.js:145267
+#, fuzzy
+msgid "Add Reaction"
+msgstr "بىر ئالاقىداش قۇشۇڭ"
 
 #~ msgid "This device's OMEMO fingerprint"
 #~ msgstr "بۇ ئەسۋاپنىڭ OMEMO بارماق ئىزى"

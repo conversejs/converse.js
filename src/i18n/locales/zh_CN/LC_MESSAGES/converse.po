@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-30 10:13+0200\n"
-"PO-Revision-Date: 2026-02-17 08:09+0000\n"
+"PO-Revision-Date: 2026-04-30 09:45+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.16\n"
+"X-Generator: Weblate 5.17.1-dev\n"
 
 #: dist/converse-no-dependencies.js:35359
 msgid "A timeout occurred"
@@ -25,7 +25,7 @@ msgstr "发生了超时"
 
 #: dist/converse-no-dependencies.js:35919
 msgid "You are blocked from sending messages."
-msgstr "您被阻止发送消息。"
+msgstr "您已被屏蔽，无法发送消息。"
 
 #: dist/converse-no-dependencies.js:36597
 msgid "Timeout Error"
@@ -61,7 +61,7 @@ msgstr "%1$s 在线"
 
 #: dist/converse-no-dependencies.js:41398
 msgid "Frequently used"
-msgstr ""
+msgstr "常用"
 
 #: dist/converse-no-dependencies.js:41399
 msgid "Smileys and emotions"
@@ -209,12 +209,12 @@ msgstr "%1$s 已停止输入"
 #: dist/converse-no-dependencies.js:47988
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr "%1$s 进入了群聊"
+msgstr "%1$s 已进入群聊"
 
 #: dist/converse-no-dependencies.js:47990
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr "%1$s 离开了群聊"
+msgstr "%1$s 已离开群聊"
 
 #: dist/converse-no-dependencies.js:47992
 #, javascript-format
@@ -260,12 +260,12 @@ msgstr "%1$s 已离开"
 #: dist/converse-no-dependencies.js:48015
 #, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr "%1$s 进入了群聊"
+msgstr "%1$s 已进入群聊"
 
 #: dist/converse-no-dependencies.js:48017
 #, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr "%1$s 离开了群聊"
+msgstr "%1$s 已离开群聊"
 
 #: dist/converse-no-dependencies.js:48019
 #, javascript-format
@@ -595,7 +595,7 @@ msgstr "您的 XMPP 地址和/或密码不正确，请重试。"
 #: dist/converse-no-dependencies.js:60707
 #, javascript-format
 msgid "We could not connect to %1$s, is your XMPP address correct?"
-msgstr "无法连接到 %1$s，您的 XMPP 地址是否正确？"
+msgstr "我们无法连接到 %1$s，您的 XMPP 地址正确吗？"
 
 #: dist/converse-no-dependencies.js:60709
 msgid "The XMPP server rejected the connection because of a policy violation"
@@ -922,7 +922,7 @@ msgstr "%1$s 邀请您加入群聊“%2$s”并留下原因：“%3$s”"
 
 #: dist/converse-no-dependencies.js:91370
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr "是否确定要解散此群聊？"
+msgstr "您确定要解散此群聊吗？"
 
 #: dist/converse-no-dependencies.js:91375
 msgid "Please enter the XMPP address of this groupchat to confirm"
@@ -1036,7 +1036,7 @@ msgstr "错误：意外结果"
 #: dist/converse-no-dependencies.js:92648
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "是否确定要移除书签“%1$s”？"
+msgstr "您确定要移除书签“%1$s”吗？"
 
 #: dist/converse-no-dependencies.js:92715
 msgid "Unbookmark this groupchat"
@@ -1081,7 +1081,7 @@ msgstr "“%1$s”的书签"
 
 #: dist/converse-no-dependencies.js:93271
 msgid "Would you like this groupchat to be automatically joined upon startup?"
-msgstr "是否在启动时自动加入此群聊？"
+msgstr "您要在启动时自动加入此群聊吗？"
 
 #: dist/converse-no-dependencies.js:93272
 #: dist/converse-no-dependencies.js:140477
@@ -1131,7 +1131,7 @@ msgstr "书签"
 #: dist/converse-no-dependencies.js:95414
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
-msgstr "您有一条未发送的消息，如果继续，此消息将丢失。是否确定？"
+msgstr "您有一条未发送的消息，如果继续，此消息将丢失。您确定吗？"
 
 #: dist/converse-no-dependencies.js:95451
 #: dist/converse-no-dependencies.js:95520
@@ -1146,7 +1146,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:95526
 #: dist/converse-no-dependencies.js:95559
 msgid "Are you sure you want to retract this message?"
-msgstr "是否确定要撤回此消息？"
+msgstr "您确定要撤回此消息吗？"
 
 #: dist/converse-no-dependencies.js:95495
 msgid "A timeout occurred while trying to retract the message"
@@ -1271,7 +1271,7 @@ msgstr "消息版本"
 
 #: dist/converse-no-dependencies.js:100894
 msgid "Are you sure you want to remove this contact?"
-msgstr "是否确定要移除此联系人？"
+msgstr "您确定要移除此联系人吗？"
 
 #: dist/converse-no-dependencies.js:100931
 #, javascript-format
@@ -1285,11 +1285,11 @@ msgstr "移除并拒绝联系人请求"
 #: dist/converse-no-dependencies.js:100964
 #, javascript-format
 msgid "Are you sure you want to decline the contact request from %1$s?"
-msgstr "是否确定要拒绝来自 %1$s 的联系人请求？"
+msgstr "您确定要拒绝来自 %1$s 的联系人请求吗？"
 
 #: dist/converse-no-dependencies.js:100967
 msgid "Also block this user from sending you further messages"
-msgstr "同时阻止此用户继续向您发送消息"
+msgstr "同时屏蔽此用户，阻止其继续向您发送消息"
 
 #: dist/converse-no-dependencies.js:100992
 msgid "Contact request declined and user blocked"
@@ -1301,7 +1301,7 @@ msgstr "联系人请求已拒绝"
 
 #: dist/converse-no-dependencies.js:101031
 msgid "Do you want to block this contact, so they cannot send you messages?"
-msgstr "是否要屏蔽此联系人，以便对方无法向您发送消息？"
+msgstr "您要屏蔽此联系人，使其无法向您发送消息吗？"
 
 #: dist/converse-no-dependencies.js:101072
 #, javascript-format
@@ -1310,7 +1310,7 @@ msgstr "抱歉，尝试屏蔽 %1$s 时出错"
 
 #: dist/converse-no-dependencies.js:101105
 msgid "Do you want to unblock this contact, so they can send you messages?"
-msgstr "是否要取消屏蔽此联系人，以便对方可以向您发送消息？"
+msgstr "您要取消屏蔽此联系人，使其可以向您发送消息吗？"
 
 #: dist/converse-no-dependencies.js:101137
 #, javascript-format
@@ -1448,11 +1448,11 @@ msgstr "主持人"
 #: dist/converse-no-dependencies.js:104562
 #, javascript-format
 msgid "%1$s has removed a message"
-msgstr "%1$s 移除了消息"
+msgstr "%1$s 已移除一条消息"
 
 #: dist/converse-no-dependencies.js:104562
 msgid "You have removed a message"
-msgstr "您移除了消息"
+msgstr "您已移除一条消息"
 
 #: dist/converse-no-dependencies.js:107392
 msgid "Search results"
@@ -1468,51 +1468,48 @@ msgstr "插入表情符号"
 
 #: dist/converse-no-dependencies.js:108985
 msgid "Getting location..."
-msgstr ""
+msgstr "正在获取位置…"
 
 #: dist/converse-no-dependencies.js:108985
 msgid "Share current location"
-msgstr ""
+msgstr "分享当前位置"
 
 #: dist/converse-no-dependencies.js:109001
 #: dist/converse-no-dependencies.js:109042
 msgid "Location Error"
-msgstr ""
+msgstr "位置错误"
 
 #: dist/converse-no-dependencies.js:109002
-#, fuzzy
 msgid "Your browser or device does not support sharing your location."
-msgstr "您的服务器不支持密码重置"
+msgstr "您的浏览器或设备不支持分享您的位置。"
 
 #: dist/converse-no-dependencies.js:109011
-#, fuzzy
 msgid "Are you sure you'd like to share your location in the chat?"
-msgstr "是否确定要移除此联系人？"
+msgstr "您确定要在聊天中分享您的位置吗？"
 
 #: dist/converse-no-dependencies.js:109031
 msgid ""
 "Location access was denied. Please allow location permissions in your "
 "browser settings and try again."
-msgstr ""
+msgstr "位置访问被拒绝。请在您的浏览器设置中允许位置权限，然后重试。"
 
 #: dist/converse-no-dependencies.js:109034
 msgid ""
 "Your current location could not be determined. Please check your device's "
 "location services and try again."
-msgstr ""
+msgstr "无法确定您的当前位置。请检查您设备的位置服务，然后重试。"
 
 #: dist/converse-no-dependencies.js:109037
 msgid ""
 "The request to get your location timed out. Please check your connection and "
 "try again."
-msgstr ""
+msgstr "获取您的位置的请求超时。请检查您的网络，然后重试。"
 
 #: dist/converse-no-dependencies.js:109040
-#, fuzzy
 msgid ""
 "An unexpected error occurred while trying to retrieve your location. Please "
 "try again."
-msgstr "抱歉，尝试撤回您的消息时出错。"
+msgstr "尝试获取您的位置时发生意外错误。请重试。"
 
 #. export default
 #: dist/converse-no-dependencies.js:109108
@@ -1559,7 +1556,7 @@ msgstr "取消屏蔽用户"
 
 #: dist/converse-no-dependencies.js:110254
 msgid "Are you sure you want to unblock this user?"
-msgstr "是否确定要取消屏蔽此用户？"
+msgstr "您确定要取消屏蔽此用户吗？"
 
 #: dist/converse-no-dependencies.js:110269
 msgid "Unblock this user"
@@ -1576,7 +1573,7 @@ msgstr "屏蔽用户"
 #: dist/converse-no-dependencies.js:110288
 #, javascript-format
 msgid "Are you sure you want to prevent %1$s from contacting you further?"
-msgstr "是否确定要阻止 %1$s 继续联系您？"
+msgstr "您确定要阻止 %1$s 继续联系您吗？"
 
 #: dist/converse-no-dependencies.js:110306
 msgid "Block this user"
@@ -1606,7 +1603,7 @@ msgstr "您有未读消息"
 
 #: dist/converse-no-dependencies.js:110580
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr "是否确定要清除此对话中的消息？"
+msgstr "您确定要清除此对话中的消息吗？"
 
 #: dist/converse-no-dependencies.js:110895
 #, javascript-format
@@ -1765,7 +1762,7 @@ msgstr "项目"
 #: dist/converse-no-dependencies.js:116038
 #: dist/converse-no-dependencies.js:125985
 msgid "Features"
-msgstr "特征"
+msgstr "功能"
 
 #: dist/converse-no-dependencies.js:116419
 msgid "No service found with that XMPP address"
@@ -2368,7 +2365,7 @@ msgstr "离开并关闭此群聊"
 
 #: dist/converse-no-dependencies.js:127107
 msgid "Are you sure you want to leave this groupchat?"
-msgstr "是否确定要离开此群聊？"
+msgstr "您确定要离开此群聊吗？"
 
 #. export default
 #: dist/converse-no-dependencies.js:127176
@@ -2542,7 +2539,7 @@ msgstr "状态已更新"
 
 #: dist/converse-no-dependencies.js:130007
 msgid "Are you sure you want to log out?"
-msgstr "是否确定要登出？"
+msgstr "您确定要退出登录吗？"
 
 #: dist/converse-no-dependencies.js:130181
 msgid "About"
@@ -2712,7 +2709,7 @@ msgid ""
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
-"是否确定要生成新的 OMEMO 加密密钥？这将会移除您的旧密钥，并且所有以前加密的消"
+"您确定要生成新的 OMEMO 加密密钥吗？这将会移除您的旧密钥，并且所有以前加密的消"
 "息将无法再在此设备上解密。"
 
 #. export default
@@ -2901,11 +2898,11 @@ msgstr "加入"
 
 #: dist/converse-no-dependencies.js:137902
 msgid "Groupchat name"
-msgstr "群聊名"
+msgstr "群聊名称"
 
 #: dist/converse-no-dependencies.js:137904
 msgid "Groupchat name or address"
-msgstr "群聊名或地址"
+msgstr "群聊名称或地址"
 
 #: dist/converse-no-dependencies.js:138263
 msgid "Enter a new Groupchat"
@@ -2953,7 +2950,7 @@ msgstr "参与者："
 
 #: dist/converse-no-dependencies.js:138614
 msgid "Features:"
-msgstr "特征："
+msgstr "功能："
 
 #: dist/converse-no-dependencies.js:138615
 msgid "Requires authentication"
@@ -3026,7 +3023,7 @@ msgstr "添加群聊"
 #: dist/converse-no-dependencies.js:139691
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
-msgstr "是否确定要离开群聊 %1$s？"
+msgstr "您确定要离开群聊 %1$s 吗？"
 
 #: dist/converse-no-dependencies.js:140353
 msgid "This contact is busy"
@@ -3259,7 +3256,7 @@ msgstr "拒绝"
 #: dist/converse-no-dependencies.js:143969
 #, javascript-format
 msgid "Would you like to add %1$s as a contact?"
-msgstr "是否将 %1$s 添加为联系人？"
+msgstr "您要将 %1$s 添加为联系人吗？"
 
 #: dist/converse-no-dependencies.js:143973
 msgid "Dismiss"
@@ -3267,19 +3264,18 @@ msgstr "关闭"
 
 #. "Alice, Bob and 1 other" / "Alice, Bob and 3 others"
 #: dist/converse-no-dependencies.js:145139
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and 1 other"
-msgstr "%1$s 和 %2$s"
+msgstr "%1$s 和其他 1 人"
 
 #: dist/converse-no-dependencies.js:145139
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and %2$d others"
-msgstr "%1$s 和 %2$s"
+msgstr "%1$s 和其他 %2$d 人"
 
 #: dist/converse-no-dependencies.js:145267
-#, fuzzy
 msgid "Add Reaction"
-msgstr "添加联系人"
+msgstr "添加回应"
 
 #~ msgid "This device's OMEMO fingerprint"
 #~ msgstr "此设备的 OMEMO 指纹"

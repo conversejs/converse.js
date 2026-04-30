@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-30 10:13+0200\n"
-"PO-Revision-Date: 2026-02-17 08:09+0000\n"
+"PO-Revision-Date: 2026-05-01 08:47+0000\n"
 "Last-Translator: Andreas Kleinert <Andy.Kleinert@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16\n"
+"X-Generator: Weblate 5.17.1\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -66,7 +66,7 @@ msgstr "%1$s ist jetzt online"
 
 #: dist/converse-no-dependencies.js:41398
 msgid "Frequently used"
-msgstr ""
+msgstr "Häufig verwendet"
 
 #: dist/converse-no-dependencies.js:41399
 msgid "Smileys and emotions"
@@ -1572,53 +1572,58 @@ msgstr "Emojis einfügen"
 
 #: dist/converse-no-dependencies.js:108985
 msgid "Getting location..."
-msgstr ""
+msgstr "Standort wird ermittelt ..."
 
 #: dist/converse-no-dependencies.js:108985
 msgid "Share current location"
-msgstr ""
+msgstr "Aktuellen Standort teilen"
 
 #: dist/converse-no-dependencies.js:109001
 #: dist/converse-no-dependencies.js:109042
-#, fuzzy
 msgid "Location Error"
-msgstr "Verbindungsfehler"
+msgstr "Fehler bei der Standortbestimmung"
 
 #: dist/converse-no-dependencies.js:109002
-#, fuzzy
 msgid "Your browser or device does not support sharing your location."
-msgstr "Ihr Server unterstützt das Zurücksetzen des Passworts nicht"
+msgstr ""
+"Ihr Browser oder Gerät unterstützt die Weitergabe Ihres Standorts nicht."
 
 #: dist/converse-no-dependencies.js:109011
-#, fuzzy
 msgid "Are you sure you'd like to share your location in the chat?"
-msgstr "Möchten Sie diesen Kontakt wirklich entfernen?"
+msgstr "Möchten Sie Ihren Standort wirklich im Chat teilen?"
 
 #: dist/converse-no-dependencies.js:109031
 msgid ""
 "Location access was denied. Please allow location permissions in your "
 "browser settings and try again."
 msgstr ""
+"Der Zugriff auf den Standort wurde abgelehnt. Bitte erlauben Sie in Ihren "
+"Browsereinstellungen den Zugriff auf den Standort und versuchen Sie es "
+"erneut."
 
 #: dist/converse-no-dependencies.js:109034
 msgid ""
 "Your current location could not be determined. Please check your device's "
 "location services and try again."
 msgstr ""
+"Ihr aktueller Standort konnte nicht ermittelt werden. Bitte überprüfen Sie "
+"die Ortungsdienste Ihres Geräts und versuchen Sie es erneut."
 
 #: dist/converse-no-dependencies.js:109037
 msgid ""
 "The request to get your location timed out. Please check your connection and "
 "try again."
 msgstr ""
+"Die Zeit für die angeforderte Standortbestimmung ist abgelaufen. Bitte "
+"überprüfen Sie Ihre Verbindung und versuchen Sie es anschließend erneut."
 
 #: dist/converse-no-dependencies.js:109040
-#, fuzzy
 msgid ""
 "An unexpected error occurred while trying to retrieve your location. Please "
 "try again."
 msgstr ""
-"Leider ist ein Fehler beim Versuch Ihre Nachricht zu widerrufen aufgetreten."
+"Beim Ermitteln Ihres Standorts ist ein unerwarteter Fehler aufgetreten. "
+"Bitte versuchen Sie es erneut."
 
 #. export default
 #: dist/converse-no-dependencies.js:109108
@@ -3435,19 +3440,18 @@ msgstr "Verwerfen"
 
 #. "Alice, Bob and 1 other" / "Alice, Bob and 3 others"
 #: dist/converse-no-dependencies.js:145139
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and 1 other"
-msgstr "%1$s und %2$s"
+msgstr "%1$s und 1 weitere"
 
 #: dist/converse-no-dependencies.js:145139
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and %2$d others"
-msgstr "%1$s und %2$s"
+msgstr "%1$s und %2$d weitere"
 
 #: dist/converse-no-dependencies.js:145267
-#, fuzzy
 msgid "Add Reaction"
-msgstr "Kontakt hinzufügen"
+msgstr "Reaktion hinzufügen"
 
 #~ msgid "This device's OMEMO fingerprint"
 #~ msgstr "OMEMO-Fingerabdruck dieses Geräts"

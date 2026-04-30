@@ -11,7 +11,7 @@ import { PRIVATE_CHAT_TYPE } from '../../shared/constants';
 import { initStorage } from '../../utils/storage.js';
 import { shouldClearCache } from '../../utils/session.js';
 
-const { $pres } = converse.env;
+const { stx } = converse.env;
 
 function initRoster() {
     // Initialize the collections that represent the roster contacts and groups
@@ -217,10 +217,10 @@ export function onRosterContactsFetched() {
  * @param {String} [message] - An optional message to the user
  */
 export function rejectPresenceSubscription(jid, message) {
-    const pres = $pres({ to: jid, type: 'unsubscribed' });
-    if (message && message !== '') {
-        pres.c('status').t(message);
-    }
+    const pres = stx`
+        <presence to="${jid}" type="unsubscribed" xmlns="jabber:client">
+            ${message ? stx`<status>${message}</status>` : ''}
+        </presence>`;
     api.send(pres);
 }
 

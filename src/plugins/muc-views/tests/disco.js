@@ -12,16 +12,15 @@ describe('Service Discovery', function () {
 
             expect(api.settings.get('muc_domain')).toBe(undefined);
 
-            await u.waitUntil(
-                () =>
-                    IQ_stanzas.filter((iq) =>
-                        iq.querySelector(`iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]`),
-                    ).length > 0,
+            let stanza = await u.waitUntil(() =>
+                IQ_stanzas.filter((iq) => {
+                    if (iq.getAttribute('to') === 'montague.lit') {
+                        const query = iq.getElementsByTagNameNS('http://jabber.org/protocol/disco#info', 'query');
+                        return query.length > 0;
+                    }
+                }).pop(),
             );
 
-            let stanza = IQ_stanzas.find((iq) =>
-                iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]'),
-            );
             const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 
             _converse.api.connection.get()._dataRecv(
@@ -42,9 +41,12 @@ describe('Service Discovery', function () {
             );
 
             stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((iq) =>
-                    iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]'),
-                ).pop(),
+                IQ_stanzas.filter((iq) => {
+                    if (iq.getAttribute('to') === 'montague.lit') {
+                        const query = iq.getElementsByTagNameNS('http://jabber.org/protocol/disco#items', 'query');
+                        return query.length > 0;
+                    }
+                }).pop(),
             );
 
             _converse.api.connection.get()._dataRecv(
@@ -61,12 +63,14 @@ describe('Service Discovery', function () {
             );
 
             stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((iq) =>
-                    iq.querySelector(
-                        'iq[to="chat.shakespeare.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]',
-                    ),
-                ).pop(),
+                IQ_stanzas.filter((iq) => {
+                    if (iq.getAttribute('to') === 'chat.shakespeare.lit') {
+                        const query = iq.getElementsByTagNameNS('http://jabber.org/protocol/disco#info', 'query');
+                        return query.length > 0;
+                    }
+                }).pop(),
             );
+
             _converse.api.connection.get()._dataRecv(
                 mock.createRequest(stx`
             <iq type="result"

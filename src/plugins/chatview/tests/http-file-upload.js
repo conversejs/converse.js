@@ -1,5 +1,5 @@
 /*global mock, converse */
-const { stx, Strophe, u } = converse.env;
+const { stx, Strophe, u, sizzle } = converse.env;
 
 describe('XEP-0363: HTTP File Upload', function () {
     describe('Discovering support', function () {
@@ -10,7 +10,7 @@ describe('XEP-0363: HTTP File Upload', function () {
                 const IQ_stanzas = api.connection.get().IQ_stanzas;
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
                 let selector = 'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]';
-                let stanza = await u.waitUntil(() => IQ_stanzas.find((iq) => iq.querySelector(selector)), 1000);
+                let stanza = await u.waitUntil(() => IQ_stanzas.find((iq) => sizzle(selector, iq).length), 1000);
 
                 stanza = stx`
                 <iq type='result'
@@ -29,10 +29,10 @@ describe('XEP-0363: HTTP File Upload', function () {
                 // Converse.js sees that the entity has a disco#items feature,
                 // so it will make a query for it.
                 selector = 'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]';
-                await u.waitUntil(() => IQ_stanzas.filter((iq) => iq.querySelector(selector)).length, 1000);
+                stanza = await u.waitUntil(() => IQ_stanzas.find((iq) => sizzle(selector, iq).length), 1000);
 
                 selector = 'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]';
-                stanza = IQ_stanzas.find((iq) => iq.querySelector(selector), 500);
+                stanza = IQ_stanzas.find((iq) => sizzle(selector, iq).length);
                 stanza = stx`
                 <iq type='result'
                     from='montague.lit'
@@ -58,10 +58,12 @@ describe('XEP-0363: HTTP File Upload', function () {
                 // Converse.js sees that the entity has a disco#info feature, so it will make a query for it.
 
                 selector = 'iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]';
-                stanza = await u.waitUntil(() => IQ_stanzas.filter((iq) => iq.querySelector(selector)).pop(), 1000);
-                expect(stanza).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="upload.montague.lit" type="get" xmlns="jabber:client">
-                    <query xmlns="http://jabber.org/protocol/disco#info"/>
-                </iq>`);
+                stanza = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(selector, iq).length).pop(), 1000);
+                expect(stanza).toEqualStanza(
+                    stx`<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="upload.montague.lit" type="get" xmlns="jabber:client">
+                        <query xmlns="http://jabber.org/protocol/disco#info"/>
+                    </iq>`,
+                );
 
                 // Upload service responds and reports a maximum file size of 5MiB
                 stanza = stx`
@@ -213,7 +215,8 @@ describe('XEP-0363: HTTP File Upload', function () {
                                     .length,
                         );
                         const iq = IQ_stanzas.pop();
-                        expect(iq).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="upload.montague.tld" type="get" xmlns="jabber:client">
+                        expect(iq)
+                            .toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="upload.montague.tld" type="get" xmlns="jabber:client">
                             <request content-type="image/jpeg" filename="my-juliet.jpg" size="23456" xmlns="urn:xmpp:http:upload:0"/>
                         </iq>`);
 
@@ -258,7 +261,8 @@ describe('XEP-0363: HTTP File Upload', function () {
                         api.connection.get()._dataRecv(mock.createRequest(stanza));
 
                         await u.waitUntil(() => sent_stanza, 1000);
-                        expect(sent_stanza).toEqualStanza(stx`<message from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" to="lady.montague@montague.lit" type="chat" xmlns="jabber:client">
+                        expect(sent_stanza)
+                            .toEqualStanza(stx`<message from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" to="lady.montague@montague.lit" type="chat" xmlns="jabber:client">
                             <body>${message}</body>
                             <active xmlns="http://jabber.org/protocol/chatstates"/>
                             <request xmlns="urn:xmpp:receipts"/>
@@ -290,17 +294,19 @@ describe('XEP-0363: HTTP File Upload', function () {
                         await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
                         await u.waitUntil(
                             () =>
-                                IQ_stanzas.filter((iq) =>
-                                    iq.querySelector(
-                                        'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]',
-                                    ),
+                                IQ_stanzas.filter(
+                                    (iq) =>
+                                        sizzle(
+                                            'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]',
+                                            iq,
+                                        ).length,
                                 ).length,
                         );
 
-                        let stanza = IQ_stanzas.find((iq) =>
-                            iq.querySelector(
-                                'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]',
-                            ),
+                        let stanza = IQ_stanzas.find(
+                            (iq) =>
+                                sizzle('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]', iq)
+                                    .length,
                         );
 
                         const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
@@ -322,19 +328,23 @@ describe('XEP-0363: HTTP File Upload', function () {
                             // Converse.js sees that the entity has a disco#items feature,
                             // so it will make a query for it.
                             return (
-                                IQ_stanzas.filter(function (iq) {
-                                    return iq.querySelector(
-                                        'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]',
-                                    );
-                                }).length > 0
+                                IQ_stanzas.filter(
+                                    (iq) =>
+                                        sizzle(
+                                            'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]',
+                                            iq,
+                                        ).length,
+                                ).length > 0
                             );
                         }, 300);
 
-                        stanza = IQ_stanzas.find(function (iq) {
-                            return iq.querySelector(
-                                'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]',
-                            );
-                        });
+                        stanza = IQ_stanzas.find(
+                            (iq) =>
+                                sizzle(
+                                    'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]',
+                                    iq,
+                                ).length,
+                        );
                         const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                         stanza = stx`
                         <iq type='result'
@@ -362,25 +372,29 @@ describe('XEP-0363: HTTP File Upload', function () {
 
                         const items = await api.disco.entities.items('montague.lit');
                         expect(items.length).toBe(1);
-                        await u.waitUntil(function () {
-                            // Converse.js sees that the entity has a disco#info feature,
-                            // so it will make a query for it.
-                            return (
-                                IQ_stanzas.filter((iq) =>
-                                    iq.querySelector(
-                                        'iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]',
-                                    ),
-                                ).length > 0
-                            );
-                        }, 300);
+                        await u.waitUntil(
+                            () =>
+                                // Converse.js sees that the entity has a disco#info feature,
+                                // so it will make a query for it.
+                                IQ_stanzas.filter(
+                                    (iq) =>
+                                        sizzle(
+                                            'iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]',
+                                            iq,
+                                        ).length,
+                                ).length,
+                        );
 
-                        stanza = IQ_stanzas.find((iq) =>
-                            iq.querySelector(
-                                'iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]',
-                            ),
+                        stanza = IQ_stanzas.find(
+                            (iq) =>
+                                sizzle(
+                                    'iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]',
+                                    iq,
+                                ).length,
                         );
                         const IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-                        expect(stanza).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${IQ_id}" to="upload.montague.lit" type="get" xmlns="jabber:client">
+                        expect(stanza)
+                            .toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${IQ_id}" to="upload.montague.lit" type="get" xmlns="jabber:client">
                             <query xmlns="http://jabber.org/protocol/disco#info"/>
                         </iq>`);
 
@@ -480,7 +494,8 @@ describe('XEP-0363: HTTP File Upload', function () {
                             IQ_stanzas.filter((iq) => iq.querySelector('iq[to="upload.montague.tld"] request')).length,
                     );
                     const iq = IQ_stanzas.pop();
-                    expect(iq).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="upload.montague.tld" type="get" xmlns="jabber:client">
+                    expect(iq)
+                        .toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="upload.montague.tld" type="get" xmlns="jabber:client">
                         <request content-type="image/jpeg" filename="my-juliet.jpg" size="23456" xmlns="urn:xmpp:http:upload:0"/>
                     </iq>`);
 

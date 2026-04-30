@@ -1,5 +1,5 @@
 /*global mock, converse */
-const { Strophe, u, stx } = converse.env;
+const { Strophe, sizzle, u, stx } = converse.env;
 
 describe('A Groupchat', function () {
     describe('upon being entered', function () {
@@ -181,7 +181,7 @@ describe('Someone being invited to a groupchat', function () {
             let stanza = await u.waitUntil(() =>
                 sent_IQs
                     .filter((iq) =>
-                        iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`),
+                        sizzle(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`, iq).length,
                     )
                     .pop(),
             );
@@ -282,7 +282,7 @@ describe('Someone being invited to a groupchat', function () {
             stanza = await u.waitUntil(() =>
                 sent_IQs
                     .filter((iq) =>
-                        iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/muc#admin"]`),
+                        sizzle(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/muc#admin"]`, iq).length,
                     )
                     .pop(),
             );

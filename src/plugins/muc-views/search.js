@@ -1,6 +1,6 @@
 import { _converse, api, converse, log } from "@converse/headless";
 
-const { Strophe, $iq, sizzle } = converse.env;
+const { Strophe, stx, sizzle } = converse.env;
 
 Strophe.addNamespace('MUCSEARCH', 'https://xmlns.zombofant.net/muclumbus/search/1.0');
 
@@ -12,30 +12,42 @@ const rooms_cache = {};
 async function searchRooms (query) {
     const muc_search_service = api.settings.get('muc_search_service');
     const bare_jid = _converse.session.get('bare_jid');
-    const iq = $iq({
-        'type': 'get',
-        'from': bare_jid,
-        'to': muc_search_service,
-    }).c('search', { 'xmlns': Strophe.NS.MUCSEARCH })
-        .c('set', { 'xmlns': Strophe.NS.RSM })
-            .c('max').t(10).up().up()
-        .c('x', { 'xmlns': Strophe.NS.XFORM, 'type': 'submit' })
-            .c('field', { 'var': 'FORM_TYPE', 'type': 'hidden' })
-                .c('value').t('https://xmlns.zombofant.net/muclumbus/search/1.0#params').up().up()
-            .c('field', { 'var': 'q', 'type': 'text-single' })
-                .c('value').t(query).up().up()
-            .c('field', { 'var': 'sinname', 'type': 'boolean' })
-                .c('value').t('true').up().up()
-            .c('field', { 'var': 'sindescription', 'type': 'boolean' })
-                .c('value').t('false').up().up()
-            .c('field', { 'var': 'sinaddr', 'type': 'boolean' })
-                .c('value').t('true').up().up()
-            .c('field', { 'var': 'min_users', 'type': 'text-single' })
-                .c('value').t('1').up().up()
-            .c('field', { 'var': 'key', 'type': 'list-single' })
-                .c('value').t('address').up()
-                .c('option').c('value').t('nusers').up().up()
-                .c('option').c('value').t('address')
+    const iq = stx`
+        <iq type="get"
+            from="${bare_jid}"
+            to="${muc_search_service}"
+            xmlns="jabber:client">
+            <search xmlns="${Strophe.NS.MUCSEARCH}">
+                <set xmlns="${Strophe.NS.RSM}">
+                    <max>10</max>
+                </set>
+                <x xmlns="${Strophe.NS.XFORM}" type="submit">
+                    <field var="FORM_TYPE" type="hidden">
+                        <value>https://xmlns.zombofant.net/muclumbus/search/1.0#params</value>
+                    </field>
+                    <field var="q" type="text-single">
+                        <value>${query}</value>
+                    </field>
+                    <field var="sinname" type="boolean">
+                        <value>true</value>
+                    </field>
+                    <field var="sindescription" type="boolean">
+                        <value>false</value>
+                    </field>
+                    <field var="sinaddr" type="boolean">
+                        <value>true</value>
+                    </field>
+                    <field var="min_users" type="text-single">
+                        <value>1</value>
+                    </field>
+                    <field var="key" type="list-single">
+                        <value>address</value>
+                        <option><value>nusers</value></option>
+                        <option><value>address</value></option>
+                    </field>
+                </x>
+            </search>
+        </iq>`;
 
     let iq_result;
     try {

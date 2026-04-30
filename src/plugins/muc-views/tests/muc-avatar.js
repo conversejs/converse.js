@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { u, stx } = converse.env;
+const { sizzle, u, stx } = converse.env;
 
 describe('Groupchats', () => {
     describe('A Groupchat', () => {
@@ -45,11 +45,11 @@ describe('Groupchats', () => {
                     const muc_jid = 'coven@chat.shakespeare.lit';
                     await mock.waitForRoster(_converse, 'current', 0);
                     await mock.openControlBox(_converse);
-                    const promise = _converse.api.rooms.open(muc_jid, { nick: 'some1' });
+                    _converse.api.rooms.open(muc_jid, { nick: 'some1' });
 
                     const selector = `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
                     const features_query = await u.waitUntil(() =>
-                        IQ_stanzas.filter((iq) => iq.querySelector(selector)).pop(),
+                        IQ_stanzas.filter((iq) => sizzle(selector, iq).length).pop(),
                     );
 
                     const features_stanza = stx`

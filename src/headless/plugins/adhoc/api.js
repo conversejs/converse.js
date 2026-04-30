@@ -4,7 +4,7 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { parseCommandResult, parseForCommands } from './utils.js';
 
-const { Strophe, $iq, u, stx } = converse.env;
+const { Strophe, u, stx } = converse.env;
 
 
 export default {
@@ -46,14 +46,10 @@ export default {
          * @returns {Promise<AdHocCommandResult>}
          */
         async fetchCommandForm (jid, node) {
-            const stanza = $iq({
-                type: 'set',
-                to: jid
-            }).c('command', {
-                xmlns: Strophe.NS.ADHOC,
-                action: 'execute',
-                node,
-            });
+            const stanza = stx`
+                <iq type="set" to="${jid}" xmlns="jabber:client">
+                    <command xmlns="${Strophe.NS.ADHOC}" action="execute" node="${node}"></command>
+                </iq>`;
             return parseCommandResult(await api.sendIQ(stanza));
         },
 

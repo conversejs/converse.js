@@ -1,7 +1,6 @@
 /*global mock, converse */
 
-const { Strophe } = converse.env;
-const $msg = converse.env.$msg;
+const { Strophe, stx } = converse.env;
 const u = converse.env.utils;
 
 describe('Notifications', function () {
@@ -19,17 +18,15 @@ describe('Notifications', function () {
 
                         const message = 'This message will show a desktop notification';
                         const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit',
-                            msg = $msg({
-                                from: sender_jid,
-                                to: _converse.api.connection.get().jid,
-                                type: 'chat',
-                                id: u.getUniqueId(),
-                            })
-                                .c('body')
-                                .t(message)
-                                .up()
-                                .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                                .tree();
+                            msg = stx`
+                                <message from="${sender_jid}"
+                                         to="${_converse.api.connection.get().jid}"
+                                         type="chat"
+                                         id="${u.getUniqueId()}"
+                                         xmlns="jabber:client">
+                                    <body>${message}</body>
+                                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                                </message>`;
                         await _converse.handleMessageStanza(msg); // This will emit 'message'
                         await u.waitUntil(() => _converse.chatboxviews.get(sender_jid));
                         expect(window.Notification).toHaveBeenCalled();
@@ -47,16 +44,14 @@ describe('Notifications', function () {
 
                         // Test mention with setting false
                         const nick = mock.chatroom_names[0];
-                        const makeMsg = (text) =>
-                            $msg({
-                                from: 'lounge@montague.lit/' + nick,
-                                id: u.getUniqueId(),
-                                to: 'romeo@montague.lit',
-                                type: 'groupchat',
-                            })
-                                .c('body')
-                                .t(text)
-                                .tree();
+                        const makeMsg = (text) => stx`
+                            <message from="lounge@montague.lit/${nick}"
+                                     id="${u.getUniqueId()}"
+                                     to="romeo@montague.lit"
+                                     type="groupchat"
+                                     xmlns="jabber:client">
+                                <body>${text}</body>
+                            </message>`;
                         _converse.api.connection
                             .get()
                             ._dataRecv(mock.createRequest(makeMsg('romeo: this will NOT show a notification')));
@@ -64,23 +59,19 @@ describe('Notifications', function () {
                         expect(window.Notification).not.toHaveBeenCalled();
 
                         // Test reference
-                        const message_with_ref = $msg({
-                            from: 'lounge@montague.lit/' + nick,
-                            id: u.getUniqueId(),
-                            to: 'romeo@montague.lit',
-                            type: 'groupchat',
-                        })
-                            .c('body')
-                            .t('romeo: this will show a notification')
-                            .up()
-                            .c('reference', {
-                                'xmlns': 'urn:xmpp:reference:0',
-                                'begin': '0',
-                                'end': '5',
-                                'type': 'mention',
-                                'uri': 'xmpp:romeo@montague.lit',
-                            })
-                            .tree();
+                        const message_with_ref = stx`
+                            <message from="lounge@montague.lit/${nick}"
+                                     id="${u.getUniqueId()}"
+                                     to="romeo@montague.lit"
+                                     type="groupchat"
+                                     xmlns="jabber:client">
+                                <body>romeo: this will show a notification</body>
+                                <reference xmlns="urn:xmpp:reference:0"
+                                           begin="0"
+                                           end="5"
+                                           type="mention"
+                                           uri="xmpp:romeo@montague.lit"/>
+                            </message>`;
                         _converse.api.connection.get()._dataRecv(mock.createRequest(message_with_ref));
                         await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                         expect(window.Notification.calls.count()).toBe(1);
@@ -102,21 +93,18 @@ describe('Notifications', function () {
                         spyOn(window, 'Notification').and.returnValue(stub);
 
                         await mock.waitForRoster(_converse, 'current', 0);
-                        const stanza = $msg({
-                            'type': 'headline',
-                            'from': 'notify.example.com',
-                            'to': 'romeo@montague.lit',
-                            'xml:lang': 'en',
-                        })
-                            .c('subject')
-                            .t('SIEVE')
-                            .up()
-                            .c('body')
-                            .t('&lt;juliet@example.com&gt; You got mail.')
-                            .up()
-                            .c('x', { 'xmlns': 'jabber:x:oob' })
-                            .c('url')
-                            .t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
+                        const stanza = stx`
+                            <message type="headline"
+                                     from="notify.example.com"
+                                     to="romeo@montague.lit"
+                                     xml:lang="en"
+                                     xmlns="jabber:client">
+                                <subject>SIEVE</subject>
+                                <body>&lt;juliet@example.com&gt; You got mail.</body>
+                                <x xmlns="jabber:x:oob">
+                                    <url>imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18</url>
+                                </x>
+                            </message>`;
                         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
                         await u.waitUntil(() => _converse.chatboxviews.keys().length === 1);
@@ -130,21 +118,18 @@ describe('Notifications', function () {
                     mock.initConverse([], { 'allow_non_roster_messaging': false }, (_converse) => {
                         const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                         spyOn(window, 'Notification').and.returnValue(stub);
-                        const stanza = $msg({
-                            'type': 'headline',
-                            'from': 'someone@notify.example.com',
-                            'to': 'romeo@montague.lit',
-                            'xml:lang': 'en',
-                        })
-                            .c('subject')
-                            .t('SIEVE')
-                            .up()
-                            .c('body')
-                            .t('&lt;juliet@example.com&gt; You got mail.')
-                            .up()
-                            .c('x', { 'xmlns': 'jabber:x:oob' })
-                            .c('url')
-                            .t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
+                        const stanza = stx`
+                            <message type="headline"
+                                     from="someone@notify.example.com"
+                                     to="romeo@montague.lit"
+                                     xml:lang="en"
+                                     xmlns="jabber:client">
+                                <subject>SIEVE</subject>
+                                <body>&lt;juliet@example.com&gt; You got mail.</body>
+                                <x xmlns="jabber:x:oob">
+                                    <url>imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18</url>
+                                </x>
+                            </message>`;
                         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                         expect(_converse.chatboxviews.keys().includes('someone@notify.example.com')).toBeFalsy();
                         expect(window.Notification).not.toHaveBeenCalled();
@@ -196,42 +181,42 @@ describe('Notifications', function () {
                         view.renderChatArea();
                     }
                     let text = 'This message will play a sound because it mentions romeo';
-                    let message = $msg({
-                        from: 'lounge@montague.lit/otheruser',
-                        id: '1',
-                        to: 'romeo@montague.lit',
-                        type: 'groupchat',
-                    })
-                        .c('body')
-                        .t(text);
+                    let message = stx`
+                        <message from="lounge@montague.lit/otheruser"
+                                 id="1"
+                                 to="romeo@montague.lit"
+                                 type="groupchat"
+                                 xmlns="jabber:client">
+                            <body>${text}</body>
+                        </message>`;
                     _converse.api.settings.set('notify_all_room_messages', true);
-                    await view.model.handleMessageStanza(message.nodeTree);
+                    await view.model.handleMessageStanza(message);
                     await u.waitUntil(() => window.Audio.calls.count());
                     expect(window.Audio).toHaveBeenCalled();
 
                     text = "This message won't play a sound";
-                    message = $msg({
-                        from: 'lounge@montague.lit/otheruser',
-                        id: '2',
-                        to: 'romeo@montague.lit',
-                        type: 'groupchat',
-                    })
-                        .c('body')
-                        .t(text);
-                    await view.model.handleMessageStanza(message.nodeTree);
+                    message = stx`
+                        <message from="lounge@montague.lit/otheruser"
+                                 id="2"
+                                 to="romeo@montague.lit"
+                                 type="groupchat"
+                                 xmlns="jabber:client">
+                            <body>${text}</body>
+                        </message>`;
+                    await view.model.handleMessageStanza(message);
                     expect(window.Audio, 1);
                     api.settings.set('play_sounds', false);
 
                     text = "This message won't play a sound because it is sent by romeo";
-                    message = $msg({
-                        from: 'lounge@montague.lit/romeo',
-                        id: '3',
-                        to: 'romeo@montague.lit',
-                        type: 'groupchat',
-                    })
-                        .c('body')
-                        .t(text);
-                    await view.model.handleMessageStanza(message.nodeTree);
+                    message = stx`
+                        <message from="lounge@montague.lit/romeo"
+                                 id="3"
+                                 to="romeo@montague.lit"
+                                 type="groupchat"
+                                 xmlns="jabber:client">
+                            <body>${text}</body>
+                        </message>`;
+                    await view.model.handleMessageStanza(message);
                     expect(window.Audio, 1);
                 }),
             );
@@ -252,17 +237,15 @@ describe('Notifications', function () {
                 const view = await mock.openChatBoxFor(_converse, sender_jid);
                 spyOn(view.model, 'isHidden').and.returnValue(true);
 
-                const msg = $msg({
-                    from: sender_jid,
-                    to: _converse.api.connection.get().jid,
-                    type: 'chat',
-                    id: u.getUniqueId(),
-                })
-                    .c('body')
-                    .t('This message will increment the message counter')
-                    .up()
-                    .c('active', { 'xmlns': Strophe.NS.CHATSTATES })
-                    .tree();
+                const msg = stx`
+                    <message from="${sender_jid}"
+                             to="${_converse.api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <body>This message will increment the message counter</body>
+                        <active xmlns="${Strophe.NS.CHATSTATES}"/>
+                    </message>`;
 
                 spyOn(_converse.api, 'trigger').and.callThrough();
 
@@ -272,17 +255,15 @@ describe('Notifications', function () {
                 expect(favico.badge.calls.count()).toBe(0);
 
                 _converse.api.settings.set('show_tab_notifications', true);
-                const msg2 = $msg({
-                    from: sender_jid,
-                    to: _converse.api.connection.get().jid,
-                    type: 'chat',
-                    id: u.getUniqueId(),
-                })
-                    .c('body')
-                    .t('This message increment the message counter AND update the page title')
-                    .up()
-                    .c('active', { 'xmlns': Strophe.NS.CHATSTATES })
-                    .tree();
+                const msg2 = stx`
+                    <message from="${sender_jid}"
+                             to="${_converse.api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <body>This message increment the message counter AND update the page title</body>
+                        <active xmlns="${Strophe.NS.CHATSTATES}"/>
+                    </message>`;
 
                 await _converse.handleMessageStanza(msg2);
                 await u.waitUntil(() => favico.badge.calls.count() === 1);
@@ -313,17 +294,15 @@ describe('Notifications', function () {
                 document.dispatchEvent(new Event('visibilitychange'));
                 const message = 'This message will not increment the message counter';
                 const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit',
-                    msg = $msg({
-                        from: sender_jid,
-                        to: _converse.api.connection.get().jid,
-                        type: 'chat',
-                        id: u.getUniqueId(),
-                    })
-                        .c('body')
-                        .t(message)
-                        .up()
-                        .c('active', { 'xmlns': Strophe.NS.CHATSTATES })
-                        .tree();
+                    msg = stx`
+                        <message from="${sender_jid}"
+                                 to="${_converse.api.connection.get().jid}"
+                                 type="chat"
+                                 id="${u.getUniqueId()}"
+                                 xmlns="jabber:client">
+                            <body>${message}</body>
+                            <active xmlns="${Strophe.NS.CHATSTATES}"/>
+                        </message>`;
                 await _converse.handleMessageStanza(msg);
 
                 const promise = u.getOpenPromise();
@@ -345,18 +324,15 @@ describe('Notifications', function () {
                 spyOn(converse.env, 'Favico').and.returnValue(favico);
                 const message = 'This message will always increment the message counter from zero';
                 const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-                const msgFactory = () =>
-                    $msg({
-                        from: sender_jid,
-                        to: _converse.api.connection.get().jid,
-                        type: 'chat',
-                        id: u.getUniqueId(),
-                    })
-                        .c('body')
-                        .t(message)
-                        .up()
-                        .c('active', { 'xmlns': Strophe.NS.CHATSTATES })
-                        .tree();
+                const msgFactory = () => stx`
+                    <message from="${sender_jid}"
+                             to="${_converse.api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <body>${message}</body>
+                        <active xmlns="${Strophe.NS.CHATSTATES}"/>
+                    </message>`;
 
                 // leave converse-chat page
                 spyOn(_converse.exports.ChatBox.prototype, 'isHidden').and.returnValue(true);

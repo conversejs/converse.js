@@ -98,13 +98,14 @@ describe('The groupchat moderator tool', function () {
 
             spyOn(_converse.MUCOccupants.prototype, 'fetchMembers').and.callThrough();
             const sent_IQ = _converse.api.connection.get().IQ_stanzas.pop();
-            expect(sent_IQ).toEqualStanza(stx`<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
-                <query xmlns="http://jabber.org/protocol/muc#admin">
-                    <item affiliation="admin" jid="crone1@shakespeare.lit">
-                        <reason>You're an admin now</reason>
-                    </item>
-                </query>
-            </iq>`);
+            expect(sent_IQ).toEqualStanza(stx`
+                <iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#admin">
+                        <item affiliation="admin" jid="crone1@shakespeare.lit">
+                            <reason>You're an admin now</reason>
+                        </item>
+                    </query>
+                </iq>`);
 
             _converse.api.connection.get().IQ_stanzas = [];
             const stanza = stx`
@@ -425,7 +426,8 @@ describe('The groupchat moderator tool', function () {
             submit.click();
 
             const sent_IQ = _converse.api.connection.get().IQ_stanzas.pop();
-            expect(sent_IQ).toEqualStanza(stx`<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
+            expect(sent_IQ)
+                .toEqualStanza(stx`<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
                 <query xmlns="http://jabber.org/protocol/muc#admin">
                     <item affiliation="admin" jid="gower@shakespeare.lit">
                         <reason>You're an admin now</reason>

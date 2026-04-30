@@ -4,7 +4,7 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from '@converse/log';
 
-const { Strophe, $iq } = converse.env;
+const { Stanza, Strophe, stx } = converse.env;
 
 export default {
     /**
@@ -31,8 +31,8 @@ export default {
         stream: {
             /**
              * @method api.disco.stream.getFeature
-             * @param { String } name The feature name
-             * @param { String } xmlns The XML namespace
+             * @param {String} name The feature name
+             * @param {String} xmlns The XML namespace
              * @example _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver')
              */
             async getFeature(name, xmlns) {
@@ -114,7 +114,7 @@ export default {
                 /**
                  * Lets you register new disco features for this client (i.e. instance of Converse)
                  * @method api.disco.own.features.add
-                 * @param { String } name - e.g. http://jabber.org/protocol/caps
+                 * @param {String} name - e.g. http://jabber.org/protocol/caps
                  * @example _converse.api.disco.own.features.add("http://jabber.org/protocol/caps");
                  */
                 add(name) {
@@ -156,15 +156,15 @@ export default {
          * @returns {promise} Promise which resolves once we have a result from the server.
          */
         info(jid, node, options) {
-            const attrs = { xmlns: Strophe.NS.DISCO_INFO };
-            if (node) {
-                attrs.node = node;
-            }
-            const info = $iq({
-                'from': api.connection.get().jid,
-                'to': jid,
-                'type': 'get',
-            }).c('query', attrs);
+            const info = stx`
+                <iq from="${api.connection.get().jid}"
+                    to="${jid}"
+                    type="get"
+                    xmlns="jabber:client">
+                    <query xmlns="${Strophe.NS.DISCO_INFO}"
+                           ${node ? Stanza.unsafeXML(`node="${node}"`) : ''}>
+                    </query>
+                </iq>`;
             return api.sendIQ(info, options?.timeout);
         },
 
@@ -177,16 +177,16 @@ export default {
          * @returns {promise} Promise which resolves once we have a result from the server.
          */
         items(jid, node) {
-            const attrs = { xmlns: Strophe.NS.DISCO_ITEMS };
-            if (node) {
-                attrs.node = node;
-            }
             return api.sendIQ(
-                $iq({
-                    'from': api.connection.get().jid,
-                    'to': jid,
-                    'type': 'get',
-                }).c('query', attrs)
+                stx`
+                    <iq from="${api.connection.get().jid}"
+                        to="${jid}"
+                        type="get"
+                        xmlns="jabber:client">
+                        <query xmlns="${Strophe.NS.DISCO_ITEMS}"
+                               ${node ? Stanza.unsafeXML(`node="${node}"`) : ''}>
+                        </query>
+                    </iq>`
             );
         },
 

@@ -16,7 +16,7 @@ import { isElement } from '../../utils/html.js';
 import { parseErrorStanza } from '../../shared/parsers.js';
 import { parseVCardResultStanza } from './parsers.js';
 
-const { Strophe, $iq, sizzle, stx } = converse.env;
+const { Stanza, Strophe, sizzle, stx } = converse.env;
 
 Strophe.addNamespace('VCARD_UPDATE', 'vcard-temp:x:update');
 
@@ -26,12 +26,15 @@ Strophe.addNamespace('VCARD_UPDATE', 'vcard-temp:x:update');
  * @param {Element} [vcard_el]
  */
 export function createStanza(type, jid, vcard_el) {
-    const iq = $iq(jid ? { 'type': type, 'to': jid } : { 'type': type });
-    if (!vcard_el) {
-        iq.c('vCard', { 'xmlns': Strophe.NS.VCARD });
-    } else {
-        iq.cnode(vcard_el);
-    }
+    const iq = stx`
+        <iq type="${type}"
+            ${jid ? Stanza.unsafeXML(`to="${jid}"`) : ''}
+            xmlns="jabber:client">
+            ${vcard_el ? '' : stx`<vCard xmlns="${Strophe.NS.VCARD}"></vCard>`}
+        </iq>`;
+
+    if (vcard_el) iq.cnode(vcard_el);
+
     return iq;
 }
 

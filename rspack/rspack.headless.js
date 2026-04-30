@@ -41,32 +41,70 @@ module.exports = (_env, argv) => {
         },
     };
 
+    const nonMinConfig = merge(common, {
+        ...sharedConfig,
+        optimization: {
+            minimize: false,
+        },
+        output: {
+            path: path.resolve(__dirname, '../src/headless/dist'),
+            filename: 'converse-headless.js',
+            chunkFilename: 'converse-headless.js',
+            globalObject: 'this',
+        },
+    });
+
+    const minConfig = merge(common, {
+        ...sharedConfig,
+        output: {
+            path: path.resolve(__dirname, '../src/headless/dist'),
+            filename: 'converse-headless.min.js',
+            chunkFilename: 'converse-headless.min.js',
+            globalObject: 'this',
+        },
+    });
+
+    const nonMinESMConfig = merge(common, {
+        ...sharedConfig,
+        optimization: {
+            minimize: false,
+        },
+        experiments: {
+            outputModule: true,
+            topLevelAwait: true,
+        },
+        output: {
+            path: path.resolve(__dirname, '../src/headless/dist'),
+            filename: 'converse-headless.esm.js',
+            chunkFilename: 'converse-headless.esm.js',
+            library: {
+                type: 'module',
+            },
+        },
+    });
+
+    const minESMConfig = merge(common, {
+        ...sharedConfig,
+        experiments: {
+            outputModule: true,
+            topLevelAwait: true,
+        },
+        output: {
+            path: path.resolve(__dirname, '../src/headless/dist'),
+            filename: 'converse-headless.min.esm.js',
+            chunkFilename: 'converse-headless.min.esm.js',
+            library: {
+                type: 'module',
+            },
+        },
+    });
+
     return [
         // CJS Build
-        merge(common, {
-            ...sharedConfig,
-            output: {
-                path: path.resolve(__dirname, '../src/headless/dist'),
-                filename: '[name].js',
-                chunkFilename: '[name].js',
-                globalObject: 'this',
-            },
-        }),
+        nonMinConfig,
+        minConfig,
         // ESM Build
-        merge(common, {
-            ...sharedConfig,
-            experiments: {
-                outputModule: true,
-                topLevelAwait: true,
-            },
-            output: {
-                path: path.resolve(__dirname, '../src/headless/dist'),
-                filename: '[name].esm.js',
-                chunkFilename: '[name].esm.js',
-                library: {
-                    type: 'module',
-                },
-            },
-        }),
+        nonMinESMConfig,
+        minESMConfig,
     ];
 };

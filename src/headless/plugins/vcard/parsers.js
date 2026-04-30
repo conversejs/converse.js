@@ -23,8 +23,14 @@ export async function parseVCardResultStanza(iq) {
     };
     if (result.image) {
         const buffer = u.base64ToArrayBuffer(result.image);
-        const ab = await crypto.subtle.digest('SHA-1', buffer);
-        result['image_hash'] = u.arrayBufferToHex(ab);
+        // Check if crypto.subtle is available (requires secure context/HTTPS)
+        if (window.isSecureContext) {
+            const ab = await crypto.subtle.digest('SHA-1', buffer);
+            result['image_hash'] = u.arrayBufferToHex(ab);
+        } else {
+            // Fallback for non-HTTPS contexts: use base64 as pseudo-hash
+            result['image_hash'] = result.image.substring(0, 32);
+        }
     }
     return result;
 }

@@ -2,7 +2,7 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { isTestEnv } from '../../utils/session.js';
 
-const { Strophe, $iq } = converse.env;
+const { Strophe, stx } = converse.env;
 
 let lastStanzaDate;
 
@@ -18,7 +18,7 @@ function pong (ping) {
     lastStanzaDate = new Date();
     const from = ping.getAttribute('from');
     const id = ping.getAttribute('id');
-    const iq = $iq({type: 'result', to: from,id: id});
+    const iq = stx`<iq type="result" to="${from}" id="${id}" xmlns="jabber:client"></iq>`;
     api.sendIQ(iq);
     return true;
 }

@@ -1,4 +1,4 @@
-const { u } = converse.env;
+const { sizzle, u } = converse.env;
 
 describe('DiscoBrowser', function () {
     it(
@@ -40,7 +40,7 @@ describe('DiscoBrowser', function () {
                 connection.IQ_stanzas.filter(
                     (iq) =>
                         iq.getAttribute('type') === 'get' &&
-                        iq.querySelector('query[xmlns="http://jabber.org/protocol/disco#info"]'),
+                        sizzle('query[xmlns="http://jabber.org/protocol/disco#info"]', iq).length,
                 ).pop(),
             );
 
@@ -75,17 +75,14 @@ describe('DiscoBrowser', function () {
             const { IQ_stanzas, IQ_ids } = connection;
 
             await u.waitUntil(function () {
-                return (
-                    IQ_stanzas.filter(function (iq) {
-                        return iq.querySelector(
-                            'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]',
-                        );
-                    }).length > 0
-                );
+                return IQ_stanzas.filter(
+                    (iq) =>
+                        sizzle('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]', iq).length,
+                ).length;
             });
-            let stanza = IQ_stanzas.find(function (iq) {
-                return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
-            });
+            let stanza = IQ_stanzas.find(
+                (iq) => sizzle('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]', iq).length,
+            );
             const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
             stanza = stx`
             <iq xmlns="jabber:client"
@@ -110,13 +107,15 @@ describe('DiscoBrowser', function () {
                 // Converse.js sees that the entity has a disco#items feature,
                 // so it will make a query for it.
                 return (
-                    IQ_stanzas.filter((iq) => iq.querySelector('query[xmlns="http://jabber.org/protocol/disco#items"]'))
-                        .length > 0
+                    IQ_stanzas.filter(
+                        (iq) => sizzle('query[xmlns="http://jabber.org/protocol/disco#items"]', iq).length,
+                    ).length > 0
                 );
             });
 
-            stanza = IQ_stanzas.find((iq) =>
-                iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]'),
+            stanza = IQ_stanzas.find(
+                (iq) =>
+                    sizzle('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]', iq).length,
             );
             const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 

@@ -10,10 +10,10 @@
 import _converse from '../../../shared/_converse.js';
 import api from '../../../shared/api/index.js';
 import converse from '../../../shared/api/public.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import { parseMemberListIQ } from '../parsers.js';
 
-const { Strophe, $iq, u, stx } = converse.env;
+const { Stanza, Strophe, u, stx } = converse.env;
 
 /**
  * Sends an IQ stanza to the server, asking it for the relevant affiliation list .
@@ -24,7 +24,7 @@ const { Strophe, $iq, u, stx } = converse.env;
  * @param {string} muc_jid - The JID of the MUC for which the affiliation list should be fetched
  * @returns {Promise<MemberListItem[]|Error>}
  */
-export async function getAffiliationList (affiliation, muc_jid) {
+export async function getAffiliationList(affiliation, muc_jid) {
     const iq = stx`
         <iq xmlns="jabber:client" to="${muc_jid}" type="get">
             <query xmlns="${Strophe.NS.MUC_ADMIN}">
@@ -47,7 +47,7 @@ export async function getAffiliationList (affiliation, muc_jid) {
         return err;
     }
     return parseMemberListIQ(result)
-        .filter(p => p)
+        .filter((p) => p)
         .sort((a, b) => (a.nick < b.nick ? -1 : a.nick > b.nick ? 1 : 0));
 }
 
@@ -58,9 +58,9 @@ export async function getAffiliationList (affiliation, muc_jid) {
  * @param {Array<User>} users
  * @returns {Promise}
  */
-export function setAffiliations (muc_jid, users) {
-    const affiliations = [...new Set(users.map(u => u.affiliation))];
-    return Promise.all(affiliations.map(a => setAffiliation(a, muc_jid, users)));
+export function setAffiliations(muc_jid, users) {
+    const affiliations = [...new Set(users.map((u) => u.affiliation))];
+    return Promise.all(affiliations.map((a) => setAffiliation(a, muc_jid, users)));
 }
 
 /**
@@ -81,13 +81,13 @@ export function setAffiliations (muc_jid, users) {
  *  same affiliation as being currently set will be considered.
  * @returns {Promise} A promise which resolves and fails depending on the XMPP server response.
  */
-export function setAffiliation (affiliation, muc_jids, members) {
+export function setAffiliation(affiliation, muc_jids, members) {
     if (!Array.isArray(muc_jids)) {
         muc_jids = [muc_jids];
     }
-    members = members.filter(m => [undefined, affiliation].includes(m.affiliation));
+    members = members.filter((m) => [undefined, affiliation].includes(m.affiliation));
     return Promise.all(
-        muc_jids.reduce((acc, jid) => [...acc, ...members.map(m => sendAffiliationIQ(affiliation, jid, m))], [])
+        muc_jids.reduce((acc, jid) => [...acc, ...members.map((m) => sendAffiliationIQ(affiliation, jid, m))], []),
     );
 }
 
@@ -97,18 +97,18 @@ export function setAffiliation (affiliation, muc_jids, members) {
  * @param {string} muc_jid - The JID of the MUC in which the affiliation should be set.
  * @param {object} member - Map containing the member's jid and optionally a reason and affiliation.
  */
-function sendAffiliationIQ (affiliation, muc_jid, member) {
+function sendAffiliationIQ(affiliation, muc_jid, member) {
     affiliation = member.affiliation || affiliation;
-    const iq = $iq({ to: muc_jid, type: 'set' })
-        .c('query', { xmlns: Strophe.NS.MUC_ADMIN })
-        .c('item', {
-            affiliation,
-            ...(affiliation === 'outcast' ? {} : {nick: member.nick }),
-            jid: member.jid
-        });
-    if (member.reason !== undefined) {
-        iq.c('reason', member.reason);
-    }
+    const iq = stx`
+        <iq to="${muc_jid}" type="set" xmlns="jabber:client">
+            <query xmlns="${Strophe.NS.MUC_ADMIN}">
+                <item affiliation="${affiliation}"
+                      ${affiliation !== 'outcast' && member.nick ? Stanza.unsafeXML(`nick="${member.nick}"`) : ''}
+                      jid="${member.jid}">
+                    ${member.reason ? stx`<reason>${member.reason}</reason>` : ''}
+                </item>
+            </query>
+        </iq>`;
     return api.sendIQ(iq);
 }
 
@@ -138,23 +138,25 @@ function sendAffiliationIQ (affiliation, muc_jid, member) {
  * @param {array} old_list - Array containing the old affiliations
  * @returns {array}
  */
-export function computeAffiliationsDelta (exclude_existing, remove_absentees, new_list, old_list) {
-    const new_jids = new_list.map(o => o.jid);
-    const old_jids = old_list.map(o => o.jid);
+export function computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list) {
+    const new_jids = new_list.map((o) => o.jid);
+    const old_jids = old_list.map((o) => o.jid);
     // Get the new affiliations
-    let delta = new_jids.filter(jid => !old_jids.includes(jid)).map(jid => new_list[new_jids.indexOf(jid)]);
+    let delta = new_jids.filter((jid) => !old_jids.includes(jid)).map((jid) => new_list[new_jids.indexOf(jid)]);
     if (!exclude_existing) {
         // Get the changed affiliations
         delta = delta.concat(
-            new_list.filter(item => {
+            new_list.filter((item) => {
                 const idx = old_jids.indexOf(item.jid);
                 return idx >= 0 ? item.affiliation !== old_list[idx].affiliation : false;
-            })
+            }),
         );
     }
     if (remove_absentees) {
         // Get the removed affiliations
-        delta = delta.concat(old_jids.filter(jid => !new_jids.includes(jid)).map(jid => ({ 'jid': jid, 'affiliation': 'none' })));
+        delta = delta.concat(
+            old_jids.filter((jid) => !new_jids.includes(jid)).map((jid) => ({ jid, 'affiliation': 'none' })),
+        );
     }
     return delta;
 }

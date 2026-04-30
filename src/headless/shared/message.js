@@ -1,5 +1,5 @@
 import sizzle from 'sizzle';
-import { Strophe, $iq } from 'strophe.js';
+import { Strophe } from 'strophe.js';
 import { Model } from '@converse/skeletor';
 import log from '@converse/log';
 import _converse from '../shared/_converse.js';
@@ -11,7 +11,7 @@ import ModelWithVCard from '../shared/model-with-vcard';
 import { getUniqueId } from '../utils/index.js';
 import converse from './api/public.js';
 
-const { dayjs } = converse.env;
+const { dayjs, stx } = converse.env;
 
 /**
  * @extends {Model}
@@ -177,16 +177,17 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
     sendSlotRequestStanza() {
         if (!this.file) return Promise.reject(new Error('file is undefined'));
 
-        const iq = $iq({
-            'from': _converse.session.get('jid'),
-            'to': this.get('slot_request_url'),
-            'type': 'get',
-        }).c('request', {
-            'xmlns': Strophe.NS.HTTPUPLOAD,
-            'filename': this.file.name,
-            'size': this.file.size,
-            'content-type': this.file.type,
-        });
+        const iq = stx`
+            <iq from="${_converse.session.get('jid')}"
+                to="${this.get('slot_request_url')}"
+                type="get"
+                xmlns="jabber:client">
+                <request xmlns="${Strophe.NS.HTTPUPLOAD}"
+                         filename="${this.file.name}"
+                         size="${this.file.size}"
+                         content-type="${this.file.type}">
+                </request>
+            </iq>`;
         return api.sendIQ(iq);
     }
 

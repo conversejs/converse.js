@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const $msg = converse.env.$msg;
+const { stx } = converse.env;
 const Strophe = converse.env.Strophe;
 const u = converse.env.utils;
 const sizzle = converse.env.sizzle;
@@ -30,15 +30,14 @@ describe('Chatboxes', function () {
                 expect(info_messages.pop().textContent).toBe('/close: Close this chat');
                 expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
 
-                const msg = $msg({
-                    from: contact_jid,
-                    to: api.connection.get().jid,
-                    type: 'chat',
-                    id: u.getUniqueId(),
-                })
-                    .c('body')
-                    .t('hello world')
-                    .tree();
+                const msg = stx`
+                    <message from="${contact_jid}"
+                             to="${api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <body>hello world</body>
+                    </message>`;
                 await _converse.handleMessageStanza(msg);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
                 const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__body .chat-msg__text';
@@ -352,14 +351,14 @@ describe('Chatboxes', function () {
 
                     const sender_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                     // <composing> state
-                    const stanza = $msg({
-                        'from': sender_jid,
-                        'to': api.connection.get().jid,
-                        'type': 'chat',
-                        'id': u.getUniqueId(),
-                    })
-                        .c('composing', { 'xmlns': Strophe.NS.CHATSTATES })
-                        .tree();
+                    const stanza = stx`
+                        <message from="${sender_jid}"
+                                 to="${api.connection.get().jid}"
+                                 type="chat"
+                                 id="${u.getUniqueId()}"
+                                 xmlns="jabber:client">
+                            <composing xmlns="${Strophe.NS.CHATSTATES}"/>
+                        </message>`;
 
                     spyOn(_converse.api, 'trigger').and.callThrough();
                     api.connection.get()._dataRecv(mock.createRequest(stanza));
@@ -416,11 +415,13 @@ describe('Chatboxes', function () {
                         const stanza = await u.waitUntil(() =>
                             sent_stanzas.filter((s) => sizzle(`active`, s).length).pop(),
                         );
-                        expect(stanza).toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
-                            <active xmlns="http://jabber.org/protocol/chatstates"/>
-                            <no-store xmlns="urn:xmpp:hints"/>
-                            <no-permanent-store xmlns="urn:xmpp:hints"/>
-                        </message>`);
+                        expect(stanza).toEqualStanza(
+                            stx`<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
+                                <active xmlns="http://jabber.org/protocol/chatstates"/>
+                                <no-store xmlns="urn:xmpp:hints"/>
+                                <no-permanent-store xmlns="urn:xmpp:hints"/>
+                            </message>`,
+                        );
                     }),
                 );
             });
@@ -510,14 +511,14 @@ describe('Chatboxes', function () {
                         await mock.openChatBoxFor(_converse, sender_jid);
 
                         // <composing> state
-                        let msg = $msg({
-                            from: sender_jid,
-                            to: api.connection.get().jid,
-                            type: 'chat',
-                            id: u.getUniqueId(),
-                        })
-                            .c('composing', { 'xmlns': Strophe.NS.CHATSTATES })
-                            .tree();
+                        let msg = stx`
+                            <message from="${sender_jid}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     id="${u.getUniqueId()}"
+                                     xmlns="jabber:client">
+                                <composing xmlns="${Strophe.NS.CHATSTATES}"/>
+                            </message>`;
 
                         api.connection.get()._dataRecv(mock.createRequest(msg));
                         const view = _converse.chatboxviews.get(sender_jid);
@@ -526,27 +527,26 @@ describe('Chatboxes', function () {
                         expect(view.model.messages.length).toEqual(0);
 
                         // <paused> state
-                        msg = $msg({
-                            from: sender_jid,
-                            to: api.connection.get().jid,
-                            type: 'chat',
-                            id: u.getUniqueId(),
-                        })
-                            .c('paused', { 'xmlns': Strophe.NS.CHATSTATES })
-                            .tree();
+                        msg = stx`
+                            <message from="${sender_jid}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     id="${u.getUniqueId()}"
+                                     xmlns="jabber:client">
+                                <paused xmlns="${Strophe.NS.CHATSTATES}"/>
+                            </message>`;
                         api.connection.get()._dataRecv(mock.createRequest(msg));
                         csn = mock.cur_names[1] + ' has stopped typing';
                         await u.waitUntil(() => view.querySelector('.chat-content__notifications').innerText === csn);
 
-                        msg = $msg({
-                            from: sender_jid,
-                            to: api.connection.get().jid,
-                            type: 'chat',
-                            id: u.getUniqueId(),
-                        })
-                            .c('body')
-                            .t('hello world')
-                            .tree();
+                        msg = stx`
+                            <message from="${sender_jid}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     id="${u.getUniqueId()}"
+                                     xmlns="jabber:client">
+                                <body>hello world</body>
+                            </message>`;
                         await _converse.handleMessageStanza(msg);
                         const msg_el = await u.waitUntil(() => view.querySelector('.chat-msg'));
                         await u.waitUntil(() => view.querySelector('.chat-content__notifications').innerText === '');
@@ -567,23 +567,23 @@ describe('Chatboxes', function () {
 
                         spyOn(u, 'shouldCreateMessage').and.callThrough();
 
-                        const msg = $msg({
-                            'from': _converse.bare_jid,
-                            'id': u.getUniqueId(),
-                            'to': api.connection.get().jid,
-                            'type': 'chat',
-                            'xmlns': 'jabber:client',
-                        })
-                            .c('sent', { 'xmlns': 'urn:xmpp:carbons:2' })
-                            .c('forwarded', { 'xmlns': 'urn:xmpp:forward:0' })
-                            .c('message', {
-                                'xmlns': 'jabber:client',
-                                'from': _converse.bare_jid + '/another-resource',
-                                'to': recipient_jid,
-                                'type': 'chat',
-                            })
-                            .c('composing', { 'xmlns': Strophe.NS.CHATSTATES })
-                            .tree();
+                        const msg = stx`
+                            <message from="${_converse.bare_jid}"
+                                     id="${u.getUniqueId()}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     xmlns="jabber:client">
+                                <sent xmlns="urn:xmpp:carbons:2">
+                                    <forwarded xmlns="urn:xmpp:forward:0">
+                                        <message xmlns="jabber:client"
+                                                 from="${_converse.bare_jid}/another-resource"
+                                                 to="${recipient_jid}"
+                                                 type="chat">
+                                            <composing xmlns="${Strophe.NS.CHATSTATES}"/>
+                                        </message>
+                                    </forwarded>
+                                </sent>
+                            </message>`;
                         api.connection.get()._dataRecv(mock.createRequest(msg));
 
                         await u.waitUntil(() => u.shouldCreateMessage.calls.count());
@@ -623,7 +623,8 @@ describe('Chatboxes', function () {
                             1000,
                         );
 
-                        expect(stanza).toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
+                        expect(stanza)
+                            .toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
                             <composing xmlns="http://jabber.org/protocol/chatstates"/>
                             <no-store xmlns="urn:xmpp:hints"/>
                             <no-permanent-store xmlns="urn:xmpp:hints"/>
@@ -634,7 +635,8 @@ describe('Chatboxes', function () {
                         stanza = await u.waitUntil(() =>
                             sent_stanzas.filter((s) => sizzle(`[xmlns="${xmlns}"]`, s)).pop(),
                         );
-                        expect(stanza).toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
+                        expect(stanza)
+                            .toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
                             <paused xmlns="http://jabber.org/protocol/chatstates"/>
                             <no-store xmlns="urn:xmpp:hints"/>
                             <no-permanent-store xmlns="urn:xmpp:hints"/>
@@ -672,14 +674,14 @@ describe('Chatboxes', function () {
                         const sender_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                         const view = await mock.openChatBoxFor(_converse, sender_jid);
                         // <paused> state
-                        const msg = $msg({
-                            from: sender_jid,
-                            to: api.connection.get().jid,
-                            type: 'chat',
-                            id: u.getUniqueId(),
-                        })
-                            .c('paused', { 'xmlns': Strophe.NS.CHATSTATES })
-                            .tree();
+                        const msg = stx`
+                            <message from="${sender_jid}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     id="${u.getUniqueId()}"
+                                     xmlns="jabber:client">
+                                <paused xmlns="${Strophe.NS.CHATSTATES}"/>
+                            </message>`;
 
                         api.connection.get()._dataRecv(mock.createRequest(msg));
                         const csn = mock.cur_names[1] + ' has stopped typing';
@@ -699,23 +701,23 @@ describe('Chatboxes', function () {
                         const recipient_jid = mock.cur_names[5].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                         spyOn(u, 'shouldCreateMessage').and.callThrough();
                         const view = await mock.openChatBoxFor(_converse, recipient_jid);
-                        const msg = $msg({
-                            'from': _converse.bare_jid,
-                            'id': u.getUniqueId(),
-                            'to': api.connection.get().jid,
-                            'type': 'chat',
-                            'xmlns': 'jabber:client',
-                        })
-                            .c('sent', { 'xmlns': 'urn:xmpp:carbons:2' })
-                            .c('forwarded', { 'xmlns': 'urn:xmpp:forward:0' })
-                            .c('message', {
-                                'xmlns': 'jabber:client',
-                                'from': _converse.bare_jid + '/another-resource',
-                                'to': recipient_jid,
-                                'type': 'chat',
-                            })
-                            .c('paused', { 'xmlns': Strophe.NS.CHATSTATES })
-                            .tree();
+                        const msg = stx`
+                            <message from="${_converse.bare_jid}"
+                                     id="${u.getUniqueId()}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     xmlns="jabber:client">
+                                <sent xmlns="urn:xmpp:carbons:2">
+                                    <forwarded xmlns="urn:xmpp:forward:0">
+                                        <message xmlns="jabber:client"
+                                                 from="${_converse.bare_jid}/another-resource"
+                                                 to="${recipient_jid}"
+                                                 type="chat">
+                                            <paused xmlns="${Strophe.NS.CHATSTATES}"/>
+                                        </message>
+                                    </forwarded>
+                                </sent>
+                            </message>`;
                         api.connection.get()._dataRecv(mock.createRequest(msg));
                         await u.waitUntil(() => u.shouldCreateMessage.calls.count());
                         expect(view.model.messages.length).toEqual(0);
@@ -749,7 +751,8 @@ describe('Chatboxes', function () {
                         expect(view.model.get('chat_state')).toBe('active');
 
                         const messages = sent_stanzas.filter((s) => s.matches('message'));
-                        expect(messages[0]).toEqualStanza(stx`<message id="${messages[0].getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">
+                        expect(messages[0])
+                            .toEqualStanza(stx`<message id="${messages[0].getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">
                             <active xmlns="http://jabber.org/protocol/chatstates"/>
                             <no-store xmlns="urn:xmpp:hints"/>
                             <no-permanent-store xmlns="urn:xmpp:hints"/>
@@ -764,7 +767,8 @@ describe('Chatboxes', function () {
                         let stanza = await u.waitUntil(() =>
                             sent_stanzas.filter((s) => s.querySelector('message composing')).pop(),
                         );
-                        expect(stanza).toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">
+                        expect(stanza)
+                            .toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">
                             <composing xmlns="http://jabber.org/protocol/chatstates"/>
                             <no-store xmlns="urn:xmpp:hints"/>
                             <no-permanent-store xmlns="urn:xmpp:hints"/>
@@ -774,7 +778,8 @@ describe('Chatboxes', function () {
                         stanza = await u.waitUntil(() =>
                             sent_stanzas.filter((s) => s.querySelector('message paused')).pop(),
                         );
-                        expect(stanza).toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">
+                        expect(stanza)
+                            .toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">
                             <paused xmlns="http://jabber.org/protocol/chatstates"/>
                             <no-store xmlns="urn:xmpp:hints"/>
                             <no-permanent-store xmlns="urn:xmpp:hints"/>
@@ -784,7 +789,8 @@ describe('Chatboxes', function () {
                         stanza = await u.waitUntil(() =>
                             sent_stanzas.filter((s) => s.querySelector('message inactive')).pop(),
                         );
-                        expect(stanza).toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">
+                        expect(stanza)
+                            .toEqualStanza(stx`<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">
                             <inactive xmlns="http://jabber.org/protocol/chatstates"/>
                             <no-store xmlns="urn:xmpp:hints"/>
                             <no-permanent-store xmlns="urn:xmpp:hints"/>
@@ -850,15 +856,14 @@ describe('Chatboxes', function () {
                         // Insert <composing> message, to also check that
                         // text messages are inserted correctly with
                         // temporary chat events in the chat contents.
-                        let msg = $msg({
-                            'to': _converse.bare_jid,
-                            'xmlns': 'jabber:client',
-                            'from': sender_jid,
-                            'type': 'chat',
-                        })
-                            .c('composing', { 'xmlns': Strophe.NS.CHATSTATES })
-                            .up()
-                            .tree();
+                        let msg = stx`
+                            <message from="${sender_jid}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     id="${u.getUniqueId()}"
+                                     xmlns="jabber:client">
+                                <composing xmlns="${Strophe.NS.CHATSTATES}"/>
+                            </message>`;
                         api.connection.get()._dataRecv(mock.createRequest(msg));
                         const csntext = await u.waitUntil(
                             () => view.querySelector('.chat-content__notifications').textContent,
@@ -866,14 +871,14 @@ describe('Chatboxes', function () {
                         expect(csntext).toEqual(mock.cur_names[1] + ' is typing');
                         expect(view.model.messages.length).toBe(0);
 
-                        msg = $msg({
-                            from: sender_jid,
-                            to: api.connection.get().jid,
-                            type: 'chat',
-                            id: u.getUniqueId(),
-                        })
-                            .c('inactive', { 'xmlns': Strophe.NS.CHATSTATES })
-                            .tree();
+                        msg = stx`
+                            <message from="${sender_jid}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     id="${u.getUniqueId()}"
+                                     xmlns="jabber:client">
+                                <inactive xmlns="${Strophe.NS.CHATSTATES}"/>
+                            </message>`;
                         api.connection.get()._dataRecv(mock.createRequest(msg));
 
                         await u.waitUntil(() => !view.querySelector('.chat-content__notifications').textContent);
@@ -891,15 +896,14 @@ describe('Chatboxes', function () {
                         const sender_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                         await mock.openChatBoxFor(_converse, sender_jid);
 
-                        const msg = $msg({
-                            from: sender_jid,
-                            to: api.connection.get().jid,
-                            type: 'chat',
-                            id: u.getUniqueId(),
-                        })
-                            .c('body')
-                            .c('gone', { 'xmlns': Strophe.NS.CHATSTATES })
-                            .tree();
+                        const msg = stx`
+                            <message from="${sender_jid}"
+                                     id="${u.getUniqueId()}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     xmlns="jabber:client">
+                                <gone xmlns="${Strophe.NS.CHATSTATES}" />
+                            </message>`;
                         api.connection.get()._dataRecv(mock.createRequest(msg));
 
                         const view = _converse.chatboxviews.get(sender_jid);
@@ -927,15 +931,15 @@ describe('Chatboxes', function () {
 
                         // Original message
                         const original_id = u.getUniqueId();
-                        const original = $msg({
-                            from: sender_jid,
-                            to: api.connection.get().jid,
-                            type: 'chat',
-                            id: original_id,
-                            body: 'Original message',
-                        })
-                            .c('active', { 'xmlns': Strophe.NS.CHATSTATES })
-                            .tree();
+                        const original = stx`
+                            <message from="${sender_jid}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     id="${original_id}"
+                                     xmlns="jabber:client">
+                                <body>Original message</body>
+                                <active xmlns="${Strophe.NS.CHATSTATES}"/>
+                            </message>`;
 
                         spyOn(_converse.api, 'trigger').and.callThrough();
                         api.connection.get()._dataRecv(mock.createRequest(original));
@@ -945,14 +949,14 @@ describe('Chatboxes', function () {
                         expect(view).toBeDefined();
 
                         // <composing> state
-                        const msg = $msg({
-                            from: sender_jid,
-                            to: api.connection.get().jid,
-                            type: 'chat',
-                            id: u.getUniqueId(),
-                        })
-                            .c('composing', { 'xmlns': Strophe.NS.CHATSTATES })
-                            .tree();
+                        const msg = stx`
+                            <message from="${sender_jid}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     id="${u.getUniqueId()}"
+                                     xmlns="jabber:client">
+                                <composing xmlns="${Strophe.NS.CHATSTATES}"/>
+                            </message>`;
                         api.connection.get()._dataRecv(mock.createRequest(msg));
 
                         const csntext = await u.waitUntil(
@@ -961,17 +965,16 @@ describe('Chatboxes', function () {
                         expect(csntext).toEqual(mock.cur_names[1] + ' is typing');
 
                         // Edited message
-                        const edited = $msg({
-                            from: sender_jid,
-                            to: api.connection.get().jid,
-                            type: 'chat',
-                            id: u.getUniqueId(),
-                            body: 'Edited message',
-                        })
-                            .c('active', { 'xmlns': Strophe.NS.CHATSTATES })
-                            .up()
-                            .c('replace', { 'xmlns': Strophe.NS.MESSAGE_CORRECT, 'id': original_id })
-                            .tree();
+                        const edited = stx`
+                            <message from="${sender_jid}"
+                                     to="${api.connection.get().jid}"
+                                     type="chat"
+                                     id="${u.getUniqueId()}"
+                                     xmlns="jabber:client">
+                                <body>Edited message</body>
+                                <active xmlns="${Strophe.NS.CHATSTATES}"/>
+                                <replace xmlns="${Strophe.NS.MESSAGE_CORRECT}" id="${original_id}"/>
+                            </message>`;
 
                         await _converse.handleMessageStanza(edited);
                         await u.waitUntil(() => !view.querySelector('.chat-content__notifications').textContent);

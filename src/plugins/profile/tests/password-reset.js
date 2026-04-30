@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Strophe, u, stx } = converse.env;
+const { Strophe, sizzle, u, stx } = converse.env;
 
 async function submitPasswordResetForm(_converse) {
     await mock.openControlBox(_converse);
@@ -29,9 +29,10 @@ describe('The profile modal', function () {
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const query_iq = await u.waitUntil(() =>
-                sent_IQs.filter((iq) => iq.querySelector('iq[type="get"] query[xmlns="jabber:iq:register"]')).pop(),
+                sent_IQs.filter((iq) => sizzle('iq[type="get"] query[xmlns="jabber:iq:register"]', iq).length).pop(),
             );
-            expect(query_iq).toEqualStanza(stx`<iq id="${query_iq.getAttribute('id')}" to="${_converse.domain}" type="get" xmlns="jabber:client">
+            expect(query_iq)
+                .toEqualStanza(stx`<iq id="${query_iq.getAttribute('id')}" to="${_converse.domain}" type="get" xmlns="jabber:client">
                 <query xmlns="jabber:iq:register"/>
             </iq>`);
 
@@ -48,9 +49,10 @@ describe('The profile modal', function () {
             );
 
             const set_iq = await u.waitUntil(() =>
-                sent_IQs.filter((iq) => iq.querySelector('iq[type="set"] query[xmlns="jabber:iq:register"]')).pop(),
+                sent_IQs.filter((iq) => sizzle('iq[type="set"] query[xmlns="jabber:iq:register"]', iq).length).pop(),
             );
-            expect(set_iq).toEqualStanza(stx`<iq id="${set_iq.getAttribute('id')}" to="${_converse.domain}" type="set" xmlns="jabber:client">
+            expect(set_iq)
+                .toEqualStanza(stx`<iq id="${set_iq.getAttribute('id')}" to="${_converse.domain}" type="set" xmlns="jabber:client">
                 <query xmlns="jabber:iq:register">
                     <username>romeo@montague.lit</username>
                     <password>secret-password</password>
@@ -74,10 +76,11 @@ describe('The profile modal', function () {
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const query_iq = await u.waitUntil(() =>
-                sent_IQs.filter((iq) => iq.querySelector('query[xmlns="jabber:iq:register"]')).pop(),
+                sent_IQs.filter((iq) => sizzle('query[xmlns="jabber:iq:register"]', iq).length).pop(),
             );
 
-            expect(query_iq).toEqualStanza(stx`<iq id="${query_iq.getAttribute('id')}" to="${_converse.domain}" type="get" xmlns="jabber:client">
+            expect(query_iq)
+                .toEqualStanza(stx`<iq id="${query_iq.getAttribute('id')}" to="${_converse.domain}" type="get" xmlns="jabber:client">
                 <query xmlns="jabber:iq:register"/>
             </iq>`);
 
@@ -102,10 +105,11 @@ describe('The profile modal', function () {
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const query_iq = await u.waitUntil(() =>
-                sent_IQs.filter((iq) => iq.querySelector('query[xmlns="jabber:iq:register"]')).pop(),
+                sent_IQs.filter((iq) => sizzle('query[xmlns="jabber:iq:register"]', iq).length).pop(),
             );
 
-            expect(query_iq).toEqualStanza(stx`<iq id="${query_iq.getAttribute('id')}" to="${_converse.domain}" type="get" xmlns="jabber:client">
+            expect(query_iq)
+                .toEqualStanza(stx`<iq id="${query_iq.getAttribute('id')}" to="${_converse.domain}" type="get" xmlns="jabber:client">
                 <query xmlns="jabber:iq:register"/>
             </iq>`);
 
@@ -122,9 +126,10 @@ describe('The profile modal', function () {
             );
 
             const set_iq = await u.waitUntil(() =>
-                sent_IQs.filter((iq) => iq.querySelector('iq[type="set"] query[xmlns="jabber:iq:register"]')).pop(),
+                sent_IQs.filter((iq) => sizzle('iq[type="set"] query[xmlns="jabber:iq:register"]', iq).length).pop(),
             );
-            expect(set_iq).toEqualStanza(stx`<iq id="${set_iq.getAttribute('id')}" to="${_converse.domain}" type="set" xmlns="jabber:client">
+            expect(set_iq)
+                .toEqualStanza(stx`<iq id="${set_iq.getAttribute('id')}" to="${_converse.domain}" type="set" xmlns="jabber:client">
                 <query xmlns="jabber:iq:register">
                     <username>romeo@montague.lit</username>
                     <password>secret-password</password>

@@ -1,7 +1,7 @@
 import { __ } from 'i18n';
 import { _converse, api, converse, constants, u } from '@converse/headless';
 
-const { Strophe, $build } = converse.env;
+const { Strophe, stx } = converse.env;
 
 /**
  * @param {string} stat
@@ -46,8 +46,11 @@ let inactive = false;
  * @param { String } stat - The user's chat status
  */
 export function sendCSI(stat) {
-    api.send($build(stat, { xmlns: Strophe.NS.CSI }));
-    inactive = stat === constants.INACTIVE ? true : false;
+    const stanza = stat === constants.ACTIVE
+        ? stx`<active xmlns="${Strophe.NS.CSI}"></active>`
+        : stx`<inactive xmlns="${Strophe.NS.CSI}"></inactive>`;
+    api.send(stanza);
+    inactive = stat === constants.INACTIVE;
 }
 
 /**

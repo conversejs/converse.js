@@ -196,7 +196,8 @@ describe('A groupchat shown in the groupchats list', function () {
                 let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
                 // Check that an IQ is sent out, asking for the configuration form.
-                expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+                expect(iq)
+                    .toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
                     <query xmlns="http://jabber.org/protocol/muc#owner"/>
                 </iq>`);
 
@@ -246,8 +247,10 @@ describe('A groupchat shown in the groupchats list', function () {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
                 iq = await u.waitUntil(() =>
-                    IQ_stanzas.filter((iq) =>
-                        iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`),
+                    IQ_stanzas.filter(
+                        (iq) =>
+                            sizzle(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`, iq)
+                                .length,
                     ).pop(),
                 );
 

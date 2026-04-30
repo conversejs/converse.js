@@ -10,7 +10,7 @@ import { setActiveForm, fetchXMPPProviders } from './utils.js';
 import './styles/register.scss';
 
 // Strophe methods for building stanzas
-const { Strophe, sizzle, $iq } = converse.env;
+const { Strophe, sizzle, stx, $iq } = converse.env;
 const { CONNECTION_STATUS } = constants;
 
 const CHOOSE_PROVIDER = 0;
@@ -136,8 +136,10 @@ class RegistrationForm extends CustomElement {
         }
         // Send an IQ stanza to get all required data fields
         conn._addSysHandler((s) => this.onRegistrationFields(s), null, "iq", null, null);
-        const stanza = $iq({type: "get"}).c("query", {xmlns: Strophe.NS.REGISTER}).tree();
-        stanza.setAttribute("id", conn.getUniqueId("sendIQ"));
+        const stanza = stx`
+            <iq type="get" id="${conn.getUniqueId('sendIQ')}" xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.REGISTER}"></query>
+            </iq>`;
         conn.send(stanza);
         conn.connected = false;
         return true;

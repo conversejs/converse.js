@@ -1,6 +1,6 @@
 import { _converse, api, converse, log, constants } from "@converse/headless";
 
-const { Strophe, $iq } = converse.env;
+const { Stanza, Strophe, stx } = converse.env;
 const { CHATROOMS_TYPE } = constants;
 
 async function disablePushAppServer (domain, push_app_server) {
@@ -12,17 +12,15 @@ async function disablePushAppServer (domain, push_app_server) {
         log.warn(`Not disabling push app server "${push_app_server.jid}", no disco support from your server.`);
         return;
     }
-    const stanza = $iq({'type': 'set'});
-    if (domain !== bare_jid) {
-        stanza.attrs({'to': domain});
-    }
-    stanza.c('disable', {
-        'xmlns': Strophe.NS.PUSH,
-        'jid': push_app_server.jid,
-    });
-    if (push_app_server.node) {
-        stanza.attrs({'node': push_app_server.node});
-    }
+    const stanza = stx`
+        <iq type="set"
+            ${domain !== bare_jid ? Stanza.unsafeXML(`to="${domain}"`) : ''}
+            xmlns="jabber:client">
+            <disable xmlns="${Strophe.NS.PUSH}"
+                jid="${push_app_server.jid}"
+                ${push_app_server.node ? Stanza.unsafeXML(`node="${push_app_server.node}"`) : ''}>
+            </disable>
+        </iq>`;
     api.sendIQ(stanza)
     .catch(e => {
         log.error(`Could not disable push app server for ${push_app_server.jid}`);
@@ -48,23 +46,26 @@ async function enablePushAppServer (domain, push_app_server) {
         log.warn(`Not enabling push app server "${push_app_server.jid}", no disco support from your server.`);
         return;
     }
-    const stanza = $iq({'type': 'set'});
     const bare_jid = _converse.session.get('bare_jid');
-    if (domain !== bare_jid) {
-        stanza.attrs({'to': domain});
-    }
-    stanza.c('enable', {
-        'xmlns': Strophe.NS.PUSH,
-        'jid': push_app_server.jid,
-        'node': push_app_server.node
-    });
-    if (push_app_server.secret) {
-        stanza.c('x', {'xmlns': Strophe.NS.XFORM, 'type': 'submit'})
-            .c('field', {'var': 'FORM_TYPE'})
-                .c('value').t(`${Strophe.NS.PUBSUB}#publish-options`).up().up()
-            .c('field', {'var': 'secret'})
-                .c('value').t(push_app_server.secret);
-    }
+
+    const stanza = stx`
+        <iq type="set"
+            ${domain !== bare_jid ? Stanza.unsafeXML(`to="${domain}"`) : ''}
+            xmlns="jabber:client">
+            <enable xmlns="${Strophe.NS.PUSH}"
+                    jid="${push_app_server.jid}"
+                    node="${push_app_server.node}">
+                ${push_app_server.secret ? stx`
+                    <x xmlns="${Strophe.NS.XFORM}" type="submit">
+                        <field var="FORM_TYPE">
+                            <value>${Strophe.NS.PUBSUB}#publish-options</value>
+                        </field>
+                        <field var="secret">
+                            <value>${push_app_server.secret}</value>
+                        </field>
+                    </x>` : ''}
+            </enable>
+        </iq>`;
     return api.sendIQ(stanza);
 }
 

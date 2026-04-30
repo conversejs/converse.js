@@ -18,6 +18,7 @@ import { parseErrorStanza } from "../../shared/parsers.js";
 
 const { NS } = Strophe;
 const u = converse.env.utils;
+const { stx } = converse.env;
 
 /**
  * @param {Element|Error} e
@@ -79,7 +80,10 @@ export function getMAMPrefsFromFeature(feature) {
         return;
     }
     if (prefs["default"] !== api.settings.get("message_archiving")) {
-        const stanza = $iq({ "type": "get" }).c("prefs", { "xmlns": NS.MAM });
+        const stanza = stx`
+            <iq type="get" xmlns="jabber:client">
+                <prefs xmlns="${NS.MAM}"></prefs>
+            </iq>`;
         api.sendIQ(stanza)
             .then(/** @param {Element} iq */ (iq) => _converse.exports.onMAMPreferences(iq, feature))
             .catch(/** @param {Error|Element} e */ (e) => _converse.exports.onMAMError(e, stanza.tree()));

@@ -21,7 +21,6 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
     /**
      * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
      * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
-     * @typedef {import('../../shared/message.js').default} BaseMessage
      * @typedef {import('./message.js').default} MUCMessage
      */
 

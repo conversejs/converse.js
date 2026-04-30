@@ -3,7 +3,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse, log } from '@converse/headless';
 
-const { Strophe, $iq, sizzle, u } = converse.env;
+const { Strophe, stx, sizzle, u } = converse.env;
 
 
 class PasswordReset extends CustomElement {
@@ -39,7 +39,10 @@ class PasswordReset extends CustomElement {
         if (this.checkPasswordsMatch(ev)) return;
 
         const domain = _converse.session.get('domain');
-        const iq = $iq({ 'type': 'get', 'to': domain }).c('query', { 'xmlns': Strophe.NS.REGISTER });
+        const iq = stx`
+            <iq type="get" to="${domain}" xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.REGISTER}"></query>
+            </iq>`;
         const iq_response = await api.sendIQ(iq);
 
         if (iq_response === null) {
@@ -60,10 +63,13 @@ class PasswordReset extends CustomElement {
         const data = new FormData(ev.target);
         const password = data.get('password');
 
-        const reset_iq = $iq({ 'type': 'set', 'to': domain })
-            .c('query', { 'xmlns': Strophe.NS.REGISTER })
-                .c('username', {}, username)
-                .c('password', {}, password);
+        const reset_iq = stx`
+            <iq type="set" to="${domain}" xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.REGISTER}">
+                    <username>${username}</username>
+                    <password>${password}</password>
+                </query>
+            </iq>`;
 
         const iq_result = await api.sendIQ(reset_iq);
         if (iq_result === null) {

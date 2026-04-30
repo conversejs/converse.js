@@ -1,10 +1,10 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import { setLastStanzaDate } from './utils.js';
 
-const { Strophe, $iq, u } = converse.env;
+const { Strophe, u, stx } = converse.env;
 
 export default {
     /**
@@ -18,7 +18,7 @@ export default {
      *  Whether the pinged entity responded with a non-error IQ stanza.
      *  If we already know we're not connected, no ping is sent out and `null` is returned.
      */
-    async ping (jid, timeout) {
+    async ping(jid, timeout) {
         if (!api.connection.authenticated()) {
             log.debug("Not pinging when we know we're not authenticated");
             return null;
@@ -30,11 +30,13 @@ export default {
         setLastStanzaDate(new Date());
         const bare_jid = _converse.session.get('bare_jid');
         jid = jid || Strophe.getDomainFromJid(bare_jid);
-        const iq = $iq({
-                'type': 'get',
-                'to': jid,
-                'id': u.getUniqueId('ping')
-            }).c('ping', {'xmlns': Strophe.NS.PING});
+        const iq = stx`
+            <iq type="get"
+                to="${jid}"
+                id="${u.getUniqueId('ping')}"
+                xmlns="jabber:client">
+                <ping xmlns="${Strophe.NS.PING}"></ping>
+            </iq>`;
 
         const result = await api.sendIQ(iq, timeout || 10000, false);
         if (result === null) {
@@ -49,5 +51,5 @@ export default {
             return false;
         }
         return true;
-    }
-}
+    },
+};

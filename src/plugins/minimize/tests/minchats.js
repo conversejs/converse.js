@@ -1,5 +1,5 @@
 /*global mock, converse */
-const { $msg, u } = converse.env;
+const { stx, u } = converse.env;
 
 describe('A chat message', function () {
     it(
@@ -22,17 +22,15 @@ describe('A chat message', function () {
             expect(chatview.model.get('hidden')).toBeTruthy();
             var message = 'This message is sent to a minimized chatbox';
             var sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-            var msg = $msg({
-                from: sender_jid,
-                to: _converse.api.connection.get().jid,
-                type: 'chat',
-                id: u.getUniqueId(),
-            })
-                .c('body')
-                .t(message)
-                .up()
-                .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                .tree();
+            var msg = stx`
+                <message from="${sender_jid}"
+                         to="${_converse.api.connection.get().jid}"
+                         type="chat"
+                         id="${u.getUniqueId()}"
+                         xmlns="jabber:client">
+                    <body>${message}</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                </message>`;
             await _converse.handleMessageStanza(msg);
 
             await u.waitUntil(() => chatview.model.messages.length);
@@ -45,17 +43,15 @@ describe('A chat message', function () {
             expect(u.isVisible(count)).toBeTruthy();
             expect(count.textContent).toBe('1');
             _converse.handleMessageStanza(
-                $msg({
-                    from: mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit',
-                    to: _converse.api.connection.get().jid,
-                    type: 'chat',
-                    id: u.getUniqueId(),
-                })
-                    .c('body')
-                    .t('This message is also sent to a minimized chatbox')
-                    .up()
-                    .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                    .tree(),
+                stx`
+                    <message from="${mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit'}"
+                             to="${_converse.api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <body>This message is also sent to a minimized chatbox</body>
+                        <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`,
             );
 
             await u.waitUntil(() => chatview.model.messages.length > 1);
@@ -327,17 +323,15 @@ describe('The Minimized Chats Widget', function () {
             const chatview = _converse.chatboxviews.get(contact_jid);
             minimize(chatview.model);
             for (i = 0; i < 3; i++) {
-                const msg = $msg({
-                    from: contact_jid,
-                    to: _converse.api.connection.get().jid,
-                    type: 'chat',
-                    id: u.getUniqueId(),
-                })
-                    .c('body')
-                    .t('This message is sent to a minimized chatbox')
-                    .up()
-                    .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                    .tree();
+                const msg = stx`
+                    <message from="${contact_jid}"
+                             to="${_converse.api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <body>This message is sent to a minimized chatbox</body>
+                        <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`;
                 _converse.handleMessageStanza(msg);
             }
             await u.waitUntil(() => chatview.model.messages.length === 3, 500);
@@ -347,53 +341,53 @@ describe('The Minimized Chats Widget', function () {
             // Chat state notifications don't increment the unread messages counter
             // <composing> state
             _converse.handleMessageStanza(
-                $msg({
-                    from: contact_jid,
-                    to: _converse.api.connection.get().jid,
-                    type: 'chat',
-                    id: u.getUniqueId(),
-                })
-                    .c('composing', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                    .tree(),
+                stx`
+                    <message from="${contact_jid}"
+                             to="${_converse.api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <composing xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`,
             );
             expect(minimized_chats.querySelector('.unread-message-count').textContent).toBe(i.toString());
 
             // <paused> state
             _converse.handleMessageStanza(
-                $msg({
-                    from: contact_jid,
-                    to: _converse.api.connection.get().jid,
-                    type: 'chat',
-                    id: u.getUniqueId(),
-                })
-                    .c('paused', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                    .tree(),
+                stx`
+                    <message from="${contact_jid}"
+                             to="${_converse.api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <paused xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`,
             );
             expect(minimized_chats.querySelector('.unread-message-count').textContent).toBe(i.toString());
 
             // <gone> state
             _converse.handleMessageStanza(
-                $msg({
-                    from: contact_jid,
-                    to: _converse.api.connection.get().jid,
-                    type: 'chat',
-                    id: u.getUniqueId(),
-                })
-                    .c('gone', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                    .tree(),
+                stx`
+                    <message from="${contact_jid}"
+                             to="${_converse.api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <gone xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`,
             );
             expect(minimized_chats.querySelector('.unread-message-count').textContent).toBe(i.toString());
 
             // <inactive> state
             _converse.handleMessageStanza(
-                $msg({
-                    from: contact_jid,
-                    to: _converse.api.connection.get().jid,
-                    type: 'chat',
-                    id: u.getUniqueId(),
-                })
-                    .c('inactive', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                    .tree(),
+                stx`
+                    <message from="${contact_jid}"
+                             to="${_converse.api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <inactive xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`,
             );
             expect(minimized_chats.querySelector('.unread-message-count').textContent).toBe(i.toString());
         }),
@@ -409,15 +403,14 @@ describe('The Minimized Chats Widget', function () {
             minimize(view.model);
             const message = 'fires: Your attention is required';
             const nick = mock.chatroom_names[0];
-            const msg = $msg({
-                from: muc_jid + '/' + nick,
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat',
-            })
-                .c('body')
-                .t(message)
-                .tree();
+            const msg = stx`
+                <message from="${muc_jid}/${nick}"
+                         id="${u.getUniqueId()}"
+                         to="romeo@montague.lit"
+                         type="groupchat"
+                         xmlns="jabber:client">
+                    <body>${message}</body>
+                </message>`;
             view.model.handleMessageStanza(msg);
             await u.waitUntil(() => view.model.messages.length);
             const minimized_chats = await u.waitUntil(() => document.querySelector('converse-minimized-chats'));

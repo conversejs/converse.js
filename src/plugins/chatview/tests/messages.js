@@ -1,5 +1,5 @@
 /*global mock, converse */
-const { Strophe, $msg, dayjs, sizzle, stx, u } = converse.env;
+const { Strophe, dayjs, sizzle, stx, u } = converse.env;
 
 describe('A Chat Message', function () {
     it(
@@ -69,7 +69,8 @@ describe('A Chat Message', function () {
             api.connection.get()._dataRecv(mock.createRequest(received_stanza));
             const sent_stanzas = api.connection.get().sent_stanzas;
             const sent_stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.querySelector('error')).pop());
-            expect(sent_stanza).toEqualStanza(stx`<message id="${received_stanza.tree().getAttribute('id')}" to="${contact_jid}" type="error" xmlns="jabber:client">
+            expect(sent_stanza)
+                .toEqualStanza(stx`<message id="${received_stanza.tree().getAttribute('id')}" to="${contact_jid}" type="error" xmlns="jabber:client">
                 <error type="cancel">
                     <not-allowed xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                     <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Forwarded messages not part of an encapsulating protocol are not supported</text>
@@ -309,24 +310,23 @@ describe('A Chat Message', function () {
             // Send a message from a different resource
             const msgtext = 'This is a carbon message';
             const sender_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-            const msg = $msg({
-                'from': _converse.bare_jid,
-                'id': u.getUniqueId(),
-                'to': api.connection.get().jid,
-                'type': 'chat',
-                'xmlns': 'jabber:client',
-            })
-                .c('received', { 'xmlns': 'urn:xmpp:carbons:2' })
-                .c('forwarded', { 'xmlns': 'urn:xmpp:forward:0' })
-                .c('message', {
-                    'xmlns': 'jabber:client',
-                    'from': sender_jid,
-                    'to': _converse.bare_jid + '/another-resource',
-                    'type': 'chat',
-                })
-                .c('body')
-                .t(msgtext)
-                .tree();
+            const msg = stx`
+                <message from="${_converse.bare_jid}"
+                         id="${u.getUniqueId()}"
+                         to="${api.connection.get().jid}"
+                         type="chat"
+                         xmlns="jabber:client">
+                    <received xmlns="urn:xmpp:carbons:2">
+                        <forwarded xmlns="urn:xmpp:forward:0">
+                            <message xmlns="jabber:client"
+                                     from="${sender_jid}"
+                                     to="${_converse.bare_jid}/another-resource"
+                                     type="chat">
+                                <body>${msgtext}</body>
+                            </message>
+                        </forwarded>
+                    </received>
+                </message>`;
 
             await _converse.handleMessageStanza(msg);
             const chatbox = _converse.chatboxes.get(sender_jid);
@@ -368,24 +368,23 @@ describe('A Chat Message', function () {
             // Send a message from a different resource
             const msgtext = 'This is a sent carbon message';
             const recipient_jid = mock.cur_names[5].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-            const msg = $msg({
-                'from': _converse.bare_jid,
-                'id': u.getUniqueId(),
-                'to': api.connection.get().jid,
-                'type': 'chat',
-                'xmlns': 'jabber:client',
-            })
-                .c('sent', { 'xmlns': 'urn:xmpp:carbons:2' })
-                .c('forwarded', { 'xmlns': 'urn:xmpp:forward:0' })
-                .c('message', {
-                    'xmlns': 'jabber:client',
-                    'from': _converse.bare_jid + '/another-resource',
-                    'to': recipient_jid,
-                    'type': 'chat',
-                })
-                .c('body')
-                .t(msgtext)
-                .tree();
+            const msg = stx`
+                <message from="${_converse.bare_jid}"
+                         id="${u.getUniqueId()}"
+                         to="${api.connection.get().jid}"
+                         type="chat"
+                         xmlns="jabber:client">
+                    <sent xmlns="urn:xmpp:carbons:2">
+                        <forwarded xmlns="urn:xmpp:forward:0">
+                            <message xmlns="jabber:client"
+                                     from="${_converse.bare_jid + '/another-resource'}"
+                                     to="${recipient_jid}"
+                                     type="chat">
+                                <body>${msgtext}</body>
+                            </message>
+                        </forwarded>
+                    </sent>
+                </message>`;
 
             await _converse.handleMessageStanza(msg);
             // Check that the chatbox and its view now exist
@@ -426,24 +425,23 @@ describe('A Chat Message', function () {
             const msgtext = 'Please come to Creepy Valley tonight, alone!';
             const sender_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             const impersonated_jid = mock.cur_names[2].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-            const msg = $msg({
-                'from': sender_jid,
-                'id': u.getUniqueId(),
-                'to': api.connection.get().jid,
-                'type': 'chat',
-                'xmlns': 'jabber:client',
-            })
-                .c('received', { 'xmlns': 'urn:xmpp:carbons:2' })
-                .c('forwarded', { 'xmlns': 'urn:xmpp:forward:0' })
-                .c('message', {
-                    'xmlns': 'jabber:client',
-                    'from': impersonated_jid,
-                    'to': api.connection.get().jid,
-                    'type': 'chat',
-                })
-                .c('body')
-                .t(msgtext)
-                .tree();
+            const msg = stx`
+                <message from="${sender_jid}"
+                         id="${u.getUniqueId()}"
+                         to="${api.connection.get().jid}"
+                         type="chat"
+                         xmlns="jabber:client">
+                    <received xmlns="urn:xmpp:carbons:2">
+                        <forwarded xmlns="urn:xmpp:forward:0">
+                            <message xmlns="jabber:client"
+                                     from="${sender_jid}"
+                                     to="${impersonated_jid}"
+                                     type="chat">
+                                <body>${msgtext}</body>
+                            </message>
+                        </forwarded>
+                    </received>
+                </message>`;
             await _converse.handleMessageStanza(msg);
 
             // Check that chatbox for impersonated user is not created.
@@ -476,18 +474,16 @@ describe('A Chat Message', function () {
             const view = _converse.chatboxviews.get(contact_jid);
 
             let message = 'This is a day old message';
-            let msg = $msg({
-                from: contact_jid,
-                to: api.connection.get().jid,
-                type: 'chat',
-                id: one_day_ago.toDate().getTime(),
-            })
-                .c('body')
-                .t(message)
-                .up()
-                .c('delay', { xmlns: 'urn:xmpp:delay', from: 'montague.lit', stamp: one_day_ago.toISOString() })
-                .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                .tree();
+            let msg = stx`
+                <message from="${contact_jid}"
+                         to="${api.connection.get().jid}"
+                         type="chat"
+                         id="${one_day_ago.toDate().getTime()}"
+                         xmlns="jabber:client">
+                    <body>${message}</body>
+                    <delay xmlns="urn:xmpp:delay" from="montague.lit" stamp="${one_day_ago.toISOString()}"/>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                </message>`;
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
 
@@ -515,17 +511,15 @@ describe('A Chat Message', function () {
             expect(time.textContent).toEqual(dayjs(one_day_ago.startOf('day')).format('dddd MMM Do YYYY'));
 
             message = 'This is a current message';
-            msg = $msg({
-                from: contact_jid,
-                to: api.connection.get().jid,
-                type: 'chat',
-                id: new Date().getTime(),
-            })
-                .c('body')
-                .t(message)
-                .up()
-                .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                .tree();
+            msg = stx`
+                <message from="${contact_jid}"
+                         to="${api.connection.get().jid}"
+                         type="chat"
+                         id="${new Date().getTime()}"
+                         xmlns="jabber:client">
+                    <body>${message}</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                </message>`;
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
 
@@ -798,17 +792,15 @@ describe('A Chat Message', function () {
             jasmine.clock().mockDate(base_time);
 
             _converse.handleMessageStanza(
-                $msg({
-                    'from': sender_jid,
-                    'to': api.connection.get().jid,
-                    'type': 'chat',
-                    'id': u.getUniqueId(),
-                })
-                    .c('body')
-                    .t('A message')
-                    .up()
-                    .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                    .tree(),
+                stx`
+                    <message from="${sender_jid}"
+                             to="${api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <body>A message</body>
+                        <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`,
             );
             await new Promise((resolve) => _converse.on('chatBoxViewInitialized', resolve));
             const view = _converse.chatboxviews.get(sender_jid);
@@ -816,50 +808,44 @@ describe('A Chat Message', function () {
 
             jasmine.clock().tick(3 * ONE_MINUTE_LATER);
             _converse.handleMessageStanza(
-                $msg({
-                    'from': sender_jid,
-                    'to': api.connection.get().jid,
-                    'type': 'chat',
-                    'id': u.getUniqueId(),
-                })
-                    .c('body')
-                    .t('Another message 3 minutes later')
-                    .up()
-                    .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                    .tree(),
+                stx`
+                    <message from="${sender_jid}"
+                             to="${api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <body>Another message 3 minutes later</body>
+                        <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`,
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
             jasmine.clock().tick(11 * ONE_MINUTE_LATER);
             _converse.handleMessageStanza(
-                $msg({
-                    'from': sender_jid,
-                    'to': api.connection.get().jid,
-                    'type': 'chat',
-                    'id': u.getUniqueId(),
-                })
-                    .c('body')
-                    .t('Another message 14 minutes since we started')
-                    .up()
-                    .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                    .tree(),
+                stx`
+                    <message from="${sender_jid}"
+                             to="${api.connection.get().jid}"
+                             type="chat"
+                             id="${u.getUniqueId()}"
+                             xmlns="jabber:client">
+                        <body>Another message 14 minutes since we started</body>
+                        <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`,
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
             jasmine.clock().tick(1 * ONE_MINUTE_LATER);
 
             _converse.handleMessageStanza(
-                $msg({
-                    'from': sender_jid,
-                    'to': api.connection.get().jid,
-                    'type': 'chat',
-                    'id': api.connection.get().getUniqueId(),
-                })
-                    .c('body')
-                    .t('Another message 1 minute and 1 second since the previous one')
-                    .up()
-                    .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                    .tree(),
+                stx`
+                    <message from="${sender_jid}"
+                             to="${api.connection.get().jid}"
+                             type="chat"
+                             id="${api.connection.get().getUniqueId()}"
+                             xmlns="jabber:client">
+                        <body>Another message 1 minute and 1 second since the previous one</body>
+                        <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`,
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
@@ -892,21 +878,15 @@ describe('A Chat Message', function () {
 
             // Let's add a delayed, in between message
             _converse.handleMessageStanza(
-                $msg({
-                    'xmlns': 'jabber:client',
-                    'id': api.connection.get().getUniqueId(),
-                    'to': _converse.bare_jid,
-                    'from': sender_jid,
-                    'type': 'chat',
-                })
-                    .c('body')
-                    .t('A delayed message, sent 5 minutes since we started')
-                    .up()
-                    .c('delay', {
-                        'xmlns': 'urn:xmpp:delay',
-                        'stamp': dayjs(base_time).add(5, 'minutes').toISOString(),
-                    })
-                    .tree(),
+                stx`
+                    <message xmlns="jabber:client"
+                             id="${api.connection.get().getUniqueId()}"
+                             to="${_converse.bare_jid}"
+                             from="${sender_jid}"
+                             type="chat">
+                        <body>A delayed message, sent 5 minutes since we started</body>
+                        <delay xmlns="urn:xmpp:delay" stamp="${dayjs(base_time).add(5, 'minutes').toISOString()}"/>
+                    </message>`,
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
@@ -940,21 +920,27 @@ describe('A Chat Message', function () {
             );
 
             _converse.handleMessageStanza(
-                $msg({
-                    'xmlns': 'jabber:client',
-                    'id': api.connection.get().getUniqueId(),
-                    'to': sender_jid,
-                    'from': _converse.bare_jid + '/some-other-resource',
-                    'type': 'chat',
-                })
-                    .c('body')
-                    .t('A carbon message 4 minutes later')
-                    .up()
-                    .c('delay', {
-                        'xmlns': 'urn:xmpp:delay',
-                        'stamp': dayjs(base_time).add(4, 'minutes').toISOString(),
-                    })
-                    .tree(),
+                stx`
+                    <message xmlns="jabber:client"
+                             id="${api.connection.get().getUniqueId()}"
+                             to="${sender_jid}"
+                             from="${_converse.bare_jid}/some-other-resource"
+                             type="chat">
+                        <body>A carbon message 4 minutes later</body>
+                        <delay xmlns="urn:xmpp:delay" stamp="${dayjs(base_time).add(4, 'minutes').toISOString()}"/>
+                    </message>`,
+            );
+
+            _converse.handleMessageStanza(
+                stx`
+                    <message xmlns="jabber:client"
+                             id="${api.connection.get().getUniqueId()}"
+                             to="${sender_jid}"
+                             from="${_converse.bare_jid}/some-other-resource"
+                             type="chat">
+                        <body>A carbon message 4 minutes later</body>
+                        <delay xmlns="urn:xmpp:delay" stamp="${dayjs(base_time).add(4, 'minutes').toISOString()}"/>
+                    </message>`,
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
@@ -1041,17 +1027,15 @@ describe('A Chat Message', function () {
                 // We don't already have an open chatbox for this user
                 expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
                 await _converse.handleMessageStanza(
-                    $msg({
-                        'from': sender_jid,
-                        'to': api.connection.get().jid,
-                        'type': 'chat',
-                        'id': u.getUniqueId(),
-                    })
-                        .c('body')
-                        .t(message)
-                        .up()
-                        .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                        .tree(),
+                    stx`
+                        <message from="${sender_jid}"
+                                 to="${api.connection.get().jid}"
+                                 type="chat"
+                                 id="${u.getUniqueId()}"
+                                 xmlns="jabber:client">
+                            <body>${message}</body>
+                            <active xmlns="http://jabber.org/protocol/chatstates"/>
+                        </message>`,
                 );
                 const chatbox = await _converse.chatboxes.get(sender_jid);
                 expect(chatbox).toBeDefined();
@@ -1087,17 +1071,15 @@ describe('A Chat Message', function () {
                 const message = '\n\n        This is a received message         \n\n';
                 const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await _converse.handleMessageStanza(
-                    $msg({
-                        'from': sender_jid,
-                        'to': api.connection.get().jid,
-                        'type': 'chat',
-                        'id': u.getUniqueId(),
-                    })
-                        .c('body')
-                        .t(message)
-                        .up()
-                        .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                        .tree(),
+                    stx`
+                        <message from="${sender_jid}"
+                                 to="${api.connection.get().jid}"
+                                 type="chat"
+                                 id="${u.getUniqueId()}"
+                                 xmlns="jabber:client">
+                            <body>${message}</body>
+                            <active xmlns="http://jabber.org/protocol/chatstates"/>
+                        </message>`,
                 );
                 const view = _converse.chatboxviews.get(sender_jid);
                 await u.waitUntil(() => view.model.messages.length);
@@ -1129,17 +1111,15 @@ describe('A Chat Message', function () {
                         });
                     });
                     const message = 'This is a received message from someone not on the roster';
-                    const msg = $msg({
-                        from: sender_jid,
-                        to: api.connection.get().jid,
-                        type: 'chat',
-                        id: u.getUniqueId(),
-                    })
-                        .c('body')
-                        .t(message)
-                        .up()
-                        .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                        .tree();
+                    const msg = stx`
+                        <message from="${sender_jid}"
+                                 to="${api.connection.get().jid}"
+                                 type="chat"
+                                 id="${u.getUniqueId()}"
+                                 xmlns="jabber:client">
+                            <body>${message}</body>
+                            <active xmlns="http://jabber.org/protocol/chatstates"/>
+                        </message>`;
 
                     // We don't already have an open chatbox for this user
                     expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
@@ -1380,14 +1360,14 @@ describe('A Chat Message', function () {
                     message_form.onKeyDown(enter_event);
                     await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
-                    const msg = $msg({
-                        from: contact_jid,
-                        to: api.connection.get().jid,
-                        type: 'chat',
-                        id: u.getUniqueId(),
-                    })
-                        .c('active', { 'xmlns': 'http://jabber.org/protocol/chatstates' })
-                        .tree();
+                    const msg = stx`
+                        <message from="${contact_jid}"
+                                 to="${api.connection.get().jid}"
+                                 type="chat"
+                                 id="${u.getUniqueId()}"
+                                 xmlns="jabber:client">
+                            <active xmlns="http://jabber.org/protocol/chatstates"/>
+                        </message>`;
                     await _converse.handleMessageStanza(msg);
 
                     api.connection.get()._dataRecv(

@@ -8,7 +8,7 @@ import ColorAwareModel from '../../shared/color.js';
 import ModelWithVCard from '../../shared/model-with-vcard.js';
 import { rejectPresenceSubscription } from './utils.js';
 
-const { Strophe, $pres, stx } = converse.env;
+const { Strophe, stx } = converse.env;
 
 class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
     get idAttribute () {
@@ -100,10 +100,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
      * "subscribe" to the contact
      */
     ackSubscribe () {
-        api.send($pres({
-            'type': 'subscribe',
-            'to': this.get('jid')
-        }));
+        api.send(stx`<presence type="subscribe" to="${this.get('jid')}" xmlns="jabber:client"></presence>`);
     }
 
     /**
@@ -114,7 +111,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
      * send notification of the subscription state change to the user.
      */
     ackUnsubscribe () {
-        api.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
+        api.send(stx`<presence type="unsubscribe" to="${this.get('jid')}" xmlns="jabber:client"></presence>`);
         this.sendRosterRemoveStanza();
         this.destroy();
     }
@@ -163,7 +160,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
         }
         if (this.get('ask') === 'subscribe' || subscription === 'to') {
             // See: https://datatracker.ietf.org/doc/html/rfc6121#section-3.3.1
-            api.send($pres({ type: 'unsubscribe',  to: this.get('jid')}));
+            api.send(stx`<presence type="unsubscribe" to="${this.get('jid')}" xmlns="jabber:client"></presence>`);
         }
         if (unauthorize && ['from', 'both'].includes(subscription)) {
             // See: https://datatracker.ietf.org/doc/html/rfc6121#section-3.2.1

@@ -44,7 +44,9 @@ describe('XEP-0357 Push Notifications', function () {
                     'info',
                 );
                 const stanza = await u.waitUntil(() =>
-                    IQ_stanzas.filter((iq) => iq.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop(),
+                    IQ_stanzas.filter(
+                        (iq) => sizzle('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]', iq).length,
+                    ).pop(),
                 );
                 expect(stanza).toEqualStanza(stx`<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                     <enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>
@@ -113,6 +115,7 @@ describe('XEP-0357 Push Notifications', function () {
                     [],
                     'info',
                 );
+
                 iq = await u.waitUntil(() =>
                     IQ_stanzas.filter(
                         (iq) =>
@@ -121,9 +124,10 @@ describe('XEP-0357 Push Notifications', function () {
                     ).pop(),
                 );
 
-                expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="chat.shakespeare.lit" type="set" xmlns="jabber:client">
-                    <enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>
-                </iq>`);
+                expect(iq).toEqualStanza(stx`
+                    <iq id="${iq.getAttribute('id')}" to="chat.shakespeare.lit" type="set" xmlns="jabber:client">
+                        <enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>
+                    </iq>`);
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(
                         stx`<iq to="${_converse.api.connection.get().jid}"
@@ -163,8 +167,8 @@ describe('XEP-0357 Push Notifications', function () {
                     'info',
                 );
                 const stanza = await u.waitUntil(() =>
-                    IQ_stanzas.filter((iq) =>
-                        iq.querySelector('iq[type="set"] disable[xmlns="urn:xmpp:push:0"]'),
+                    IQ_stanzas.filter(
+                        (iq) => sizzle('iq[type="set"] disable[xmlns="urn:xmpp:push:0"]', iq).length,
                     ).pop(),
                 );
                 expect(stanza).toEqualStanza(stx`<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
@@ -219,7 +223,9 @@ describe('XEP-0357 Push Notifications', function () {
                 );
 
                 const stanza = await u.waitUntil(() =>
-                    IQ_stanzas.filter((iq) => iq.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop(),
+                    IQ_stanzas.filter(
+                        (iq) => sizzle('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]', iq).length,
+                    ).pop(),
                 );
                 expect(stanza).toEqualStanza(stx`<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                     <enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0">

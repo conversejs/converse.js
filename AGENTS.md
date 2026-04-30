@@ -58,7 +58,14 @@ src/
 │   └── locales/          # Translation files (.po)
 ├── types/                # Generated TypeScript definitions
 └── utils/                # Utility functions
+media/                    # Sponsor logos (separate repo: conversejs/media)
 ```
+
+#### Media Repository
+
+Sponsor logos are stored in a separate repository at `https://github.com/conversejs/media`.
+This repo should be checked out to the `media/` directory and is git-ignored in the main repo.
+Without this repo, sponsor logos in `index.html` and the fullscreen footer will show as broken images.
 
 ## Essential Commands
 

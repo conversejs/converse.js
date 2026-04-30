@@ -21,7 +21,7 @@ XGETTEXT			= xgettext
 VERSION_FORMAT	= [0-9]+\.[0-9]+\.[0-9]+
 
 .PHONY: all
-all: node_modules dist
+all: node_modules dist media
 
 .PHONY: help
 help:
@@ -42,6 +42,7 @@ help:
 	@echo " node_modules	Install NPM dependencies"
 	@echo " watch       	Watch for changes on JS and scss files and automatically update the generated files."
 	@echo " logo        	Generate PNG logos of multiple sizes."
+	@echo " media       	Clone the conversejs/media repo for sponsor logos."
 
 
 ########################################################################
@@ -150,6 +151,21 @@ devserver: node_modules
 	npm run devserver
 
 ########################################################################
+## Media (sponsor logos)
+
+MEDIA_URL = https://github.com/conversejs/media.git
+
+.PHONY: media
+media:
+	@if [ -d media ]; then \
+		echo "media directory already exists. Pulling latest changes..."; \
+		cd media && git pull; \
+	else \
+		echo "Cloning conversejs/media repository..."; \
+		git clone $(MEDIA_URL) media; \
+	fi
+
+########################################################################
 ## Builds
 
 dist/converse-no-dependencies.js: src rspack/rspack.common.js rspack/rspack.nodeps.js @converse/headless node_modules
@@ -203,7 +219,7 @@ dist:: node_modules src/**/* | dist/website.css dist/website.min.css
 	npm run build
 
 .PHONY: install
-install:: dist
+install:: media dist
 
 .PHONY: cdn
 cdn:: node_modules

@@ -107,7 +107,7 @@ export function replaceCurrentWord(input, new_value, suffix = ' ') {
     input.value =
         value.slice(0, caret - current_word.length) + mention_boundary + `${new_value}${suffix}` + value.slice(caret);
     const selection_end = caret - current_word.length + new_value.length + suffix.length;
-    input.selectionEnd = mention_boundary ? selection_end + 1 : selection_end;
+    input.selectionEnd = mention_boundary ? selection_end + mention_boundary.length : selection_end;
 }
 
 /**

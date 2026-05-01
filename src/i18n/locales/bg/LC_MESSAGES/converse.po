@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-30 10:13+0200\n"
-"PO-Revision-Date: 2026-02-18 16:09+0000\n"
+"PO-Revision-Date: 2026-05-02 12:09+0000\n"
 "Last-Translator: \"Mr. EddX\" <mreddx@chatrix.one>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/bg/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.1-dev\n"
+"X-Generator: Weblate 5.17.1\n"
 
 #: dist/converse-no-dependencies.js:35359
 msgid "A timeout occurred"
@@ -63,7 +63,7 @@ msgstr "%1$s е онлайн"
 
 #: dist/converse-no-dependencies.js:41398
 msgid "Frequently used"
-msgstr ""
+msgstr "Често използвани"
 
 #: dist/converse-no-dependencies.js:41399
 msgid "Smileys and emotions"
@@ -1526,51 +1526,57 @@ msgstr "Вмъкване на емотикони"
 
 #: dist/converse-no-dependencies.js:108985
 msgid "Getting location..."
-msgstr ""
+msgstr "Получаване на местоположение..."
 
 #: dist/converse-no-dependencies.js:108985
 msgid "Share current location"
-msgstr ""
+msgstr "Споделяне на текущо местоположение"
 
 #: dist/converse-no-dependencies.js:109001
 #: dist/converse-no-dependencies.js:109042
 msgid "Location Error"
-msgstr ""
+msgstr "Грешка в местоположението"
 
 #: dist/converse-no-dependencies.js:109002
-#, fuzzy
 msgid "Your browser or device does not support sharing your location."
-msgstr "Вашият сървър не поддържа повторно задаване на парола"
+msgstr ""
+"Вашият браузър или устройство не поддържа споделяне на местоположението."
 
 #: dist/converse-no-dependencies.js:109011
-#, fuzzy
 msgid "Are you sure you'd like to share your location in the chat?"
-msgstr "Сигурни ли сте, че искате да премахнете този познат?"
+msgstr "Сигурни ли сте, че желаете да споделите местоположението си в чата?"
 
 #: dist/converse-no-dependencies.js:109031
 msgid ""
 "Location access was denied. Please allow location permissions in your "
 "browser settings and try again."
 msgstr ""
+"Достъпът до местоположението е отказан. Моля, разрешете достъп до "
+"местоположение в настройките на браузъра си и опитайте отново."
 
 #: dist/converse-no-dependencies.js:109034
 msgid ""
 "Your current location could not be determined. Please check your device's "
 "location services and try again."
 msgstr ""
+"Текущото ви местоположение не можа да бъде определено. Моля, проверете "
+"услугите за местоположение на устройството и опитайте отново."
 
 #: dist/converse-no-dependencies.js:109037
 msgid ""
 "The request to get your location timed out. Please check your connection and "
 "try again."
 msgstr ""
+"Заявката за вашето местоположение е изтекла. Моля, проверете връзката и "
+"опитайте отново."
 
 #: dist/converse-no-dependencies.js:109040
-#, fuzzy
 msgid ""
 "An unexpected error occurred while trying to retrieve your location. Please "
 "try again."
-msgstr "Възникна грешка при опит за премахване на Вашето съобщение."
+msgstr ""
+"Възникна неочаквана грешка при опит за извличане на местоположението. Моля, "
+"опитайте отново."
 
 #. export default
 #: dist/converse-no-dependencies.js:109108
@@ -3367,19 +3373,18 @@ msgstr "Отхвърли"
 
 #. "Alice, Bob and 1 other" / "Alice, Bob and 3 others"
 #: dist/converse-no-dependencies.js:145139
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and 1 other"
-msgstr "%1$s и %2$s"
+msgstr "%1$s и 1 друг"
 
 #: dist/converse-no-dependencies.js:145139
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and %2$d others"
-msgstr "%1$s и %2$s"
+msgstr "%1$s и %2$d други"
 
 #: dist/converse-no-dependencies.js:145267
-#, fuzzy
 msgid "Add Reaction"
-msgstr "Добавяне на познат"
+msgstr "Добави реакция"
 
 #~ msgid "This device's OMEMO fingerprint"
 #~ msgstr "OMEMO пръстовия отпечатък на това устройство"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-30 10:13+0200\n"
-"PO-Revision-Date: 2026-05-01 08:47+0000\n"
+"PO-Revision-Date: 2026-05-02 12:09+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -1583,13 +1583,16 @@ msgid ""
 "The request to get your location timed out. Please check your connection and "
 "try again."
 msgstr ""
+"Die versoek om u ligging te kry het verstryk. Kontroleer u verbinding en "
+"probeer dan weer."
 
 #: dist/converse-no-dependencies.js:109040
-#, fuzzy
 msgid ""
 "An unexpected error occurred while trying to retrieve your location. Please "
 "try again."
-msgstr "Jammer, 'n fout het voorgekom tydens die herroeping van u boodskap."
+msgstr ""
+"'n Onverwagse fout het tydens die liggingsversoek voorgekom. Probeer "
+"asseblief weer."
 
 #. export default
 #: dist/converse-no-dependencies.js:109108
@@ -1688,12 +1691,11 @@ msgstr "Is u seker u wil die boodskappe in hierdie gesprek uitvee?"
 #: dist/converse-no-dependencies.js:110895
 #, javascript-format
 msgid "Replying to %1$s"
-msgstr ""
+msgstr "Antwoord aan %1$s"
 
 #: dist/converse-no-dependencies.js:110897
-#, fuzzy
 msgid "Cancel reply"
-msgstr "Kanseleer"
+msgstr "Kanselleer antwoord"
 
 #: dist/converse-no-dependencies.js:110985
 #: dist/converse-no-dependencies.js:120033
@@ -2850,7 +2852,7 @@ msgstr "Registreer"
 
 #: dist/converse-no-dependencies.js:136252
 msgid "XMPP Compliance"
-msgstr ""
+msgstr "XMPP Nakoming"
 
 #: dist/converse-no-dependencies.js:136252
 msgid "Free of charge"
@@ -2858,47 +2860,44 @@ msgstr "Gratis"
 
 #: dist/converse-no-dependencies.js:136252
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: dist/converse-no-dependencies.js:136252
 msgid "No"
-msgstr ""
+msgstr "Nee"
 
 #: dist/converse-no-dependencies.js:136252
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #: dist/converse-no-dependencies.js:136252
 msgid "Professional hosting"
 msgstr "Professionele bediening"
 
 #: dist/converse-no-dependencies.js:136252
-#, fuzzy
 msgid "Password reset"
-msgstr "Verkeerde wagwoord"
+msgstr "Herstel wagwoord"
 
 #: dist/converse-no-dependencies.js:136252
 msgid "Legal notice"
 msgstr "Wettige kennisgewing"
 
 #: dist/converse-no-dependencies.js:136252
-#, fuzzy
 msgid "Online since"
-msgstr "Aanlyn gebruikers"
+msgstr "Aanlyn sedert"
 
 #: dist/converse-no-dependencies.js:136252
-#, fuzzy
 msgid "Message archive storage time"
-msgstr "Boodskap-argivering"
+msgstr "Boodskap-argivering stoortyd"
 
 #: dist/converse-no-dependencies.js:136252
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s days"
-msgstr "%1$s sê"
+msgstr "%1$s dae"
 
 #: dist/converse-no-dependencies.js:136252
 msgid "File upload size limit"
-msgstr ""
+msgstr "Lêer oplaai limiet"
 
 #: dist/converse-no-dependencies.js:136252
 msgid "File upload storage time"
@@ -3383,19 +3382,18 @@ msgstr "Verwyder"
 
 #. "Alice, Bob and 1 other" / "Alice, Bob and 3 others"
 #: dist/converse-no-dependencies.js:145139
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and 1 other"
-msgstr "%1$s en %2$s"
+msgstr "%1$s en 1 ander"
 
 #: dist/converse-no-dependencies.js:145139
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and %2$d others"
-msgstr "%1$s en %2$s"
+msgstr "%1$s en %2$d andere"
 
 #: dist/converse-no-dependencies.js:145267
-#, fuzzy
 msgid "Add Reaction"
-msgstr "Nuwe kontak"
+msgstr "Voeg reaksie by"
 
 #~ msgid "This device's OMEMO fingerprint"
 #~ msgstr "Hierdie toestel se OMEMO vingerafdruk"

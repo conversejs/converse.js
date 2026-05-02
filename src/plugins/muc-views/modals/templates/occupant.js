@@ -17,7 +17,7 @@ export default (el) => {
     const occupant_id = model.get('occupant_id');
     const role = el.model?.get('role');
     const affiliation = el.model?.get('affiliation');
-    const hats = el.model?.get('hats')?.length ? el.model.get('hats') : null;
+    const hats = el.model?.get('hats')?.length ? el.model.get('hats') : [];
     const muc = el.model.collection.chatroom;
 
     const i18n_add_to_contacts = __('Add to Contacts');
@@ -86,7 +86,7 @@ export default (el) => {
                     </li>
                     <li class="row mb-2">
                         <div class="col text-start"><strong>${__('Hats')}:</strong></div>
-                        <div class="col text-end">${hats}</div>
+                        <div class="col text-end">${hats.map((hat) => hat.title).join(', ')}</div>
                     </li>
                     <li class="row mb-2">
                         <div class="col text-start"><strong>${__('Occupant Id')}:</strong></div>

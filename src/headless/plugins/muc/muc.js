@@ -189,13 +189,16 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         if (this.isEntered()) {
             // We have restored a groupchat from session storage,
             // so we don't send out a presence stanza again.
+            log.info(`MUC ${this.get('jid')} join() early return: isEntered=true`);
             return;
         }
+        log.info(`MUC ${this.get('jid')} join() called, setting status to CONNECTING`);
         // Set this early, so we don't rejoin in onHiddenChange
         this.session.save('connection_status', ROOMSTATUS.CONNECTING);
 
         const result = await this.refreshDiscoInfo({ timeout: DISCO_INFO_TIMEOUT_ON_JOIN });
         const is_new = result instanceof ItemNotFoundError;
+        log.info(`MUC ${this.get('jid')} refreshDiscoInfo complete, is_new: ${is_new}`);
 
         nick = await this.getAndPersistNickname(nick);
         if (!nick) {
@@ -205,6 +208,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             }
             return;
         }
+        log.info(`MUC ${this.get('jid')} sending join presence`);
         api.send(await this.constructJoinPresence(password, is_new));
         if (is_new) await this.refreshDiscoInfo();
     }
@@ -213,6 +217,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * Clear stale cache and re-join a MUC we've been in before.
      */
     rejoin() {
+        log.info(`MUC ${this.get('jid')} rejoin() called, current status: ${this.session.get('connection_status')}`);
         this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
         this.registerHandlers();
         this.clearOccupantsCache();
@@ -414,6 +419,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     async onReconnection() {
+        log.info(`MUC ${this.get('jid')} onReconnection called, status: ${this.session.get('connection_status')}`);
         await this.rejoin();
         this.announceReconnection();
     }
@@ -2822,6 +2828,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         }
 
         const attrs = await parseMUCPresence(stanza, this);
+        log.debug(`MUC ${this.get('jid')} onPresence received, is_self: ${attrs.is_self}, nick: ${attrs.nick}, status: ${this.session.get('connection_status')}`);
         attrs.codes.forEach(async (code) => {
             this.createInfoMessageFromPresence(code, attrs);
 
@@ -2867,6 +2874,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @param {MUCPresenceAttributes} attrs
      */
     async onOwnPresence(attrs) {
+        log.info(`MUC ${this.get('jid')} onOwnPresence, old_status: ${this.session.get('connection_status')}, codes: ${attrs.codes.join(',')}`);
         await this.occupants.fetched;
 
         if (attrs['type'] === 'unavailable') {
@@ -2876,6 +2884,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
         const old_status = this.session.get('connection_status');
         if (old_status !== ROOMSTATUS.ENTERED && old_status !== ROOMSTATUS.CLOSING) {
+            log.info(`MUC ${this.get('jid')} onOwnPresence setting status to ENTERED`);
             // Set connection_status before creating the occupant, but
             // only trigger afterwards, so that plugins can access the
             // occupant in their event handlers.

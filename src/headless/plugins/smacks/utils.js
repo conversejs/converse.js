@@ -108,6 +108,7 @@ function saveSessionData(el) {
  * @param {Element} el
  */
 function onFailedStanza(el) {
+    log.info(`SMACKS onFailedStanza called, resetting session data`);
     resetSessionData();
     /**
      * Triggered when the XEP-0198 stream could not be resumed.
@@ -153,6 +154,7 @@ function resendUnackedStanzas() {
  * @param {Element} el
  */
 function onResumedStanza(el) {
+    log.info(`SMACKS onResumedStanza called, session resumed`);
     saveSessionData(el);
     handleAck(el);
     resendUnackedStanzas();
@@ -253,6 +255,9 @@ export function onStanzaSent(stanza) {
 }
 
 export function onWillReconnect() {
+    log.info(
+        `SMACKS onWillReconnect, smacks_resumed: ${_converse.session.get('smacks_resumed')}, smacks_stream_id: ${_converse.session.get('smacks_stream_id')}`,
+    );
     if (_converse.session.get('smacks_resumed')) {
         resetSessionData();
     }

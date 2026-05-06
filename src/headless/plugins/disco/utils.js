@@ -25,8 +25,8 @@ function onDiscoInfoRequest(stanza) {
                     return stx`
                         <identity category="${identity.category}"
                             type="${identity.type}"
-                            ${identity.name ? Strophe.unsafeXML(`name="${identity.name}"`) : ''}
-                            ${identity.lang ? Strophe.unsafeXML(`xml:lang="${identity.lang}"`) : ''}>
+                            ${identity.name ? Stanza.unsafeXML(`name="${identity.name}"`) : ''}
+                            ${identity.lang ? Stanza.unsafeXML(`xml:lang="${identity.lang}"`) : ''}>
                         </identity>`;
                 })}
                 ${_converse.state.disco._features.map((f) => stx`<feature var="${f}"></feature>`)}

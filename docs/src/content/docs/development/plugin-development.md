@@ -333,7 +333,7 @@ Your plugin added data to the payload without any coupling between the code!
 ### Real-world example
 
 A good example is the
-[getMessageActionButtons](https://conversejs.org/docs/html/api/-_converse.html#event:getMessageActionButtons)
+[getMessageActionButtons](https://github.com/conversejs/converse.js/blob/0ce522f270657d14eac5c7cf4f80b8afe320891d/src/shared/chat/message-actions.js#L459)
 hook, which lets you add, modify, or remove the action buttons on chat messages.
 
 The [Actions](https://github.com/conversejs/community-plugins/tree/master/packages/actions)

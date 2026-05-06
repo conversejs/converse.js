@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-30 10:13+0200\n"
-"PO-Revision-Date: 2026-05-02 12:09+0000\n"
+"PO-Revision-Date: 2026-05-06 11:15+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -1348,7 +1348,7 @@ msgstr "Is u seker u wil hierdie kontak verwyder?"
 #, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
 msgstr ""
-"Jammer, 'n fout het voorgekom tydens die toevoeging van %1$s as 'n kontak"
+"Jammer, 'n fout het voorgekom tydens die verwydering van %1$s as 'n kontak"
 
 #: dist/converse-no-dependencies.js:100963
 msgid "Remove and decline contact request"

@@ -8,20 +8,19 @@ export default {
      * Converse and its plugins trigger various events which you can listen to via the
      * {@link _converse.api.listen} namespace.
      *
-     * Some of these events are also available as [ES2015 Promises](http://es6-features.org/#PromiseUsage)
-     * although not all of them could logically act as promises, since some events
-     * might be fired multiple times whereas promises are to be resolved (or
-     * rejected) only once.
+     * Some of these events are also available as Promises although not all of them could
+     * logically act as promises, since some events might be fired multiple times whereas
+     * promises are to be resolved (or rejected) only once.
      *
      * Events which are also promises include:
      *
-     * * [cachedRoster](/docs/html/events.html#cachedroster)
-     * * [chatBoxesFetched](/docs/html/events.html#chatBoxesFetched)
-     * * [pluginsInitialized](/docs/html/events.html#pluginsInitialized)
-     * * [roster](/docs/html/events.html#roster)
-     * * [rosterContactsFetched](/docs/html/events.html#rosterContactsFetched)
-     * * [rosterGroupsFetched](/docs/html/events.html#rosterGroupsFetched)
-     * * [rosterInitialized](/docs/html/events.html#rosterInitialized)
+     * * cachedRoster
+     * * chatBoxesFetched
+     * * pluginsInitialized
+     * * roster
+     * * rosterContactsFetched
+     * * rosterGroupsFetched
+     * * rosterInitialized
      *
      * The various plugins might also provide promises, and they do this by using the
      * `promises.add` api method.

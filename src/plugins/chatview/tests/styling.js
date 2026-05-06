@@ -396,7 +396,7 @@ describe('An incoming chat Message', function () {
             );
 
             msg_text =
-                '> Also, icons.js is loaded from /dist, instead of dist.\nhttps://conversejs.org/docs/html/configuration.html#assets-path';
+                '> Also, icons.js is loaded from /dist, instead of dist.\nhttps://conversejs.org/docs/configuration/#assets-path';
             msg = mock.createChatMessage(_converse, contact_jid, msg_text);
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 10);
@@ -405,7 +405,7 @@ describe('An incoming chat Message', function () {
                 () =>
                     msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
                     '<blockquote>Also, icons.js is loaded from /dist, instead of dist.</blockquote>\n' +
-                        '<a target="_blank" rel="noopener" href="https://conversejs.org/docs/html/configuration.html#assets-path">https://conversejs.org/docs/html/configuration.html#assets-path</a>',
+                        '<a target="_blank" rel="noopener" href="https://conversejs.org/docs/configuration/#assets-path">https://conversejs.org/docs/configuration/#assets-path</a>',
             );
 
             msg_text = '> Where is it located?\ngeo:37.786971,-122.399677';

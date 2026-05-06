@@ -88,7 +88,7 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).conv
      * @async
      * @memberOf converse
      * @method initialize
-     * @param { object } settings A map of [configuration-settings](https://conversejs.org/docs/html/configuration.html#configuration-settings).
+     * @param { object } settings A map of [configuration-settings](https://conversejs.org/docs/configuration/#configuration-settings).
      * @example
      * converse.initialize({
      *     auto_list_rooms: false,
@@ -158,7 +158,8 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).conv
      * Exposes methods for adding and removing plugins. You'll need to write a plugin
      * if you want to have access to the private API methods defined further down below.
      *
-     * For more information on plugins, read the documentation on [writing a plugin](/docs/html/plugin_development.html).
+     * For more information on plugins, read the documentation on
+     * [writing a plugin](https://conversejs.org/docs/development/plugin-development/).
      * @namespace plugins
      * @memberOf converse
      */

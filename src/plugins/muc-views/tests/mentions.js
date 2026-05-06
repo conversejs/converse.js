@@ -333,10 +333,10 @@ describe('A sent groupchat message', function () {
                 expect(references).toEqual([]);
 
                 [text, references] = view.model.parseTextForReferences(
-                    'Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/html/index.html',
+                    'Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/',
                 );
                 expect(text).toBe(
-                    'Welcome gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/html/index.html',
+                    'Welcome gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/',
                 );
                 expect(references.length).toBe(1);
                 expect(references).toEqual([
@@ -626,7 +626,7 @@ describe('A sent groupchat message', function () {
             const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value =
-                'Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/html/index.html';
+                'Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/';
             const enter_event = {
                 'target': textarea,
                 'preventDefault': function preventDefault() {},
@@ -639,7 +639,7 @@ describe('A sent groupchat message', function () {
             expect(message.innerHTML.replace(/<!-.*?->/g, '')).toEqual(
                 `Welcome <span class="mention" data-uri="xmpp:${muc_jid}/gibson">gibson</span> <span title=":poop:">💩</span> ` +
                     `We have a guide on how to do that here: ` +
-                    `<a target="_blank" rel="noopener" href="https://conversejs.org/docs/html/index.html">https://conversejs.org/docs/html/index.html</a>`,
+                    `<a target="_blank" rel="noopener" href="https://conversejs.org/docs/">https://conversejs.org/docs/</a>`,
             );
         }),
     );

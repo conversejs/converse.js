@@ -12,7 +12,7 @@ import {
 
 /**
  * This grouping allows access to the
- * [configuration settings](/docs/html/configuration.html#configuration-settings)
+ * [configuration settings](/docs/configuration/#configuration-settings)
  * of Converse.
  *
  * @namespace _converse.api.settings

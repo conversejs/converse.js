@@ -21,10 +21,10 @@ class AboutModal extends BaseModal {
             </p>
             <p>
                 Converse is also
-                <a href="https://conversejs.org/docs/html/configuration.html" target="_blank" rel="noopener"
+                <a href="https://conversejs.org/docs/configuration/" target="_blank" rel="noopener"
                     >configurable</a
                 >, built with modern web technologies and
-                <a href="https://conversejs.org/docs/html/plugin_development.html" target="_blank" rel="noopener"
+                <a href="https://conversejs.org/docs/development/plugin-development/" target="_blank" rel="noopener"
                     >extensible with plugins</a
                 >. It has different modes, which means it can be a full page app, an embedded chat widget, or an overlayed chat
                 box. For a list of supported features and XMPP extensions, please see the

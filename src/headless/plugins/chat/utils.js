@@ -77,7 +77,8 @@ export function autoJoinChats () {
     /**
      * Triggered once any private chats have been automatically joined as
      * specified by the `auto_join_private_chats` setting.
-     * See: https://conversejs.org/docs/html/configuration.html#auto-join-private-chats
+     * See: https://conversejs.org/docs/configuration/#auto-join-private-chats
+     *
      * @event _converse#privateChatsAutoJoined
      * @example _converse.api.listen.on('privateChatsAutoJoined', () => { ... });
      * @example _converse.api.waitUntil('privateChatsAutoJoined').then(() => { ... });

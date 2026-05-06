@@ -6,7 +6,6 @@ export default {
     /**
      * Lets you trigger events, which can be listened to via
      * {@link _converse.api.listen.on} or {@link _converse.api.listen.once}
-     * (see [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)).
      *
      * Some events also double as promises and can be waited on via {@link _converse.api.waitUntil}.
      *
@@ -41,7 +40,7 @@ export default {
     /**
      * Triggers a hook which can be intercepted by registered listeners via
      * {@link _converse.api.listen.on} or {@link _converse.api.listen.once}.
-     * (see [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)).
+     *
      * A hook is a special kind of event which allows you to intercept a data
      * structure in order to modify it, before passing it back.
      * @async

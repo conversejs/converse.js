@@ -22,7 +22,7 @@ export default (el) => {
                             >
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" target="_blank" rel="noopener" href="https://conversejs.org/docs/html"
+                            <a class="nav-link" target="_blank" rel="noopener" href="https://conversejs.org/docs/"
                                 >Documentation</a
                             >
                         </li>

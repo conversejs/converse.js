@@ -17,7 +17,7 @@ export default {
      *
      * Enables you to query an XMPP server for archived messages.
      *
-     * See also the [message-archiving](/docs/html/configuration.html#message-archiving)
+     * See also the [message-archiving](https://conversejs.org/docs/configuration/#message-archiving)
      * option in the configuration settings section, which you'll
      * usually want to use in conjunction with this API.
      *

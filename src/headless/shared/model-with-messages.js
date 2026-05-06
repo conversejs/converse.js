@@ -873,20 +873,17 @@ export default function ModelWithMessages(BaseModel) {
          * @param {BaseMessage} message
          */
         incrementUnreadMsgsCounter(message) {
-            const settings = {
-                'num_unread': this.get('num_unread') + 1,
-            };
-            if (this.get('num_unread') === 0) {
-                settings['first_unread_id'] = message.get('id');
-            }
-            this.save(settings);
+            this.save({
+                num_unread: this.get('num_unread') + 1,
+                ...(this.get('num_unread') === 0 ? { first_unread_id: message.get('id') } : null),
+            });
         }
 
         clearUnreadMsgCounter() {
             if (this.get('num_unread') > 0) {
                 this.sendMarkerForMessage(this.messages.last());
+                u.safeSave(this, { num_unread: 0 });
             }
-            u.safeSave(this, { num_unread: 0 });
         }
 
         /**

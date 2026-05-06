@@ -69,15 +69,8 @@ async function populateRoster(ignore_cache = false) {
         if (connection.send_initial_presence) {
             api.user.presence.send();
             _converse.state.profile.save({ presence: 'online' });
-
         }
     }
-}
-
-function updateUnreadCounter(chatbox) {
-    const roster = /** @type {RosterContacts} */ (_converse.state.roster);
-    const contact = roster?.get(chatbox.get('jid'));
-    contact?.save({ num_unread: chatbox.get('num_unread') });
 }
 
 let presence_ref;
@@ -94,7 +87,7 @@ function registerPresenceHandler() {
         },
         null,
         'presence',
-        null
+        null,
     );
 }
 
@@ -184,20 +177,6 @@ export async function onStatusInitialized(reconnecting) {
 }
 
 /**
- * Roster specific event handler for the chatBoxesInitialized event
- */
-export function onChatBoxesInitialized() {
-    const { chatboxes } = _converse.state;
-    chatboxes.on('change:num_unread', updateUnreadCounter);
-
-    chatboxes.on('add', (chatbox) => {
-        if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
-            chatbox.setModelContact(chatbox.get('jid'));
-        }
-    });
-}
-
-/**
  * Roster specific handler for the rosterContactsFetched promise
  */
 export function onRosterContactsFetched() {
@@ -205,7 +184,7 @@ export function onRosterContactsFetched() {
     roster.on('add', (contact) => {
         // When a new contact is added, check if we already have a
         // chatbox open for it, and if so attach it to the chatbox.
-        const chatbox = _converse.state.chatboxes.findWhere({ 'jid': contact.get('jid') });
+        const chatbox = _converse.state.chatboxes.findWhere({ jid: contact.get('jid') });
         chatbox?.setModelContact(contact.get('jid'));
     });
 }

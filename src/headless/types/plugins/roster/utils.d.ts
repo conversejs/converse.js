@@ -14,10 +14,6 @@ export function onPresencesInitialized(reconnecting: boolean): void;
  */
 export function onStatusInitialized(reconnecting: boolean): Promise<void>;
 /**
- * Roster specific event handler for the chatBoxesInitialized event
- */
-export function onChatBoxesInitialized(): void;
-/**
  * Roster specific handler for the rosterContactsFetched promise
  */
 export function onRosterContactsFetched(): void;

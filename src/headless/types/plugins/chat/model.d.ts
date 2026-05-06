@@ -221,6 +221,7 @@ declare const ChatBox_base: {
         };
         onClosedChanged: () => Promise<void>;
         contact: import("../roster/contact.js").default | import("../status/profile.js").default;
+        updateContactUnreadCounter(): void;
         setModelContact(jid: string): Promise<void>;
         _browserStorage?: import("@converse/skeletor").BrowserStorage;
         _changing: boolean;

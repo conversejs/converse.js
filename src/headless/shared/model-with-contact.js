@@ -1,7 +1,9 @@
 import { getOpenPromise } from '@converse/openpromise';
 import { Strophe } from 'strophe.js';
+import u from '../utils/index.js';
 import _converse from './_converse.js';
 import api from './api/index.js';
+import { PRIVATE_CHAT_TYPE } from './constants.js';
 
 /**
  * @template {import('./types').ModelExtender} T
@@ -16,6 +18,10 @@ export default function ModelWithContact(BaseModel) {
 
         initialize() {
             super.initialize();
+
+            this.on('change:num_unread', () => this.updateContactUnreadCounter());
+            this.on('contact:add', () => this.updateContactUnreadCounter());
+
             this.rosterContactAdded = getOpenPromise();
             this.onClosedChanged = () => this.setModelContact(this.get('jid'));
             /**
@@ -25,6 +31,11 @@ export default function ModelWithContact(BaseModel) {
             this.contact = null;
         }
 
+        updateContactUnreadCounter() {
+            if (this.contact && this.get('type') === PRIVATE_CHAT_TYPE) {
+                u.safeSave(this.contact, { num_unread: this.get('num_unread') });
+            }
+        }
 
         /**
          * @param {string} jid
@@ -32,7 +43,7 @@ export default function ModelWithContact(BaseModel) {
         async setModelContact(jid) {
             if (this.contact?.get('jid') === jid) return;
 
-            if (this.get('closed')) {
+            if (this.get('type') === PRIVATE_CHAT_TYPE && this.get('closed')) {
                 this.off('change:closed', this.onClosedChanged);
                 this.on('change:closed', this.onClosedChanged);
                 return;

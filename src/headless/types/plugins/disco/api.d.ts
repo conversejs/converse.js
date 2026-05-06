@@ -3,8 +3,8 @@ declare namespace _default {
         export namespace stream {
             /**
              * @method api.disco.stream.getFeature
-             * @param { String } name The feature name
-             * @param { String } xmlns The XML namespace
+             * @param {String} name The feature name
+             * @param {String} xmlns The XML namespace
              * @example _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver')
              */
             function getFeature(name: string, xmlns: string): Promise<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>>;
@@ -41,7 +41,7 @@ declare namespace _default {
                 /**
                  * Lets you register new disco features for this client (i.e. instance of Converse)
                  * @method api.disco.own.features.add
-                 * @param { String } name - e.g. http://jabber.org/protocol/caps
+                 * @param {String} name - e.g. http://jabber.org/protocol/caps
                  * @example _converse.api.disco.own.features.add("http://jabber.org/protocol/caps");
                  */
                 function add(name: string): boolean;

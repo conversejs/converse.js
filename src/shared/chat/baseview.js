@@ -92,14 +92,14 @@ export default class BaseChatView extends CustomElement {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
         if (this.model.ui.get('scrolled')) {
-            this.model.ui.set({ 'scrolled': false });
+            this.model.ui.set({ scrolled: false });
         }
         onScrolledDown(this.model);
     }
 
     onWindowStateChanged() {
         if (document.hidden) {
-            this.model.setChatState(INACTIVE, { 'silent': true });
+            this.model.setChatState(INACTIVE, { silent: true });
         } else {
             if (!this.model.isHidden()) {
                 this.model.clearUnreadMsgCounter();

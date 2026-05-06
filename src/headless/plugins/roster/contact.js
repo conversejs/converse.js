@@ -8,7 +8,7 @@ import ColorAwareModel from '../../shared/color.js';
 import ModelWithVCard from '../../shared/model-with-vcard.js';
 import { rejectPresenceSubscription } from './utils.js';
 
-const { Strophe, stx } = converse.env;
+const { Strophe, stx, u } = converse.env;
 
 class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
     get idAttribute() {
@@ -148,11 +148,10 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
 
     /**
      * Remove this contact from the roster
-     * @async
      * @param {boolean} [unauthorize] - Whether to also unauthorize the
      * @returns {Promise<Error|Element>}
      */
-    remove(unauthorize) {
+    async remove(unauthorize) {
         const subscription = this.get('subscription');
         if (subscription === 'none' && this.get('ask') !== 'subscribe') {
             this.destroy();
@@ -169,7 +168,15 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
         const promise = this.sendRosterRemoveStanza();
         if (this.collection) this.destroy();
 
-        return promise;
+        try {
+            return await promise;
+        } catch (e) {
+            if (u.isElement(e)) {
+                // Return if it's only an error stanza
+                return e;
+            }
+            throw e;
+        }
     }
 
     /**

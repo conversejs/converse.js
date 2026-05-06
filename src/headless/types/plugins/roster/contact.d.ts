@@ -204,7 +204,6 @@ declare class RosterContact extends RosterContact_base {
     authorize(message?: string): this;
     /**
      * Remove this contact from the roster
-     * @async
      * @param {boolean} [unauthorize] - Whether to also unauthorize the
      * @returns {Promise<Error|Element>}
      */

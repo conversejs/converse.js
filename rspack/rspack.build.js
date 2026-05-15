@@ -15,7 +15,7 @@ const buildConfig = (_env, argv) => {
         devtool: isDev ? 'cheap-module-source-map' : 'source-map',
         optimization: {
             minimize: !isDev,
-            moduleIds: 'named', // Helps with debugging
+            moduleIds: 'named',
             minimizer: [
                 new rspack.SwcJsMinimizerRspackPlugin({
                     minimizerOptions: {
@@ -34,6 +34,7 @@ const buildConfig = (_env, argv) => {
             ],
         },
         module: {
+            noParse: [/\.wasm$/, /\.map$/, /\.esm\.js$/],
             rules: [
                 {
                     test: /\.(js|ts)$/,
@@ -75,7 +76,18 @@ const buildConfig = (_env, argv) => {
                 },
             ],
         },
+        resolve: {
+            fallback: {
+                fs: false,
+                path: false,
+                crypto: false,
+            },
+            modules: [path.resolve(__dirname, '../node_modules/'), path.resolve(__dirname, '../src/')],
+        },
         plugins: [
+            new rspack.IgnorePlugin({
+                resourceRegExp: /curve25519_compiled\.wasm$/,
+            }),
             new rspack.CssExtractRspackPlugin({
                 filename: '../dist/converse.min.css',
             }),
@@ -88,6 +100,7 @@ const buildConfig = (_env, argv) => {
                         from: 'node_modules/strophe.js/src/shared-connection-worker.js',
                         to: 'shared-connection-worker.js',
                     },
+                    { from: 'node_modules/libomemo.js/dist/curve25519_compiled.wasm', to: 'curve25519_compiled.wasm' },
                     { from: 'sounds', to: 'sounds' },
                     { from: 'images/favicon.ico', to: 'images/favicon.ico' },
                     { from: 'images/custom_emojis', to: 'images/custom_emojis' },

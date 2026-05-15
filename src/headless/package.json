@@ -68,12 +68,12 @@
     "dayjs": "^1.11.8",
     "dompurify": "^3.0.8",
     "filesize": "^11.0.13",
+    "libomemo.js": "^0.0.2",
     "localforage-webextensionstorage-driver": "^3.0.0",
     "lodash-es": "^4.17.21",
     "pluggable.js": "3.0.1",
     "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
     "strophe.js": "4.0.0-rc0"
-  },
-  "devDependencies": {}
+  }
 }

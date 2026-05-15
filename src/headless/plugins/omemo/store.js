@@ -3,14 +3,12 @@ import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';
+import { getCrypto } from './crypto.js';
 import { getDeviceList } from './utils.js';
 
 const { Strophe, stx, u } = converse.env;
 
 class OMEMOStore extends Model {
-    /**
-     * @typedef {Window & globalThis & {libsignal: any} } WindowWithLibsignal
-     */
     get Direction() {
         return {
             SENDING: 1,
@@ -66,12 +64,12 @@ class OMEMOStore extends Model {
      * @param {string} identifier
      * @param {string} identity_key
      */
-    saveIdentity(identifier, identity_key) {
+    async saveIdentity(identifier, identity_key) {
         if (identifier === null || identifier === undefined) {
             throw new Error("Can't save identity_key for invalid identifier");
         }
-        const { libsignal } = /** @type WindowWithLibsignal */ (window);
-        const address = new libsignal.SignalProtocolAddress.fromString(identifier);
+        const { OMEMOAddress } = await getCrypto();
+        const address = OMEMOAddress.fromString(identifier);
         const existing = this.get('identity_key' + address.getName());
         const b64_idkey = u.arrayBufferToBase64(identity_key);
         this.save('identity_key' + address.getName(), b64_idkey);
@@ -145,21 +143,12 @@ class OMEMOStore extends Model {
      */
     storeSignedPreKey(spk) {
         if (typeof spk !== 'object') {
-            // XXX: We've changed the signature of this method from the
-            // example given in InMemorySignalProtocolStore.
-            // Should be fine because the libsignal code doesn't
-            // actually call this method.
             throw new Error('storeSignedPreKey: expected an object');
         }
         this.save('signed_prekey', {
             'id': spk.keyId,
             'privKey': u.arrayBufferToBase64(spk.keyPair.privKey),
             'pubKey': u.arrayBufferToBase64(spk.keyPair.pubKey),
-            // XXX: The InMemorySignalProtocolStore does not pass
-            // in or store the signature, but we need it when we
-            // publish our bundle and this method isn't called from
-            // within libsignal code, so we modify it to also store
-            // the signature.
             'signature': u.arrayBufferToBase64(spk.signature),
         });
         return Promise.resolve();
@@ -188,7 +177,9 @@ class OMEMOStore extends Model {
      * @param {object} record
      */
     storeSession(identifier, record) {
-        return Promise.resolve(this.save('session' + identifier, record));
+        return Promise.resolve(
+            this.save('session' + identifier, record)
+        );
     }
 
     /**
@@ -233,8 +224,7 @@ class OMEMOStore extends Model {
     }
 
     async generateMissingPreKeys() {
-        const { libsignal } = /** @type WindowWithLibsignal */ (window);
-        const { KeyHelper } = libsignal;
+        const { KeyHelper } = await getCrypto();
 
         const prekeyIds = Object.keys(this.getPreKeys());
         const missing_keys = Array.from({ length: _converse.NUM_PREKEYS }, (_, id) => id.toString()).filter(
@@ -274,8 +264,7 @@ class OMEMOStore extends Model {
      */
     async generatePreKeys() {
         const amount = _converse.NUM_PREKEYS;
-        const { libsignal } = /** @type WindowWithLibsignal */ (window);
-        const { KeyHelper } = libsignal;
+        const { KeyHelper } = await getCrypto();
         const keys = await Promise.all([...Array(amount).keys()].map((id) => KeyHelper.generatePreKey(id)));
 
         keys.forEach((k) => this.storePreKey(k.keyId, k.keyPair));
@@ -295,14 +284,14 @@ class OMEMOStore extends Model {
      * even if we're offline at that time.
      */
     async generateBundle() {
-        const { libsignal } = /** @type WindowWithLibsignal */ (window);
+        const { KeyHelper } = await getCrypto();
 
         // The first thing that needs to happen if a client wants to
         // start using OMEMO is they need to generate an IdentityKey
         // and a Device ID.
 
         // The IdentityKey is a Curve25519 public/private Key pair.
-        const identity_keypair = await libsignal.KeyHelper.generateIdentityKeyPair();
+        const identity_keypair = await KeyHelper.generateIdentityKeyPair();
         const identity_key = u.arrayBufferToBase64(identity_keypair.pubKey);
 
         // The Device ID is a randomly generated integer between 1 and 2^31 - 1.
@@ -317,7 +306,7 @@ class OMEMOStore extends Model {
             },
         });
 
-        const signed_prekey = await libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0);
+        const signed_prekey = await KeyHelper.generateSignedPreKey(identity_keypair, 0);
         this.storeSignedPreKey(signed_prekey);
 
         const prekeys = await this.generatePreKeys();
@@ -362,22 +351,19 @@ class OMEMOStore extends Model {
 }
 
 export async function generateDeviceID() {
-    /**
-     * @typedef {module:plugins-omemo-index.WindowWithLibsignal} WindowWithLibsignal
-     */
-    const { libsignal } = /** @type WindowWithLibsignal */ (window);
+    const { KeyHelper } = await getCrypto();
 
     /* Generates a device ID, making sure that it's unique */
     const bare_jid = _converse.session.get('bare_jid');
     const devicelist = await getDeviceList(bare_jid, true);
     const existing_ids = devicelist.devices.pluck('id');
-    let device_id = libsignal.KeyHelper.generateRegistrationId();
+    let device_id = KeyHelper.generateRegistrationId();
 
     // Before publishing a freshly generated device id for the first time,
     // a device MUST check whether that device id already exists, and if so, generate a new one.
     let i = 0;
     while (existing_ids.includes(device_id)) {
-        device_id = libsignal.KeyHelper.generateRegistrationId();
+        device_id = KeyHelper.generateRegistrationId();
         i++;
         if (i === 10) {
             throw new Error('Unable to generate a unique device ID');

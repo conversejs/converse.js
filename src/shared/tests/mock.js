@@ -202,11 +202,26 @@ async function sendMessage(_converse, view, message) {
     return promise;
 }
 
-window.libsignal = {
-    'SignalProtocolAddress': function (name, device_id) {
+window.libomemo = {
+    'OMEMOAddress': function (name, device_id) {
         this.name = name;
         this.deviceId = device_id;
     },
+};
+window.libomemo.OMEMOAddress.fromString = function (str) {
+    const parts = str.split('.');
+    return new window.libomemo.OMEMOAddress(parts[0], parseInt(parts[1], 10));
+};
+window.libomemo.OMEMOAddress.prototype.getName = function () {
+    return this.name;
+};
+window.libomemo.OMEMOAddress.prototype.getDeviceId = function () {
+    return this.deviceId;
+};
+window.libomemo.OMEMOAddress.prototype.toString = function () {
+    return this.name + '.' + this.deviceId;
+};
+Object.assign(window.libomemo, {
     'SessionCipher': function (storage, remote_address) {
         this.remoteAddress = remote_address;
         this.storage = storage;
@@ -258,7 +273,74 @@ window.libsignal = {
             });
         },
     },
+});
+window.libomemo.OMEMOAddress.fromString = function (str) {
+    const parts = str.split('.');
+    return new window.libomemo.OMEMOAddress(parts[0], parseInt(parts[1], 10));
 };
+window.libomemo.OMEMOAddress.prototype.getName = function () {
+    return this.name;
+};
+window.libomemo.OMEMOAddress.prototype.getDeviceId = function () {
+    return this.deviceId;
+};
+window.libomemo.OMEMOAddress.prototype.toString = function () {
+    return this.name + '.' + this.deviceId;
+};
+Object.assign(window.libomemo, {
+    'SessionCipher': function (storage, remote_address) {
+        this.remoteAddress = remote_address;
+        this.storage = storage;
+        this.encrypt = () =>
+            Promise.resolve({
+                'type': 1,
+                'body': 'c1ph3R73X7',
+                'registrationId': '1337',
+            });
+        this.decryptPreKeyWhisperMessage = (key_and_tag) => {
+            return Promise.resolve(key_and_tag);
+        };
+        this.decryptWhisperMessage = (key_and_tag) => {
+            return Promise.resolve(key_and_tag);
+        };
+    },
+    'SessionBuilder': function (storage, remote_address) {
+        // eslint-disable-line no-unused-vars
+        this.processPreKey = function () {
+            return Promise.resolve();
+        };
+    },
+    'KeyHelper': {
+        'generateIdentityKeyPair': function () {
+            return Promise.resolve({
+                'pubKey': new TextEncoder('utf-8').encode('1234'),
+                'privKey': new TextEncoder('utf-8').encode('4321'),
+            });
+        },
+        'generateRegistrationId': function () {
+            return '123456789';
+        },
+        'generatePreKey': function (keyid) {
+            return Promise.resolve({
+                'keyId': keyid,
+                'keyPair': {
+                    'pubKey': new TextEncoder('utf-8').encode('1234'),
+                    'privKey': new TextEncoder('utf-8').encode('4321'),
+                },
+            });
+        },
+        'generateSignedPreKey': function (identity_keypair, keyid) {
+            return Promise.resolve({
+                'signature': new TextEncoder('utf-8').encode('11112222333344445555'),
+                'keyId': keyid,
+                'keyPair': {
+                    'pubKey': new TextEncoder('utf-8').encode('1234'),
+                    'privKey': new TextEncoder('utf-8').encode('4321'),
+                },
+            });
+        },
+    },
+});
 
 const map = current_contacts_map;
 const groups_map = {};

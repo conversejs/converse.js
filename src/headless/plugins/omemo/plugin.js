@@ -28,11 +28,7 @@ converse.plugins.add('converse-omemo', {
      * @param {import('../../shared/_converse.js').ConversePrivateGlobal} _converse
      */
     enabled(_converse) {
-        /**
-         * @typedef {Window & globalThis & {libsignal: any} } WindowWithLibsignal
-         */
         return (
-            /** @type WindowWithLibsignal */ (window).libsignal &&
             _converse.state.config.get('trusted') &&
             !_converse.api.settings.get('clear_cache_on_logout') &&
             !_converse.api.settings.get('blacklisted_plugins').includes('converse-omemo')

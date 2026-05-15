@@ -44,5 +44,3 @@ export type EncryptedMessageAttributes = {
 
 export type MUCMessageAttrsWithEncryption = MUCMessageAttributes & EncryptedMessageAttributes;
 export type MessageAttrsWithEncryption = MessageAttributes & EncryptedMessageAttributes;
-
-export type WindowWithLibsignal = Window & typeof globalThis & { libsignal: any };

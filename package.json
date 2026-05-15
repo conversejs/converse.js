@@ -48,6 +48,7 @@
     "3rdparty/*.js"
   ],
   "scripts": {
+    "dist": "npm run build",
     "build": "npm run build:website-min-css && npm run build:headless && npm run build:esm && npm run build:cjs",
     "build:cjs": "rspack build --config rspack/rspack.build.cjs.js",
     "build:esm": "rspack build --config rspack/rspack.build.esm.js",

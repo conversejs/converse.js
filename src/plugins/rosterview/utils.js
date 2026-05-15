@@ -526,7 +526,7 @@ async function handleRosterAction(jid, params) {
         // Check if user is connected before attempting to add contact
         if (!api.connection.connected()) {
             api.alert('warning', __('Not connected'), 
-                [__('You must be connected to add contacts to your roster.')]);
+                [__('Please login first before adding contacts to your roster.')]);
             return;
         }
 

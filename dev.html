@@ -1,49 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <title>Converse</title>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Converse XMPP/Jabber Chat" />
-    <meta name="author" content="JC Brand" />
-    <meta name="keywords" content="xmpp chat webchat converse.js" />
-    <link rel="manifest" href="./manifest.json">
-    <link rel="shortcut icon" type="image/ico" href="images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="dist/converse.css" />
-    <script src="3rdparty/libsignal-protocol.js"></script>
-    <script type="module" src="dist/converse.js"></script>
-</head>
+    <head>
+        <title>Converse</title>
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="Converse XMPP/Jabber Chat" />
+        <meta name="author" content="JC Brand" />
+        <meta name="keywords" content="xmpp chat webchat converse.js" />
+        <link rel="manifest" href="./manifest.json" />
+        <link rel="shortcut icon" type="image/ico" href="images/favicon.ico" />
+        <link type="text/css" rel="stylesheet" media="screen" href="dist/converse.css" />
+        <script type="module" src="dist/converse.js"></script>
+    </head>
 
-<body class="reset" style="background-color: var(--global-background-color)">
+    <body class="reset" style="background-color: var(--global-background-color)">
+        <script type="module">
+            converse.plugins.add('converse-debug', {
+                initialize() {
+                    const { _converse } = this;
+                    window._converse = _converse;
+                },
+            });
 
-<script type="module">
-    converse.plugins.add('converse-debug', {
-        initialize () {
-            const { _converse } = this;
-            window._converse = _converse;
-        }
-    });
-
-    converse.initialize({
-        i18n: 'af',
-        theme: 'nordic',
-        dark_theme: 'dracula',
-        auto_away: 300,
-        loglevel: 'debug',
-        show_background: true,
-        message_archiving: 'always',
-        muc_show_logs_before_join: true,
-        notify_all_room_messages: ['discuss@conference.conversejs.org'],
-        fetch_url_headers: true,
-        whitelisted_plugins: ['converse-debug'],
-        bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-        // view_mode: 'overlayed',
-        show_controlbox_by_default: true,
-        // websocket_url: 'wss://conversejs.org/xmpp-websocket',
-        // websocket_url: 'ws://chat.example.org:5380/xmpp-websocket',
-        // connection_options: { worker: '/dist/shared-connection-worker.js' }
-    });
-</script>
-</body>
+            converse.initialize({
+                i18n: 'af',
+                theme: 'nordic',
+                dark_theme: 'dracula',
+                auto_away: 300,
+                loglevel: 'debug',
+                show_background: true,
+                message_archiving: 'always',
+                muc_show_logs_before_join: true,
+                notify_all_room_messages: ['discuss@conference.conversejs.org'],
+                fetch_url_headers: true,
+                whitelisted_plugins: ['converse-debug'],
+                bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+                // view_mode: 'overlayed',
+                show_controlbox_by_default: true,
+                // websocket_url: 'wss://conversejs.org/xmpp-websocket',
+                // websocket_url: 'ws://chat.example.org:5380/xmpp-websocket',
+                // connection_options: { worker: '/dist/shared-connection-worker.js' }
+            });
+        </script>
+    </body>
 </html>

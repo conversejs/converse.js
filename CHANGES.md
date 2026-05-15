@@ -2,6 +2,8 @@
 
 ## 14.0.0 (Unreleased)
 
+- fix: `isTrustedIdentity` in OMEMO store wasn't properly loading the identity
+
 ### Backwards incompatible changes
 
 - `api.modal.show` no longer takes a modal instance as first parameter

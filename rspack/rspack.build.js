@@ -45,7 +45,20 @@ const buildConfig = (_env, argv) => {
             ],
         },
         module: {
+            noParse: [/\.wasm$/, /\.map$/, /\.esm\.js$/],
             rules: [
+                {
+                    test: /converse-headless/,
+                    parser: {
+                        url: false,
+                    },
+                },
+                {
+                    test: /converse-headless/,
+                    parser: {
+                        url: false,
+                    },
+                },
                 {
                     test: /\.(js|ts)$/,
                     use: [
@@ -87,7 +100,18 @@ const buildConfig = (_env, argv) => {
                 },
             ],
         },
+        resolve: {
+            fallback: {
+                fs: false,
+                path: false,
+                crypto: false,
+            },
+            modules: [path.resolve(__dirname, '../node_modules/'), path.resolve(__dirname, '../src/')],
+        },
         plugins: [
+            new rspack.IgnorePlugin({
+                resourceRegExp: /curve25519_compiled\.wasm$/,
+            }),
             new rspack.CssExtractRspackPlugin({
                 filename: '../dist/converse.css',
             }),
@@ -97,6 +121,8 @@ const buildConfig = (_env, argv) => {
                         from: 'node_modules/strophe.js/src/shared-connection-worker.js',
                         to: 'shared-connection-worker.js',
                     },
+                    { from: 'node_modules/libomemo.js/dist/curve25519_compiled.wasm', to: 'curve25519_compiled.wasm' },
+                    { from: `node_modules/libomemo.js/dist/${isDev ? 'libomemo.esm.js' : 'libomemo.esm.min.js'}`, to: 'libomemo.esm.min.js' },
                     { from: 'sounds', to: 'sounds' },
                     { from: 'images/favicon.ico', to: 'images/favicon.ico' },
                     { from: 'images/custom_emojis', to: 'images/custom_emojis' },

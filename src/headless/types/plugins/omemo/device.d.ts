@@ -1,14 +1,17 @@
 export default Device;
-declare class Device extends Model<import("@converse/skeletor").ModelAttributes> {
-    constructor(attributes?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
+/**
+ * @extends {Model<import('./types').DeviceAttributes>}
+ */
+declare class Device extends Model<import("./types").DeviceAttributes> {
+    constructor(attributes?: Partial<import("./types").DeviceAttributes>, options?: import("@converse/skeletor").ModelOptions);
     defaults(): {
-        trusted: number;
+        trusted: 0;
         active: boolean;
     };
     /**
-     * @returns {import('./types').PreKey}
+     * @returns {import('./types').CounterpartyPreKey}
      */
-    getRandomPreKey(): import("./types").PreKey;
+    getRandomPreKey(): import("./types").CounterpartyPreKey;
     /**
      * Fetch the device's OMEMO bundle from the server.
      * A bundle is a collection of publicly accessible data that can

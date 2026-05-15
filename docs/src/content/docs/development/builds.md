@@ -130,5 +130,12 @@ After building, the following files will be generated in the `dist/` directory:
 
 The headless build generates files in `src/headless/dist/`:
 
-- `converse-headless.js` - Headless ESM bundle
-- `converse-headless.min.js` - Minified headless ESM bundle
+- `converse-headless.js` - Single-file ESM bundle (no code-splitting)
+- `converse-headless.min.js` - Minified single-file ESM bundle
+- `libomemo.esm.js` - GPL-licensed crypto library companion file
+- `curve25519_compiled.wasm` - WebAssembly crypto primitives
+- `emoji.json` - Emoji metadata
+
+When deploying the headless build, all files must be served from the same directory.
+The `libomemo.esm.js` file is loaded on-demand when OMEMO encryption is used,
+and it in turn loads `curve25519_compiled.wasm` from the same location.

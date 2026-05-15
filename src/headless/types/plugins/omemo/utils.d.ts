@@ -29,23 +29,24 @@ export function getDevicesForContact(jid: string): Promise<import("./devices.js"
 /**
  * @param {string} jid
  * @param {number} id
+ * @returns {Promise<import('libomemo.js').SessionCipher>}
  */
-export function getSessionCipher(jid: string, id: number): any;
+export function getSessionCipher(jid: string, id: number): Promise<import("libomemo.js").SessionCipher>;
 /**
- * @param {import('./device.js').default} device
+ * @param {import('./device').default} device
  */
-export function getSession(device: import("./device.js").default): Promise<any>;
+export function getSession(device: import("./device").default): Promise<any>;
 /**
  * @param {import('./types').EncryptedMessage} obj
  * @returns {Promise<string>}
  */
 export function decryptMessage(obj: import("./types").EncryptedMessage): Promise<string>;
 /**
- * @param {import('../../shared/chatbox.js').default} chat
+ * @param {import('../../shared/chatbox').default} chat
  * @param {import('../../shared/types').MessageAndStanza} data
  * @return {Promise<import('../../shared/types').MessageAndStanza>}
  */
-export function createOMEMOMessageStanza(chat: import("../../shared/chatbox.js").default, data: import("../../shared/types").MessageAndStanza): Promise<import("../../shared/types").MessageAndStanza>;
+export function createOMEMOMessageStanza(chat: import("../../shared/chatbox").default, data: import("../../shared/types").MessageAndStanza): Promise<import("../../shared/types").MessageAndStanza>;
 /**
  * @param {import('../../shared/chatbox.js').default} chat
  * @param {import('../../shared/types').MessageAttributes} attrs

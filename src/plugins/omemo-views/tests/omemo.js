@@ -349,7 +349,7 @@ describe('The OMEMO module', function () {
             // XXX: Normally the key will be encrypted via libsignal.
             // However, we're mocking libsignal in the tests, so we include
             // it as plaintext in the message.
-            let stanza = stx`<message from="${contact_jid}"
+            const stanza = stx`<message from="${contact_jid}"
                 to="${_converse.api.connection.get().jid}"
                 xmlns="jabber:client"
                 type="chat"
@@ -385,7 +385,7 @@ describe('The OMEMO module', function () {
             _converse.api.connection.get().IQ_stanzas = [];
             _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => _converse.state.omemo_store);
-            let iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse), 1000);
+            const iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse), 1000);
             expect(iq_stanza).toEqualStanza(
                 stx`<iq to="${_converse.bare_jid}" from="${_converse.bare_jid}" id="${iq_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
@@ -393,8 +393,8 @@ describe('The OMEMO module', function () {
                         <item>
                             <bundle xmlns="eu.siacs.conversations.axolotl">
                                 <signedPreKeyPublic signedPreKeyId="0">${btoa('1234')}</signedPreKeyPublic>
-                                    <signedPreKeySignature>${btoa('11112222333344445555')}</signedPreKeySignature>
-                                    <identityKey>${btoa('1234')}</identityKey>
+                                <signedPreKeySignature>${btoa('11112222333344445555')}</signedPreKeySignature>
+                                <identityKey>${btoa('1234')}</identityKey>
                                 <prekeys>
                                     <preKeyPublic preKeyId="0">${btoa('1234')}</preKeyPublic>
                                     <preKeyPublic preKeyId="1">${btoa('1234')}</preKeyPublic>
@@ -503,7 +503,9 @@ describe('The OMEMO module', function () {
 
             // A PEP message is received with a device list.
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <message xmlns="jabber:client"
                     from="${contact_jid}"
                     to="${_converse.bare_jid}"
@@ -519,7 +521,8 @@ describe('The OMEMO module', function () {
                         </item>
                     </items>
                 </event>
-            </message>`),
+            </message>`,
+                ),
             );
 
             // Since we haven't yet fetched any devices for this user, the
@@ -705,7 +708,9 @@ describe('The OMEMO module', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq from="${contact_jid}"
                 id="${iq_stanza.getAttribute('id')}"
                 to="${_converse.bare_jid}"
@@ -720,7 +725,8 @@ describe('The OMEMO module', function () {
                         </item>
                     </items>
                 </pubsub>
-            </iq>`),
+            </iq>`,
+                ),
             );
 
             await await u.waitUntil(() => _converse.state.omemo_store);
@@ -748,7 +754,9 @@ describe('The OMEMO module', function () {
             await _converse.api.waitUntil('OMEMOInitialized');
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <message from="${contact_jid}"
                     to="${_converse.bare_jid}"
                     type="headline"
@@ -770,7 +778,8 @@ describe('The OMEMO module', function () {
                         </item>
                     </items>
                 </event>
-            </message>`),
+            </message>`,
+                ),
             );
 
             // Since we haven't yet fetched any devices for this user, the
@@ -832,7 +841,9 @@ describe('The OMEMO module', function () {
             expect(device.get('bundle').prekeys[2].id).toBe(2003);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                     <message from="${_converse.bare_jid}"
                              to="${_converse.bare_jid}"
                              type="headline"
@@ -854,7 +865,8 @@ describe('The OMEMO module', function () {
                                 </item>
                             </items>
                         </event>
-                    </message>`),
+                    </message>`,
+                ),
             );
 
             expect(_converse.state.devicelists.length).toBe(2);
@@ -1061,7 +1073,8 @@ describe('The OMEMO module', function () {
             );
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<iq from="${contact_jid}"
                     id="${iq_stanza.getAttribute('id')}"
                     to="${_converse.bare_jid}"
@@ -1165,7 +1178,8 @@ describe('The OMEMO module', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<iq from="${contact_jid}"
                     id="${iq_stanza.getAttribute('id')}"
                     to="${_converse.bare_jid}"
@@ -1199,7 +1213,8 @@ describe('The OMEMO module', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<iq from="${contact_jid}"
                 id="${iq_stanza.getAttribute('id')}"
                 to="${_converse.bare_jid}"

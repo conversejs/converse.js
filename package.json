@@ -43,15 +43,15 @@
     "3rdparty/*.js"
   ],
   "scripts": {
-    "build": "npm run build:website-min-css && npm run build:headless && npm run build:esm",
-    "build:esm": "rspack build --config rspack/rspack.build.js && npm run build:converse-min-css",
+    "build": "npm run build:website-min-css && npm run build:headless && npm run build:main",
+    "build:main": "rspack build --config rspack/rspack.build.js && npm run build:converse-min-css",
     "build:converse-min-css": "npx clean-css-cli dist/converse.css > dist/converse.min.css",
     "build:headless": "rspack build --config rspack/rspack.headless.js",
     "build:website-css": "sass --quiet --load-path=node_modules src/shared/styles/website.scss dist/website.css",
     "build:website-min-css": "npm run build:website-css && npx clean-css-cli dist/website.css > dist/website.min.css",
     "cdn": "ASSET_PATH=https://cdn.conversejs.org/dist/ npm run build",
     "clean": "rm -rf node_modules dist *.zip src/headless/dist src/headless/node_modules",
-    "dev": "DROP_DEBUGGER=false npm run dev:headless && npm run build:esm -- --mode=development",
+    "dev": "DROP_DEBUGGER=false npm run dev:headless && npm run build:main -- --mode=development",
     "dev:headless": "DROP_DEBUGGER=false npm run build:headless -- --mode=development",
     "devserver": "npm run dev:headless && npx rspack serve --config rspack/rspack.serve.js",
     "dist": "DROP_DEBUGGER=true npm run build",
@@ -70,7 +70,7 @@
     "types:check": "tsc --noEmit",
     "watch": "concurrently \"npm run watch:headless\" \"npm run watch:main\"",
     "watch:headless": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.headless.js --mode=development",
-    "watch:main": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.build.esm.js --mode=development"
+    "watch:main": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.build.js --mode=development"
   },
   "repository": {
     "type": "git",

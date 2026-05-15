@@ -6,6 +6,7 @@ import { constants, errors } from '../../shared/index.js';
 import { initStorage } from '../../utils/storage.js';
 import api from '../../shared/api/index.js';
 import MUC from '../../plugins/muc/muc.js';
+import { getCrypto } from './crypto.js';
 import { KEY_ALGO, TAG_LENGTH, UNTRUSTED } from './constants.js';
 import DeviceLists from './devicelists.js';
 
@@ -34,7 +35,7 @@ async function updateDevicesFromStanza(stanza) {
                 return; // We don't set the current device as inactive
             }
             devices.get(id).save('active', false);
-        }
+        },
     );
     device_ids.forEach(
         /** @param {string} device_id */ (device_id) => {
@@ -44,7 +45,7 @@ async function updateDevicesFromStanza(stanza) {
             } else {
                 devices.create({ id: device_id, jid });
             }
-        }
+        },
     );
     if (u.isSameBareJID(bare_jid, jid)) {
         // Make sure our own device is on the list
@@ -96,7 +97,7 @@ export function registerPEPPushHandler() {
             return true;
         },
         null,
-        'message'
+        'message',
     );
 }
 
@@ -193,15 +194,15 @@ export function handleMessageSendError(e, chat) {
                 __(
                     "Sorry, we're unable to send an encrypted message because %1$s " +
                         'requires you to be subscribed to their presence in order to see their OMEMO information',
-                    e.iq.getAttribute('from')
-                )
+                    e.iq.getAttribute('from'),
+                ),
             );
         } else if (sizzle(`remote-server-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]`, e.iq).length) {
             err_msgs.push(
                 __(
                     "Sorry, we're unable to send an encrypted message because the remote server for %1$s could not be found",
-                    e.iq.getAttribute('from')
-                )
+                    e.iq.getAttribute('from'),
+                ),
             );
         } else {
             err_msgs.push(__('Unable to send an encrypted message due to an unexpected error.'));
@@ -228,30 +229,31 @@ export async function getDevicesForContact(jid) {
 /**
  * @param {string} jid
  * @param {number} id
+ * @returns {Promise<import('libomemo.js').SessionCipher>}
  */
-export function getSessionCipher(jid, id) {
-    const { libsignal } = /** @type import('./types').WindowWithLibsignal */ (window);
-    const address = new libsignal.SignalProtocolAddress(jid, id);
-    return new libsignal.SessionCipher(_converse.state.omemo_store, address);
+export async function getSessionCipher(jid, id) {
+    const { OMEMOAddress, SessionCipher } = await getCrypto();
+    const address = new OMEMOAddress(jid, id);
+    return new SessionCipher(_converse.state.omemo_store, address);
 }
 
 /**
  * @param {ArrayBuffer} key_and_tag
- * @param {import('./device.js').default} device
+ * @param {import('./device').default} device
  */
-function encryptKey(key_and_tag, device) {
-    return getSessionCipher(device.get('jid'), Number(device.get('id')))
-        .encrypt(key_and_tag)
-        .then(/** @param {ArrayBuffer} payload */ (payload) => ({ payload, device }));
+async function encryptKey(key_and_tag, device) {
+    const session_cipher = await getSessionCipher(device.get('jid'), Number(device.get('id')));
+    const payload = await session_cipher.encrypt(key_and_tag);
+    return { payload, device };
 }
 
 /**
- * @param {import('./device.js').default} device
+ * @param {import('./device').default} device
  */
 async function buildSession(device) {
-    const { libsignal } = /** @type import('./types').WindowWithLibsignal */ (window);
-    const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
-    const sessionBuilder = new libsignal.SessionBuilder(_converse.state.omemo_store, address);
+    const { OMEMOAddress, SessionBuilder } = await getCrypto();
+    const address = new OMEMOAddress(device.get('jid'), device.get('id'));
+    const sessionBuilder = new SessionBuilder(_converse.state.omemo_store, address);
     const prekey = device.getRandomPreKey();
     const bundle = await device.getBundle();
     const device_id = device.get('id');
@@ -272,15 +274,15 @@ async function buildSession(device) {
 }
 
 /**
- * @param {import('./device.js').default} device
+ * @param {import('./device').default} device
  */
 export async function getSession(device) {
     if (!device.get('bundle')) {
         log.error(`Could not build an OMEMO session for device ${device.get('id')} because we don't have its bundle`);
         return null;
     }
-    const { libsignal } = /** @type import('./types').WindowWithLibsignal */ (window);
-    const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
+    const { OMEMOAddress } = await getCrypto();
+    const address = new OMEMOAddress(device.get('jid'), device.get('id'));
     const session = await _converse.state.omemo_store.loadSession(address.toString());
     if (session) {
         return session;
@@ -310,8 +312,8 @@ async function getBundlesAndBuildSessions(chatbox) {
         const collections = await Promise.all(
             chatbox.occupants.map(
                 /** @param {import('../../plugins/muc/occupant').default} o */
-                (o) => getDevicesForContact(o.get('jid'))
-            )
+                (o) => getDevicesForContact(o.get('jid')),
+            ),
         );
         devices = collections.reduce((a, b) => a.concat(b.models), []);
     } else if (chatbox.get('type') === constants.PRIVATE_CHAT_TYPE) {
@@ -335,8 +337,8 @@ async function getBundlesAndBuildSessions(chatbox) {
         devices.map(
             /** @param {Device} [d] */ (d) => {
                 return (d && getSession(d)) || null;
-            }
-        )
+            },
+        ),
     );
 
     if (sessions.includes(null)) {
@@ -401,12 +403,12 @@ export async function decryptMessage(obj) {
 }
 
 /**
- * @param {import('../../shared/chatbox.js').default} chat
+ * @param {import('../../shared/chatbox').default} chat
  * @param {import('../../shared/types').MessageAndStanza} data
  * @return {Promise<import('../../shared/types').MessageAndStanza>}
  */
 export async function createOMEMOMessageStanza(chat, data) {
-    let { stanza } = data;
+    const { stanza } = data;
     const { message } = data;
     if (!message.get('is_encrypted')) {
         return data;
@@ -426,7 +428,7 @@ export async function createOMEMOMessageStanza(chat, data) {
     const dicts = await Promise.all(
         devices
             .filter((device) => device.get('trusted') != UNTRUSTED && device.get('active'))
-            .map((device) => encryptKey(key_and_tag, device))
+            .map((device) => encryptKey(key_and_tag, device)),
     );
 
     // An encrypted header is added to the message for
@@ -441,7 +443,7 @@ export async function createOMEMOMessageStanza(chat, data) {
             <encrypted xmlns="${Strophe.NS.OMEMO}">
                 <header sid="${_converse.state.omemo_store.get('device_id')}">
                     ${dicts.map(({ payload, device }) => {
-                        const prekey = 3 == parseInt(payload.type, 10);
+                        const prekey = 3 == payload.type;
                         if (prekey) {
                             return stx`<key rid="${device.get('id')}" prekey="true">${btoa(payload.body)}</key>`;
                         }
@@ -450,7 +452,7 @@ export async function createOMEMOMessageStanza(chat, data) {
                     <iv>${iv}</iv>
                 </header>
                 <payload>${payload}</payload>
-            </encrypted>`
+            </encrypted>`,
         )
         .root();
 
@@ -472,8 +474,8 @@ export function getOutgoingMessageAttributes(chat, attrs) {
             is_encrypted: true,
             plaintext: attrs.body,
             body: __(
-                'This is an OMEMO encrypted message which your client doesn’t seem to support. ' +
-                    'Find more information on https://conversations.im/omemo'
+                'This is an OMEMO encrypted message which your client doesn\u2019t seem to support. ' +
+                    'Find more information on https://conversations.im/omemo',
             ),
         };
     }
@@ -523,7 +525,7 @@ async function onOccupantAdded(chatroom, occupant) {
                 'message': __(
                     "%1$s doesn't appear to have a client that supports OMEMO. " +
                         'Encrypted chat will no longer be possible in this grouchat.',
-                    occupant.get('nick')
+                    occupant.get('nick'),
                 ),
                 'type': 'error',
             });
@@ -541,7 +543,7 @@ export function onChatInitialized(chatbox) {
         /** @type {MUC} */ (chatbox).occupants.on(
             'add',
             /** @param {import('../../plugins/muc/occupant').default} o */ (o) =>
-                onOccupantAdded(/** @type {MUC} */ (chatbox), o)
+                onOccupantAdded(/** @type {MUC} */ (chatbox), o),
         );
         /** @type {MUC} */ (chatbox).features.on('change', () => checkOMEMOSupported(chatbox));
     }

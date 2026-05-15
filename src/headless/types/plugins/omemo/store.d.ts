@@ -1,34 +1,40 @@
-export function generateDeviceID(): Promise<any>;
+export function generateDeviceID(): Promise<string>;
 export default OMEMOStore;
-declare class OMEMOStore extends Model<import("@converse/skeletor").ModelAttributes> {
-    constructor(attributes?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
-    /**
-     * @typedef {Window & globalThis & {libsignal: any} } WindowWithLibsignal
-     */
+/**
+ * @extends {Model<import('./types').OMEMOStoreAttributes>}
+ */
+declare class OMEMOStore extends Model<import("./types").OMEMOStoreAttributes> {
+    constructor(attributes?: Partial<import("./types").OMEMOStoreAttributes>, options?: import("@converse/skeletor").ModelOptions);
     get Direction(): {
         SENDING: number;
         RECEIVING: number;
     };
     /**
-     * @returns {Promise<import('./types').KeyPair>}
+     * @returns {import('libomemo.js').KeyPair}
      */
-    getIdentityKeyPair(): Promise<import("./types").KeyPair>;
-    getLocalRegistrationId(): Promise<number>;
+    getIdentityKeyPair(): import("libomemo.js").KeyPair;
     /**
-     * @param {string} identifier
+     * @returns {number}
+     */
+    getLocalRegistrationId(): number;
+    /**
+     * @param {string} address
      * @param {ArrayBuffer} identity_key
      * @param {unknown} _direction
+     * @returns {boolean}
      */
-    isTrustedIdentity(identifier: string, identity_key: ArrayBuffer, _direction: unknown): Promise<boolean>;
+    isTrustedIdentity(address: string, identity_key: ArrayBuffer, _direction: unknown): boolean;
     /**
-     * @param {string} identifier
+     * @param {string} address
+     * @returns {ArrayBuffer}
      */
-    loadIdentityKey(identifier: string): Promise<any>;
+    loadIdentityKey(address: string): ArrayBuffer;
     /**
-     * @param {string} identifier
+     * @param {string} address
      * @param {string} identity_key
+     * @returns {boolean}
      */
-    saveIdentity(identifier: string, identity_key: string): Promise<boolean>;
+    saveIdentity(address: string, identity_key: string): boolean;
     getPreKeys(): any;
     /**
      * @param {string} key_id
@@ -38,44 +44,44 @@ declare class OMEMOStore extends Model<import("@converse/skeletor").ModelAttribu
         pubKey: any;
     }>;
     /**
-     * @param {string} key_id
-     * @param {import('./types').KeyPair} key_pair
+     * @param {number} key_id
+     * @param {import('libomemo.js').KeyPair} key_pair
      */
-    storePreKey(key_id: string, key_pair: import("./types").KeyPair): Promise<void>;
+    storePreKey(key_id: number, key_pair: import("libomemo.js").KeyPair): void;
     /**
      * @param {string} key_id
      */
     removePreKey(key_id: string): Promise<void>;
     /**
      * @param {string} _key_id
-     * @returns {Promise<import('./types').KeyPair|void>}
+     * @returns {import('libomemo.js').KeyPair|void}
      */
-    loadSignedPreKey(_key_id: string): Promise<import("./types").KeyPair | void>;
+    loadSignedPreKey(_key_id: string): import("libomemo.js").KeyPair | void;
     /**
-     * @param {import('./types').SignedPreKey} spk
+     * @param {import('libomemo.js').SignedPreKey} spk
      */
-    storeSignedPreKey(spk: import("./types").SignedPreKey): Promise<void>;
+    storeSignedPreKey(spk: import("libomemo.js").SignedPreKey): void;
     /**
-     * @param {string} key_id
+     * @param {number} key_id
      */
-    removeSignedPreKey(key_id: string): Promise<void>;
+    removeSignedPreKey(key_id: number): void;
     /**
-     * @param {string} identifier
+     * @param {string} address
      */
-    loadSession(identifier: string): Promise<any>;
+    loadSession(address: string): Promise<any>;
     /**
-     * @param {string} identifier
+     * @param {string} address
      * @param {object} record
      */
-    storeSession(identifier: string, record: object): Promise<any>;
+    storeSession(address: string, record: object): Promise<any>;
     /**
-     * @param {string} identifier
+     * @param {string} address
      */
-    removeSession(identifier: string): Promise<Awaited<this>>;
+    removeSession(address: string): Promise<Awaited<this>>;
     /**
-     * @param {string} [identifier='']
+     * @param {string} [address='']
      */
-    removeAllSessions(identifier?: string): Promise<void>;
+    removeAllSessions(address?: string): Promise<void>;
     publishBundle(): any;
     generateMissingPreKeys(): Promise<void>;
     /**
@@ -89,7 +95,7 @@ declare class OMEMOStore extends Model<import("@converse/skeletor").ModelAttribu
      * ones.
      */
     generatePreKeys(): Promise<{
-        id: any;
+        id: number;
         key: any;
     }[]>;
     /**

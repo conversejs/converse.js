@@ -47,7 +47,7 @@ function getJIDForDecryption(attrs) {
         Object.assign(attrs, {
             error_text: __(
                 'Sorry, could not decrypt a received OMEMO ' +
-                    "message because we don't have the XMPP address for that user."
+                    "message because we don't have the XMPP address for that user.",
             ),
             error_type: 'Decryption',
             is_ephemeral: true,
@@ -77,7 +77,7 @@ async function handleDecryptedWhisperMessage(attrs, key_and_tag) {
         const result = await decryptMessage({
             ...encrypted,
             payload: encrypted.payload,
-            ...{ key, tag }
+            ...{ key, tag },
         });
         device.save('active', true);
         return result;
@@ -89,7 +89,7 @@ async function handleDecryptedWhisperMessage(attrs, key_and_tag) {
  */
 async function decryptWhisperMessage(attrs) {
     const from_jid = getJIDForDecryption(attrs);
-    const session_cipher = getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
+    const session_cipher = await getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
     const key = u.base64ToArrayBuffer(attrs.encrypted.key);
     try {
         const key_and_tag = await session_cipher.decryptWhisperMessage(key, 'binary');
@@ -106,7 +106,7 @@ async function decryptWhisperMessage(attrs) {
  */
 async function decryptPrekeyWhisperMessage(attrs) {
     const from_jid = getJIDForDecryption(attrs);
-    const session_cipher = getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
+    const session_cipher = await getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
     const key = u.base64ToArrayBuffer(attrs.encrypted.key);
     let key_and_tag;
     try {
@@ -213,7 +213,7 @@ export function parseBundle(bundle_el) {
         /** @param {Element} el */ (el) => ({
             id: parseInt(el.getAttribute('preKeyId'), 10),
             key: el.textContent,
-        })
+        }),
     );
     return {
         identity_key: bundle_el.querySelector('identityKey').textContent.trim(),

@@ -202,11 +202,26 @@ async function sendMessage(_converse, view, message) {
     return promise;
 }
 
-window.libsignal = {
-    'SignalProtocolAddress': function (name, device_id) {
+window.libomemo = {
+    'OMEMOAddress': function (name, device_id) {
         this.name = name;
         this.deviceId = device_id;
     },
+};
+window.libomemo.OMEMOAddress.fromString = function (str) {
+    const parts = str.split('.');
+    return new window.libomemo.OMEMOAddress(parts[0], parseInt(parts[1], 10));
+};
+window.libomemo.OMEMOAddress.prototype.getName = function () {
+    return this.name;
+};
+window.libomemo.OMEMOAddress.prototype.getDeviceId = function () {
+    return this.deviceId;
+};
+window.libomemo.OMEMOAddress.prototype.toString = function () {
+    return this.name + '.' + this.deviceId;
+};
+Object.assign(window.libomemo, {
     'SessionCipher': function (storage, remote_address) {
         this.remoteAddress = remote_address;
         this.storage = storage;
@@ -258,7 +273,7 @@ window.libsignal = {
             });
         },
     },
-};
+});
 
 const map = current_contacts_map;
 const groups_map = {};

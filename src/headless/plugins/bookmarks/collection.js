@@ -251,8 +251,7 @@ class Bookmarks extends Collection {
     markRoomAsBookmarked(bookmark) {
         const { chatboxes } = _converse.state;
         const groupchat = chatboxes.get(bookmark.get('jid'));
-        groupchat?.save('bookmarked', true);
-        groupchat?.save('pinned', bookmark.pinned);
+        groupchat?.setBookmark(bookmark);
     }
 
     /**
@@ -344,9 +343,7 @@ class Bookmarks extends Collection {
     pinBookmark(bookmark) {
         const extensions = [...bookmark.get('extensions'), `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`];
 
-        const { chatboxes } = _converse.state;
-        const groupchat = chatboxes.get(bookmark.get('jid'));
-        groupchat?.save('pinned', true);
+        bookmark.set('pinned', true);
         
         try {
             api.bookmarks.set({
@@ -354,7 +351,7 @@ class Bookmarks extends Collection {
                 extensions,
             });
         } catch (error) {
-            groupchat?.save('pinned', false);
+            bookmark.set('pinned', false);
             log.error('Error while trying to pin bookmark');
             log.error(error);
         }
@@ -367,9 +364,7 @@ class Bookmarks extends Collection {
     unpinBookmark(bookmark) {
         const extensions = bookmark.get('extensions').filter(/** @param {String} e */ e => !(e.includes('<pinned')));
 
-        const { chatboxes } = _converse.state;
-        const groupchat = chatboxes.get(bookmark.get('jid'));
-        groupchat?.save('pinned', false);
+        bookmark.set('pinned', false);
         
         try {
             api.bookmarks.set({
@@ -377,7 +372,7 @@ class Bookmarks extends Collection {
                 extensions,
             });
         } catch (error) {
-            groupchat?.save('pinned', true);
+            bookmark.set('pinned', true);
             log.error('Error while trying to unpin bookmark');
             log.error(error);
         }

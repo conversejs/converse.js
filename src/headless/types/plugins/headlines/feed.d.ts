@@ -4,7 +4,6 @@
 export default class HeadlinesFeed extends ChatBoxBase {
     constructor(attrs: any, options: any);
     defaults(): {
-        bookmarked: boolean;
         hidden: boolean;
         message_type: string;
         num_unread: number;

@@ -13,7 +13,6 @@ const { CONTROLBOX_TYPE } = constants;
 class ControlBox extends Model {
     defaults() {
         return {
-            bookmarked: false,
             box_id: 'controlbox',
             chat_state: undefined,
             closed: !api.settings.get('show_controlbox_by_default'),

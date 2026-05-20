@@ -32,6 +32,7 @@ export class RoomsList extends CustomElement {
         this.listenTo(chatboxes, 'change', this.renderIfRelevantChange);
         this.listenTo(chatboxes, 'vcard:add', () => this.requestUpdate());
         this.listenTo(chatboxes, 'vcard:change', () => this.requestUpdate());
+        this.listenTo(chatboxes, 'bookmark:change', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
     }
 
@@ -46,7 +47,7 @@ export class RoomsList extends CustomElement {
 
     /** @param {import('@converse/headless').Model} model */
     renderIfRelevantChange(model) {
-        const attrs = ['bookmarked', 'hidden', 'name', 'num_unread', 'num_unread_general', 'has_activity', 'pinned'];
+        const attrs = ['hidden', 'name', 'num_unread', 'num_unread_general', 'has_activity'];
         const changed = model.changed || {};
         if (u.muc.isChatRoom(model) && Object.keys(changed).filter((m) => attrs.includes(m)).length) {
             this.requestUpdate();
@@ -56,7 +57,7 @@ export class RoomsList extends CustomElement {
     /** @returns {import('@converse/headless').MUC[]} */
     getRoomsToShow() {
         const { chatboxes } = _converse.state;
-        const rooms = chatboxes.filter((m) => m.get('type') === CHATROOMS_TYPE && !m.get('closed') && !m.get('pinned'));
+        const rooms = chatboxes.filter((m) => m.get('type') === CHATROOMS_TYPE && !m.get('closed') && !m.bookmark?.get('pinned'));
         rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
         return rooms;
     }

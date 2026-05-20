@@ -46,7 +46,7 @@ export function tplRoomItem (el, room) {
     ];
 
     if (api.settings.get('allow_bookmarks')) {
-        if (!room.get('pinned')) {
+        if (!room.bookmark?.get('pinned')) {
             buttons.push(tplRoomMenuItem({
                 room,
                 alt_text: __('Pin this groupchat to the top of the list'),

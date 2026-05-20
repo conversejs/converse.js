@@ -43,6 +43,7 @@ import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
 import ChatBoxBase from '../../shared/chatbox';
 import ColorAwareModel from '../../shared/color';
+import ModelWithBookmark from '../../shared/model-with-bookmark';
 import ModelWithMessages from '../../shared/model-with-messages';
 import ModelWithVCard from '../../shared/model-with-vcard';
 import { shouldCreateGroupchatMessage, isInfoVisible } from './utils.js';
@@ -55,7 +56,7 @@ const DISCO_INFO_TIMEOUT_ON_JOIN = 30000;
 /**
  * Represents a groupchat conversation.
  */
-class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))) {
+class MUC extends ModelWithBookmark(ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase)))) {
     /**
      * @typedef {import('../../shared/message.js').default} BaseMessage
      * @typedef {import('./message.js').default} MUCMessage
@@ -72,7 +73,6 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     defaults() {
         /** @type {import('./types').DefaultMUCAttributes} */
         return {
-            bookmarked: false,
             chat_state: undefined,
             closed: false,
             has_activity: false, // XEP-437

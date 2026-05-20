@@ -24,7 +24,7 @@ export class PinnedBookmarksView extends RoomsList {
     /** @returns {import('@converse/headless').MUC[]} */
     getRoomsToShow() {
         const { chatboxes } = _converse.state;
-        const rooms = chatboxes.filter((m) => m.get('pinned'));
+        const rooms = chatboxes.filter((m) => m.bookmark?.get('pinned'));
         rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
         return rooms;
     }

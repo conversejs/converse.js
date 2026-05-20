@@ -818,7 +818,7 @@ Where the nickname value comes from depends on other settings.
 
 The [nickname](#nickname) configuration setting takes precedence ahead of any other nickname value. If that's not set, then the "nickname" value from the user's VCard is taken, and if that is not set but [muc_nickname_from_jid](#muc_nickname_from_jid) is set to `true`, then the node of the user's JID (the part before the `@`) is used.
 
-If no nickame value is found, then an error will be raised.
+If no nickname value is found, then an error will be raised.
 
 ### mam_request_all_pages
 

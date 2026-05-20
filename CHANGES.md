@@ -11,7 +11,7 @@
 - #3023: Fix empty roster group name treated as a valid group instead of "Ungrouped"
 - #3382: Fix audio player accessibility for screen reader users (NVDA, JAWS)
 - #3502: Fix custom emoji shortnames overlapping with built-in emoji shortnames
-- #3815: Removal of boomark leads to new bookmark named `Symbol(lit-nothing)`
+- #3815: Removal of bookmark leads to new bookmark named `Symbol(lit-nothing)`
 - #3824: Dates and times are not translated 
 - #3829: Rich text from LibreOffice Calc is sent as screenshots
 - #3830: The message textarea blocks undo of the pasted text

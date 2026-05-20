@@ -35,7 +35,7 @@ export default (el) => {
     return html`<form
         class="converse-form converse-form--modal confirm"
         action="#"
-        @submit=${(ev) => el.onConfimation(ev)}
+        @submit=${(ev) => el.onConfirmation(ev)}
     >
         <div class="mb-3 lh-base"><strong>${first_msg}</strong></div>
         <div class="mb-3">${subsequent_msgs?.map(/** @param {string} msg */ (msg) => html`<p>${msg}</p>`)}</div>

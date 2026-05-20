@@ -9,7 +9,7 @@ const { Strophe } = converse.env;
 /**
  * @param {import('@converse/headless/types/plugins/roster/contact').default} [contact]
  */
-function getPrettySubcription(contact) {
+function getPrettySubscription(contact) {
     const s = contact?.get('subscription');
     if (s === 'none') {
         return __('Neither of you receive presence updates');
@@ -239,7 +239,7 @@ export function tplUserDetailsModal(el) {
                 ${contact
                     ? html` <div class="row mb-2">
                           <div class="col-sm-4"><label>${__('Presence')}:</label></div>
-                          <div class="col-sm-8">${getPrettySubcription(contact)}</div>
+                          <div class="col-sm-8">${getPrettySubscription(contact)}</div>
                       </div>`
                     : ''}
                 ${o.nickname

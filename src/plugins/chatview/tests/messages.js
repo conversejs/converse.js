@@ -1,10 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { Strophe, dayjs, sizzle, stx, u } = converse.env;
 
 describe('A Chat Message', function () {
     it(
         "will be demarcated if it's the first newly received message",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
@@ -41,7 +43,7 @@ describe('A Chat Message', function () {
 
     it(
         "is rejected if it's an unencapsulated forwarded message",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 2);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -66,7 +68,7 @@ describe('A Chat Message', function () {
                     </message>
                 </forwarded>
             </message>`;
-            api.connection.get()._dataRecv(mock.createRequest(received_stanza));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, received_stanza));
             const sent_stanzas = api.connection.get().sent_stanzas;
             const sent_stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.querySelector('error')).pop());
             expect(sent_stanza)
@@ -83,7 +85,7 @@ describe('A Chat Message', function () {
 
     it(
         'can be received out of order, and will still be displayed in the right order',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -253,7 +255,7 @@ describe('A Chat Message', function () {
 
     it(
         "is ignored if it's a malformed headline message",
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
 
@@ -279,14 +281,14 @@ describe('A Chat Message', function () {
 
     it(
         'will render Openstreetmap-URL from geo-URI',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const message = 'geo:37.786971,-122.399677';
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
@@ -301,7 +303,7 @@ describe('A Chat Message', function () {
 
     it(
         'can be a carbon message, as defined in XEP-0280',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             const include_nick = false;
             await mock.waitForRoster(_converse, 'current', 2, include_nick);
@@ -359,7 +361,7 @@ describe('A Chat Message', function () {
 
     it(
         'can be a carbon message that this user sent from a different client, as defined in XEP-0280',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
             await mock.waitForRoster(_converse, 'current');
@@ -408,7 +410,7 @@ describe('A Chat Message', function () {
 
     it(
         "will be discarded if it's a malicious message meant to look like a carbon copy",
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -456,7 +458,7 @@ describe('A Chat Message', function () {
 
     it(
         'will indicate when it has a time difference of more than a day between it and its predecessor',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             const include_nick = false;
             await mock.waitForRoster(_converse, 'current', 2, include_nick);
@@ -560,7 +562,7 @@ describe('A Chat Message', function () {
 
     it(
         'is sanitized to prevent Javascript injection attacks',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -568,7 +570,7 @@ describe('A Chat Message', function () {
             const view = _converse.chatboxviews.get(contact_jid);
             const message = '<p>This message contains <em>some</em> <b>markup</b></p>';
             spyOn(view.model, 'sendMessage').and.callThrough();
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             expect(view.model.sendMessage).toHaveBeenCalled();
             const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
             expect(msg.textContent).toEqual(message);
@@ -580,7 +582,7 @@ describe('A Chat Message', function () {
 
     it(
         'can contain hyperlinks, which will be clickable',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -588,7 +590,7 @@ describe('A Chat Message', function () {
             const view = _converse.chatboxviews.get(contact_jid);
             const message = 'This message contains a hyperlink: www.opkode.com';
             spyOn(view.model, 'sendMessage').and.callThrough();
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             expect(view.model.sendMessage).toHaveBeenCalled();
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
             const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
@@ -603,7 +605,7 @@ describe('A Chat Message', function () {
 
     it(
         'will remove url query parameters from hyperlinks as set',
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['chatBoxesFetched'],
             { filter_url_query_params: ['utm_medium', 'utm_content', 's'] },
             async function (_converse) {
@@ -624,7 +626,7 @@ describe('A Chat Message', function () {
                 const view = _converse.chatboxviews.get(contact_jid);
                 let message =
                     'This message contains a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 await u.waitUntil(
@@ -637,7 +639,7 @@ describe('A Chat Message', function () {
                 _converse.api.settings.set('filter_url_query_params', 'utm_medium');
                 message =
                     'Another message with a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
@@ -653,7 +655,7 @@ describe('A Chat Message', function () {
 
     it(
         'properly renders URLs',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const originalFetch = window.fetch;
             spyOn(window, 'fetch').and.callFake(async (...args) => {
                 if (args[1].method === 'HEAD') {
@@ -670,7 +672,7 @@ describe('A Chat Message', function () {
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             const message = 'https://mov.im/?node/pubsub.movim.eu/Dino/urn-uuid-979bd24f-0bf3-5099-9fa7-510b9ce9a884';
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
             const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
             const anchor = await u.waitUntil(() => msg.querySelector('a'));
@@ -681,7 +683,7 @@ describe('A Chat Message', function () {
 
     it(
         'will render newlines',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current');
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -693,7 +695,7 @@ describe('A Chat Message', function () {
                      xmlns="jabber:client">
                 <body>Hey\nHave you heard the news?</body>
             </message>`;
-            api.connection.get()._dataRecv(mock.createRequest(stanza));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
             expect(view.querySelector('.chat-msg__text').innerHTML.replace(/<!-.*?->/g, '')).toBe(
                 'Hey\nHave you heard the news?',
@@ -705,7 +707,7 @@ describe('A Chat Message', function () {
                     xmlns="jabber:client">
                 <body>Hey\n\n\nHave you heard the news?</body>
             </message>`;
-            api.connection.get()._dataRecv(mock.createRequest(stanza));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
             const text = view
                 .querySelector('converse-chat-message:last-child .chat-msg__text')
@@ -718,7 +720,7 @@ describe('A Chat Message', function () {
                     xmlns="jabber:client">
                 <body>Hey\nHave you heard\nthe news?</body>
             </message>`;
-            api.connection.get()._dataRecv(mock.createRequest(stanza));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
             expect(
                 view
@@ -733,7 +735,7 @@ describe('A Chat Message', function () {
                     xmlns="jabber:client">
                 <body>Hey\nHave you heard\n\n\nthe news?\nhttps://conversejs.org</body>
             </message>`;
-            api.connection.get()._dataRecv(mock.createRequest(stanza));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 4);
             await u.waitUntil(() => {
                 const text = view
@@ -749,7 +751,7 @@ describe('A Chat Message', function () {
 
     it(
         'will render the message time as configured',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current');
             api.settings.set('time_format', 'hh:mm');
@@ -757,7 +759,7 @@ describe('A Chat Message', function () {
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             const message = 'This message is sent from this chatbox';
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
 
             const chatbox = await _converse.api.chats.get(contact_jid);
             expect(chatbox.messages.models.length, 1);
@@ -774,7 +776,7 @@ describe('A Chat Message', function () {
 
     it(
         'will be correctly identified and rendered as a followup message',
-        mock.initConverse([], { 'debounced_content_rendering': false }, async function (_converse) {
+        mock.initConverse(converse, [], { 'debounced_content_rendering': false }, async function (_converse) {
             const { api } = _converse;
 
             await mock.waitForRoster(_converse, 'current');
@@ -850,7 +852,7 @@ describe('A Chat Message', function () {
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
             jasmine.clock().tick(1 * ONE_MINUTE_LATER);
-            await mock.sendMessage(view, 'Another message within 10 minutes, but from a different person');
+            await mock.sendMessage(_converse, view, 'Another message within 10 minutes, but from a different person');
 
             await u.waitUntil(() => view.querySelectorAll('.message').length === 6);
             expect(view.querySelectorAll('.chat-msg').length).toBe(5);
@@ -979,7 +981,7 @@ describe('A Chat Message', function () {
     describe('when sent', function () {
         it(
             'will appear inside the chatbox it was sent from',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
                 spyOn(_converse.api, 'trigger').and.callThrough();
@@ -988,7 +990,7 @@ describe('A Chat Message', function () {
                 const view = _converse.chatboxviews.get(contact_jid);
                 const message = 'This message is sent from this chatbox';
                 spyOn(view.model, 'sendMessage').and.callThrough();
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 expect(view.model.messages.length, 2);
                 expect(sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop().textContent).toEqual(message);
@@ -997,13 +999,13 @@ describe('A Chat Message', function () {
 
         it(
             'will be trimmed of leading and trailing whitespace',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
                 const message = '   \nThis message is sent from this chatbox \n     \n';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 expect(view.model.messages.at(0).get('message')).toEqual(message.trim());
                 const message_el = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(message_el.textContent).toEqual(message.trim());
@@ -1014,7 +1016,7 @@ describe('A Chat Message', function () {
     describe('when received from someone else', function () {
         it(
             'will open a chatbox and be displayed inside it',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const { api } = _converse;
                 const include_nick = false;
                 await mock.waitForRoster(_converse, 'current', 1, include_nick);
@@ -1062,7 +1064,7 @@ describe('A Chat Message', function () {
 
         it(
             'will be trimmed of leading and trailing whitespace',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1, false);
                 await mock.openControlBox(_converse);
@@ -1094,7 +1096,7 @@ describe('A Chat Message', function () {
         describe('when a chatbox is opened for someone who is not in the roster', function () {
             it(
                 'the VCard for that user is fetched and the chatbox updated with the results',
-                mock.initConverse([], { 'allow_non_roster_messaging': true }, async function (_converse) {
+                mock.initConverse(converse, [], { 'allow_non_roster_messaging': true }, async function (_converse) {
                     const { api } = _converse;
                     await mock.waitUntilBlocklistInitialized(_converse);
                     await mock.waitForRoster(_converse, 'current', 0);
@@ -1148,7 +1150,7 @@ describe('A Chat Message', function () {
         describe('who is not on the roster', function () {
             it(
                 'will open a chatbox and be displayed inside it if allow_non_roster_messaging is true',
-                mock.initConverse([], { 'allow_non_roster_messaging': false }, async function (_converse) {
+                mock.initConverse(converse, [], { 'allow_non_roster_messaging': false }, async function (_converse) {
                     await mock.waitUntilBlocklistInitialized(_converse);
                     await mock.waitForRoster(_converse, 'current', 0);
 
@@ -1208,7 +1210,7 @@ describe('A Chat Message', function () {
         describe('and for which then an error message is received from the server', function () {
             it(
                 'will have the error message displayed after itself',
-                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                     const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current', 1);
                     const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -1257,7 +1259,7 @@ describe('A Chat Message', function () {
                             <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">${error_txt}</text>
                         </error>
                     </message>`;
-                    api.connection.get()._dataRecv(mock.createRequest(stanza));
+                    api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                     let ui_error_txt = `Message delivery failed.\n${error_txt}`;
                     await u.waitUntil(
@@ -1276,7 +1278,7 @@ describe('A Chat Message', function () {
                             <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">${other_error_txt}</text>
                         </error>
                     </message>`;
-                    api.connection.get()._dataRecv(mock.createRequest(stanza));
+                    api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                     ui_error_txt = `Message delivery failed.\n${other_error_txt}`;
                     await u.waitUntil(
@@ -1298,7 +1300,7 @@ describe('A Chat Message', function () {
                             <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Server-to-server connection failed: Connecting failed: connection timeout</text>
                         </error>
                     </message>`;
-                    api.connection.get()._dataRecv(mock.createRequest(stanza));
+                    api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                     expect(view.querySelectorAll('.chat-msg__error').length).toEqual(2);
 
                     msg_text = 'This message will be sent, and also receive an error';
@@ -1321,7 +1323,7 @@ describe('A Chat Message', function () {
                             <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Something else went wrong as well</text>
                         </error>
                     </message>`;
-                    api.connection.get()._dataRecv(mock.createRequest(stanza));
+                    api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                     await u.waitUntil(() => view.model.messages.length > 2);
                     await u.waitUntil(() => view.querySelectorAll('.chat-msg__error').length === 3);
 
@@ -1339,7 +1341,7 @@ describe('A Chat Message', function () {
 
             it(
                 'will not show to the user an error message for a CSI message',
-                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                     const { api } = _converse;
                     // See #1317
                     // https://github.com/conversejs/converse.js/issues/1317
@@ -1371,7 +1373,7 @@ describe('A Chat Message', function () {
                     await _converse.handleMessageStanza(msg);
 
                     api.connection.get()._dataRecv(
-                        mock.createRequest(stx`
+                        mock.createRequest(_converse, stx`
                     <message xml:lang="en" type="error" from="${contact_jid}" xmlns="jabber:client">
                         <active xmlns="http://jabber.org/protocol/chatstates"/>
                         <no-store xmlns="urn:xmpp:hints"/>
@@ -1393,7 +1395,7 @@ describe('A Chat Message', function () {
 
             it(
                 'will have the error displayed below it',
-                mock.initConverse([], {}, async function (_converse) {
+                mock.initConverse(converse, [], {}, async function (_converse) {
                     const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current', 1);
                     const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -1424,7 +1426,7 @@ describe('A Chat Message', function () {
                             <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">${err_txt}</text>
                         </error>
                     </message>`;
-                    api.connection.get()._dataRecv(mock.createRequest(error));
+                    api.connection.get()._dataRecv(mock.createRequest(_converse, error));
 
                     expect(await u.waitUntil(() => view.querySelector('.chat-error')?.textContent?.trim())).toBe(
                         err_txt,
@@ -1436,7 +1438,7 @@ describe('A Chat Message', function () {
 
         it(
             'will cause the chat area to be scrolled down only if it was at the bottom originally',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current');
                 const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -1473,7 +1475,7 @@ describe('A Chat Message', function () {
 
         it(
             "is ignored if it's intended for a different resource and filter_by_resource is set to true",
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);

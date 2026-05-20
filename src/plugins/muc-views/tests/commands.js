@@ -1,11 +1,13 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('Groupchats', function () {
     describe('Each chat groupchat can take special commands', function () {
         it(
             'takes /help to show the available commands',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 spyOn(window, 'confirm').and.callFake(() => true);
                 await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -132,7 +134,7 @@ describe('Groupchats', function () {
 
         it(
             'takes /help to show the available commands and commands can be disabled by config',
-            mock.initConverse([], { muc_disable_slash_commands: ['mute', 'voice'] }, async function (_converse) {
+            mock.initConverse(converse, [], { muc_disable_slash_commands: ['mute', 'voice'] }, async function (_converse) {
                 await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
@@ -173,7 +175,7 @@ describe('Groupchats', function () {
 
         it(
             'takes /member to make an occupant a member',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 let iq_stanza;
                 const nick = 'romeo';
                 const muc_jid = 'lounge@muc.montague.lit';
@@ -184,7 +186,7 @@ describe('Groupchats', function () {
                  * receive our own.
                  */
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                                 xmlns="jabber:client"
                                 to="romeo@montague.lit/orchard"
@@ -247,7 +249,7 @@ describe('Groupchats', function () {
                     from="lounge@muc.montague.lit"
                     id="${sent_stanza.getAttribute('id')}"/>`;
                 _converse.api.connection.get().IQ_stanzas = [];
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
                 iq_stanza = await u.waitUntil(() =>
                     _converse.api.connection
                         .get()
@@ -260,7 +262,8 @@ describe('Groupchats', function () {
                 expect(iq_stanza).toEqualStanza(
                     stx`<iq id="${iq_stanza.getAttribute('id')}" to="lounge@muc.montague.lit" type="get" xmlns="jabber:client">
                             <query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="member"/></query>
-                        </iq>`);
+                        </iq>`,
+                );
                 expect(view.model.occupants.length).toBe(2);
 
                 result = stx`<iq xmlns="jabber:client"
@@ -272,7 +275,7 @@ describe('Groupchats', function () {
                             <item jid="marc" affiliation="member"/>
                         </query>
                     </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
 
                 expect(view.model.occupants.length).toBe(2);
                 iq_stanza = await u.waitUntil(() =>
@@ -287,7 +290,8 @@ describe('Groupchats', function () {
                 expect(iq_stanza).toEqualStanza(
                     stx`<iq id="${iq_stanza.getAttribute('id')}" to="lounge@muc.montague.lit" type="get" xmlns="jabber:client">
                             <query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="owner"/></query>
-                        </iq>`);
+                        </iq>`,
+                );
                 expect(view.model.occupants.length).toBe(2);
 
                 result = stx`<iq xmlns="jabber:client"
@@ -299,7 +303,7 @@ describe('Groupchats', function () {
                             <item jid="romeo@montague.lit" affiliation="owner"/>
                         </query>
                     </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
 
                 expect(view.model.occupants.length).toBe(2);
                 iq_stanza = await u.waitUntil(() =>
@@ -314,7 +318,8 @@ describe('Groupchats', function () {
                 expect(iq_stanza).toEqualStanza(
                     stx`<iq id="${iq_stanza.getAttribute('id')}" to="lounge@muc.montague.lit" type="get" xmlns="jabber:client">
                             <query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="admin"/></query>
-                        </iq>`);
+                        </iq>`,
+                );
                 expect(view.model.occupants.length).toBe(2);
 
                 result = stx`<iq xmlns="jabber:client"
@@ -324,7 +329,7 @@ describe('Groupchats', function () {
                         id="${iq_stanza.getAttribute('id')}">
                     <query xmlns="http://jabber.org/protocol/muc#admin"></query>
                 </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
 
                 if (view.model.get('hidden_occupants')) {
                     // Happens in headless chrome
@@ -339,7 +344,7 @@ describe('Groupchats', function () {
 
         it(
             'takes /topic to set the groupchat topic',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 // Check the alias /topic
@@ -407,7 +412,7 @@ describe('Groupchats', function () {
 
         it(
             'takes /clear to clear messages',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
@@ -429,7 +434,7 @@ describe('Groupchats', function () {
 
         it(
             'takes /owner to make a user an owner',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 let sent_IQ, IQ_id;
                 const sendIQ = _converse.api.connection.get().sendIQ;
                 spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -442,7 +447,7 @@ describe('Groupchats', function () {
                 spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                             from="lounge@montague.lit/annoyingGuy"
                             id="27C55F89-1C6A-459A-9EB5-77690145D624"
@@ -505,7 +510,7 @@ describe('Groupchats', function () {
                 );
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                         from="lounge@montague.lit/annoyingGuy"
                         id="27C55F89-1C6A-459A-9EB5-77690145D628"
@@ -527,7 +532,7 @@ describe('Groupchats', function () {
 
         it(
             'takes /ban to ban a user',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 let sent_IQ, IQ_id;
                 const sendIQ = _converse.api.connection.get().sendIQ;
                 spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -540,7 +545,7 @@ describe('Groupchats', function () {
                 spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                             from="lounge@montague.lit/annoyingGuy"
                             id="27C55F89-1C6A-459A-9EB5-77690145D624"
@@ -592,7 +597,7 @@ describe('Groupchats', function () {
                 );
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                         from='lounge@montague.lit/annoyingGuy'
                         id='27C55F89-1C6A-459A-9EB5-77690145D628'
@@ -615,7 +620,7 @@ describe('Groupchats', function () {
                 );
                 expect(view.querySelector('.chat-info:last-child q').textContent.trim()).toBe("You're annoying");
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                         from="lounge@montague.lit/joe2"
                         id="27C55F89-1C6A-459A-9EB5-77690145D624"
@@ -640,7 +645,7 @@ describe('Groupchats', function () {
 
         it(
             'takes a /kick command to kick a user',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 let sent_IQ, IQ_id;
                 const sendIQ = _converse.api.connection.get().sendIQ;
                 spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -663,7 +668,7 @@ describe('Groupchats', function () {
                         <item jid='annoyingguy@montague.lit' affiliation='none' role='participant'/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
                 const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
                 textarea.value = '/kick';
@@ -689,7 +694,8 @@ describe('Groupchats', function () {
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2);
                 expect(view.model.setRole).toHaveBeenCalled();
-                expect(sent_IQ).toEqualStanza(stx`<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
+                expect(sent_IQ)
+                    .toEqualStanza(stx`<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
                     <query xmlns="http://jabber.org/protocol/muc#admin">
                         <item nick="annoying guy" role="none">
                             <reason>You're annoying</reason>
@@ -711,7 +717,7 @@ describe('Groupchats', function () {
                     </x>
                 </presence>`;
 
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 2);
                 expect(view.querySelectorAll('.chat-info__message')[1].textContent.trim()).toBe(
@@ -723,7 +729,7 @@ describe('Groupchats', function () {
 
         it(
             'takes /op and /deop to make a user a moderator or not',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
                 const view = _converse.chatboxviews.get(muc_jid);
@@ -738,7 +744,7 @@ describe('Groupchats', function () {
 
                 // New user enters the groupchat
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                         from="lounge@montague.lit/trustworthyguy"
                         id="27C55F89-1C6A-459A-9EB5-77690145D624"
@@ -783,7 +789,8 @@ describe('Groupchats', function () {
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2);
                 expect(view.model.setRole).toHaveBeenCalled();
-                expect(sent_IQ).toEqualStanza(stx`<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
+                expect(sent_IQ)
+                    .toEqualStanza(stx`<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
                     <query xmlns="http://jabber.org/protocol/muc#admin">
                         <item nick="trustworthyguy" role="moderator">
                             <reason>You're trustworthy</reason>
@@ -792,7 +799,7 @@ describe('Groupchats', function () {
                 </iq>`);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                         from="lounge@montague.lit/trustworthyguy"
                         to="romeo@montague.lit/desktop"
@@ -829,7 +836,7 @@ describe('Groupchats', function () {
                 </iq>`);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                         from="lounge@montague.lit/trustworthyguy"
                         to="romeo@montague.lit/desktop"
@@ -850,7 +857,7 @@ describe('Groupchats', function () {
 
         it(
             'takes /mute and /voice to mute and unmute a user',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
                 const view = _converse.chatboxviews.get(muc_jid);
@@ -865,7 +872,7 @@ describe('Groupchats', function () {
 
                 // New user enters the groupchat
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                             from="lounge@montague.lit/annoyingGuy"
                             id="27C55F89-1C6A-459A-9EB5-77690145D624"
@@ -928,7 +935,7 @@ describe('Groupchats', function () {
                  * </presence>
                  */
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(stx`<presence
+                    mock.createRequest(_converse, stx`<presence
                     from="lounge@montague.lit/annoyingGuy"
                     to="romeo@montague.lit/desktop"
                     xmlns="jabber:client">
@@ -962,7 +969,7 @@ describe('Groupchats', function () {
                 </iq>`);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                         from="lounge@montague.lit/annoyingGuy"
                         to="romeo@montague.lit/desktop"
@@ -983,7 +990,7 @@ describe('Groupchats', function () {
 
         it(
             'takes /destroy to destroy a muc',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const new_muc_jid = 'foyer@montague.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
@@ -1028,7 +1035,7 @@ describe('Groupchats', function () {
                 xmlns="jabber:client"/>`;
                 expect(_converse.chatboxes.length).toBe(2);
                 spyOn(_converse.api, 'trigger').and.callThrough();
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result_stanza));
                 await u.waitUntil(
                     () => view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED,
                 );
@@ -1066,7 +1073,7 @@ describe('Groupchats', function () {
                 to="${_converse.api.connection.get().jid}"
                 xmlns="jabber:client"/>`;
                 expect(_converse.chatboxes.length).toBe(2);
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result_stanza));
                 await u.waitUntil(
                     () => view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED,
                 );

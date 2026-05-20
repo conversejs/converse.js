@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const u = converse.env.utils;
 
@@ -6,10 +7,11 @@ describe('The Login Form', function () {
     it(
         'shows the domain name when locked_domain is set',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             { auto_login: false, allow_registration: false, locked_domain: 'jabber.hot-chilli.eu' },
             async function (_converse) {
-                mock.toggleControlBox();
+                mock.toggleControlBox(_converse);
                 const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
                 await u.waitUntil(() => cbview.querySelectorAll('div.input-group').length);
 
@@ -24,10 +26,11 @@ describe('The Login Form', function () {
     it(
         'contains a checkbox to indicate whether the computer is trusted or not',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             { auto_login: false, allow_registration: false },
             async function (_converse) {
-                mock.toggleControlBox();
+                mock.toggleControlBox(_converse);
                 const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
                 await u.waitUntil(() => cbview.querySelectorAll('input[type="checkbox"]').length);
 
@@ -59,10 +62,11 @@ describe('The Login Form', function () {
     it(
         'checkbox can be set to false by default',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             { auto_login: false, allow_user_trust_override: 'off', allow_registration: false },
             async function (_converse) {
-                mock.toggleControlBox();
+                mock.toggleControlBox(_converse);
                 const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
                 await u.waitUntil(() => cbview.querySelectorAll('input[type="checkbox"]').length);
 

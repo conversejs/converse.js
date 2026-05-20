@@ -6,7 +6,7 @@
  * @typedef {import('../plugins/status/profile').default} Profile
  * @typedef {import('../plugins/vcard/vcard').default} VCards
  */
-import log from "@converse/log";
+import log from '@converse/log';
 import i18n from './i18n.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import { EventEmitter, Model } from '@converse/skeletor';
@@ -28,9 +28,8 @@ import {
     PAUSED,
     PREBIND,
     SUCCESS,
-    VERSION_NAME
-} from './constants';
-
+    VERSION_NAME,
+} from './constants.js';
 
 const DEPRECATED_ATTRS = {
     chatboxes: null,
@@ -50,8 +49,7 @@ const DEPRECATED_ATTRS = {
     COMPOSING,
     PAUSED,
     GONE,
-}
-
+};
 
 /**
  * A private, closured namespace containing the private api (via {@link _converse.api})
@@ -60,8 +58,7 @@ const DEPRECATED_ATTRS = {
  * @namespace _converse
  */
 export class ConversePrivateGlobal extends EventEmitter(Object) {
-
-    constructor () {
+    constructor() {
         super();
         const proxy = new Proxy(this, {
             get: (target, key) => {
@@ -70,14 +67,14 @@ export class ConversePrivateGlobal extends EventEmitter(Object) {
                         log.warn(`Accessing ${key} on _converse is DEPRECATED`);
                     }
                 }
-                return Reflect.get(target, key)
-            }
+                return Reflect.get(target, key);
+            },
         });
         proxy.initialize();
         return proxy;
     }
 
-    initialize () {
+    initialize() {
         this.VERSION_NAME = VERSION_NAME;
 
         this.strict_plugin_dependencies = false;
@@ -86,7 +83,7 @@ export class ConversePrivateGlobal extends EventEmitter(Object) {
 
         this.templates = {};
 
-        this.storage = /** @type {Record<string, BrowserStorage.LocalForage>} */{};
+        this.storage = /** @type {Record<string, BrowserStorage.LocalForage>} */ {};
 
         this.promises = {
             initialized: getOpenPromise(),
@@ -96,9 +93,9 @@ export class ConversePrivateGlobal extends EventEmitter(Object) {
 
         // Set as module attr so that we can override in tests.
         // TODO: replace with config settings
-        this.TIMEOUTS =  {
+        this.TIMEOUTS = {
             PAUSED: 10000,
-            INACTIVE: 90000
+            INACTIVE: 90000,
         };
 
         Object.assign(this, DEPRECATED_ATTRS);
@@ -111,7 +108,7 @@ export class ConversePrivateGlobal extends EventEmitter(Object) {
          * @typedef {Record<string, string>} UserMessage
          * @typedef {Record<string, string|UserMessage>} UserMessages
          */
-        this.labels = /** @type {UserMessages} */({});
+        this.labels = /** @type {UserMessages} */ ({});
 
         /**
          * Namespace for storing code that might be useful to 3rd party
@@ -119,13 +116,13 @@ export class ConversePrivateGlobal extends EventEmitter(Object) {
          * access to code (e.g. classes) from converse.js without having to add
          * converse.js as a dependency.
          */
-        this.exports = /** @type {Record<string, Object>} */({});
+        this.exports = /** @type {Record<string, Object>} */ ({});
 
         /**
          * Provides a way for 3rd party plugins to access constants used by
          * Converse.
          */
-        this.constants = /** @type {Record<string, string|Object>} */({});
+        this.constants = /** @type {Record<string, string|Object>} */ ({});
 
         /**
          * Utility methods and globals from bundled 3rd party libraries.
@@ -141,25 +138,23 @@ export class ConversePrivateGlobal extends EventEmitter(Object) {
          * @property {Profile} profile
          * @property {DiscoState} disco
          */
-        this.state = /** @type {ConverseState} */({});
+        this.state = /** @type {ConverseState} */ ({});
 
         this.initSession();
     }
 
-    initSession () {
+    initSession() {
         this.state.session?.destroy();
         this.state.session = new Model();
 
         // XXX DEPRECATED
         this.session = this.state.session;
-        Object.assign(
-            this, {
-                jid: undefined,
-                bare_jid: undefined,
-                domain: undefined,
-                resource: undefined
-            }
-        );
+        Object.assign(this, {
+            jid: undefined,
+            bare_jid: undefined,
+            domain: undefined,
+            resource: undefined,
+        });
     }
 
     /**
@@ -168,7 +163,7 @@ export class ConversePrivateGlobal extends EventEmitter(Object) {
      * @memberOf _converse
      * @param {...String} args
      */
-    __ (...args) {
+    __(...args) {
         return i18n.__(...args);
     }
 
@@ -187,7 +182,7 @@ export class ConversePrivateGlobal extends EventEmitter(Object) {
      * @memberOf _converse
      * @param {String} str
      */
-    ___ (str) {
+    ___(str) {
         return str;
     }
 }

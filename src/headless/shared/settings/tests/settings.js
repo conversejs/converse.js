@@ -2,7 +2,7 @@ import { initConverse } from "../../../tests/mock.js";
 
 describe("The \"settings\" API", function () {
     it("has methods 'get' and 'set' to set configuration settings",
-            initConverse(null, { loglevel: 'debug' }, (_converse) => {
+            initConverse(converse, null, { loglevel: 'debug' }, (_converse) => {
 
         const { api } = _converse;
 
@@ -20,7 +20,7 @@ describe("The \"settings\" API", function () {
     }));
 
     it("extended via settings.extend don't override settings passed in via converse.initialize",
-            initConverse([], {'emoji_categories': {"travel": ":rocket:"}}, (_converse) => {
+            initConverse(converse, [], {'emoji_categories': {"travel": ":rocket:"}}, (_converse) => {
 
         expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
 
@@ -33,7 +33,7 @@ describe("The \"settings\" API", function () {
     }));
 
     it("only overrides the passed in properties",
-            initConverse([],
+            initConverse(converse, [],
             {
                 'root': document.createElement('div').attachShadow({ 'mode': 'open' }),
                 'emoji_categories': { 'travel': ':rocket:' },
@@ -60,7 +60,7 @@ describe("Configuration settings", function () {
     describe("when set", function () {
 
         it("will trigger a change event for which listeners can be registered",
-                initConverse([], {}, function (_converse) {
+                initConverse(converse, [], {}, function (_converse) {
 
             const { api } = _converse;
             let changed;

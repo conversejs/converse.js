@@ -1,10 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { sizzle, u } = converse.env;
 
 describe('A Chat Message', function () {
     it(
         'will render images from their URLs',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             const base_url = `${window.origin}/base`;
             let message = base_url + '/logo/conversejs-filled.svg';
@@ -12,7 +14,7 @@ describe('A Chat Message', function () {
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
@@ -23,7 +25,7 @@ describe('A Chat Message', function () {
             );
 
             message += '?param1=val1&param2=val2';
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
@@ -35,7 +37,7 @@ describe('A Chat Message', function () {
 
             // Test now with two images in one message
             message += ' hello world ' + base_url + '/logo/conversejs-filled.svg';
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 4, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
@@ -45,7 +47,7 @@ describe('A Chat Message', function () {
             // Configured image URLs are rendered
             _converse.api.settings.set('image_urls_regex', /^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i);
             message = 'https://imgur.com/oxymPax';
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 5, 1000);
             expect(view.querySelectorAll('.chat-content .chat-image').length).toBe(5);
 
@@ -59,7 +61,7 @@ describe('A Chat Message', function () {
 
     it(
         'will not render images if render_media is false',
-        mock.initConverse(['chatBoxesFetched'], { 'render_media': false }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'render_media': false }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             const base_url = 'https://conversejs.org';
             const message = base_url + '/logo/conversejs-filled.svg';
@@ -67,7 +69,7 @@ describe('A Chat Message', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             const sel = '.chat-content .chat-msg:last .chat-msg__text';
             await u.waitUntil(
                 () =>
@@ -82,7 +84,7 @@ describe('A Chat Message', function () {
 
     it(
         'will automatically render images from approved URLs only',
-        mock.initConverse(['chatBoxesFetched'], { 'render_media': ['imgur.com'] }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'render_media': ['imgur.com'] }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             const base_url = 'https://conversejs.org';
             let message = 'https://imgur.com/oxymPax.png';
@@ -90,11 +92,11 @@ describe('A Chat Message', function () {
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 1);
 
             message = base_url + '/logo/conversejs-filled.svg';
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 2, 1000);
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 1, 1000);
             expect(view.querySelectorAll('.chat-content .chat-image').length).toBe(1);
@@ -103,7 +105,7 @@ describe('A Chat Message', function () {
 
     it(
         'will automatically update its rendering of media and the message actions when settings change',
-        mock.initConverse(['chatBoxesFetched'], { 'render_media': ['conversejs.org'] }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'render_media': ['conversejs.org'] }, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current');
             const message = 'https://conversejs.org/logo/conversejs-filled-192.svg';
@@ -111,7 +113,7 @@ describe('A Chat Message', function () {
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 1);
 
             const actions_el = view.querySelector('converse-message-actions');
@@ -157,7 +159,7 @@ describe('A Chat Message', function () {
 
     it(
         'will fall back to rendering images as URLs',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             const base_url = 'https://conversejs.org';
             const message = base_url + '/logo/non-existing.svg';
@@ -165,7 +167,7 @@ describe('A Chat Message', function () {
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
@@ -180,7 +182,7 @@ describe('A Chat Message', function () {
 
     it(
         'will fall back to rendering URLs that match image_urls_regex as URLs',
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['rosterGroupsFetched', 'chatBoxesFetched'],
             {
                 'render_media': true,
@@ -193,7 +195,7 @@ describe('A Chat Message', function () {
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
                 spyOn(view.model, 'sendMessage').and.callThrough();
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 await u.waitUntil(() => view.querySelector('.chat-content .chat-msg'));
                 const msg = view.querySelector('.chat-content .chat-msg .chat-msg__text');
@@ -209,14 +211,14 @@ describe('A Chat Message', function () {
 
     it(
         'will respect a changed allowed_image_domains setting when re-rendered',
-        mock.initConverse(['chatBoxesFetched'], { 'render_media': true }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'render_media': true }, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current');
             const message = 'https://imgur.com/oxymPax.png';
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('converse-chat-message-body .chat-image').length === 1);
             expect(view.querySelector('.chat-msg__action-hide-previews')).not.toBe(null);
 
@@ -233,7 +235,7 @@ describe('A Chat Message', function () {
 
     it(
         'will allow the user to toggle visibility of rendered images',
-        mock.initConverse(['chatBoxesFetched'], { 'render_media': true }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'render_media': true }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             // let message = "https://i.imgur.com/Py9ifJE.mp4";
             const base_url = 'https://conversejs.org';
@@ -242,7 +244,7 @@ describe('A Chat Message', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
 
             const sel = '.chat-content .chat-msg:last .chat-msg__text';
             await u.waitUntil(

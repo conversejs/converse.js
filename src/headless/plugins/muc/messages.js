@@ -1,4 +1,4 @@
-import MUCMessage from './message';
+import MUCMessage from './message.js';
 import { Collection } from '@converse/skeletor';
 
 /**
@@ -6,8 +6,7 @@ import { Collection } from '@converse/skeletor';
  * @extends {Collection<MUCMessage>}
  */
 class MUCMessages extends Collection {
-
-    constructor (attrs, options={}) {
+    constructor(attrs, options = {}) {
         super(attrs, Object.assign({ comparator: 'time' }, options));
         this.model = MUCMessage;
         this.fetched = null;

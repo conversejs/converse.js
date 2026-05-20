@@ -1,9 +1,12 @@
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { sizzle, u } = converse.env;
 
 describe('DiscoBrowser', function () {
     it(
         'initializes with the session domain as the first entity',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             await mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
@@ -19,7 +22,7 @@ describe('DiscoBrowser', function () {
 
     it(
         'returns an error message for item-not-found errors',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             await api.modal.show('converse-user-settings-modal');
             const modal = api.modal.get('converse-user-settings-modal');
@@ -45,7 +48,7 @@ describe('DiscoBrowser', function () {
             );
 
             connection._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<iq from="nonexistent.domain"
                         to="${_converse.session.get('jid')}"
                         id="${sent.getAttribute('id')}"
@@ -65,7 +68,7 @@ describe('DiscoBrowser', function () {
 
     it(
         'returns features, identities and items when successful',
-        mock.initConverse(['discoInitialized'], {}, async function (_converse) {
+        mock.initConverse(converse, ['discoInitialized'], {}, async function (_converse) {
             const { api } = _converse;
             await api.modal.show('converse-user-settings-modal');
             const modal = api.modal.get('converse-user-settings-modal');
@@ -101,7 +104,7 @@ describe('DiscoBrowser', function () {
                     <feature var='jabber:iq:version'/>
                 </query>
             </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             await u.waitUntil(() => {
                 // Converse.js sees that the entity has a disco#items feature,
@@ -120,7 +123,7 @@ describe('DiscoBrowser', function () {
             const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq xmlns="jabber:client"
                 type='result'
                 from='montague.lit'
@@ -176,7 +179,7 @@ describe('DiscoBrowser', function () {
 
     it(
         'updates the _entity_jids array to only include up to the clicked breadcrumb',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             await api.modal.show('converse-user-settings-modal');
             const modal = api.modal.get('converse-user-settings-modal');
@@ -195,7 +198,7 @@ describe('DiscoBrowser', function () {
 
     it(
         'updates _entity_jids with the submitted JID',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             await api.modal.show('converse-user-settings-modal');
             const modal = api.modal.get('converse-user-settings-modal');

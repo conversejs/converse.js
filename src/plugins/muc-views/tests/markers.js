@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { u, stx } = converse.env;
 
@@ -7,7 +8,7 @@ const { u, stx } = converse.env;
 describe('A XEP-0333 Chat Marker', function () {
     it(
         'may be returned for a MUC message',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
@@ -32,7 +33,7 @@ describe('A XEP-0333 Chat Marker', function () {
                      from="lounge@montague.lit/some1" type="groupchat" xmlns="jabber:client">
                 <received xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
             expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
@@ -41,7 +42,7 @@ describe('A XEP-0333 Chat Marker', function () {
                      from="lounge@montague.lit/some1" type="groupchat" xmlns="jabber:client">
                 <displayed xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
@@ -50,7 +51,7 @@ describe('A XEP-0333 Chat Marker', function () {
                      from="lounge@montague.lit/some1" type="groupchat" xmlns="jabber:client">
                 <acknowledged xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
@@ -62,7 +63,7 @@ describe('A XEP-0333 Chat Marker', function () {
                 <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
             expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
         }),

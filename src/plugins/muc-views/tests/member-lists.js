@@ -1,11 +1,13 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { Strophe, sizzle, u, stx } = converse.env;
 
 describe('A Groupchat', function () {
     describe('upon being entered', function () {
         it(
             'will fetch the member list if muc_fetch_members is true',
-            mock.initConverse([], { 'muc_fetch_members': true }, async function (_converse) {
+            mock.initConverse(converse, [], { 'muc_fetch_members': true }, async function (_converse) {
                 const { api } = _converse;
                 let sent_IQs = _converse.api.connection.get().IQ_stanzas;
                 const muc_jid = 'lounge@montague.lit';
@@ -15,17 +17,20 @@ describe('A Groupchat', function () {
 
                 // Check in reverse order that we requested all three lists
                 const owner_iq = sent_IQs.pop();
-                expect(owner_iq).toEqualStanza(stx`<iq id="${owner_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+                expect(owner_iq)
+                    .toEqualStanza(stx`<iq id="${owner_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
                     <query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="owner"/></query>
                 </iq>`);
 
                 const admin_iq = sent_IQs.pop();
-                expect(admin_iq).toEqualStanza(stx`<iq id="${admin_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+                expect(admin_iq)
+                    .toEqualStanza(stx`<iq id="${admin_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
                     <query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="admin"/></query>
                 </iq>`);
 
                 const member_iq = sent_IQs.pop();
-                expect(member_iq).toEqualStanza(stx`<iq id="${member_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+                expect(member_iq)
+                    .toEqualStanza(stx`<iq id="${member_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
                     <query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="member"/></query>
                 </iq>`);
                 view.close();
@@ -60,7 +65,7 @@ describe('A Groupchat', function () {
 
         it(
             'will not fetch the member list if the user is not affiliated',
-            mock.initConverse([], { 'muc_fetch_members': true }, async function (_converse) {
+            mock.initConverse(converse, [], { 'muc_fetch_members': true }, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const sent_IQs = _converse.api.connection.get().IQ_stanzas;
                 spyOn(_converse.exports.MUCOccupants.prototype, 'fetchMembers').and.callThrough();
@@ -84,7 +89,7 @@ describe('A Groupchat', function () {
         describe('when fetching the member lists', function () {
             it(
                 'gracefully handles being forbidden from fetching the lists for certain affiliations',
-                mock.initConverse([], { 'muc_fetch_members': true }, async function (_converse) {
+                mock.initConverse(converse, [], { 'muc_fetch_members': true }, async function (_converse) {
                     const sent_IQs = _converse.api.connection.get().IQ_stanzas;
                     const muc_jid = 'lounge@montague.lit';
                     const features = [
@@ -109,15 +114,18 @@ describe('A Groupchat', function () {
 
                     // Check in reverse order that we requested all three lists
                     const owner_iq = sent_IQs.pop();
-                    expect(owner_iq).toEqualStanza(stx`<iq id="${owner_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+                    expect(owner_iq)
+                        .toEqualStanza(stx`<iq id="${owner_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
                         <query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="owner"/></query>
                     </iq>`);
                     const admin_iq = sent_IQs.pop();
-                    expect(admin_iq).toEqualStanza(stx`<iq id="${admin_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+                    expect(admin_iq)
+                        .toEqualStanza(stx`<iq id="${admin_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
                         <query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="admin"/></query>
                     </iq>`);
                     const member_iq = sent_IQs.pop();
-                    expect(member_iq).toEqualStanza(stx`<iq id="${member_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+                    expect(member_iq)
+                        .toEqualStanza(stx`<iq id="${member_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
                         <query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="member"/></query>
                     </iq>`);
 
@@ -127,14 +135,14 @@ describe('A Groupchat', function () {
                         <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
                     </iq>`,
                     );
-                    _converse.api.connection.get()._dataRecv(mock.createRequest(err_stanza));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, err_stanza));
 
                     err_stanza = u.toStanza(
                         `<iq xmlns="jabber:client" type="error" to="${_converse.jid}" from="${muc_jid}" id="${owner_iq.getAttribute('id')}">
                         <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
                     </iq>`,
                     );
-                    _converse.api.connection.get()._dataRecv(mock.createRequest(err_stanza));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, err_stanza));
 
                     // Now the service sends the member lists to the user
                     const member_list_stanza = stx`
@@ -147,7 +155,7 @@ describe('A Groupchat', function () {
                             <item affiliation="member" jid="hag66@shakespeare.lit" nick="thirdwitch" role="participant"/>
                         </query>
                     </iq>`;
-                    _converse.api.connection.get()._dataRecv(mock.createRequest(member_list_stanza));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, member_list_stanza));
 
                     await u.waitUntil(() => view.model.occupants.length > 1);
                     expect(view.model.occupants.length).toBe(2);
@@ -169,7 +177,7 @@ describe('A Groupchat', function () {
 describe('Someone being invited to a groupchat', function () {
     it(
         'will first be added to the member list if the groupchat is members only',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             spyOn(_converse.exports.MUCOccupants.prototype, 'fetchMembers').and.callThrough();
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
@@ -180,12 +188,15 @@ describe('Someone being invited to a groupchat', function () {
             // Check that the groupchat queried for the features.
             let stanza = await u.waitUntil(() =>
                 sent_IQs
-                    .filter((iq) =>
-                        sizzle(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`, iq).length,
+                    .filter(
+                        (iq) =>
+                            sizzle(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`, iq)
+                                .length,
                     )
                     .pop(),
             );
-            expect(stanza).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
+            expect(stanza)
+                .toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">
                 <query xmlns="http://jabber.org/protocol/disco#info"/>
             </iq>`);
 
@@ -203,7 +214,7 @@ describe('Someone being invited to a groupchat', function () {
                     <feature var="muc_membersonly"/>
                 </query>
             </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, features_stanza));
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             await u.waitUntil(() => sent_stanzas.filter((s) => s.matches(`presence[to="${muc_jid}/${nick}"]`)).pop());
 
@@ -227,17 +238,20 @@ describe('Someone being invited to a groupchat', function () {
 
             // Check in reverse order that we requested all three lists
             const owner_iq = sent_IQs.pop();
-            expect(owner_iq).toEqualStanza(stx`<iq id="${owner_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">
+            expect(owner_iq)
+                .toEqualStanza(stx`<iq id="${owner_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">
                 <query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="owner"/></query>
             </iq>`);
 
             const admin_iq = sent_IQs.pop();
-            expect(admin_iq).toEqualStanza(stx`<iq id="${admin_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">
+            expect(admin_iq)
+                .toEqualStanza(stx`<iq id="${admin_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">
                 <query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="admin"/></query>
             </iq>`);
 
             const member_iq = sent_IQs.pop();
-            expect(member_iq).toEqualStanza(stx`<iq id="${member_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">
+            expect(member_iq)
+                .toEqualStanza(stx`<iq id="${member_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">
                 <query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="member"/></query>
             </iq>`);
 
@@ -252,7 +266,7 @@ describe('Someone being invited to a groupchat', function () {
                     <item affiliation="member" jid="hag66@shakespeare.lit" nick="thirdwitch" role="participant"/>
                 </query>
             </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(member_list_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, member_list_stanza));
 
             const admin_list_stanza = stx`
             <iq from="coven@chat.shakespeare.lit"
@@ -264,7 +278,7 @@ describe('Someone being invited to a groupchat', function () {
                     <item affiliation="admin" jid="wiccarocks@shakespeare.lit" nick="secondwitch"/>
                 </query>
             </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(admin_list_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, admin_list_stanza));
 
             const owner_list_stanza = stx`
             <iq from="coven@chat.shakespeare.lit"
@@ -276,13 +290,15 @@ describe('Someone being invited to a groupchat', function () {
                     <item affiliation="owner" jid="crone1@shakespeare.lit"/>
                 </query>
             </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(owner_list_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, owner_list_stanza));
 
             // Converse puts the user on the member list
             stanza = await u.waitUntil(() =>
                 sent_IQs
-                    .filter((iq) =>
-                        sizzle(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/muc#admin"]`, iq).length,
+                    .filter(
+                        (iq) =>
+                            sizzle(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/muc#admin"]`, iq)
+                                .length,
                     )
                     .pop(),
             );
@@ -303,7 +319,7 @@ describe('Someone being invited to a groupchat', function () {
                 to="romeo@montague.lit/orchard"
                 type="result"
                 xmlns="jabber:client"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
 
             await u.waitUntil(() => view.model.occupants.fetchMembers.calls.count());
 

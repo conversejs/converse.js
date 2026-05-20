@@ -1,15 +1,14 @@
 import tplMUCBookmarkForm from './templates/form.js';
-import { CustomElement } from 'shared/components/element';
+import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from '@converse/headless';
 
 class MUCBookmarkForm extends CustomElement {
-
-    constructor () {
+    constructor() {
         super();
         this.jid = null;
     }
 
-    static get properties () {
+    static get properties() {
         return {
             'jid': { type: String },
         };
@@ -34,7 +33,7 @@ class MUCBookmarkForm extends CustomElement {
     /**
      * @param {Event} ev
      */
-    onBookmarkFormSubmitted (ev) {
+    onBookmarkFormSubmitted(ev) {
         ev.preventDefault();
         const { bookmarks } = _converse.state;
         const form = /** @type {HTMLFormElement} */ (ev.target);
@@ -51,7 +50,7 @@ class MUCBookmarkForm extends CustomElement {
     /**
      * @param {Event} ev
      */
-    removeBookmark (ev) {
+    removeBookmark(ev) {
         this.bookmark?.destroy();
         this.closeBookmarkForm(ev);
     }
@@ -59,13 +58,13 @@ class MUCBookmarkForm extends CustomElement {
     /**
      * @param {Event} ev
      */
-    closeBookmarkForm (ev) {
+    closeBookmarkForm(ev) {
         ev.preventDefault();
         this.dispatchEvent(
             new Event('hide.bs.modal', {
                 bubbles: true,
                 cancelable: true,
-            })
+            }),
         );
     }
 }

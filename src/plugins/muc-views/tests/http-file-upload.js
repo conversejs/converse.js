@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { Strophe, sizzle, u, stx } = converse.env;
 
@@ -7,7 +8,7 @@ describe('XEP-0363: HTTP File Upload', function () {
         describe('A file upload toolbar button', function () {
             it(
                 'does not appear in MUC chats',
-                mock.initConverse([], {}, async (_converse) => {
+                mock.initConverse(converse, [], {}, async (_converse) => {
                     await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                     mock.waitUntilDiscoConfirmed(
                         _converse,
@@ -31,7 +32,7 @@ describe('XEP-0363: HTTP File Upload', function () {
         describe('A file upload toolbar button', function () {
             it(
                 'appears in MUC chats',
-                mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
+                mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
                     await mock.waitUntilDiscoConfirmed(
                         _converse,
                         _converse.domain,
@@ -68,7 +69,7 @@ describe('XEP-0363: HTTP File Upload', function () {
             describe('when clicked and a file chosen', function () {
                 it(
                     'is uploaded and sent out from a groupchat',
-                    mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
+                    mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
                         const base_url = 'https://conversejs.org';
                         await mock.waitUntilDiscoConfirmed(
                             _converse,
@@ -122,7 +123,8 @@ describe('XEP-0363: HTTP File Upload', function () {
                                     .length,
                         );
                         const iq = IQ_stanzas.pop();
-                        expect(iq).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="upload.montague.tld" type="get" xmlns="jabber:client">
+                        expect(iq)
+                            .toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="upload.montague.tld" type="get" xmlns="jabber:client">
                             <request content-type="image/jpeg" filename="my-juliet.jpg" size="23456" xmlns="urn:xmpp:http:upload:0"/>
                         </iq>`);
 
@@ -163,7 +165,7 @@ describe('XEP-0363: HTTP File Upload', function () {
                         });
                         let sent_stanza;
                         spyOn(_converse.api.connection.get(), 'send').and.callFake((stanza) => (sent_stanza = stanza));
-                        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                        _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                         await u.waitUntil(() => sent_stanza, 1000);
                         expect(sent_stanza).toEqualStanza(stx`

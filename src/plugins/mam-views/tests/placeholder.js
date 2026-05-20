@@ -1,11 +1,13 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { Strophe, sizzle, u } = converse.env;
 
 describe('Message Archive Management', function () {
     describe('A placeholder message', function () {
         it(
             'is created to indicate a gap in the history',
-            mock.initConverse(
+            mock.initConverse(converse, 
                 ['discoInitialized'],
                 {
                     auto_fill_history_gaps: false,
@@ -70,7 +72,7 @@ describe('Message Archive Management', function () {
                         </forwarded>
                     </result>
                 </message>`;
-                    conn._dataRecv(mock.createRequest(message));
+                    conn._dataRecv(mock.createRequest(_converse, message));
 
                     message = stx`
                 <message xmlns="jabber:client"
@@ -85,7 +87,7 @@ describe('Message Archive Management', function () {
                         </forwarded>
                     </result>
                 </message>`;
-                    conn._dataRecv(mock.createRequest(message));
+                    conn._dataRecv(mock.createRequest(_converse, message));
 
                     // Clear so that we don't match the older query
                     while (sent_IQs.length) {
@@ -102,7 +104,7 @@ describe('Message Archive Management', function () {
                         </set>
                     </fin>
                 </iq>`;
-                    conn._dataRecv(mock.createRequest(result));
+                    conn._dataRecv(mock.createRequest(_converse, result));
                     await u.waitUntil(() => view.model.messages.length === 5);
 
                     expect(view.model.messages.at(0) instanceof _converse.MAMPlaceholderMessage).toBe(true);
@@ -149,7 +151,7 @@ describe('Message Archive Management', function () {
                         </forwarded>
                     </result>
                 </message>`;
-                    conn._dataRecv(mock.createRequest(message));
+                    conn._dataRecv(mock.createRequest(_converse, message));
 
                     // Clear so that we don't match the older query
                     while (sent_IQs.length) {
@@ -166,7 +168,7 @@ describe('Message Archive Management', function () {
                         </set>
                     </fin>
                 </iq>`;
-                    conn._dataRecv(mock.createRequest(result));
+                    conn._dataRecv(mock.createRequest(_converse, result));
                     await u.waitUntil(() => view.model.messages.length === 5);
                     await u.waitUntil(() => view.querySelectorAll('converse-mam-placeholder').length === 1);
                 },
@@ -175,7 +177,7 @@ describe('Message Archive Management', function () {
 
         it(
             'is not created when the full RSM result set is returned',
-            mock.initConverse(['discoInitialized'], { 'archived_messages_page_size': 2 }, async function (_converse) {
+            mock.initConverse(converse, ['discoInitialized'], { 'archived_messages_page_size': 2 }, async function (_converse) {
                 const sent_IQs = _converse.api.connection.get().IQ_stanzas;
                 const muc_jid = 'orchard@chat.shakespeare.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
@@ -199,7 +201,7 @@ describe('Message Archive Management', function () {
                         </forwarded>
                     </result>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
 
                 message = stx`
                 <message xmlns="jabber:client"
@@ -214,7 +216,7 @@ describe('Message Archive Management', function () {
                         </forwarded>
                     </result>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
 
                 // Clear so that we don't match the older query
                 while (sent_IQs.length) {
@@ -230,7 +232,7 @@ describe('Message Archive Management', function () {
                         </set>
                     </fin>
                 </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
                 await u.waitUntil(() => view.model.messages.length === 2);
                 expect(view.model.messages.pluck('id').join(',')).toBe(`${first_msg_id},${last_msg_id}`);
             }),

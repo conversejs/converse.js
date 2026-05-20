@@ -7,9 +7,9 @@ description: All available configuration settings for Converse.
 
 The included minified JavaScript and CSS files can be used for demoing or testing, but you'll want to configure Converse to suit your needs before you deploy it on your website.
 
-Converse is passed its configuration settings when you call its *initialize* method.
+Converse is passed its configuration settings when you call its _initialize_ method.
 
-You'll most likely want to call the *initialize* method in your HTML page. For an example of how this is done, please see the bottom of the *./index.html* page.
+You'll most likely want to call the _initialize_ method in your HTML page. For an example of how this is done, please see the bottom of the _./index.html_ page.
 
 Please refer to the [Configuration settings](#configuration-settings) section below for info on all the available configuration settings.
 
@@ -17,7 +17,7 @@ Please refer to the [Configuration settings](#configuration-settings) section be
 
 ### autocomplete_providers_url
 
-* Default: `https://data.xmpp.net/providers/v2/providers-Ds.json`
+- Default: `https://data.xmpp.net/providers/v2/providers-Ds.json`
 
 This setting specifies the URL from which to fetch a list of XMPP provider domains
 for autocomplete suggestions when adding a new contact.
@@ -31,7 +31,7 @@ the autocomplete will suggest domains from both:
 The URL should return a JSON array of domain strings, for example:
 
 ```json
-    ["jabber.de", "jabber.fr", "conversations.im", "disroot.org"]
+["jabber.de", "jabber.fr", "conversations.im", "disroot.org"]
 ```
 
 This uses the [XMPP Providers](https://providers.xmpp.net/) project's Category D list,
@@ -40,11 +40,10 @@ which includes all known XMPP providers regardless of quality rating.
 To disable this feature and only show domains from the user's roster, set this to an empty string:
 
 ```javascript
-    converse.initialize({
-        autocomplete_providers_url: ''
-    });
+converse.initialize({
+    autocomplete_providers_url: '',
+});
 ```
-
 
 ### allowed_audio_domains
 
@@ -81,7 +80,7 @@ The default means is `login`, which means that the user either logs in manually 
 
 #### external
 
-This setting will still show a login form and submit button, but the form will only contain an input for the user's JID, *not* for the password.
+This setting will still show a login form and submit button, but the form will only contain an input for the user's JID, _not_ for the password.
 
 That's because this setting is intended to be used when you are using SASL-EXTERNAL as authentication mechanism, in which case a password is usually not required.
 
@@ -113,14 +112,14 @@ In addition to setting [authentication](#authentication) to `prebind`, you'll al
 
 Here's an example of Converse being initialized with these options:
 
-``` javascript
+```javascript
 converse.initialize({
     bosh_service_url: 'https://bind.example.com',
     jid: 'me@example.com',
     authentication: 'prebind',
     prebind_url: 'http://example.com/api/prebind',
     auto_login: true,
-    allow_logout: false
+    allow_logout: false,
 });
 ```
 
@@ -226,7 +225,7 @@ Allow Converse to change the browser url bar through the History API \<<https://
 
 This setting determines whether a user may decide whether Converse is `trusted` or not (e.g. in the particular browser).
 
-This is done via a *This is a trusted device* checkbox in the login form. If this setting is set to `true` or `off`, the checkbox will be shown to the user, otherwise not.
+This is done via a _This is a trusted device_ checkbox in the login form. If this setting is set to `true` or `off`, the checkbox will be shown to the user, otherwise not.
 
 When this setting is set to `true`, the checkbox will be checked by default. To not have it checked by default, set this setting to `off`.
 
@@ -411,14 +410,11 @@ The core, and by default whitelisted, plugins are:
 
 Example:
 
-``` javascript
+```javascript
 require(['converse-core', 'converse-muc-embedded'], function (converse) {
     converse.initialize({
         // other settings removed for brevity
-        blacklisted_plugins: [
-            'converse-dragresize',
-            'converse-minimize'
-        ],
+        blacklisted_plugins: ['converse-dragresize', 'converse-minimize'],
     });
 });
 ```
@@ -445,9 +441,9 @@ A more modern alternative to BOSH is to use [websockets](https://developer.mozil
 
 If set to `true`, all locally cached data will be cleared when the user logs out, regardless of the [persistent_store](#persistent_store) being used (`localStorage`, `IndexedDB` or `sessionStorage`).
 
-*Note*: If [allow_user_trust_override](#allow_user_trust_override) is set to `true` and the user indicates that this device/browser is **not** trusted, then the cache will be cleared on logout, even if this setting is set to `true`.
+_Note_: If [allow_user_trust_override](#allow_user_trust_override) is set to `true` and the user indicates that this device/browser is **not** trusted, then the cache will be cleared on logout, even if this setting is set to `true`.
 
-*Note*: If this setting is set to `true`, then OMEMO will be disabled, since otherwise it won't be possible to decrypt archived messages that were already decrypted previously (due to forward security).
+_Note_: If this setting is set to `true`, then OMEMO will be disabled, since otherwise it won't be possible to decrypt archived messages that were already decrypted previously (due to forward security).
 
 ### clear_messages_on_reconnection
 
@@ -494,13 +490,11 @@ For documentation on the configuration options that `Strophe.Connection` accepts
 
 As an example, suppose you want to restrict the supported SASL authentication mechanisms, then you'd pass in the `mechanisms` as a `connection_options` `key:value` pair:
 
-``` javascript
+```javascript
 converse.initialize({
     connection_options: {
-        'mechanisms': [
-            converse.env.Strophe.SASLMD5,
-        ]
-    }
+        'mechanisms': [converse.env.Strophe.SASLMD5],
+    },
 });
 ```
 
@@ -508,11 +502,11 @@ converse.initialize({
 
 Newer versions of Strophe.js, support the ability to run the XMPP Connection inside a [shared worker](https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker) that's shared between open tabs in the browser in which Converse is running (and which have the same domain).
 
-*Note:* This feature is experimental and there currently is no way to synchronize actions between tabs. For example, sent 1-on-1 messages aren't reflected by the server, so you if you send such a message in one tab, it won't appear in another.
+_Note:_ This feature is experimental and there currently is no way to synchronize actions between tabs. For example, sent 1-on-1 messages aren't reflected by the server, so you if you send such a message in one tab, it won't appear in another.
 
-``` javascript
+```javascript
 converse.initialize({
-    connection_options: { worker: '/dist/shared-connection-worker.js' }
+    connection_options: { worker: '/dist/shared-connection-worker.js' },
 });
 ```
 
@@ -774,15 +768,27 @@ Determines whether Converse will attempt to keep you logged in across page loads
 
 - Default:
 
-``` javascript
+```javascript
 locales: [
-    'af', 'ca', 'de',
-    'es', 'en', 'fr',
-    'he', 'hu', 'id',
-    'it', 'ja', 'nb',
-    'nl', 'pl', 'pt_BR',
-    'ru', 'uk', 'zh'
-]
+    'af',
+    'ca',
+    'de',
+    'es',
+    'en',
+    'fr',
+    'he',
+    'hu',
+    'id',
+    'it',
+    'ja',
+    'nb',
+    'nl',
+    'pl',
+    'pt_BR',
+    'ru',
+    'uk',
+    'zh',
+];
 ```
 
 This setting restricts the locales that are supported by Converse and therefore what may be given as value for the `i18n` option.
@@ -932,7 +938,7 @@ You can also selectively disable some moderator commands by setting it to an arr
 
 The following example will disable 'mute' and 'voice' command:
 
-``` javascript
+```javascript
 muc_disable_slash_commands: ['mute', 'voice'],
 ```
 
@@ -1041,7 +1047,7 @@ As this only makes sense on your own server, the check is applied only if the do
 
 Example:
 
-``` javascript
+```javascript
 muc_roomid_policy: /^[a-z0-9._-]{5,40}$/,
 ```
 
@@ -1055,7 +1061,7 @@ This option can be used in conjunction with [muc_roomid_policy](#muc_roomid_poli
 
 Example:
 
-``` javascript
+```javascript
 muc_roomid_policy_hint: '<br><b>Policy for groupchat id:</b><br>- between 5 and 40 characters,<br>- lowercase from a to z (no special characters) or<br>- digits or<br>- dots (.) or<br>- underlines (_) or<br>- hyphens (-),<br>- no spaces<br>',
 ```
 
@@ -1063,8 +1069,8 @@ muc_roomid_policy_hint: '<br><b>Policy for groupchat id:</b><br>- between 5 and 
 
 - Default: List composed of MUC status codes, role changes, join and leave events and affiliation changes. The values of converse.MUC_INFO_CODES below are joined to build the default list:
 
-``` javascript
-converse.MUC_AFFILIATION_CHANGES_LIST = ['owner', 'admin', 'member', 'exowner', 'exadmin', 'exmember', 'exoutcast']
+```javascript
+converse.MUC_AFFILIATION_CHANGES_LIST = ['owner', 'admin', 'member', 'exowner', 'exadmin', 'exmember', 'exoutcast'];
 converse.MUC_ROLE_CHANGES_LIST = ['op', 'deop', 'voice', 'mute'];
 converse.MUC_TRAFFIC_STATES_LIST = ['entered', 'exited'];
 
@@ -1083,7 +1089,7 @@ converse.MUC_INFO_CODES = {
 
 This setting determines which info messages will Converse show inside a chatroom. It is recommended to use the aforementioned Converse object in the following fashion to build the list of desired info messages that will be shown:
 
-``` javascript
+```javascript
 muc_show_info_messages: [
     ...converse.MUC_INFO_CODES.visibility_changes,
     ...converse.MUC_INFO_CODES.self,
@@ -1094,7 +1100,7 @@ muc_show_info_messages: [
     ...converse.MUC_INFO_CODES.affiliation_changes,
     ...converse.MUC_INFO_CODES.join_leave_events,
     ...converse.MUC_INFO_CODES.role_changes,
-]
+];
 ```
 
 By default all info messages are shown.
@@ -1166,7 +1172,7 @@ Your XMPP server will have to support Oauth logins
 
 :::
 
-``` javascript
+```javascript
 converse.initialize({
     oauth_providers: {
         'github': {
@@ -1174,15 +1180,15 @@ converse.initialize({
             'host': 'chat.example.org',
             'class': 'fa-github-alt',
             'id': 'github',
-            'name': 'Github'
+            'name': 'Github',
         },
         'twitter': {
             'client_id': '0332d98cff83b1999b22',
             'host': 'chat.example.org',
             'class': 'fa-twitter',
             'id': 'twitter',
-            'name': 'Twitter'
-        }
+            'name': 'Twitter',
+        },
     },
 });
 ```
@@ -1227,7 +1233,7 @@ Example:
 
 ```javascript
 converse.initialize({
-    popular_emojis: [':thumbsup:', ':heart:', ':laughing:', ':joy:', ':tada:']
+    popular_emojis: [':thumbsup:', ':heart:', ':laughing:', ':joy:', ':tada:'],
 });
 ```
 
@@ -1275,9 +1281,11 @@ The hyperlink on the registration form which points to a directory of public XMP
 
 - Default: `'/dist/'` or the [publicPath](https://webpack.js.org/guides/public-path/) value as configured in the relevant Webpack configuration.
 
-Since version 5.0.0, Converse serves a smaller bundle by extracting various resources (for example emojis and translations) into separate files (aka "chunks") which are loaded asynchronously on demand.
+Since version 5.0.0, Converse serves a smaller bundle by extracting various resources
+(for example emojis and translations) into separate files (aka "chunks") which are loaded asynchronously on demand.
 
-The URL path at which these resources are loaded is normally set by the `publicPath` setting of Webpack but this means that it's hardcoded to a particular value at compile time.
+The URL path at which these resources are loaded is normally set by the `publicPath` setting of RSPack
+but this means that it's hardcoded to a particular value at compile time.
 
 This configuration setting allows this value to be set at runtime as well.
 
@@ -1338,16 +1346,19 @@ When disabling, you need to specify at least a `jid` and set `disabled` to `true
 
 For example:
 
-``` javascript
+```javascript
 converse.initialize({
-    'push_app_servers':  [{
-        'jid': 'push-4@client.example',
-        'node': 'yxs32uqsflafdk3iuqo',
-        'disable': true
-    }, {
-        'jid': 'push-5@client.example',
-        'node': 'yxs32uqsflafdk3iuqo',
-    }]
+    'push_app_servers': [
+        {
+            'jid': 'push-4@client.example',
+            'node': 'yxs32uqsflafdk3iuqo',
+            'disable': true,
+        },
+        {
+            'jid': 'push-5@client.example',
+            'node': 'yxs32uqsflafdk3iuqo',
+        },
+    ],
 });
 ```
 
@@ -1396,7 +1407,7 @@ This setting, together with the three allowed domain settings above, obsolete th
 
 - Default: `true`
 
-Most XMPP servers enable the Salted Challenge Response Authentication Mechanism or SCRAM for short. This allows the user and the server to mutually authenticate *without* the need to transmit the user's password in plaintext.
+Most XMPP servers enable the Salted Challenge Response Authentication Mechanism or SCRAM for short. This allows the user and the server to mutually authenticate _without_ the need to transmit the user's password in plaintext.
 
 Assuming the server does not alter the user's password or the storage parameters, we can authenticate with the same SCRAM key multiple times.
 
@@ -1412,7 +1423,7 @@ A list of room config-option names. If this list is non-empty, only the correspo
 
 In the following example the user can only see (and thus change) the roomname and nothing else:
 
-``` javascript
+```javascript
 roomconfig_whitelist: ['muc#roomconfig_roomname'],
 ```
 
@@ -1424,24 +1435,24 @@ When using Converse inside a web component's shadow DOM, you will need to set th
 
 For example:
 
-``` javascript
+```javascript
 class CustomChatComponent extends HTMLElement {
-  constructor() {
-    super();
-    const shadowRoot  = this.attachShadow({mode: "open"});
-    this.initConverse(shadowRoot);
-  }
-
-  initConverse(shadowRoot) {
-      window.addEventListener("converse-loaded", function(event) {
-          const { converse } = event.detail;
-          converse.initialize({
-              root: shadowRoot,
-              // Other settings go here...
-          });
-      });
+    constructor() {
+        super();
+        const shadowRoot = this.attachShadow({ mode: 'open' });
+        this.initConverse(shadowRoot);
     }
-  }
+
+    initConverse(shadowRoot) {
+        window.addEventListener('converse-loaded', function (event) {
+            const { converse } = event.detail;
+            converse.initialize({
+                root: shadowRoot,
+                // Other settings go here...
+            });
+        });
+    }
+}
 ```
 
 ### roster_groups
@@ -1472,9 +1483,9 @@ Can also be set to an Array in order to allow only certain types of chat state n
 
 For example:
 
-``` javascript
+```javascript
 converse.initialize({
-    'send_chat_state_notifications':  ['composing']
+    'send_chat_state_notifications': ['composing'],
 });
 ```
 
@@ -1516,7 +1527,7 @@ Determines whether the login form should show an input element where the user ca
 
 The "controlbox" refers to the special chatbox containing your contacts roster, status widget, chatrooms and other controls.
 
-By default this box is hidden and can be toggled by clicking on any element in the page with class *toggle-controlbox*.
+By default this box is hidden and can be toggled by clicking on any element in the page with class _toggle-controlbox_.
 
 If this options is set to true, the controlbox will by default be shown upon page load.
 
@@ -1685,7 +1696,7 @@ See also [emoji_image_path](#emoji_image_path).
 
 - Default:
 
-``` javascript
+```javascript
 {
     call: false,
     spoiler: false,
@@ -1695,21 +1706,21 @@ See also [emoji_image_path](#emoji_image_path).
 
 Allows you to show or hide buttons on the chatboxes' toolbars.
 
-- *call*:  
+- _call_:  
   Provides a button with a picture of a telephone on it. When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.
 
-  ``` javascript
-  converse.listen.on('callButtonClicked', function(data) {
-      console.log('Strophe connection is', data.connection);
-      console.log('Bare buddy JID is', data.model.get('jid'));
-      // ... Third-party library code ...
-  });
-  ```
+    ```javascript
+    converse.listen.on('callButtonClicked', function (data) {
+        console.log('Strophe connection is', data.connection);
+        console.log('Bare buddy JID is', data.model.get('jid'));
+        // ... Third-party library code ...
+    });
+    ```
 
-- *emoji*:  
+- _emoji_:  
   Enables rendering of emoji and provides a toolbar button for choosing them.
 
-- *spoiler*:  
+- _spoiler_:  
   Shows a button for showing[XEP-0382](https://xmpp.org/extensions/xep-0382.html) spoiler messages.
 
 ### websocket_url
@@ -1781,11 +1792,11 @@ If you are using a custom build which excludes some core plugins, then you shoul
 
 Example:
 
-``` javascript
+```javascript
 require(['converse-core', 'converse-muc-embedded'], function (converse) {
     converse.initialize({
         // other settings removed for brevity
-        whitelisted_plugins: ['myplugin']
+        whitelisted_plugins: ['myplugin'],
     });
 });
 ```
@@ -1806,12 +1817,15 @@ There are two ways to add users.
 
 By providing an XHR search URL, you're enabling the second mechanism.
 
-*What is expected from the remote server?*
+_What is expected from the remote server?_
 
 A default JSON encoded list of objects must be returned. Each object corresponds to a matched user and needs the keys `jid` and `fullname`.
 
-``` javascript
-[{"jid": "marty@mcfly.net", "fullname": "Marty McFly"}, {"jid": "doc@brown.com", "fullname": "Doc Brown"}]
+```javascript
+[
+    { 'jid': 'marty@mcfly.net', 'fullname': 'Marty McFly' },
+    { 'jid': 'doc@brown.com', 'fullname': 'Doc Brown' },
+];
 ```
 
 :::note
@@ -1828,7 +1842,7 @@ Converse will construct the XHR get URL by simply appending `q=<query string ent
 
 Examples:
 
-``` javascript
+```javascript
 xhr_user_search_url: 'https://some.url/some_path?',
 ```
 
@@ -1836,23 +1850,22 @@ xhr_user_search_url: 'https://some.url/some_path?',
 xhr_user_search_url: 'https://some.url/some_path?api_key=somekey&',
 ```
 
-
 ### xmpp_providers_url
 
-* Default: `'https://data.xmpp.net/providers/v2/providers-B.json'`
+- Default: `'https://data.xmpp.net/providers/v2/providers-B.json'`
 
 The URL from which to fetch the curated list of XMPP providers shown on the
 registration form. The list is sourced from the [XMPP Providers](https://invent.kde.org/melvo/xmpp-providers)
 project and displays providers grouped by category (A and B) with details such
 as compliance score, server locations, and service properties.
 
-Set to an empty string or ``false`` to disable the provider list and fall back
+Set to an empty string or `false` to disable the provider list and fall back
 to the manual domain input.
 
 Example:
 
-``` javascript
+```javascript
 converse.initialize({
-    xmpp_providers_url: 'https://data.xmpp.net/providers/v2/providers-B.json'
+    xmpp_providers_url: 'https://data.xmpp.net/providers/v2/providers-B.json',
 });
 ```

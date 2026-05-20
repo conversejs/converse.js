@@ -1,12 +1,11 @@
-import { Collection } from "@converse/skeletor";
-import Resource from "./resource";
+import { Collection } from '@converse/skeletor';
+import Resource from './resource.js';
 
 /**
  * @extends {Collection<Resource>}
  */
 class Resources extends Collection {
-
-    constructor () {
+    constructor() {
         super();
         this.model = Resource;
     }

@@ -1,6 +1,6 @@
 import { api, converse, log, u } from '@converse/headless';
 import { __ } from 'i18n';
-import { CustomElement } from 'shared/components/element';
+import { CustomElement } from 'shared/components/element.js';
 import tplAffiliationForm from './templates/affiliation-form.js';
 
 import './styles/affiliation-form.scss';
@@ -8,7 +8,7 @@ import './styles/affiliation-form.scss';
 const { Strophe, sizzle } = converse.env;
 
 class AffiliationForm extends CustomElement {
-    static get properties () {
+    static get properties() {
         return {
             muc: { type: Object },
             jid: { type: String },
@@ -18,32 +18,32 @@ class AffiliationForm extends CustomElement {
         };
     }
 
-    constructor () {
+    constructor() {
         super();
         this.jid = null;
         this.muc = null;
         this.affiliation = null;
     }
 
-    render () {
+    render() {
         return tplAffiliationForm(this);
     }
 
-    alert (message, type) {
+    alert(message, type) {
         this.alert_message = message;
         this.alert_type = type;
     }
 
-    async assignAffiliation (ev) {
+    async assignAffiliation(ev) {
         ev.stopPropagation();
         ev.preventDefault();
         this.alert(); // clear alert messages
 
         const data = new FormData(ev.target);
-        const affiliation = /** @type {string} */(data.get('affiliation'));
+        const affiliation = /** @type {string} */ (data.get('affiliation'));
         const attrs = {
             jid: this.jid,
-            reason: /** @type {string} */(data.get('reason')),
+            reason: /** @type {string} */ (data.get('reason')),
         };
         const muc_jid = this.muc.get('jid');
         try {

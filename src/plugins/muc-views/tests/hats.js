@@ -1,17 +1,18 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { u, stx } = converse.env;
 
 describe('A XEP-0317 MUC Hat', function () {
     it(
         'can be included in a presence stanza',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <presence
                 to="romeo@montague.lit/_converse.js-29092160"
                 from="coven@chat.shakespeare.lit/newguy"
@@ -25,7 +26,7 @@ describe('A XEP-0317 MUC Hat', function () {
             const hat1_id = u.getUniqueId();
             const hat2_id = u.getUniqueId();
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <presence from="${muc_jid}/Terry" id="${u.getUniqueId()}" to="${_converse.jid}" xmlns="jabber:client">
                 <x xmlns="http://jabber.org/protocol/muc#user">
                     <item affiliation="member" role="participant"/>
@@ -48,7 +49,7 @@ describe('A XEP-0317 MUC Hat', function () {
             expect(hats.map((h) => h.title).join(' ')).toBe("Teacher's Assistant Dark Mage");
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     u.toStanza(`
             <message type="groupchat" from="${muc_jid}/Terry" id="${u.getUniqueId()}" to="${_converse.jid}">
                 <body>Hello world</body>
@@ -64,7 +65,7 @@ describe('A XEP-0317 MUC Hat', function () {
 
             const hat3_id = u.getUniqueId();
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <presence from="${muc_jid}/Terry" id="${u.getUniqueId()}" to="${_converse.jid}" xmlns="jabber:client">
                 <x xmlns="http://jabber.org/protocol/muc#user">
                     <item affiliation="member" role="participant"/>
@@ -86,7 +87,7 @@ describe('A XEP-0317 MUC Hat', function () {
             expect(badges.map((b) => b.textContent.trim()).join(' ')).toBe("Teacher's Assistant Dark Mage Mad hatter");
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <presence from="${muc_jid}/Terry" id="${u.getUniqueId()}" to="${_converse.jid}" xmlns="jabber:client">
                 <x xmlns="http://jabber.org/protocol/muc#user">
                     <item affiliation="member" role="participant"/>

@@ -26,7 +26,7 @@ import {
     isHeadline,
     isValidReceiptRequest,
     throwErrorIfInvalidForward,
-} from '../../shared/parsers';
+} from '../../shared/parsers.js';
 import { STATUS_CODE_STANZAS } from './constants.js';
 
 const { Strophe, dayjs, sizzle, u } = converse.env;

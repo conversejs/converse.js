@@ -1,5 +1,5 @@
 import { Strophe } from 'strophe.js';
-import _converse from '../shared/_converse';
+import _converse from '../shared/_converse.js';
 import { settings_api } from '../shared/settings/api.js';
 
 /**
@@ -98,4 +98,3 @@ export function maybeAppendDomain(jid) {
 
     return jid;
 }
-

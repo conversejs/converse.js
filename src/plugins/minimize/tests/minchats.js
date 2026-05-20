@@ -1,10 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { stx, u } = converse.env;
 
 describe('A chat message', function () {
     it(
         'received for a minimized chat box will increment a counter on its header',
-        mock.initConverse(['chatBoxesFetched'], { 'view_mode': 'overlayed' }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'view_mode': 'overlayed' }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             await mock.waitUntilBlocklistInitialized(_converse);
             const contact_name = mock.cur_names[0];
@@ -69,7 +71,7 @@ describe('A chat message', function () {
 describe('A Groupchat', function () {
     it(
         "can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@conference.shakespeare.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
@@ -92,7 +94,7 @@ describe('A Groupchat', function () {
 describe('A Chatbox', function () {
     it(
         "can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             await mock.waitUntilBlocklistInitialized(_converse);
             await mock.openControlBox(_converse);
@@ -121,7 +123,7 @@ describe('A Chatbox', function () {
 
     it(
         'can be opened in minimized mode initially',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             const minimized_chats = await u.waitUntil(() => document.querySelector('converse-minimized-chats'));
@@ -137,7 +139,7 @@ describe('A Chatbox', function () {
 
     it(
         'can be trimmed to conserve space',
-        mock.initConverse([], { no_trimming: false, show_self_in_roster: false }, async function (_converse) {
+        mock.initConverse(converse, [], { no_trimming: false, show_self_in_roster: false }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
 
@@ -174,7 +176,7 @@ describe('A Chatbox', function () {
 describe("A minimized chat's Unread Message Count", function () {
     it(
         'is displayed when scrolled up chatbox is minimized after receiving unread messages',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { minimize } = converse.env.u;
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -200,7 +202,7 @@ describe("A minimized chat's Unread Message Count", function () {
 
     it(
         'is incremented when message is received and windows is not focused',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             const view = await mock.openChatBoxFor(_converse, sender_jid);
@@ -224,7 +226,7 @@ describe("A minimized chat's Unread Message Count", function () {
 describe('The Minimized Chats Widget', function () {
     it(
         'shows chats that have been minimized',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilBlocklistInitialized(_converse);
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -266,7 +268,7 @@ describe('The Minimized Chats Widget', function () {
 
     it(
         'can be toggled to hide or show minimized chats',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { minimize } = converse.env.u;
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -299,7 +301,7 @@ describe('The Minimized Chats Widget', function () {
 
     it(
         'shows the number messages received to minimized chats',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { minimize } = converse.env.u;
 
             await mock.waitForRoster(_converse, 'current', 4);
@@ -395,7 +397,7 @@ describe('The Minimized Chats Widget', function () {
 
     it(
         'shows the number messages received to minimized groupchats',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { minimize } = converse.env.u;
             const muc_jid = 'kitchen@conference.shakespeare.lit';
             await mock.openAndEnterMUC(_converse, 'kitchen@conference.shakespeare.lit', 'fires');

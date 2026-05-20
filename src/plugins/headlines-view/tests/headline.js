@@ -1,11 +1,12 @@
-/*global mock, converse, _ */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { stx, u } = converse.env;
 
 describe('A headlines box', function () {
     it(
         'will not open nor display non-headline messages',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             /* XMPP spam message:
              *
@@ -25,7 +26,7 @@ describe('A headlines box', function () {
                     <nick xmlns="http://jabber.org/protocol/nick">-wwdmz</nick>
                     <body>SORRY FOR THIS ADVERT</body>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await new Promise((resolve) => setTimeout(resolve, 100));
             const headlines = await _converse.api.headlines.get();
             expect(headlines.length).toBe(0);
@@ -34,7 +35,7 @@ describe('A headlines box', function () {
 
     it(
         'will open and display headline messages',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             /* <message from='notify.example.com'
              *          to='romeo@im.example.com'
@@ -62,7 +63,7 @@ describe('A headlines box', function () {
                     </x>
                 </message>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => _converse.chatboxviews.keys().includes('notify.example.com'));
             const view = _converse.chatboxviews.get('notify.example.com');
             expect(view.model.get('show_avatar')).toBeFalsy();
@@ -72,7 +73,7 @@ describe('A headlines box', function () {
 
     it(
         'will show headline messages in the controlbox',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
 
@@ -106,7 +107,7 @@ describe('A headlines box', function () {
                     </x>
                 </message>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             const view = _converse.chatboxviews.get('controlbox');
             await u.waitUntil(() => view.querySelectorAll('.open-headline').length);
             expect(view.querySelectorAll('.open-headline').length).toBe(1);
@@ -116,7 +117,7 @@ describe('A headlines box', function () {
 
     it(
         'will remove headline messages from the controlbox if closed',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { stx } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.openControlBox(_converse);
@@ -146,7 +147,7 @@ describe('A headlines box', function () {
                     </x>
                 </message>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             const cbview = _converse.chatboxviews.get('controlbox');
             await u.waitUntil(() => cbview.querySelectorAll('.open-headline').length);
             const hlview = _converse.chatboxviews.get('notify.example.com');
@@ -160,7 +161,7 @@ describe('A headlines box', function () {
 
     it(
         'will not show a headline messages from a full JID if allow_non_roster_messaging is false',
-        mock.initConverse(['chatBoxesFetched'], { 'allow_non_roster_messaging': false }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'allow_non_roster_messaging': false }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const { stx } = converse.env;
             const stanza = stx`
@@ -172,7 +173,7 @@ describe('A headlines box', function () {
                     <nick>gpocy</nick>
                     <body>Здравствуйте друзья</body>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             expect(_converse.chatboxviews.keys().filter((k) => k !== 'controlbox').length).toBe(0);
         }),
     );

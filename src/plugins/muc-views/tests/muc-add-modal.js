@@ -1,15 +1,17 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { sizzle, u } = converse.env;
 
 describe('The "Groupchats" Add modal', function () {
     it(
         'can be opened from a link in the "Groupchats" section of the controlbox',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const modal = await mock.openAddMUCModal(_converse);
 
             const muc_jid = 'lounge@muc.montague.lit';
 
-            let label_name = modal.querySelector('label[for="chatroom"]');
+            const label_name = modal.querySelector('label[for="chatroom"]');
             expect(modal.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
             expect(label_name.textContent.trim()).toBe('Groupchat name or address:');
             const label_nick = modal.querySelector('label[for="nickname"]');
@@ -29,7 +31,7 @@ describe('The "Groupchats" Add modal', function () {
 
     it(
         "doesn't require the domain when muc_domain is set",
-        mock.initConverse(['chatBoxesFetched'], { muc_domain: 'muc.example.org' }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { muc_domain: 'muc.example.org' }, async function (_converse) {
             let modal = await mock.openAddMUCModal(_converse);
             expect(modal.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
@@ -69,7 +71,7 @@ describe('The "Groupchats" Add modal', function () {
 
     it(
         'uses the muc_domain if locked_muc_domain is true',
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['chatBoxesFetched'],
             { muc_domain: 'muc.example.org', locked_muc_domain: true },
             async function (_converse) {
@@ -114,7 +116,7 @@ describe('The "Groupchats" Add modal', function () {
 
     it(
         'strips the locked MUC domain from user input',
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['chatBoxesFetched'],
             { muc_domain: 'muc.example.org', locked_muc_domain: true },
             async function (_converse) {
@@ -137,7 +139,7 @@ describe('The "Groupchats" Add modal', function () {
 
     it(
         'lets you create a MUC with only the name',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { domain } = _converse;
             await mock.waitUntilDiscoConfirmed(
                 _converse,
@@ -186,7 +188,7 @@ describe('The "Groupchats" Add modal', function () {
                         <status code="201"/>
                     </x>
                 </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const iq = await u.waitUntil(() =>
@@ -201,7 +203,7 @@ describe('The "Groupchats" Add modal', function () {
                 </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<iq xmlns="jabber:client"
                     type="result"
                     to="${own_jid}"
@@ -250,7 +252,7 @@ describe('The "Groupchats" Add modal', function () {
 
     it(
         "shows a validation error when only the name was specified and there's no default MUC service",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { domain } = _converse;
             await mock.waitUntilDiscoConfirmed(_converse, domain, [{ category: 'server', type: 'IM' }], []);
 
@@ -277,7 +279,7 @@ describe('The "Groupchats" Add modal', function () {
 
     it(
         'normalizes the MUC name when creating the corresponding JID',
-        mock.initConverse(['chatBoxesFetched'], { muc_domain: 'montague.lit' }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { muc_domain: 'montague.lit' }, async function (_converse) {
             const modal = await mock.openAddMUCModal(_converse);
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
 
@@ -302,7 +304,7 @@ describe('The "Groupchats" Add modal', function () {
 
     it(
         'applies a muc_roomid_policy',
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['chatBoxesFetched'],
             {
                 muc_domain: 'montague.lit',

@@ -1,12 +1,13 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
-const { Strophe, sizzle, stx, omemo } = converse.env;
+const { Strophe, sizzle, stx } = converse.env;
 const u = converse.env.utils;
 
 describe('The OMEMO module', function () {
     it(
         'enables encrypted groupchat messages to be sent and received',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             // MEMO encryption works only in members only conferences
             // that are non-anonymous.
             const features = [
@@ -40,7 +41,7 @@ describe('The OMEMO module', function () {
                     <item affiliation='none' jid='newguy@montague.lit/_converse.js-290929789' role='participant'/>
                 </x>
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             // Wait for Converse to fetch newguy's device list
             let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
@@ -64,7 +65,7 @@ describe('The OMEMO module', function () {
                     </items>
                 </pubsub>
             </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => _converse.state.omemo_store);
             expect(_converse.state.devicelists.length).toBe(2);
 
@@ -152,7 +153,7 @@ describe('The OMEMO module', function () {
                     <payload>${obj.payload}</payload>
                 </encrypted>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
             expect(view.model.messages.length).toBe(2);
             expect(view.querySelectorAll('.chat-msg__body')[1].textContent.trim()).toBe(
@@ -167,7 +168,7 @@ describe('The OMEMO module', function () {
 
     it(
         'gracefully handles auth errors when trying to send encrypted groupchat messages',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             // MEMO encryption works only in members only conferences
             // that are non-anonymous.
             const features = [
@@ -194,7 +195,7 @@ describe('The OMEMO module', function () {
                             role="participant"/>
                     </x>
                 </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             const toolbar = await u.waitUntil(() => view.querySelector('.chat-toolbar'));
             const toggle = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
@@ -214,7 +215,7 @@ describe('The OMEMO module', function () {
                 mock.deviceListFetched(_converse, contact_jid, ['4e30f35051b7b8b42abe083742187228']),
             );
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => _converse.state.omemo_store);
             expect(_converse.state.devicelists.length).toBe(2);
 
@@ -266,7 +267,7 @@ describe('The OMEMO module', function () {
                     <not-authorized xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                 </error>
             </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             await u.waitUntil(() => document.querySelectorAll('.alert-danger').length, 2000);
             const header = document.querySelector('.alert-danger .modal-title');
@@ -283,7 +284,7 @@ describe('The OMEMO module', function () {
 
     it(
         'adds a toolbar button for starting an encrypted groupchat session',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilDiscoConfirmed(
                 _converse,
@@ -337,7 +338,7 @@ describe('The OMEMO module', function () {
                               role="participant"/>
                     </x>
                 </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
             expect(iq_stanza).toEqualStanza(
@@ -345,7 +346,8 @@ describe('The OMEMO module', function () {
                         <pubsub xmlns="http://jabber.org/protocol/pubsub">
                             <items node="eu.siacs.conversations.axolotl.devicelist"/>
                         </pubsub>
-                    </iq>`);
+                    </iq>`,
+            );
 
             stanza = stx`
                 <iq from="${contact_jid}"
@@ -364,7 +366,7 @@ describe('The OMEMO module', function () {
                         </items>
                     </pubsub>
                 </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => _converse.state.omemo_store);
             expect(_converse.state.devicelists.length).toBe(2);
 
@@ -427,14 +429,15 @@ describe('The OMEMO module', function () {
                               role="participant"/>
                     </x>
                 </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
             expect(iq_stanza).toEqualStanza(
                 stx`<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute('id')}" to="${contact_jid}" type="get" xmlns="jabber:client">
                         <pubsub xmlns="http://jabber.org/protocol/pubsub">
                             <items node="eu.siacs.conversations.axolotl.devicelist"/>
                         </pubsub>
-                    </iq>`);
+                    </iq>`,
+            );
 
             stanza = stx`
                 <iq from="${contact_jid}"
@@ -446,7 +449,7 @@ describe('The OMEMO module', function () {
                         <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                     </error>
                 </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             await u.waitUntil(() => !view.model.get('omemo_supported'));
             await u.waitUntil(

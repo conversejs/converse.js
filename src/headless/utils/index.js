@@ -10,7 +10,7 @@ import * as arraybuffer from './arraybuffer.js';
 import * as color from './color.js';
 import * as html from './html.js';
 import * as init from './init.js';
-import * as jid from './jid';
+import * as jid from './jid.js';
 import * as object from './object.js';
 import * as promise from './promise.js';
 import * as session from './session.js';
@@ -163,5 +163,5 @@ export default Object.assign(
         shouldCreateMessage,
         triggerEvent,
     },
-    u
+    u,
 );

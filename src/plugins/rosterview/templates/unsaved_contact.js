@@ -2,8 +2,7 @@ import { __ } from 'i18n';
 import { api } from '@converse/headless';
 import { html } from 'lit';
 import { getUnreadMsgsDisplay } from 'shared/chat/utils.js';
-import { tplDetailsButton, tplRemoveButton } from './roster_item';
-
+import { tplDetailsButton, tplRemoveButton } from './roster_item.js';
 
 /**
  * @param {import('../contactview').default} el
@@ -23,7 +22,6 @@ function tplAddContactButton(el) {
     </a>`;
 }
 
-
 /**
  * @param {import('../contactview').default} el
  */
@@ -33,9 +31,9 @@ export default (el) => {
     const jid = el.model.get('jid');
     const i18n_chat = __('Click to chat with %1$s (XMPP address: %2$s)', display_name, jid);
     const btns = [
-       tplDetailsButton(el),
-       tplAddContactButton(el),
-       ...(api.settings.get('allow_contact_removal') ? [tplRemoveButton(el)] : []),
+        tplDetailsButton(el),
+        tplAddContactButton(el),
+        ...(api.settings.get('allow_contact_removal') ? [tplRemoveButton(el)] : []),
     ];
 
     return html`

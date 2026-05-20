@@ -1,11 +1,12 @@
-/* global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
-const { Strophe, u, stx } = converse.env;
+const { u, stx } = converse.env;
 
 describe('Service Discovery', function () {
     it(
         'can be used to set the muc_domain',
-        mock.initConverse(['discoInitialized'], {}, async function (_converse) {
+        mock.initConverse(converse, ['discoInitialized'], {}, async function (_converse) {
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const IQ_ids = _converse.api.connection.get().IQ_ids;
             const { api } = _converse;
@@ -24,7 +25,7 @@ describe('Service Discovery', function () {
             const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<iq type="result"
                     from="montague.lit"
                     to="romeo@montague.lit/orchard"
@@ -50,7 +51,7 @@ describe('Service Discovery', function () {
             );
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq type="result"
                     from="montague.lit"
                     to="romeo@montague.lit/orchard"
@@ -72,7 +73,7 @@ describe('Service Discovery', function () {
             );
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq type="result"
                     from="chat.shakespeare.lit"
                     to="romeo@montague.lit/orchard"

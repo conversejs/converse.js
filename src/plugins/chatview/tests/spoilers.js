@@ -1,4 +1,5 @@
-/* global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { Strophe, sizzle, u, stx } = converse.env;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -16,7 +17,7 @@ describe('A spoiler message', function () {
 
     it(
         'can be received with a hint',
-        mock.initConverse(['chatBoxesFetched'], settings, async (_converse) => {
+        mock.initConverse(converse, ['chatBoxesFetched'], settings, async (_converse) => {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current');
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -27,7 +28,7 @@ describe('A spoiler message', function () {
                 <body>${spoiler}</body>
                 <spoiler xmlns="urn:xmpp:spoiler:0">${spoiler_hint}</spoiler>
             </message>`;
-            api.connection.get()._dataRecv(mock.createRequest(msg));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, msg));
             await new Promise((resolve) => _converse.api.listen.once('chatBoxViewInitialized', resolve));
             const view = _converse.chatboxviews.get(sender_jid);
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
@@ -42,7 +43,7 @@ describe('A spoiler message', function () {
 
     it(
         'can be received without a hint',
-        mock.initConverse(['chatBoxesFetched'], settings, async (_converse) => {
+        mock.initConverse(converse, ['chatBoxesFetched'], settings, async (_converse) => {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current');
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -52,7 +53,7 @@ describe('A spoiler message', function () {
                 <body>${spoiler}</body>
                 <spoiler xmlns="urn:xmpp:spoiler:0"></spoiler>
             </message>`;
-            api.connection.get()._dataRecv(mock.createRequest(msg));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, msg));
             await new Promise((resolve) => _converse.api.listen.once('chatBoxViewInitialized', resolve));
             const view = _converse.chatboxviews.get(sender_jid);
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
@@ -69,7 +70,7 @@ describe('A spoiler message', function () {
 
     it(
         'can be sent without a hint',
-        mock.initConverse(['chatBoxesFetched'], settings, async (_converse) => {
+        mock.initConverse(converse, ['chatBoxesFetched'], settings, async (_converse) => {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             mock.openControlBox(_converse);
@@ -80,7 +81,7 @@ describe('A spoiler message', function () {
             // whether Strophe.NS.SPOILER is supported, in which case
             // the spoiler button will appear.
             const presence = stx`<presence xmlns="jabber:client" from="${contact_jid}/phone" to="romeo@montague.lit"/>`;
-            api.connection.get()._dataRecv(mock.createRequest(presence));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             await mock.openChatBoxFor(_converse, contact_jid);
             await mock.waitUntilDiscoConfirmed(_converse, contact_jid + '/phone', [], [Strophe.NS.SPOILER]);
             const view = _converse.chatboxviews.get(contact_jid);
@@ -129,7 +130,7 @@ describe('A spoiler message', function () {
 
     it(
         'can be sent with a hint',
-        mock.initConverse(['chatBoxesFetched'], settings, async (_converse) => {
+        mock.initConverse(converse, ['chatBoxesFetched'], settings, async (_converse) => {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             mock.openControlBox(_converse);
@@ -140,7 +141,7 @@ describe('A spoiler message', function () {
             // whether Strophe.NS.SPOILER is supported, in which case
             // the spoiler button will appear.
             const presence = stx`<presence xmlns="jabber:client" from="${contact_jid}/phone" to="romeo@montague.lit"/>`;
-            api.connection.get()._dataRecv(mock.createRequest(presence));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             await mock.openChatBoxFor(_converse, contact_jid);
             await mock.waitUntilDiscoConfirmed(_converse, contact_jid + '/phone', [], [Strophe.NS.SPOILER]);
             const view = _converse.chatboxviews.get(contact_jid);
@@ -206,7 +207,7 @@ describe('A spoiler message', function () {
 
     it(
         'can be saved as an unsent draft',
-        mock.initConverse(['chatBoxesFetched'], { ...settings, view_mode: 'fullscreen' }, async (_converse) => {
+        mock.initConverse(converse, ['chatBoxesFetched'], { ...settings, view_mode: 'fullscreen' }, async (_converse) => {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 2);
             mock.openControlBox(_converse);
@@ -218,7 +219,7 @@ describe('A spoiler message', function () {
             // whether Strophe.NS.SPOILER is supported, in which case
             // the spoiler button will appear.
             const presence = stx`<presence xmlns="jabber:client" from="${contact1_jid}/phone" to="romeo@montague.lit"/>`;
-            api.connection.get()._dataRecv(mock.createRequest(presence));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
             await mock.openChatBoxFor(_converse, contact1_jid);
             await mock.waitUntilDiscoConfirmed(_converse, contact1_jid + '/phone', [], [Strophe.NS.SPOILER]);

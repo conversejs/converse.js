@@ -1,4 +1,7 @@
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
+
+const { stx } = converse.env;
 
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
@@ -8,7 +11,7 @@ describe('A sent presence stanza', function () {
 
     it(
         'includes an entity capabilities node',
-        mock.initConverse([], {}, async (_converse) => {
+        mock.initConverse(converse, [], {}, async (_converse) => {
             await mock.waitForRoster(_converse, 'current', 0);
             _converse.api.disco.own.identities.clear();
             _converse.api.disco.own.features.clear();
@@ -36,17 +39,20 @@ describe('A sent presence stanza', function () {
 
     it(
         'has a given priority',
-        mock.initConverse(['statusInitialized'], {}, async (_converse) => {
+        mock.initConverse(converse, ['statusInitialized'], {}, async (_converse) => {
             const { api } = _converse;
             const { profile } = _converse.state;
             let pres = await profile.constructPresence({ status: 'Hello world' });
             expect(pres.node).toEqualStanza(stx`
-            <presence xmlns="jabber:client">
-                <status>Hello world</status>
-                <priority>0</priority>
-                <x xmlns="vcard-temp:x:update"/>
-                <c hash="sha-1" node="https://conversejs.org" ver="5xpk8wyeMSdAjnSeIv3fwIjd1r0=" xmlns="http://jabber.org/protocol/caps"/>
-            </presence>`);
+                <presence xmlns="jabber:client">
+                    <status>Hello world</status>
+                    <priority>0</priority>
+                    <x xmlns="vcard-temp:x:update"/>
+                    <c hash="sha-1"
+                        node="https://conversejs.org"
+                        ver="5xpk8wyeMSdAjnSeIv3fwIjd1r0="
+                        xmlns="http://jabber.org/protocol/caps"/>
+                </presence>`);
 
             api.settings.set('priority', 2);
             pres = await profile.constructPresence({ show: 'away', status: 'Going jogging' });

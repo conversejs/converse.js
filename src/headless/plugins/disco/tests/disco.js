@@ -1,5 +1,5 @@
-/*global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
 const { u, stx, Strophe, sizzle } = converse.env;
 
@@ -7,7 +7,7 @@ describe('Service Discovery', function () {
     describe('Whenever a server is queried for its features', function () {
         it(
             'stores the features it receives',
-            mock.initConverse(['discoInitialized'], {}, async function (_converse) {
+            mock.initConverse(converse, ['discoInitialized'], {}, async function (_converse) {
                 const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
                 const IQ_ids = _converse.api.connection.get().IQ_ids;
                 await u.waitUntil(function () {
@@ -42,7 +42,7 @@ describe('Service Discovery', function () {
                         <feature var='jabber:iq:version'/>
                     </query>
                 </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 await u.waitUntil(() => {
                     // Converse.js sees that the entity has a disco#items feature,
@@ -62,7 +62,7 @@ describe('Service Discovery', function () {
                 const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(stx`
+                    mock.createRequest(_converse, stx`
                 <iq xmlns="jabber:client"
                     type='result'
                     from='montague.lit'
@@ -124,7 +124,7 @@ describe('Service Discovery', function () {
     describe('Whenever converse.js discovers a new server feature', function () {
         it(
             'emits the serviceDiscovered event',
-            mock.initConverse(['discoInitialized'], {}, function (_converse) {
+            mock.initConverse(converse, ['discoInitialized'], {}, function (_converse) {
                 spyOn(_converse.api, 'trigger').and.callThrough();
                 _converse.disco_entities.get(_converse.domain).features.create({ 'var': Strophe.NS.MAM });
                 expect(_converse.api.trigger).toHaveBeenCalled();
@@ -138,7 +138,7 @@ describe('Service Discovery', function () {
     describe('api.disco.entities.find', function () {
         it(
             "returns our own JID's entity",
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const bare = _converse.session.get('bare_jid');
                 const domain = Strophe.getDomainFromJid(bare);
                 await mock.waitUntilDiscoConfirmed(_converse, bare, [], ['feature1']);
@@ -152,7 +152,7 @@ describe('Service Discovery', function () {
 
         it(
             'returns the domain entity',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const bare = _converse.session.get('bare_jid');
                 const domain = Strophe.getDomainFromJid(bare);
                 await mock.waitUntilDiscoConfirmed(_converse, bare, [], []);
@@ -166,7 +166,7 @@ describe('Service Discovery', function () {
 
         it(
             'returns a matching item entity',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const bare = _converse.session.get('bare_jid');
                 const domain = Strophe.getDomainFromJid(bare);
                 await mock.waitUntilDiscoConfirmed(_converse, bare, [], []);
@@ -188,7 +188,7 @@ describe('Service Discovery', function () {
 
         it(
             'returns multiple matching entities',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const bare = _converse.session.get('bare_jid');
                 const domain = Strophe.getDomainFromJid(bare);
                 await mock.waitUntilDiscoConfirmed(_converse, bare, [], ['feature']);
@@ -213,7 +213,7 @@ describe('Service Discovery', function () {
 
         it(
             'returns null if no entity matches',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const bare = _converse.session.get('bare_jid');
                 const domain = Strophe.getDomainFromJid(bare);
                 await mock.waitUntilDiscoConfirmed(_converse, bare, [], []);
@@ -232,7 +232,7 @@ describe('Service Discovery', function () {
 
         it(
             'searches only under the provided JID subtree',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const bare = _converse.session.get('bare_jid');
                 const domain = Strophe.getDomainFromJid(bare);
                 // domain items: a@b supports featureX, c@d does not

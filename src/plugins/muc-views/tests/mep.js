@@ -1,10 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { u, Strophe, stx } = converse.env;
 
 describe('A XEP-0316 MEP notification', function () {
     it(
         'is rendered as an info message',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const nick = 'romeo';
             await mock.openAndEnterMUC(_converse, muc_jid, nick);
@@ -33,13 +35,13 @@ describe('A XEP-0316 MEP notification', function () {
                 </event>
             </message>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
             await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
             expect(view.querySelector('.chat-info__message converse-texture').textContent.trim()).toBe(msg);
             expect(view.querySelector('.reason').textContent.trim()).toBe(reason);
 
             // Check that duplicates aren't created
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
             let promise = u.getOpenPromise();
             setTimeout(() => {
                 expect(view.querySelectorAll('.chat-info').length).toBe(1);
@@ -72,7 +74,7 @@ describe('A XEP-0316 MEP notification', function () {
                 </event>
             </message>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
             await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 2);
             expect(
                 view
@@ -82,7 +84,7 @@ describe('A XEP-0316 MEP notification', function () {
             expect(view.querySelector('converse-chat-message:last-child .reason').textContent.trim()).toBe(reason);
 
             // Check that duplicates aren't created
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
             promise = u.getOpenPromise();
             setTimeout(() => {
                 expect(view.querySelectorAll('.chat-info').length).toBe(2);
@@ -94,7 +96,7 @@ describe('A XEP-0316 MEP notification', function () {
 
     it(
         'can trigger a notification if sent to a hidden MUC',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             // const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
             // spyOn(window, 'Notification').and.returnValue(stub);
 
@@ -124,7 +126,7 @@ describe('A XEP-0316 MEP notification', function () {
                     </items>
                 </event>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
             await u.waitUntil(() => model.messages.length === 1);
             // expect(window.Notification.calls.count()).toBe(1);
 
@@ -139,7 +141,7 @@ describe('A XEP-0316 MEP notification', function () {
 
     it(
         'renders URLs as links',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const nick = 'romeo';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, nick, [], [], true);
@@ -166,7 +168,7 @@ describe('A XEP-0316 MEP notification', function () {
                     </items>
                 </event>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
             await u.waitUntil(() => model.messages.length === 1);
 
             const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
@@ -185,7 +187,7 @@ describe('A XEP-0316 MEP notification', function () {
 
     it(
         'can be retracted by a moderator',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const nick = 'romeo';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -194,7 +196,7 @@ describe('A XEP-0316 MEP notification', function () {
             const msg = 'An anonymous user has saluted romeo';
             const reason = 'Thank you for helping me yesterday';
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <message from="${muc_jid}"
                     to="${_converse.jid}"
                     type="headline"

@@ -4,7 +4,7 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import u from '../../utils/index.js';
 import { rejectMessage } from '../../shared/actions.js';
 import { StanzaParseError } from '../../shared/errors.js';
@@ -27,7 +27,7 @@ import {
     isServerMessage,
     isValidReceiptRequest,
     throwErrorIfInvalidForward,
-} from '../../shared/parsers';
+} from '../../shared/parsers.js';
 
 const { Strophe, dayjs, sizzle } = converse.env;
 
@@ -36,17 +36,14 @@ const { Strophe, dayjs, sizzle } = converse.env;
  * @param {Element} stanza - The message stanza
  * @returns {Promise<import('../../shared/types.ts').MessageAttributes|StanzaParseError>}
  */
-export async function parseMessage (stanza) {
+export async function parseMessage(stanza) {
     throwErrorIfInvalidForward(stanza);
 
     let to_jid = stanza.getAttribute('to');
     const to_resource = Strophe.getResourceFromJid(to_jid);
     const resource = _converse.session.get('resource');
     if (api.settings.get('filter_by_resource') && to_resource && to_resource !== resource) {
-        return new StanzaParseError(
-            stanza,
-            `Ignoring incoming message intended for a different resource: ${to_jid}`,
-        );
+        return new StanzaParseError(stanza, `Ignoring incoming message intended for a different resource: ${to_jid}`);
     }
 
     const bare_jid = _converse.session.get('bare_jid');
@@ -130,7 +127,7 @@ export async function parseMessage (stanza) {
             'thread': stanza.querySelector('thread')?.textContent,
             'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : now,
             'to': stanza.getAttribute('to'),
-            'type': stanza.getAttribute('type') || 'normal'
+            'type': stanza.getAttribute('type') || 'normal',
         },
         getErrorAttributes(stanza),
         getOutOfBandAttributes(stanza),
@@ -139,7 +136,7 @@ export async function parseMessage (stanza) {
         getStanzaIDs(stanza, original_stanza),
         getRetractionAttributes(stanza, original_stanza),
         getEncryptionAttributes(stanza),
-        getReplyAttributes(stanza)
+        getReplyAttributes(stanza),
     );
 
     if (attrs.is_archived) {
@@ -151,9 +148,9 @@ export async function parseMessage (stanza) {
     attrs = Object.assign(
         {
             'message': attrs.body || attrs.error, // TODO: Remove and use body and error attributes instead
-            'is_valid_receipt_request': isValidReceiptRequest(stanza, attrs)
+            'is_valid_receipt_request': isValidReceiptRequest(stanza, attrs),
         },
-        attrs
+        attrs,
     );
 
     // We prefer to use one of the XEP-0359 unique and stable stanza IDs

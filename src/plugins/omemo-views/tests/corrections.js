@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
-const { Strophe, sizzle, stx, u, omemo } = converse.env;
+const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('An OMEMO encrypted message', function () {
     it(
         'can be edited',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.initializedOMEMO(_converse);
@@ -142,7 +143,7 @@ describe('An OMEMO encrypted message', function () {
             const first_rcvd_msg_id = u.getUniqueId();
             let obj = await u.omemo.encryptMessage('This is an encrypted message from the contact');
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <message from="${contact_jid}"
                     to="${_converse.api.connection.get().jid}"
                     type="chat"
@@ -168,7 +169,7 @@ describe('An OMEMO encrypted message', function () {
             const msg_id = u.getUniqueId();
             obj = await u.omemo.encryptMessage('This is an edited encrypted message from the contact');
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <message from="${contact_jid}"
                      to="${_converse.api.connection.get().jid}"
                      type="chat"
@@ -209,7 +210,7 @@ describe('An OMEMO encrypted message', function () {
 describe('An OMEMO encrypted MUC message', function () {
     it(
         'can be edited',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             // MEMO encryption works only in members only conferences
             // that are non-anonymous.
             const features = [
@@ -243,7 +244,7 @@ describe('An OMEMO encrypted MUC message', function () {
                     <item affiliation='none' jid='newguy@montague.lit/_converse.js-290929789' role='participant'/>
                 </x>
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             // Wait for Converse to fetch newguy's device list
             let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
@@ -271,7 +272,7 @@ describe('An OMEMO encrypted MUC message', function () {
                     </items>
                 </pubsub>
             </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => _converse.state.omemo_store);
             expect(_converse.state.devicelists.length).toBe(2);
 
@@ -402,7 +403,7 @@ describe('An OMEMO encrypted MUC message', function () {
             const first_received_message = 'This is an encrypted message from the contact';
             const first_obj = await u.omemo.encryptMessage(first_received_message);
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <message from="${muc_jid}/newguy"
                      to="${_converse.api.connection.get().jid}"
                      type="groupchat"
@@ -429,7 +430,7 @@ describe('An OMEMO encrypted MUC message', function () {
             const second_received_message = 'This is an edited encrypted message from the contact';
             const second_obj = await u.omemo.encryptMessage(second_received_message);
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <message from="${muc_jid}/newguy"
                      to="${_converse.api.connection.get().jid}"
                      type="groupchat"

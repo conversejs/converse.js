@@ -1,4 +1,5 @@
-﻿/*global mock, converse */
+﻿import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { u, stx } = converse.env;
 
@@ -6,7 +7,7 @@ describe('XEP-0461 Message Replies', function () {
     describe('A Chat Message', function () {
         it(
             'can be replied to using a message action',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 await mock.openControlBox(_converse);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -45,7 +46,7 @@ describe('XEP-0461 Message Replies', function () {
 
         it(
             'can cancel a reply in progress',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 await mock.openControlBox(_converse);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -87,7 +88,7 @@ describe('XEP-0461 Message Replies', function () {
 
         it(
             'includes reply element in outgoing stanza when replying',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
                 await mock.openControlBox(_converse);
@@ -140,7 +141,7 @@ describe('XEP-0461 Message Replies', function () {
 
         it(
             'parses incoming reply messages correctly',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
                 await mock.openControlBox(_converse);

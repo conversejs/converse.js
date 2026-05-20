@@ -1,5 +1,5 @@
 import { Model } from '@converse/skeletor';
-import { ROOMSTATUS } from './constants';
+import { ROOMSTATUS } from './constants.js';
 
 class MUCSession extends Model {
     defaults() {

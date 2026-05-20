@@ -5,12 +5,12 @@ import _converse from '../../shared/_converse.js';
 import converse from '../../shared/api/public.js';
 import ColorAwareModel from '../../shared/color.js';
 import ModelWithMessages from '../../shared/model-with-messages.js';
-import ModelWithVCard from '../../shared/model-with-vcard';
+import ModelWithVCard from '../../shared/model-with-vcard.js';
 import { AFFILIATIONS, ROLES } from './constants.js';
 import MUCMessages from './messages.js';
 import u from '../../utils/index.js';
-import { shouldCreateGroupchatMessage } from './utils';
-import { sendChatState } from '../../shared/actions';
+import { shouldCreateGroupchatMessage } from './utils.js';
+import { sendChatState } from '../../shared/actions.js';
 
 const { Strophe, stx } = converse.env;
 

@@ -1,9 +1,9 @@
-const { Strophe } = converse.env;
+import mock from '../../../shared/tests/mock.js';
 
 describe('A chat state indication', function () {
     it(
         'is sent out when the client becomes or stops being idle',
-        mock.initConverse(['discoInitialized'], {}, (_converse) => {
+        mock.initConverse(converse, ['discoInitialized'], {}, (_converse) => {
             let i = 0;
             const domain = _converse.session.get('domain');
             _converse.disco_entities.get(domain).features['urn:xmpp:csi:0'] = true; // Mock that the server supports CSI
@@ -29,7 +29,7 @@ describe('A chat state indication', function () {
 describe('Automatic status change', function () {
     it(
         'happens when the client is idle for long enough',
-        mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
             const { api } = _converse;
             let i = 0;
             // Usually initialized by registerIntervalHandler

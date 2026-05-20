@@ -1,12 +1,12 @@
-/* global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
 const { u } = converse.env;
 
 describe('The "chats" API', function () {
     it(
         "has a method 'get' which returns the promise that resolves to a chat model",
-        mock.initConverse(['rosterInitialized', 'chatBoxesInitialized'], {}, async (_converse) => {
+        mock.initConverse(converse, ['rosterInitialized', 'chatBoxesInitialized'], {}, async (_converse) => {
             await mock.waitForRoster(_converse, 'current', 2);
 
             // Test on chat that doesn't exist.
@@ -37,7 +37,7 @@ describe('The "chats" API', function () {
 
     it(
         "has a method 'open' which opens and returns a promise that resolves to a chat model",
-        mock.initConverse(['chatBoxesInitialized'], {}, async (_converse) => {
+        mock.initConverse(converse, ['chatBoxesInitialized'], {}, async (_converse) => {
             await mock.waitForRoster(_converse, 'current', 2);
 
             const jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';

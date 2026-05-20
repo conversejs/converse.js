@@ -1,5 +1,4 @@
-/*global converse */
-
+import converse from '../../../../dist/converse.esm.js';
 
 function createInput(value, selectionEnd) {
     const input = document.createElement('input');

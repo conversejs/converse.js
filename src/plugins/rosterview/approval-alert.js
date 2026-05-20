@@ -1,5 +1,5 @@
-import { RosterContact, _converse, api, converse} from '@converse/headless';
-import { CustomElement } from 'shared/components/element';
+import { RosterContact, api, converse } from '@converse/headless';
+import { CustomElement } from 'shared/components/element.js';
 import { declineContactRequest } from 'plugins/rosterview/utils.js';
 import tplApprovalAlert from './templates/approval-alert.js';
 import tplUnsavedAlert from './templates/unsaved-alert.js';

@@ -1,11 +1,12 @@
-/* global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { u } = converse.env;
 
 describe('The list of MUC domains', function () {
     it(
         'is shown in controlbox',
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['chatBoxesFetched'],
             {
                 muc_grouped_by_domain: true,
@@ -96,7 +97,7 @@ describe('The list of MUC domains', function () {
 describe('A MUC domain group', function () {
     it(
         'is collapsible',
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['chatBoxesFetched'],
             {
                 muc_grouped_by_domain: true,

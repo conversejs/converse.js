@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
-const { Strophe, sizzle, u, stx } = converse.env;
+const { sizzle, u, stx } = converse.env;
 
 describe('Ad-hoc commands', function () {
     it(
         'can be queried for via a modal',
-        mock.initConverse([], {}, async (_converse) => {
+        mock.initConverse(converse, [], {}, async (_converse) => {
             const { api } = _converse;
             const entity_jid = 'muc.montague.lit';
             const { IQ_stanzas } = _converse.api.connection.get();
@@ -33,7 +34,7 @@ describe('Ad-hoc commands', function () {
             let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq type="result"
                 id="${iq.getAttribute('id')}"
                 to="${_converse.jid}"
@@ -84,12 +85,13 @@ describe('Ad-hoc commands', function () {
             sel = `iq[to="${entity_jid}"][type="set"] command`;
             iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
-            expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
+            expect(iq)
+                .toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
                 <command action="execute" node="adduser" xmlns="http://jabber.org/protocol/commands"/>
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq to="${_converse.jid}" xmlns="jabber:client" type="result" xml:lang="en" id="${iq.getAttribute('id')}" from="${entity_jid}">
             <command status="executing" node="adduser" sessionid="1653988890.6236324-886f3dc54ce443c6b4a1805877bf7faa" xmlns="http://jabber.org/protocol/commands">
                 <actions>
@@ -145,7 +147,7 @@ describe('Ad-hoc commands', function () {
 
     it(
         'can immediately return with a result, instead of a form',
-        mock.initConverse([], {}, async (_converse) => {
+        mock.initConverse(converse, [], {}, async (_converse) => {
             const { api } = _converse;
             const entity_jid = 'muc.montague.lit';
             const { IQ_stanzas } = _converse.api.connection.get();
@@ -173,7 +175,7 @@ describe('Ad-hoc commands', function () {
             let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq type="result"
                 id="${iq.getAttribute('id')}"
                 to="${_converse.jid}"
@@ -198,7 +200,8 @@ describe('Ad-hoc commands', function () {
             sel = `iq[to="${entity_jid}"][type="set"] command`;
             iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
-            expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
+            expect(iq)
+                .toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
                 <command action="execute" node="uptime" xmlns="http://jabber.org/protocol/commands"/>
             </iq>`);
 
@@ -207,7 +210,7 @@ describe('Ad-hoc commands', function () {
                 '11 hours and 15 minutes (since Sun Nov 12 21:22:22: 2023)';
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
                 <iq to="${_converse.jid}"
                     xmlns="jabber:client"
                     type="result"
@@ -236,7 +239,7 @@ describe('Ad-hoc commands', function () {
 
     it(
         'may return reported fields, which are readonly and are presented in a table',
-        mock.initConverse([], {}, async (_converse) => {
+        mock.initConverse(converse, [], {}, async (_converse) => {
             const { api } = _converse;
             const entity_jid = 'muc.montague.lit';
             const { IQ_stanzas } = _converse.api.connection.get();
@@ -266,7 +269,7 @@ describe('Ad-hoc commands', function () {
             let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq type="result"
                 id="${iq.getAttribute('id')}"
                 to="${_converse.jid}"
@@ -290,12 +293,13 @@ describe('Ad-hoc commands', function () {
             sel = `iq[to="${entity_jid}"][type="set"] command`;
             iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
-            expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
+            expect(iq)
+                .toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
                 <command action="execute" node="list" xmlns="http://jabber.org/protocol/commands"/>
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq type="result" from="${entity_jid}" to="${jid}" id="${iq.getAttribute('id')}" xmlns="jabber:client">
                 <command xmlns="http://jabber.org/protocol/commands"
                         sessionid="list:20020923T213616Z-700"
@@ -378,7 +382,7 @@ describe('Ad-hoc commands', function () {
 
     it(
         'May return a result form with readonly fields',
-        mock.initConverse([], {}, async (_converse) => {
+        mock.initConverse(converse, [], {}, async (_converse) => {
             const { api } = _converse;
             const entity_jid = 'muc.montague.lit';
             const { IQ_stanzas } = _converse.api.connection.get();
@@ -408,7 +412,7 @@ describe('Ad-hoc commands', function () {
             let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq type="result"
                 id="${iq.getAttribute('id')}"
                 to="${_converse.jid}"
@@ -432,12 +436,13 @@ describe('Ad-hoc commands', function () {
             sel = `iq[to="${entity_jid}"][type="set"] command`;
             iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
-            expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
+            expect(iq)
+                .toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
                 <command action="execute" node="list" xmlns="http://jabber.org/protocol/commands"/>
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq type="result" from="${entity_jid}" to="${jid}" id="${iq.getAttribute('id')}" xmlns="jabber:client">
                 <command node="urn:xmpp:invite#create-account"
                         status="completed"
@@ -499,7 +504,7 @@ describe('Ad-hoc commands', function () {
 describe('Ad-hoc commands consisting of multiple steps', function () {
     it(
         'can be queried and executed via a modal',
-        mock.initConverse([], {}, async (_converse) => {
+        mock.initConverse(converse, [], {}, async (_converse) => {
             const { api } = _converse;
             const entity_jid = 'montague.lit';
             const { IQ_stanzas } = _converse.api.connection.get();
@@ -532,7 +537,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <query xmlns="http://jabber.org/protocol/disco#items" node="http://jabber.org/protocol/commands">
                     <item node="uptime" name="Get uptime" jid="${entity_jid}"/>
@@ -560,7 +565,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             const sessionid = 'f4d477d3-d8b1-452d-95c9-fece53ef99ad';
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
         <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
             <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                 <actions>
@@ -631,7 +636,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                 <actions>
@@ -709,7 +714,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq xmlns="jabber:server" type="result" from="${entity_jid}" to="${_converse.jid}" id="${iq.getAttribute('id')}">
                 <command xmlns="http://jabber.org/protocol/commands"
                         sessionid="${sessionid}"
@@ -724,7 +729,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
 
     it(
         'can be canceled',
-        mock.initConverse([], {}, async (_converse) => {
+        mock.initConverse(converse, [], {}, async (_converse) => {
             const { api } = _converse;
             const entity_jid = 'montague.lit';
             const { IQ_stanzas } = _converse.api.connection.get();
@@ -752,7 +757,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <query xmlns="http://jabber.org/protocol/disco#items" node="http://jabber.org/protocol/commands">
                     <item node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi" name="Multi-step command" jid="${entity_jid}"/>
@@ -772,7 +777,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             const sessionid = 'f4d477d3-d8b1-452d-95c9-fece53ef99cc';
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
         <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
             <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                 <actions>
@@ -808,7 +813,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <command xmlns="http://jabber.org/protocol/commands"
                         sessionid="${sessionid}"
@@ -823,7 +828,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
 
     it(
         'can be navigated backwards',
-        mock.initConverse([], {}, async (_converse) => {
+        mock.initConverse(converse, [], {}, async (_converse) => {
             const { api } = _converse;
             const entity_jid = 'montague.lit';
             const { IQ_stanzas } = _converse.api.connection.get();
@@ -856,7 +861,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <query xmlns="http://jabber.org/protocol/disco#items" node="http://jabber.org/protocol/commands">
                     <item node="uptime" name="Get uptime" jid="${entity_jid}"/>
@@ -884,7 +889,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             const sessionid = 'f4d477d3-d8b1-452d-95c9-fece53ef99ad';
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                     <actions>
@@ -922,7 +927,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                 <actions>
@@ -959,7 +964,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                     <actions>
@@ -983,7 +988,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
 
     it(
         'may return a result form with readonly fields',
-        mock.initConverse([], {}, async (_converse) => {
+        mock.initConverse(converse, [], {}, async (_converse) => {
             const { api } = _converse;
             const entity_jid = 'muc.montague.lit';
             const { IQ_stanzas } = _converse.api.connection.get();
@@ -1013,7 +1018,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq type="result"
                 id="${iq.getAttribute('id')}"
                 to="${_converse.jid}"
@@ -1045,7 +1050,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             const sessionid = 'f4d477d3-d8b1-452d-95c9-fece53ef99ad';
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq type="result" to="${_converse.jid}" from="${entity_jid}"
             id="${iq.getAttribute('id')}" xmlns="jabber:client">
                 <command status="executing"
@@ -1103,7 +1108,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq type="result"
                 to="${entity_jid}" from="${_converse.jid}"
                 id="${iq.getAttribute('id')}" xmlns="jabber:client">

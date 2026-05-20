@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const Model = converse.env.Model;
 const { Strophe, sizzle, u, stx } = converse.env;
@@ -7,7 +8,7 @@ describe('Groupchats', function () {
     describe('The "rooms" API', function () {
         it(
             "has a method 'close' which closes rooms by JID or all rooms when called with no arguments",
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
 
                 const { api } = _converse;
@@ -55,7 +56,7 @@ describe('Groupchats', function () {
 
         it(
             "has a method 'get' which returns a wrapped groupchat (if it exists)",
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
 
@@ -102,7 +103,7 @@ describe('Groupchats', function () {
 
         it(
             "has a method 'open' which opens (optionally configures) and returns a wrapped chat box",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const { api } = _converse;
                 // Mock 'getDiscoInfo', otherwise the room won't be
                 // displayed as it waits first for the features to be returned
@@ -180,7 +181,7 @@ describe('Groupchats', function () {
                 expect(room instanceof Model).toBeTruthy();
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(stx`
+                    mock.createRequest(_converse, stx`
                 <presence xmlns="jabber:client" to="romeo@montague.lit/pda" from="room@conference.example.org/some1">
                     <x xmlns="http://jabber.org/protocol/muc#user">
                         <item affiliation="owner" jid="romeo@montague.lit/pda" role="moderator"/>
@@ -194,7 +195,8 @@ describe('Groupchats', function () {
                 const iq = await u.waitUntil(() =>
                     IQ_stanzas.filter((s) => sizzle(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`, s).length).pop(),
                 );
-                expect(iq).toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="room@conference.example.org" type="get" xmlns="jabber:client">
+                expect(iq)
+                    .toEqualStanza(stx`<iq id="${iq.getAttribute('id')}" to="room@conference.example.org" type="get" xmlns="jabber:client">
                     <query xmlns="http://jabber.org/protocol/muc#owner"/>
                 </iq>`);
 
@@ -238,7 +240,7 @@ describe('Groupchats', function () {
 
                 mucview = _converse.chatboxviews.get('room@conference.example.org');
                 spyOn(mucview.model, 'sendConfiguration').and.callThrough();
-                _converse.api.connection.get()._dataRecv(mock.createRequest(node));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, node));
                 await u.waitUntil(() => mucview.model.sendConfiguration.calls.count() === 1);
 
                 const sent_stanza = IQ_stanzas.filter((s) => s.getAttribute('type') === 'set').pop();

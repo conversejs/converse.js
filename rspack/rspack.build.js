@@ -1,7 +1,7 @@
-const { rspack } = require('@rspack/core');
-const path = require('path');
-const { merge } = require('webpack-merge');
-const common = require('../rspack/rspack.common.js');
+import { rspack } from '@rspack/core';
+import path from 'path';
+import { merge } from 'webpack-merge';
+import common, { __dirname } from '../rspack/rspack.common.js';
 
 const buildConfig = (_env, argv) => {
     const isDev = argv?.mode === 'development';
@@ -106,4 +106,4 @@ const buildConfig = (_env, argv) => {
     });
 };
 
-module.exports = buildConfig;
+export default buildConfig;

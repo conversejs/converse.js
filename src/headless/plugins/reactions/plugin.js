@@ -7,7 +7,6 @@
 
 import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';
-import _converse from '../../shared/_converse.js';
 import { parseReactionsMessage } from './parsers.js';
 import {
     getDuplicateMessageQueries,

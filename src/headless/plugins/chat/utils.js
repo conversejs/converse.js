@@ -5,19 +5,19 @@
  * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
  * @typedef {import('strophe.js').Builder} Builder
  */
-import sizzle from "sizzle";
+import sizzle from 'sizzle';
 import { Model } from '@converse/skeletor';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import converse from "../../shared/api/public.js";
-import log from "@converse/log";
-import { isArchived, isHeadline, isMUCPrivateMessage, isServerMessage, } from '../../shared/parsers';
+import converse from '../../shared/api/public.js';
+import log from '@converse/log';
+import { isArchived, isHeadline, isMUCPrivateMessage, isServerMessage } from '../../shared/parsers.js';
 import { parseMessage } from './parsers.js';
-import { PRIVATE_CHAT_TYPE } from "../../shared/constants.js";
+import { PRIVATE_CHAT_TYPE } from '../../shared/constants.js';
 
 const { Strophe, u } = converse.env;
 
-export function routeToChat (event) {
+export function routeToChat(event) {
     if (!location.hash.startsWith('#converse/chat?jid=')) {
         return;
     }
@@ -34,7 +34,7 @@ export function routeToChat (event) {
  * message, i.e. not a MAM archived one.
  * @param {Element|Model|object} message
  */
-export function isNewMessage (message) {
+export function isNewMessage(message) {
     if (message instanceof Element) {
         return !(
             sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, message).length &&
@@ -49,7 +49,7 @@ export function isNewMessage (message) {
 /**
  * @param {Element} stanza
  */
-async function handleErrorMessage (stanza) {
+async function handleErrorMessage(stanza) {
     const from_jid = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
     const bare_jid = _converse.session.get('bare_jid');
     if (u.isSameBareJID(from_jid, bare_jid)) {
@@ -61,19 +61,21 @@ async function handleErrorMessage (stanza) {
     }
 }
 
-export function autoJoinChats () {
+export function autoJoinChats() {
     // Automatically join private chats, based on the
     // "auto_join_private_chats" configuration setting.
-    api.settings.get('auto_join_private_chats').forEach(/** @param {string} jid */(jid) => {
-        if (_converse.state.chatboxes.where({ 'jid': jid }).length) {
-            return;
-        }
-        if (typeof jid === 'string') {
-            api.chats.open(jid);
-        } else {
-            log.error('Invalid jid criteria specified for "auto_join_private_chats"');
-        }
-    });
+    api.settings.get('auto_join_private_chats').forEach(
+        /** @param {string} jid */ (jid) => {
+            if (_converse.state.chatboxes.where({ 'jid': jid }).length) {
+                return;
+            }
+            if (typeof jid === 'string') {
+                api.chats.open(jid);
+            } else {
+                log.error('Invalid jid criteria specified for "auto_join_private_chats"');
+            }
+        },
+    );
     /**
      * Triggered once any private chats have been automatically joined as
      * specified by the `auto_join_private_chats` setting.
@@ -86,7 +88,7 @@ export function autoJoinChats () {
     api.trigger('privateChatsAutoJoined');
 }
 
-export function registerMessageHandlers () {
+export function registerMessageHandlers() {
     api.connection.get().addHandler(
         /** @param {Element} stanza */
         (stanza) => {
@@ -112,17 +114,16 @@ export function registerMessageHandlers () {
         },
         null,
         'message',
-        'error'
+        'error',
     );
 }
-
 
 /**
  * Handler method for all incoming single-user chat "message" stanzas.
  * @param {Element|Builder} stanza
  */
-export async function handleMessageStanza (stanza) {
-    stanza = (stanza instanceof Element) ? stanza : stanza.tree();
+export async function handleMessageStanza(stanza) {
+    stanza = stanza instanceof Element ? stanza : stanza.tree();
 
     if (isServerMessage(stanza)) {
         // Prosody sends headline messages with type `chat`, so we need to filter them out here.
@@ -140,12 +141,12 @@ export async function handleMessageStanza (stanza) {
         return log.error(e);
     }
     if (u.isErrorObject(attrs)) {
-        const { stanza, message } = /** @type {StanzaParseError} */(attrs);
+        const { stanza, message } = /** @type {StanzaParseError} */ (attrs);
         if (stanza) log.error(stanza);
         return log.error(message);
     }
 
-    const { body, plaintext, contact_jid, nick } = /** @type {MessageAttributes} */(attrs);
+    const { body, plaintext, contact_jid, nick } = /** @type {MessageAttributes} */ (attrs);
 
     // XXX: Need to take XEP-428 <fallback> into consideration
     const has_body = !!(body || plaintext);
@@ -172,7 +173,7 @@ export async function handleMessageStanza (stanza) {
  * Ask the XMPP server to enable Message Carbons
  * See [XEP-0280](https://xmpp.org/extensions/xep-0280.html#enabling)
  */
-export async function enableCarbons () {
+export async function enableCarbons() {
     const bare_jid = _converse.session.get('bare_jid');
     const domain = Strophe.getDomainFromJid(bare_jid);
     const supported = await api.disco.supports(Strophe.NS.CARBONS, domain);
@@ -184,8 +185,8 @@ export async function enableCarbons () {
 
     const iq = new Strophe.Builder('iq', {
         'from': api.connection.get().jid,
-        'type': 'set'
-    }).c('enable', {xmlns: Strophe.NS.CARBONS});
+        'type': 'set',
+    }).c('enable', { xmlns: Strophe.NS.CARBONS });
 
     const result = await api.sendIQ(iq, null, false);
     if (result === null) {

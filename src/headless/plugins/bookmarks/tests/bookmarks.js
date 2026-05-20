@@ -1,11 +1,12 @@
-/* global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
+
 const { sizzle, stx, u } = converse.env;
 
 describe('A bookmark', function () {
     it(
         'is automatically created when a MUC is entered',
-        mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
 
@@ -62,7 +63,7 @@ describe('A bookmark', function () {
             to="${_converse.api.connection.get().jid}"
             type="result"
             id="${sent_stanza.getAttribute('id')}"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             expect(muc.get('bookmarked')).toBeTruthy();
         }),
@@ -70,7 +71,7 @@ describe('A bookmark', function () {
 
     it(
         'will be updated when a user changes their nickname in a MUC',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
 
@@ -89,7 +90,7 @@ describe('A bookmark', function () {
             to="${_converse.api.connection.get().jid}"
             type="result"
             id="${sent_stanza.getAttribute('id')}"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             const newnick = 'BAP';
             muc.setNickname(newnick);
@@ -100,7 +101,7 @@ describe('A bookmark', function () {
             }
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<presence
                     xmlns="jabber:server"
                     from='${muc_jid}/${nick}'
@@ -122,7 +123,7 @@ describe('A bookmark', function () {
             await u.waitUntil(() => muc.get('nick') === newnick);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<presence
                     xmlns="jabber:server"
                     from='${muc_jid}/${newnick}'
@@ -185,7 +186,7 @@ describe('A bookmark', function () {
     describe('when autojoin is set', function () {
         it(
             'will cause a MUC to be opened and joined automatically upon login',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const { api, state } = _converse;
                 await mock.waitForRoster(_converse, 'current', 0);
                 await mock.waitUntilBookmarksReturned(_converse);
@@ -234,7 +235,7 @@ describe('A bookmark', function () {
 
         it(
             'has autojoin set to false upon leaving',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
                 await mock.waitUntilBookmarksReturned(_converse);
 
@@ -302,7 +303,7 @@ describe('A bookmark', function () {
 
     it(
         'can be created and sends out a stanza',
-        mock.initConverse(['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
 
@@ -458,7 +459,7 @@ describe('A bookmark', function () {
 
     it(
         'handles missing bookmarks gracefully when server responds with item-not-found',
-        mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilDiscoConfirmed(
                 _converse,
@@ -485,7 +486,7 @@ describe('A bookmark', function () {
                         <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                     </error>
                 </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(error_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, error_stanza));
 
             const { fetched_flag_key } = u.bookmarks.getStorageKeys();
             const cache_key = `converse.room-bookmarks.romeo@montague.lit-fetched`;
@@ -497,7 +498,7 @@ describe('A bookmark', function () {
 
     it(
         'can be removed and sends out a retract stanza',
-        mock.initConverse(['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilDiscoConfirmed(
                 _converse,
@@ -530,7 +531,7 @@ describe('A bookmark', function () {
                     to="${_converse.api.connection.get().jid}"
                     type="result"
                     id="${sent_stanza.getAttribute('id')}"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(result_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result_stanza));
 
             // Clear previous stanzas
             while (IQ_stanzas.length) IQ_stanzas.pop();

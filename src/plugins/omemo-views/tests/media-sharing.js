@@ -1,10 +1,12 @@
-/*global mock, converse */
-const { omemo, Strophe, stx, u, sizzle } = converse.env;
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
+const { Strophe, stx, u, sizzle } = converse.env;
 
 describe('The OMEMO module', function () {
     it(
         "shows an error when it can't download a received encrypted file",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.initializedOMEMO(_converse);
@@ -73,7 +75,7 @@ describe('The OMEMO module', function () {
                         <payload>${obj.payload}</payload>
                     </encrypted>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
             expect(view.model.messages.length).toBe(2);
@@ -86,7 +88,7 @@ describe('The OMEMO module', function () {
 
     it(
         'implements XEP-0454 to encrypt uploaded files',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const base_url = 'https://example.org/';
             await mock.waitUntilDiscoConfirmed(
                 _converse,
@@ -125,7 +127,7 @@ describe('The OMEMO module', function () {
                 </items>
             </pubsub>
             </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => _converse.state.omemo_store);
             const devicelist = _converse.state.devicelists.get({ 'jid': contact_jid });
             await u.waitUntil(() => devicelist.devices.length === 1);
@@ -167,7 +169,7 @@ describe('The OMEMO module', function () {
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
             });
             let sent_stanza;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             iq_stanza = await u.waitUntil(() => mock.bundleIQRequestSent(_converse, contact_jid, '555'));
             stanza = stx`
@@ -193,7 +195,7 @@ describe('The OMEMO module', function () {
                 </items>
             </pubsub>
             </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             iq_stanza = await u.waitUntil(() =>
                 mock.bundleIQRequestSent(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'),
             );
@@ -222,7 +224,7 @@ describe('The OMEMO module', function () {
             </iq>`;
 
             spyOn(_converse.api.connection.get(), 'send').and.callFake((stanza) => (sent_stanza = stanza));
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             await u.waitUntil(() => sent_stanza);
 

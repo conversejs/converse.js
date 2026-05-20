@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { sizzle, stx, u } = converse.env;
 
 describe('The occupants sidebar', function () {
     it(
         "shows all members even if they're not currently present in the groupchat",
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const members = [
                 {
@@ -31,7 +32,7 @@ describe('The occupants sidebar', function () {
                               role="${role}"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             }
 
             if (view.model.get('hidden_occupants')) {
@@ -64,7 +65,7 @@ describe('The occupants sidebar', function () {
                               role="none"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
                 expect(occupants.querySelectorAll('li').length).toBe(8);
             }
             const presence = stx`<presence to="romeo@montague.lit/pda"
@@ -74,7 +75,7 @@ describe('The occupants sidebar', function () {
                     <item affiliation="" jid="servant@montague.lit" role="visitor"/>
                 </x>
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             await u.waitUntil(() => occupants.querySelectorAll('li').length > 8, 500);
             expect(occupants.querySelectorAll('li').length).toBe(9);
             expect(view.model.occupants.length).toBe(9);
@@ -85,12 +86,12 @@ describe('The occupants sidebar', function () {
             expect(view.model.occupants.length).toBe(8);
             view.model.session.set('connection_status', converse.ROOMSTATUS.ENTERED); // Hack
             await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length === 8);
-        })
+        }),
     );
 
     it(
         'shows users currently present in the groupchat',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
             var view = _converse.chatboxviews.get('lounge@montague.lit');
             for (var i = 0; i < mock.chatroom_names.length; i++) {
@@ -106,7 +107,7 @@ describe('The occupants sidebar', function () {
                     </x>
                     <status/>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             }
 
             if (view.model.get('hidden_occupants')) {
@@ -138,15 +139,15 @@ describe('The occupants sidebar', function () {
                               role="none"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             }
             await u.waitUntil(() => occupants.querySelectorAll('li').length === 1);
-        })
+        }),
     );
 
     it(
         'indicates moderators and visitors by means of a special css class and tooltip',
-        mock.initConverse([], { 'view_mode': 'fullscreen' }, async function (_converse) {
+        mock.initConverse(converse, [], { 'view_mode': 'fullscreen' }, async function (_converse) {
             await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             let contact_jid = mock.cur_names[2].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -175,13 +176,13 @@ describe('The occupants sidebar', function () {
                 <status code="110"/>
             </presence>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length > 1, 500);
             occupants = view.querySelectorAll('.occupant-list li');
             expect(occupants.length).toBe(2);
             expect(occupants[0].querySelector('.occupant-nick').textContent.trim()).toBe('moderatorman');
             expect(occupants[0].querySelector('.occupant-nick').getAttribute('title')).toBe(
-                contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.'
+                contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.',
             );
             expect(occupants[1].querySelector('.occupant-nick').textContent.trim()).toBe('romeo');
             expect(occupants[0].querySelectorAll('.badge').length).toBe(2);
@@ -201,7 +202,7 @@ describe('The occupants sidebar', function () {
                 </x>
                 <status code="110"/>
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
             await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length > 2, 500);
             occupants = view.querySelector('.occupant-list').querySelectorAll('li');
@@ -209,11 +210,11 @@ describe('The occupants sidebar', function () {
             expect(occupants[2].querySelector('.occupant-nick').textContent.trim()).toBe('visitorwoman');
             expect(occupants[2].querySelector('.occupant-nick').getAttribute('title')).toBe(
                 contact_jid +
-                    ' This user can NOT send messages in this groupchat. Click to mention visitorwoman in your message.'
+                    ' This user can NOT send messages in this groupchat. Click to mention visitorwoman in your message.',
             );
             expect(occupants[2].querySelectorAll('.badge').length).toBe(1);
             expect(sizzle('.badge', occupants[2]).pop().textContent.trim()).toBe('V');
             expect(sizzle('.badge', occupants[2]).pop().getAttribute('title').trim()).toBe('Visitor');
-        })
+        }),
     );
 });

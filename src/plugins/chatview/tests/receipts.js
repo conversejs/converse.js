@@ -1,12 +1,12 @@
-/*global mock, converse, _ */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
-const { Strophe, stx, sizzle } = converse.env;
-const u = converse.env.utils;
+const { Strophe, stx, sizzle, u } = converse.env;
 
 describe('A delivery receipt', function () {
     it(
         'is emitted for a received message which requests it',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current');
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -35,7 +35,7 @@ describe('A delivery receipt', function () {
 
     it(
         'is not emitted for a carbon message',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             const bare_jid = _converse.session.get('bare_jid');
             await mock.waitForRoster(_converse, 'current', 1);
@@ -75,7 +75,7 @@ describe('A delivery receipt', function () {
 
     it(
         'is not emitted for an archived message',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -118,7 +118,7 @@ describe('A delivery receipt', function () {
 
     it(
         'can be received for a sent message',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -143,7 +143,7 @@ describe('A delivery receipt', function () {
                                    xmlns="jabber:client">
                 <received id="${msg_id}" xmlns="${Strophe.NS.RECEIPTS}"/>
             </message>`;
-            api.connection.get()._dataRecv(mock.createRequest(msg));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, msg));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__receipt').length === 1);
 
             // Also handle receipts with type 'chat'. See #1353
@@ -165,7 +165,7 @@ describe('A delivery receipt', function () {
                                xmlns="jabber:client">
                 <received id="${msg_id}" xmlns="${Strophe.NS.RECEIPTS}"/>
             </message>`;
-            api.connection.get()._dataRecv(mock.createRequest(msg));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, msg));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__receipt').length === 2);
             expect(_converse.exports.handleMessageStanza.calls.count()).toBe(1);
         }),

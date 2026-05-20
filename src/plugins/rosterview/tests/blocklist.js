@@ -1,9 +1,12 @@
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { u } = converse.env;
 
 describe('The Blocklist Modal', function () {
     it(
         'shows a message when there are no blocked users',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilBlocklistInitialized(_converse);
             const modal = await _converse.api.modal.show('converse-blocklist-modal');
             await u.waitUntil(() => modal.querySelector('p'));
@@ -13,7 +16,7 @@ describe('The Blocklist Modal', function () {
 
     it(
         'shows blocked users and allows unblocking them',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilBlocklistInitialized(_converse);
 
             const { api } = _converse;
@@ -49,7 +52,7 @@ describe('The Blocklist Modal', function () {
                     id="${stanza.getAttribute('id')}"
                     to="${own_jid}"
                     xmlns="jabber:client"/>`;
-            connection._dataRecv(mock.createRequest(result));
+            connection._dataRecv(mock.createRequest(_converse, result));
 
             const modal = await api.modal.show('converse-blocklist-modal');
             await u.waitUntil(() => modal.querySelector('ul.items-list'));
@@ -112,7 +115,7 @@ describe('The Blocklist Modal', function () {
                     id="${stanza.getAttribute('id')}"
                     to="${own_jid}"
                     xmlns="jabber:client"/>`;
-            connection._dataRecv(mock.createRequest(unblock_result));
+            connection._dataRecv(mock.createRequest(_converse, unblock_result));
 
             await u.waitUntil(() => api.toast.show.calls.count() === 1);
             expect(api.toast.show).toHaveBeenCalledWith('blocked', {

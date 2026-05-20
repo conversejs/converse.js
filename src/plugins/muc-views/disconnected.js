@@ -1,28 +1,26 @@
 import tplMUCDisconnect from './templates/muc-disconnect.js';
-import { CustomElement } from 'shared/components/element';
+import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api } from "@converse/headless";
-
+import { _converse, api } from '@converse/headless';
 
 class MUCDisconnected extends CustomElement {
-
-    constructor () {
+    constructor() {
         super();
         this.jid = null;
     }
 
-    static get properties () {
+    static get properties() {
         return {
-            'jid': { type: String }
-        }
+            'jid': { type: String },
+        };
     }
 
-    connectedCallback () {
+    connectedCallback() {
         super.connectedCallback();
         this.model = _converse.state.chatboxes.get(this.jid);
     }
 
-    render () {
+    render() {
         const message = this.model.session.get('disconnection_message');
         if (!message) {
             return;

@@ -1,7 +1,6 @@
 import { html, nothing } from 'lit';
 import { api, constants } from '@converse/headless';
-import { __ } from 'i18n';
-import { getChatStyle } from 'shared/chat/utils';
+import { getChatStyle } from 'shared/chat/utils.js';
 
 const { CHATROOMS_TYPE } = constants;
 

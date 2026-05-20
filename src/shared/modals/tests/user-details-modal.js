@@ -1,10 +1,12 @@
-/*global mock, converse */
-const { sizzle, u } = converse.env;
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
+const { u } = converse.env;
 
 describe('The User Details Modal', function () {
     it(
         "can be used to set a contact's name and groups",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             api.trigger('rosterContactsFetched');
@@ -14,9 +16,9 @@ describe('The User Details Modal', function () {
             await u.waitUntil(() => _converse.chatboxes.length > 1);
 
             const view = _converse.chatboxviews.get(contact_jid);
-            let show_modal_button = view.querySelector('.show-msg-author-modal');
+            const show_modal_button = view.querySelector('.show-msg-author-modal');
             show_modal_button.click();
-            let modal = api.modal.get('converse-user-details-modal');
+            const modal = api.modal.get('converse-user-details-modal');
             await u.waitUntil(() => u.isVisible(modal));
             modal.querySelector('#edit-tab').click();
 
@@ -43,12 +45,12 @@ describe('The User Details Modal', function () {
                     <item jid="mercutio@montague.lit" name="New Name"><group>Other</group></item>
                 </query>
             </iq>`);
-        })
+        }),
     );
 
     it(
         'can be used to remove a contact',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             api.trigger('rosterContactsFetched');
@@ -75,12 +77,12 @@ describe('The User Details Modal', function () {
             show_modal_button.click();
             remove_contact_button = modal.querySelector('button.remove-contact');
             expect(remove_contact_button === null).toBeTruthy();
-        })
+        }),
     );
 
     it(
         'shows an alert when an error happened while removing the contact',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             _converse.api.trigger('rosterContactsFetched');
 
@@ -107,7 +109,7 @@ describe('The User Details Modal', function () {
             const header = document.querySelector('.alert-danger .modal-title');
             expect(header.textContent).toBe('Error');
             expect(u.ancestor(header, '.modal-content').querySelector('.modal-body p').textContent.trim()).toBe(
-                'Sorry, an error occurred while trying to remove Mercutio as a contact'
+                'Sorry, an error occurred while trying to remove Mercutio as a contact',
             );
             document.querySelector('.alert-danger .btn[aria-label="Close"]').click();
 
@@ -122,12 +124,12 @@ describe('The User Details Modal', function () {
 
             modal.querySelector('#edit-tab').click();
             await u.waitUntil(() => u.isVisible(modal.querySelector('button.remove-contact')));
-        })
+        }),
     );
 
     it(
         'can be used to accept a contact request',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.openControlBox(_converse);
             await mock.createContacts(_converse, 'requesting', 1);
@@ -143,17 +145,17 @@ describe('The User Details Modal', function () {
             await u.waitUntil(() => u.isVisible(modal));
             modal.querySelector('.accept-contact-request').click();
             await u.waitUntil(() => document.querySelector('converse-accept-contact-request-modal'));
-        })
+        }),
     );
 
     it(
         'can be used to decline a contact request',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitUntilDiscoConfirmed(
                 _converse,
                 _converse.domain,
                 [{ 'category': 'server', 'type': 'IM' }],
-                ['urn:xmpp:blocking']
+                ['urn:xmpp:blocking'],
             );
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.openControlBox(_converse);
@@ -171,11 +173,13 @@ describe('The User Details Modal', function () {
             expect(modal).toBeDefined();
 
             spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
-            spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
+            spyOn(contact, 'unauthorize').and.callFake(function () {
+                return contact;
+            });
             await u.waitUntil(() => u.isVisible(modal));
             modal.querySelector('.decline-contact-request').click();
             await u.waitUntil(() => _converse.api.confirm.calls.count);
             await u.waitUntil(() => contact.unauthorize.calls.count());
-        })
+        }),
     );
 });

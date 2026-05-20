@@ -1,5 +1,11 @@
-import { PATTERN_POSITION_TABLE, QRCodeLimitLength, QRErrorCorrectLevelMap, QRMaskPattern, QRMode } from "./constants";
-import QRPolynomial, { QRMath } from "./polynomial";
+import {
+    PATTERN_POSITION_TABLE,
+    QRCodeLimitLength,
+    QRErrorCorrectLevelMap,
+    QRMaskPattern,
+    QRMode,
+} from './constants.js';
+import QRPolynomial, { QRMath } from './polynomial.js';
 
 /**
  * Get the type by string length
@@ -37,7 +43,7 @@ export function getTypeNumber(text, nCorrectLevel) {
     }
 
     if (nType > QRCodeLimitLength.length) {
-        throw new Error("Too long data");
+        throw new Error('Too long data');
     }
 
     return nType;
@@ -46,7 +52,7 @@ export function getTypeNumber(text, nCorrectLevel) {
 function getUTF8Length(sText) {
     let replacedText = encodeURI(sText)
         .toString()
-        .replace(/\%[0-9a-fA-F]{2}/g, "a");
+        .replace(/\%[0-9a-fA-F]{2}/g, 'a');
     return replacedText.length + (replacedText.length != sText ? 3 : 0);
 }
 
@@ -103,7 +109,7 @@ export const QRUtil = {
             case QRMaskPattern.PATTERN111:
                 return (((i * j) % 3) + ((i + j) % 2)) % 2 == 0;
             default:
-                throw new Error("bad maskPattern:" + maskPattern);
+                throw new Error('bad maskPattern:' + maskPattern);
         }
     },
 
@@ -127,7 +133,7 @@ export const QRUtil = {
                 case QRMode.MODE_KANJI:
                     return 8;
                 default:
-                    throw new Error("mode:" + mode);
+                    throw new Error('mode:' + mode);
             }
         } else if (type < 27) {
             switch (mode) {
@@ -140,7 +146,7 @@ export const QRUtil = {
                 case QRMode.MODE_KANJI:
                     return 10;
                 default:
-                    throw new Error("mode:" + mode);
+                    throw new Error('mode:' + mode);
             }
         } else if (type < 41) {
             switch (mode) {
@@ -153,10 +159,10 @@ export const QRUtil = {
                 case QRMode.MODE_KANJI:
                     return 12;
                 default:
-                    throw new Error("mode:" + mode);
+                    throw new Error('mode:' + mode);
             }
         } else {
-            throw new Error("type:" + type);
+            throw new Error('type:' + type);
         }
     },
 

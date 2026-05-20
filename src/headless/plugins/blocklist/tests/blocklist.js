@@ -1,15 +1,14 @@
-/*global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
 const { u, stx } = converse.env;
 
 describe('A blocklist', function () {
-    beforeEach(() => {
-    });
+    beforeEach(() => {});
 
     it(
         'is automatically fetched from the server once the user logs in',
-        mock.initConverse(['discoInitialized'], {}, async function (_converse) {
+        mock.initConverse(converse, ['discoInitialized'], {}, async function (_converse) {
             const { api, state } = _converse;
             state.session.set('converse.blocklist-romeo@montague.lit-fetched', undefined);
 
@@ -39,7 +38,7 @@ describe('A blocklist', function () {
                         <item jid='juliet@capulet.lit'/>
                     </blocklist>
                 </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             const blocklist = await api.waitUntil('blocklistInitialized');
             expect(blocklist.length).toBe(2);
@@ -49,7 +48,7 @@ describe('A blocklist', function () {
 
     it(
         'is updated when the server sends IQ stanzas',
-        mock.initConverse(['discoInitialized'], {}, async function (_converse) {
+        mock.initConverse(converse, ['discoInitialized'], {}, async function (_converse) {
             const { api, domain, state } = _converse;
             state.session.set('converse.blocklist-romeo@montague.lit-fetched', undefined);
 
@@ -73,14 +72,14 @@ describe('A blocklist', function () {
                         <item jid='iago@shakespeare.lit'/>
                     </blocklist>
                 </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             const blocklist = await api.waitUntil('blocklistInitialized');
             expect(blocklist.length).toBe(1);
 
             // The server sends a push IQ stanza
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`
                     <iq xmlns="jabber:client"
                         to="${api.connection.get().jid}"
@@ -97,7 +96,7 @@ describe('A blocklist', function () {
 
             // The server sends a push IQ stanza
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`
                     <iq xmlns="jabber:client"
                         to="${api.connection.get().jid}"
@@ -116,7 +115,7 @@ describe('A blocklist', function () {
 
     it(
         'can be updated via the api',
-        mock.initConverse(['discoInitialized'], {}, async function (_converse) {
+        mock.initConverse(converse, ['discoInitialized'], {}, async function (_converse) {
             const { api, domain, state } = _converse;
             state.session.set('converse.blocklist-romeo@montague.lit-fetched', undefined);
 
@@ -132,7 +131,7 @@ describe('A blocklist', function () {
             let sent_stanza = await u.waitUntil(() => IQ_stanzas.find((s) => s.querySelector('iq blocklist')));
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<iq xmlns="jabber:client"
                         to="${api.connection.get().jid}"
                         type="result"
@@ -160,7 +159,7 @@ describe('A blocklist', function () {
             _converse.api.connection
                 .get()
                 ._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq xmlns="jabber:client" type="result" id="${sent_stanza.getAttribute('id')}"/>`,
                     ),
                 );
@@ -181,7 +180,7 @@ describe('A blocklist', function () {
             _converse.api.connection
                 .get()
                 ._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq xmlns="jabber:client" type="result" id="${sent_stanza.getAttribute('id')}"/>`,
                     ),
                 );
@@ -195,7 +194,7 @@ describe('A blocklist', function () {
 describe('A Chat Message', function () {
     it(
         "will show an error message if it's rejected due to being banned",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api, state } = _converse;
             state.session.set('converse.blocklist-romeo@montague.lit-fetched', undefined);
 
@@ -206,7 +205,7 @@ describe('A Chat Message', function () {
             const message = await chat.sendMessage({ body: msg_text });
 
             api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
                 <message xmlns="jabber:client"
                     to="${api.connection.get().jid}"
                     type="error"

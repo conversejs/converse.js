@@ -1,11 +1,12 @@
-/* global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
-const { u, Strophe, sizzle, stx } = converse.env;
+const { u, sizzle, stx } = converse.env;
 
 describe('A list of open groupchats', function () {
     it(
         'is shown in controlbox',
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['chatBoxesFetched'],
             {
                 allow_bookmarks: false, // Makes testing easier, otherwise we
@@ -58,7 +59,7 @@ describe('A list of open groupchats', function () {
 
     it(
         'shows the number of unread mentions received',
-        mock.initConverse([], { 'allow_bookmarks': false }, async function (_converse) {
+        mock.initConverse(converse, [], { 'allow_bookmarks': false }, async function (_converse) {
             await mock.openControlBox(_converse);
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             expect(roomspanel.querySelectorAll('.available-room').length).toBe(0);
@@ -114,7 +115,7 @@ describe('A list of open groupchats', function () {
 describe('A groupchat shown in the groupchats list', function () {
     it(
         "is highlighted if it's currently open",
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['chatBoxesFetched'],
             {
                 view_mode: 'fullscreen',
@@ -156,7 +157,7 @@ describe('A groupchat shown in the groupchats list', function () {
 
     it(
         'shows the MUC avatar',
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['chatBoxesFetched'],
             {
                 whitelisted_plugins: ['converse-roomslist'],
@@ -227,7 +228,7 @@ describe('A groupchat shown in the groupchats list', function () {
                             </x>
                         </query>
                     </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(config_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, config_stanza));
 
                 const modal = _converse.api.modal.get('converse-muc-config-modal');
                 const name_el = await u.waitUntil(() => modal.querySelector('input[name="muc#roomconfig_roomname"]'));
@@ -244,7 +245,7 @@ describe('A groupchat shown in the groupchats list', function () {
                         to="${jid}"
                         from="${muc_jid}"
                         id="${iq.getAttribute('id')}"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
 
                 iq = await u.waitUntil(() =>
                     IQ_stanzas.filter(
@@ -266,7 +267,7 @@ describe('A groupchat shown in the groupchats list', function () {
                                       type="text"/>
                         </query>
                     </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, features_stanza));
 
                 await u.waitUntil(() => new Promise((success) => muc_el.model.features.on('change', success)));
 
@@ -306,7 +307,7 @@ describe('A groupchat shown in the groupchats list', function () {
 
     it(
         'can be closed',
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             {
                 whitelisted_plugins: ['converse-roomslist'],
@@ -344,7 +345,7 @@ describe('A groupchat shown in the groupchats list', function () {
 
     it(
         'shows unread messages directed at the user',
-        mock.initConverse(
+        mock.initConverse(converse, 
             null,
             {
                 whitelisted_plugins: ['converse-roomslist'],

@@ -1,17 +1,13 @@
-/*global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
-const { stx } = converse.env;
-const dayjs = converse.env.dayjs;
-const Strophe = converse.env.Strophe;
-const u = converse.env.utils;
-const sizzle = converse.env.sizzle;
+const { dayjs, stx, sizzle, u, Strophe } = converse.env;
 
 describe('Message Archive Management', function () {
     describe('The archive.query API', function () {
         it(
             'can be used to query for all archived messages',
-            mock.initConverse(['discoInitialized'], {}, async function (_converse) {
+            mock.initConverse(converse, ['discoInitialized'], {}, async function (_converse) {
                 const sendIQ = _converse.api.connection.get().sendIQ;
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
@@ -30,7 +26,7 @@ describe('Message Archive Management', function () {
 
         it(
             'can be used to query for all messages to/from a particular JID',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
                 const sendIQ = _converse.api.connection.get().sendIQ;
@@ -59,7 +55,7 @@ describe('Message Archive Management', function () {
 
         it(
             'can be used to query for archived messages from a chat room',
-            mock.initConverse(['statusInitialized'], {}, async function (_converse) {
+            mock.initConverse(converse, ['statusInitialized'], {}, async function (_converse) {
                 const { api } = _converse;
                 const room_jid = 'coven@chat.shakespeare.lit';
                 api.archive.query({ mam: { with: room_jid }, is_groupchat: true });
@@ -80,7 +76,7 @@ describe('Message Archive Management', function () {
 
         it(
             'checks whether returned MAM messages from a MUC room are from the right JID',
-            mock.initConverse(['statusInitialized'], {}, async function (_converse) {
+            mock.initConverse(converse, ['statusInitialized'], {}, async function (_converse) {
                 const room_jid = 'coven@chat.shakespeare.lit';
                 const promise = _converse.api.archive.query({
                     is_groupchat: true,
@@ -109,7 +105,7 @@ describe('Message Archive Management', function () {
                             </forwarded>
                         </result>
                     </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(msg1));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, msg1));
 
                 // Send an <iq> stanza to indicate the end of the result set.
                 const stanza = stx`<iq type='result' id='${sent_stanza.getAttribute('id')}' xmlns="jabber:client">
@@ -121,7 +117,7 @@ describe('Message Archive Management', function () {
                     </set>
                 </fin>
             </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 const result = await promise;
                 expect(result.messages.length).toBe(0);
@@ -130,7 +126,7 @@ describe('Message Archive Management', function () {
 
         it(
             'can be used to query for all messages in a certain timespan',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
@@ -166,7 +162,7 @@ describe('Message Archive Management', function () {
 
         it(
             'throws a TypeError if an invalid date is provided',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 let promise;
                 try {
                     promise = _converse.api.archive.query({ mam: { start: 'not a real date' } });
@@ -182,7 +178,7 @@ describe('Message Archive Management', function () {
 
         it(
             'can be used to query for all messages after a certain time',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
                 const sendIQ = _converse.api.connection.get().sendIQ;
@@ -216,7 +212,7 @@ describe('Message Archive Management', function () {
 
         it(
             'can be used to query for a limited set of results',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
                 const sendIQ = _converse.api.connection.get().sendIQ;
@@ -250,7 +246,7 @@ describe('Message Archive Management', function () {
 
         it(
             'accepts "before" with an empty string as value to reverse the order',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
                 const sendIQ = _converse.api.connection.get().sendIQ;
@@ -276,7 +272,7 @@ describe('Message Archive Management', function () {
 
         it(
             'returns an object which includes the messages and a _converse.RSM object',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
                 const sendIQ = _converse.api.connection.get().sendIQ;
@@ -302,7 +298,7 @@ describe('Message Archive Management', function () {
                             </forwarded>
                         </result>
                     </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(msg1));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, msg1));
 
                 const msg2 = stx`<message id='aeb213' to='juliet@capulet.lit/chamber' xmlns="jabber:client">
                         <result xmlns='urn:xmpp:mam:2' queryid='${queryid}' id='28482-98726-73624'>
@@ -317,7 +313,7 @@ describe('Message Archive Management', function () {
                             </forwarded>
                         </result>
                     </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(msg2));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, msg2));
 
                 const stanza = stx`<iq type='result' id='${IQ_id}' xmlns="jabber:client">
                 <fin xmlns='urn:xmpp:mam:2'>
@@ -328,7 +324,7 @@ describe('Message Archive Management', function () {
                     </set>
                 </fin>
             </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 const result = await promise;
                 expect(result.messages.length).toBe(2);

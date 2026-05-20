@@ -4,7 +4,7 @@ import './message-body.js';
 import 'shared/components/dropdown.js';
 import 'shared/modals/message-versions.js';
 import 'shared/modals/user-details.js';
-import 'shared/registry';
+import 'shared/registry.js';
 import 'plugins/muc-views/modals/occupant.js';
 import tplFileProgress from './templates/file-progress.js';
 import tplInfoMessage from './templates/info-message.js';

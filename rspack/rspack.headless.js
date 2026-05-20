@@ -1,7 +1,7 @@
-const path = require('path');
-const { rspack } = require('@rspack/core');
-const { merge } = require('webpack-merge');
-const common = require('../rspack/rspack.common.js');
+import path from 'path';
+import { rspack } from '@rspack/core';
+import { merge } from 'webpack-merge';
+import common, { __dirname } from '../rspack/rspack.common.js';
 
 const plugins = [
     new rspack.CopyRspackPlugin({
@@ -9,7 +9,7 @@ const plugins = [
     }),
 ];
 
-module.exports = (_env, argv) => {
+export default (_env, argv) => {
     const isDev = argv?.mode === 'development';
 
     const sharedConfig = {

@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { dayjs, stx, u } = converse.env;
 
@@ -7,7 +8,7 @@ const { dayjs, stx, u } = converse.env;
 describe('MUC Mention Notifications', function () {
     it(
         'may be received from a MUC in which the user is not currently present',
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             {
                 allow_bookmarks: false, // Hack to get the rooms list to render
@@ -57,7 +58,7 @@ describe('MUC Mention Notifications', function () {
                     </forwarded>
                 </mentions>
             </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
 
                 await u.waitUntil(() => Array.from(room_el.classList).includes('unread-msgs'));
                 expect(room_el.querySelector('.msgs-indicator')?.textContent.trim()).toBe('1');
@@ -81,7 +82,7 @@ describe('MUC Mention Notifications', function () {
                     </forwarded>
                 </mentions>
             </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
                 expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
                 await u.waitUntil(() => room_el.querySelector('.msgs-indicator')?.textContent.trim() === '2');
             },

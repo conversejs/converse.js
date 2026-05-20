@@ -1,14 +1,12 @@
 import { Strophe } from 'strophe.js';
-import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import BaseMessage from '../../shared/message.js';
-
 
 class MUCMessage extends BaseMessage {
     /**
      * @typedef {import('./occupant').default} MUCOccupant
      */
-    initialize () {
+    initialize() {
         super.initialize();
 
         // If `type` changes from `error` to `groupchat`, we want to set the occupant. See #2733
@@ -24,11 +22,11 @@ class MUCMessage extends BaseMessage {
         api.trigger('chatRoomMessageInitialized', this);
     }
 
-    get occupants () {
-        return (this.get('type') === 'chat') ? this.chatbox.collection : this.chatbox.occupants;
+    get occupants() {
+        return this.get('type') === 'chat' ? this.chatbox.collection : this.chatbox.occupants;
     }
 
-    getDisplayName () {
+    getDisplayName() {
         return this.occupant?.getDisplayName() || this.get('nick');
     }
 
@@ -38,25 +36,26 @@ class MUCMessage extends BaseMessage {
      * @method _converse.ChatRoomMessages#mayBeModerated
      * @returns {Promise<boolean>}
      */
-    async mayBeModerated () {
-        if (typeof this.get('from_muc')  === 'undefined') {
+    async mayBeModerated() {
+        if (typeof this.get('from_muc') === 'undefined') {
             // If from_muc is not defined, then this message hasn't been
             // reflected yet, which means we won't have a XEP-0359 stanza id.
             return;
         }
         return (
             ['all', 'moderator'].includes(api.settings.get('allow_message_retraction')) &&
-            this.get(`stanza_id ${this.get('from_muc')}`) && await this.chatbox.canModerateMessages()
+            this.get(`stanza_id ${this.get('from_muc')}`) &&
+            (await this.chatbox.canModerateMessages())
         );
     }
 
-    checkValidity () {
+    checkValidity() {
         const result = super.checkValidity();
         !result && this.chatbox.debouncedRejoin();
         return result;
     }
 
-    onOccupantRemoved () {
+    onOccupantRemoved() {
         this.stopListening(this.occupant);
         delete this.occupant;
         this.listenTo(this.occupants, 'add', this.onOccupantAdded);
@@ -65,7 +64,7 @@ class MUCMessage extends BaseMessage {
     /**
      * @param {MUCOccupant} [occupant]
      */
-    onOccupantAdded (occupant) {
+    onOccupantAdded(occupant) {
         if (this.get('occupant_id')) {
             if (occupant.get('occupant_id') !== this.get('occupant_id')) {
                 return;
@@ -73,7 +72,7 @@ class MUCMessage extends BaseMessage {
         } else if (occupant.get('nick') !== Strophe.getResourceFromJid(this.get('from'))) {
             return;
         }
-        this.setOccupant(occupant)
+        this.setOccupant(occupant);
     }
 
     getOccupant() {
@@ -84,17 +83,15 @@ class MUCMessage extends BaseMessage {
      * @param {MUCOccupant} [occupant]
      * @return {MUCOccupant}
      */
-    setOccupant (occupant) {
+    setOccupant(occupant) {
         if (!['groupchat', 'chat'].includes(this.get('type')) || this.isEphemeral()) {
             return;
         }
 
         if (occupant) {
             this.occupant = occupant;
-
         } else if (this.get('type') === 'chat' && this.get('sender') === 'them') {
             this.occupant = this.chatbox;
-
         } else {
             if (this.occupant) return;
 

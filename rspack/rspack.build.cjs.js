@@ -1,7 +1,7 @@
-const { merge } = require('webpack-merge');
-const buildConfig = require('../rspack/rspack.build.js');
+import { merge } from 'webpack-merge';
+import buildConfig from '../rspack/rspack.build.js';
 
-module.exports = (env, argv) =>
+export default (env, argv) =>
     merge(buildConfig(env, argv), {
         output: {
             filename: '[name].js',

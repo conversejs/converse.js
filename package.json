@@ -2,6 +2,7 @@
   "name": "converse.js",
   "version": "13.0.0",
   "description": "Browser based XMPP chat client",
+  "type": "module",
   "workspaces": [
     "src/headless",
     "src/log"
@@ -132,7 +133,7 @@
     "postcss": "^8.4.16",
     "postcss-loader": "^8.1.1",
     "sass": "^1.86.2",
-    "sass-loader": "^16.0.5",
+    "sass-loader": "^17.0.0",
     "style-loader": "^4.0.0",
     "typescript": "5.6.2",
     "webpack-merge": "^6.0.1"

@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { sizzle, stx } = converse.env;
 const u = converse.env.utils;
@@ -7,7 +8,7 @@ describe('Emojis', function () {
     describe('The emoji picker', function () {
         it(
             'is opened to autocomplete emojis in the textarea',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
                 const muc_jid = 'lounge@montague.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
@@ -66,7 +67,7 @@ describe('Emojis', function () {
                         <item jid="some1@montague.lit" affiliation="member" role="participant"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
                 textarea.value = ':use';
                 message_form.onKeyDown(tab_event);
@@ -79,7 +80,7 @@ describe('Emojis', function () {
 
         it(
             'is focused to autocomplete emojis in the textarea',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 await mock.waitForRoster(_converse, 'current', 0);
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
@@ -133,7 +134,7 @@ describe('Emojis', function () {
 
         it(
             'properly inserts emojis into the chat textarea',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 await mock.waitForRoster(_converse, 'current', 0);
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
@@ -179,7 +180,7 @@ describe('Emojis', function () {
 
         it(
             'allows you to search for particular emojis',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 await mock.waitForRoster(_converse, 'current', 0);
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
@@ -188,9 +189,7 @@ describe('Emojis', function () {
                 const toolbar = view.querySelector('converse-chat-toolbar');
                 toolbar.querySelector('.toggle-emojis').click();
                 await u.waitUntil(() => u.isVisible(view.querySelector('.emoji-picker__lists')));
-                await u.waitUntil(
-                    () => sizzle('converse-chat-toolbar .insert-emoji:not(.hidden)', view).length > 500,
-                );
+                await u.waitUntil(() => sizzle('converse-chat-toolbar .insert-emoji:not(.hidden)', view).length > 500);
 
                 const input = view.querySelector('.emoji-search');
                 input.value = 'smiley';

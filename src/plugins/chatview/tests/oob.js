@@ -1,11 +1,13 @@
-/*global mock, converse */
-const { Strophe, u, stx } = converse.env;
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
+const { u, stx } = converse.env;
 
 describe('A Chat Message', function () {
     describe('which contains an OOB URL', function () {
         it(
             'will render audio from oob mp3 URLs using accessible audio player',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
@@ -21,7 +23,7 @@ describe('A Chat Message', function () {
                     <body>Have you heard this funny audio?</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                 await u.waitUntil(
                     () => view.querySelectorAll('.chat-content .chat-msg converse-audio-player').length,
@@ -43,7 +45,7 @@ describe('A Chat Message', function () {
                     <body>${url}</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                 msg = view.querySelector('.chat-msg .chat-msg__text');
@@ -62,7 +64,7 @@ describe('A Chat Message', function () {
 
         it(
             'will render video from oob mp4 URLs',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
@@ -78,7 +80,7 @@ describe('A Chat Message', function () {
                     <body>Have you seen this funny video?</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg video').length, 2000);
                 let msg = view.querySelector('.chat-msg .chat-msg__text');
                 expect(msg.classList.length).toBe(1);
@@ -95,7 +97,7 @@ describe('A Chat Message', function () {
                     <body>https://montague.lit/video.mp4</body>
                     <x xmlns="jabber:x:oob"><url>https://montague.lit/video.mp4</url></x>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                 msg = view.querySelector('converse-chat-message .chat-msg__text');
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('Have you seen this funny video?');
@@ -108,7 +110,7 @@ describe('A Chat Message', function () {
 
         it(
             'will render download links for files from oob URLs',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
@@ -123,7 +125,7 @@ describe('A Chat Message', function () {
                     <body>Have you downloaded this funny file?</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                 await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg a').length, 1000);
                 const msg = view.querySelector('.chat-msg .chat-msg__text');
@@ -138,7 +140,7 @@ describe('A Chat Message', function () {
 
         it(
             'will render images from oob URLs',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const base_url = 'https://conversejs.org';
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -155,8 +157,8 @@ describe('A Chat Message', function () {
                     <body>Have you seen this funny image?</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                 await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg a').length, 1000);
                 const msg = view.querySelector('.chat-msg .chat-msg__text');

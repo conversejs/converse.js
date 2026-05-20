@@ -1,5 +1,5 @@
-/* global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
 const { sizzle, stx, u, errors } = converse.env;
 
@@ -7,7 +7,7 @@ describe('The pubsub API', function () {
     describe('fetching a nodes config settings', function () {
         it(
             "can be used to fetch a nodes's configuration settings",
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
                 const { api } = _converse;
                 const sent_stanzas = api.connection.get().sent_stanzas;
@@ -134,7 +134,7 @@ describe('The pubsub API', function () {
                     </pubsub>
                 </iq>`;
 
-                _converse.api.connection.get()._dataRecv(mock.createRequest(response));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
 
                 const result = await promise;
                 expect(result).toEqual({
@@ -165,7 +165,7 @@ describe('The pubsub API', function () {
 
         it(
             'handles error cases',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
                 const { api } = _converse;
                 const sent_stanzas = api.connection.get().sent_stanzas;
@@ -198,7 +198,7 @@ describe('The pubsub API', function () {
                     .finally(() => {
                         expect(first_error_thrown).toBe(true);
                     });
-                _converse.api.connection.get()._dataRecv(mock.createRequest(response));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
 
                 promise = api.pubsub.config.get(pubsub_jid, node);
                 sent_stanza = await u.waitUntil(() =>
@@ -221,7 +221,7 @@ describe('The pubsub API', function () {
                     .finally(() => {
                         expect(second_error_thrown).toBe(true);
                     });
-                _converse.api.connection.get()._dataRecv(mock.createRequest(response));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
 
                 promise = api.pubsub.config.get(pubsub_jid, node);
                 sent_stanza = await u.waitUntil(() =>
@@ -244,7 +244,7 @@ describe('The pubsub API', function () {
                     .finally(() => {
                         expect(third_error_thrown).toBe(true);
                     });
-                _converse.api.connection.get()._dataRecv(mock.createRequest(response));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
             }),
         );
     });
@@ -252,7 +252,7 @@ describe('The pubsub API', function () {
     describe('setting a nodes config settings', function () {
         it(
             'first fetches the config, and then changes the specified values',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
                 const { api } = _converse;
                 const sent_stanzas = api.connection.get().sent_stanzas;
@@ -266,7 +266,7 @@ describe('The pubsub API', function () {
                     sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
                 );
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(stx`
+                    mock.createRequest(_converse, stx`
                     <iq type='result'
                         xmlns="jabber:client"
                         from='${pubsub_jid}'
@@ -371,7 +371,7 @@ describe('The pubsub API', function () {
                     </iq>`);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(stx`
+                    mock.createRequest(_converse, stx`
                     <iq type='result'
                         xmlns="jabber:client"
                         from='${pubsub_jid}'
@@ -401,7 +401,7 @@ describe('The pubsub API', function () {
 
         it(
             'handles error cases',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
                 const { api } = _converse;
                 const sent_stanzas = api.connection.get().sent_stanzas;
@@ -415,7 +415,7 @@ describe('The pubsub API', function () {
                     sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
                 );
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(stx`
+                    mock.createRequest(_converse, stx`
                     <iq type='result'
                         xmlns="jabber:client"
                         from='${pubsub_jid}'
@@ -463,7 +463,7 @@ describe('The pubsub API', function () {
                     .finally(() => {
                         expect(first_error_thrown).toBe(true);
                     });
-                _converse.api.connection.get()._dataRecv(mock.createRequest(response));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
             }),
         );
     });
@@ -471,7 +471,7 @@ describe('The pubsub API', function () {
     describe('publishing to a node', function () {
         it(
             "will try to manually configure the node if publish-options aren't supported",
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const pubsub_jid = 'pubsub.shakespeare.lit';
@@ -522,13 +522,13 @@ describe('The pubsub API', function () {
                         <precondition-not-met xmlns='http://jabber.org/protocol/pubsub#errors'/>
                     </error>
                 </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(response));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
 
                 sent_stanza = await u.waitUntil(() =>
                     sent_stanzas.filter((iq) => iq.querySelector('pubsub configure')).pop(),
                 );
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(stx`
+                    mock.createRequest(_converse, stx`
                     <iq type='result'
                         xmlns="jabber:client"
                         from='${pubsub_jid}'
@@ -573,7 +573,7 @@ describe('The pubsub API', function () {
                     </iq>`);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(stx`
+                    mock.createRequest(_converse, stx`
                     <iq type='result'
                         xmlns="jabber:client"
                         from='${pubsub_jid}'
@@ -607,7 +607,7 @@ describe('The pubsub API', function () {
                     </iq>`);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(stx`
+                    mock.createRequest(_converse, stx`
                     <iq type='result'
                         xmlns="jabber:client"
                         from='${pubsub_jid}'

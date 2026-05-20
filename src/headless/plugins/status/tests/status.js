@@ -1,12 +1,12 @@
-/*global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
 const { u, sizzle } = converse.env;
 
 describe('The Profile model', function () {
     it(
         "won't send <show>online</show> when setting a custom status message",
-        mock.initConverse(async (_converse) => {
+        mock.initConverse(converse, async (_converse) => {
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             await _converse.api.user.status.set('online');
             _converse.api.user.status.message.set("I'm also happy!");

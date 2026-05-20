@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { sizzle, u, stx } = converse.env;
 
@@ -6,7 +7,7 @@ describe('Groupchats', () => {
     describe('A Groupchat', () => {
         it(
             'has an avatar image',
-            mock.initConverse(['chatBoxesFetched'], { vcard: { nickname: '' } }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { vcard: { nickname: '' } }, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 
@@ -32,7 +33,7 @@ describe('Groupchats', () => {
 
         it(
             'has an avatar which opens a details modal when clicked',
-            mock.initConverse(
+            mock.initConverse(converse, 
                 ['chatBoxesFetched'],
                 {
                     whitelisted_plugins: ['converse-roomslist'],
@@ -81,7 +82,7 @@ describe('Groupchats', () => {
                                 </x>
                             </query>
                         </iq>`;
-                    _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, features_stanza));
 
                     const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
                     await u.waitUntil(
@@ -97,7 +98,7 @@ describe('Groupchats', () => {
                             </x>
                             <status code="110"/>
                         </presence>`;
-                    _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
                     const avatar_el = await u.waitUntil(() =>
                         view.querySelector('converse-muc-heading converse-avatar'),
@@ -144,7 +145,7 @@ describe('Groupchats', () => {
                                 <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
                             </x>
                         </presence>`;
-                    _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
                     await u.waitUntil(() => view.model.occupants.length === 2);
 
                     els = modal.querySelectorAll('p.room-info');

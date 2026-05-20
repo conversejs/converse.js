@@ -1,11 +1,13 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { Strophe, stx, u, sizzle } = converse.env;
 
 describe('MAM archived messages', function () {
     it(
         'will be fetched newest first and will automatically fetch again if the placeholder message becomes visible',
 
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             {
                 archived_messages_page_size: 3,
@@ -63,12 +65,12 @@ describe('MAM archived messages', function () {
                         </forwarded>
                     </result>
                 </message>`,
-                ].forEach((stanza) => conn._dataRecv(mock.createRequest(stanza)));
+                ].forEach((stanza) => conn._dataRecv(mock.createRequest(_converse, stanza)));
 
                 while (conn.IQ_stanzas.length) conn.IQ_stanzas.pop();
 
                 conn._dataRecv(
-                    mock.createRequest(stx`
+                    mock.createRequest(_converse, stx`
             <iq type="result" id="${iq_id}" xmlns="jabber:client">
                 <fin xmlns="urn:xmpp:mam:2">
                     <set xmlns="http://jabber.org/protocol/rsm">
@@ -104,7 +106,7 @@ describe('MAM archived messages', function () {
 
     it(
         'will appear in the correct order',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const nick = 'romeo';
             const muc_jid = 'room@muc.example.com';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, nick);
@@ -186,7 +188,7 @@ describe('MAM archived messages', function () {
 
     it(
         'is ignored if it has the same archive-id of an already received one',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'room@muc.example.com';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             spyOn(model, 'getDuplicateMessage').and.callThrough();
@@ -200,7 +202,7 @@ describe('MAM archived messages', function () {
                            id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
                            by="room@muc.example.com"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => model.messages.length === 1);
             await u.waitUntil(() => model.getDuplicateMessage.calls.count() === 1);
             let result = await model.getDuplicateMessage.calls.all()[0].returnValue;
@@ -232,7 +234,7 @@ describe('MAM archived messages', function () {
 
     it(
         "will be discarded if it's a malicious message meant to look like a carbon copy",
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
             const muc_jid = 'xsf@muc.xmpp.org';
@@ -240,7 +242,7 @@ describe('MAM archived messages', function () {
             const impersonated_jid = `${muc_jid}/i_am_groot`;
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<presence to='romeo@montague.lit/_converse.js-29092160' from='${sender_jid}' xmlns="jabber:client">
                     <x xmlns='${Strophe.NS.MUC_USER}'>
                         <item affiliation='owner' jid='newguy@montague.lit/_converse.js-290929789' role='participant'/>

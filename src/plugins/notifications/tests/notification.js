@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { Strophe, stx } = converse.env;
 const u = converse.env.utils;
@@ -11,7 +12,7 @@ describe('Notifications', function () {
             describe('an HTML5 Notification', function () {
                 it(
                     'is shown when a new private message is received',
-                    mock.initConverse([], {}, async (_converse) => {
+                    mock.initConverse(converse, [], {}, async (_converse) => {
                         await mock.waitForRoster(_converse, 'current');
                         const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                         spyOn(window, 'Notification').and.returnValue(stub);
@@ -35,7 +36,7 @@ describe('Notifications', function () {
 
                 it(
                     'is shown when you are mentioned in a groupchat',
-                    mock.initConverse([], {}, async (_converse) => {
+                    mock.initConverse(converse, [], {}, async (_converse) => {
                         await mock.waitForRoster(_converse, 'current');
                         await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                         const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -54,7 +55,7 @@ describe('Notifications', function () {
                             </message>`;
                         _converse.api.connection
                             .get()
-                            ._dataRecv(mock.createRequest(makeMsg('romeo: this will NOT show a notification')));
+                            ._dataRecv(mock.createRequest(_converse, makeMsg('romeo: this will NOT show a notification')));
                         await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                         expect(window.Notification).not.toHaveBeenCalled();
 
@@ -72,7 +73,7 @@ describe('Notifications', function () {
                                            type="mention"
                                            uri="xmpp:romeo@montague.lit"/>
                             </message>`;
-                        _converse.api.connection.get()._dataRecv(mock.createRequest(message_with_ref));
+                        _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_with_ref));
                         await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                         expect(window.Notification.calls.count()).toBe(1);
 
@@ -80,7 +81,7 @@ describe('Notifications', function () {
                         _converse.api.settings.set('notify_all_room_messages', true);
                         _converse.api.connection
                             .get()
-                            ._dataRecv(mock.createRequest(makeMsg('romeo: this will show a notification')));
+                            ._dataRecv(mock.createRequest(_converse, makeMsg('romeo: this will show a notification')));
                         await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                         expect(window.Notification.calls.count()).toBe(2);
                     }),
@@ -88,7 +89,7 @@ describe('Notifications', function () {
 
                 it(
                     'is shown for headline messages',
-                    mock.initConverse([], {}, async (_converse) => {
+                    mock.initConverse(converse, [], {}, async (_converse) => {
                         const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                         spyOn(window, 'Notification').and.returnValue(stub);
 
@@ -105,7 +106,7 @@ describe('Notifications', function () {
                                     <url>imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18</url>
                                 </x>
                             </message>`;
-                        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                        _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                         await u.waitUntil(() => _converse.chatboxviews.keys().length === 1);
                         expect(_converse.chatboxviews.keys().includes('notify.example.com')).toBeTruthy();
@@ -115,7 +116,7 @@ describe('Notifications', function () {
 
                 it(
                     'is not shown for full JID headline messages if allow_non_roster_messaging is false',
-                    mock.initConverse([], { 'allow_non_roster_messaging': false }, (_converse) => {
+                    mock.initConverse(converse, [], { 'allow_non_roster_messaging': false }, (_converse) => {
                         const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                         spyOn(window, 'Notification').and.returnValue(stub);
                         const stanza = stx`
@@ -130,7 +131,7 @@ describe('Notifications', function () {
                                     <url>imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18</url>
                                 </x>
                             </message>`;
-                        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                        _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                         expect(_converse.chatboxviews.keys().includes('someone@notify.example.com')).toBeFalsy();
                         expect(window.Notification).not.toHaveBeenCalled();
                     }),
@@ -138,7 +139,7 @@ describe('Notifications', function () {
 
                 it(
                     'is shown when a user changes their chat state (if show_chat_state_notifications is true)',
-                    mock.initConverse([], { show_chat_state_notifications: true }, async (_converse) => {
+                    mock.initConverse(converse, [], { show_chat_state_notifications: true }, async (_converse) => {
                         await mock.waitForRoster(_converse, 'current', 3);
                         const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                         spyOn(window, 'Notification').and.returnValue(stub);
@@ -153,7 +154,7 @@ describe('Notifications', function () {
         describe('When a new contact request is received', function () {
             it(
                 'an HTML5 Notification is received',
-                mock.initConverse((_converse) => {
+                mock.initConverse(converse, (_converse) => {
                     const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                     spyOn(window, 'Notification').and.returnValue(stub);
                     _converse.api.trigger('contactRequest', { 'getDisplayName': () => 'Peter Parker' });
@@ -167,7 +168,7 @@ describe('Notifications', function () {
         describe('A notification sound', function () {
             it(
                 'is played when the current user is mentioned in a groupchat',
-                mock.initConverse([], {}, async (_converse) => {
+                mock.initConverse(converse, [], {}, async (_converse) => {
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                     const { api } = _converse;
@@ -226,7 +227,7 @@ describe('Notifications', function () {
     describe('A Favicon Message Counter', function () {
         it(
             'is incremented when the message is received and the window is not focused',
-            mock.initConverse([], { 'show_tab_notifications': false }, async function (_converse) {
+            mock.initConverse(converse, [], { 'show_tab_notifications': false }, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
 
@@ -284,7 +285,7 @@ describe('Notifications', function () {
 
         it(
             'is not incremented when the message is received and the window is focused',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
 
@@ -318,7 +319,7 @@ describe('Notifications', function () {
 
         it(
             'is incremented from zero when chatbox was closed after viewing previously received messages and the window is not focused now',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current');
                 const favico = jasmine.createSpyObj('favico', ['badge']);
                 spyOn(converse.env, 'Favico').and.returnValue(favico);

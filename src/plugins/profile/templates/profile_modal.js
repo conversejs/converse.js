@@ -2,7 +2,7 @@ import { html } from 'lit';
 import { _converse } from '@converse/headless';
 import { __ } from 'i18n';
 import 'shared/components/image-picker.js';
-import { shouldShowPasswordResetForm } from '../utils';
+import { shouldShowPasswordResetForm } from '../utils.js';
 import tplChatStatusForm from './chat-status-form.js';
 
 /**
@@ -31,7 +31,7 @@ export default (el) => {
     const i18n_role = __('Role');
     const i18n_save = __('Save and close');
     const i18n_role_help = __(
-        'Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.'
+        'Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.',
     );
     const i18n_url = __('URL');
     const i18n_status = __('Status');
@@ -56,7 +56,7 @@ export default (el) => {
                 data-toggle="tab"
                 >${i18n_status}</a
             >
-        </li>`
+        </li>`,
     );
 
     navigation_tabs.set(
@@ -73,7 +73,7 @@ export default (el) => {
                 data-toggle="tab"
                 >${i18n_profile}</a
             >
-        </li>`
+        </li>`,
     );
 
     if (shouldShowPasswordResetForm()) {
@@ -91,7 +91,7 @@ export default (el) => {
                     data-toggle="tab"
                     >${ii18n_reset_password}</a
                 >
-            </li>`
+            </li>`,
         );
     }
 
@@ -110,7 +110,7 @@ export default (el) => {
                     data-toggle="tab"
                     >${i18n_omemo}</a
                 >
-            </li>`
+            </li>`,
         );
     }
 

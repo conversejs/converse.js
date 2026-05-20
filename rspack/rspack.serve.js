@@ -1,7 +1,7 @@
-const { rspack } = require('@rspack/core');
-const path = require('path');
-const { merge } = require('webpack-merge');
-const common = require('../rspack/rspack.common.js');
+import { rspack } from '@rspack/core';
+import path from 'path';
+import { merge } from 'webpack-merge';
+import common from '../rspack/rspack.common.js';
 
 const plugins = [
     new rspack.CopyRspackPlugin({
@@ -9,7 +9,7 @@ const plugins = [
     }),
 ];
 
-module.exports = [
+export default [
     // Headless build configuration
     merge(common, {
         name: 'converse-headless',
@@ -66,8 +66,8 @@ module.exports = [
         },
         resolve: {
             alias: {
-                '@converse/headless': path.resolve(__dirname, '../src/headless/dist/converse-headless.js')
-            }
+                '@converse/headless': path.resolve(__dirname, '../src/headless/dist/converse-headless.js'),
+            },
         },
         devServer: {
             static: [

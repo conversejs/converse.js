@@ -1,11 +1,13 @@
-/* global mock, converse */
-const { Strophe, sizzle, stx, u } = converse.env;
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
+const { stx, u } = converse.env;
 
 describe('A chat room', function () {
     describe('when bookmarked', function () {
         it(
             'will use the nickname from the bookmark',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const { u } = converse.env;
                 await mock.waitForRoster(_converse, 'current', 0);
                 await mock.waitUntilBookmarksReturned(_converse);
@@ -31,7 +33,7 @@ describe('A chat room', function () {
 describe('Bookmarks', function () {
     it(
         'can be pushed from the XMPP server',
-        mock.initConverse(['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             const { u } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
@@ -63,7 +65,7 @@ describe('Bookmarks', function () {
                 </items>
             </event>
         </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await mock.waitForMUCDiscoInfo(_converse, 'theplay@conference.shakespeare.lit');
 
             const { bookmarks } = _converse.state;
@@ -97,7 +99,7 @@ describe('Bookmarks', function () {
                 </items>
             </event>
         </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             await u.waitUntil(() => bookmarks.length === 3);
             expect(bookmarks.map((b) => b.get('name'))).toEqual([
@@ -134,7 +136,7 @@ describe('Bookmarks', function () {
                 </items>
             </event>
         </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             await u.waitUntil(() => bookmarks.filter((b) => !b.get('autojoin')).length === 3);
             expect(bookmarks.map((b) => b.get('name'))).toEqual([
@@ -149,7 +151,7 @@ describe('Bookmarks', function () {
 
     it(
         'can be retrieved from the XMPP server',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { sizzle, u } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilDiscoConfirmed(
@@ -205,7 +207,7 @@ describe('Bookmarks', function () {
             </pubsub>
             </iq>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => _converse.bookmarks.onBookmarksReceived.calls.count());
             await _converse.api.waitUntil('bookmarksInitialized');
             const { bookmarks } = _converse.state;
@@ -225,7 +227,7 @@ describe('Bookmarks', function () {
 
     it(
         'can have a password which will be used to enter',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const autojoin_muc = 'theplay@conference.shakespeare.lit';
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse, [

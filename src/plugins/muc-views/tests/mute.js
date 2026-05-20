@@ -1,11 +1,13 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { Strophe, stx, u } = converse.env;
 
 describe('Groupchats', function () {
     describe('A muted user', function () {
         it(
             'will receive a user-friendly error message when trying to send a message',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'trollbox@montague.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'troll');
                 const view = _converse.chatboxviews.get(muc_jid);
@@ -22,7 +24,7 @@ describe('Groupchats', function () {
                          from="trollbox@montague.lit">
                     <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 await u.waitUntil(() => view.querySelector('.chat-msg__error')?.textContent.trim(), 1000);
 
                 expect(view.querySelector('.chat-msg__error').textContent.trim()).toBe(
@@ -43,7 +45,7 @@ describe('Groupchats', function () {
                         <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Thou shalt not!</text>
                     </error>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__error').length === 2);
                 const sel = 'converse-message-history converse-chat-message:last-child .chat-msg__error';
@@ -54,7 +56,7 @@ describe('Groupchats', function () {
 
         it(
             'will see an explanatory message instead of a textarea',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const features = [
                     'http://jabber.org/protocol/muc',
                     'jabber:iq:register',
@@ -77,7 +79,7 @@ describe('Groupchats', function () {
                         <status code="110"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 await u.waitUntil(() => view.querySelector('.chat-textarea') === null);
                 let bottom_panel = view.querySelector('.muc-bottom-panel');
@@ -114,7 +116,7 @@ describe('Groupchats', function () {
                     <status code="110"/>
                 </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 await u.waitUntil(() => view.querySelector('.muc-bottom-panel') === null);
                 expect(textarea === null).toBe(false);
                 // Check now that things get restored when the user is given a voice

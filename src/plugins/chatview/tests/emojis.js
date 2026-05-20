@@ -1,8 +1,7 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
-const { stx } = converse.env;
-const u = converse.env.utils;
-const { Strophe, sizzle } = converse.env;
+const { stx, sizzle, u, Strophe } = converse.env;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe('Emojis', function () {
@@ -12,12 +11,12 @@ describe('Emojis', function () {
 
         it(
             'publishes emoji usage to pubsub PEP node when an emoji is sent',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitUntilDiscoConfirmed(
                     _converse,
                     _converse.bare_jid,
                     [{ 'category': 'pubsub', 'type': 'pep' }],
-                    ['http://jabber.org/protocol/pubsub#publish-options']
+                    ['http://jabber.org/protocol/pubsub#publish-options'],
                 );
 
                 await mock.waitForRoster(_converse, 'current', 1);
@@ -51,8 +50,8 @@ describe('Emojis', function () {
                 const sent_stanzas = _converse.api.connection.get().sent_stanzas;
                 const sent_stanza = await u.waitUntil(() =>
                     sent_stanzas.find(
-                        (iq) => sizzle(`pubsub publish[node="${Strophe.NS.REACTIONS_POPULAR}"]`, iq).length
-                    )
+                        (iq) => sizzle(`pubsub publish[node="${Strophe.NS.REACTIONS_POPULAR}"]`, iq).length,
+                    ),
                 );
 
                 expect(sent_stanza).toEqualStanza(stx`
@@ -82,7 +81,7 @@ describe('Emojis', function () {
                         </publish-options>
                         </pubsub>
                     </iq>`);
-            })
+            }),
         );
     });
 
@@ -92,7 +91,7 @@ describe('Emojis', function () {
 
         it(
             'can be opened by clicking a button in the chat toolbar',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const contact_jid = mock.cur_names[2].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
@@ -105,12 +104,12 @@ describe('Emojis', function () {
                 item.click();
                 expect(view.querySelector('textarea.chat-textarea').value).toBe(':thumbsup: ');
                 toolbar.querySelector('.toggle-emojis').click(); // Close the panel again
-            })
+            }),
         );
 
         it(
             'renders the popular category with recently used emojis',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
@@ -157,12 +156,12 @@ describe('Emojis', function () {
                 expect(emoji_data).toEqual([':thumbsup:', ':heart:', ':joy:', ':laughing:', ':tada:']);
 
                 toolbar.querySelector('.toggle-emojis').click();
-            })
+            }),
         );
 
         it(
             'shows the default popular emojis when there is no usage history',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
@@ -189,7 +188,7 @@ describe('Emojis', function () {
                 // The popular emoji list should exist but contain no items
                 const popular_list = await u.waitUntil(
                     () => picker.querySelector('ul.emoji-picker[data-category="popular"]'),
-                    1000
+                    1000,
                 );
                 const emoji_items = popular_list.querySelectorAll('li.insert-emoji');
                 expect(emoji_items.length).toBe(5);
@@ -197,14 +196,14 @@ describe('Emojis', function () {
                 // Verify the emojis are in the correct order (most recent first)
                 const emoji_data = Array.from(emoji_items).map((el) => el.getAttribute('data-emoji'));
                 expect(emoji_data).toEqual([':thumbsup:', ':heart:', ':laughing:', ':joy:', ':tada:']);
-            })
+            }),
         );
     });
 
     describe('A Chat Message', function () {
         it(
             "will display larger if it's only emojis",
-            mock.initConverse(['chatBoxesFetched'], { 'use_system_emojis': true }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { 'use_system_emojis': true }, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current');
                 const sender_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 _converse.handleMessageStanza(
@@ -215,7 +214,7 @@ describe('Emojis', function () {
                                  xmlns="jabber:client">
                         <body>😇</body>
                         <active xmlns="http://jabber.org/protocol/chatstates"/>
-                    </message>`
+                    </message>`,
                 );
                 await new Promise((resolve) => _converse.on('chatBoxViewInitialized', resolve));
                 const view = _converse.chatboxviews.get(sender_jid);
@@ -230,7 +229,7 @@ describe('Emojis', function () {
                                  xmlns="jabber:client">
                         <body>😇 Hello world! 😇 😇</body>
                         <active xmlns="http://jabber.org/protocol/chatstates"/>
-                    </message>`
+                    </message>`,
                 );
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
 
@@ -270,8 +269,8 @@ describe('Emojis', function () {
                 await u.waitUntil(
                     () =>
                         Array.from(view.querySelectorAll('.chat-msg__text')).filter(
-                            (el) => el.textContent === edited_text
-                        ).length
+                            (el) => el.textContent === edited_text,
+                        ).length,
                 );
                 expect(view.model.messages.models.length).toBe(3);
                 let message = view.querySelector(last_msg_sel);
@@ -295,12 +294,12 @@ describe('Emojis', function () {
 
                 message = view.querySelector('.message:last-child .chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
-            })
+            }),
         );
 
         it(
             'can render emojis as images',
-            mock.initConverse(['chatBoxesFetched'], { 'use_system_emojis': false }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { 'use_system_emojis': false }, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current');
                 const contact_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 _converse.handleMessageStanza(
@@ -311,7 +310,7 @@ describe('Emojis', function () {
                                  xmlns="jabber:client">
                         <body>😇</body>
                         <active xmlns="http://jabber.org/protocol/chatstates"/>
-                    </message>`
+                    </message>`,
                 );
                 await new Promise((resolve) => _converse.on('chatBoxViewInitialized', resolve));
                 const view = _converse.chatboxviews.get(contact_jid);
@@ -319,7 +318,7 @@ describe('Emojis', function () {
                 await u.waitUntil(
                     () =>
                         view.querySelector('.chat-msg__text').innerHTML.replace(/<!-.*?->/g, '') ===
-                        '<img class="emoji" loading="lazy" draggable="false" title=":innocent:" alt="😇" src="https://twemoji.maxcdn.com/v/12.1.6//72x72/1f607.png">'
+                        '<img class="emoji" loading="lazy" draggable="false" title=":innocent:" alt="😇" src="https://twemoji.maxcdn.com/v/12.1.6//72x72/1f607.png">',
                 );
 
                 const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
@@ -348,12 +347,12 @@ describe('Emojis', function () {
                 const sent_stanzas = _converse.api.connection.get().sent_stanzas;
                 const sent_stanza = sent_stanzas.filter((s) => s.nodeName === 'message').pop();
                 expect(sent_stanza.querySelector('body').innerHTML).toBe('💩 😇');
-            })
+            }),
         );
 
         it(
             'can show custom emojis',
-            mock.initConverse(
+            mock.initConverse(converse, 
                 ['chatBoxesFetched'],
                 {
                     emoji_categories: {
@@ -381,7 +380,7 @@ describe('Emojis', function () {
                     const picker = await u.waitUntil(() => view.querySelector('converse-emoji-picker'), 1000);
                     const custom_category = picker.querySelector('.pick-category[data-category="custom"]');
                     expect(custom_category.innerHTML.replace(/<!-.*?->/g, '').trim()).toBe(
-                        '<img class="emoji" loading="lazy" draggable="false" title=":xmpp:" alt=":xmpp:" src="/dist/./images/custom_emojis/xmpp.png">'
+                        '<img class="emoji" loading="lazy" draggable="false" title=":xmpp:" alt=":xmpp:" src="/dist/./images/custom_emojis/xmpp.png">',
                     );
 
                     const textarea = view.querySelector('textarea.chat-textarea');
@@ -397,15 +396,15 @@ describe('Emojis', function () {
                     await u.waitUntil(
                         () =>
                             body.innerHTML.replace(/<!-.*?->/g, '').trim() ===
-                            'Running tests for <img class="emoji" loading="lazy" draggable="false" title=":converse:" alt=":converse:" src="/dist/./images/custom_emojis/converse.png">'
+                            'Running tests for <img class="emoji" loading="lazy" draggable="false" title=":converse:" alt=":converse:" src="/dist/./images/custom_emojis/converse.png">',
                     );
-                }
-            )
+                },
+            ),
         );
 
         it(
             'correctly resolves overlapping custom emoji shortnames',
-            mock.initConverse(
+            mock.initConverse(converse, 
                 ['chatBoxesFetched'],
                 {
                     emoji_categories: {
@@ -462,8 +461,8 @@ describe('Emojis', function () {
 
                     const message = view.model.messages.last();
                     expect(message.get('body')).toBe('Look at :penguin3: here');
-                }
-            )
+                },
+            ),
         );
     });
 });

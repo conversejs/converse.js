@@ -1,13 +1,13 @@
 /**
  * @module:headless-plugins-muc-muc
  */
-import debounce from 'lodash-es/debounce';
-import pick from 'lodash-es/pick';
+import debounce from 'lodash-es/debounce.js';
+import pick from 'lodash-es/pick.js';
 import sizzle from 'sizzle';
 import { getOpenPromise } from '@converse/openpromise';
 import { Model } from '@converse/skeletor';
 import log from '@converse/log';
-import p from '../../utils/parse-helpers';
+import p from '../../utils/parse-helpers.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
@@ -41,12 +41,12 @@ import { safeSave } from '../../utils/init.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
-import ChatBoxBase from '../../shared/chatbox';
-import ColorAwareModel from '../../shared/color';
-import ModelWithMessages from '../../shared/model-with-messages';
-import ModelWithVCard from '../../shared/model-with-vcard';
+import ChatBoxBase from '../../shared/chatbox.js';
+import ColorAwareModel from '../../shared/color.js';
+import ModelWithMessages from '../../shared/model-with-messages.js';
+import ModelWithVCard from '../../shared/model-with-vcard.js';
 import { shouldCreateGroupchatMessage, isInfoVisible } from './utils.js';
-import MUCSession from './session';
+import MUCSession from './session.js';
 
 const { u, stx } = converse.env;
 
@@ -2828,7 +2828,9 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         }
 
         const attrs = await parseMUCPresence(stanza, this);
-        log.debug(`MUC ${this.get('jid')} onPresence received, is_self: ${attrs.is_self}, nick: ${attrs.nick}, status: ${this.session.get('connection_status')}`);
+        log.debug(
+            `MUC ${this.get('jid')} onPresence received, is_self: ${attrs.is_self}, nick: ${attrs.nick}, status: ${this.session.get('connection_status')}`,
+        );
         attrs.codes.forEach(async (code) => {
             this.createInfoMessageFromPresence(code, attrs);
 
@@ -2874,7 +2876,9 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @param {MUCPresenceAttributes} attrs
      */
     async onOwnPresence(attrs) {
-        log.info(`MUC ${this.get('jid')} onOwnPresence, old_status: ${this.session.get('connection_status')}, codes: ${attrs.codes.join(',')}`);
+        log.info(
+            `MUC ${this.get('jid')} onOwnPresence, old_status: ${this.session.get('connection_status')}, codes: ${attrs.codes.join(',')}`,
+        );
         await this.occupants.fetched;
 
         if (attrs['type'] === 'unavailable') {

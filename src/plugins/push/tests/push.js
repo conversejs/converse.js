@@ -1,9 +1,7 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
-const { stx } = converse.env;
-const Strophe = converse.env.Strophe;
-const sizzle = converse.env.sizzle;
-const u = converse.env.utils;
+const { stx, sizzle, u, Strophe } = converse.env;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe('XEP-0357 Push Notifications', function () {
@@ -12,7 +10,7 @@ describe('XEP-0357 Push Notifications', function () {
 
     it(
         'can be enabled',
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             {
                 'push_app_servers': [
@@ -52,7 +50,7 @@ describe('XEP-0357 Push Notifications', function () {
                     <enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>
                 </iq>`);
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq to="${_converse.api.connection.get().jid}"
                                 type="result"
                                 id="${stanza.getAttribute('id')}"
@@ -66,7 +64,7 @@ describe('XEP-0357 Push Notifications', function () {
 
     it(
         'can be enabled for a MUC domain',
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             {
                 'enable_muc_push': true,
@@ -100,7 +98,7 @@ describe('XEP-0357 Push Notifications', function () {
                     <enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>
                 </iq>`);
                 const result = u.toStanza(`<iq type="result" id="${iq.getAttribute('id')}" to="romeo@montague.lit" />`);
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
 
                 await u.waitUntil(() => _converse.session.get('push_enabled'));
                 expect(_converse.session.get('push_enabled').length).toBe(1);
@@ -129,7 +127,7 @@ describe('XEP-0357 Push Notifications', function () {
                         <enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>
                     </iq>`);
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq to="${_converse.api.connection.get().jid}"
                                 type="result"
                                 id="${iq.getAttribute('id')}"
@@ -143,7 +141,7 @@ describe('XEP-0357 Push Notifications', function () {
 
     it(
         'can be disabled',
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['chatBoxesFetched'],
             {
                 'push_app_servers': [
@@ -175,7 +173,7 @@ describe('XEP-0357 Push Notifications', function () {
                     <disable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>
                 </iq>`);
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq to="${_converse.api.connection.get().jid}"
                                 type="result"
                                 id="${stanza.getAttribute('id')}"
@@ -189,7 +187,7 @@ describe('XEP-0357 Push Notifications', function () {
 
     it(
         'can require a secret token to be included',
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             {
                 'push_app_servers': [
@@ -236,7 +234,7 @@ describe('XEP-0357 Push Notifications', function () {
                     </enable>
                 </iq>`);
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq to="${_converse.api.connection.get().jid}"
                                 type="result"
                                 id="${stanza.getAttribute('id')}"

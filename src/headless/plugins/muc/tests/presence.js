@@ -1,12 +1,12 @@
-/*global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
 const { stx, u } = converse.env;
 
 describe('MUC presence history element', function () {
     it(
         'includes history when maxstanzas is set',
-        mock.initConverse(['statusInitialized'], { muc_history_max_stanzas: 5 }, async function (_converse) {
+        mock.initConverse(converse, ['statusInitialized'], { muc_history_max_stanzas: 5 }, async function (_converse) {
             const { api } = _converse;
             const muc_jid = 'room@server';
             const nick = 'test';
@@ -20,11 +20,16 @@ describe('MUC presence history element', function () {
                     .pop(),
             );
             expect(sent_stanza).toEqualStanza(stx`
-              <presence to="${muc_jid}/${nick}" xmlns="jabber:client" id="${sent_stanza.getAttribute('id')}" from="${jid}">
+              <presence to="${muc_jid}/${nick}"
+                    xmlns="jabber:client"
+                    id="${sent_stanza.getAttribute('id')}"
+                    from="${jid}">
                 <x xmlns="http://jabber.org/protocol/muc">
                   <history maxstanzas="5"/>
                 </x>
-                <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org" ver="5xpk8wyeMSdAjnSeIv3fwIjd1r0="/>
+                <c xmlns="http://jabber.org/protocol/caps"
+                    hash="sha-1" node="https://conversejs.org"
+                    ver="5xpk8wyeMSdAjnSeIv3fwIjd1r0="/>
               </presence>`);
 
             api.settings.set('muc_history_max_stanzas', 0);

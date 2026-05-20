@@ -1,4 +1,6 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { Strophe, u, stx, sizzle } = converse.env;
 
 // See: https://xmpp.org/rfcs/rfc3921.html
@@ -6,7 +8,7 @@ const { Strophe, u, stx, sizzle } = converse.env;
 describe('XEP-0437 Room Activity Indicators', function () {
     it(
         'will be activated for a MUC that becomes hidden',
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
@@ -39,7 +41,7 @@ describe('XEP-0437 Room Activity Indicators', function () {
                     </forwarded>
                 </result>
             </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
 
                 message = stx`<message xmlns="jabber:client"
                     to="romeo@montague.lit/orchard"
@@ -53,7 +55,7 @@ describe('XEP-0437 Room Activity Indicators', function () {
                     </forwarded>
                 </result>
             </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(message));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
 
                 const result = stx`<iq type="result"
                     id="${iq_get.getAttribute('id')}"
@@ -66,7 +68,7 @@ describe('XEP-0437 Room Activity Indicators', function () {
                     </set>
                 </fin>
             </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
                 await u.waitUntil(() => view.model.messages.length === 2);
 
                 const sent_stanzas = [];
@@ -117,7 +119,7 @@ describe('XEP-0437 Room Activity Indicators', function () {
                 </rai>
             </message>
         `;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(activity_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, activity_stanza));
 
                 await u.waitUntil(() => view.model.get('has_activity'));
                 expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
@@ -127,7 +129,7 @@ describe('XEP-0437 Room Activity Indicators', function () {
 
     it(
         'will be activated for a MUC that starts out hidden',
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             {
                 allow_bookmarks: false, // Hack to get the rooms list to render
@@ -186,7 +188,7 @@ describe('XEP-0437 Room Activity Indicators', function () {
                 </rai>
             </message>
         `;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(activity_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, activity_stanza));
 
                 await u.waitUntil(() => model.get('has_activity'));
                 expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
@@ -196,7 +198,7 @@ describe('XEP-0437 Room Activity Indicators', function () {
 
     it(
         'may not be activated due to server resource constraints',
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
@@ -236,7 +238,7 @@ describe('XEP-0437 Room Activity Indicators', function () {
                 <error type="wait"><resource-constraint xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
             </presence>
         `;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(activity_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, activity_stanza));
 
                 await u.waitUntil(() => model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
             },

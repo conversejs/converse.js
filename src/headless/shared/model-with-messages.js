@@ -1,5 +1,5 @@
 import { filesize } from 'filesize';
-import pick from 'lodash-es/pick';
+import pick from 'lodash-es/pick.js';
 import debounce from 'lodash-es/debounce.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { Model } from '@converse/skeletor';
@@ -12,7 +12,7 @@ import { isNewMessage } from '../plugins/chat/utils.js';
 import _converse from './_converse.js';
 import * as errors from './errors.js';
 import { sendMarker, sendReceiptStanza, sendRetractionMessage } from './actions.js';
-import { parseMessage } from '../plugins/chat/parsers';
+import { parseMessage } from '../plugins/chat/parsers.js';
 
 const { Strophe, stx, u } = converse.env;
 

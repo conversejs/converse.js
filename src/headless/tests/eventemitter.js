@@ -4,7 +4,7 @@ const container = {};
 
 describe("The _converse Event Emitter", function() {
 
-    it("allows you to subscribe to emitted events", mock.initConverse((_converse) => {
+    it("allows you to subscribe to emitted events", mock.initConverse(converse, (_converse) => {
         container.callback = function () {};
         spyOn(container, 'callback');
         _converse.on('connected', container.callback);
@@ -16,7 +16,7 @@ describe("The _converse Event Emitter", function() {
         expect(container.callback.calls.count(), 3);
     }));
 
-    it("allows you to listen once for an emitted event", mock.initConverse((_converse) => {
+    it("allows you to listen once for an emitted event", mock.initConverse(converse, (_converse) => {
         container.callback = function () {};
         spyOn(container, 'callback');
         _converse.once('connected', container.callback);
@@ -28,7 +28,7 @@ describe("The _converse Event Emitter", function() {
         expect(container.callback.calls.count(), 1);
     }));
 
-    it("allows you to stop listening or subscribing to an event", mock.initConverse((_converse) => {
+    it("allows you to stop listening or subscribing to an event", mock.initConverse(converse, (_converse) => {
         container.callback = function () {};
         container.anotherCallback = function () {};
         container.neverCalled = function () {};

@@ -1,17 +1,18 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { Strophe, u, stx } = converse.env;
 
 describe('The nickname autocomplete feature', function () {
     it(
         'shows all autocompletion options when the user presses @',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'tom');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             // Nicknames from presences
             ['dick', 'harry'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                     to="tom@montague.lit/resource"
                     from="lounge@montague.lit/${nick}"
@@ -76,14 +77,14 @@ describe('The nickname autocomplete feature', function () {
 
     it(
         'shows all autocompletion options when the user presses @ right after a new line',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'tom');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
 
             // Nicknames from presences
             ['dick', 'harry'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                         to="tom@montague.lit/resource"
                         from="lounge@montague.lit/${nick}"
@@ -148,14 +149,14 @@ describe('The nickname autocomplete feature', function () {
 
     it(
         'shows all autocompletion options when the user presses @ right after an allowed character',
-        mock.initConverse(['chatBoxesFetched'], { 'opening_mention_characters': ['('] }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'opening_mention_characters': ['('] }, async function (_converse) {
             await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'tom');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
 
             // Nicknames from presences
             ['dick', 'harry'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                     to="tom@montague.lit/resource"
                     from="lounge@montague.lit/${nick}"
@@ -221,7 +222,7 @@ describe('The nickname autocomplete feature', function () {
 
     it(
         'should order by query index position and length',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitUntilBookmarksReturned(_converse);
             const model = await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'tom');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -229,7 +230,7 @@ describe('The nickname autocomplete feature', function () {
             // Nicknames from presences
             ['bernard', 'naber', 'helberlo', 'john', 'jones'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                     to="tom@montague.lit/resource"
                     from="lounge@montague.lit/${nick}"
@@ -292,7 +293,7 @@ describe('The nickname autocomplete feature', function () {
 
     it(
         'autocompletes when the user presses tab',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitUntilBookmarksReturned(_converse);
             const model = await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -305,7 +306,7 @@ describe('The nickname autocomplete feature', function () {
                     <item affiliation="none" jid="some1@montague.lit/resource" role="participant"/>
                 </x>
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
             await u.waitUntil(() => view.model.occupants.length === 2);
 
@@ -349,7 +350,7 @@ describe('The nickname autocomplete feature', function () {
                 <item affiliation="none" jid="some2@montague.lit/resource" role="participant"/>
             </x>
         </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             await u.waitUntil(() => model.getOccupantByNickname('some2'));
 
             textarea.value = 'hello s s';
@@ -383,7 +384,7 @@ describe('The nickname autocomplete feature', function () {
 
             // Test that pressing tab twice selects
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<presence
                     to="romeo@montague.lit/orchard"
                     from="lounge@montague.lit/z3r0"
@@ -409,13 +410,13 @@ describe('The nickname autocomplete feature', function () {
 
     it(
         'autocompletes when the user presses backspace',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilBookmarksReturned(_converse);
             await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             expect(view.model.occupants.length).toBe(1);
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<presence
                     to="romeo@montague.lit/orchard"
                     from="lounge@montague.lit/some1"

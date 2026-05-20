@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { _converse, api } from '@converse/headless';
 import { __ } from 'i18n';
-import { CustomElement } from 'shared/components/element';
+import { CustomElement } from '../../shared/components/element.js';
 import tplDiscoBrowser from './templates/disco-browser.js';
 
 import './styles/disco-browser.scss';

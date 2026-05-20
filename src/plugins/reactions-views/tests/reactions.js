@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { Strophe, sizzle, stx, u } = converse.env;
 
@@ -7,7 +8,7 @@ describe('Message Reactions (XEP-0444)', function () {
     describe('sending reactions in a 1:1 chat', function () {
         it(
             'logs an error and sends nothing when given an unknown shortname',
-            mock.initConverse(['chatBoxesFetched'], { popular_emojis: [':not-an-emoji:'] }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis: [':not-an-emoji:'] }, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -21,7 +22,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="shortname-error-msg">
                         <body>React to this</body>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -29,10 +30,10 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 // Open the reaction picker so the converse-reaction-picker element is in the DOM
                 const msg_el = await u.waitUntil(() =>
-                    view.querySelector('.chat-msg[data-msgid="shortname-error-msg"]')
+                    view.querySelector('.chat-msg[data-msgid="shortname-error-msg"]'),
                 );
                 const toggle_el = await u.waitUntil(() =>
-                    msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle')
+                    msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle'),
                 );
                 toggle_el.click();
                 const action_el = await u.waitUntil(() => msg_el.querySelector('.chat-msg__action-reaction'));
@@ -46,16 +47,16 @@ describe('Message Reactions (XEP-0444)', function () {
                 picker_el.onEmojiSelected(':not-an-emoji:');
 
                 expect(converse.env.log.error).toHaveBeenCalledWith(
-                    'sendReaction: could not convert shortname to emoji: :not-an-emoji:'
+                    'sendReaction: could not convert shortname to emoji: :not-an-emoji:',
                 );
                 expect(api.connection.get().send).not.toHaveBeenCalled();
                 expect(msg_model.get('reactions')).toBeFalsy();
-            })
+            }),
         );
 
         it(
             'sends a correct XEP-0444 stanza when a reaction is added',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -70,7 +71,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="msg-to-react-to">
                         <body>React to this</body>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -110,12 +111,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 // The button should carry the 'reacted' class since the logged-in user reacted
                 const btn = await u.waitUntil(() => view.querySelector('converse-reactions .chat-msg__reaction'));
                 expect(btn.classList.contains('reacted')).toBeTrue();
-            })
+            }),
         );
 
         it(
             'toggles off a reaction when the same emoji is sent again',
-            mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -129,7 +130,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="toggle-msg">
                         <body>Toggle test</body>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -170,12 +171,12 @@ describe('Message Reactions (XEP-0444)', function () {
                         <store xmlns="${Strophe.NS.HINTS}"/>
                     </message>
                 `);
-            })
+            }),
         );
 
         it(
             "clicking someone else's reaction button adds your own reaction",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -189,7 +190,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="click-reaction-msg">
                         <body>Click my reaction</body>
-                    </message>`
+                    </message>`,
                 );
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 const msg_model = view.model.messages.findWhere({ 'msgid': 'click-reaction-msg' });
@@ -204,7 +205,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="click-reaction-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
                 await u.waitUntil(() => getReactionEmojis(view).includes('👍'));
                 expect(getReactionCounts(view)['👍']).toBe(1);
@@ -233,12 +234,12 @@ describe('Message Reactions (XEP-0444)', function () {
                         <store xmlns="${Strophe.NS.HINTS}"/>
                     </message>
                 `);
-            })
+            }),
         );
 
         it(
             'clicking your own reaction button removes it',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -252,7 +253,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="remove-own-reaction-msg">
                         <body>Remove my reaction</body>
-                    </message>`
+                    </message>`,
                 );
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 const msg_model = view.model.messages.findWhere({ 'msgid': 'remove-own-reaction-msg' });
@@ -287,14 +288,14 @@ describe('Message Reactions (XEP-0444)', function () {
                         <store xmlns="${Strophe.NS.HINTS}"/>
                     </message>
                 `);
-            })
+            }),
         );
     });
 
     describe('reaction picker', function () {
         it(
             'closes when the user clicks outside it',
-            mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
@@ -307,14 +308,14 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="picker-close-msg">
                         <body>Open picker test</body>
-                    </message>`
+                    </message>`,
                 );
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
                 // Open the reaction picker
                 const msg_el = await u.waitUntil(() => view.querySelector('.chat-msg[data-msgid="picker-close-msg"]'));
                 const toggle_el = await u.waitUntil(() =>
-                    msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle')
+                    msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle'),
                 );
                 toggle_el.click();
                 const action_el = await u.waitUntil(() => msg_el.querySelector('.chat-msg__action-reaction'));
@@ -330,14 +331,14 @@ describe('Message Reactions (XEP-0444)', function () {
                 document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
                 await u.waitUntil(() => !picker_el.opened);
                 expect(picker_el.opened).toBeFalse();
-            })
+            }),
         );
     });
 
     describe('receiving reactions in a 1:1 chat', function () {
         it(
             'applies an incoming reaction stanza to the correct message',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
@@ -351,7 +352,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="incoming-react-msg">
                         <body>Hello there</body>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -367,7 +368,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="incoming-react-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('👍'));
@@ -375,12 +376,12 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 await u.waitUntil(() => getReactionEmojis(view).includes('👍'));
                 expect(getReactionEmojis(view)).toEqual(['👍']);
-            })
+            }),
         );
 
         it(
             "replaces a user's previous reactions when receiving a new reaction stanza",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
@@ -393,7 +394,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="react-replace-msg">
                         <body>React to this message</body>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -409,7 +410,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="react-replace-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('👍'));
@@ -427,7 +428,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="react-replace-msg">
                             <reaction>❤️</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('❤️'));
@@ -437,12 +438,12 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 await u.waitUntil(() => !getReactionEmojis(view).includes('👍'));
                 expect(getReactionEmojis(view)).toEqual(['❤️']);
-            })
+            }),
         );
 
         it(
             'removes all reactions when receiving an empty reaction set',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
@@ -455,7 +456,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="remove-react-msg">
                         <body>React to this</body>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -472,7 +473,7 @@ describe('Message Reactions (XEP-0444)', function () {
                             <reaction>👍</reaction>
                             <reaction>❤️</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.length === 2);
@@ -489,7 +490,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="reaction-remove">
                         <reactions xmlns="urn:xmpp:reactions:0" id="remove-react-msg">
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => {
@@ -501,14 +502,14 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 await u.waitUntil(() => getReactionEmojis(view).length === 0);
                 expect(getReactionEmojis(view)).toEqual([]);
-            })
+            }),
         );
     });
 
     describe('reaction tooltip shows the correct reactor name', function () {
         it(
             'shows the contact display name in the tooltip for a 1:1 reaction',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
@@ -521,7 +522,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="tooltip-1-1-msg">
                         <body>Tooltip test</body>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -536,7 +537,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="tooltip-1-1-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 // Wait for the reaction button to appear
@@ -547,12 +548,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 await u.waitUntil(() => btn.getAttribute('data-tooltip') === mock.cur_names[0]);
                 expect(btn.getAttribute('data-tooltip')).toBe(mock.cur_names[0]);
                 expect(btn.getAttribute('title')).toBe(mock.cur_names[0]);
-            })
+            }),
         );
 
         it(
             'shows "You" (own display name) in the tooltip when the logged-in user reacts in a 1:1 chat',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -566,7 +567,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="tooltip-own-react-msg">
                         <body>Own tooltip test</body>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -584,12 +585,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 await u.waitUntil(() => btn.getAttribute('data-tooltip') === own_display_name);
                 expect(btn.getAttribute('data-tooltip')).toBe(own_display_name);
                 expect(btn.getAttribute('title')).toBe(own_display_name);
-            })
+            }),
         );
 
         it(
             'shows both reactor names in the tooltip when two users have reacted in a 1:1 chat',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -603,7 +604,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="tooltip-two-reactors-msg">
                         <body>Two reactors test</body>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -618,7 +619,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="tooltip-two-reactors-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => getReactionEmojis(view).includes('👍'));
@@ -638,18 +639,18 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 const updated_btn = await u.waitUntil(() =>
                     view.querySelector(
-                        'converse-reactions .chat-msg__reaction[data-tooltip="' + expected_tooltip + '"]'
-                    )
+                        'converse-reactions .chat-msg__reaction[data-tooltip="' + expected_tooltip + '"]',
+                    ),
                 );
                 expect(updated_btn).not.toBeNull();
                 expect(updated_btn.getAttribute('data-tooltip')).toBe(expected_tooltip);
                 expect(updated_btn.getAttribute('title')).toBe(expected_tooltip);
-            })
+            }),
         );
 
         it(
             'shows the MUC nick in the tooltip for a groupchat reaction',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -664,7 +665,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="muc-tooltip-msg">
                         <body>MUC tooltip test</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="muc-tooltip-stanza" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -679,7 +680,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-tooltip-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 // Wait for the reaction button to appear and tooltip to be populated
@@ -691,12 +692,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 await u.waitUntil(() => btn.getAttribute('data-tooltip') === 'juliet');
                 expect(btn.getAttribute('data-tooltip')).toBe('juliet');
                 expect(btn.getAttribute('title')).toBe('juliet');
-            })
+            }),
         );
 
         it(
             'shows the MUC nickname in the tooltip when the logged-in user reacts in a MUC',
-            mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 0);
 
@@ -712,7 +713,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="muc-tooltip-own-msg">
                         <body>Own MUC reaction tooltip test</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="muc-tooltip-own-stanza" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -729,12 +730,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 await u.waitUntil(() => btn.getAttribute('data-tooltip') === 'romeo');
                 expect(btn.getAttribute('data-tooltip')).toBe('romeo');
                 expect(btn.getAttribute('title')).toBe('romeo');
-            })
+            }),
         );
 
         it(
             'shows both MUC nicks in the tooltip when two participants have reacted',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -749,7 +750,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="muc-tooltip-two-msg">
                         <body>Two MUC reactors test</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="muc-tooltip-two-stanza" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -764,7 +765,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-tooltip-two-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => getReactionEmojis(view).includes('👍'));
@@ -779,7 +780,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-tooltip-two-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => getReactionCounts(view)['👍'] === 2);
@@ -791,12 +792,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 await u.waitUntil(() => btn.getAttribute('data-tooltip') === 'juliet and mercutio');
                 expect(btn.getAttribute('data-tooltip')).toBe('juliet and mercutio');
                 expect(btn.getAttribute('title')).toBe('juliet and mercutio');
-            })
+            }),
         );
 
         it(
             'shows "nick1, nick2 and N others" in the tooltip when more than two participants have reacted in a MUC',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -811,7 +812,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="muc-tooltip-many-msg">
                         <body>Many MUC reactors test</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="muc-tooltip-many-stanza" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 // Three participants react with 👍 — remainder is 1
@@ -829,7 +830,7 @@ describe('Message Reactions (XEP-0444)', function () {
                             <reactions xmlns="urn:xmpp:reactions:0" id="muc-tooltip-many-msg">
                                 <reaction>👍</reaction>
                             </reactions>
-                        </message>`
+                        </message>`,
                     );
                 }
 
@@ -839,8 +840,8 @@ describe('Message Reactions (XEP-0444)', function () {
                 // "juliet, mercutio and 1 other"
                 let btn = await u.waitUntil(() =>
                     view.querySelector(
-                        `converse-reactions .chat-msg__reaction[data-tooltip="juliet, mercutio and 1 other"]`
-                    )
+                        `converse-reactions .chat-msg__reaction[data-tooltip="juliet, mercutio and 1 other"]`,
+                    ),
                 );
                 expect(btn).not.toBeNull();
                 expect(btn.getAttribute('data-tooltip')).toBe('juliet, mercutio and 1 other');
@@ -856,27 +857,27 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-tooltip-many-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => getReactionCounts(view)['👍'] === 4);
 
                 const btn2 = await u.waitUntil(() =>
                     view.querySelector(
-                        `converse-reactions .chat-msg__reaction[data-tooltip="juliet, mercutio and 2 others"]`
-                    )
+                        `converse-reactions .chat-msg__reaction[data-tooltip="juliet, mercutio and 2 others"]`,
+                    ),
                 );
                 expect(btn2).not.toBeNull();
                 expect(btn2.getAttribute('data-tooltip')).toBe('juliet, mercutio and 2 others');
                 expect(btn2.getAttribute('title')).toBe('juliet, mercutio and 2 others');
-            })
+            }),
         );
     });
 
     describe('in a MUC', function () {
         it(
             'sends a groupchat reaction stanza using the MUC stanza_id as the reaction target id',
-            mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
 
@@ -893,7 +894,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="muc-msg-1">
                         <body>React to this MUC message</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="muc-stanza-id" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -927,12 +928,12 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 await u.waitUntil(() => getReactionEmojis(view).includes('🎉'));
                 expect(getReactionEmojis(view)).toEqual(['🎉']);
-            })
+            }),
         );
 
         it(
             'falls back to msgid when MUC stanza_id is not present when sending a reaction',
-            mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
 
@@ -948,7 +949,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="groupchat"
                                 id="muc-no-stanza-id-msg">
                         <body>React to this MUC message (no stanza-id)</body>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -978,12 +979,12 @@ describe('Message Reactions (XEP-0444)', function () {
                         <store xmlns="${Strophe.NS.HINTS}"/>
                     </message>
                 `);
-            })
+            }),
         );
 
         it(
             'applies an incoming reaction that references the message by MUC stanza_id',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -999,7 +1000,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="muc-target-msg">
                         <body>React to this</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="server-stanza-id-abc" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -1016,7 +1017,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         </reactions>
                         <store xmlns="${Strophe.NS.HINTS}"/>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="server-stanza-id-xyz" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 // The reaction must be applied to the correct target message
@@ -1025,12 +1026,12 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 await u.waitUntil(() => getReactionEmojis(view).includes('❤️'));
                 expect(getReactionEmojis(view)).toEqual(['❤️']);
-            })
+            }),
         );
 
         it(
             'shows a count of 1 (not 2) when the MUC echoes back our own reaction stanza',
-            mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -1045,7 +1046,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="muc-count-msg">
                         <body>Count test</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="muc-count-stanza-id" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -1067,7 +1068,7 @@ describe('Message Reactions (XEP-0444)', function () {
                             <reaction>👍</reaction>
                         </reactions>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="${u.getUniqueId()}" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[`${muc_jid}/romeo`]?.includes('👍'));
@@ -1079,12 +1080,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 await u.waitUntil(() => getReactionEmojis(view).includes('👍'));
                 const counts = getReactionCounts(view);
                 expect(counts['👍']).toBe(1);
-            })
+            }),
         );
 
         it(
             'does not wipe the message body when the MUC echoes back our own reaction stanza',
-            mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -1100,7 +1101,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="muc-body-msg">
                         <body>This text must survive reactions</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="muc-body-stanza-id" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -1124,7 +1125,7 @@ describe('Message Reactions (XEP-0444)', function () {
                             <reaction>👍</reaction>
                         </reactions>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="${u.getUniqueId()}" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[`${muc_jid}/romeo`]?.includes('👍'));
@@ -1132,14 +1133,14 @@ describe('Message Reactions (XEP-0444)', function () {
                 // The message body must still be intact
                 expect(msg_model.get('body')).toBe('This text must survive reactions');
                 expect(view.querySelector('.chat-msg__text').textContent.trim()).toBe(
-                    'This text must survive reactions'
+                    'This text must survive reactions',
                 );
-            })
+            }),
         );
 
         it(
             'accumulates reactions from multiple participants via incoming stanzas',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -1154,7 +1155,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="groupchat"
                                 id="muc-accum-msg">
                         <body>React to this</body>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -1170,7 +1171,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-accum-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[`${muc_jid}/juliet`]?.includes('👍'));
@@ -1189,7 +1190,7 @@ describe('Message Reactions (XEP-0444)', function () {
                             <reaction>👍</reaction>
                             <reaction>🎉</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[`${muc_jid}/mercutio`]?.includes('🎉'));
@@ -1206,12 +1207,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 const counts = getReactionCounts(view);
                 expect(counts['👍']).toBe(2);
                 expect(counts['🎉']).toBe(1);
-            })
+            }),
         );
 
         it(
             "preserves other users' reactions when one user updates theirs",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -1225,7 +1226,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="groupchat"
                                 id="muc-preserve-msg">
                         <body>Preserve reactions test</body>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -1241,7 +1242,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-preserve-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[`${muc_jid}/juliet`]?.includes('👍'));
@@ -1259,7 +1260,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-preserve-msg">
                             <reaction>❤️</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[`${muc_jid}/mercutio`]?.includes('❤️'));
@@ -1278,7 +1279,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-preserve-msg">
                             <reaction>🎉</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[`${muc_jid}/juliet`]?.includes('🎉'));
@@ -1292,12 +1293,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 expect(getReactionEmojis(view)).toContain('❤️');
                 expect(getReactionEmojis(view)).not.toContain('👍');
                 expect(getReactionEmojis(view).length).toBe(2);
-            })
+            }),
         );
 
         it(
             "removes only the retracting participant's reactions when an empty reaction stanza is received in a MUC",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -1312,7 +1313,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="muc-retract-msg">
                         <body>React to this</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="muc-retract-stanza" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 const msg_model = view.model.messages.findWhere({ 'msgid': 'muc-retract-msg' });
@@ -1327,7 +1328,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-retract-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 // Mercutio reacts with ❤️
@@ -1340,7 +1341,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-retract-msg">
                             <reaction>❤️</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => getReactionCounts(view)['👍'] === 1 && getReactionCounts(view)['❤️'] === 1);
@@ -1355,7 +1356,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="groupchat"
                                 id="muc-retract-react-3">
                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-retract-msg"/>
-                    </message>`
+                    </message>`,
                 );
 
                 // Juliet's reaction is removed; Mercutio's is untouched
@@ -1366,12 +1367,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 // UI: only ❤️ remains
                 await u.waitUntil(() => !getReactionEmojis(view).includes('👍'));
                 expect(getReactionEmojis(view)).toEqual(['❤️']);
-            })
+            }),
         );
 
         it(
             'clicking your own reaction button removes it in a MUC',
-            mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 0);
 
@@ -1387,7 +1388,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="muc-remove-own-msg">
                         <body>Remove my MUC reaction</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="muc-remove-own-stanza" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 const msg_model = view.model.messages.findWhere({ 'msgid': 'muc-remove-own-msg' });
@@ -1400,7 +1401,7 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 // The button should have the 'reacted' class since it's our own reaction
                 const btn = await u.waitUntil(() =>
-                    view.querySelector('converse-reactions .chat-msg__reaction.reacted')
+                    view.querySelector('converse-reactions .chat-msg__reaction.reacted'),
                 );
                 expect(btn).not.toBeNull();
                 expect(btn.classList.contains('reacted')).toBeTrue();
@@ -1429,12 +1430,12 @@ describe('Message Reactions (XEP-0444)', function () {
                          <store xmlns="${Strophe.NS.HINTS}"/>
                      </message>
                  `);
-            })
+            }),
         );
 
         it(
             'uses occupant_id as the reaction key in MUCs that support XEP-0421, deduplicating across nick changes',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -1450,7 +1451,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="occ-id-msg">
                         <body>React to this</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="occ-id-stanza" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 const msg_model = view.model.messages.findWhere({ 'msgid': 'occ-id-msg' });
@@ -1468,7 +1469,7 @@ describe('Message Reactions (XEP-0444)', function () {
                             <reaction>👍</reaction>
                         </reactions>
                         <occupant-id xmlns="${Strophe.NS.OCCUPANTID}" id="${juliet_occupant_id}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[juliet_occupant_id]?.length);
@@ -1488,7 +1489,7 @@ describe('Message Reactions (XEP-0444)', function () {
                             <reaction>🎉</reaction>
                         </reactions>
                         <occupant-id xmlns="${Strophe.NS.OCCUPANTID}" id="${juliet_occupant_id}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 // Same occupant_id key: should update, not create a second entry
@@ -1497,12 +1498,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 expect(msg_model.get('reactions')[juliet_occupant_id]).toEqual(['👍', '🎉']);
                 expect(getReactionCounts(view)['👍']).toBe(1);
                 expect(getReactionCounts(view)['🎉']).toBe(1);
-            })
+            }),
         );
 
         it(
             'uses the real bare JID as the reaction key in non-anonymous MUCs without XEP-0421, deduplicating across nick changes',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -1513,15 +1514,15 @@ describe('Message Reactions (XEP-0444)', function () {
                 // Send juliet's presence with her real JID so the occupant model has it
                 const juliet_bare_jid = 'juliet@capulet.lit';
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence from="${muc_jid}/juliet"
                                     to="${_converse.jid}"
                                     xmlns="jabber:client">
                             <x xmlns="http://jabber.org/protocol/muc#user">
                                 <item jid="${juliet_bare_jid}" affiliation="member" role="participant"/>
                             </x>
-                        </presence>`
-                    )
+                        </presence>`,
+                    ),
                 );
                 await u.waitUntil(() => view.model.occupants.findWhere({ 'nick': 'juliet' })?.get('jid'));
 
@@ -1533,7 +1534,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="nonanon-msg">
                         <body>React to this</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="nonanon-stanza" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 const msg_model = view.model.messages.findWhere({ 'msgid': 'nonanon-msg' });
@@ -1548,7 +1549,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="nonanon-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[juliet_bare_jid]?.length);
@@ -1558,15 +1559,15 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 // Juliet changes nick to 'julieta' — send updated presence with same real JID
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence from="${muc_jid}/julieta"
                                     to="${_converse.jid}"
                                     xmlns="jabber:client">
                             <x xmlns="http://jabber.org/protocol/muc#user">
                                 <item jid="${juliet_bare_jid}" affiliation="member" role="participant"/>
                             </x>
-                        </presence>`
-                    )
+                        </presence>`,
+                    ),
                 );
                 await u.waitUntil(() => view.model.occupants.findWhere({ 'nick': 'julieta' })?.get('jid'));
 
@@ -1581,7 +1582,7 @@ describe('Message Reactions (XEP-0444)', function () {
                             <reaction>👍</reaction>
                             <reaction>❤️</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[juliet_bare_jid]?.length === 2);
@@ -1589,12 +1590,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 expect(msg_model.get('reactions')[juliet_bare_jid]).toEqual(['👍', '❤️']);
                 expect(getReactionCounts(view)['👍']).toBe(1);
                 expect(getReactionCounts(view)['❤️']).toBe(1);
-            })
+            }),
         );
 
         it(
             'falls back to full JID in semi-anonymous MUCs without XEP-0421, creating separate entries per nick',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -1610,7 +1611,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="semianon-msg">
                         <body>React to this</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="semianon-stanza" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 const msg_model = view.model.messages.findWhere({ 'msgid': 'semianon-msg' });
@@ -1625,7 +1626,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="semianon-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[`${muc_jid}/juliet`]?.length);
@@ -1642,7 +1643,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="semianon-msg">
                             <reaction>🎉</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => msg_model.get('reactions')?.[`${muc_jid}/julieta`]?.length);
@@ -1651,14 +1652,14 @@ describe('Message Reactions (XEP-0444)', function () {
                 expect(msg_model.get('reactions')[`${muc_jid}/julieta`]).toEqual(['🎉']);
                 expect(getReactionCounts(view)['👍']).toBe(1);
                 expect(getReactionCounts(view)['🎉']).toBe(1);
-            })
+            }),
         );
     });
 
     describe('restricted reactions', function () {
         it(
             'sets allowed_reactions on the chatbox when a disco#info result with restricted reactions is received',
-            mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -1670,7 +1671,7 @@ describe('Message Reactions (XEP-0444)', function () {
                 // Simulate a disco#info IQ result from the MUC announcing restricted reactions.
                 // Per XEP-0444 §2.2, restrictions are advertised via a XEP-0128 data form.
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq type="result"
                             from="${muc_jid}"
                             to="${_converse.bare_jid}"
@@ -1688,18 +1689,18 @@ describe('Message Reactions (XEP-0444)', function () {
                                 </field>
                             </x>
                         </query>
-                    </iq>`
-                    )
+                    </iq>`,
+                    ),
                 );
 
                 await u.waitUntil(() => view.model.get('allowed_reactions') !== undefined);
                 expect(view.model.get('allowed_reactions')).toEqual(['👍', '❤️']);
-            })
+            }),
         );
 
         it(
             'filters the reaction picker to only show allowed emojis',
-            mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const muc_jid = 'lounge@montague.lit';
@@ -1715,7 +1716,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="restricted-picker-msg">
                         <body>Restricted reactions test</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="restricted-picker-stanza" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
@@ -1723,7 +1724,7 @@ describe('Message Reactions (XEP-0444)', function () {
                 // renders with the filtered list from the start.
                 // popular_emojis has 5 entries; only 👍 and 🎉 are allowed.
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq type="result"
                             from="${muc_jid}"
                             to="${_converse.bare_jid}"
@@ -1741,18 +1742,18 @@ describe('Message Reactions (XEP-0444)', function () {
                                 </field>
                             </x>
                         </query>
-                    </iq>`
-                    )
+                    </iq>`,
+                    ),
                 );
                 await u.waitUntil(() => view.model.get('allowed_reactions') !== undefined);
                 expect(view.model.get('allowed_reactions')).toEqual(['👍', '🎉']);
 
                 // Open the reaction picker
                 const msg_el = await u.waitUntil(() =>
-                    view.querySelector('.chat-msg[data-msgid="restricted-picker-msg"]')
+                    view.querySelector('.chat-msg[data-msgid="restricted-picker-msg"]'),
                 );
                 const toggle_el = await u.waitUntil(() =>
-                    msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle')
+                    msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle'),
                 );
                 toggle_el.click();
                 const action_el = await u.waitUntil(() => msg_el.querySelector('.chat-msg__action-reaction'));
@@ -1764,18 +1765,18 @@ describe('Message Reactions (XEP-0444)', function () {
                 });
 
                 const rendered_emojis = Array.from(picker_el.querySelectorAll('.reaction-item:not(.more)')).map((btn) =>
-                    btn.textContent.trim()
+                    btn.textContent.trim(),
                 );
 
                 // Only the two allowed emojis should appear, not the full popular list
                 expect(rendered_emojis).toEqual(['👍', '🎉']);
                 expect(rendered_emojis.length).toBe(2);
-            })
+            }),
         );
 
         it(
             'sets allowed_reactions on the chatbox and filters the picker in a 1:1 chat',
-            mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 // The disco#info comes from a specific resource of the contact
@@ -1788,7 +1789,7 @@ describe('Message Reactions (XEP-0444)', function () {
                 // Per XEP-0444 §2.2 Example 3, a contact's client can advertise
                 // restricted reactions in their disco#info result.
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq type="result"
                                 from="${contact_full_jid}"
                                 to="${_converse.jid}"
@@ -1806,8 +1807,8 @@ describe('Message Reactions (XEP-0444)', function () {
                                     </field>
                                 </x>
                             </query>
-                        </iq>`
-                    )
+                        </iq>`,
+                    ),
                 );
 
                 // The handler matches on the bare JID, so the chatbox for contact_jid gets updated
@@ -1822,16 +1823,16 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="restricted-1:1-msg">
                         <body>React to this</body>
-                    </message>`
+                    </message>`,
                 );
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
                 // Open the reaction picker and verify only allowed emojis are shown
                 const msg_el = await u.waitUntil(() =>
-                    view.querySelector('.chat-msg[data-msgid="restricted-1:1-msg"]')
+                    view.querySelector('.chat-msg[data-msgid="restricted-1:1-msg"]'),
                 );
                 const toggle_el = await u.waitUntil(() =>
-                    msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle')
+                    msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle'),
                 );
                 toggle_el.click();
                 const action_el = await u.waitUntil(() => msg_el.querySelector('.chat-msg__action-reaction'));
@@ -1842,18 +1843,18 @@ describe('Message Reactions (XEP-0444)', function () {
                 });
 
                 const rendered_emojis = Array.from(picker_el.querySelectorAll('.reaction-item:not(.more)')).map((btn) =>
-                    btn.textContent.trim()
+                    btn.textContent.trim(),
                 );
                 expect(rendered_emojis).toEqual(['👍', '🎉']);
                 expect(rendered_emojis.length).toBe(2);
-            })
+            }),
         );
     });
 
     describe('dangling reactions', function () {
         it(
             'stores a reaction as dangling when the target message is not yet in local state (1:1)',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
@@ -1869,7 +1870,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="not-yet-received-msg">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 // A dangling reaction placeholder should be stored
@@ -1880,12 +1881,12 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 // It should not be rendered in the UI
                 expect(view.querySelectorAll('.chat-msg').length).toBe(0);
-            })
+            }),
         );
 
         it(
             'applies a dangling reaction when the original message arrives (1:1)',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
@@ -1901,7 +1902,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="original-msg-1">
                             <reaction>👍</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.model.messages.models.some((m) => m.get('dangling_reaction')));
@@ -1914,7 +1915,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="original-msg-1">
                         <body>Hello</body>
-                    </message>`
+                    </message>`,
                 );
 
                 // Dangling placeholder should be gone
@@ -1929,12 +1930,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 // And rendered in the UI
                 await u.waitUntil(() => getReactionEmojis(view).includes('👍'));
                 expect(getReactionEmojis(view)).toEqual(['👍']);
-            })
+            }),
         );
 
         it(
             'applies multiple dangling reactions from different users when the original message arrives',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 2);
                 const contact_jid1 = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 const contact_jid2 = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -1971,7 +1972,7 @@ describe('Message Reactions (XEP-0444)', function () {
                 });
 
                 await u.waitUntil(
-                    () => view.model.messages.models.filter((m) => m.get('dangling_reaction')).length === 2
+                    () => view.model.messages.models.filter((m) => m.get('dangling_reaction')).length === 2,
                 );
 
                 // Original message arrives
@@ -1982,7 +1983,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 type="chat"
                                 id="original-msg-2">
                         <body>Hello</body>
-                    </message>`
+                    </message>`,
                 );
 
                 // Both danglings gone, both reactions on the message
@@ -1995,12 +1996,12 @@ describe('Message Reactions (XEP-0444)', function () {
                 });
                 expect(msg.get('reactions')[contact_jid1]).toEqual(['👍']);
                 expect(msg.get('reactions')[contact_jid2]).toEqual(['❤️']);
-            })
+            }),
         );
 
         it(
             'stores a dangling reaction in a MUC and applies it when the original message arrives',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
                 const muc_jid = 'lounge@montague.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
@@ -2016,7 +2017,7 @@ describe('Message Reactions (XEP-0444)', function () {
                         <reactions xmlns="urn:xmpp:reactions:0" id="muc-original-msg-1">
                             <reaction>🎉</reaction>
                         </reactions>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => view.model.messages.models.some((m) => m.get('dangling_reaction')));
@@ -2033,7 +2034,7 @@ describe('Message Reactions (XEP-0444)', function () {
                                 id="muc-original-msg-1">
                         <body>Hello MUC</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="muc-stanza-id-1" by="${muc_jid}"/>
-                    </message>`
+                    </message>`,
                 );
 
                 await u.waitUntil(() => !view.model.messages.models.some((m) => m.get('dangling_reaction')));
@@ -2046,7 +2047,7 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 await u.waitUntil(() => getReactionEmojis(view).includes('🎉'));
                 expect(getReactionEmojis(view)).toEqual(['🎉']);
-            })
+            }),
         );
     });
 });
@@ -2055,14 +2056,14 @@ describe('Popular Reactions PEP publishing', function () {
     const popular_emojis = [':thumbsup:', ':heart:', ':tada:', ':joy:', ':open_mouth:'];
     it(
         'only publishes reacted emojis to PEP, but pads the picker display with configured defaults',
-        mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.waitUntilDiscoConfirmed(
                 _converse,
                 _converse.bare_jid,
                 [{ 'category': 'pubsub', 'type': 'pep' }],
-                ['http://jabber.org/protocol/pubsub#publish-options']
+                ['http://jabber.org/protocol/pubsub#publish-options'],
             );
 
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -2076,7 +2077,7 @@ describe('Popular Reactions PEP publishing', function () {
                         type="chat"
                         id="pep-list-test-msg">
                     <body>React to this</body>
-                </message>`
+                </message>`,
             );
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
@@ -2095,7 +2096,7 @@ describe('Popular Reactions PEP publishing', function () {
             const pep_iq = await u.waitUntil(() =>
                 sent_stanzas
                     .filter((iq) => sizzle(`pubsub publish[node="${Strophe.NS.REACTIONS_POPULAR}"]`, iq).length)
-                    .pop()
+                    .pop(),
             );
             expect(pep_iq).toBeDefined();
 
@@ -2108,19 +2109,19 @@ describe('Popular Reactions PEP publishing', function () {
 
             // The model must also reflect only the reacted emoji
             expect(Object.keys(model.get('timestamps'))).toEqual(['👍']);
-        })
+        }),
     );
 
     it(
         'publishes popular reactions to PEP node when reacting via UI',
-        mock.initConverse(['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.waitUntilDiscoConfirmed(
                 _converse,
                 _converse.bare_jid,
                 [{ 'category': 'pubsub', 'type': 'pep' }],
-                ['http://jabber.org/protocol/pubsub#publish-options']
+                ['http://jabber.org/protocol/pubsub#publish-options'],
             );
 
             // 1. Open a 1:1 chat
@@ -2136,7 +2137,7 @@ describe('Popular Reactions PEP publishing', function () {
                         type="chat"
                         id="pep-test-msg">
                     <body>React to this</body>
-                </message>`
+                </message>`,
             );
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
@@ -2155,7 +2156,7 @@ describe('Popular Reactions PEP publishing', function () {
             const pep_iq = await u.waitUntil(() =>
                 sent_stanzas
                     .filter((iq) => sizzle(`pubsub publish[node="${Strophe.NS.REACTIONS_POPULAR}"]`, iq).length)
-                    .pop()
+                    .pop(),
             );
             expect(pep_iq).toBeDefined();
 
@@ -2213,7 +2214,7 @@ describe('Popular Reactions PEP publishing', function () {
             // 10. Verify the reaction appears in the UI
             await u.waitUntil(() => getReactionEmojis(view).includes('👍'));
             expect(getReactionEmojis(view)).toEqual(['👍']);
-        })
+        }),
     );
 });
 
@@ -2259,7 +2260,7 @@ const chooseReactionViaUI = async (view, msgid, emoji) => {
 
     const picker_el = await u.waitUntil(() => msg_el.querySelector('converse-reaction-picker'));
     const emoji_btn = Array.from(picker_el.querySelectorAll('.reaction-item')).find(
-        (el) => el.textContent.trim() === emoji
+        (el) => el.textContent.trim() === emoji,
     );
     if (emoji_btn) {
         emoji_btn.click();
@@ -2273,8 +2274,8 @@ const chooseReactionViaUI = async (view, msgid, emoji) => {
     await u.waitUntil(() => u.isVisible(msg_el.querySelector('.emoji-picker__lists')));
     const emoji_link = await u.waitUntil(() =>
         Array.from(msg_el.querySelectorAll('.emoji-picker li.insert-emoji a')).find(
-            (el) => el.textContent.trim() === emoji
-        )
+            (el) => el.textContent.trim() === emoji,
+        ),
     );
     expect(emoji_link).toBeTruthy();
     emoji_link.click();

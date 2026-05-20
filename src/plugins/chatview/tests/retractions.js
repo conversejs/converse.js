@@ -1,10 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { Strophe, u, stx, dayjs, sizzle } = converse.env;
 
 describe('A sent chat message', function () {
     it(
         'can be retracted',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             const view = await mock.openChatBoxFor(_converse, contact_jid);
@@ -53,7 +55,7 @@ describe('A sent chat message', function () {
 describe('A received chat message', function () {
     it(
         'can be followed up with a retraction',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             const view = await mock.openChatBoxFor(_converse, contact_jid);
@@ -70,7 +72,7 @@ describe('A received chat message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" id="kxViLhgbnNMcWv10" by="${_converse.bare_jid}"/>
             </message>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(received_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, received_stanza));
             await u.waitUntil(() => view.model.messages.length === 1);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
 
@@ -85,7 +87,7 @@ describe('A received chat message', function () {
                     <body>/me retracted a message</body>
                     <store xmlns="urn:xmpp:hints"/>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, retraction_stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
 
             expect(view.model.messages.length).toBe(1);
@@ -100,7 +102,7 @@ describe('A received chat message', function () {
 
     it(
         'may be preceded with a retraction',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             const view = await mock.openChatBoxFor(_converse, contact_jid);
@@ -116,7 +118,7 @@ describe('A received chat message', function () {
                     <body>/me retracted a message</body>
                     <store xmlns="urn:xmpp:hints"/>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, retraction_stanza));
             await u.waitUntil(() => view.model.messages.length === 1);
 
             const hour_ago = dayjs().subtract(1, 'hour');
@@ -132,7 +134,7 @@ describe('A received chat message', function () {
                     <origin-id xmlns="urn:xmpp:sid:0" id="29132ea0-0121-2897-b121-36638c259554"/>
                     <stanza-id xmlns="urn:xmpp:sid:0" id="kxViLhgbnNMcWv10" by="${_converse.bare_jid}"/>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
 
             expect(view.model.messages.length).toBe(1);
@@ -148,7 +150,7 @@ describe('A received chat message', function () {
 describe('A message retraction', function () {
     it(
         'can be received before the message it pertains to',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const date = new Date().toISOString();
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
@@ -168,7 +170,7 @@ describe('A message retraction', function () {
                 <store xmlns="urn:xmpp:hints"/>
             </message>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, retraction_stanza));
             await u.waitUntil(() => view.model.messages.length === 1);
             const message = view.model.messages.at(0);
             expect(message.get('dangling_retraction')).toBe(true);
@@ -188,7 +190,7 @@ describe('A message retraction', function () {
                 <origin-id xmlns="urn:xmpp:sid:0" id="2e972ea0-0050-44b7-a830-f6638a2595b3"/>
                 <stanza-id xmlns="urn:xmpp:sid:0" id="IxVDLJ0RYbWcWvqC" by="${_converse.bare_jid}"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 2);
             expect(view.model.messages.length).toBe(1);
             expect(message.get('retracted')).toBeTruthy();
@@ -201,7 +203,7 @@ describe('A message retraction', function () {
 
     it(
         'may be returned as a tombstone message',
-        mock.initConverse(['discoInitialized'], {}, async function (_converse) {
+        mock.initConverse(converse, ['discoInitialized'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
@@ -226,7 +228,7 @@ describe('A message retraction', function () {
                         </forwarded>
                     </result>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(first_message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, first_message));
 
             const tombstone = stx`
                 <message id="${u.getUniqueId()}" to="${_converse.jid}" xmlns="jabber:client">
@@ -239,7 +241,7 @@ describe('A message retraction', function () {
                         </forwarded>
                     </result>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(tombstone));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, tombstone));
 
             const last_id = u.getUniqueId();
             const retraction = stx`
@@ -255,7 +257,7 @@ describe('A message retraction', function () {
                         </forwarded>
                     </result>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, retraction));
 
             const iq_result = stx`
                 <iq type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
@@ -267,7 +269,7 @@ describe('A message retraction', function () {
                         </set>
                     </fin>
                 </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(iq_result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, iq_result));
 
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 3);
 
@@ -290,7 +292,7 @@ describe('A message retraction', function () {
 describe('A Received Chat Message', function () {
     it(
         'can be followed up by a retraction',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -308,7 +310,7 @@ describe('A Received Chat Message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" id="kxViLhgbnNMcWv10" by="${_converse.bare_jid}"/>
             </message>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => view.model.messages.length === 1);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
 
@@ -326,7 +328,7 @@ describe('A Received Chat Message', function () {
                     <stanza-id xmlns="urn:xmpp:sid:0" id="IxVDLJ0RYbWcWvqC" by="${_converse.bare_jid}"/>
                 </message>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => view.model.messages.length === 2);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
 
@@ -341,7 +343,7 @@ describe('A Received Chat Message', function () {
                 <body>/me retracted a previous message, but it's unsupported by your client.</body>
                 <store xmlns="urn:xmpp:hints"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, retraction_stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
 
             expect(view.model.messages.length).toBe(2);

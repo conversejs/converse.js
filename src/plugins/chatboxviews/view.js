@@ -27,7 +27,7 @@ class ConverseChats extends CustomElement {
         body.classList.add(`converse-${api.settings.get('view_mode')}`);
 
         /**
-         * Triggered once the ChatBoxViews view-colleciton has been initialized
+         * Triggered once the ChatBoxViews view-collection has been initialized
          * @event _converse#chatBoxViewsInitialized
          * @example _converse.api.listen.on('chatBoxViewsInitialized', () => { ... });
          */

@@ -18,7 +18,7 @@
  * @property {String} [i18n]
  * @property {String} [jid]
  * @property {Boolean} [keepalive=true]
- * @property {('debug'|'info'|'eror')} [loglevel='info']
+ * @property {('debug'|'info'|'error')} [loglevel='info']
  * @property {Array<String>} [locales]
  * @property {String} [nickname]
  * @property {String} [password]

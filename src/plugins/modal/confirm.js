@@ -57,7 +57,7 @@ export default class Confirm extends BaseModal {
     /**
      * @param {SubmitEvent} ev
      */
-    onConfimation(ev) {
+    onConfirmation(ev) {
         ev.preventDefault();
         const form = /** @type {HTMLFormElement} */ (ev.target);
         const form_data = new FormData(form);

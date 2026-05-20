@@ -13,7 +13,7 @@ export default class Confirm extends BaseModal {
     /**
      * @param {SubmitEvent} ev
      */
-    onConfimation(ev: SubmitEvent): void;
+    onConfirmation(ev: SubmitEvent): void;
 }
 import BaseModal from 'plugins/modal/modal.js';
 //# sourceMappingURL=confirm.d.ts.map

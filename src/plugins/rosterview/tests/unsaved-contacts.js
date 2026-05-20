@@ -218,7 +218,7 @@ describe('A chat with an unsaved contact', function () {
 
             await u.waitUntil(() => contact.save.calls.count());
             expect(contact.save).toHaveBeenCalledWith({ hide_contact_add_alert: true });
-            await u.waitUntil(() => !view.querySelector('converse-contact-approval-alert').childElementCound);
+            await u.waitUntil(() => !view.querySelector('converse-contact-approval-alert').childElementCount);
         }),
     );
 });

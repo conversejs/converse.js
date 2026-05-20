@@ -1,11 +1,12 @@
-/* global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { u, stx } = converse.env;
 
 describe('The MUC occupants filter', function () {
     it(
         'can be used to filter which occupants are shown',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const members = [
                 {
@@ -40,7 +41,7 @@ describe('The MUC occupants filter', function () {
                                 role="${role}"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             }
 
             if (view.model.get('hidden_occupants')) {

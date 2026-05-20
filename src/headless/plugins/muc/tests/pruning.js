@@ -1,12 +1,12 @@
-/*global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
 const { u } = converse.env;
 
 describe('A Groupchat Message', function () {
     it(
         'will be pruned if it exceeds the prune_messages_above threshold',
-        mock.initConverse(['chatBoxesFetched'], { 'prune_messages_above': 3 }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'prune_messages_above': 3 }, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             expect(model.ui.get('scrolled')).toBeFalsy();
@@ -41,7 +41,7 @@ describe('A Groupchat Message', function () {
                      type="groupchat">
                 <body>1st incoming</body>
             </message>`);
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => model.messages.length === 4);
             await u.waitUntil(() => model.messages.length === 3, 550);
         }),

@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { u } = converse.env;
 
 describe('The Location Button', function () {
     it(
         'shows a confirmation prompt and sends the geo URI in a one-on-one chat',
-        mock.initConverse(['chatBoxesFetched'], { 'view_mode': 'fullscreen' }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'view_mode': 'fullscreen' }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
 

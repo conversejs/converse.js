@@ -1,5 +1,5 @@
-/*global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
@@ -7,7 +7,7 @@ describe('Groupchats', function () {
     describe('The auto_register_muc_nickname option', function () {
         it(
             'allows you to automatically register your nickname when joining a room',
-            mock.initConverse(['chatBoxesFetched'], { 'auto_register_muc_nickname': true }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { 'auto_register_muc_nickname': true }, async function (_converse) {
                 const nick = 'romeo';
                 const muc_jid = 'coven@chat.shakespeare.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, nick);
@@ -27,7 +27,7 @@ describe('Groupchats', function () {
                 );
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq from="${muc_jid}"
                         id="${stanza.getAttribute('id')}"
                         to="${_converse.session.get('jid')}"
@@ -73,7 +73,7 @@ describe('Groupchats', function () {
 
         it(
             'allows you to automatically deregister your nickname when closing a room',
-            mock.initConverse(
+            mock.initConverse(converse, 
                 ['chatBoxesFetched'],
                 { 'auto_register_muc_nickname': 'unregister' },
                 async function (_converse) {
@@ -105,7 +105,7 @@ describe('Groupchats', function () {
                         </x>
                     </query>
                 </iq>`;
-                    _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
                     await u.waitUntil(() =>
                         _converse.api.connection
                             .get()
@@ -143,7 +143,7 @@ describe('Groupchats', function () {
                         xmlns="jabber:client">
                     <query xmlns="jabber:iq:register"></query>
                 </iq>`;
-                    _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
                 },
             ),
         );

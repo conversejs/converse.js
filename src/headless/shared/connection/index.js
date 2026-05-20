@@ -1,17 +1,16 @@
-import debounce from 'lodash-es/debounce';
-import log from "@converse/log";
+import debounce from 'lodash-es/debounce.js';
+import log from '@converse/log';
 import sizzle from 'sizzle';
 import _converse from '../_converse.js';
 import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
-import { CONNECTION_STATUS } from '../constants';
+import { CONNECTION_STATUS } from '../constants.js';
 import { Strophe } from 'strophe.js';
-import { clearSession, tearDown } from "../../utils/session.js";
+import { clearSession, tearDown } from '../../utils/session.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { setUserJID, } from '../../utils/init.js';
+import { setUserJID } from '../../utils/init.js';
 
 const i = Object.keys(Strophe.Status).reduce((max, k) => Math.max(max, Strophe.Status[k]), 0);
 Strophe.Status.RECONNECTING = i + 1;
-
 
 /**
  * The Connection class manages the connection to the XMPP server. It's
@@ -19,8 +18,7 @@ Strophe.Status.RECONNECTING = i + 1;
  * via BOSH or websocket inside a shared worker).
  */
 export class Connection extends Strophe.Connection {
-
-    constructor (service, options) {
+    constructor(service, options) {
         super(service, options);
         // For new sessions, we need to send out a presence stanza to notify
         // the server/network that we're online.
@@ -40,35 +38,35 @@ export class Connection extends Strophe.Connection {
         log.debug('%c%s', 'color: darkcyan', body.outerHTML);
     }
 
-    async bind () {
+    async bind() {
         const { api } = _converse;
         /**
          * Synchronous event triggered before we send an IQ to bind the user's
          * JID resource for this session.
          * @event _converse#beforeResourceBinding
          */
-        await api.trigger('beforeResourceBinding', {'synchronous': true});
+        await api.trigger('beforeResourceBinding', { 'synchronous': true });
         super.bind();
     }
 
-    async onDomainDiscovered (response) {
+    async onDomainDiscovered(response) {
         const { api } = _converse;
         const text = await response.text();
-        const xrd = (new DOMParser()).parseFromString(text, "text/xml").firstElementChild;
-        if (xrd.nodeName != "XRD" || xrd.namespaceURI != "http://docs.oasis-open.org/ns/xri/xrd-1.0") {
-            return log.info("Could not discover XEP-0156 connection methods");
+        const xrd = new DOMParser().parseFromString(text, 'text/xml').firstElementChild;
+        if (xrd.nodeName != 'XRD' || xrd.namespaceURI != 'http://docs.oasis-open.org/ns/xri/xrd-1.0') {
+            return log.info('Could not discover XEP-0156 connection methods');
         }
         const bosh_links = sizzle(`Link[rel="urn:xmpp:alt-connections:xbosh"]`, xrd);
         const ws_links = sizzle(`Link[rel="urn:xmpp:alt-connections:websocket"]`, xrd);
-        const bosh_methods = bosh_links.map(el => el.getAttribute('href')).filter(uri => uri.startsWith('https:'));
-        const ws_methods = ws_links.map(el => el.getAttribute('href')).filter(uri => uri.startsWith('wss:'));
+        const bosh_methods = bosh_links.map((el) => el.getAttribute('href')).filter((uri) => uri.startsWith('https:'));
+        const ws_methods = ws_links.map((el) => el.getAttribute('href')).filter((uri) => uri.startsWith('wss:'));
         if (bosh_methods.length === 0 && ws_methods.length === 0) {
-            log.info("Neither BOSH nor WebSocket connection methods have been specified with XEP-0156.");
+            log.info('Neither BOSH nor WebSocket connection methods have been specified with XEP-0156.');
         } else {
             // TODO: support multiple endpoints
-            api.settings.set("websocket_url", ws_methods.pop());
+            api.settings.set('websocket_url', ws_methods.pop());
             api.settings.set('bosh_service_url', bosh_methods.pop());
-            this.service = api.settings.get("websocket_url") || api.settings.get('bosh_service_url');
+            this.service = api.settings.get('websocket_url') || api.settings.get('bosh_service_url');
             this.setProtocol();
         }
     }
@@ -81,13 +79,13 @@ export class Connection extends Strophe.Connection {
      * @method Connection.discoverConnectionMethods
      * @param {string} domain
      */
-    async discoverConnectionMethods (domain) {
+    async discoverConnectionMethods(domain) {
         // Use XEP-0156 to check whether this host advertises websocket or BOSH connection methods.
         const options = {
-            mode: /** @type {RequestMode} */('cors'),
+            mode: /** @type {RequestMode} */ ('cors'),
             headers: {
-                Accept: 'application/xrd+xml, text/xml'
-            }
+                Accept: 'application/xrd+xml, text/xml',
+            },
         };
         const url = `https://${domain}/.well-known/host-meta`;
         let response;
@@ -101,7 +99,7 @@ export class Connection extends Strophe.Connection {
         if (response.status >= 200 && response.status < 400) {
             await this.onDomainDiscovered(response);
         } else {
-            log.info("Could not discover XEP-0156 connection methods");
+            log.info('Could not discover XEP-0156 connection methods');
         }
     }
 
@@ -112,20 +110,20 @@ export class Connection extends Strophe.Connection {
      * @param {String} password
      * @param {Function} callback
      */
-    async connect (jid, password, callback) {
+    async connect(jid, password, callback) {
         const { __, api } = _converse;
 
-        if (api.settings.get("discover_connection_methods")) {
+        if (api.settings.get('discover_connection_methods')) {
             const domain = Strophe.getDomainFromJid(jid);
             await this.discoverConnectionMethods(domain);
         }
-        if (!api.settings.get('bosh_service_url') && !api.settings.get("websocket_url")) {
+        if (!api.settings.get('bosh_service_url') && !api.settings.get('websocket_url')) {
             // If we don't have a connection URL, we show an input for the user
             // to manually provide it.
             api.settings.set('show_connection_url_input', true);
             (callback || this.onConnectStatusChanged.bind(this))(
                 Strophe.Status.DISCONNECTED,
-                __('Could not automatically determine a connection URL')
+                __('Could not automatically determine a connection URL'),
             );
             return;
         }
@@ -150,7 +148,7 @@ export class Connection extends Strophe.Connection {
      * We also call `_proto._doDisconnect` so that connection event handlers
      * for the old transport are removed.
      */
-    async switchTransport () {
+    async switchTransport() {
         const { api } = _converse;
 
         const bare_jid = _converse.session.get('bare_jid');
@@ -159,22 +157,22 @@ export class Connection extends Strophe.Connection {
             this._proto._doDisconnect();
             this._proto = new Strophe.Bosh(this);
             this.service = api.settings.get('bosh_service_url');
-        } else if (api.connection.isType('bosh') && api.settings.get("websocket_url")) {
-            if (api.settings.get("authentication") === ANONYMOUS) {
+        } else if (api.connection.isType('bosh') && api.settings.get('websocket_url')) {
+            if (api.settings.get('authentication') === ANONYMOUS) {
                 // When reconnecting anonymously, we need to connect with only
                 // the domain, not the full JID that we had in our previous
                 // (now failed) session.
-                await setUserJID(api.settings.get("jid"));
+                await setUserJID(api.settings.get('jid'));
             } else {
                 await setUserJID(bare_jid);
             }
             this._proto._doDisconnect();
             this._proto = new Strophe.Websocket(this);
-            this.service = api.settings.get("websocket_url");
+            this.service = api.settings.get('websocket_url');
         }
     }
 
-    async reconnect () {
+    async reconnect() {
         const { api } = _converse;
 
         log.debug('RECONNECTING: the connection has dropped, attempting to reconnect.');
@@ -184,11 +182,11 @@ export class Connection extends Strophe.Connection {
         const conn_status = _converse.state.connfeedback.get('connection_status');
         if (conn_status === Strophe.Status.CONNFAIL) {
             this.switchTransport();
-        } else if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get("authentication") === ANONYMOUS) {
+        } else if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get('authentication') === ANONYMOUS) {
             // When reconnecting anonymously, we need to connect with only
             // the domain, not the full JID that we had in our previous
             // (now failed) session.
-            await setUserJID(api.settings.get("jid"));
+            await setUserJID(api.settings.get('jid'));
         }
 
         /**
@@ -198,7 +196,7 @@ export class Connection extends Strophe.Connection {
          */
         api.trigger('will-reconnect');
 
-        if (api.settings.get("authentication") === ANONYMOUS) {
+        if (api.settings.get('authentication') === ANONYMOUS) {
             await clearSession(_converse);
         }
         const jid = _converse.session.get('jid');
@@ -211,7 +209,7 @@ export class Connection extends Strophe.Connection {
      * @method Connection.onConnected
      * @param {Boolean} [reconnecting] - Whether Converse.js reconnected from an earlier dropped session.
      */
-    async onConnected (reconnecting) {
+    async onConnected(reconnecting) {
         const { api } = _converse;
 
         delete this.reconnecting;
@@ -234,7 +232,7 @@ export class Connection extends Strophe.Connection {
          * user's JID resource for this session.
          * @event _converse#afterResourceBinding
          */
-        await api.trigger('afterResourceBinding', reconnecting, {'synchronous': true});
+        await api.trigger('afterResourceBinding', reconnecting, { 'synchronous': true });
 
         if (reconnecting) {
             /**
@@ -264,7 +262,7 @@ export class Connection extends Strophe.Connection {
      * @param {Boolean} [override] - An optional flag to replace any previous
      *  disconnection cause and reason.
      */
-    setDisconnectionCause (cause, reason, override) {
+    setDisconnectionCause(cause, reason, override) {
         if (cause === undefined) {
             delete this.disconnection_cause;
             delete this.disconnection_reason;
@@ -278,12 +276,12 @@ export class Connection extends Strophe.Connection {
      * @param {Number} [status] - The status number as received from Strophe.
      * @param {String} [message] - An optional user-facing message
      */
-    setConnectionStatus (status, message) {
+    setConnectionStatus(status, message) {
         this.status = status;
         _converse.state.connfeedback.set({ connection_status: status, message });
     }
 
-    async finishDisconnection () {
+    async finishDisconnection() {
         this.setConnectionStatus(Strophe.Status.DISCONNECTED, this.disconnection_reason);
         const { api } = _converse;
         // Properly tear down the session so that it's possible to manually connect again.
@@ -295,11 +293,11 @@ export class Connection extends Strophe.Connection {
         api.connection.destroy();
 
         /**
-        * Triggered after converse.js has disconnected from the XMPP server.
-        * @event _converse#disconnected
-        * @memberOf _converse
-        * @example _converse.api.listen.on('disconnected', () => { ... });
-        */
+         * Triggered after converse.js has disconnected from the XMPP server.
+         * @event _converse#disconnected
+         * @memberOf _converse
+         * @example _converse.api.listen.on('disconnected', () => { ... });
+         */
         api.trigger('disconnected');
     }
 
@@ -309,12 +307,12 @@ export class Connection extends Strophe.Connection {
      * to reconnect.
      * @method onDisconnected
      */
-    onDisconnected () {
+    onDisconnected() {
         const { api } = _converse;
-        if (api.settings.get("auto_reconnect")) {
+        if (api.settings.get('auto_reconnect')) {
             const reason = this.disconnection_reason;
             if (this.disconnection_cause === Strophe.Status.AUTHFAIL) {
-                if (api.settings.get("credentials_url") || api.settings.get("authentication") === ANONYMOUS) {
+                if (api.settings.get('credentials_url') || api.settings.get('authentication') === ANONYMOUS) {
                     // If `credentials_url` is set, we reconnect, because we might
                     // be receiving expirable tokens from the credentials_url.
                     //
@@ -332,15 +330,15 @@ export class Connection extends Strophe.Connection {
                 const { __ } = _converse;
                 this.setConnectionStatus(
                     Strophe.Status.CONNFAIL,
-                    __('An error occurred while connecting to the chat server.')
+                    __('An error occurred while connecting to the chat server.'),
                 );
                 return this.finishDisconnection();
             } else if (
                 this.disconnection_cause === LOGOUT ||
                 reason === Strophe.ErrorCondition.NO_AUTH_MECH ||
-                reason === "host-unknown" ||
-                reason === "remote-connection-failed" ||
-                reason === "not-well-formed"
+                reason === 'host-unknown' ||
+                reason === 'remote-connection-failed' ||
+                reason === 'not-well-formed'
             ) {
                 return this.finishDisconnection();
             }
@@ -357,13 +355,12 @@ export class Connection extends Strophe.Connection {
      * @param {Number} status
      * @param {String} [condition]
      */
-    onConnectStatusChanged (status, condition) {
+    onConnectStatusChanged(status, condition) {
         const { __ } = _converse;
         log.debug(`Status changed to: ${CONNECTION_STATUS[status]}`);
         if (status === Strophe.Status.ATTACHFAIL) {
             this.setConnectionStatus(status);
             this.worker_attach_promise?.resolve(false);
-
         } else if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
             if (this.worker_attach_promise?.isResolved && this.status === Strophe.Status.ATTACHED) {
                 // A different tab must have attached, so nothing to do for us here.
@@ -391,11 +388,7 @@ export class Connection extends Strophe.Connection {
         } else if (status === Strophe.Status.BINDREQUIRED) {
             this.bind();
         } else if (status === Strophe.Status.ERROR) {
-            this.setConnectionStatus(
-                status,
-                __('An error occurred while connecting to the chat server.')
-            );
-
+            this.setConnectionStatus(status, __('An error occurred while connecting to the chat server.'));
         } else if (status === Strophe.Status.CONNECTING) {
             this.setConnectionStatus(status);
         } else if (status === Strophe.Status.AUTHENTICATING) {
@@ -407,20 +400,20 @@ export class Connection extends Strophe.Connection {
             this.setConnectionStatus(status, condition);
             this.setDisconnectionCause(status, condition, true);
             this.onDisconnected();
-
         } else if (status === Strophe.Status.CONNFAIL) {
             let feedback = condition;
-            if (condition === "host-unknown" || condition == "remote-connection-failed") {
-                feedback = __("We could not connect to %1$s, is your XMPP address correct?",
-                    Strophe.getDomainFromJid(this.jid));
+            if (condition === 'host-unknown' || condition == 'remote-connection-failed') {
+                feedback = __(
+                    'We could not connect to %1$s, is your XMPP address correct?',
+                    Strophe.getDomainFromJid(this.jid),
+                );
             } else if (condition === 'policy-violation') {
-                feedback = __("The XMPP server rejected the connection because of a policy violation");
+                feedback = __('The XMPP server rejected the connection because of a policy violation');
             } else if (condition !== undefined && condition === Strophe?.ErrorCondition?.NO_AUTH_MECH) {
-                feedback = __("The XMPP server did not offer a supported authentication mechanism");
+                feedback = __('The XMPP server did not offer a supported authentication mechanism');
             }
             this.setConnectionStatus(status, feedback);
             this.setDisconnectionCause(status, condition);
-
         } else if (status === Strophe.Status.DISCONNECTING) {
             this.setConnectionStatus(status);
             this.setDisconnectionCause(status, condition);
@@ -430,7 +423,7 @@ export class Connection extends Strophe.Connection {
     /**
      * @param {string} type
      */
-    isType (type) {
+    isType(type) {
         if (type.toLowerCase() === 'websocket') {
             return this._proto instanceof Strophe.Websocket;
         } else if (type.toLowerCase() === 'bosh') {
@@ -438,9 +431,9 @@ export class Connection extends Strophe.Connection {
         }
     }
 
-    hasResumed () {
+    hasResumed() {
         const { api } = _converse;
-        if (api.settings.get("connection_options")?.worker || this.isType('bosh')) {
+        if (api.settings.get('connection_options')?.worker || this.isType('bosh')) {
             return _converse.state.connfeedback.get('connection_status') === Strophe.Status.ATTACHED;
         } else {
             // Not binding means that the session was resumed.
@@ -448,24 +441,22 @@ export class Connection extends Strophe.Connection {
         }
     }
 
-    restoreWorkerSession () {
+    restoreWorkerSession() {
         this.attach(this.onConnectStatusChanged);
         this.worker_attach_promise = getOpenPromise();
         return this.worker_attach_promise;
     }
 }
 
-
 /**
  * The MockConnection class is used during testing, to mock an XMPP connection.
  */
 export class MockConnection extends Connection {
-
     /**
      * @param {string} service - The BOSH or WebSocket service URL.
      * @param {import('strophe.js/src/types/connection').ConnectionOptions} options - The configuration options
      */
-    constructor (service, options) {
+    constructor(service, options) {
         super(service, options);
 
         this.sent_stanzas = [];
@@ -473,18 +464,19 @@ export class MockConnection extends Connection {
         this.IQ_ids = [];
 
         this.features = Strophe.xmlHtmlNode(
-            '<stream:features xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client">'+
-                '<ver xmlns="urn:xmpp:features:rosterver"/>'+
-                '<csi xmlns="urn:xmpp:csi:0"/>'+
-                '<this xmlns="http://jabber.org/protocol/caps" ver="UwBpfJpEt3IoLYfWma/o/p3FFRo=" hash="sha-1" node="http://prosody.im"/>'+
-                '<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind">'+
-                    '<required/>'+
-                '</bind>'+
-                `<sm xmlns='urn:xmpp:sm:3'/>`+
-                '<session xmlns="urn:ietf:params:xml:ns:xmpp-session">'+
-                    '<optional/>'+
-                '</session>'+
-            '</stream:features>').firstElementChild;
+            '<stream:features xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client">' +
+                '<ver xmlns="urn:xmpp:features:rosterver"/>' +
+                '<csi xmlns="urn:xmpp:csi:0"/>' +
+                '<this xmlns="http://jabber.org/protocol/caps" ver="UwBpfJpEt3IoLYfWma/o/p3FFRo=" hash="sha-1" node="http://prosody.im"/>' +
+                '<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind">' +
+                '<required/>' +
+                '</bind>' +
+                `<sm xmlns='urn:xmpp:sm:3'/>` +
+                '<session xmlns="urn:ietf:params:xml:ns:xmpp-session">' +
+                '<optional/>' +
+                '</session>' +
+                '</stream:features>',
+        ).firstElementChild;
 
         // @ts-ignore
         this._proto._processRequest = () => {};
@@ -496,19 +488,20 @@ export class MockConnection extends Connection {
             this.mock = true;
             this.jid = 'romeo@montague.lit/orchard';
             this._changeConnectStatus(Strophe.Status.BINDREQUIRED);
-        }
+        };
     }
 
     // @ts-ignore
-    get _sasl_mechanism () {
+    get _sasl_mechanism() {
         return new Strophe.SASLSHA256();
     }
 
-    _processRequest () { // eslint-disable-line class-methods-use-this
+    _processRequest() {
+        // eslint-disable-line class-methods-use-this
         // Don't attempt to send out stanzas
     }
 
-    sendIQ (iq, callback, errback) {
+    sendIQ(iq, callback, errback) {
         iq = iq.tree?.() ?? iq;
 
         this.IQ_stanzas.push(iq);
@@ -517,15 +510,15 @@ export class MockConnection extends Connection {
         return id;
     }
 
-    send (stanza) {
+    send(stanza) {
         stanza = stanza.tree?.() ?? stanza;
         this.sent_stanzas.push(stanza);
         return super.send(stanza);
     }
 
-    async bind () {
+    async bind() {
         const { api } = _converse;
-        await api.trigger('beforeResourceBinding', {'synchronous': true});
+        await api.trigger('beforeResourceBinding', { 'synchronous': true });
         this.authenticated = true;
         this._changeConnectStatus(Strophe.Status.CONNECTED);
     }

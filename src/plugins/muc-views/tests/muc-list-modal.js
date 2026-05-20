@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { Strophe, sizzle, u, stx } = converse.env;
 
 describe('The "Groupchats" List modal', function () {
     it(
         'can be opened from a link in the "Groupchats" section of the controlbox',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
             const button = await u.waitUntil(() => cbview.querySelector('converse-rooms-list .show-list-muc-modal'));
@@ -52,7 +53,7 @@ describe('The "Groupchats" List modal', function () {
                         <item jid="street@chat.shakespeare.lit" name="A street"/>
                     </query>
                 </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(iq));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, iq));
 
             await u.waitUntil(() => modal.querySelectorAll('.available-chatrooms li').length === 11);
             const rooms = modal.querySelectorAll('.available-chatrooms li');
@@ -82,7 +83,7 @@ describe('The "Groupchats" List modal', function () {
 
     it(
         'is pre-filled with the muc_domain',
-        mock.initConverse(['chatBoxesFetched'], { 'muc_domain': 'muc.example.org' }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'muc_domain': 'muc.example.org' }, async function (_converse) {
             await mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
             const button = await u.waitUntil(() => cbview.querySelector('converse-rooms-list .show-list-muc-modal'));
@@ -97,7 +98,7 @@ describe('The "Groupchats" List modal', function () {
 
     it(
         "doesn't let you set the MUC domain if it's locked",
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['chatBoxesFetched'],
             { 'muc_domain': 'chat.shakespeare.lit', 'locked_muc_domain': true },
             async function (_converse) {
@@ -138,7 +139,7 @@ describe('The "Groupchats" List modal', function () {
                             <item jid="forres@chat.shakespeare.lit" name="The Palace"/>
                         </query>
                     </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(iq));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, iq));
 
                 await u.waitUntil(() => modal.querySelectorAll('.available-chatrooms li').length === 4);
                 const rooms = modal.querySelectorAll('.available-chatrooms li');

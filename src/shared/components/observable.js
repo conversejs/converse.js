@@ -1,5 +1,5 @@
-import { api } from "@converse/headless";
-import { CustomElement } from "./element";
+import { api } from '@converse/headless';
+import { CustomElement } from './element.js';
 
 /**
  * An element which triggers a global `visibilityChanged` event when
@@ -28,7 +28,7 @@ export class ObservableElement extends CustomElement {
 
         this.isVisible = false;
         this.observableThresholds = [0.0, 0.25, 0.5, 0.75, 1.0]; // thresholds to check for, every 25%
-        this.observableMargin = "0px"; // margin from root element
+        this.observableMargin = '0px'; // margin from root element
         this.intersectionRatio = 0.5; // wait till at least 50% of the item is visible
         this.observableDelay = 100;
     }
@@ -55,14 +55,14 @@ export class ObservableElement extends CustomElement {
                     threshold: this.observableThresholds,
                     // @ts-ignore
                     delay: this.observableDelay,
-                }
+                },
             );
             this.intersectionObserver.observe(this);
         }
     }
 
     alreadyHandled() {
-        return (this.observable === "once" && this.isVisible);
+        return this.observable === 'once' && this.isVisible;
     }
 
     /**
@@ -74,12 +74,12 @@ export class ObservableElement extends CustomElement {
         for (const entry of entries) {
             const ratio = Number(entry.intersectionRatio.toFixed(2));
             if (ratio >= this.intersectionRatio && !this.alreadyHandled()) {
-                if (this.observable === "once") {
+                if (this.observable === 'once') {
                     this.intersectionObserver.disconnect();
                 }
                 this.isVisible = true;
 
-                api.trigger("visibilityChanged", { el: this, entry });
+                api.trigger('visibilityChanged', { el: this, entry });
                 this.onVisibilityChanged(entry);
             }
         }

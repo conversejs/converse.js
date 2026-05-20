@@ -1,10 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('The OMEMO module', function () {
     it(
         'adds methods for encrypting and decrypting messages via AES GCM',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const message = 'This message will be encrypted';
             await mock.waitForRoster(_converse, 'current', 1);
             const payload = await u.omemo.encryptMessage(message);
@@ -15,7 +17,7 @@ describe('The OMEMO module', function () {
 
     it(
         'enables encrypted messages to be sent and received',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.initializedOMEMO(_converse);
@@ -105,7 +107,7 @@ describe('The OMEMO module', function () {
                         <payload>${obj.payload}</payload>
                     </encrypted>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
             expect(view.model.messages.length).toBe(2);
             expect(view.querySelectorAll('.chat-msg__body')[1].textContent.trim()).toBe(
@@ -127,7 +129,7 @@ describe('The OMEMO module', function () {
                         <payload>${obj.payload}</payload>
                     </encrypted>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
             await u.waitUntil(() => view.model.messages.length > 1);
             expect(view.model.messages.length).toBe(3);
@@ -139,7 +141,7 @@ describe('The OMEMO module', function () {
 
     it(
         'properly handles an already decrypted message being received again',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.initializedOMEMO(_converse);
@@ -169,7 +171,7 @@ describe('The OMEMO module', function () {
                         <payload>${obj.payload}</payload>
                     </encrypted>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             // Test reception of the same message, but the decryption fails.
             // The properly decrypted message should still show to the user.
@@ -189,7 +191,7 @@ describe('The OMEMO module', function () {
                         <payload>${obj.payload}x</payload>
                     </encrypted>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             await u.waitUntil(() => view.querySelector('.chat-msg__text')?.textContent.trim() === msg_txt);
 
@@ -203,7 +205,7 @@ describe('The OMEMO module', function () {
 
     it(
         'will create a new device based on a received carbon message',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.initializedOMEMO(
                 _converse,
                 [{ 'category': 'pubsub', 'type': 'pep' }],
@@ -234,7 +236,7 @@ describe('The OMEMO module', function () {
                 </items>
             </pubsub>
         </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             const omemo_store = await u.waitUntil(() => _converse.state.omemo_store);
 
             const contact_devicelist = _converse.state.devicelists.get({ 'jid': contact_jid });
@@ -275,7 +277,7 @@ describe('The OMEMO module', function () {
                 </sent>
             </message>`;
             _converse.api.connection.get().IQ_stanzas = [];
-            _converse.api.connection.get()._dataRecv(mock.createRequest(carbon));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, carbon));
 
             // Remove one pre-key to exercise code that generates new ones.
             const prekeys = omemo_store.getPreKeys();
@@ -294,7 +296,7 @@ describe('The OMEMO module', function () {
                 id="${iq_stanza.getAttribute('id')}"
                 to="${_converse.bare_jid}"
                 type="result"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(result_iq));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result_iq));
 
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
             expect(view.model.messages.length).toBe(1);
@@ -337,7 +339,7 @@ describe('The OMEMO module', function () {
 
     it(
         'can receive a PreKeySignalMessage',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             _converse.NUM_PREKEYS = 5; // Restrict to 5, otherwise the resulting stanza is too large to easily test
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -373,7 +375,7 @@ describe('The OMEMO module', function () {
                 _converse.state.omemo_store.removePreKey(1);
                 return generateMissingPreKeys.apply(_converse.state.omemo_store, arguments);
             });
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             await mock.deviceListFetched(_converse, contact_jid, ['555']);
 
@@ -381,7 +383,7 @@ describe('The OMEMO module', function () {
             // that we wait for the 2nd, so we clear all the already sent
             // stanzas.
             _converse.api.connection.get().IQ_stanzas = [];
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => _converse.state.omemo_store);
             let iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse), 1000);
             expect(iq_stanza).toEqualStanza(
@@ -428,7 +430,7 @@ describe('The OMEMO module', function () {
 
     it(
         'updates device lists based on PEP messages',
-        mock.initConverse([], { 'allow_non_roster_messaging': true }, async function (_converse) {
+        mock.initConverse(converse, [], { 'allow_non_roster_messaging': true }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
 
             await mock.waitUntilDiscoConfirmed(
@@ -468,7 +470,7 @@ describe('The OMEMO module', function () {
                 </items>
             </pubsub>
         </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => _converse.state.omemo_store);
 
             expect(_converse.chatboxes.length).toBe(1);
@@ -486,7 +488,7 @@ describe('The OMEMO module', function () {
                 id="${iq_stanza.getAttribute('id')}"
                 to="${_converse.bare_jid}"
                 type="result"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
 
@@ -496,12 +498,12 @@ describe('The OMEMO module', function () {
                 id="${iq_stanza.getAttribute('id')}"
                 to="${_converse.bare_jid}"
                 type="result"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await _converse.api.waitUntil('OMEMOInitialized');
 
             // A PEP message is received with a device list.
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <message xmlns="jabber:client"
                     from="${contact_jid}"
                     to="${_converse.bare_jid}"
@@ -561,7 +563,7 @@ describe('The OMEMO module', function () {
                         </items>
                     </event>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             expect(_converse.state.devicelists.length).toBe(2);
             await u.waitUntil(() => list.devices.length === 3);
@@ -594,7 +596,7 @@ describe('The OMEMO module', function () {
                         </items>
                     </event>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             expect(_converse.state.devicelists.length).toBe(2);
             devices = _converse.state.devicelists.get(_converse.bare_jid).devices;
@@ -628,7 +630,7 @@ describe('The OMEMO module', function () {
                         </items>
                     </event>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             iq_stanza = await u.waitUntil(() => mock.ownDeviceHasBeenPublished(_converse));
             // Check that our own device is added again, but that removed
@@ -679,7 +681,7 @@ describe('The OMEMO module', function () {
 
     it(
         'updates device bundles based on PEP messages',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
 
             await mock.waitUntilDiscoConfirmed(
@@ -703,7 +705,7 @@ describe('The OMEMO module', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <iq from="${contact_jid}"
                 id="${iq_stanza.getAttribute('id')}"
                 to="${_converse.bare_jid}"
@@ -734,7 +736,7 @@ describe('The OMEMO module', function () {
                     to="${_converse.bare_jid}"
                     type="result"
                     xmlns="jabber:client"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
             stanza = stx`
                 <iq from="${_converse.bare_jid}"
@@ -742,11 +744,11 @@ describe('The OMEMO module', function () {
                     to="${_converse.bare_jid}"
                     type="result"
                     xmlns="jabber:client"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await _converse.api.waitUntil('OMEMOInitialized');
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <message from="${contact_jid}"
                     to="${_converse.bare_jid}"
                     type="headline"
@@ -814,7 +816,7 @@ describe('The OMEMO module', function () {
                         </items>
                     </event>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             expect(_converse.state.devicelists.length).toBe(2);
             expect(list.devices.length).toBe(1);
@@ -830,7 +832,7 @@ describe('The OMEMO module', function () {
             expect(device.get('bundle').prekeys[2].id).toBe(2003);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
                     <message from="${_converse.bare_jid}"
                              to="${_converse.bare_jid}"
                              type="headline"
@@ -873,7 +875,7 @@ describe('The OMEMO module', function () {
 
     it(
         'publishes a bundle with which an encrypted session can be created',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitUntilDiscoConfirmed(
                 _converse,
                 _converse.bare_jid,
@@ -896,7 +898,7 @@ describe('The OMEMO module', function () {
                         xmlns="jabber:server"
                         id="${iq_stanza.getAttribute('id')}"
                         to="${_converse.bare_jid}" type="result"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
             expect(iq_stanza).toEqualStanza(
@@ -937,7 +939,7 @@ describe('The OMEMO module', function () {
                     to="${_converse.bare_jid}"
                     type="result"
                     xmlns="jabber:client"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await _converse.api.waitUntil('OMEMOInitialized');
 
             _converse.NUM_PREKEYS = 100;
@@ -946,7 +948,7 @@ describe('The OMEMO module', function () {
 
     it(
         'adds a toolbar button for starting an encrypted chat session',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitUntilDiscoConfirmed(
                 _converse,
                 _converse.bare_jid,
@@ -984,7 +986,7 @@ describe('The OMEMO module', function () {
                 </items>
             </pubsub>
         </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => _converse.state.omemo_store);
             expect(_converse.state.devicelists.length).toBe(1);
             let devicelist = _converse.state.devicelists.get(_converse.bare_jid);
@@ -1025,7 +1027,7 @@ describe('The OMEMO module', function () {
                          to="${_converse.bare_jid}"
                          type="result"
                          xmlns="jabber:server"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             const iq_el = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
             expect(iq_el.getAttributeNames().sort().join()).toBe(['to', 'from', 'id', 'type', 'xmlns'].sort().join());
@@ -1043,7 +1045,7 @@ describe('The OMEMO module', function () {
                  id="${iq_el.getAttribute('id')}"
                  to="${_converse.bare_jid}"
                  type="result"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await _converse.api.waitUntil('OMEMOInitialized', 1000);
             await mock.openChatBoxFor(_converse, contact_jid);
 
@@ -1059,7 +1061,7 @@ describe('The OMEMO module', function () {
             );
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<iq from="${contact_jid}"
                     id="${iq_stanza.getAttribute('id')}"
                     to="${_converse.bare_jid}"
@@ -1131,7 +1133,7 @@ describe('The OMEMO module', function () {
 
     it(
         'shows OMEMO device fingerprints in the user details modal',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitUntilBlocklistInitialized(_converse);
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.waitUntilDiscoConfirmed(
@@ -1163,7 +1165,7 @@ describe('The OMEMO module', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<iq from="${contact_jid}"
                     id="${iq_stanza.getAttribute('id')}"
                     to="${_converse.bare_jid}"
@@ -1197,7 +1199,7 @@ describe('The OMEMO module', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<iq from="${contact_jid}"
                 id="${iq_stanza.getAttribute('id')}"
                 to="${_converse.bare_jid}"

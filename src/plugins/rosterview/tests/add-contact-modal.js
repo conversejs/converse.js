@@ -1,7 +1,7 @@
-/*global mock, converse */
-const u = converse.env.utils;
-const Strophe = converse.env.Strophe;
-const sizzle = converse.env.sizzle;
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
+const { u, Strophe, sizzle } = converse.env;
 
 describe("The 'Add Contact' widget", function () {
     beforeEach(() => {
@@ -11,7 +11,7 @@ describe("The 'Add Contact' widget", function () {
 
     it(
         'opens up an add modal when you click on it',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             // Mock fetch to return empty providers (so test focuses on roster domains)
             spyOn(window, 'fetch').and.callFake((url) => {
                 if (url.includes('providers')) {
@@ -67,7 +67,7 @@ describe("The 'Add Contact' widget", function () {
 
     it(
         'integrates with xhr_user_search_url to search for contacts',
-        mock.initConverse([], { xhr_user_search_url: 'http://example.org/?' }, async function (_converse) {
+        mock.initConverse(converse, [], { xhr_user_search_url: 'http://example.org/?' }, async function (_converse) {
             await mock.waitForRoster(_converse, 'all', 0);
 
             spyOn(window, 'fetch').and.callFake(() => {
@@ -114,7 +114,7 @@ describe("The 'Add Contact' widget", function () {
 
     it(
         'shows XMPP provider suggestions when typing a JID',
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             {
                 autocomplete_providers_url: 'https://data.xmpp.net/providers/v2/providers-Ds.json',
@@ -170,7 +170,7 @@ describe("The 'Add Contact' widget", function () {
 
     it(
         'falls back to roster domains when providers API is unavailable',
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             {
                 autocomplete_providers_url: 'https://data.xmpp.net/providers/v2/providers-Ds.json',
@@ -212,7 +212,7 @@ describe("The 'Add Contact' widget", function () {
 
     it(
         'allows disabling provider autocomplete by setting autocomplete_providers_url to empty',
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             {
                 autocomplete_providers_url: '',
@@ -256,7 +256,7 @@ describe("The 'Add Contact' widget", function () {
 
     it(
         'appends locked_domain when adding a contact with just a username',
-        mock.initConverse([], { locked_domain: 'montague.lit' }, async function (_converse) {
+        mock.initConverse(converse, [], { locked_domain: 'montague.lit' }, async function (_converse) {
             await mock.waitForRoster(_converse, 'all');
             await mock.openControlBox(_converse);
 
@@ -288,7 +288,7 @@ describe("The 'Add Contact' widget", function () {
 
     it(
         'appends default_domain when adding a contact with just a username',
-        mock.initConverse([], { default_domain: 'montague.lit' }, async function (_converse) {
+        mock.initConverse(converse, [], { default_domain: 'montague.lit' }, async function (_converse) {
             await mock.waitForRoster(_converse, 'all');
             await mock.openControlBox(_converse);
 

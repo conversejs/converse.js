@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { u } = converse.env;
 
 describe("A ChatBox's Unread Message Count", function () {
     it(
         'is incremented when the message is received and ChatBoxView is scrolled up',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit',
@@ -27,7 +28,7 @@ describe("A ChatBox's Unread Message Count", function () {
 
     it(
         'is not incremented when the message is received and ChatBoxView is scrolled down',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -45,7 +46,7 @@ describe("A ChatBox's Unread Message Count", function () {
 
     it(
         'is incremented when message is received, chatbox is scrolled down and the window is not focused',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current');
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -70,7 +71,7 @@ describe("A ChatBox's Unread Message Count", function () {
 
     it(
         'is incremented when message is received, chatbox is scrolled up and the window is not focused',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -93,7 +94,7 @@ describe("A ChatBox's Unread Message Count", function () {
 
     it(
         'is cleared when the chat was scrolled down and the window become focused',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -121,7 +122,7 @@ describe("A ChatBox's Unread Message Count", function () {
 
     it(
         'is cleared when the chat was hidden in fullscreen mode and then becomes visible',
-        mock.initConverse(['chatBoxesFetched'], { 'view_mode': 'fullscreen' }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'view_mode': 'fullscreen' }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, sender_jid);
@@ -138,7 +139,7 @@ describe("A ChatBox's Unread Message Count", function () {
 
     it(
         'is not cleared when ChatBoxView was scrolled up and the windows become focused',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';

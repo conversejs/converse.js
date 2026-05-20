@@ -1,10 +1,12 @@
-/*global mock, converse */
-const { Strophe, sizzle, u } = converse.env;
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
+const { sizzle, u } = converse.env;
 
 describe('A Chat Message', function () {
     it(
         'can be sent as a correction by using the up arrow',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
@@ -182,7 +184,7 @@ describe('A Chat Message', function () {
 
     it(
         'can be sent as a correction by clicking the pencil icon',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
@@ -324,7 +326,7 @@ describe('A Chat Message', function () {
     describe('when received from someone else', function () {
         it(
             'can be replaced with a correction',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
                 await mock.openControlBox(_converse);

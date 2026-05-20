@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { stx, u } = converse.env;
 
 describe('A Chat Message', function () {
     it(
         'Can be copied using a message action',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
@@ -55,7 +56,7 @@ describe('A Chat Message', function () {
 
     it(
         'Can be quoted using a message action',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);

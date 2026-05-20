@@ -20,16 +20,12 @@ import {
     waitUntilDiscoConfirmed,
 } from '../../headless/tests/mock.js';
 
-const mock = {};
-const converse = window.converse;
-converse.load();
-const { u } = converse.env;
-
 function getContactJID(index) {
-    return mock.cur_names[index].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+    return cur_names[index].replace(/ /g, '.').toLowerCase() + '@montague.lit';
 }
 
-async function checkHeaderToggling(group) {
+async function checkHeaderToggling(_converse, group) {
+    const { u } = _converse.env;
     const toggle = group.querySelector('a.group-toggle');
     expect(u.isVisible(group)).toBeTruthy();
     expect(group.querySelectorAll('ul.collapsed').length).toBe(0);
@@ -55,7 +51,8 @@ function closeAllChatBoxes(_converse) {
     return Promise.all(_converse.chatboxviews.map((view) => view.close()));
 }
 
-function toggleControlBox() {
+function toggleControlBox(_converse) {
+    const { u } = _converse.env;
     const toggle = document.querySelector('.toggle-controlbox');
     if (!u.isVisible(document.querySelector('#controlbox'))) {
         if (!u.isVisible(toggle)) {
@@ -66,21 +63,24 @@ function toggleControlBox() {
 }
 
 async function openControlBox(_converse) {
+    const { u } = _converse.env;
     const model = await _converse.api.controlbox.open();
     await u.waitUntil(() => model.get('connected'));
-    toggleControlBox();
+    toggleControlBox(_converse);
     return model;
 }
 
-function closeControlBox() {
+function closeControlBox(_converse) {
+    const { u } = _converse.env;
     const view = document.querySelector('#controlbox');
-    u.isVisible(view) && view.querySelector('.controlbox-heading__btn.close')?.click();
+    if (u.isVisible(view)) view.querySelector('.controlbox-heading__btn.close')?.click();
 }
 
 async function waitUntilBlocklistInitialized(_converse, blocklist = []) {
     window.sessionStorage.removeItem('converse.blocklist-romeo@montague.lit-fetched');
 
     const { api } = _converse;
+    const { stx, u } = _converse.env;
     await waitUntilDiscoConfirmed(
         _converse,
         _converse.domain,
@@ -92,7 +92,9 @@ async function waitUntilBlocklistInitialized(_converse, blocklist = []) {
     const sent_stanza = await u.waitUntil(() => IQ_stanzas.find((s) => s.querySelector('iq blocklist')));
 
     connection._dataRecv(
-        mock.createRequest(stx`
+        createRequest(
+            _converse,
+            stx`
             <iq xmlns="jabber:client"
                 to="${connection.jid}"
                 type="result"
@@ -100,27 +102,30 @@ async function waitUntilBlocklistInitialized(_converse, blocklist = []) {
             <blocklist xmlns='urn:xmpp:blocking'>
                 ${blocklist.map((jid) => stx`<item jid='${jid}'/>`)}
             </blocklist>
-        </iq>`),
+        </iq>`,
+        ),
     );
 
     return await api.waitUntil('blocklistInitialized');
 }
 
-function openChatBoxes(converse, amount) {
+function openChatBoxes(_converse, amount) {
     for (let i = 0; i < amount; i++) {
         const jid = cur_names[i].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-        converse.roster.get(jid).openChat();
+        _converse.roster.get(jid).openChat();
     }
 }
 
 async function openChatBoxFor(_converse, jid) {
+    const { u } = _converse.env;
     await _converse.api.waitUntil('rosterContactsFetched');
     _converse.roster.get(jid).openChat();
     return u.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
 }
 
 async function openAddMUCModal(_converse) {
-    await mock.openControlBox(_converse);
+    const { u } = _converse.env;
+    await openControlBox(_converse);
     const controlbox = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
     controlbox.querySelector('converse-rooms-list .show-add-muc-modal').click();
     const modal = _converse.api.modal.get('converse-add-muc-modal');
@@ -183,7 +188,8 @@ async function createContacts(_converse, type, length) {
     await Promise.all(promises);
 }
 
-async function sendMessage(view, message) {
+async function sendMessage(_converse, view, message) {
+    const { u } = _converse.env;
     const promise = new Promise((resolve) => view.model.messages.once('rendered', resolve));
     const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
     textarea.value = message;
@@ -217,8 +223,7 @@ window.libsignal = {
             return Promise.resolve(key_and_tag);
         };
     },
-    'SessionBuilder': function (storage, remote_address) {
-        // eslint-disable-line no-unused-vars
+    'SessionBuilder': function (_storage, _remote_address) {
         this.processPreKey = function () {
             return Promise.resolve();
         };
@@ -242,7 +247,7 @@ window.libsignal = {
                 },
             });
         },
-        'generateSignedPreKey': function (identity_keypair, keyid) {
+        'generateSignedPreKey': function (_identity_keypair, keyid) {
             return Promise.resolve({
                 'signature': new TextEncoder('utf-8').encode('11112222333344445555'),
                 'keyId': keyid,
@@ -292,6 +297,8 @@ const event = {
 };
 
 async function deviceListFetched(_converse, jid, device_ids) {
+    const { stx, u } = _converse.env;
+
     const selector = `iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`;
     const iq_stanza = await u.waitUntil(() =>
         Array.from(_converse.api.connection.get().IQ_stanzas)
@@ -315,7 +322,7 @@ async function deviceListFetched(_converse, jid, device_ids) {
                 </items>
             </pubsub>
         </iq>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(createRequest(_converse, stanza));
     }
     return iq_stanza;
 }
@@ -349,6 +356,7 @@ async function bundleFetched(
     _converse,
     { jid, device_id, identity_key, signed_prekey_id, signed_prekey_public, signed_prekey_sig, prekeys },
 ) {
+    const { stx, u } = _converse.env;
     const iq_stanza = await u.waitUntil(() => bundleIQRequestSent(_converse, jid, device_id));
     const stanza = stx`<iq from="${jid}"
             id="${iq_stanza.getAttribute('id')}"
@@ -359,7 +367,9 @@ async function bundleFetched(
             <items node="eu.siacs.conversations.axolotl.bundles:${device_id}">
                 <item>
                     <bundle xmlns="eu.siacs.conversations.axolotl">
-                        <signedPreKeyPublic signedPreKeyId="${signed_prekey_id}">${btoa(signed_prekey_public)}</signedPreKeyPublic>
+                        <signedPreKeyPublic signedPreKeyId="${signed_prekey_id}">
+                            ${btoa(signed_prekey_public)}
+                        </signedPreKeyPublic>
                         <signedPreKeySignature>${btoa(signed_prekey_sig)}</signedPreKeySignature>
                         <identityKey>${btoa(identity_key)}</identityKey>
                         <prekeys>
@@ -370,7 +380,7 @@ async function bundleFetched(
             </items>
         </pubsub>
     </iq>`;
-    _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+    _converse.api.connection.get()._dataRecv(createRequest(_converse, stanza));
 }
 
 async function initializedOMEMO(
@@ -378,6 +388,7 @@ async function initializedOMEMO(
     identities = [{ 'category': 'pubsub', 'type': 'pep' }],
     features = ['http://jabber.org/protocol/pubsub#publish-options'],
 ) {
+    const { stx, u } = _converse.env;
     await waitUntilDiscoConfirmed(_converse, _converse.bare_jid, identities, features);
     await deviceListFetched(_converse, _converse.bare_jid, ['482886413b977930064a5888b92134fe']);
     let iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse));
@@ -387,7 +398,7 @@ async function initializedOMEMO(
                           to="${_converse.bare_jid}"
                           type="result"
                           xmlns="jabber:client"/>`;
-    _converse.api.connection.get()._dataRecv(createRequest(stanza));
+    _converse.api.connection.get()._dataRecv(createRequest(_converse, stanza));
 
     iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse));
 
@@ -396,11 +407,11 @@ async function initializedOMEMO(
                           to="${_converse.bare_jid}"
                           type="result"
                           xmlns="jabber:client"/>`;
-    _converse.api.connection.get()._dataRecv(createRequest(stanza));
+    _converse.api.connection.get()._dataRecv(createRequest(_converse, stanza));
     await _converse.api.waitUntil('OMEMOInitialized');
 }
 
-Object.assign(mock, {
+export default {
     bundleFetched,
     bundleHasBeenPublished,
     bundleIQRequestSent,
@@ -445,6 +456,4 @@ Object.assign(mock, {
     waitUntilBlocklistInitialized,
     waitUntilBookmarksReturned,
     waitUntilDiscoConfirmed,
-});
-
-window.mock = mock;
+};

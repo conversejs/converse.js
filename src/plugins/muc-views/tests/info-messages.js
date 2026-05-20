@@ -1,10 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { u, stx } = converse.env;
 
 describe('an info message', function () {
     it(
         'is not rendered as a followup message',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const nick = 'romeo';
             await mock.openAndEnterMUC(_converse, muc_jid, nick);
@@ -17,7 +19,7 @@ describe('an info message', function () {
                     <status code="110"/>
                 </x>
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
 
             presence = stx`
@@ -28,7 +30,7 @@ describe('an info message', function () {
                     <status code="110"/>
                 </x>
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 2);
 
             const messages = view.querySelectorAll('.chat-info');
@@ -39,7 +41,7 @@ describe('an info message', function () {
 
     it(
         'is not shown if its a duplicate',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
@@ -51,10 +53,10 @@ describe('an info message', function () {
                     <status code="110"/>
                 </x>
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
             const promise = u.getOpenPromise();
             setTimeout(() => {

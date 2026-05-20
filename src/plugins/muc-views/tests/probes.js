@@ -1,19 +1,20 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
-const { Strophe, stx, u } = converse.env;
+const { stx, u } = converse.env;
 
 describe('Groupchats', function () {
     describe('when muc_send_probes is true', function () {
         it(
             'sends presence probes when muc_send_probes is true',
-            mock.initConverse([], { 'muc_send_probes': true }, async function (_converse) {
+            mock.initConverse(converse, [], { 'muc_send_probes': true }, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 
                 let stanza = stx`<message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="${muc_jid}/ralphm">
                     <body>This message will trigger a presence probe</body>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 const view = _converse.chatboxviews.get(muc_jid);
 
                 await u.waitUntil(() => view.model.messages.length);
@@ -40,7 +41,7 @@ describe('Groupchats', function () {
                         <item affiliation="member" jid="ralph@example.org/Conversations.ZvLu" role="participant"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
                 await u.waitUntil(() => occupant.get('affiliation') === 'member');
                 expect(occupant.get('role')).toBe('participant');
@@ -49,7 +50,7 @@ describe('Groupchats', function () {
                 stanza = stx`<message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="${muc_jid}/gonePhising">
                     <body>This message from an unavailable user will trigger a presence probe</body>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 await u.waitUntil(() => view.model.messages.length === 2);
                 occupant = view.model.messages.at(1)?.occupant;
@@ -74,7 +75,7 @@ describe('Groupchats', function () {
                         <item affiliation="member" jid="gonePhishing@example.org/d34dBEEF" role="participant"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
                 expect(view.model.occupants.length).toBe(3);
                 await u.waitUntil(() => occupant.get('affiliation') === 'member');

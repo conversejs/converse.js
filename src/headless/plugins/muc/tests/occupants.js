@@ -1,12 +1,12 @@
-/*global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
 const { Strophe, u, stx } = converse.env;
 
 describe('A MUC occupant', function () {
     it(
         "does not stores the XEP-0421 occupant id if the feature isn't advertised",
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilBookmarksReturned(_converse);
 
             const muc_jid = 'lounge@montague.lit';
@@ -26,7 +26,7 @@ describe('A MUC occupant', function () {
             <occupant-id xmlns="urn:xmpp:occupant-id:0" id="${id}" />
             </presence>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             const occupant = await u.waitUntil(() => model.getOccupantByNickname(name));
             expect(occupant.get('occupant_id')).toBe(undefined);
         }),
@@ -34,7 +34,7 @@ describe('A MUC occupant', function () {
 
     it(
         'stores the XEP-0421 occupant id received from a presence stanza',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilBookmarksReturned(_converse);
 
             const muc_jid = 'lounge@montague.lit';
@@ -59,7 +59,7 @@ describe('A MUC occupant', function () {
                 <x xmlns="http://jabber.org/protocol/muc#user" />
                 <occupant-id xmlns="urn:xmpp:occupant-id:0" id="${id}" />
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
                 const occupant = await u.waitUntil(() => model.getOccupantByNickname(name));
                 expect(occupant.get('occupant_id')).toBe(id);
             }
@@ -69,7 +69,7 @@ describe('A MUC occupant', function () {
 
     it(
         'stores our own XEP-0421 occupant id received from a presence stanza when joining a new MUC',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilBookmarksReturned(_converse);
 
             const { api } = _converse;
@@ -94,7 +94,7 @@ describe('A MUC occupant', function () {
 
     it(
         'will be added to a MUC message based on the XEP-0421 occupant id',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const nick = 'romeo';
             const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
@@ -116,7 +116,7 @@ describe('A MUC occupant', function () {
             <body>Harpier cries: 'tis time, 'tis time.</body>
             <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             await u.waitUntil(() => model.messages.length);
             let message = model.messages.at(0);
@@ -142,7 +142,7 @@ describe('A MUC occupant', function () {
             </x>
             <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
             occupant = await u.waitUntil(() => model.getOccupantByNickname('thirdwitch'));
             expect(occupant.get('occupant_id')).toBe('dd72603deec90a38ba552f7c68cbcc61bca202cd');

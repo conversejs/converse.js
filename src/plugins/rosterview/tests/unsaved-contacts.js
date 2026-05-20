@@ -1,9 +1,12 @@
-const { stx, u, sizzle } = converse.env;
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
+const { stx, u, sizzle, Strophe } = converse.env;
 
 describe('An unsaved Contact', function () {
     it(
         'is shown upon receiving a message',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitUntilBlocklistInitialized(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
@@ -32,7 +35,7 @@ describe('An unsaved Contact', function () {
 
     it(
         'is shown upon receiving a message to a previously removed contact',
-        mock.initConverse([], { lazy_load_vcards: false }, async function (_converse) {
+        mock.initConverse(converse, [], { lazy_load_vcards: false }, async function (_converse) {
             const { api } = _converse;
             await mock.waitUntilBlocklistInitialized(_converse);
             await mock.waitForRoster(_converse, 'current', 1);
@@ -76,7 +79,7 @@ describe('An unsaved Contact', function () {
 
     it(
         'is removed again when the chat is closed',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitUntilBlocklistInitialized(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
@@ -111,7 +114,7 @@ describe('An unsaved Contact', function () {
 describe('A chat with an unsaved contact', function () {
     it(
         'shows an unsaved contact alert when chatting with an unsaved contact',
-        mock.initConverse([], { lazy_load_vcards: false }, async function (_converse) {
+        mock.initConverse(converse, [], { lazy_load_vcards: false }, async function (_converse) {
             const { api } = _converse;
             await mock.waitUntilBlocklistInitialized(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
@@ -141,7 +144,7 @@ describe('A chat with an unsaved contact', function () {
 
     it(
         'can add an unsaved contact via the alert',
-        mock.initConverse([], { lazy_load_vcards: false }, async function (_converse) {
+        mock.initConverse(converse, [], { lazy_load_vcards: false }, async function (_converse) {
             const { api } = _converse;
             await mock.waitUntilBlocklistInitialized(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
@@ -191,7 +194,7 @@ describe('A chat with an unsaved contact', function () {
 
     it(
         'can dismiss the unsaved contact alert',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitUntilBlocklistInitialized(_converse);
             await mock.waitForRoster(_converse, 'current', 0);

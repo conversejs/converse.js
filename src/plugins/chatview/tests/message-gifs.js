@@ -1,18 +1,19 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { sizzle, u } = converse.env;
 
 describe('A Chat Message', function () {
     it(
         'will render gifs from their URLs',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             const gif_url = 'https://media.giphy.com/media/Byana3FscAMGQ/giphy.gif';
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
-            await mock.sendMessage(view, gif_url);
+            await mock.sendMessage(_converse, view, gif_url);
             await u.waitUntil(() => view.querySelectorAll('.chat-content canvas').length);
             expect(view.model.sendMessage).toHaveBeenCalled();
             const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();

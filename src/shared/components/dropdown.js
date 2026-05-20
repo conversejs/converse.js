@@ -1,15 +1,15 @@
 /**
  * @typedef {module:dom-navigator.DOMNavigatorOptions} DOMNavigatorOptions
  */
-import { html } from "lit";
-import { until } from "lit/directives/until.js";
-import { api, constants, u } from "@converse/headless";
-import { DOMNavigator } from "shared/dom-navigator";
-import DropdownBase from "shared/components/dropdownbase.js";
-import "shared/components/icons.js";
-import { __ } from "i18n";
+import { html } from 'lit';
+import { until } from 'lit/directives/until.js';
+import { api, constants, u } from '@converse/headless';
+import { DOMNavigator } from '../dom-navigator/index.js';
+import DropdownBase from 'shared/components/dropdownbase.js';
+import 'shared/components/icons.js';
+import { __ } from 'i18n';
 
-import "./styles/dropdown.scss";
+import './styles/dropdown.scss';
 
 const { KEYCODES } = constants;
 
@@ -23,7 +23,7 @@ export default class Dropdown extends DropdownBase {
 
     constructor() {
         super();
-        this.icon_classes = "fa fa-bars";
+        this.icon_classes = 'fa fa-bars';
         this.items = [];
         this.id = u.getUniqueId();
     }
@@ -36,11 +36,11 @@ export default class Dropdown extends DropdownBase {
                     data-bs-toggle="dropdown"
                     aria-haspopup="true"
                     aria-expanded="false"
-                    aria-label=${__("Menu")}>
+                    aria-label=${__('Menu')}>
                 <converse-icon aria-hidden="true" size="1em" class="${this.icon_classes}">
             </button>
             <ul class="dropdown-menu" aria-labelledby="${this.id}">
-                ${this.items.map((b) => html`<li>${until(b, "")}</li>`)}
+                ${this.items.map((b) => html`<li>${until(b, '')}</li>`)}
             </ul>
         `;
     }
@@ -56,15 +56,15 @@ export default class Dropdown extends DropdownBase {
     }
 
     disconnectedCallback() {
-        this.removeEventListener("keydown", this.onKeyDown);
+        this.removeEventListener('keydown', this.onKeyDown);
         this.disableArrowNavigation();
         super.disconnectedCallback();
     }
 
     registerEvents() {
         this.onKeyDown = (ev) => this.#onKeyDown(ev);
-        this.addEventListener("hide.bs.dropdown", () => this.onDropdownHide());
-        this.addEventListener("keydown", this.onKeyDown);
+        this.addEventListener('hide.bs.dropdown', () => this.onDropdownHide());
+        this.addEventListener('keydown', this.onKeyDown);
     }
 
     onDropdownHide() {
@@ -74,7 +74,7 @@ export default class Dropdown extends DropdownBase {
     initArrowNavigation() {
         if (!this.navigator) {
             const options = /** @type DOMNavigatorOptions */ ({
-                selector: ".dropdown-menu li",
+                selector: '.dropdown-menu li',
                 onSelected: (el) => el.focus(),
             });
             this.navigator = new DOMNavigator(/** @type HTMLElement */ (this.menu), options);
@@ -122,4 +122,4 @@ export default class Dropdown extends DropdownBase {
     }
 }
 
-api.elements.define("converse-dropdown", Dropdown);
+api.elements.define('converse-dropdown', Dropdown);

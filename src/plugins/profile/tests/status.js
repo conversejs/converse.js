@@ -1,13 +1,13 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
-const u = converse.env.utils;
-const Strophe = converse.env.Strophe;
+const {u, Strophe} = converse.env;
 
 describe('The Controlbox', function () {
     describe('The Status Widget', function () {
         it(
             "shows the user's chat status, which is online by default",
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 mock.openControlBox(_converse);
                 const view = await u.waitUntil(() => document.querySelector('converse-user-profile'));
                 expect(u.hasClass('online', view.querySelector('.xmpp-status span:first-child'))).toBe(true);
@@ -17,7 +17,7 @@ describe('The Controlbox', function () {
 
         it(
             "can be used to set the current user's chat status",
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.openControlBox(_converse);
                 const cbview = _converse.chatboxviews.get('controlbox');
                 cbview.querySelector('.change-status').click();
@@ -46,7 +46,7 @@ describe('The Controlbox', function () {
 
         it(
             'can be used to set a custom status message',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.openControlBox(_converse);
                 const cbview = _converse.chatboxviews.get('controlbox');
                 cbview.querySelector('.change-status').click();

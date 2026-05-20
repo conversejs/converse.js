@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { Strophe, u, stx } = converse.env;
 
 describe('A Groupchat Message', function () {
     it(
         'Can be copied using a message action',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 
@@ -18,7 +19,7 @@ describe('A Groupchat Message', function () {
                     <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
                 </x>
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
@@ -60,7 +61,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'Can be quoted using a message action',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const stanza = stx`
@@ -72,7 +73,7 @@ describe('A Groupchat Message', function () {
                     <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
                 </x>
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             const firstMessageText = 'But soft, what light through yonder airlock breaks?';
             const msg_id = u.getUniqueId();
@@ -107,7 +108,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'Cannot be quoted without permission to speak',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', ['muc_moderated']);
             const stanza = stx`
@@ -119,7 +120,7 @@ describe('A Groupchat Message', function () {
                     <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
                 </x>
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             const view = _converse.chatboxviews.get(muc_jid);
 
@@ -146,7 +147,7 @@ describe('A Groupchat Message', function () {
                 </x>
                 <status code="110"/>
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             const occupant = view.model.occupants.findWhere({ 'jid': _converse.bare_jid });
             await u.waitUntil(() => occupant.get('role') === 'visitor');
             expect(view.querySelector('.chat-msg__action-quote')).toBeNull();

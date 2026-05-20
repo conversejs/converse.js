@@ -1,12 +1,12 @@
-/*global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
 const { Strophe, u, stx } = converse.env;
 
 describe('A MUC message', function () {
     it(
         "saves the user's real JID as looked up via the XEP-0421 occupant id",
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilBookmarksReturned(_converse);
             const muc_jid = 'lounge@montague.lit';
             const nick = 'romeo';
@@ -23,7 +23,7 @@ describe('A MUC message', function () {
                 </x>
                 <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
             </presence>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
             const occupant = await u.waitUntil(() => model.getOccupantByNickname('thirdwitch'));
             expect(occupant.get('occupant_id')).toBe('dd72603deec90a38ba552f7c68cbcc61bca202cd');
@@ -37,7 +37,7 @@ describe('A MUC message', function () {
                 <body>Harpier cries: 'tis time, 'tis time.</body>
                 <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             await u.waitUntil(() => model.messages.length);
             expect(model.messages.at(0).get('occupant_id')).toBe('dd72603deec90a38ba552f7c68cbcc61bca202cd');
@@ -47,7 +47,7 @@ describe('A MUC message', function () {
 
     it(
         'keeps track whether you are the sender or not',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const msg = stx`
@@ -66,7 +66,7 @@ describe('A MUC message', function () {
 
     it(
         'gets updated with its stanza-id upon MUC reflection',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'room@muc.example.com';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 
@@ -89,7 +89,7 @@ describe('A MUC message', function () {
                 <origin-id xmlns="urn:xmpp:sid:0" id="${msg.get('origin_id')}"/>
             </message>`);
             spyOn(model, 'updateMessage').and.callThrough();
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => model.updateMessage.calls.count() === 1);
             expect(model.messages.length).toBe(1);
             expect(model.messages.at(0).get('stanza_id room@muc.example.com')).toBe(
@@ -101,7 +101,7 @@ describe('A MUC message', function () {
 
     it(
         "is rejected if it's an unencapsulated forwarded message",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const impersonated_jid = `${muc_jid}/alice`;
@@ -123,7 +123,7 @@ describe('A MUC message', function () {
                 </forwarded>
             </message>`;
             spyOn(converse.env.log, 'error').and.callThrough();
-            _converse.api.connection.get()._dataRecv(mock.createRequest(received_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, received_stanza));
             await u.waitUntil(() => converse.env.log.error.calls.count() === 1);
             expect(converse.env.log.error.calls.argsFor(0)[0]?.message).toBe(
                 `Ignoring unencapsulated forwarded message from ${muc_jid}/mallory`,
@@ -135,7 +135,7 @@ describe('A MUC message', function () {
 
     it(
         'parses the correct body element',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const received_stanza = stx`
@@ -158,7 +158,7 @@ describe('A MUC message', function () {
 
     it(
         'does not overwrite its stanza-id when a follow-up message (e.g. reaction) arrives',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'room@muc.example.com';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
 

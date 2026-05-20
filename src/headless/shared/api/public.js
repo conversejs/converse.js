@@ -3,18 +3,18 @@
  */
 import { sprintf } from 'sprintf-js';
 import dayjs from 'dayjs';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
+import advancedFormat from 'dayjs/plugin/advancedFormat.js';
+import localizedFormat from 'dayjs/plugin/localizedFormat.js';
 import sizzle from 'sizzle';
 import { Stanza, Strophe, $build, $iq, $msg, $pres, stx } from 'strophe.js';
-import { Collection, Model } from "@converse/skeletor";
+import { Collection, Model } from '@converse/skeletor';
 import { filesize } from 'filesize';
 import { css, html, render, nothing } from 'lit';
 
 import api from './index.js';
 import _converse from '../_converse.js';
-import i18n from '../i18n';
-import log from "@converse/log";
+import i18n from '../i18n.js';
+import log from '@converse/log';
 import ConnectionFeedback from './../connection/feedback.js';
 import u, { setLogLevelFromRoute } from '../../utils/index.js';
 import { ANONYMOUS, CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';
@@ -59,7 +59,7 @@ const env = /** @type {import('./types').ConverseEnv} */ {
     stx,
     u,
     utils: u,
-}
+};
 
 /**
  * @typedef {Window & {converse: ConversePrivateGlobal} } window
@@ -76,8 +76,7 @@ const env = /** @type {import('./types').ConverseEnv} */ {
  * @global
  * @namespace converse
  */
-const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).converse || {}, {
-
+const converse = Object.assign(/** @type {ConversePrivateGlobal} */ (window).converse || {}, {
     CHAT_STATES,
 
     keycodes: KEYCODES,
@@ -102,19 +101,21 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).conv
      *     roster_groups: true
      * });
      */
-    async initialize (settings) {
+    async initialize(settings) {
         const { api } = _converse;
         await cleanup(_converse);
 
         initAppSettings(settings);
         _converse.strict_plugin_dependencies = settings.strict_plugin_dependencies; // Needed by pluggable.js
-        log.setLogLevel(api.settings.get("loglevel"));
+        log.setLogLevel(api.settings.get('loglevel'));
 
-        if (api.settings.get("authentication") === ANONYMOUS) {
-            if (api.settings.get("auto_login") && !api.settings.get('jid')) {
-                throw new Error("Config Error: you need to provide the server's " +
-                      "domain via the 'jid' option when using anonymous " +
-                      "authentication with auto_login.");
+        if (api.settings.get('authentication') === ANONYMOUS) {
+            if (api.settings.get('auto_login') && !api.settings.get('jid')) {
+                throw new Error(
+                    "Config Error: you need to provide the server's " +
+                        "domain via the 'jid' option when using anonymous " +
+                        'authentication with auto_login.',
+                );
             }
         }
 
@@ -138,8 +139,8 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).conv
 
         registerGlobalEventHandlers(_converse);
 
-        const plugins = _converse.pluggable.plugins
-        if (api.settings.get("auto_login") || api.settings.get("keepalive") && plugins['converse-bosh']?.enabled()) {
+        const plugins = _converse.pluggable.plugins;
+        if (api.settings.get('auto_login') || (api.settings.get('keepalive') && plugins['converse-bosh']?.enabled())) {
             await api.user.login(null, null, true);
         }
 
@@ -183,17 +184,14 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).conv
          *  }
          *  converse.plugins.add('myplugin', plugin);
          */
-        add (name, plugin) {
+        add(name, plugin) {
             plugin.__name__ = name;
             if (_converse.pluggable.plugins[name] !== undefined) {
-                throw new TypeError(
-                    `Error: plugin with name "${name}" has already been ` + 'registered!'
-                );
+                throw new TypeError(`Error: plugin with name "${name}" has already been ` + 'registered!');
             } else {
                 _converse.pluggable.plugins[name] = plugin;
             }
-        }
-
+        },
     },
     env,
 });

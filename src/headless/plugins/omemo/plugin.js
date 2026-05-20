@@ -22,7 +22,7 @@ import {
 const { u, Strophe } = converse.env;
 
 converse.plugins.add('converse-omemo', {
-    dependencies: ['converse-pubsub', 'converse-profile'],
+    dependencies: ['converse-pubsub'],
 
     /**
      * @param {import('../../shared/_converse.js').ConversePrivateGlobal} _converse
@@ -68,7 +68,7 @@ converse.plugins.add('converse-omemo', {
                     handleMessageSendError(e, chat);
                 }
                 return data;
-            }
+            },
         );
 
         api.listen.on('connected', registerPEPPushHandler);
@@ -90,7 +90,7 @@ converse.plugins.add('converse-omemo', {
              * @param {import('../../shared/chatbox.js').default} chat
              * @param {File} file
              */
-            (chat, file) => (chat.get('omemo_active') ? encryptFile(file) : file)
+            (chat, file) => (chat.get('omemo_active') ? encryptFile(file) : file),
         );
 
         api.listen.on('clearSession', () => {

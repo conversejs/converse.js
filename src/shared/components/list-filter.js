@@ -1,4 +1,4 @@
-import debounce from 'lodash-es/debounce';
+import debounce from 'lodash-es/debounce.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from '@converse/headless';
 

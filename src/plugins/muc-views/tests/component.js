@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const u = converse.env.utils;
 
 describe('The <converse-muc> component', function () {
     it(
         'can be rendered as a standalone component',
-        mock.initConverse([], { 'auto_insert': false }, async function (_converse) {
+        mock.initConverse(converse, [], { 'auto_insert': false }, async function (_converse) {
             const { api } = _converse;
             const muc_jid = 'lounge@montague.lit';
             const nick = 'romeo';
@@ -37,7 +38,7 @@ describe('The <converse-muc> component', function () {
 
     it(
         'will update correctly when the jid property changes',
-        mock.initConverse([], { auto_insert: false }, async function (_converse) {
+        mock.initConverse(converse, [], { auto_insert: false }, async function (_converse) {
             const { api } = _converse;
             const muc_jid = 'lounge@montague.lit';
             const nick = 'romeo';

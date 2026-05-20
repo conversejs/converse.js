@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { Strophe, sizzle, u, stx } = converse.env;
 
@@ -24,7 +25,7 @@ async function submitPasswordResetForm(_converse) {
 describe('The profile modal', function () {
     it(
         'allows you to reset your password',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await submitPasswordResetForm(_converse);
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
@@ -37,7 +38,7 @@ describe('The profile modal', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     u.toStanza(`
                     <iq type='result' id='${query_iq.getAttribute('id')}'>
                         <query xmlns='jabber:iq:register'>
@@ -61,7 +62,7 @@ describe('The profile modal', function () {
 
             _converse.api.connection
                 .get()
-                ._dataRecv(mock.createRequest(u.toStanza(`<iq type='result' id='${set_iq.getAttribute('id')}'></iq>`)));
+                ._dataRecv(mock.createRequest(_converse, u.toStanza(`<iq type='result' id='${set_iq.getAttribute('id')}'></iq>`)));
 
             const alert = await u.waitUntil(() => document.querySelector('converse-alert-modal'));
             await u.waitUntil(() => u.isVisible(alert));
@@ -71,7 +72,7 @@ describe('The profile modal', function () {
 
     it(
         'informs you if you cannot reset your password due to registration not being supported',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const modal = await submitPasswordResetForm(_converse);
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
@@ -85,7 +86,7 @@ describe('The profile modal', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     u.toStanza(`
                 <iq type='result' id="${query_iq.getAttribute('id')}">
                     <error type="cancel"><service-unavailable xmlns="${Strophe.NS.STANZAS}"/></error>
@@ -100,7 +101,7 @@ describe('The profile modal', function () {
 
     it(
         "informs you if you're not allowed to reset your password",
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const modal = await submitPasswordResetForm(_converse);
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
@@ -114,7 +115,7 @@ describe('The profile modal', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     u.toStanza(`
                     <iq type='result' id='${query_iq.getAttribute('id')}'>
                         <query xmlns='jabber:iq:register'>
@@ -137,7 +138,7 @@ describe('The profile modal', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     u.toStanza(`
                 <iq type='result' id="${set_iq.getAttribute('id')}">
                     <error type="modify"><forbidden xmlns="${Strophe.NS.STANZAS}"/></error>

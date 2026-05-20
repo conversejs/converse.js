@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { stx, u } = converse.env;
 
@@ -6,7 +7,7 @@ describe('XSS', function () {
     describe('A Groupchat', function () {
         it(
             'escapes occupant nicknames when rendering them, to avoid JS-injection attacks',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
 
                 const presence = stx`
@@ -19,7 +20,7 @@ describe('XSS', function () {
                     </x>
                 </presence>`;
 
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 if (view.model.get('hidden_occupants')) {
                     // Happens in headless chrome due to smaller viewport size
@@ -34,7 +35,7 @@ describe('XSS', function () {
 
         it(
             'escapes the subject before rendering it, to avoid JS-injection attacks',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.openAndEnterMUC(_converse, 'jdev@conference.jabber.org', 'jc');
                 spyOn(window, 'alert');
                 const subject = '<img src="x" onerror="alert(\'XSS\');"/>';

@@ -4,9 +4,9 @@
  * @license MIT
  * The word "QR Code" is registered trademark of DENSO WAVE INCORPORATED
  */
-import { QRErrorCorrectLevelMap, QRMode, RS_BLOCK_TABLE } from "./constants";
-import QRPolynomial from "./polynomial";
-import { QRUtil, getTypeNumber } from "./utils";
+import { QRErrorCorrectLevelMap, QRMode, RS_BLOCK_TABLE } from './constants.js';
+import QRPolynomial from './polynomial.js';
+import { QRUtil, getTypeNumber } from './utils.js';
 
 export class QRCodeModel {
     /**
@@ -37,7 +37,7 @@ export class QRCodeModel {
      */
     isDark(row, col) {
         if (row < 0 || this.moduleCount <= row || col < 0 || this.moduleCount <= col) {
-            throw new Error(row + "," + col);
+            throw new Error(row + ',' + col);
         }
         return this.modules[row][col];
     }
@@ -249,7 +249,7 @@ export class QRCodeModel {
             totalDataCount += rsBlocks[i].dataCount;
         }
         if (buffer.getLengthInBits() > totalDataCount * 8) {
-            throw new Error("code length overflow. (" + buffer.getLengthInBits() + ">" + totalDataCount * 8 + ")");
+            throw new Error('code length overflow. (' + buffer.getLengthInBits() + '>' + totalDataCount * 8 + ')');
         }
         if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
             buffer.put(0, 4);
@@ -384,7 +384,7 @@ class QRRSBlock {
     static getRSBlocks(typeNumber, errorCorrectLevel) {
         let rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
         if (rsBlock == undefined) {
-            throw new Error("bad rs block @ typeNumber:" + typeNumber + "/errorCorrectLevel:" + errorCorrectLevel);
+            throw new Error('bad rs block @ typeNumber:' + typeNumber + '/errorCorrectLevel:' + errorCorrectLevel);
         }
         let length = rsBlock.length / 3;
         let list = [];
@@ -452,7 +452,7 @@ class QRBitBuffer {
             this.buffer.push(0);
         }
         if (bit) {
-            this.buffer[bufIndex] |= 0x80 >>> this.length % 8;
+            this.buffer[bufIndex] |= 0x80 >>> (this.length % 8);
         }
         this.length++;
     }

@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { u, sizzle, stx } = converse.env;
 
 describe('A Groupchat Message', function () {
     it(
         'supports the /me command',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
             await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));

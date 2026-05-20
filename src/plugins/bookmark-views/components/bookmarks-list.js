@@ -1,4 +1,4 @@
-import debounce from 'lodash-es/debounce';
+import debounce from 'lodash-es/debounce.js';
 import { _converse, api, u, Model } from '@converse/headless';
 import tplBookmarksList from './templates/list.js';
 import tplSpinner from 'templates/spinner.js';

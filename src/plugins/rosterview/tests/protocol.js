@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 // See: https://xmpp.org/rfcs/rfc3921.html
 
@@ -36,7 +37,7 @@ describe('Presence subscriptions', function () {
          */
         it(
             'Subscribe to contact, contact accepts and subscribes back',
-            mock.initConverse([], { show_self_in_roster: false, roster_groups: false }, async function (_converse) {
+            mock.initConverse(converse, [], { show_self_in_roster: false, roster_groups: false }, async function (_converse) {
                 let stanza;
                 await mock.waitForRoster(_converse, 'current', 0);
                 await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
@@ -107,7 +108,7 @@ describe('Presence subscriptions', function () {
                  * success of the roster set:
                  */
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq type="set" xmlns="jabber:client">
                     <query xmlns="jabber:iq:roster">
                         <item jid="contact@example.org" subscription="none" name="Chris Contact">
@@ -119,7 +120,7 @@ describe('Presence subscriptions', function () {
                 );
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(stx`
+                    mock.createRequest(_converse, stx`
                             <iq type="result"
                                 id="${roster_set_stanza.getAttribute('id')}"
                                 xmlns="jabber:client"/>`),
@@ -158,7 +159,7 @@ describe('Presence subscriptions', function () {
                  * attribute in the roster item:
                  */
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq type="set" from="${_converse.bare_jid}" xmlns="jabber:client">
                     <query xmlns="jabber:iq:roster">
                         <item jid="contact@example.org" subscription="none" ask="subscribe" name="Chris Contact">
@@ -192,7 +193,7 @@ describe('Presence subscriptions', function () {
                 _converse.api.connection
                     .get()
                     ._dataRecv(
-                        mock.createRequest(
+                        mock.createRequest(_converse, 
                             (stanza = stx`<presence to="${_converse.bare_jid}" from="contact@example.org" type="subscribed" xmlns="jabber:client"/>`),
                         ),
                     );
@@ -219,9 +220,11 @@ describe('Presence subscriptions', function () {
                 </query>
             </iq>`;
 
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 // Check that the IQ set was acknowledged.
-                expect(sent_stanza).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="result" xmlns="jabber:client"/>`);
+                expect(sent_stanza).toEqualStanza(
+                    stx`<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="result" xmlns="jabber:client"/>`,
+                );
 
                 // The contact should now be visible as an existing contact (but still offline).
                 await u.waitUntil(() => {
@@ -250,7 +253,7 @@ describe('Presence subscriptions', function () {
                     <presence to="${_converse.bare_jid}"
                               from="contact@example.org/resource"
                               xmlns="jabber:client"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 // Now the contact should also be online.
                 expect(contact.presence.getStatus()).toBe('online');
 
@@ -269,7 +272,7 @@ describe('Presence subscriptions', function () {
                               from="contact@example.org/resource"
                               type="subscribe"
                               xmlns="jabber:client"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 expect(_converse.roster.handleIncomingSubscription).toHaveBeenCalled();
 
                 /* The user's client MUST send a presence stanza of type
@@ -289,7 +292,7 @@ describe('Presence subscriptions', function () {
                  * a value of "both".
                  */
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq type="set" xmlns="jabber:client">
                     <query xmlns="jabber:iq:roster">
                         <item jid="contact@example.org" subscription="both" name="contact@example.org"/>
@@ -306,7 +309,7 @@ describe('Presence subscriptions', function () {
 
         it(
             'Alternate Flow: Contact Declines Subscription Request',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const { stx } = converse.env;
                 /* The process by which a user subscribes to a contact, including
                  * the interaction between roster items and subscription states.
@@ -324,7 +327,7 @@ describe('Presence subscriptions', function () {
                                   name="contact@example.org"/>
                         </query>
                     </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 // A pending contact should now exist.
                 contact = _converse.roster.get('contact@example.org');
                 expect(_converse.roster.get('contact@example.org') instanceof _converse.RosterContact).toBeTruthy();
@@ -369,7 +372,7 @@ describe('Presence subscriptions', function () {
                               from="contact@example.org"
                               type="unsubscribed"
                               xmlns="jabber:client"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 /* Upon receiving the presence stanza of type "unsubscribed",
                  * the user SHOULD acknowledge receipt of that subscription
@@ -377,7 +380,9 @@ describe('Presence subscriptions', function () {
                  * sending a presence stanza of type "unsubscribe
                  */
                 expect(contact.ackUnsubscribe).toHaveBeenCalled();
-                expect(sent_stanza).toEqualStanza(stx`<presence to="contact@example.org" type="unsubscribe" xmlns="jabber:client"/>`);
+                expect(sent_stanza).toEqualStanza(
+                    stx`<presence to="contact@example.org" type="unsubscribe" xmlns="jabber:client"/>`,
+                );
 
                 /* _converse.js will then also automatically remove the
                  * contact from the user's roster.
@@ -392,7 +397,7 @@ describe('Presence subscriptions', function () {
 
         it(
             'Unsubscribe to a contact when subscription is mutual',
-            mock.initConverse([], { roster_groups: false }, async function (_converse) {
+            mock.initConverse(converse, [], { roster_groups: false }, async function (_converse) {
                 const { u, sizzle, Strophe, stx } = converse.env;
                 const jid = 'abram@montague.lit';
                 await mock.openControlBox(_converse);
@@ -446,7 +451,7 @@ describe('Presence subscriptions', function () {
                     <iq type="result"
                         id="${sent_iq.getAttribute('id')}"
                         xmlns="jabber:client"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 // Our contact has now been removed
                 await u.waitUntil(() => typeof _converse.roster.get(jid) === 'undefined');
             }),
@@ -454,7 +459,7 @@ describe('Presence subscriptions', function () {
 
         it(
             'Receiving a subscription request',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const { u, sizzle, Strophe, stx } = converse.env;
                 spyOn(_converse.api, 'trigger').and.callThrough();
                 await mock.openControlBox(_converse);
@@ -472,7 +477,7 @@ describe('Presence subscriptions', function () {
                         <nick xmlns="${Strophe.NS.NICK}">Clint Contact</nick>
                     </presence>`;
 
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 const rosterview = document.querySelector('converse-roster');
                 await u.waitUntil(() => {
                     const header = sizzle('a:contains("Contact requests")', rosterview).pop();

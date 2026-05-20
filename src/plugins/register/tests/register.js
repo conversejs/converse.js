@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { stx, Strophe, sizzle, u } = converse.env;
 
@@ -11,10 +12,11 @@ describe('The Registration Form', function () {
     it(
         'is not available unless allow_registration=true',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             { auto_login: false, allow_registration: false },
             async function (_converse) {
-                await mock.toggleControlBox();
+                mock.toggleControlBox(_converse);
                 const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
                 expect(cbview.querySelectorAll('a.register-account').length).toBe(0);
             },
@@ -24,6 +26,7 @@ describe('The Registration Form', function () {
     it(
         'can be opened by clicking on the registration tab',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             { auto_login: false, allow_registration: true },
             async function (_converse) {
@@ -49,6 +52,7 @@ describe('The Registration Form', function () {
     it(
         "allows the user to choose an XMPP provider's domain",
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             { auto_login: false, discover_connection_methods: false, allow_registration: true, xmpp_providers_url: '' },
             async function (_converse) {
@@ -90,6 +94,7 @@ describe('The Registration Form', function () {
     it(
         'shows a provider list when xmpp_providers_url is set',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             { auto_login: false, discover_connection_methods: false, allow_registration: true },
             async function (_converse) {
@@ -123,6 +128,7 @@ describe('The Registration Form', function () {
     it(
         "allows the user to choose an XMPP provider's domain in fullscreen view mode",
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             {
                 auto_login: false,
@@ -157,7 +163,7 @@ describe('The Registration Form', function () {
                     .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
                     .up()
                     .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
-                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                _converse.api.connection.get()._connect_cb(mock.createRequest(_converse, stanza));
 
                 expect(registerview.getRegistrationFields).toHaveBeenCalled();
 
@@ -169,7 +175,7 @@ describe('The Registration Form', function () {
                         <email/>
                     </query>
                 </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 expect(registerview.renderRegistrationForm).toHaveBeenCalled();
 
                 await u.waitUntil(() => registerview.querySelectorAll('input').length === 5);
@@ -182,10 +188,11 @@ describe('The Registration Form', function () {
     it(
         'will render a registration form as received from the XMPP provider',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             { auto_login: false, discover_connection_methods: false, allow_registration: true, xmpp_providers_url: '' },
             async function (_converse) {
-                await mock.toggleControlBox();
+                mock.toggleControlBox(_converse);
                 const cbview = _converse.api.controlbox.get();
                 const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
                 login_form.click();
@@ -212,7 +219,7 @@ describe('The Registration Form', function () {
                     .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
                     .up()
                     .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
-                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                _converse.api.connection.get()._connect_cb(mock.createRequest(_converse, stanza));
 
                 expect(registerview.getRegistrationFields).toHaveBeenCalled();
 
@@ -224,7 +231,7 @@ describe('The Registration Form', function () {
                         <email/>
                     </query>
                 </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 expect(registerview.onRegistrationFields).toHaveBeenCalled();
                 expect(registerview.renderRegistrationForm).toHaveBeenCalled();
 
@@ -238,6 +245,7 @@ describe('The Registration Form', function () {
     it(
         'will set form_type to legacy and submit it as legacy',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             { auto_login: false, discover_connection_methods: false, allow_registration: true, xmpp_providers_url: '' },
             async function (_converse) {
@@ -267,7 +275,7 @@ describe('The Registration Form', function () {
                     .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
                     .up()
                     .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
-                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                _converse.api.connection.get()._connect_cb(mock.createRequest(_converse, stanza));
                 stanza = stx`<iq type="result" id="reg1" xmlns="jabber:client">
                     <query xmlns="jabber:iq:register">
                         <instructions>Please choose a username, password and provide your email address</instructions>
@@ -276,7 +284,7 @@ describe('The Registration Form', function () {
                         <email/>
                     </query>
                 </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 expect(registerview.form_type).toBe('legacy');
 
                 const username_input = await u.waitUntil(() => registerview.querySelector('input[name=username]'));
@@ -301,6 +309,7 @@ describe('The Registration Form', function () {
     it(
         'will set form_type to xform and submit it as xform',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             { auto_login: false, discover_connection_methods: false, allow_registration: true, xmpp_providers_url: '' },
             async function (_converse) {
@@ -328,7 +337,7 @@ describe('The Registration Form', function () {
                     .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
                     .up()
                     .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
-                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                _converse.api.connection.get()._connect_cb(mock.createRequest(_converse, stanza));
 
                 stanza = stx`<iq type="result" id="reg1" xmlns="jabber:client">
                     <query xmlns="jabber:iq:register">
@@ -341,7 +350,7 @@ describe('The Registration Form', function () {
                         </x>
                     </query>
                 </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 expect(registerview.form_type).toBe('xform');
 
                 const username_input = await u.waitUntil(() => registerview.querySelector('input[name=username]'));
@@ -380,6 +389,7 @@ describe('The Registration Form', function () {
     it(
         'renders the account registration form',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             { auto_login: false, discover_connection_methods: false, allow_registration: true, xmpp_providers_url: '' },
             async function (_converse) {
@@ -405,7 +415,7 @@ describe('The Registration Form', function () {
                     .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
                     .up()
                     .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
-                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                _converse.api.connection.get()._connect_cb(mock.createRequest(_converse, stanza));
 
                 stanza = stx`
             <iq xmlns="jabber:client" type="result" from="conversations.im" id="ad1e0d50-5adb-4397-a997-5feab56fe418:sendIQ" xml:lang="en">
@@ -431,7 +441,7 @@ describe('The Registration Form', function () {
                     <instructions>You need a client that supports x:data and CAPTCHA to register</instructions>
                 </query>
             </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 await u.waitUntil(
                     () => registerview.querySelectorAll('#converse-register input[required]').length === 3,
@@ -448,6 +458,7 @@ describe('The Registration Form', function () {
     it(
         'lets you choose a different provider',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             {
                 auto_login: false,
@@ -478,7 +489,7 @@ describe('The Registration Form', function () {
                     .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
                     .up()
                     .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
-                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                _converse.api.connection.get()._connect_cb(mock.createRequest(_converse, stanza));
 
                 stanza = stx`
             <iq xmlns="jabber:client" type="result" from="conversations.im" id="ad1e0d50-5adb-4397-a997-5feab56fe418:sendIQ" xml:lang="en">
@@ -494,7 +505,7 @@ describe('The Registration Form', function () {
                     </x>
                 </query>
             </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 await u.waitUntil(
                     () => registerview.querySelectorAll('#converse-register input[required]').length === 2,
@@ -518,6 +529,7 @@ describe('The Registration Form', function () {
     it(
         'renders errors',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             {
                 auto_login: false,
@@ -548,7 +560,7 @@ describe('The Registration Form', function () {
                     .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
                     .up()
                     .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
-                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                _converse.api.connection.get()._connect_cb(mock.createRequest(_converse, stanza));
 
                 stanza = stx`
             <iq xmlns="jabber:client" type="result" from="conversejs.org" id="ad1e0d50-5adb-4397-a997-5feab56fe418:sendIQ" xml:lang="en">
@@ -574,7 +586,7 @@ describe('The Registration Form', function () {
                     <instructions>You need a client that supports x:data and CAPTCHA to register</instructions>
                 </query>
             </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 spyOn(view, 'submitRegistrationForm').and.callThrough();
 
@@ -595,7 +607,7 @@ describe('The Registration Form', function () {
                     <text xml:lang='en' xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'>Too many CAPTCHA requests</text>
                 </error>
             </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(response_IQ));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response_IQ));
 
                 const alert = await u.waitUntil(() => view.querySelector('.alert'));
                 expect(alert.textContent.trim()).toBe('Registration failed.\nToo many CAPTCHA requests');
@@ -609,6 +621,7 @@ describe('The Registration Form', function () {
     it(
         'properly escapes an ampersand from an input field',
         mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             {
                 auto_login: false,
@@ -618,7 +631,7 @@ describe('The Registration Form', function () {
                 xmpp_providers_url: '',
             },
             async function (_converse) {
-                await mock.toggleControlBox();
+                mock.toggleControlBox(_converse);
                 const cbview = _converse.api.controlbox.get();
                 const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
                 login_form.click();
@@ -640,7 +653,7 @@ describe('The Registration Form', function () {
                     .c('register', { xmlns: 'http://jabber.org/features/iq-register' })
                     .up()
                     .c('mechanisms', { xmlns: 'urn:ietf:params:xml:ns:xmpp-sasl' });
-                _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
+                _converse.api.connection.get()._connect_cb(mock.createRequest(_converse, stanza));
 
                 stanza = stx`<iq type="result" id="reg1" xmlns="jabber:client">
                     <query xmlns="jabber:iq:register">
@@ -652,7 +665,7 @@ describe('The Registration Form', function () {
                         </x>
                     </query>
                 </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 await u.waitUntil(() => registerview.querySelectorAll('input').length === 4);
 
                 const username = registerview.querySelector('input[name="username"]');

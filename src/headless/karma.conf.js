@@ -1,37 +1,44 @@
-/* global module */
-module.exports = function (config) {
+export default function (config) {
     config.set({
-        basePath: '',
+        basePath: '../..',
         frameworks: ['jasmine'],
         files: [
             {
-                pattern: 'dist/emoji.json',
+                pattern: 'logo/conversejs-filled-192.png',
+                watched: false,
+                included: false,
+                served: true,
+                nocache: false,
+            },
+            {
+                pattern: 'src/headless/dist/emoji.json',
                 watched: false,
                 included: false,
                 served: true,
                 type: 'json',
             },
-            { pattern: 'dist/*.js.map', included: false },
-            'dist/converse-headless.js',
-            { pattern: 'tests/*.js', type: 'module' },
-            { pattern: 'plugins/blocklist/tests/*.js', type: 'module' },
-            { pattern: 'plugins/bookmarks/tests/*.js', type: 'module' },
-            { pattern: 'plugins/caps/tests/*.js', type: 'module' },
-            { pattern: 'plugins/chat/tests/*.js', type: 'module' },
-            { pattern: 'plugins/disco/tests/*.js', type: 'module' },
-            { pattern: 'plugins/emoji/tests/*.js', type: 'module' },
-            { pattern: 'plugins/mam/tests/*.js', type: 'module' },
-            { pattern: 'plugins/muc/tests/*.js', type: 'module' },
-            { pattern: 'plugins/ping/tests/*.js', type: 'module' },
-            { pattern: 'plugins/pubsub/tests/*.js', type: 'module' },
-            { pattern: 'plugins/reactions/tests/*.js', type: 'module' },
-            { pattern: 'plugins/roster/tests/*.js', type: 'module' },
-            { pattern: 'plugins/smacks/tests/*.js', type: 'module' },
-            { pattern: 'plugins/status/tests/*.js', type: 'module' },
-            { pattern: 'shared/settings/tests/settings.js', type: 'module' },
+            { pattern: 'src/headless/dist/*.js.map', included: false },
+            { pattern: 'src/headless/dist/converse-headless.esm.js', type: 'module' },
+            { pattern: 'src/headless/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/vcard/tests/update.js', type: 'module' },
+            { pattern: 'src/headless/plugins/blocklist/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/bookmarks/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/caps/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/chat/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/disco/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/emoji/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/mam/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/muc/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/ping/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/pubsub/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/reactions/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/roster/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/smacks/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/status/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/shared/settings/tests/settings.js', type: 'module' },
         ],
         proxies: {
-            '/dist/': '/base/dist/',
+            '/dist/': '/base/src/headless/dist/',
         },
         client: {
             jasmine: {
@@ -48,4 +55,4 @@ module.exports = function (config) {
         singleRun: false,
         concurrency: Infinity,
     });
-};
+}

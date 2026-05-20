@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 import { __ } from 'i18n';
-import { getJIDsAutoCompleteList } from 'plugins/rosterview/utils';
+import { getJIDsAutoCompleteList } from 'plugins/rosterview/utils.js';
 
 /**
  * @param {import('../disco-browser').default} el
@@ -33,18 +33,18 @@ export default (el) => {
                         <li class="breadcrumb-item">
                             <a href="#" @click="${(ev) => el.handleBreadcrumbClick(ev, index)}">${jid}</a>
                         </li>
-                    `
+                    `,
                 )}
             </ol>
         </nav>
 
         ${until(
             disco.then(() => ''),
-            html`<converse-spinner></converse-spinner>`
+            html`<converse-spinner></converse-spinner>`,
         )}
         ${until(
             disco.then(({ error }) => (error ? html`<div class="alert alert-danger" role="alert">${error}</div>` : '')),
-            ''
+            '',
         )}
 
         <div class="container">
@@ -69,12 +69,12 @@ export default (el) => {
                                                         </li>`
                                                       : ''}
                                               </ul>
-                                          </li>`
+                                          </li>`,
                                   )}
                               </ul>`
-                        : ''
+                        : '',
                 ),
-                ''
+                '',
             )}
             ${until(
                 disco.then(({ items }) =>
@@ -85,12 +85,12 @@ export default (el) => {
                                       (i) =>
                                           html`<li class="list-item">
                                               <a @click="${(ev) => el.addEntityJID(ev, i)}">${el.renderItem(i)}</a>
-                                          </li>`
+                                          </li>`,
                                   )}
                               </ul>`
-                        : ''
+                        : '',
                 ),
-                ''
+                '',
             )}
             ${until(
                 disco.then(({ features }) =>
@@ -101,9 +101,9 @@ export default (el) => {
                                   ${features.map((f) => html`<li class="list-item">${f}</li>`)}
                               </ul>
                           `
-                        : ''
+                        : '',
                 ),
-                ''
+                '',
             )}
         </div>`;
 };

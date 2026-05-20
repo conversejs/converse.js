@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { Strophe, sizzle, u, stx } = converse.env;
 
 describe('A MUC', function () {
     it(
         'allows you to change your nickname via a modal',
-        mock.initConverse(
+        mock.initConverse(converse, 
             [],
             { view_mode: 'fullscreen', auto_register_muc_nickname: true },
             async function (_converse) {
@@ -38,7 +39,7 @@ describe('A MUC', function () {
                     stx`<presence from="${_converse.jid}"
                 id="${sent_stanza.getAttribute('id')}"
                 to="${muc_jid}/${newnick}"
-                xmlns="jabber:client"/>`
+                xmlns="jabber:client"/>`,
                 );
 
                 // clear sent stanzas
@@ -47,7 +48,7 @@ describe('A MUC', function () {
 
                 // Two presence stanzas are received from the MUC service
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`
             <presence
                 xmlns="jabber:client"
@@ -63,15 +64,15 @@ describe('A MUC', function () {
                 <status code='303'/>
                 <status code='110'/>
             </x>
-            </presence>`
-                    )
+            </presence>`,
+                    ),
                 );
 
                 await u.waitUntil(() => model.get('nick') === newnick);
 
                 // Check that the new nickname gets registered with the MUC
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`
             <presence
                 xmlns="jabber:client"
@@ -84,8 +85,8 @@ describe('A MUC', function () {
                     role='participant'/>
                 <status code='110'/>
             </x>
-            </presence>`
-                    )
+            </presence>`,
+                    ),
                 );
 
                 await u.waitUntil(() => model.occupants.at(0).get('nick') === newnick);
@@ -93,19 +94,19 @@ describe('A MUC', function () {
 
                 let stanza = await u.waitUntil(() =>
                     IQ_stanzas.find(
-                        (iq) => sizzle(`iq[type="get"] query[xmlns="${Strophe.NS.MUC_REGISTER}"]`, iq).length
-                    )
+                        (iq) => sizzle(`iq[type="get"] query[xmlns="${Strophe.NS.MUC_REGISTER}"]`, iq).length,
+                    ),
                 );
 
                 expect(stanza).toEqualStanza(
                     stx`<iq to="lounge@montague.lit"
                     type="get"
                     xmlns="jabber:client"
-                    id="${stanza.getAttribute('id')}"><query xmlns="jabber:iq:register"/></iq>`
+                    id="${stanza.getAttribute('id')}"><query xmlns="jabber:iq:register"/></iq>`,
                 );
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<iq from="${muc_jid}"
                 id="${stanza.getAttribute('id')}"
                 to="${_converse.session.get('jid')}"
@@ -126,14 +127,14 @@ describe('A MUC', function () {
                 </field>
                 </x>
             </query>
-            </iq>`
-                    )
+            </iq>`,
+                    ),
                 );
 
                 stanza = await u.waitUntil(() =>
                     IQ_stanzas.find(
-                        (iq) => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.MUC_REGISTER}"]`, iq).length
-                    )
+                        (iq) => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.MUC_REGISTER}"]`, iq).length,
+                    ),
                 );
 
                 expect(stanza).toEqualStanza(
@@ -144,15 +145,15 @@ describe('A MUC', function () {
                     <field var="muc#register_roomnick"><value>loverboy</value></field>
                 </x>
                 </query>
-            </iq>`
+            </iq>`,
                 );
-            }
-        )
+            },
+        ),
     );
 
     it(
         'informs users if their nicknames have been changed.',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             /* The service then sends two presence stanzas to the full JID
              * of each occupant (including the occupant who is changing his
              * or her room nickname), one of type "unavailable" for the old
@@ -222,11 +223,11 @@ describe('A MUC', function () {
                 </x>
             </presence>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             await u.waitUntil(() => view.querySelectorAll('.chat-info').length);
 
             expect(sizzle('div.chat-info:last').pop().textContent.trim()).toBe(
-                __(_converse.labels.muc.STATUS_CODE_MESSAGES['303'], 'newnick')
+                __(_converse.labels.muc.STATUS_CODE_MESSAGES['303'], 'newnick'),
             );
             expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
 
@@ -247,23 +248,23 @@ describe('A MUC', function () {
                 </x>
             </presence>`;
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
             expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
             expect(view.querySelectorAll('div.chat-info').length).toBe(1);
             expect(sizzle('div.chat-info', view)[0].textContent.trim()).toBe(
-                __(_converse.labels.muc.STATUS_CODE_MESSAGES['303'], 'newnick')
+                __(_converse.labels.muc.STATUS_CODE_MESSAGES['303'], 'newnick'),
             );
             occupants = view.querySelector('.occupant-list');
             await u.waitUntil(() => sizzle('.occupant-nick:first', occupants).pop().textContent.trim() === 'newnick');
             expect(view.model.occupants.length).toBe(1);
             expect(view.model.get('nick')).toBe('newnick');
-        })
+        }),
     );
 
     describe('when being entered', function () {
         it(
             "will use the user's reserved nickname, if it exists",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
                 const muc_jid = 'lounge@montague.lit';
                 _converse.api.rooms.open(muc_jid);
@@ -271,8 +272,8 @@ describe('A MUC', function () {
 
                 const iq = await u.waitUntil(() =>
                     IQ_stanzas.filter(
-                        (s) => sizzle(`iq[to="${muc_jid}"] query[node="x-roomuser-item"]`, s).length
-                    ).pop()
+                        (s) => sizzle(`iq[to="${muc_jid}"] query[node="x-roomuser-item"]`, s).length,
+                    ).pop(),
                 );
 
                 expect(iq).toEqualStanza(stx`
@@ -290,7 +291,7 @@ describe('A MUC', function () {
                         <identity category="conference" name="thirdwitch" type="text"/>
                     </query>
                 </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 // The user has just entered the groupchat (because join was called)
                 // and receives their own presence from the server.
@@ -310,7 +311,7 @@ describe('A MUC', function () {
                         <status code="210"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
                 // clear sent stanzas
                 while (IQ_stanzas.length) IQ_stanzas.pop();
@@ -324,12 +325,12 @@ describe('A MUC', function () {
                 await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-info').length);
                 const info_text = sizzle('.chat-content .chat-info:first', view).pop().textContent.trim();
                 expect(info_text).toBe('Your nickname has been automatically set to thirdwitch');
-            })
+            }),
         );
 
         it(
             "will use the nickname set in the global settings if the user doesn't have a VCard nickname",
-            mock.initConverse(
+            mock.initConverse(converse, 
                 ['chatBoxesFetched'],
                 {
                     blacklisted_plugins: ['converse-vcard'],
@@ -343,20 +344,20 @@ describe('A MUC', function () {
                     await mock.waitForReservedNick(_converse, muc_jid, '');
                     const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
                     expect(view.model.get('nick')).toBe('Benedict-Cucumberpatch');
-                }
-            )
+                },
+            ),
         );
 
         it(
             'will render a nickname form if a nickname conflict happens and muc_nickname_from_jid=false',
-            mock.initConverse([], { vcard: { nickname: '' } }, async function (_converse) {
+            mock.initConverse(converse, [], { vcard: { nickname: '' } }, async function (_converse) {
                 const { api } = _converse;
                 const muc_jid = 'conflicted@muc.montague.lit';
                 api.rooms.open(muc_jid, { nick: 'romeo' });
                 await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(stx`
+                    mock.createRequest(_converse, stx`
                 <presence
                         from="${muc_jid}/romeo"
                         id="${u.getUniqueId()}"
@@ -367,20 +368,20 @@ describe('A MUC', function () {
                     <error by="${muc_jid}" type="cancel">
                         <conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                     </error>
-                </presence>`)
+                </presence>`),
                 );
 
                 const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
                 const el = await u.waitUntil(() => view.querySelector('.muc-nickname-form .validation-message'));
                 expect(el.textContent.trim()).toBe(
-                    'The nickname you chose is reserved or currently in use, please choose a different one.'
+                    'The nickname you chose is reserved or currently in use, please choose a different one.',
                 );
-            })
+            }),
         );
 
         it(
             'will automatically choose a new nickname if a nickname conflict happens and muc_nickname_from_jid=true',
-            mock.initConverse(['chatBoxesFetched'], { vcard: { nickname: '' } }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { vcard: { nickname: '' } }, async function (_converse) {
                 const { api } = _converse;
                 const muc_jid = 'conflicting@muc.montague.lit';
 
@@ -393,7 +394,7 @@ describe('A MUC', function () {
                 await u.waitUntil(() =>
                     sent_stanzas
                         .filter((s) => s.nodeName === 'presence' && s.getAttribute('to').startsWith(muc_jid))
-                        .pop()
+                        .pop(),
                 );
 
                 const { IQ_stanzas } = api.connection.get();
@@ -414,14 +415,14 @@ describe('A MUC', function () {
                         <conflict xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                     </error>
                 </presence>`;
-                api.connection.get()._dataRecv(mock.createRequest(presence));
+                api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
                 await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
                 let sent_stanza = await u.waitUntil(() =>
                     sent_stanzas
                         .filter((s) => s.nodeName === 'presence' && s.getAttribute('to').startsWith(muc_jid))
-                        .pop()
+                        .pop(),
                 );
                 expect(sent_stanza).toEqualStanza(stx`
                 <presence id="${sent_stanza.getAttribute('id')}"
@@ -448,14 +449,14 @@ describe('A MUC', function () {
                         <conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                     </error>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
                 await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
                 sent_stanza = await u.waitUntil(() =>
                     sent_stanzas
                         .filter((s) => s.nodeName === 'presence' && s.getAttribute('to').startsWith(muc_jid))
-                        .pop()
+                        .pop(),
                 );
                 expect(sent_stanza).toEqualStanza(stx`
                 <presence id="${sent_stanza.getAttribute('id')}"
@@ -482,14 +483,14 @@ describe('A MUC', function () {
                         <conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                     </error>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
                 await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
                 sent_stanza = await u.waitUntil(() =>
                     sent_stanzas
                         .filter((s) => s.nodeName === 'presence' && s.getAttribute('to').startsWith(muc_jid))
-                        .pop()
+                        .pop(),
                 );
                 expect(sent_stanza).toEqualStanza(stx`
                 <presence id="${sent_stanza.getAttribute('id')}"
@@ -500,12 +501,12 @@ describe('A MUC', function () {
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
                         ver="Hbd4V8rlZualGDSkxW/4bVlnudc="/>>
                 </presence>`);
-            })
+            }),
         );
 
         it(
             "will show an error message if the user's nickname doesn't conform to groupchat policy",
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const { api } = _converse;
                 const muc_jid = 'conformist@muc.montague.lit';
                 api.rooms.open(muc_jid, { nick: 'romeo' });
@@ -523,19 +524,19 @@ describe('A MUC', function () {
                         <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                     </error>
                 </presence>`;
-                api.connection.get()._dataRecv(mock.createRequest(presence));
+                api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
                 const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
                 const el = await u.waitUntil(() =>
-                    view.querySelector('.chatroom-body converse-muc-disconnected .disconnect-msg:last-child')
+                    view.querySelector('.chatroom-body converse-muc-disconnected .disconnect-msg:last-child'),
                 );
                 expect(el.textContent.trim()).toBe("Your nickname doesn't conform to this groupchat's policies.");
-            })
+            }),
         );
 
         it(
             "doesn't show the nickname field if locked_muc_nickname is true",
-            mock.initConverse(
+            mock.initConverse(converse, 
                 ['chatBoxesFetched'],
                 {
                     locked_muc_nickname: true,
@@ -561,13 +562,13 @@ describe('A MUC', function () {
                     await u.waitUntil(() => _converse.chatboxes.length > 1);
                     const chatroom = _converse.chatboxes.get(muc_jid);
                     expect(chatroom.get('nick')).toBe('romeo');
-                }
-            )
+                },
+            ),
         );
 
         it(
             'uses the JID node if muc_nickname_from_jid is set to true',
-            mock.initConverse(
+            mock.initConverse(converse, 
                 ['chatBoxesFetched'],
                 {
                     'muc_nickname_from_jid': true,
@@ -585,8 +586,8 @@ describe('A MUC', function () {
                     expect(label_nick.textContent.trim()).toBe('Nickname:');
                     const nick_input = modal.querySelector('input[name="nickname"]');
                     expect(nick_input.value).toBe('romeo');
-                }
-            )
+                },
+            ),
         );
     });
 });

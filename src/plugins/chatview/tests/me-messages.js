@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { stx, u, sizzle } = converse.env;
 
 describe('A Message', function () {
     it(
         'supports the /me command',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
             await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
@@ -31,7 +32,7 @@ describe('A Message', function () {
             expect(view.querySelector('.chat-msg__author').textContent.includes('**Mercutio')).toBeTruthy();
 
             message = '/me is as well';
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             expect(view.querySelectorAll('.chat-msg--action').length).toBe(2);
             await u.waitUntil(
                 () => sizzle('.chat-msg__author:last', view).pop().textContent.trim() === '**Romeo Montague',
@@ -43,14 +44,14 @@ describe('A Message', function () {
             // Check that /me messages after a normal message don't
             // get the 'chat-msg--followup' class.
             message = 'This a normal message';
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__text';
             await u.waitUntil(() => view.querySelector(msg_txt_sel).textContent.trim() === message);
             let el = view.querySelector('converse-chat-message:last-child .chat-msg__body');
             expect(u.hasClass('chat-msg--followup', el)).toBeFalsy();
 
             message = '/me wrote a 3rd person message';
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelector(msg_txt_sel).textContent.trim() === message.replace('/me ', ''));
             el = view.querySelector('converse-chat-message:last-child .chat-msg__body');
             expect(view.querySelectorAll('.chat-msg--action').length).toBe(3);

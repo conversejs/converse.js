@@ -1,12 +1,12 @@
-/* global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('Groupchats', function () {
     it(
         'keeps track of unread messages and mentions',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
             // Open a hidden room
@@ -14,7 +14,7 @@ describe('Groupchats', function () {
             const model = _converse.chatboxes.get(muc_jid);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <message xmlns="jabber:client" type="groupchat" id="1" to="${_converse.jid}" xml:lang="en" from="${muc_jid}/juliet">
                 <body>Romeo oh romeo</body>
             </message>`),
@@ -24,7 +24,7 @@ describe('Groupchats', function () {
             expect(model.get('num_unread')).toBe(1);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <message xmlns="jabber:client" type="groupchat" id="2" to="${_converse.jid}" xml:lang="en" from="${muc_jid}/juliet">
                 <body>Wherefore art though?</body>
             </message>`),
@@ -45,7 +45,7 @@ describe('Groupchats', function () {
     describe('A groupchat', function () {
         it(
             'sends the user status when joining and when it changes',
-            mock.initConverse(['statusInitialized'], {}, async function (_converse) {
+            mock.initConverse(converse, ['statusInitialized'], {}, async function (_converse) {
                 const { profile } = _converse.state;
                 const muc_jid = 'coven@chat.shakespeare.lit';
                 profile.set('show', 'away');
@@ -103,7 +103,7 @@ describe('Groupchats', function () {
 
         it(
             'reconnects when no-acceptable error is returned when sending a message',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const muc_jid = 'coven@chat.shakespeare.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
                 const model = _converse.chatboxes.get(muc_jid);
@@ -119,7 +119,7 @@ describe('Groupchats', function () {
                         <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                     </error>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 let sent_stanzas = _converse.api.connection.get().sent_stanzas;
                 const iq = await u.waitUntil(() =>
@@ -145,7 +145,7 @@ describe('Groupchats', function () {
                 const index = sent_stanzas.length - 1;
 
                 _converse.api.connection.get().IQ_stanzas = [];
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
                 await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
                 const pres = await u.waitUntil(() =>
@@ -164,7 +164,7 @@ describe('Groupchats', function () {
 
         it(
             'ignores connection attempts when already connected',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const { api } = _converse;
                 const muc_jid = 'coven@chat.shakespeare.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
@@ -195,7 +195,7 @@ describe('Groupchats', function () {
                         </forwarded>
                     </result>
                 </message>`;
-                api.connection.get()._dataRecv(mock.createRequest(stanza));
+                api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 await api.waitUntil(() => _converse.exports.onDirectMUCInvitation.calls.count());
                 expect(_converse.exports.onDirectMUCInvitation).toHaveBeenCalledTimes(1);
                 await _converse.exports.onDirectMUCInvitation.calls.all()[0].returnValue;

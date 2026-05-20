@@ -1,10 +1,12 @@
-/* global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('Bookmarks', function () {
     it(
         'can be pushed from the XMPP server',
-        mock.initConverse(['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             const { u } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
@@ -34,7 +36,7 @@ describe('Bookmarks', function () {
                 </items>
             </event>
         </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await mock.waitForMUCDiscoInfo(_converse, 'theplay@conference.shakespeare.lit');
 
             const { bookmarks } = _converse.state;
@@ -62,7 +64,7 @@ describe('Bookmarks', function () {
                 </items>
             </event>
         </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             await u.waitUntil(() => bookmarks.length === 3);
             expect(bookmarks.map((b) => b.get('name'))).toEqual([
@@ -77,7 +79,7 @@ describe('Bookmarks', function () {
 
     it(
         'can be retrieved from the XMPP server',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { Strophe, sizzle, u } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilDiscoConfirmed(
@@ -120,7 +122,7 @@ describe('Bookmarks', function () {
                 </items>
             </pubsub>
         </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => _converse.bookmarks.onBookmarksReceived.calls.count());
             await _converse.api.waitUntil('bookmarksInitialized');
             expect(_converse.bookmarks.models.length).toBe(2);
@@ -133,7 +135,7 @@ describe('Bookmarks', function () {
 describe('The bookmarks list modal', function () {
     it(
         'shows a list of bookmarks',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilDiscoConfirmed(
                 _converse,
@@ -184,7 +186,7 @@ describe('The bookmarks list modal', function () {
                 </items>
             </pubsub>
         </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             const modal = _converse.api.modal.get('converse-bookmark-list-modal');
             await u.waitUntil(() => modal.querySelectorAll('.bookmarks.rooms-list .room-item').length);
@@ -210,7 +212,7 @@ describe('The bookmarks list modal', function () {
 
     it(
         'can be used to open a MUC from a bookmark',
-        mock.initConverse(['chatBoxesFetched'], { 'view_mode': 'fullscreen' }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'view_mode': 'fullscreen' }, async function (_converse) {
             const api = _converse.api;
 
             await mock.waitForRoster(_converse, 'current', 0);
@@ -245,7 +247,7 @@ describe('The bookmarks list modal', function () {
                 </items>
             </pubsub>
         </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             const modal = api.modal.get('converse-bookmark-list-modal');
             await u.waitUntil(() => u.isVisible(modal), 1000);

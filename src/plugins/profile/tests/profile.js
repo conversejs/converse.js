@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const u = converse.env.utils;
 
@@ -6,7 +7,7 @@ describe('The Controlbox', function () {
     describe('The user profile', function () {
         it(
             "shows the user's configured nickname",
-            mock.initConverse(
+            mock.initConverse(converse, 
                 [],
                 { blacklisted_plugins: ['converse-vcard'], nickname: 'nicky' },
                 async function (_converse) {

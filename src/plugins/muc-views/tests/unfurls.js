@@ -1,10 +1,12 @@
-/*global mock, converse */
-const { Strophe, u, stx, sizzle } = converse.env;
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
+const { u, stx } = converse.env;
 
 describe('A Groupchat Message', function () {
     it(
         'will render an unfurl based on OGP data',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, nick);
@@ -21,7 +23,7 @@ describe('A Groupchat Message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_stanza));
             const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
             expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
@@ -43,7 +45,7 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:height" content="720" />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
             const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
             expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe(unfurl_image_src);
@@ -53,7 +55,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'will fix GitHub URLs which are relative',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, nick);
@@ -70,7 +72,7 @@ describe('A Groupchat Message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_stanza));
             const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
             expect(el.textContent).toBe(unfurl_url);
 
@@ -83,7 +85,7 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image" content="https://opengraph.githubassets.com/992a5f409ed015bcb824abb748e04f8feb7bbb92eef7e3da48e08d1e2cf7b053/conversejs/converse.js/commit/b7b14601773e63ede3f93c47550fdc317553a04a" />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
             const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
             expect(unfurl.querySelector('.card-img-top').getAttribute('href')).toBe(unfurl_url);
@@ -92,7 +94,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'will render an unfurl with limited OGP data',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             /* Some sites don't include ogp data such as title, description and
              * url. This test is to check that we fall back gracefully */
             const nick = 'romeo';
@@ -108,7 +110,7 @@ describe('A Groupchat Message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_stanza));
             const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
             expect(el.textContent).toBe('https://mempool.space');
 
@@ -121,7 +123,7 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:height" content="500" />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
             const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
             expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe(
@@ -133,7 +135,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'will render an unfurl containing a GIF',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, nick);
@@ -149,7 +151,7 @@ describe('A Groupchat Message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_stanza));
             const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
             expect(el.textContent).toBe(unfurl_url);
 
@@ -165,7 +167,7 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:height" content="302" />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
             const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
             expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe(gif_url);
@@ -174,7 +176,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'will render multiple unfurls based on OGP data',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, nick);
@@ -188,7 +190,7 @@ describe('A Groupchat Message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_stanza));
             const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
             expect(el.textContent).toBe(
                 'Check out https://www.youtube.com/watch?v=dQw4w9WgXcQ and https://duckduckgo.com',
@@ -212,7 +214,7 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:height" content="720" />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
             await u.waitUntil(() => view.querySelectorAll('converse-message-unfurl').length === 1);
 
             metadata_stanza = stx`
@@ -225,7 +227,7 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="The Internet privacy company that empowers you to seamlessly take control of your personal information online, without any tradeoffs." />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
             await u.waitUntil(() => view.querySelectorAll('converse-message-unfurl').length === 2);
         }),
@@ -233,7 +235,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'will not render an unfurl received from a MUC participant',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, nick);
@@ -247,7 +249,7 @@ describe('A Groupchat Message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_stanza));
             const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
             expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
@@ -263,7 +265,7 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
             await u.waitUntil(() => view.model.handleMetadataFastening.calls.count());
             expect(view.model.handleMetadataFastening.calls.first().returnValue).toBe(false);
@@ -273,7 +275,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'will not render an unfurl based on OGP data if render_media is false',
-        mock.initConverse(['chatBoxesFetched'], { render_media: false }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { render_media: false }, async function (_converse) {
             const { api } = _converse;
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
@@ -288,7 +290,7 @@ describe('A Groupchat Message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_stanza));
             const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
             expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
@@ -304,7 +306,7 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
             expect(view.querySelector('converse-message-unfurl')).toBe(null);
 
@@ -325,7 +327,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'will only render a single unfurl when receiving the same OGP data multiple times',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, nick);
@@ -339,7 +341,7 @@ describe('A Groupchat Message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_stanza));
             const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
             expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
@@ -355,9 +357,9 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
             await u.waitUntil(() => view.model.handleMetadataFastening.calls.count());
             const unfurls = await u.waitUntil(() => view.querySelectorAll('converse-message-unfurl'));
@@ -367,7 +369,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'will not render an unfurl image if the domain is not in allowed_image_domains',
-        mock.initConverse(['chatBoxesFetched'], { 'allowed_image_domains': [] }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'allowed_image_domains': [] }, async function (_converse) {
             const { api } = _converse;
 
             const nick = 'romeo';
@@ -383,7 +385,7 @@ describe('A Groupchat Message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_stanza));
             const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
             expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
@@ -397,7 +399,7 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
             await u.waitUntil(() => !view.querySelector('converse-message-unfurl'));
 
@@ -408,7 +410,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'lets the user hide an unfurl',
-        mock.initConverse(['chatBoxesFetched'], { 'render_media': true }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'render_media': true }, async function (_converse) {
             const { api } = _converse;
 
             const nick = 'romeo';
@@ -424,7 +426,7 @@ describe('A Groupchat Message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_stanza));
             const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
             expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
@@ -438,7 +440,7 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:type" content="video.other" />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
             await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
             let button = await u.waitUntil(() =>
@@ -463,7 +465,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'will not render an unfurl when the message has been retracted',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, nick);
@@ -482,7 +484,7 @@ describe('A Groupchat Message', function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message_stanza));
 
             const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
             expect(el.textContent).toBe(unfurl_url);
@@ -498,7 +500,7 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley's official music video" />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
             // Verify the unfurl is rendered
             const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
@@ -511,7 +513,7 @@ describe('A Groupchat Message', function () {
                     <retract xmlns="urn:xmpp:message-retract:0"/>
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, retraction_stanza));
 
             // Verify the unfurl is no longer rendered
             await u.waitUntil(() => view.querySelector('converse-message-unfurl') === null);
@@ -526,7 +528,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'will not render an unfurl that has been removed in a subsequent correction',
-        mock.initConverse(['chatBoxesFetched'], { auto_register_muc_nickname: false }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { auto_register_muc_nickname: false }, async function (_converse) {
             const { api } = _converse;
             const { jid: own_jid } = api.connection.get();
             const nick = 'romeo';
@@ -583,7 +585,7 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:height" content="720" />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
             const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
             expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe(unfurl_image_src);

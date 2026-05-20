@@ -4,9 +4,9 @@
  * This module started as a fork of Rubens Mariuzzo's dom-navigator.
  * @copyright Rubens Mariuzzo, JC Brand
  */
-import u from "utils/html";
-import { converse } from "@converse/headless";
-import {absoluteOffsetLeft, absoluteOffsetTop, inViewport} from "./utils";
+import u from 'utils/html.js';
+import { converse } from '@converse/headless';
+import { absoluteOffsetLeft, absoluteOffsetTop, inViewport } from './utils.js';
 
 const { keycodes } = converse;
 
@@ -24,12 +24,12 @@ class DOMNavigator {
      */
     static get DIRECTION() {
         return {
-            down: "down",
-            end: "end",
-            home: "home",
-            left: "left",
-            right: "right",
-            up: "up",
+            down: 'down',
+            end: 'end',
+            home: 'home',
+            left: 'left',
+            right: 'right',
+            up: 'up',
         };
     }
 
@@ -47,10 +47,10 @@ class DOMNavigator {
             getSelector: null,
             jump_to_picked: null,
             jump_to_picked_direction: null,
-            jump_to_picked_selector: "picked",
+            jump_to_picked_selector: 'picked',
             onSelected: null,
-            selected: "selected",
-            selector: "li",
+            selected: 'selected',
+            selector: 'li',
         };
     }
 
@@ -75,7 +75,7 @@ class DOMNavigator {
             {
                 distance: Infinity,
                 element: null,
-            }
+            },
         );
         return next.element;
     }
@@ -113,14 +113,14 @@ class DOMNavigator {
         this.getElements();
         this.keydownHandler = /** @param {KeyboardEvent} ev */ (ev) => this.handleKeydown(ev);
         const root = u.getRootElement();
-        root.addEventListener("keydown", this.keydownHandler);
+        root.addEventListener('keydown', this.keydownHandler);
         this.enabled = true;
     }
 
     disable() {
         if (this.keydownHandler) {
             const root = u.getRootElement();
-            root.removeEventListener("keydown", this.keydownHandler);
+            root.removeEventListener('keydown', this.keydownHandler);
         }
         this.unselect();
         this.elements = {};
@@ -161,7 +161,7 @@ class DOMNavigator {
                 const getDistance = (el) => Math.abs(left - el.offsetLeft) + Math.abs(top - el.offsetTop);
                 el = DOMNavigator.getClosestElement(els, getDistance);
             } else {
-                throw new Error("getNextElement: invalid direction value");
+                throw new Error('getNextElement: invalid direction value');
             }
         } else {
             if (direction === DOMNavigator.DIRECTION.right || direction === DOMNavigator.DIRECTION.down) {
@@ -195,7 +195,7 @@ class DOMNavigator {
         }
         this.unselect();
         direction && this.scrollTo(el, direction);
-        if (el.matches("input")) {
+        if (el.matches('input')) {
             el.focus();
         } else {
             u.addClass(this.options.selected, el);
@@ -316,7 +316,7 @@ class DOMNavigator {
      */
     elementsAfter(left, top) {
         return this.getElements(DOMNavigator.DIRECTION.down).filter(
-            (el) => el.offsetLeft >= left && el.offsetTop >= top
+            (el) => el.offsetLeft >= left && el.offsetTop >= top,
         );
     }
 

@@ -1,7 +1,7 @@
 import { html, nothing } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { _converse, api, constants } from '@converse/headless';
-import { isMobileViewport } from 'shared/chat/utils';
+import { isMobileViewport } from 'shared/chat/utils.js';
 
 const { CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE, CONNECTION_STATUS } = constants;
 
@@ -22,7 +22,7 @@ export default () => {
     const logged_out = !connection?.connected || !connection?.authenticated || connection?.disconnecting;
     const connection_status = connfeedback.get('connection_status');
     const connecting = ['CONNECTED', 'CONNECTING', 'AUTHENTICATING', 'RECONNECTING'].includes(
-        CONNECTION_STATUS[connection_status]
+        CONNECTION_STATUS[connection_status],
     );
     return html`
         ${!logged_out && is_overlayed
@@ -65,7 +65,7 @@ export default () => {
                         style="${style}"
                     ></converse-chat> `;
                 }
-            }
+            },
         )}
     `;
 };

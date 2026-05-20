@@ -3,6 +3,7 @@
   "version": "13.0.0",
   "description": "Converse.js Headless build",
   "author": "JC Brand <jc@opkode.com>",
+  "type": "module",
   "contributors": [
     "cmrd Senya <senya@riseup.net>"
   ],
@@ -54,6 +55,7 @@
   },
   "scripts": {
     "test": "karma start karma.conf.js",
+    "test:browser": "karma start karma.conf --browsers Chrome",
     "types": "tsc -p tsconfig.json"
   },
   "bugs": {
@@ -62,7 +64,7 @@
   "dependencies": {
     "@converse/log": "^0.0.1",
     "@converse/openpromise": "^0.0.4",
-    "@converse/skeletor": "^3.0.0",
+    "@converse/skeletor": "^3.0.1",
     "dayjs": "^1.11.8",
     "dompurify": "^3.0.8",
     "filesize": "^11.0.13",

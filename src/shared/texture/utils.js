@@ -1,6 +1,6 @@
 import { u } from '@converse/headless';
 import { html } from 'lit';
-import { bracketing_directives, dont_escape, styling_directives, styling_map } from './constants';
+import { bracketing_directives, dont_escape, styling_directives, styling_map } from './constants.js';
 
 const URL_REGEXES = {
     // valid "scheme://" or "www."

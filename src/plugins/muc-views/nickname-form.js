@@ -1,5 +1,5 @@
 import { _converse, api } from '@converse/headless';
-import { CustomElement } from 'shared/components/element';
+import { CustomElement } from 'shared/components/element.js';
 import tplMUCNicknameForm from './templates/muc-nickname-form.js';
 
 import './styles/nickname-form.scss';

@@ -1,10 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { u } = converse.env;
 
 describe('An unsent groupchat message', function () {
     it(
         'will be saved as a draft when switching chats',
-        mock.initConverse([], { view_mode: 'fullscreen' }, async function (_converse) {
+        mock.initConverse(converse, [], { view_mode: 'fullscreen' }, async function (_converse) {
             const muc1_jid = 'lounge@montague.lit';
             const muc2_jid = 'garden@montague.lit';
 

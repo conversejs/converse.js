@@ -5,7 +5,7 @@
 import { _converse, api, converse, RosterFilter } from '@converse/headless';
 import RosterContactView from './contactview.js';
 import { clearXMPPProvidersCache, highlightRosterItem } from './utils.js';
-import '../modal';
+import '../modal/index.js';
 import AddContactModal from './modals/add-contact.js';
 import AcceptContactRequestModal from './modals/accept-contact-request.js';
 import NewChatModal from './modals/new-chat.js';

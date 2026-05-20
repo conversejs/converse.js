@@ -1,10 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { Strophe, sizzle, stx, u } = converse.env;
 
 describe('An incoming groupchat message', function () {
     it(
         'is specially marked when you are mentioned in it',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
@@ -28,13 +30,13 @@ describe('An incoming groupchat message', function () {
 
     it(
         'highlights all users mentioned via XEP-0372 references',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'tom');
             const view = _converse.chatboxviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                         to="tom@montague.lit/resource"
                         from="lounge@montague.lit/${nick}"
@@ -92,7 +94,7 @@ describe('An incoming groupchat message', function () {
 
     it(
         'properly renders mentions that contain the pipe character',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             const { jid: own_jid } = api.connection.get();
             const muc_jid = 'lounge@montague.lit';
@@ -100,7 +102,7 @@ describe('An incoming groupchat message', function () {
             const muc = await mock.openAndEnterMUC(_converse, muc_jid, nick);
             const view = _converse.chatboxviews.get(muc_jid);
             api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<presence
                     to="romeo@montague.lit/resource"
                     from="lounge@montague.lit/ThUnD3r|Gr33n"
@@ -151,13 +153,13 @@ describe('An incoming groupchat message', function () {
 
     it(
         'highlights all users mentioned via XEP-0372 references in a quoted message',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'tom');
             const view = _converse.chatboxviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                         to="tom@montague.lit/resource"
                         from="lounge@montague.lit/${nick}"
@@ -200,7 +202,7 @@ describe('A sent groupchat message', function () {
     describe('in which someone is mentioned', function () {
         it(
             'gets parsed for mentions which get turned into references',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
 
                 // Making the MUC non-anonymous so that real JIDs are included
@@ -220,7 +222,7 @@ describe('A sent groupchat message', function () {
                 const view = _converse.chatboxviews.get(muc_jid);
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh', 'Link Mauve', 'robot'].forEach((nick) => {
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(
+                        mock.createRequest(_converse, 
                             stx`<presence
                             to="tom@montague.lit/resource"
                             from="lounge@montague.lit/${nick}"
@@ -369,13 +371,13 @@ describe('A sent groupchat message', function () {
 
         it(
             'gets parsed for mentions as indicated with an @ preceded by a space or at the start of the text',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'tom');
                 const view = _converse.chatboxviews.get(muc_jid);
                 ['NotAnAdress', 'darnuria'].forEach((nick) => {
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(
+                        mock.createRequest(_converse, 
                             stx`<presence
                             to="tom@montague.lit/resource"
                             from="lounge@montague.lit/${nick}"
@@ -402,7 +404,7 @@ describe('A sent groupchat message', function () {
 
         it(
             'properly encodes the URIs in sent out references',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const { api } = _converse;
                 const { jid: own_jid } = api.connection.get();
                 const nick = 'tom';
@@ -410,7 +412,7 @@ describe('A sent groupchat message', function () {
                 await mock.openAndEnterMUC(_converse, muc_jid, nick);
                 const view = _converse.chatboxviews.get(muc_jid);
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence
                         to="tom@montague.lit/resource"
                         from="lounge@montague.lit/Link Mauve"
@@ -452,7 +454,7 @@ describe('A sent groupchat message', function () {
 
         it(
             'can get corrected and given new references',
-            mock.initConverse([], {}, async function (_converse) {
+            mock.initConverse(converse, [], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const { api } = _converse;
                 const { jid: own_jid } = api.connection.get();
@@ -474,7 +476,7 @@ describe('A sent groupchat message', function () {
                 const view = _converse.chatboxviews.get(muc_jid);
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(
+                        mock.createRequest(_converse, 
                             stx`<presence
                             to="tom@montague.lit/resource"
                             from="lounge@montague.lit/${nick}"
@@ -561,7 +563,7 @@ describe('A sent groupchat message', function () {
 
         it(
             'includes a XEP-0372 references to that person',
-            mock.initConverse([], { auto_register_muc_nickname: false }, async function (_converse) {
+            mock.initConverse(converse, [], { auto_register_muc_nickname: false }, async function (_converse) {
                 const { api } = _converse;
                 const { jid: own_jid } = api.connection.get();
                 const nick = 'romeo';
@@ -571,7 +573,7 @@ describe('A sent groupchat message', function () {
 
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(
+                        mock.createRequest(_converse, 
                             stx`<presence
                             to="tom@montague.lit/resource"
                             from="lounge@montague.lit/${nick}"
@@ -619,14 +621,13 @@ describe('A sent groupchat message', function () {
 
     it(
         'highlights all users mentioned via XEP-0372 references in a quoted message',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const members = [{ 'jid': 'gibson@gibson.net', 'nick': 'gibson', 'affiliation': 'member' }];
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'tom', [], members);
             const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            textarea.value =
-                'Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/';
+            textarea.value = 'Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/';
             const enter_event = {
                 'target': textarea,
                 'preventDefault': function preventDefault() {},

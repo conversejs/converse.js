@@ -1,4 +1,5 @@
-﻿/*global mock, converse */
+﻿import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { u, stx } = converse.env;
 
@@ -6,7 +7,7 @@ describe('XEP-0461 Message Replies', function () {
     describe('A MUC Message', function () {
         it(
             'can be replied to using a message action',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const nick = 'romeo';
                 await mock.openAndEnterMUC(_converse, muc_jid, nick);
@@ -48,7 +49,7 @@ describe('XEP-0461 Message Replies', function () {
 
         it(
             'parses incoming MUC reply messages correctly',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const nick = 'romeo';
                 await mock.openAndEnterMUC(_converse, muc_jid, nick);

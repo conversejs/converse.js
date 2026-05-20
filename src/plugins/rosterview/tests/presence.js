@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
@@ -8,7 +9,7 @@ describe('A sent presence stanza', function () {
 
     it(
         'includes the saved status message',
-        mock.initConverse([], {}, async (_converse) => {
+        mock.initConverse(converse, [], {}, async (_converse) => {
             const { u, Strophe } = converse.env;
             mock.openControlBox(_converse);
             spyOn(_converse.api.connection.get(), 'send').and.callThrough();

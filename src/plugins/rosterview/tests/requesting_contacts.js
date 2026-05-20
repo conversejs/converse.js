@@ -1,9 +1,12 @@
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { stx, sizzle, u } = converse.env;
 
 describe('Requesting Contacts', function () {
     it(
         'can be added to the roster and they will be sorted alphabetically',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.openControlBox(_converse);
             let names = [];
@@ -43,7 +46,7 @@ describe('Requesting Contacts', function () {
 
     it(
         'can have their requests accepted via a dropdown in the roster',
-        mock.initConverse([], { lazy_load_vcards: false }, async function (_converse) {
+        mock.initConverse(converse, [], { lazy_load_vcards: false }, async function (_converse) {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.createContacts(_converse, 'requesting', 1);
@@ -56,7 +59,7 @@ describe('Requesting Contacts', function () {
 
     it(
         'can have their requests declined via a dropdown in the roster',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilDiscoConfirmed(
                 _converse,
                 _converse.domain,
@@ -82,7 +85,7 @@ describe('Requesting Contacts', function () {
 
     it(
         "do not have a header if there aren't any",
-        mock.initConverse([], { show_self_in_roster: false }, async function (_converse) {
+        mock.initConverse(converse, [], { show_self_in_roster: false }, async function (_converse) {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilDiscoConfirmed(
@@ -121,7 +124,7 @@ describe('Requesting Contacts', function () {
 
     it(
         'can be collapsed under their own header',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             mock.createContacts(_converse, 'requesting');
             await mock.openControlBox(_converse);
@@ -134,7 +137,7 @@ describe('Requesting Contacts', function () {
 
     it(
         'can have their requests accepted by the user',
-        mock.initConverse([], { lazy_load_vcards: false }, async function (_converse) {
+        mock.initConverse(converse, [], { lazy_load_vcards: false }, async function (_converse) {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.createContacts(_converse, 'requesting');
@@ -175,7 +178,7 @@ describe('Requesting Contacts', function () {
 
             const result = stx`
                 <iq to="${api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client"/>`;
-            api.connection.get()._dataRecv(mock.createRequest(result));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, result));
 
             stanza = await u.waitUntil(() =>
                 sent_stanzas.filter((s) => s.matches('presence[type="subscribed"]')).pop(),
@@ -192,7 +195,7 @@ describe('Requesting Contacts', function () {
 
     it(
         'can have their requests denied by the user',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilDiscoConfirmed(
                 _converse,
                 _converse.domain,
@@ -222,7 +225,7 @@ describe('Requesting Contacts', function () {
 
     it(
         "are persisted even if other contacts' change their presence ",
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.openControlBox(_converse);
 
             const { IQ_stanzas } = _converse.api.connection.get();
@@ -243,13 +246,13 @@ describe('Requesting Contacts', function () {
                         </item>
                     </query>
                 </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
 
             const pres = stx`
                 <presence from="data@enterprise/resource"
                           type="subscribe"
                           xmlns="jabber:client"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, pres));
 
             expect(_converse.roster.pluck('jid').length).toBe(1);
             const rosterview = document.querySelector('converse-roster');
@@ -264,7 +267,7 @@ describe('Requesting Contacts', function () {
                         </item>
                     </query>
                 </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(roster_push));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, roster_push));
             expect(_converse.roster.data.get('version')).toBe('ver34');
             expect(_converse.roster.models.length).toBe(4);
             expect(_converse.roster.pluck('jid').includes('data@enterprise')).toBeTruthy();
@@ -275,7 +278,7 @@ describe('Requesting Contacts', function () {
 describe('A chat with a requesting contact', function () {
     it(
         'shows an approval alert when chatting with a requesting contact',
-        mock.initConverse([], { lazy_load_vcards: false }, async function (_converse) {
+        mock.initConverse(converse, [], { lazy_load_vcards: false }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.createContacts(_converse, 'requesting', 1);
             const name = mock.req_names[0];
@@ -295,7 +298,7 @@ describe('A chat with a requesting contact', function () {
 
     it(
         'can approve a contact request via the approval alert',
-        mock.initConverse([], { lazy_load_vcards: false }, async function (_converse) {
+        mock.initConverse(converse, [], { lazy_load_vcards: false }, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.createContacts(_converse, 'requesting', 1);
@@ -328,7 +331,7 @@ describe('A chat with a requesting contact', function () {
 
             const result = stx`
                 <iq to="${api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client"/>`;
-            api.connection.get()._dataRecv(mock.createRequest(result));
+            api.connection.get()._dataRecv(mock.createRequest(_converse, result));
 
             stanza = await u.waitUntil(() =>
                 sent_stanzas.filter((s) => s.matches('presence[type="subscribed"]')).pop(),
@@ -344,7 +347,7 @@ describe('A chat with a requesting contact', function () {
 
     it(
         'can deny a contact request via the approval alert',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitUntilDiscoConfirmed(
                 _converse,

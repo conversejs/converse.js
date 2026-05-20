@@ -1,4 +1,5 @@
-/*global mock, converse, _ */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { stx, sizzle, Strophe, u } = converse.env;
 
@@ -16,7 +17,7 @@ async function openModtools(_converse, view) {
 describe('The groupchat moderator tool', function () {
     it(
         'allows you to set affiliations and roles',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
 
             let members = [
@@ -114,7 +115,7 @@ describe('The groupchat moderator tool', function () {
                 from="${view.model.get('jid')}"
                 to="${_converse.api.connection.get().jid}"
                 xmlns="jabber:client"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             await u.waitUntil(() => view.model.occupants.fetchMembers.calls.count());
 
             members = [
@@ -167,7 +168,7 @@ describe('The groupchat moderator tool', function () {
 
     it(
         'allows you to filter affiliation search results',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const members = [
                 { 'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member' },
@@ -220,12 +221,12 @@ describe('The groupchat moderator tool', function () {
 
     it(
         'allows you to filter role search results',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', []);
             const view = _converse.chatboxviews.get(muc_jid);
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<presence to="${_converse.jid}" from="${muc_jid}/nomorenicks" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="nomorenicks@montague.lit" role="participant"/>
@@ -234,7 +235,7 @@ describe('The groupchat moderator tool', function () {
                 ),
             );
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<presence to="${_converse.jid}" from="${muc_jid}/newb" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="newb@montague.lit" role="participant"/>
@@ -243,7 +244,7 @@ describe('The groupchat moderator tool', function () {
                 ),
             );
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<presence to="${_converse.jid}" from="${muc_jid}/some1" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="some1@montague.lit" role="participant"/>
@@ -252,7 +253,7 @@ describe('The groupchat moderator tool', function () {
                 ),
             );
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<presence to="${_converse.jid}" from="${muc_jid}/oldhag" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="oldhag@montague.lit" role="participant"/>
@@ -261,7 +262,7 @@ describe('The groupchat moderator tool', function () {
                 ),
             );
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<presence to="${_converse.jid}" from="${muc_jid}/crone" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="crone@montague.lit" role="participant"/>
@@ -270,7 +271,7 @@ describe('The groupchat moderator tool', function () {
                 ),
             );
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
+                mock.createRequest(_converse, 
                     stx`<presence to="${_converse.jid}" from="${muc_jid}/tux" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="tux@montague.lit" role="participant"/>
@@ -328,7 +329,7 @@ describe('The groupchat moderator tool', function () {
 
     it(
         'shows an error message if a particular affiliation list may not be retrieved',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const members = [
                 { 'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member' },
@@ -371,7 +372,7 @@ describe('The groupchat moderator tool', function () {
                     <forbidden xmlns="${Strophe.NS.STANZAS}"/>
                  </error>
             </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(error));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, error));
             await u.waitUntil(() => !modal.loading_users_with_affiliation);
 
             const alert = await u.waitUntil(() => modal.querySelector('.alert'));
@@ -387,7 +388,7 @@ describe('The groupchat moderator tool', function () {
 
     it(
         'shows an error message if a particular affiliation may not be set',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const members = [
                 { 'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member' },
@@ -444,13 +445,13 @@ describe('The groupchat moderator tool', function () {
                     <not-allowed xmlns="${Strophe.NS.STANZAS}"/>
                  </error>
             </iq>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(error));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, error));
         }),
     );
 
     it(
         "doesn't allow admins to make more admins",
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const members = [
                 { 'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member' },
@@ -492,7 +493,7 @@ describe('The groupchat moderator tool', function () {
 
     it(
         'lets the assignable affiliations and roles be configured via modtools_disable_assign',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const members = [{ 'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner' }];
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);

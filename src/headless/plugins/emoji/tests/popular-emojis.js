@@ -1,5 +1,5 @@
-/* global converse */
 import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.esm.js';
 
 const { Strophe, sizzle, stx, u } = converse.env;
 
@@ -7,7 +7,7 @@ describe('Popular Emojis', function () {
     describe('PopularEmojis Model', function () {
         it(
             'records usage timestamps correctly',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const popular_emojis = _converse.state.popular_emojis;
@@ -34,7 +34,7 @@ describe('Popular Emojis', function () {
 
         it(
             'records shortname usage as unicode',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const popular_emojis = _converse.state.popular_emojis;
@@ -54,7 +54,7 @@ describe('Popular Emojis', function () {
 
         it(
             'returns emojis sorted by most recently used first',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const popular_emojis = _converse.state.popular_emojis;
@@ -81,7 +81,7 @@ describe('Popular Emojis', function () {
 
         it(
             'overwrites the previous timestamp when an emoji is used again',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const popular_emojis = _converse.state.popular_emojis;
@@ -104,7 +104,7 @@ describe('Popular Emojis', function () {
     describe('PubSub Storage and Retrieval', function () {
         it(
             'fetches popular reactions from PEP node on connect',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current', 0);
                 const own_jid = _converse.session.get('jid');
@@ -144,7 +144,7 @@ describe('Popular Emojis', function () {
                         </pubsub>
                     </iq>
                 `;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(returned_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, returned_stanza));
 
                 const { popular_emojis } = _converse.state;
                 await u.waitUntil(() => Object.keys(popular_emojis.get('timestamps')).length);
@@ -164,7 +164,7 @@ describe('Popular Emojis', function () {
     describe('Cross-device Synchronization', function () {
         it(
             'merges incoming PEP timestamps with local ones, keeping the most recent per emoji',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const { popular_emojis } = _converse.state;
@@ -199,7 +199,7 @@ describe('Popular Emojis', function () {
                         </event>
                     </message>
                 `;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 await u.waitUntil(() => popular_emojis.get('timestamps')['❤️']);
 
@@ -222,7 +222,7 @@ describe('Popular Emojis', function () {
 
         it(
             'does not overwrite a newer local timestamp with an older remote one',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const { popular_emojis } = _converse.state;
@@ -253,7 +253,7 @@ describe('Popular Emojis', function () {
                         </event>
                     </message>
                 `;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 // Give it a moment to process
                 await u.waitUntil(() => true);
@@ -265,7 +265,7 @@ describe('Popular Emojis', function () {
         );
         it(
             'preserves skin-tone modifiers in unicode keys',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const popular_emojis = _converse.state.popular_emojis;
@@ -287,7 +287,7 @@ describe('Popular Emojis', function () {
     describe('getPopularEmojis', function () {
         it(
             'returns emoji data keyed by the stored unicode, preserving variation selectors',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const popular_emojis = _converse.state.popular_emojis;
@@ -313,7 +313,7 @@ describe('Popular Emojis', function () {
 
         it(
             'respects the popular_emojis setting length',
-            mock.initConverse(
+            mock.initConverse(converse, 
                 ['chatBoxesFetched'],
                 { 'popular_emojis': [':thumbsup:', ':heart:'] },
                 async function (_converse) {
@@ -338,7 +338,7 @@ describe('Popular Emojis', function () {
 
         it(
             'filters out emoji not found in emoji data',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const popular_emojis = _converse.state.popular_emojis;

@@ -7,7 +7,7 @@ import log from '@converse/log';
 import { isUniView } from '../../utils/session.js';
 import { sendChatState, sendMarker } from '../../shared/actions.js';
 import ModelWithMessages from '../../shared/model-with-messages.js';
-import ModelWithVCard from '../../shared/model-with-vcard';
+import ModelWithVCard from '../../shared/model-with-vcard.js';
 import ModelWithContact from '../../shared/model-with-contact.js';
 import ColorAwareModel from '../../shared/color.js';
 import ChatBoxBase from '../../shared/chatbox.js';

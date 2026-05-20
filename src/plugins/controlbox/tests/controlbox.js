@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { stx, u } = converse.env;
 
 describe('The Controlbox', function () {
     it(
         "can be opened by clicking a DOM element with class 'toggle-controlbox'",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             spyOn(_converse.api, 'trigger').and.callThrough();
             document.querySelector('.toggle-controlbox').click();
             const el = await u.waitUntil(() => document.querySelector('#controlbox'));
@@ -15,7 +16,7 @@ describe('The Controlbox', function () {
 
     it(
         "can be closed by clicking a DOM element with class 'close-chatbox-button'",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.openControlBox(_converse);
             const view = _converse.chatboxviews.get('controlbox');
 
@@ -32,7 +33,7 @@ describe('The Controlbox', function () {
     describe('The "Contacts" section', function () {
         it(
             'shows the number of unread mentions received',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const { minimize, maximize } = converse.env.u;
 
                 await mock.waitForRoster(_converse, 'all');

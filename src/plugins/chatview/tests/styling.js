@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { u, $msg } = converse.env;
 
 describe('An incoming chat Message', function () {
     it(
         'can have styling disabled via an "unstyled" element',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             const include_nick = false;
             await mock.waitForRoster(_converse, 'current', 2, include_nick);
@@ -40,7 +41,7 @@ describe('An incoming chat Message', function () {
 
     it(
         'can have styling disabled via the allow_message_styling setting',
-        mock.initConverse(['chatBoxesFetched'], { 'allow_message_styling': false }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'allow_message_styling': false }, async function (_converse) {
             const { api } = _converse;
             const include_nick = false;
             await mock.waitForRoster(_converse, 'current', 2, include_nick);
@@ -73,7 +74,7 @@ describe('An incoming chat Message', function () {
 
     it(
         'can be styled with span XEP-0393 message styling hints',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             let msg_text, msg, msg_el;
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -258,7 +259,7 @@ describe('An incoming chat Message', function () {
 
     it(
         'can be styled with block XEP-0393 message styling hints',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             let msg_text, msg, msg_el;
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -310,7 +311,7 @@ describe('An incoming chat Message', function () {
 
     it(
         'can be styled with quote XEP-0393 message styling hints',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             let msg_text, msg, msg_el;
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -532,7 +533,7 @@ describe('An incoming chat Message', function () {
 
     it(
         "won't style invalid block quotes",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -575,7 +576,7 @@ describe('An incoming chat Message', function () {
 describe('An XEP-0393 styled message ', function () {
     it(
         'can be replaced with a correction and will still render properly',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const originalFetch = window.fetch;
             spyOn(window, 'fetch').and.callFake(async (...args) => {
                 if (args[1].method === 'HEAD') {
@@ -648,7 +649,7 @@ describe('An XEP-0393 styled message ', function () {
 
     it(
         'can be sent as a correction by using the up arrow',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const originalFetch = window.fetch;
             spyOn(window, 'fetch').and.callFake(async (...args) => {
                 if (args[1].method === 'HEAD') {

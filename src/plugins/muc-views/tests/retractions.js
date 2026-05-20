@@ -1,4 +1,6 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
+
 const { Strophe, u, stx, sizzle } = converse.env;
 
 async function sendAndThenRetractMessage(_converse, view) {
@@ -33,7 +35,7 @@ describe('Message Retractions', function () {
     describe('A groupchat message retraction', function () {
         it(
             "is not applied if it's not from the right author",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
@@ -66,7 +68,7 @@ describe('Message Retractions', function () {
             `;
                 spyOn(view.model, 'handleRetraction').and.callThrough();
 
-                _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, retraction_stanza));
                 await u.waitUntil(() => view.model.handleRetraction.calls.count() === 1);
                 expect(await view.model.handleRetraction.calls.first().returnValue).toBe(true);
                 expect(view.querySelectorAll('.chat-msg').length).toBe(1);
@@ -82,7 +84,7 @@ describe('Message Retractions', function () {
 
         it(
             'can be received before the message it pertains to',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const date = new Date().toISOString();
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -102,7 +104,7 @@ describe('Message Retractions', function () {
                 const view = _converse.chatboxviews.get(muc_jid);
                 spyOn(converse.env.log, 'warn');
                 spyOn(view.model, 'handleRetraction').and.callThrough();
-                _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, retraction_stanza));
 
                 await u.waitUntil(() => view.model.handleRetraction.calls.count() === 1);
                 await u.waitUntil(() => view.model.messages.length === 1);
@@ -122,7 +124,7 @@ describe('Message Retractions', function () {
                     <stanza-id xmlns="urn:xmpp:sid:0" id="stanza-id-1" by="${muc_jid}"/>
                     <origin-id xmlns="urn:xmpp:sid:0" id="origin-id-1"/>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(received_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, received_stanza));
                 await u.waitUntil(() => view.model.handleRetraction.calls.count() === 2);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1, 1000);
                 expect(view.model.messages.length).toBe(1);
@@ -142,7 +144,7 @@ describe('Message Retractions', function () {
     describe('A groupchat message moderator retraction', function () {
         it(
             'can be received before the message it pertains to',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const date = new Date().toISOString();
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -158,7 +160,7 @@ describe('Message Retractions', function () {
                 const view = _converse.chatboxviews.get(muc_jid);
                 spyOn(converse.env.log, 'warn');
                 spyOn(view.model, 'handleModeration').and.callThrough();
-                _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, retraction_stanza));
 
                 await u.waitUntil(() => view.model.handleModeration.calls.count() === 1);
                 await u.waitUntil(() => view.model.messages.length === 1);
@@ -178,7 +180,7 @@ describe('Message Retractions', function () {
                     <stanza-id xmlns="urn:xmpp:sid:0" id="stanza-id-1" by="${muc_jid}"/>
                 </message>`;
 
-                _converse.api.connection.get()._dataRecv(mock.createRequest(received_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, received_stanza));
                 await u.waitUntil(() => view.model.handleModeration.calls.count() === 2);
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
@@ -199,7 +201,7 @@ describe('Message Retractions', function () {
     describe('A Received Groupchat Message', function () {
         it(
             'can be followed up by a retraction by the author',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
@@ -232,7 +234,7 @@ describe('Message Retractions', function () {
                     <body>/me retracted a previous message, but it's unsupported by your client.</body>
                     <store xmlns="urn:xmpp:hints"/>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, retraction_stanza));
 
                 // We opportunistically save the message as retracted, even before receiving the retraction message
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
@@ -248,7 +250,7 @@ describe('Message Retractions', function () {
 
         it(
             'can be retracted by a moderator, with the IQ response received before the retraction message',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
@@ -302,7 +304,7 @@ describe('Message Retractions', function () {
                     to="${_converse.bare_jid}"
                     type="result"
                     xmlns="jabber:client"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result_iq));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result_iq));
 
                 // We opportunistically save the message as retracted, even before receiving the retraction message
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
@@ -342,7 +344,7 @@ describe('Message Retractions', function () {
 
         it(
             "can not be retracted if the MUC doesn't support message moderation",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
                 const view = _converse.chatboxviews.get(muc_jid);
@@ -368,7 +370,7 @@ describe('Message Retractions', function () {
 
         it(
             'can be retracted by a moderator, with the retraction message received before the IQ response',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
@@ -434,7 +436,7 @@ describe('Message Retractions', function () {
                     to="${_converse.bare_jid}"
                     type="result"
                     xmlns="jabber:client"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(result_iq));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result_iq));
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
                 expect(view.model.messages.at(0).get('moderated_by')).toBe(_converse.bare_jid);
@@ -445,7 +447,7 @@ describe('Message Retractions', function () {
 
         it(
             'can be followed up by a retraction from a different moderator',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const nick = 'romeo';
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE, Strophe.NS.OCCUPANTID];
@@ -457,7 +459,7 @@ describe('Message Retractions', function () {
                 const mod_jid = `${muc_jid}/${name}`;
                 const mod_occ_id = u.getUniqueId();
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(
+                    mock.createRequest(_converse, 
                         stx`<presence from="${mod_jid}"
                         id="${u.getUniqueId()}"
                         to="${_converse.bare_jid}"
@@ -530,7 +532,7 @@ describe('Message Retractions', function () {
     describe('A Sent Groupchat Message', function () {
         it(
             'can be retracted by its author',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
@@ -572,7 +574,7 @@ describe('Message Retractions', function () {
                 </message>`;
 
                 spyOn(view.model, 'handleRetraction').and.callThrough();
-                _converse.api.connection.get()._dataRecv(mock.createRequest(reflection));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, reflection));
                 await u.waitUntil(() => view.model.handleRetraction.calls.count() === 1, 1000);
 
                 await u.waitUntil(() => view.model.messages.length === 2, 1000);
@@ -588,7 +590,7 @@ describe('Message Retractions', function () {
 
         it(
             'can be retracted by its author, causing an error message in response',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
@@ -625,7 +627,7 @@ describe('Message Retractions', function () {
                     <retract id="${stanza_id}" xmlns="urn:xmpp:message-retract:1"/>
                 </message>`;
 
-                _converse.api.connection.get()._dataRecv(mock.createRequest(error));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, error));
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__error').length === 1, 1000);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 0, 1000);
@@ -643,7 +645,7 @@ describe('Message Retractions', function () {
 
         it(
             'can be retracted by its author, causing a timeout error in response',
-            mock.initConverse(['chatBoxesFetched'], { stanza_timeout: 1 }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { stanza_timeout: 1 }, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
@@ -681,7 +683,7 @@ describe('Message Retractions', function () {
 
         it(
             'can be retracted by a moderator',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
@@ -735,7 +737,7 @@ describe('Message Retractions', function () {
 
         it(
             "can be retracted by the sender if they're a moderator",
-            mock.initConverse(
+            mock.initConverse(converse, 
                 ['chatBoxesFetched'],
                 { 'allow_message_retraction': 'moderator' },
                 async function (_converse) {
@@ -803,7 +805,7 @@ describe('Message Retractions', function () {
                     to="${_converse.bare_jid}"
                     type="result"
                     xmlns="jabber:client"/>`;
-                    _converse.api.connection.get()._dataRecv(mock.createRequest(result_iq));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result_iq));
 
                     // We opportunistically save the message as retracted, even before receiving the retraction message
                     await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
@@ -843,7 +845,7 @@ describe('Message Retractions', function () {
     describe('when archived', function () {
         it(
             'may be returned as a tombstone groupchat message',
-            mock.initConverse(['discoInitialized'], {}, async function (_converse) {
+            mock.initConverse(converse, ['discoInitialized'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
@@ -868,7 +870,7 @@ describe('Message Retractions', function () {
                     </result>
                 </message>`;
                 spyOn(view.model, 'handleRetraction').and.callThrough();
-                _converse.api.connection.get()._dataRecv(mock.createRequest(tombstone));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, tombstone));
 
                 const last_id = u.getUniqueId();
                 const retraction = stx`
@@ -884,7 +886,7 @@ describe('Message Retractions', function () {
                         </forwarded>
                     </result>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(retraction));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, retraction));
 
                 const iq_result = stx`
                 <iq type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
@@ -896,7 +898,7 @@ describe('Message Retractions', function () {
                         </set>
                     </fin>
                 </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(iq_result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, iq_result));
 
                 await u.waitUntil(() => view.model.messages.length === 1);
                 let message = view.model.messages.at(0);
@@ -920,7 +922,7 @@ describe('Message Retractions', function () {
 
         it(
             'may be returned as a tombstone moderated groupchat message',
-            mock.initConverse(['discoInitialized', 'chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['discoInitialized', 'chatBoxesFetched'], {}, async function (_converse) {
                 const muc_jid = 'lounge@montague.lit';
                 const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
@@ -948,7 +950,7 @@ describe('Message Retractions', function () {
                     </result>
                 </message>`;
                 spyOn(view.model, 'handleModeration').and.callThrough();
-                _converse.api.connection.get()._dataRecv(mock.createRequest(tombstone));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, tombstone));
 
                 const last_id = u.getUniqueId();
                 const retraction = stx`
@@ -965,7 +967,7 @@ describe('Message Retractions', function () {
                         </forwarded>
                     </result>
                 </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(retraction));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, retraction));
 
                 const iq_result = stx`
                 <iq type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
@@ -977,7 +979,7 @@ describe('Message Retractions', function () {
                         </set>
                     </fin>
                 </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(iq_result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, iq_result));
 
                 await u.waitUntil(() => view.model.messages.length);
                 expect(view.model.messages.length).toBe(1);

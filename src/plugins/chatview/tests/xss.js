@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const sizzle = converse.env.sizzle;
 const u = converse.env.utils;
@@ -7,7 +8,7 @@ describe('XSS', function () {
     describe('A Chat Message', function () {
         it(
             'will escape IMG payload XSS attempts',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 spyOn(window, 'alert').and.callThrough();
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
@@ -17,20 +18,20 @@ describe('XSS', function () {
                 const view = _converse.chatboxviews.get(contact_jid);
 
                 let message = "<img src=x onerror=alert('XSS');>";
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual("&lt;img src=x onerror=alert('XSS');&gt;");
                 expect(window.alert).not.toHaveBeenCalled();
 
                 message = "<img src=x onerror=alert('XSS')//";
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual("&lt;img src=x onerror=alert('XSS')//");
 
                 message = '<img src=x onerror=alert(String.fromCharCode(88,83,83));>';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual(
@@ -38,7 +39,7 @@ describe('XSS', function () {
                 );
 
                 message = '<img src=x oneonerrorrror=alert(String.fromCharCode(88,83,83));>';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual(
@@ -46,7 +47,7 @@ describe('XSS', function () {
                 );
 
                 message = '<img src=x:alert(alt) onerror=eval(src) alt=xss>';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual(
@@ -54,13 +55,13 @@ describe('XSS', function () {
                 );
 
                 message = "><img src=x onerror=alert('XSS');>";
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual("&gt;&lt;img src=x onerror=alert('XSS');&gt;");
 
                 message = '><img src=x onerror=alert(String.fromCharCode(88,83,83));>';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual(
@@ -73,7 +74,7 @@ describe('XSS', function () {
 
         it(
             'will escape SVG payload XSS attempts',
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 spyOn(window, 'alert').and.callThrough();
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
@@ -83,25 +84,25 @@ describe('XSS', function () {
                 const view = _converse.chatboxviews.get(contact_jid);
 
                 let message = '<svgonload=alert(1)>';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('&lt;svgonload=alert(1)&gt;');
 
                 message = "<svg/onload=alert('XSS')>";
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual("&lt;svg/onload=alert('XSS')&gt;");
 
                 message = '<svg onload=alert(1)//';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('&lt;svg onload=alert(1)//');
 
                 message = '<svg/onload=alert(String.fromCharCode(88,83,83))>';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual(
@@ -109,13 +110,13 @@ describe('XSS', function () {
                 );
 
                 message = '<svg id=alert(1) onload=eval(id)>';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('&lt;svg id=alert(1) onload=eval(id)&gt;');
 
                 message = '"><svg/onload=alert(String.fromCharCode(88,83,83))>';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual(
@@ -123,7 +124,7 @@ describe('XSS', function () {
                 );
 
                 message = '"><svg/onload=alert(/XSS/)';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('"&gt;&lt;svg/onload=alert(/XSS/)');
@@ -134,7 +135,7 @@ describe('XSS', function () {
 
         it(
             'will have properly escaped URLs',
-            mock.initConverse(['chatBoxesFetched'], { render_media: false }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { render_media: false }, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
 
@@ -143,7 +144,7 @@ describe('XSS', function () {
                 const view = _converse.chatboxviews.get(contact_jid);
 
                 let message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
 
                 let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
@@ -158,7 +159,7 @@ describe('XSS', function () {
                 );
 
                 message = 'http://www.opkode.com/"onmouseover="alert(1)"whatever';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 await u.waitUntil(
@@ -168,7 +169,7 @@ describe('XSS', function () {
                 );
 
                 message = "https://en.wikipedia.org/wiki/Ender's_Game";
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 await u.waitUntil(
@@ -178,7 +179,7 @@ describe('XSS', function () {
                 );
 
                 message = '<https://bugs.documentfoundation.org/show_bug.cgi?id=123737>';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 await u.waitUntil(
@@ -188,7 +189,7 @@ describe('XSS', function () {
                 );
 
                 message = '<http://www.opkode.com/"onmouseover="alert(1)"whatever>';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 await u.waitUntil(
@@ -198,7 +199,7 @@ describe('XSS', function () {
                 );
 
                 message = `https://www.google.com/maps/place/Kochstraat+6,+2041+CE+Zandvoort/@52.3775999,4.548971,3a,15y,170.85h,88.39t/data=!3m6!1e1!3m4!1sQ7SdHo_bPLPlLlU8GSGWaQ!2e0!7i13312!8i6656!4m5!3m4!1s0x47c5ec1e56f845ad:0x1de0bc4a5771fb08!8m2!3d52.3773668!4d4.5489388!5m1!1e2`;
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
                 expect(msg.textContent).toEqual(message);
                 await u.waitUntil(
@@ -211,7 +212,7 @@ describe('XSS', function () {
 
         it(
             'will avoid malformed and unsafe urls urls from rendering as anchors',
-            mock.initConverse(['chatBoxesFetched'], { render_media: false }, async function (_converse) {
+            mock.initConverse(converse, ['chatBoxesFetched'], { render_media: false }, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
 
@@ -274,28 +275,28 @@ describe('XSS', function () {
                     );
                 }
 
-                await mock.sendMessage(view, bad_urls[0]);
+                await mock.sendMessage(_converse, view, bad_urls[0]);
                 checkNonParsedURL(bad_urls[0]);
 
-                await mock.sendMessage(view, bad_urls[1]);
+                await mock.sendMessage(_converse, view, bad_urls[1]);
                 checkNonParsedURL(bad_urls[1]);
 
-                await mock.sendMessage(view, good_urls[0].entered);
+                await mock.sendMessage(_converse, view, good_urls[0].entered);
                 await checkParsedURL(good_urls[0]);
 
-                await mock.sendMessage(view, good_urls[1].entered);
+                await mock.sendMessage(_converse, view, good_urls[1].entered);
                 await checkParsedURL(good_urls[1]);
 
-                await mock.sendMessage(view, good_urls[2].entered);
+                await mock.sendMessage(_converse, view, good_urls[2].entered);
                 await checkParsedURL(good_urls[2]);
 
-                await mock.sendMessage(view, good_urls[3].entered);
+                await mock.sendMessage(_converse, view, good_urls[3].entered);
                 await checkParsedXMPPURL(good_urls[3]);
 
-                await mock.sendMessage(view, good_urls[4].entered);
+                await mock.sendMessage(_converse, view, good_urls[4].entered);
                 await checkParsedURL(good_urls[4]);
 
-                await mock.sendMessage(view, good_urls[5].entered);
+                await mock.sendMessage(_converse, view, good_urls[5].entered);
                 await checkParsedURL(good_urls[5]);
             }),
         );

@@ -1,6 +1,6 @@
 import api from '../../shared/api/index.js';
 import _converse from '../../shared/_converse.js';
-import { PRES_SHOW_VALUES, PRES_TYPE_VALUES, STATUS_WEIGHTS } from '../../shared/constants';
+import { PRES_SHOW_VALUES, PRES_TYPE_VALUES, STATUS_WEIGHTS } from '../../shared/constants.js';
 
 let idle_seconds = 0;
 let idle = false;
@@ -43,7 +43,7 @@ export default {
         async set(value, message) {
             if (!Object.keys(STATUS_WEIGHTS).includes(value)) {
                 throw new Error(
-                    'Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1'
+                    'Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1',
                 );
             }
 

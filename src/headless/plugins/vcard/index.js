@@ -1,5 +1,5 @@
 import VCard from './vcard.js';
-import VCards from "./vcards";
+import VCards from './vcards.js';
 
 import './plugin.js';
 

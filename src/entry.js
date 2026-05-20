@@ -18,7 +18,7 @@
  */
 const plugins = {};
 
-const converse = {
+let converse = {
     plugins: {
         /**
          * Adds a Converse plugin
@@ -38,8 +38,8 @@ const converse = {
      * Initializes Converse with the provided settings.
      * @param {object} settings
      */
-    initialize(settings = {}) {
-        return converse.load(settings).initialize(settings);
+    async initialize(settings = {}) {
+        return (await converse.load(settings)).initialize(settings);
     },
 
     /**
@@ -62,13 +62,13 @@ const converse = {
      * @param {object} settings A map of configuration-settings that are needed at load time.
      * @example converse.load({assets_path: '/path/to/assets/'});
      */
-    load(settings = {}) {
+    async load(settings = {}) {
         if (settings.assets_path) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             __webpack_public_path__ = settings.assets_path; // eslint-disable-line no-undef
         }
-        require('./index.js');
+        converse = await import('./index.js');
         Object.keys(plugins).forEach((name) => converse.plugins.add(name, plugins[name]));
         return converse;
     },

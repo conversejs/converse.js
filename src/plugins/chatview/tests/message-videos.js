@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
-const { Strophe, sizzle, u } = converse.env;
+const { sizzle, u } = converse.env;
 
 describe('A chat message containing video URLs', function () {
     it(
         'will render videos from their URLs',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             // let message = "https://i.imgur.com/Py9ifJE.mp4";
             const base_url = 'https://conversejs.org';
@@ -14,13 +15,13 @@ describe('A chat message containing video URLs', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('.chat-content video').length, 1000);
             let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.querySelector('video').src).toEqual(message);
 
             message += '?param1=val1&param2=val2';
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             await u.waitUntil(() => view.querySelectorAll('.chat-content video').length === 2, 1000);
             msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.querySelector('video').src).toEqual(message);
@@ -29,7 +30,7 @@ describe('A chat message containing video URLs', function () {
 
     it(
         'will not render videos if render_media is false',
-        mock.initConverse(['chatBoxesFetched'], { 'render_media': false }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'render_media': false }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             // let message = "https://i.imgur.com/Py9ifJE.mp4";
             const base_url = 'https://conversejs.org';
@@ -38,7 +39,7 @@ describe('A chat message containing video URLs', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             const sel = '.chat-content .chat-msg:last .chat-msg__text';
             await u.waitUntil(
                 () =>
@@ -53,7 +54,7 @@ describe('A chat message containing video URLs', function () {
 
     it(
         'will allow rendering of videos from approved URLs only',
-        mock.initConverse(
+        mock.initConverse(converse, 
             ['chatBoxesFetched'],
             { 'allowed_video_domains': ['conversejs.org'] },
             async function (_converse) {
@@ -63,12 +64,12 @@ describe('A chat message containing video URLs', function () {
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
                 spyOn(view.model, 'sendMessage').and.callThrough();
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 1);
 
                 const base_url = 'https://conversejs.org';
                 message = base_url + '/logo/conversejs-filled.mp4';
-                await mock.sendMessage(view, message);
+                await mock.sendMessage(_converse, view, message);
                 await u.waitUntil(() => view.querySelectorAll('.chat-content video').length, 1000);
                 const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
                 expect(msg.querySelector('video').src).toEqual(message);
@@ -78,7 +79,7 @@ describe('A chat message containing video URLs', function () {
 
     it(
         'will allow the user to toggle visibility of rendered videos',
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             // let message = "https://i.imgur.com/Py9ifJE.mp4";
             const base_url = 'https://conversejs.org';
@@ -87,7 +88,7 @@ describe('A chat message containing video URLs', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            await mock.sendMessage(view, message);
+            await mock.sendMessage(_converse, view, message);
             const sel = '.chat-content .chat-msg:last .chat-msg__text';
             await u.waitUntil(
                 () =>

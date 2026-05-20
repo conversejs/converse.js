@@ -1,15 +1,16 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { Strophe, u, stx } = converse.env;
 
 describe('A Groupchat Message', function () {
     it(
         'can be replaced with a correction',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <presence
                 to="romeo@montague.lit/_converse.js-29092160"
                 from="coven@chat.shakespeare.lit/newguy"
@@ -94,12 +95,12 @@ describe('A Groupchat Message', function () {
 
     it(
         'keeps the same position in history after a correction',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
             <presence
                 to="romeo@montague.lit/_converse.js-29092160"
                 from="coven@chat.shakespeare.lit/newguy"
@@ -202,7 +203,7 @@ describe('A Groupchat Message', function () {
 
     it(
         'can be sent as a correction by using the up arrow',
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;
             const { jid: own_jid } = api.connection.get();
             const nick = 'romeo';
@@ -320,7 +321,7 @@ describe('A Groupchat Message', function () {
 describe('A Groupchat Message XEP-0308 correction ', function () {
     it(
         "is ignored if it's from a different occupant-id",
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
@@ -399,7 +400,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
 
     it(
         "cannot be edited if it's from a different occupant id",
-        mock.initConverse([], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, async function (_converse) {
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];

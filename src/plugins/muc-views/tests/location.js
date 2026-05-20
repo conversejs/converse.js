@@ -1,11 +1,12 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.esm.js';
 
 const { stx, u } = converse.env;
 
 describe('The Location Button', function () {
     it(
         'shows a confirmation prompt and sends the geo URI as a message in a MUC',
-        mock.initConverse(['discoInitialized'], { 'view_mode': 'fullscreen' }, async function (_converse) {
+        mock.initConverse(converse, ['discoInitialized'], { 'view_mode': 'fullscreen' }, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const nick = 'romeo';
 
@@ -43,7 +44,7 @@ describe('The Location Button', function () {
 
     it(
         'shows a confirmation prompt and sends the geo URI in a MUC private message',
-        mock.initConverse(['chatBoxesFetched'], { 'view_mode': 'fullscreen' }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'view_mode': 'fullscreen' }, async function (_converse) {
             const muc_jid = 'coven@chat.shakespeare.lit';
             const nick = 'romeo';
 
@@ -57,7 +58,7 @@ describe('The Location Button', function () {
 
             // Simulate another occupant joining
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(stx`
+                mock.createRequest(_converse, stx`
                     <presence
                         from="${muc_jid}/firstwitch"
                         id="${u.getUniqueId()}"

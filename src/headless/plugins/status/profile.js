@@ -2,7 +2,7 @@ import { Model } from '@converse/skeletor';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import ModelWithVCard from '../../shared/model-with-vcard';
+import ModelWithVCard from '../../shared/model-with-vcard.js';
 import ColorAwareModel from '../../shared/color.js';
 
 const { Stanza, Strophe, stx } = converse.env;
@@ -20,8 +20,8 @@ export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
     /**
      * @return {import('./types').ConnectionStatus}
      */
-    getStatus () {
-        const presence  = this.get('presence');
+    getStatus() {
+        const presence = this.get('presence');
         if (presence === 'offline' || presence === 'unavailable') {
             return 'offline';
         }

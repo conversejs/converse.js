@@ -392,7 +392,7 @@ export default class AudioPlayer extends CustomElement {
                         @keydown=${this.#onPlayPauseKeyDown}
                         aria-label="${play_pause_label}"
                         aria-pressed="${this.is_playing}"
-                        ?disabled=${this.has_error || this.is_loading}
+                        ?disabled=${this.has_error}
                     >
                         ${this.is_loading
                             ? html`<converse-icon

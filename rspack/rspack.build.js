@@ -9,8 +9,8 @@ const buildConfig = (_env, argv) => {
     return merge(common, {
         mode: isDev ? 'development' : 'production',
         entry: {
-            'converse': path.resolve(__dirname, '../src/entry.js'),
-            'converse.min': path.resolve(__dirname, '../src/entry.js'),
+            'converse': path.resolve(__dirname, '../src/index.js'),
+            'converse.min': path.resolve(__dirname, '../src/index.js'),
         },
         devtool: isDev ? 'cheap-module-source-map' : 'source-map',
         optimization: {

@@ -68,7 +68,7 @@ export default function (config) {
         ],
 
         proxies: {
-            '/dist/emoji.json': '/base/dist/emoji.json',
+            '/dist/': '/base/dist/',
             '/dist/images/custom_emojis/': '/base/dist/images/custom_emojis/',
             '/images/logo/': '/base/dist/images/logo/',
         },

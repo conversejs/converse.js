@@ -17,11 +17,12 @@ Bootstrap 5 and Lit UI components.
 ## Monorepo
 
 Three npm workspaces:
+
 - **Root** (`/`): Main package with UI plugins (`src/plugins/`)
 - **Headless** (`src/headless/`): Core XMPP logic and state management, separate package `@converse/headless`
-    The `@converse/headless` package resolves to the built bundle (`dist/converse-headless.js`),
-    **not** to individual source files. Importing from relative paths pointing to `src/headless/`
-    back into the main package like `src/plugins` is forbidden since they cross the package boundary.
+  The `@converse/headless` package resolves to the built bundle (`dist/converse-headless.js`),
+  **not** to individual source files. Importing from relative paths pointing to `src/headless/`
+  back into the main package like `src/plugins` is forbidden since they cross the package boundary.
 
     Read: src/headless/AGENTS.md
 
@@ -29,9 +30,8 @@ Three npm workspaces:
 
 ### Key Entry Points
 
-- `src/index.js` — Main entry (imports all plugins)
+- `src/index.js` — Main entry
 - `src/headless/index.js` — Headless entry
-- `src/entry.js` — Alternative entry
 - `rspack/` — Build configs
 
 ### Directory Structure

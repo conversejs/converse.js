@@ -56,7 +56,7 @@ export default [
         mode: 'development',
         entry: {
             'converse': {
-                import: path.resolve(__dirname, '../src/entry.js'),
+                import: path.resolve(__dirname, '../src/index.js'),
                 filename: '../dist/[name].js',
             },
         },

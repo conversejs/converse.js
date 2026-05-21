@@ -9,9 +9,6 @@ export { __dirname };
 
 export default {
     plugins: [
-        new rspack.DefinePlugin({
-            'process.env.ASSET_PATH': JSON.stringify(process.env.ASSET_PATH || '/dist/'),
-        }),
         new rspack.CircularDependencyRspackPlugin({
             exclude: /node_modules/,
             failOnError: true,
@@ -21,7 +18,7 @@ export default {
     ],
     output: {
         path: path.resolve(__dirname, '../dist'),
-        publicPath: process.env.ASSET_PATH || '/dist/',
+        publicPath: 'auto',
         chunkFilename: '[name].js',
     },
     devtool: 'source-map',

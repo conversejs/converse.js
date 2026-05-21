@@ -1,5 +1,3 @@
-import headless from '../dist/converse-headless.esm.js';
-
 const view_mode = 'overlayed';
 const theme = ['dracula', 'classic', 'cyberpunk', 'nordic'][Math.floor(Math.random() * 4)];
 
@@ -30,25 +28,25 @@ export const default_muc_features = [
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000;
 
-jasmine.toEqualStanza = function toEqualStanza() {
-    return {
-        compare(actual, expected) {
-            const { u } = headless.env;
-            const result = { pass: u.isEqualNode(actual, expected) };
-            if (!result.pass) {
-                result.message =
-                    `Stanzas don't match:\n` +
-                    `Actual:\n${(actual.tree?.() ?? actual).outerHTML}\n` +
-                    `Expected:\n${expected.tree().outerHTML}`;
-            }
-            return result;
+beforeAll(() => {
+    jasmine.addMatchers({
+        toEqualStanza() {
+            return {
+                compare(actual, expected) {
+                    const { u } = window.converse.env;
+                    const result = { pass: u.isEqualNode(actual, expected) };
+                    if (!result.pass) {
+                        result.message =
+                            `Stanzas don't match:\n` +
+                            `Actual:\n${(actual.tree?.() ?? actual).outerHTML}\n` +
+                            `Expected:\n${expected.tree().outerHTML}`;
+                    }
+                    return result;
+                },
+            };
         },
-    };
-};
-
-// Register toEqualStanza globally so all test files can use it without
-// needing to call jasmine.addMatchers themselves
-beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+    });
+});
 
 export const domain = 'montague.lit';
 

@@ -64,7 +64,7 @@ describe('A bookmark', function () {
             id="${sent_stanza.getAttribute('id')}"/>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-            expect(muc.get('bookmarked')).toBeTruthy();
+            expect(muc.bookmark).toBeTruthy();
         }),
     );
 
@@ -245,7 +245,7 @@ describe('A bookmark', function () {
 
                 const { bookmarks } = _converse.state;
                 await u.waitUntil(() => bookmarks.length);
-                await u.waitUntil(() => muc.get('bookmarked'));
+                await u.waitUntil(() => muc.bookmark);
                 spyOn(bookmarks, 'sendBookmarkStanza').and.callThrough();
 
                 const sent_IQs = _converse.api.connection.get().IQ_stanzas;
@@ -594,10 +594,10 @@ describe('A bookmark', function () {
                 ).pop()
             );
 
-            expect(bookmark.pinned).toBe(true);
+            expect(bookmark.get('pinned')).toBe(true);
 
             const chatbox = state.chatboxes.get(muc_jid);
-            expect(chatbox.get('pinned')).toBe(true);
+            expect(chatbox.bookmark.get('pinned')).toBe(true);
 
             expect(sent_stanza).toEqualStanza(stx`
                 <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
@@ -659,8 +659,8 @@ describe('A bookmark', function () {
 
             const IQ_stanzas = api.connection.get().IQ_stanzas;
 
-            expect(bookmark.pinned).toBe(true);
-            expect(state.chatboxes.get(muc_jid).get('pinned')).toBe(true);
+            expect(bookmark.get('pinned')).toBe(true);
+            expect(state.chatboxes.get(muc_jid).bookmark.get('pinned')).toBe(true);
 
             // Now unpin the bookmark
             await state.bookmarks.unpinBookmark(bookmark);
@@ -671,8 +671,8 @@ describe('A bookmark', function () {
                 }).pop()
             );
 
-            expect(bookmark.pinned).toBe(false);
-            expect(state.chatboxes.get(muc_jid).get('pinned')).toBe(false);
+            expect(bookmark.get('pinned')).toBe(false);
+            expect(state.chatboxes.get(muc_jid).bookmark.get('pinned')).toBe(false);
 
             expect(sent_stanza).toEqualStanza(stx`
                 <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">

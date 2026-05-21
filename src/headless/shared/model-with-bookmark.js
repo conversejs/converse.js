@@ -11,12 +11,9 @@ export default function ModelWithBookmark(BaseModel) {
         }
 
         setBookmark(bookmark) {
-            if (this.bookmark) {
-                this.stopListening(this.bookmark, 'change');
-            }
-
             this.bookmark = bookmark;
             this.listenTo(this.bookmark, 'change', () => this.trigger('bookmark:change', bookmark));
+            this.trigger('bookmark:change', bookmark);
         }
     };
 }

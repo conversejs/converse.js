@@ -164,6 +164,29 @@ resolve: {
 
 If you're using other build tools like Rollup or Vite, they have similar module resolution features that can be used for the same purpose.
 
+After configuring aliases, import Converse from your application entrypoint and build your wrapper application as usual. For example:
+
+```javascript
+// src/index.js
+import converse from 'converse.js';
+import 'converse.js/dist/converse.min.css';
+
+converse.initialize({
+    theme: 'mytheme',
+    // ... your other settings
+});
+```
+
+The compiled bundle will include Converse, while the aliases make your bundler use the replacement template modules instead of the originals. Rebuild with your normal command, for example `npm run build`, `webpack --mode production`, or the equivalent command in your project.
+
+If you want to share a complete customization, create a small example repository that contains:
+
+- a `package.json` with `converse.js` as a dependency;
+- a bundler config with the alias mappings;
+- the replacement template files;
+- an entrypoint that imports Converse and calls `converse.initialize`;
+- a README with the exact install, development, and build commands.
+
 ### Best practices for theming
 
 1. **Start with an existing theme**: Copy one of the existing theme files as a starting point rather than creating from scratch.

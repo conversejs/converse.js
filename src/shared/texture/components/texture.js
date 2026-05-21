@@ -67,4 +67,8 @@ export default class Texture extends LitElement {
     }
 }
 
-customElements.define("converse-texture", Texture);
+if (!customElements.get("converse-texture")) {
+    if (!customElements.get("converse-texture")) {
+    customElements.define("converse-texture", Texture);
+}
+}

@@ -23,7 +23,7 @@ describe('A Chat Message', function () {
     it(
         'will render audio streams using the accessible audio player',
         mock.initConverse(['chatBoxesFetched'], { fetch_url_headers: true }, async function (_converse) {
-            spyOn(window, 'fetch').and.callFake(async () => {
+            spyOn(window, 'fetch').and.callFake(() => {
                 return new Response('', {
                     status: 200,
                     headers: {
@@ -115,6 +115,36 @@ describe('A Chat Message', function () {
 
             // Check that aria-pressed is initially false (not playing)
             expect(playBtn.getAttribute('aria-pressed')).toEqual('false');
+        }),
+    );
+
+    it(
+        'keeps the audio play button keyboard-available while audio metadata is loading',
+        mock.initConverse(['chatBoxesFetched'], { fetch_url_headers: true }, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            const base_url = 'https://conversejs.org';
+            const message = base_url + '/logo/audio.mp3';
+
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            await mock.sendMessage(view, message);
+            await u.waitUntil(() => view.querySelectorAll('.chat-content converse-audio-player').length, 1000);
+
+            const audioPlayer = view.querySelector('converse-audio-player');
+            audioPlayer.is_loading = true;
+            audioPlayer.has_error = false;
+            await audioPlayer.updateComplete;
+
+            const playBtn = audioPlayer.querySelector('.audio-player__play-btn');
+            spyOn(audioPlayer.audio, 'play').and.returnValue(Promise.resolve());
+
+            expect(playBtn.disabled).toBe(false);
+            playBtn.focus();
+            expect(document.activeElement).toBe(playBtn);
+
+            playBtn.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+            expect(audioPlayer.audio.play).toHaveBeenCalled();
         }),
     );
 

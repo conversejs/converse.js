@@ -221,7 +221,7 @@ export default class MessageForm extends CustomElement {
         }
         u.addClass('disabled', textarea);
         textarea.setAttribute('disabled', 'disabled');
-        /** @type {EmojiDropdown} */ (this.querySelector('converse-emoji-dropdown'))?.dropdown.hide();
+        /** @type {EmojiDropdown} */ (this.querySelector('converse-emoji-dropdown'))?.hide();
 
         const is_command = await parseMessageForCommands(this.model, message_text);
         const message = is_command ? null : await this.model.sendMessage({ 'body': message_text, spoiler_hint });

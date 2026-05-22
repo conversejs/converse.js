@@ -23,7 +23,7 @@ export default class EmojiDropdown extends DropdownBase {
         // This is an optimization, we lazily render the emoji picker, otherwise tests slow to a crawl.
         this.render_emojis = false;
         this.model = null;
-        this.addEventListener('shown.bs.dropdown', () => this.onShown());
+        this.addEventListener('converse:dropdown:show', () => this.onShown());
     }
 
     initModel() {
@@ -56,7 +56,6 @@ export default class EmojiDropdown extends DropdownBase {
                 type="button"
                 id="${this.id}"
                 title="${__('Insert emojis')}"
-                data-bs-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
             >
@@ -75,7 +74,7 @@ export default class EmojiDropdown extends DropdownBase {
                                 html` <converse-emoji-picker
                                     .state=${this.model.emoji_picker}
                                     .model=${this.model}
-                                    @emojiSelected=${() => this.dropdown.hide()}
+                                    @emojiSelected=${() => this.hide()}
                                     ?render_emojis=${this.render_emojis}
                                     current_category="${this.model.emoji_picker.get('current_category') || ''}"
                                     current_skintone="${this.model.emoji_picker.get('current_skintone') || ''}"

@@ -33,7 +33,6 @@ export default class Dropdown extends DropdownBase {
             <button class="btn btn--transparent btn--standalone dropdown-toggle dropdown-toggle--no-caret"
                     id="${this.id}"
                     type="button"
-                    data-bs-toggle="dropdown"
                     aria-haspopup="true"
                     aria-expanded="false"
                     aria-label=${__('Menu')}>
@@ -63,7 +62,7 @@ export default class Dropdown extends DropdownBase {
 
     registerEvents() {
         this.onKeyDown = (ev) => this.#onKeyDown(ev);
-        this.addEventListener('hide.bs.dropdown', () => this.onDropdownHide());
+        this.addEventListener('converse:dropdown:hide', () => this.onDropdownHide());
         this.addEventListener('keydown', this.onKeyDown);
     }
 
@@ -103,7 +102,7 @@ export default class Dropdown extends DropdownBase {
         ev.preventDefault();
         ev.stopPropagation();
         this.navigator.selected?.querySelector('a')?.click();
-        this.dropdown.hide();
+        this.hide();
     }
 
     /**
@@ -117,7 +116,7 @@ export default class Dropdown extends DropdownBase {
         } else if (ev.key === KEYCODES.DOWN_ARROW && !this.navigator.enabled) {
             this.enableArrowNavigation(ev);
         } else if (ev.key === KEYCODES.ESCAPE) {
-            this.dropdown.hide();
+            this.hide();
         }
     }
 }

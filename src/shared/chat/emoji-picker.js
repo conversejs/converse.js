@@ -82,8 +82,8 @@ export default class EmojiPicker extends CustomElement {
     }
 
     updated(changed) {
-        changed.has('query') && this.updateSearchResults(changed);
-        changed.has('current_category') && this.setScrollPosition();
+        if (changed.has('query')) this.updateSearchResults(changed);
+        if (changed.has('current_category')) this.setScrollPosition();
     }
 
     onModelChanged(changed) {
@@ -122,23 +122,26 @@ export default class EmojiPicker extends CustomElement {
         }
     }
 
-    registerEvents() {
-        this.onKeyDown = (ev) => this.#onKeyDown(ev);
-        // The emoji picker might not be inside a dropdown (e.g. when used in the chat bottom panel).
-        // In that case, we don't need to listen for the hide event.
-        this.dropdown?.addEventListener('converse:dropdown:hide', () => this.onDropdownHide());
-        this.addEventListener('keydown', this.onKeyDown);
-    }
-
     connectedCallback() {
         super.connectedCallback();
         this.registerEvents();
     }
 
     disconnectedCallback() {
-        this.removeEventListener('keydown', this.onKeyDown);
         this.disableArrowNavigation();
         super.disconnectedCallback();
+    }
+
+    registerEvents() {
+        this._onKeyDown = (ev) => this.#onKeyDown(ev);
+        this._onDropdownHide = () => this.#onDropdownHide();
+        this.addEventListener('keydown', this._onKeyDown);
+        this.dropdown?.addEventListener('converse:dropdown:hide', this._onDropdownHide);
+    }
+
+    unregisterEvents() {
+        this.removeEventListener('keydown', this._onKeyDown);
+        this.dropdown?.removeEventListener('converse:dropdown:hide', this._onDropdownHide);
     }
 
     /**
@@ -154,7 +157,7 @@ export default class EmojiPicker extends CustomElement {
         }
     }
 
-    onDropdownHide() {
+    #onDropdownHide() {
         this.disableArrowNavigation();
         this.dispatchEvent(new CustomEvent('emojipickerblur', { bubbles: true }));
     }

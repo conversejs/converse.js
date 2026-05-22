@@ -55,18 +55,23 @@ export default class Dropdown extends DropdownBase {
     }
 
     disconnectedCallback() {
-        this.removeEventListener('keydown', this.onKeyDown);
         this.disableArrowNavigation();
         super.disconnectedCallback();
     }
 
     registerEvents() {
-        this.onKeyDown = (ev) => this.#onKeyDown(ev);
-        this.addEventListener('converse:dropdown:hide', () => this.onDropdownHide());
-        this.addEventListener('keydown', this.onKeyDown);
+        this._onKeyDown = (ev) => this.#onKeyDown(ev);
+        this._onDropdownHide = () => this.#onDropdownHide();
+        this.addEventListener('converse:dropdown:hide', this._onDropdownHide);
+        this.addEventListener('keydown', this._onKeyDown);
     }
 
-    onDropdownHide() {
+    unregisterEvents() {
+        this.removeEventListener('keydown', this._onKeyDown);
+        this.removeEventListener('converse:dropdown:hide', this._onDropdownHide);
+    }
+
+    #onDropdownHide() {
         this.disableArrowNavigation();
     }
 

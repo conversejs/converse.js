@@ -8,50 +8,55 @@ describe('Message Reactions (XEP-0444)', function () {
     describe('sending reactions in a 1:1 chat', function () {
         it(
             'logs an error and sends nothing when given an unknown shortname',
-            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis: [':not-an-emoji:'] }, async function (_converse) {
-                const { api } = _converse;
-                await mock.waitForRoster(_converse, 'current', 1);
-                const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-                await mock.openChatBoxFor(_converse, contact_jid);
-                const view = _converse.chatboxviews.get(contact_jid);
+            mock.initConverse(
+                converse,
+                ['chatBoxesFetched'],
+                { popular_emojis: [':not-an-emoji:'] },
+                async function (_converse) {
+                    const { api } = _converse;
+                    await mock.waitForRoster(_converse, 'current', 1);
+                    const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                    await mock.openChatBoxFor(_converse, contact_jid);
+                    const view = _converse.chatboxviews.get(contact_jid);
 
-                await _converse.handleMessageStanza(
-                    stx`<message xmlns="jabber:client"
+                    await _converse.handleMessageStanza(
+                        stx`<message xmlns="jabber:client"
                                 from="${contact_jid}"
                                 to="${_converse.jid}"
                                 type="chat"
                                 id="shortname-error-msg">
                         <body>React to this</body>
                     </message>`,
-                );
+                    );
 
-                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-                const msg_model = view.model.messages.findWhere({ 'msgid': 'shortname-error-msg' });
+                    await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+                    const msg_model = view.model.messages.findWhere({ 'msgid': 'shortname-error-msg' });
 
-                // Open the reaction picker so the converse-reaction-picker element is in the DOM
-                const msg_el = await u.waitUntil(() =>
-                    view.querySelector('.chat-msg[data-msgid="shortname-error-msg"]'),
-                );
-                const toggle_el = await u.waitUntil(() =>
-                    msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle'),
-                );
-                toggle_el.click();
-                const action_el = await u.waitUntil(() => msg_el.querySelector('.chat-msg__action-reaction'));
-                action_el.click();
-                const picker_el = await u.waitUntil(() => msg_el.querySelector('converse-reaction-picker'));
+                    // Open the reaction picker so the converse-reaction-picker element is in the DOM
+                    const msg_el = await u.waitUntil(() =>
+                        view.querySelector('.chat-msg[data-msgid="shortname-error-msg"]'),
+                    );
+                    const toggle_el = await u.waitUntil(() =>
+                        msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle'),
+                    );
+                    toggle_el.click();
+                    const action_el = await u.waitUntil(() => msg_el.querySelector('.chat-msg__action-reaction'));
+                    action_el.click();
+                    const picker_el = await u.waitUntil(() => msg_el.querySelector('converse-reaction-picker'));
 
-                spyOn(api.connection.get(), 'send').and.callThrough();
-                spyOn(converse.env.log, 'error');
+                    spyOn(api.connection.get(), 'send').and.callThrough();
+                    spyOn(converse.env.log, 'error');
 
-                // Directly invoke onEmojiSelected with the unknown shortname, bypassing DOM button lookup
-                picker_el.onEmojiSelected(':not-an-emoji:');
+                    // Directly invoke onEmojiSelected with the unknown shortname, bypassing DOM button lookup
+                    picker_el.onEmojiSelected(':not-an-emoji:');
 
-                expect(converse.env.log.error).toHaveBeenCalledWith(
-                    'sendReaction: could not convert shortname to emoji: :not-an-emoji:',
-                );
-                expect(api.connection.get().send).not.toHaveBeenCalled();
-                expect(msg_model.get('reactions')).toBeFalsy();
-            }),
+                    expect(converse.env.log.error).toHaveBeenCalledWith(
+                        'sendReaction: could not convert shortname to emoji: :not-an-emoji:',
+                    );
+                    expect(api.connection.get().send).not.toHaveBeenCalled();
+                    expect(msg_model.get('reactions')).toBeFalsy();
+                },
+            ),
         );
 
         it(
@@ -1514,7 +1519,8 @@ describe('Message Reactions (XEP-0444)', function () {
                 // Send juliet's presence with her real JID so the occupant model has it
                 const juliet_bare_jid = 'juliet@capulet.lit';
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence from="${muc_jid}/juliet"
                                     to="${_converse.jid}"
                                     xmlns="jabber:client">
@@ -1559,7 +1565,8 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 // Juliet changes nick to 'julieta' — send updated presence with same real JID
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence from="${muc_jid}/julieta"
                                     to="${_converse.jid}"
                                     xmlns="jabber:client">
@@ -1671,7 +1678,8 @@ describe('Message Reactions (XEP-0444)', function () {
                 // Simulate a disco#info IQ result from the MUC announcing restricted reactions.
                 // Per XEP-0444 §2.2, restrictions are advertised via a XEP-0128 data form.
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<iq type="result"
                             from="${muc_jid}"
                             to="${_converse.bare_jid}"
@@ -1724,7 +1732,8 @@ describe('Message Reactions (XEP-0444)', function () {
                 // renders with the filtered list from the start.
                 // popular_emojis has 5 entries; only 👍 and 🎉 are allowed.
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<iq type="result"
                             from="${muc_jid}"
                             to="${_converse.bare_jid}"
@@ -1789,7 +1798,8 @@ describe('Message Reactions (XEP-0444)', function () {
                 // Per XEP-0444 §2.2 Example 3, a contact's client can advertise
                 // restricted reactions in their disco#info result.
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<iq type="result"
                                 from="${contact_full_jid}"
                                 to="${_converse.jid}"
@@ -2225,12 +2235,13 @@ describe('Popular Reactions PEP publishing', function () {
  * @param {Element} view
  * @returns {string[]}
  */
-const getReactionEmojis = (view) =>
-    Array.from(view.querySelectorAll('converse-reactions .chat-msg__reaction')).map((r) => {
+function getReactionEmojis(view) {
+    return Array.from(view.querySelectorAll('converse-reactions .chat-msg__reaction')).map((r) => {
         const count_el = r.querySelector('.count');
         const count_text = count_el?.textContent ?? '';
         return r.textContent.replace(count_text, '').trim();
     });
+}
 
 /**
  * Returns the reactor counts for each emoji currently rendered in
@@ -2238,7 +2249,7 @@ const getReactionEmojis = (view) =>
  * @param {Element} view
  * @returns {Record<string, number>}
  */
-const getReactionCounts = (view) => {
+function getReactionCounts(view) {
     const result = {};
     for (const r of view.querySelectorAll('converse-reactions .chat-msg__reaction')) {
         const count_el = r.querySelector('.count');
@@ -2247,9 +2258,10 @@ const getReactionCounts = (view) => {
         result[emoji] = parseInt(count_el?.textContent ?? '1', 10);
     }
     return result;
-};
+}
 
-const chooseReactionViaUI = async (view, msgid, emoji) => {
+async function chooseReactionViaUI(view, msgid, emoji) {
+    debugger;
     const msg_el = await u.waitUntil(() => view.querySelector(`.chat-msg[data-msgid="${msgid}"]`));
     const dropdown_el = await u.waitUntil(() => msg_el?.querySelector('converse-message-actions converse-dropdown'));
     const toggle_el = await u.waitUntil(() => dropdown_el?.querySelector('.dropdown-toggle'));
@@ -2279,4 +2291,4 @@ const chooseReactionViaUI = async (view, msgid, emoji) => {
     );
     expect(emoji_link).toBeTruthy();
     emoji_link.click();
-};
+}

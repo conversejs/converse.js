@@ -11,7 +11,6 @@
 import { createPopper } from '@popperjs/core';
 import { CustomElement } from 'shared/components/element.js';
 import { api, u, _converse, EmojiPicker } from '@converse/headless';
-import { __ } from 'i18n';
 import tplReactionPicker from './templates/reaction-picker.js';
 import { sendReaction, getPopularReactions } from './utils.js';
 import 'shared/components/dropdown.js';
@@ -167,12 +166,13 @@ export default class ReactionPicker extends CustomElement {
      * @returns {Promise<void>}
      */
     async toggleEmojiPickerDropdown(ev) {
+        const button = /** @type {HTMLElement} */ (ev.currentTarget);
+
         await this.initEmojiPicker();
         await this.updateComplete;
 
-        const button = /** @type {HTMLElement} */ (ev.currentTarget);
         const dropdown = button.closest('.dropdown');
-        const menu = dropdown?.querySelector('.dropdown-menu');
+        const menu = /** @type {HTMLElement|undefined|null} */ (dropdown?.querySelector('.dropdown-menu'));
         if (!dropdown || !menu) return;
 
         if (menu.classList.contains('show')) {
@@ -188,10 +188,7 @@ export default class ReactionPicker extends CustomElement {
             this._emoji_dropdown_popper?.destroy();
             this._emoji_dropdown_popper = createPopper(button, menu, {
                 placement: 'bottom-start',
-                modifiers: [
-                    { name: 'flip' },
-                    { name: 'offset', options: { offset: [0, 4] } },
-                ],
+                modifiers: [{ name: 'flip' }, { name: 'offset', options: { offset: [0, 4] } }],
             });
         }
     }

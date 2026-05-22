@@ -25,9 +25,9 @@ export default (el) => {
                     type="button"
                     id="${el.picker_id}-dropdown"
                     style="anchor-name: ${anchor_name}"
-                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
                     aria-expanded="false"
-                    @click=${el.initEmojiPicker}
+                    @click=${(ev) => el.toggleEmojiPickerDropdown(ev)}
                 >
                     <converse-icon class="fas fa-plus" size="1em"></converse-icon>
                 </button>

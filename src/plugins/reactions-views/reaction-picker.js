@@ -159,6 +159,32 @@ export default class ReactionPicker extends CustomElement {
 
     /**
      * Initialize the emoji picker for this chat if it doesn't exist
+     * and toggle the dropdown visibility.
+     * @param {Event} ev
+     * @returns {Promise<void>}
+     */
+    async toggleEmojiPickerDropdown(ev) {
+        await this.initEmojiPicker();
+        await this.updateComplete;
+
+        const button = /** @type {HTMLElement} */ (ev.currentTarget);
+        const dropdown = button.closest('.dropdown');
+        const menu = dropdown?.querySelector('.dropdown-menu');
+        if (!dropdown || !menu) return;
+
+        if (menu.classList.contains('show')) {
+            menu.classList.remove('show');
+            button.setAttribute('aria-expanded', 'false');
+            dropdown.dispatchEvent(new CustomEvent('converse:dropdown:hide', { bubbles: true }));
+        } else {
+            menu.classList.add('show');
+            button.setAttribute('aria-expanded', 'true');
+            dropdown.dispatchEvent(new CustomEvent('converse:dropdown:show', { bubbles: true }));
+        }
+    }
+
+    /**
+     * Initialize the emoji picker for this chat if it doesn't exist
      * @returns {Promise<void>}
      */
     async initEmojiPicker() {

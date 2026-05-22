@@ -62,7 +62,7 @@
   "dependencies": {
     "@converse/log": "^0.0.1",
     "@converse/openpromise": "^0.0.4",
-    "@converse/skeletor": "^3.0.0",
+    "@converse/skeletor": "^3.0.1",
     "dayjs": "^1.11.8",
     "dompurify": "^3.0.8",
     "filesize": "^11.0.13",
@@ -72,6 +72,5 @@
     "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
     "strophe.js": "4.0.0-rc0"
-  },
-  "devDependencies": {}
+  }
 }

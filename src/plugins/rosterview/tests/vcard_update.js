@@ -9,6 +9,7 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
         mock.initConverse(converse, ['chatBoxesFetched'], { no_vcard_mocks: true }, async function (_converse) {
             const { api } = _converse;
             const { u, sizzle } = _converse.env;
+                    mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
 
@@ -31,7 +32,9 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
             const base64Image = btoa(String.fromCharCode(...byteArray));
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <iq from='${contact_jid}'
                         xmlns="jabber:client"
                         to='${_converse.session.get('jid')}'
@@ -48,7 +51,8 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
                             <BINVAL>${base64Image}</BINVAL>
                         </PHOTO>
                     </vCard>
-                </iq>`),
+                </iq>`,
+                ),
             );
 
             const contact = await api.contacts.get(contact_jid);
@@ -58,7 +62,8 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
             while (IQ_stanzas.length) IQ_stanzas.pop();
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence xmlns="jabber:client"
                                 to="${_converse.session.get('jid')}"
                                 from="${contact_jid}/resource">
@@ -79,7 +84,9 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
                 </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <iq from='${contact_jid}'
                         xmlns="jabber:client"
                         to='${_converse.session.get('jid')}'
@@ -93,7 +100,8 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
                         <EMAIL><USERID>mercutio@shakespeare.lit</USERID></EMAIL>
                         <PHOTO></PHOTO>
                     </vCard>
-                </iq>`),
+                </iq>`,
+                ),
             );
 
             await u.waitUntil(() => !contact.vcard.get('image'));

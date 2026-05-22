@@ -138,7 +138,7 @@ describe('The Registration Form', function () {
                 xmpp_providers_url: '',
             },
             async function (_converse) {
-                const cbview = _converse.api.controlbox.get();
+                const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
                 cbview.querySelector('.toggle-register-login').click();
 
                 const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
@@ -193,7 +193,7 @@ describe('The Registration Form', function () {
             { auto_login: false, discover_connection_methods: false, allow_registration: true, xmpp_providers_url: '' },
             async function (_converse) {
                 mock.toggleControlBox(_converse);
-                const cbview = _converse.api.controlbox.get();
+                const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
                 const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
                 login_form.click();
 
@@ -632,7 +632,7 @@ describe('The Registration Form', function () {
             },
             async function (_converse) {
                 mock.toggleControlBox(_converse);
-                const cbview = _converse.api.controlbox.get();
+                const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
                 const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
                 login_form.click();
 

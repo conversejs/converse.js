@@ -823,9 +823,9 @@ describe('The Contacts Roster', function () {
                             .map((e) => e.querySelector('li')).length,
                     1000,
                 );
-                await mock.checkHeaderToggling(_converse, [
+                await mock.checkHeaderToggling(_converse,
                     rosterview.querySelector('[data-group="Pending contacts"]'),
-                ]);
+                );
             }),
         );
 
@@ -1078,7 +1078,7 @@ describe('The Contacts Roster', function () {
                 await _addContacts(_converse);
                 const rosterview = document.querySelector('converse-roster');
                 await u.waitUntil(() => sizzle('li', rosterview).filter(u.isVisible).length, 500);
-                await mock.checkHeaderToggling(_converse, [rosterview.querySelector('.roster-group')]);
+                await mock.checkHeaderToggling(_converse, rosterview.querySelector('.roster-group'));
             }),
         );
 

@@ -28,7 +28,7 @@ export function getInitSettings() {
 }
 
 export function getAppSetting(key) {
-    if (Object.keys(DEFAULT_SETTINGS).includes(key)) {
+    if (app_settings && Object.keys(DEFAULT_SETTINGS).includes(key)) {
         return app_settings[key];
     }
 }

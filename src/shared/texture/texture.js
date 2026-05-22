@@ -162,7 +162,7 @@ export class Texture extends String {
                 .map(async (o) => {
                     const template = await this.addHyperlinkTemplate(o);
                     this.addTemplateResult(o.start + local_offset, o.end + local_offset, template);
-                })
+                }),
         );
     }
 
@@ -179,7 +179,7 @@ export class Texture extends String {
             this.addTemplateResult(
                 m.index + offset,
                 m.index + m[0].length + offset,
-                getHyperlinkTemplate(m[0].replace(regex, api.settings.get('geouri_replacement')))
+                getHyperlinkTemplate(m[0].replace(regex, api.settings.get('geouri_replacement'))),
             );
         }
     }
@@ -221,7 +221,7 @@ export class Texture extends String {
                 this.addTemplateResult(
                     begin + local_offset,
                     end + local_offset,
-                    tplMentionWithNick({ ...ref, mention })
+                    tplMentionWithNick({ ...ref, mention }),
                 );
             } else {
                 this.addTemplateResult(begin + local_offset, end + local_offset, tplMention({ ...ref, mention }));
@@ -240,7 +240,7 @@ export class Texture extends String {
         const references = [];
         const text_str = this.toString();
         const mention_ranges = this.mentions.map((m) =>
-            Array.from({ 'length': Number(m.end) }, (_, i) => Number(m.begin) + i)
+            Array.from({ 'length': Number(m.end) }, (_, i) => Number(m.begin) + i),
         );
 
         // Pre-detect URL ranges so that styling directives (e.g. underscores)
@@ -330,14 +330,16 @@ export class Texture extends String {
          */
         await api.trigger('beforeMessageBodyTransformed', this, { synchronous: true });
 
-        this.render_styling && this.addStyling();
+        if (this.render_styling) this.addStyling();
 
         await this.addAnnotations(this.addMentions);
         await this.addAnnotations(this.addHyperlinks);
         await this.addAnnotations(this.addMapURLs);
 
-        await api.emojis.initialize();
-        await this.addAnnotations(this.addEmojis);
+        if (api.emojis) {
+            await api.emojis.initialize();
+            await this.addAnnotations(this.addEmojis);
+        }
 
         /**
          * Synchronous event which provides a hook for transforming a chat message's body text
@@ -351,7 +353,7 @@ export class Texture extends String {
         await api.trigger('afterMessageBodyTransformed', this, { synchronous: true });
 
         this.payload = this.marshall();
-        this.options.show_me_message && this.trimMeMessage();
+        if (this.options.show_me_message) this.trimMeMessage();
         this.payload = this.payload.map((item) => (isString(item) ? item : item.template));
     }
 
@@ -396,7 +398,7 @@ export class Texture extends String {
             });
         return list.reduce(
             (acc, i) => (isString(i) ? [...acc, u.emojis.convertASCII2Emoji(collapseLineBreaks(i))] : [...acc, i]),
-            []
+            [],
         );
     }
 }
@@ -424,7 +426,7 @@ class StylingDirective extends Directive {
         const t = new Texture(
             txt,
             offset,
-            Object.assign(options, { 'show_images': false, 'embed_videos': false, 'embed_audio': false })
+            Object.assign(options, { 'show_images': false, 'embed_videos': false, 'embed_audio': false }),
         );
         return html`${until(StylingDirective.transform(t), html`${t}`)}`;
     }
@@ -459,7 +461,7 @@ export function getDirectiveTemplate(d, text, offset, options) {
             // This big [] corresponds to \s without newlines, to avoid issues when the > is the last character of the line
             .replace(
                 /\n\u200B*>[ \f\r\t\v\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?/g,
-                (m) => `\n${'\u200B'.repeat(m.length - 1)}`
+                (m) => `\n${'\u200B'.repeat(m.length - 1)}`,
             )
             .replace(/\n$/, ''); // Trim line-break at the end
         return template(newtext, offset, options);

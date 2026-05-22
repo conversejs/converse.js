@@ -131,7 +131,7 @@ describe('Requesting Contacts', function () {
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle('.roster-group', rosterview).filter(u.isVisible).length, 700);
             const el = await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Contact requests"]`));
-            await mock.checkHeaderToggling.apply(_converse, [el.parentElement]);
+            await mock.checkHeaderToggling(_converse, el.parentElement);
         }),
     );
 

@@ -361,7 +361,7 @@ describe('XEP-0363: HTTP File Upload', function () {
 
                         api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
-                        let entities = await _converse.api.disco.entities.get();
+                        const entities = await _converse.api.disco.entities.get();
 
                         expect(entities.length).toBe(3);
                         expect(entities.get(_converse.domain).features.length).toBe(2);
@@ -395,10 +395,15 @@ describe('XEP-0363: HTTP File Upload', function () {
                                 ).length,
                         );
                         const IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-                        expect(stanza)
-                            .toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${IQ_id}" to="upload.montague.lit" type="get" xmlns="jabber:client">
+                        expect(stanza).toEqualStanza(
+                            stx`<iq from="romeo@montague.lit/orchard"
+                                id="${IQ_id}"
+                                to="upload.montague.lit"
+                                type="get"
+                                xmlns="jabber:client">
                             <query xmlns="http://jabber.org/protocol/disco#info"/>
-                        </iq>`);
+                        </iq>`,
+                        );
 
                         // Upload service responds and reports a maximum file size of 5MiB
                         stanza = stx`
@@ -421,7 +426,6 @@ describe('XEP-0363: HTTP File Upload', function () {
                             </query>
                         </iq>`;
                         api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
-                        entities = await _converse.api.disco.entities.get();
                         const entity = await api.disco.entities.get('upload.montague.lit');
                         expect(entity.get('parent_jids')).toEqual(['montague.lit']);
                         expect(entity.identities.where({ 'category': 'store' }).length).toBe(1);

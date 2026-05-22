@@ -8,6 +8,7 @@
  * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
  * @typedef {import('@converse/headless/types/shared/types').ChatBoxOrMUC} ChatBoxOrMUC
  */
+import { createPopper } from '@popperjs/core';
 import { CustomElement } from 'shared/components/element.js';
 import { api, u, _converse, EmojiPicker } from '@converse/headless';
 import { __ } from 'i18n';
@@ -88,6 +89,8 @@ export default class ReactionPicker extends CustomElement {
         if (!this.opened) return;
         this.#anchor_rect = null;
         this.popular_reactions_promise = null;
+        this._emoji_dropdown_popper?.destroy();
+        this._emoji_dropdown_popper = null;
         this.opened = false;
     }
 
@@ -176,10 +179,20 @@ export default class ReactionPicker extends CustomElement {
             menu.classList.remove('show');
             button.setAttribute('aria-expanded', 'false');
             dropdown.dispatchEvent(new CustomEvent('converse:dropdown:hide', { bubbles: true }));
+            this._emoji_dropdown_popper?.destroy();
+            this._emoji_dropdown_popper = null;
         } else {
             menu.classList.add('show');
             button.setAttribute('aria-expanded', 'true');
             dropdown.dispatchEvent(new CustomEvent('converse:dropdown:show', { bubbles: true }));
+            this._emoji_dropdown_popper?.destroy();
+            this._emoji_dropdown_popper = createPopper(button, menu, {
+                placement: 'bottom-start',
+                modifiers: [
+                    { name: 'flip' },
+                    { name: 'offset', options: { offset: [0, 4] } },
+                ],
+            });
         }
     }
 

@@ -10,18 +10,18 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./src/types/index.d.ts",
+        "types": "./dist/converse.d.ts",
         "default": "./dist/converse.esm.js"
       },
       "require": {
-        "types": "./src/types/index.d.ts",
+        "types": "./dist/converse.d.ts",
         "default": "./dist/converse.js"
       }
     },
     "./dist/*": "./dist/*",
     "./shared/*": "./src/shared/*"
   },
-  "types": "./src/types/index.d.ts",
+  "types": "./dist/converse.d.ts",
   "browser": "dist/converse.js",
   "main": "dist/converse.js",
   "module": "dist/converse.esm.js",
@@ -71,7 +71,7 @@
     "test:browser": "karma start karma.conf --browsers Chrome",
     "test:headless": "cd src/headless && karma start karma.conf.js --single-run",
     "test:headless:browser": "cd src/headless && karma start karma.conf.js --browsers Chrome",
-    "types": "tsc -p ./src/log/tsconfig.json && tsc -p ./src/headless/tsconfig.json && tsc",
+    "types": "tsc -p ./src/log/tsconfig.json && tsc -p ./src/headless/tsconfig.json && tsc && dts-bundle-generator -o dist/converse.d.ts src/types/index.d.ts --project tsconfig.json --no-check && dts-bundle-generator -o src/headless/dist/converse-headless.d.ts src/headless/types/index.d.ts --project src/headless/tsconfig.json --no-check",
     "types:check": "tsc --noEmit",
     "watch": "concurrently \"npm run watch:headless\" \"npm run watch:main\"",
     "watch:headless": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.headless.js --mode=development",
@@ -117,6 +117,7 @@
     "clean-css-cli": "^5.6.2",
     "concurrently": "^9.2.1",
     "css-loader": "^7.1.2",
+    "dts-bundle-generator": "^9.5.1",
     "eslint": "^10.0.2",
     "fast-text-encoding": "^1.0.3",
     "globals": "^17.3.0",

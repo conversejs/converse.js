@@ -12,18 +12,18 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./types/index.d.ts",
+        "types": "./dist/converse-headless.d.ts",
         "default": "./dist/converse-headless.esm.js"
       },
       "require": {
-        "types": "./types/index.d.ts",
+        "types": "./dist/converse-headless.d.ts",
         "default": "./dist/converse-headless.js"
       }
     },
     "./dist/*": "./dist/*"
   },
   "main": "./dist/converse-headless.js",
-  "types": "./types/index.d.ts",
+  "types": "./dist/converse-headless.d.ts",
   "module": "./dist/converse-headless.esm.js",
   "files": [
     "README.md",
@@ -56,7 +56,7 @@
   "scripts": {
     "test": "karma start karma.conf.js",
     "test:browser": "karma start karma.conf --browsers Chrome",
-    "types": "tsc -p tsconfig.json"
+    "types": "tsc -p tsconfig.json && dts-bundle-generator -o dist/converse-headless.d.ts types/index.d.ts --project tsconfig.json --no-check"
   },
   "bugs": {
     "url": "https://github.com/conversejs/converse.js/issues"

@@ -6,3 +6,9 @@ export type CompressionOptions = {
     maxUncompressedSize: number;
 };
 
+export type XFormFieldOptions = {
+    domain?: string;
+    fixed_username?: string;
+    new_password?: boolean;
+};
+

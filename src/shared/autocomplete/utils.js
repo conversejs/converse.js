@@ -4,34 +4,56 @@ import { converse } from '@converse/headless';
 const u = converse.env.utils;
 
 export const helpers = {
+    /**
+     * @param {string|HTMLElement} expr
+     * @param {HTMLElement} [el]
+     * @returns {HTMLElement|null}
+     */
     getElement(expr, el) {
         return typeof expr === 'string' ? (el || document).querySelector(expr) : expr || null;
     },
 
+    /**
+     * @param {HTMLElement} element
+     * @param {Record<string, Function>} o
+     */
     bind(element, o) {
         if (element) {
             for (var event in o) {
                 if (!Object.prototype.hasOwnProperty.call(o, event)) {
                     continue;
                 }
-                const callback = o[event];
-                event.split(/\s+/).forEach((event) => element.addEventListener(event, callback));
+                const callback = /** @type {EventListener} */ (o[event]);
+                event
+                    .split(/\s+/)
+                    .forEach((event) => element.addEventListener(event, /** @type {EventListener} */ (callback)));
             }
         }
     },
 
+    /**
+     * @param {HTMLElement} element
+     * @param {Record<string, Function>} o
+     */
     unbind(element, o) {
         if (element) {
             for (var event in o) {
                 if (!Object.prototype.hasOwnProperty.call(o, event)) {
                     continue;
                 }
-                const callback = o[event];
-                event.split(/\s+/).forEach((event) => element.removeEventListener(event, callback));
+                const callback = /** @type {EventListener} */ (o[event]);
+                event
+                    .split(/\s+/)
+                    .forEach((event) => element.removeEventListener(event, /** @type {EventListener} */ (callback)));
             }
         }
     },
 
+    /**
+     * @param {string} word
+     * @param {string[]} ac_triggers
+     * @returns {boolean}
+     */
     isMention(word, ac_triggers) {
         return ac_triggers.includes(word[0]) || (u.isMentionBoundary(word[0]) && ac_triggers.includes(word[1]));
     },
@@ -66,8 +88,8 @@ export function FILTER_STARTSWITH(text, input) {
 }
 
 /**
- * @param {string} a
- * @param {string} b
+ * @param {import('./suggestion').default} a
+ * @param {import('./suggestion').default} b
  * @returns {number}
  */
 export function SORT_BY_LENGTH(a, b) {
@@ -77,6 +99,11 @@ export function SORT_BY_LENGTH(a, b) {
     return a < b ? -1 : 1;
 }
 
+/**
+ * @param {import('./suggestion').default} a
+ * @param {import('./suggestion').default} b
+ * @return {number}
+ */
 export const SORT_BY_QUERY_POSITION = function (a, b) {
     const query = a.query.toLowerCase();
     const x = a.label.toLowerCase().indexOf(query);
@@ -105,7 +132,6 @@ export function getAutoCompleteItem(text, input) {
         </li>
     `;
 }
-
 
 Object.assign(u, {
     autocomplete: {

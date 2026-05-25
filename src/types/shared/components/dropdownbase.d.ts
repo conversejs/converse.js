@@ -3,7 +3,6 @@ export default class DropdownBase extends CustomElement {
     button: HTMLButtonElement;
     /** @param {MouseEvent} ev */
     _onButtonClick: (ev: MouseEvent) => void;
-    connectedCallback(): void;
     /**
      * Override in subclass to register event listeners.
      * Called automatically from connectedCallback().
@@ -19,7 +18,7 @@ export default class DropdownBase extends CustomElement {
     /** Show the dropdown */
     show(): void;
     _popper: import("@popperjs/core").Instance;
-    _onDocumentClick: (ev: any) => void;
+    _onDocumentClick: (ev: MouseEvent) => void;
     /** Hide the dropdown */
     hide(): void;
 }

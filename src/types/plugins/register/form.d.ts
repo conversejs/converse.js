@@ -27,14 +27,15 @@ declare class RegistrationForm extends CustomElement {
         };
     };
     urls: any[];
-    fields: {};
+    /** @type {Record<string, any>} */
+    fields: Record<string, any>;
     domain: any;
     alert_type: string;
-    xmpp_providers: any[];
+    /** @type {string[]} */
+    xmpp_providers: string[];
     expanded_provider: any;
     setErrorMessage: (m: string) => void;
     setFeedbackMessage: (m: string) => void;
-    initialize(): void;
     status: number;
     render(): import("lit-html").TemplateResult<1>;
     /**

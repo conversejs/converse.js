@@ -65,7 +65,7 @@ export class Texture extends String {
      *  If set to `true`, then videos will always be rendered with a video
      *  player. If set to `false`, they won't, and if not defined, then the `embed_videos` setting
      *  is used to determine whether they should be rendered as videos or as hyperlinks.
-     * @param {Array} [options.mentions] - An array of mention references
+     * @param {import('./types').Mention[]} [options.mentions] - An array of mention references
      * @param {MediaURLMetadata[]} [options.media_urls] - An array of {@link MediaURLMetadata} objects,
      *  used to render media such as images, videos and audio. It might not be
      *  possible to have the media metadata available, so if this value is
@@ -240,7 +240,7 @@ export class Texture extends String {
         const references = [];
         const text_str = this.toString();
         const mention_ranges = this.mentions.map((m) =>
-            Array.from({ 'length': Number(m.end) }, (_, i) => Number(m.begin) + i),
+            Array.from({ length: Number(m.end) }, (_, i) => Number(m.begin) + i),
         );
 
         // Pre-detect URL ranges so that styling directives (e.g. underscores)
@@ -439,12 +439,12 @@ const renderStyling = directive(StylingDirective);
 const styling_templates = {
     // m is the chatbox model
     // i is the offset of this directive relative to the start of the original message
-    emphasis: (txt, i, options) => html`<span class="styling-directive">_</span><i>${renderStyling(txt, i, options)}</i><span class="styling-directive">_</span>`,
-    preformatted: (txt) => html`<span class="styling-directive">\`</span><code>${txt}</code><span class="styling-directive">\`</span>`,
-    preformatted_block: (txt) => html`<div class="styling-directive">\`\`\`</div><pre><code class="block">${txt}</code></pre><div class="styling-directive">\`\`\`</div>`,
-    quote: (txt, i, options) => html`<blockquote>${renderStyling(txt, i, options)}</blockquote>`,
-    strike: (txt, i, options) => html`<span class="styling-directive">~</span><del>${renderStyling(txt, i, options)}</del><span class="styling-directive">~</span>`,
-    strong: (txt, i, options) => html`<span class="styling-directive">*</span><b>${renderStyling(txt, i, options)}</b><span class="styling-directive">*</span>`,
+    emphasis: /** @param {string} txt @param {number} i @param {object} options */ (txt, i, options) => html`<span class="styling-directive">_</span><i>${renderStyling(txt, i, options)}</i><span class="styling-directive">_</span>`,
+    preformatted: /** @param {string} txt */ (txt) => html`<span class="styling-directive">\`</span><code>${txt}</code><span class="styling-directive">\`</span>`,
+    preformatted_block: /** @param {string} txt */ (txt) => html`<div class="styling-directive">\`\`\`</div><pre><code class="block">${txt}</code></pre><div class="styling-directive">\`\`\`</div>`,
+    quote: /** @param {string} txt @param {number} i @param {object} options */ (txt, i, options) => html`<blockquote>${renderStyling(txt, i, options)}</blockquote>`,
+    strike: /** @param {string} txt @param {number} i @param {object} options */ (txt, i, options) => html`<span class="styling-directive">~</span><del>${renderStyling(txt, i, options)}</del><span class="styling-directive">~</span>`,
+    strong: /** @param {string} txt @param {number} i @param {object} options */ (txt, i, options) => html`<span class="styling-directive">*</span><b>${renderStyling(txt, i, options)}</b><span class="styling-directive">*</span>`,
 };
 
 /**
@@ -454,7 +454,7 @@ const styling_templates = {
  * @param {object} options
  */
 export function getDirectiveTemplate(d, text, offset, options) {
-    const template = styling_templates[styling_map[d].name];
+    const template = styling_templates[/** @type {{name: string, type: string}} */ (styling_map[d]).name];
     if (isQuoteDirective(d)) {
         const newtext = text
             // Don't show the directive itself

@@ -9,11 +9,11 @@ import tplModeratorTools from './templates/moderator-tools.js';
 
 import './styles/moderator-tools.scss';
 
-const { u } = converse.env
+const { u } = converse.env;
 const { AFFILIATIONS, ROLES } = constants;
 
 export default class ModeratorTools extends CustomElement {
-    static get properties () {
+    static get properties() {
         return {
             affiliation: { type: String },
             affiliations_filter: { type: String, attribute: false },
@@ -29,7 +29,7 @@ export default class ModeratorTools extends CustomElement {
         };
     }
 
-    constructor () {
+    constructor() {
         super();
         this.jid = null;
         this.tab = 'affiliations';
@@ -37,26 +37,33 @@ export default class ModeratorTools extends CustomElement {
         this.affiliations_filter = '';
         this.role = '';
         this.roles_filter = '';
+        /** @type {import('@converse/headless').MUCOccupant[]} */
+        this.users_with_affiliation = null;
+        /** @type {import('@converse/headless').MUCOccupant[]} */
+        this.users_with_role = null;
 
-        this.addEventListener("affiliationChanged", () => {
+        this.addEventListener('affiliationChanged', () => {
             this.alert(__('Affiliation changed'), 'primary');
             this.onSearchAffiliationChange();
-            this.requestUpdate()
+            this.requestUpdate();
         });
 
-        this.addEventListener("roleChanged", () => {
+        this.addEventListener('roleChanged', () => {
             this.alert(__('Role changed'), 'primary');
-            this.requestUpdate()
+            this.requestUpdate();
         });
     }
 
-    updated (changed) {
-        changed.has('role') && this.onSearchRoleChange();
-        changed.has('affiliation') && this.onSearchAffiliationChange();
-        changed.has('jid') && changed.get('jid') && this.initialize();
+    /**
+     * @param {import('lit').PropertyValues} changed
+     */
+    updated(changed) {
+        if (changed.has('role')) this.onSearchRoleChange();
+        if (changed.has('affiliation')) this.onSearchAffiliationChange();
+        if (changed.has('jid') && changed.get('jid')) this.initialize();
     }
 
-    async initialize () {
+    async initialize() {
         this.initialized = getOpenPromise();
         const muc = await api.rooms.get(this.jid);
         await muc.initialized;
@@ -64,7 +71,7 @@ export default class ModeratorTools extends CustomElement {
         this.initialized.resolve();
     }
 
-    render () {
+    render() {
         if (this.muc?.occupants) {
             const occupant = this.muc.occupants.getOwnOccupant();
             return tplModeratorTools(this, {
@@ -73,19 +80,19 @@ export default class ModeratorTools extends CustomElement {
                 'alert_type': this.alert_type,
                 'assignable_affiliations': occupant.getAssignableAffiliations(),
                 'assignable_roles': occupant.getAssignableRoles(),
-                'filterAffiliationResults': ev => this.filterAffiliationResults(ev),
-                'filterRoleResults': ev => this.filterRoleResults(ev),
+                'filterAffiliationResults': /** @param {Event} ev */ (ev) => this.filterAffiliationResults(ev),
+                'filterRoleResults': /** @param {Event} ev */ (ev) => this.filterRoleResults(ev),
                 'loading_users_with_affiliation': this.loading_users_with_affiliation,
-                'queryAffiliation': ev => this.queryAffiliation(ev),
-                'queryRole': ev => this.queryRole(ev),
+                'queryAffiliation': /** @param {Event} ev */ (ev) => this.queryAffiliation(ev),
+                'queryRole': /** @param {Event} ev */ (ev) => this.queryRole(ev),
                 'queryable_affiliations': AFFILIATIONS.filter(
-                    a => !api.settings.get('modtools_disable_query').includes(a)
+                    (a) => !api.settings.get('modtools_disable_query').includes(a),
                 ),
-                'queryable_roles': ROLES.filter(a => !api.settings.get('modtools_disable_query').includes(a)),
+                'queryable_roles': ROLES.filter((a) => !api.settings.get('modtools_disable_query').includes(a)),
                 'roles_filter': this.roles_filter,
-                'switchTab': ev => this.switchTab(ev),
+                'switchTab': /** @param {Event} ev */ (ev) => this.switchTab(ev),
                 'tab': this.tab,
-                'toggleForm': ev => this.toggleForm(ev),
+                'toggleForm': /** @param {Event} ev */ (ev) => this.toggleForm(ev),
                 'users_with_affiliation': this.users_with_affiliation,
                 'users_with_role': this.users_with_role,
             });
@@ -94,14 +101,14 @@ export default class ModeratorTools extends CustomElement {
         }
     }
 
-    switchTab (ev) {
+    switchTab(/** @type {Event} */ ev) {
         ev.stopPropagation();
         ev.preventDefault();
-        this.tab = ev.target.getAttribute('data-name');
+        this.tab = /** @type {string} */ (/** @type {HTMLElement} */ (ev.target).getAttribute('data-name'));
         this.requestUpdate();
     }
 
-    async onSearchAffiliationChange () {
+    async onSearchAffiliationChange() {
         if (!this.affiliation) return;
 
         await this.initialized;
@@ -123,7 +130,7 @@ export default class ModeratorTools extends CustomElement {
         this.loading_users_with_affiliation = false;
     }
 
-    async onSearchRoleChange () {
+    async onSearchRoleChange() {
         if (!this.role) {
             return;
         }
@@ -132,7 +139,7 @@ export default class ModeratorTools extends CustomElement {
         this.users_with_role = this.muc.getOccupantsWithRole(this.role);
     }
 
-    shouldFetchAffiliationsList () {
+    shouldFetchAffiliationsList() {
         const affiliation = this.affiliation;
         if (affiliation === 'none') {
             return false;
@@ -145,7 +152,8 @@ export default class ModeratorTools extends CustomElement {
         }
     }
 
-    toggleForm (ev) {
+    /** @param {Event} ev */
+    toggleForm(ev) {
         ev.stopPropagation();
         ev.preventDefault();
         const toggle = u.ancestor(ev.target, '.toggle-form');
@@ -158,43 +166,43 @@ export default class ModeratorTools extends CustomElement {
         }
     }
 
-    filterRoleResults (ev) {
-        this.roles_filter = ev.target.value;
+    /** @param {Event} ev */
+    filterRoleResults(ev) {
+        this.roles_filter = /** @type {HTMLInputElement} */ (ev.target).value;
         this.requestUpdate();
     }
 
-    filterAffiliationResults (ev) {
-        this.affiliations_filter = ev.target.value;
+    filterAffiliationResults(/** @type {Event} */ ev) {
+        this.affiliations_filter = /** @type {HTMLInputElement} */ (ev.target).value;
     }
 
-    queryRole (ev) {
+    queryRole(/** @type {Event} */ ev) {
         ev.stopPropagation();
         ev.preventDefault();
-        const data = new FormData(ev.target);
-        const role = /** @type {string} */(data.get('role'));
+        const data = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+        const role = /** @type {string} */ (data.get('role'));
         this.role = null;
         this.role = role;
     }
 
-    queryAffiliation (ev) {
+    queryAffiliation(/** @type {Event} */ ev) {
         ev.stopPropagation();
         ev.preventDefault();
-        const data = new FormData(ev.target);
-        const affiliation = /** @type {NonOutcastAffiliation} */(data.get('affiliation'));
+        const data = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+        const affiliation = /** @type {NonOutcastAffiliation} */ (data.get('affiliation'));
         this.affiliation = null;
         this.affiliation = affiliation;
     }
 
-    alert (message, type) {
+    alert(/** @type {string} */ message, /** @type {string} */ type) {
         this.alert_message = message;
         this.alert_type = type;
     }
 
-    clearAlert () {
+    clearAlert() {
         this.alert_message = undefined;
         this.alert_type = undefined;
     }
-
 }
 
 api.elements.define('converse-modtools', ModeratorTools);

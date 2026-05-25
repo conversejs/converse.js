@@ -14,7 +14,7 @@ const { siblingIndex } = u;
 export class AutoComplete extends EventEmitter(Object) {
     /**
      * @param {HTMLElement} el
-     * @param {any} config
+     * @param {import('./types').AutoCompleteConfig} config
      */
     constructor(el, config = {}) {
         super();
@@ -23,10 +23,10 @@ export class AutoComplete extends EventEmitter(Object) {
         this.is_opened = false;
         this.match_current_word = false; // Match only the current word, otherwise all input is matched
         this.suffix = ' '; // String to append after the autocompleted value
-        this.sort = config.sort === false ? null : SORT_BY_QUERY_POSITION;
+        this.sort = typeof config.sort === 'boolean' && config.sort === false ? null : SORT_BY_QUERY_POSITION;
         this.filter = FILTER_CONTAINS;
-        this.ac_triggers = []; // Array of keys (`ev.key`) values that will trigger auto-complete
-        this.include_triggers = []; // Array of trigger keys which should be included in the returned value
+        /** @type {string[]} */ this.ac_triggers = []; // Array of keys (`ev.key`) values that will trigger auto-complete
+        /** @type {string[]} */ this.include_triggers = []; // Array of trigger keys which should be included in the returned value
         this.min_chars = 2;
         this.max_items = 10;
         this.auto_first = false; // Should the first element be automatically selected?
@@ -41,7 +41,7 @@ export class AutoComplete extends EventEmitter(Object) {
         this.input = /** @type {HTMLInputElement} */ (this.container.querySelector('.suggestion-box__input'));
         this.input.setAttribute('aria-autocomplete', 'list');
 
-        this.ul = /** @type {HTMLElement} */(this.container.querySelector('.suggestion-box__results'));
+        this.ul = /** @type {HTMLElement} */ (this.container.querySelector('.suggestion-box__results'));
         this.status = this.container.querySelector('.suggestion-box__additions');
 
         Object.assign(this, config);
@@ -59,28 +59,32 @@ export class AutoComplete extends EventEmitter(Object) {
     }
 
     bindEvents() {
-        this._events = {
-            input: [{
-                callback: () => this.close({ reason: 'blur' }),
-                context: undefined,
-                ctx: undefined
-            }],
-            form: [{
-                callback: () => this.close({ reason: 'submit' }),
-                context: undefined,
-                ctx: undefined
-            }],
+        /** @type {Record<string, Array<{callback: Function, context?: any, ctx?: any}>>} */ this._events = {
+            input: [
+                {
+                    callback: () => this.close({ reason: 'blur' }),
+                    context: undefined,
+                    ctx: undefined,
+                },
+            ],
+            form: [
+                {
+                    callback: () => this.close({ reason: 'submit' }),
+                    context: undefined,
+                    ctx: undefined,
+                },
+            ],
             ul: [
                 {
                     callback: (ev) => this.onMouseDown(ev),
                     context: undefined,
-                    ctx: undefined
+                    ctx: undefined,
                 },
                 {
                     callback: (ev) => this.onMouseOver(ev),
                     context: undefined,
-                    ctx: undefined
-                }
+                    ctx: undefined,
+                },
             ],
         };
         // The helpers.bind function expects event names to be passed differently
@@ -100,15 +104,18 @@ export class AutoComplete extends EventEmitter(Object) {
             this._list = list.split(/\s*,\s*/);
         } else {
             // Element or CSS selector
-            const children = helpers.getElement(list)?.children || [];
-            this._list = Array.from(children)
-                .filter((el) => !el.disabled)
-                .map((el) => {
-                    const text = el.textContent.trim();
-                    const value = el.value || text;
-                    const label = el.label || text;
-                    return value !== '' ? { label, value } : null;
-                })
+            const el = helpers.getElement(list);
+            const children = el?.children;
+            this._list = Array.from(children || [])
+                .filter(/** @param {HTMLOptionElement} el */ (el) => !el.disabled)
+                .map(
+                    /** @param {HTMLOptionElement} el */ (el) => {
+                        const text = el.textContent.trim();
+                        const value = el.value || text;
+                        const label = el.label || text;
+                        return value !== '' ? { label, value } : null;
+                    },
+                )
                 .filter((i) => i);
         }
 
@@ -228,7 +235,7 @@ export class AutoComplete extends EventEmitter(Object) {
             this.auto_completing = false;
             this.trigger('suggestion-box-selectcomplete', {
                 text: suggestion, // DEPRECATED
-                suggestion
+                suggestion,
             });
         }
     }
@@ -281,7 +288,7 @@ export class AutoComplete extends EventEmitter(Object) {
 
         if (
             [converse.keycodes.SHIFT, converse.keycodes.META, converse.keycodes.ESCAPE, converse.keycodes.ALT].includes(
-                ev.key
+                ev.key,
             )
         ) {
             return;
@@ -338,8 +345,8 @@ export class AutoComplete extends EventEmitter(Object) {
             this.index = -1;
             this.suggestions = list
                 .map(
-                    /** @param {import('./types').XHRResultItem} item */ (item) =>
-                        new Suggestion(this.data(item, value), value)
+                    /** @param {import('./types').AutoCompleteData} item */ (item) =>
+                        new Suggestion(this.data(item, value), value),
                 )
                 .filter(/** @param {Suggestion} item */ ({ value: text }) => this.filter(text, value));
 

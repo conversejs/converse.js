@@ -28,7 +28,7 @@ export default (el) => {
 
     const contacts_map = roster.reduce((acc, contact) => populateContactsMap(acc, contact), {});
     const groupnames = Object.keys(contacts_map).filter((contact) =>
-        shouldShowGroup(contact, /** @type {any} */ (el.model)),
+        shouldShowGroup(contact, /** @type {import('@converse/skeletor').Model} */ (el.model)),
     );
     const is_closed = el.model.get('toggle_state') === CLOSED;
     groupnames.sort(groupsComparator);
@@ -156,7 +156,7 @@ export default (el) => {
                 (n) => n,
                 (name) => {
                     const contacts = contacts_map[name].filter((c) =>
-                        shouldShowContact(c, name, /** @type {any} */ (el.model)),
+                        shouldShowContact(c, name, /** @type {import('@converse/skeletor').Model} */ (el.model)),
                     );
                     contacts.sort(contactsComparator);
                     return contacts.length ? tplGroup({ contacts, name }) : '';

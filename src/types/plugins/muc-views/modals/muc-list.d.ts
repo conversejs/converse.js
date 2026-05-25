@@ -1,5 +1,8 @@
 export default class MUCListModal extends BaseModal {
-    constructor(options: any);
+    /**
+     * @typedef {import('shared/types').EventWithInputTarget} EventWithInputTarget
+     */
+    constructor(options: import("@converse/skeletor").ModelOptions);
     items: any[];
     loading_items: boolean;
     renderModal(): import("lit-html").TemplateResult<1>;
@@ -17,18 +20,20 @@ export default class MUCListModal extends BaseModal {
      * Handle the IQ stanza returned from the server, containing
      * all its public groupchats.
      * @method _converse.ChatRoomView#onRoomsFound
-     * @param {HTMLElement} [iq]
+     * @param {Element} [iq]
      */
-    onRoomsFound(iq?: HTMLElement): boolean;
+    onRoomsFound(iq?: Element): boolean;
     /**
      * Send an IQ stanza to the server asking for all groupchats
      * @private
      * @method _converse.ChatRoomView#updateRoomsList
      */
     private updateRoomsList;
-    showRooms(ev: any): void;
-    setDomainFromEvent(ev: any): void;
-    setNick(ev: any): void;
+    showRooms(ev: Event): void;
+    /** @param {EventWithInputTarget} ev */
+    setDomainFromEvent(ev: import("shared/types").EventWithInputTarget): void;
+    /** @param {EventWithInputTarget} ev */
+    setNick(ev: import("shared/types").EventWithInputTarget): void;
 }
 import BaseModal from 'plugins/modal/modal.js';
 //# sourceMappingURL=muc-list.d.ts.map

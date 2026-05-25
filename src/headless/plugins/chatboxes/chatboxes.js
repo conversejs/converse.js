@@ -12,7 +12,7 @@ import { initStorage } from '../../utils/storage.js';
 class ChatBoxes extends Collection {
     /**
      * @param {ChatBoxBase[]} models
-     * @param {object} options
+     * @param {import('@converse/skeletor').CollectionOptions<ChatBoxBase>} options
      */
     constructor(models, options) {
         super(models, Object.assign({ comparator: 'time_opened' }, options));
@@ -26,11 +26,7 @@ class ChatBoxes extends Collection {
         /**
          * Triggered once all chat boxes have been recreated from the browser cache
          * @event _converse#chatBoxesFetched
-         * @type {object}
-         * @property {ChatBoxBase} chatbox
-         * @property {Element} stanza
-         * @example _converse.api.listen.on('chatBoxesFetched', obj => { ... });
-         * @example _converse.api.waitUntil('chatBoxesFetched').then(() => { ... });
+         * @example _converse.api.listen.on('chatBoxesFetched', () => { ... });
          */
         api.trigger('chatBoxesFetched');
     }

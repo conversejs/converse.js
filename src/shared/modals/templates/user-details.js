@@ -30,7 +30,11 @@ function getPrettySubscription(contact) {
 function tplUnblockButton(el) {
     const i18n_block = __('Remove from blocklist');
     return html`
-        <button type="button" @click="${(ev) => el.unblockContact(ev)}" class="btn btn-danger">
+        <button
+            type="button"
+            @click="${/** @param {MouseEvent} ev */ (ev) => el.unblockContact(ev)}"
+            class="btn btn-danger"
+        >
             <converse-icon class="fas fa-times" color="var(--background-color)" size="1em"></converse-icon
             >&nbsp;${i18n_block}
         </button>
@@ -43,7 +47,11 @@ function tplUnblockButton(el) {
 function tplBlockButton(el) {
     const i18n_block = __('Add to blocklist');
     return html`
-        <button type="button" @click="${(ev) => el.blockContact(ev)}" class="btn btn-danger">
+        <button
+            type="button"
+            @click="${/** @param {MouseEvent} ev */ (ev) => el.blockContact(ev)}"
+            class="btn btn-danger"
+        >
             <converse-icon class="fas fa-list-ul" color="var(--background-color)" size="1em"></converse-icon
             >&nbsp;${i18n_block}
         </button>
@@ -56,7 +64,11 @@ function tplBlockButton(el) {
 function tplAddButton(el) {
     const i18n_add_contact = __('Add as contact');
     return html`
-        <button type="button" @click="${(ev) => el.addContact(ev)}" class="btn btn-success add-contact">
+        <button
+            type="button"
+            @click="${/** @param {MouseEvent} ev */ (ev) => el.addContact(ev)}"
+            class="btn btn-success add-contact"
+        >
             <converse-icon class="fas fa-user-plus" color="var(--background-color)" size="1em"></converse-icon
             >&nbsp;${i18n_add_contact}
         </button>
@@ -69,7 +81,11 @@ function tplAddButton(el) {
 function tplRemoveButton(el) {
     const i18n_remove_contact = __('Remove as contact');
     return html`
-        <button type="button" @click="${(ev) => el.removeContact(ev)}" class="btn btn-danger remove-contact">
+        <button
+            type="button"
+            @click="${/** @param {MouseEvent} ev */ (ev) => el.removeContact(ev)}"
+            class="btn btn-danger remove-contact"
+        >
             <converse-icon class="fas fa-trash-alt" color="var(--background-color)" size="1em"></converse-icon
             >&nbsp;${i18n_remove_contact}
         </button>
@@ -84,7 +100,7 @@ function tplAcceptButton(el) {
     return html`
         <button
             type="button"
-            @click="${(ev) => el.acceptContactRequest(ev)}"
+            @click="${/** @param {MouseEvent} ev */ (ev) => el.acceptContactRequest(ev)}"
             class="btn btn-success accept-contact-request"
         >
             <converse-icon class="fas fa-user-plus" color="var(--background-color)" size="1em"></converse-icon
@@ -101,7 +117,7 @@ function tplDeclineButton(el) {
     return html`
         <button
             type="button"
-            @click="${(ev) => el.declineContactRequest(ev)}"
+            @click="${/** @param {MouseEvent} ev */ (ev) => el.declineContactRequest(ev)}"
             class="btn btn-danger decline-contact-request"
         >
             <converse-icon class="fas fa-user-plus" color="var(--background-color)" size="1em"></converse-icon
@@ -134,7 +150,7 @@ export function tplUserDetailsModal(el) {
                     tplBlockButton(el);
                 }
             }
-        }
+        },
     );
 
     const i18n_address = __('XMPP Address');
@@ -157,7 +173,7 @@ export function tplUserDetailsModal(el) {
                 href="#profile-tabpanel"
                 aria-controls="profile-tabpanel"
                 role="tab"
-                @click="${(ev) => el.switchTab(ev)}"
+                @click="${/** @param {MouseEvent} ev */ (ev) => el.switchTab(ev)}"
                 data-name="profile"
                 data-toggle="tab"
                 >${i18n_profile}</a
@@ -174,12 +190,12 @@ export function tplUserDetailsModal(el) {
                     href="#edit-tabpanel"
                     aria-controls="edit-tabpanel"
                     role="tab"
-                    @click="${(ev) => el.switchTab(ev)}"
+                    @click="${/** @param {MouseEvent} ev */ (ev) => el.switchTab(ev)}"
                     data-name="edit"
                     data-toggle="tab"
                     >${ii18n_edit}</a
                 >
-            </li>`
+            </li>`,
         );
     }
 
@@ -192,12 +208,12 @@ export function tplUserDetailsModal(el) {
                     href="#omemo-tabpanel"
                     aria-controls="omemo-tabpanel"
                     role="tab"
-                    @click="${(ev) => el.switchTab(ev)}"
+                    @click="${/** @param {MouseEvent} ev */ (ev) => el.switchTab(ev)}"
                     data-name="omemo"
                     data-toggle="tab"
                     >${i18n_omemo}</a
                 >
-            </li>`
+            </li>`,
         );
     }
 
@@ -283,7 +299,7 @@ export function tplUserDetailsModal(el) {
                               <div class="col-sm-8">
                                   ${groups.map(
                                       /** @param {string} group */ (group) =>
-                                          html`<span class="badge badge-roster-group me-1">${group}</span>`
+                                          html`<span class="badge badge-roster-group me-1">${group}</span>`,
                                   )}
                               </div>
                           </div>
@@ -300,7 +316,7 @@ export function tplUserDetailsModal(el) {
                 ${!contact
                     ? until(
                           blocking_supported.then(() => tplBlockButton(el)),
-                          ''
+                          '',
                       )
                     : ''}
             </div>
@@ -313,7 +329,10 @@ export function tplUserDetailsModal(el) {
                       aria-labelledby="edit-tab"
                   >
                       ${el.tab === 'edit'
-                          ? html`<form class="converse-form" @submit=${(ev) => el.updateContact(ev)}>
+                          ? html`<form
+                                    class="converse-form"
+                                    @submit=${/** @param {MouseEvent} ev */ (ev) => el.updateContact(ev)}
+                                >
                                     <div class="mb-3">
                                         <label class="form-label clearfix" for="name">${__('Name')}:</label>
                                         <input type="text" name="name" value="${name}" class="form-control" />
@@ -336,7 +355,7 @@ export function tplUserDetailsModal(el) {
                                 ${allow_contact_removal && is_roster_contact ? tplRemoveButton(el) : ''}
                                 ${until(
                                     blocking_supported.then(() => tplBlockButton(el)),
-                                    ''
+                                    '',
                                 )}`
                           : ''}
                   </div>`

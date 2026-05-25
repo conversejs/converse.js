@@ -22,7 +22,14 @@ export function getHeaders(url: string): Promise<Headers>;
  * @param {string} text
  */
 export function collapseLineBreaks(text: string): string;
-export function tplMention(o: any): import("lit-html").TemplateResult<1>;
+/**
+ * @param {{uri: string, mention: string}} o
+ * @returns {import('lit').TemplateResult}
+ */
+export function tplMention(o: {
+    uri: string;
+    mention: string;
+}): import("lit").TemplateResult;
 /**
  * @param {import('./texture').Texture} text
  * @param {number} i
@@ -49,7 +56,10 @@ export function containsDirectives(text: import("./texture").Texture): boolean;
  * @returns {Array<[number, number]>} - Array of [start, end] index pairs for detected URLs
  */
 export function getURLRanges(string: string): Array<[number, number]>;
-export function tplMentionWithNick(o: any): import("lit-html").TemplateResult<1>;
+export function tplMentionWithNick(o: {
+    uri: string;
+    mention: string;
+}): import("lit-html").TemplateResult<1>;
 declare const _default: {
     getRandomInt: typeof import("headless/types/utils/index.js").getRandomInt;
     getUniqueId: typeof import("headless/types/utils/index.js").getUniqueId;
@@ -79,7 +89,12 @@ declare const _default: {
     getLongestSubstring(string: string, candidates: string[]): string;
     isString(s: any): boolean;
     getDefaultStorageType(): import("headless/types/utils/types.js").StorageType;
-    createStore(id: string, type: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").BrowserStorage;
+    createStore(id: string, type: import(
+    /**
+     * @param {{uri: string, mention: string}} o
+     * @returns {import('lit').TemplateResult}
+     */
+    "headless/types/utils/types.js").StorageType): import("@converse/skeletor").BrowserStorage;
     initStorage(model: import("headless/types/utils/types.js").StorageModel, id: string, type?: import("headless/types/utils/types.js").StorageType): void;
     isErrorStanza(stanza: Element): boolean;
     isForbiddenError(stanza: Element): boolean;

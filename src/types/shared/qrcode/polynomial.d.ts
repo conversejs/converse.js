@@ -1,16 +1,35 @@
 export default QRPolynomial;
 export namespace QRMath {
-    function glog(n: any): any;
-    function gexp(n: any): any;
+    function glog(n: number): number;
+    function gexp(n: number): number;
     let EXP_TABLE: any[];
     let LOG_TABLE: any[];
 }
 declare class QRPolynomial {
-    constructor(num: any, shift: any);
+    /**
+     * @param {number[]} num
+     * @param {number} shift
+     */
+    constructor(num: number[], shift: number);
     num: any[];
-    get(index: any): any;
+    /**
+ * @param {number} index
+ * @returns {number}
+ */
+    get(index: number): number;
+    /**
+ * @returns {number}
+ */
     getLength(): number;
-    multiply(e: any): QRPolynomial;
-    mod(e: any): any;
+    /**
+ * @param {QRPolynomial} e
+ * @returns {QRPolynomial}
+ */
+    multiply(e: QRPolynomial): QRPolynomial;
+    /**
+ * @param {QRPolynomial} e
+ * @returns {QRPolynomial}
+ */
+    mod(e: QRPolynomial): QRPolynomial;
 }
 //# sourceMappingURL=polynomial.d.ts.map

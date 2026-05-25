@@ -4,7 +4,7 @@ declare class ChatBoxViews {
     el: any;
     add(key: any, val: any): void;
     get(key: any): any;
-    xget(id: any): {};
+    xget(id: string | null | undefined): {};
     getAll(): any[];
     keys(): string[];
     remove(key: any): void;

@@ -19,6 +19,10 @@ export default class HeadlinesFeed extends ChatBoxBase {
         };
     }
 
+    /**
+     * @param {import('@converse/skeletor').ModelAttributes} attrs
+     * @param {import('@converse/skeletor').ModelOptions} options
+     */
     constructor(attrs, options) {
         super(attrs, options);
         this.disable_mam = true; // Don't do MAM queries for this box

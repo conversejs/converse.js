@@ -12,7 +12,7 @@ class ChatBoxViews {
         return this.views[key];
     }
 
-    xget(id) {
+    xget(/** @type {string|null|undefined} */ id) {
         return this.keys()
             .filter((k) => k !== id)
             .reduce((acc, k) => {
@@ -51,3 +51,4 @@ class ChatBoxViews {
 }
 
 export default ChatBoxViews;
+

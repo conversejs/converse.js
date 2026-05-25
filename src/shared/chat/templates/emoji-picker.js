@@ -27,7 +27,9 @@ function tplEmojiPickerHeader(o) {
     const cats = api.settings.get('emoji_categories');
     const transform = (c) =>
         cats[c] ? emoji_category(Object.assign({ 'category': c, 'emoji': o.sn2Emoji(cats[c]) }, o)) : '';
-    return html`<ul>${Object.keys(cats).map(transform)}</ul>`;
+    return html`<ul>
+        ${Object.keys(cats).map(transform)}
+    </ul>`;
 }
 
 function tplEmojiItem(o) {
@@ -56,7 +58,8 @@ export function tplSearchResults(o) {
 
 async function tplEmojisForCategory(o) {
     const { popular_emojis } = _converse.state;
-    const emojis = o.category === 'popular' ? await popular_emojis?.getPopularEmojis() : converse.emojis.json[o.category];
+    const emojis =
+        o.category === 'popular' ? await popular_emojis?.getPopularEmojis() : converse.emojis.json[o.category];
 
     return html`<a id="emoji-picker-${o.category}" class="emoji-category__heading" data-category="${o.category}"
             >${__(api.settings.get('emoji_category_labels')[o.category])}</a
@@ -69,11 +72,13 @@ async function tplEmojisForCategory(o) {
 export function tplAllEmojis(o) {
     const cats = api.settings.get('emoji_categories');
     return html` <span ?hidden=${o.query} class="emoji-lists__container emoji-lists__container--browse">
-        ${Object.keys(cats).map((c) => (cats[c] ? until(tplEmojisForCategory(Object.assign({ 'category': c }, o)), '') : ''))}
+        ${Object.keys(cats).map((c) =>
+            cats[c] ? until(tplEmojisForCategory(Object.assign({ 'category': c }, o)), '') : '',
+        )}
     </span>`;
 }
 
-function tplSkintoneEmoji(o, skintone, skintone_emoji) {
+function tplSkintoneEmoji(o, /** @type {string} */ skintone, /** @type {string} */ skintone_emoji) {
     return html` <li
         data-skintone="${skintone_emoji}"
         class="emoji-skintone ${o.current_skintone === skintone ? 'picked' : ''}"
@@ -90,6 +95,7 @@ function tplSkintoneEmoji(o, skintone, skintone_emoji) {
  */
 export function tplEmojiPicker(el, o) {
     const i18n_search = __('Search');
+    /** @type {Record<string, string>} */
     const skintones = {
         'tone1': ':raised_hand_tone1:',
         'tone2': ':raised_hand_tone2:',

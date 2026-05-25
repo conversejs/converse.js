@@ -56,22 +56,23 @@ export default class EmojiPickerContent extends CustomElement {
                 root: this.querySelector('.emoji-picker__lists'),
                 threshold: [0.1],
             };
-            const handler = (ev) => this.setCategoryOnVisibilityChange(ev);
+            const handler = /** @param {IntersectionObserverEntry[]} ev */(ev) => this.setCategoryOnVisibilityChange(ev);
             this.observer = new IntersectionObserver(handler, options);
         }
-        sizzle('.emoji-picker', this).forEach((a) => this.observer.observe(a));
+        sizzle('.emoji-picker', this).forEach(/** @param {Element} a */(a) => this.observer.observe(a));
     }
 
+    /** @param {IntersectionObserverEntry[]} entries */
     setCategoryOnVisibilityChange (entries) {
         const selected = /** @type {EmojiPicker} */(this.parentElement).navigator.selected;
-        const intersection_with_selected = entries.filter((i) => i.target.contains(selected)).pop();
+        const intersection_with_selected = entries.filter(/** @param {IntersectionObserverEntry} i */(i) => i.target.contains(selected)).pop();
         let current;
         // Choose the intersection that contains the currently selected
         // element, or otherwise the one with the largest ratio.
         if (intersection_with_selected) {
             current = intersection_with_selected;
         } else {
-            current = entries.reduce((p, c) => (c.intersectionRatio >= (p?.intersectionRatio || 0) ? c : p), null);
+            current = entries.reduce(/** @param {IntersectionObserverEntry|null} p */ /** @param {IntersectionObserverEntry} c */(p, c) => (c.intersectionRatio >= (p?.intersectionRatio || 0) ? c : p), null);
         }
         if (current && current.isIntersecting) {
             const category = current.target.getAttribute('data-category');

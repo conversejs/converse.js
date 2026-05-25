@@ -226,7 +226,8 @@ describe('The groupchat moderator tool', function () {
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', []);
             const view = _converse.chatboxviews.get(muc_jid);
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence to="${_converse.jid}" from="${muc_jid}/nomorenicks" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="nomorenicks@montague.lit" role="participant"/>
@@ -235,7 +236,8 @@ describe('The groupchat moderator tool', function () {
                 ),
             );
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence to="${_converse.jid}" from="${muc_jid}/newb" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="newb@montague.lit" role="participant"/>
@@ -244,7 +246,8 @@ describe('The groupchat moderator tool', function () {
                 ),
             );
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence to="${_converse.jid}" from="${muc_jid}/some1" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="some1@montague.lit" role="participant"/>
@@ -253,7 +256,8 @@ describe('The groupchat moderator tool', function () {
                 ),
             );
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence to="${_converse.jid}" from="${muc_jid}/oldhag" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="oldhag@montague.lit" role="participant"/>
@@ -262,7 +266,8 @@ describe('The groupchat moderator tool', function () {
                 ),
             );
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence to="${_converse.jid}" from="${muc_jid}/crone" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="crone@montague.lit" role="participant"/>
@@ -271,7 +276,8 @@ describe('The groupchat moderator tool', function () {
                 ),
             );
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence to="${_converse.jid}" from="${muc_jid}/tux" xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
                         <item affiliation="none" jid="tux@montague.lit" role="participant"/>

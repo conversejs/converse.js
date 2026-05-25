@@ -23,13 +23,13 @@ export default class ConverseGIFElement extends CustomElement {
     progress_color: any;
     initGIF(): void;
     supergif: ConverseGif;
-    updated(changed: any): void;
     render(): string | import("utils/html.js").TemplateResult;
     renderErrorFallback(): string | import("utils/html.js").TemplateResult;
     setHover(): void;
     hover_timeout: NodeJS.Timeout;
     unsetHover(): void;
-    onControlsClicked(ev: any): void;
+    /** @param {MouseEvent} ev */
+    onControlsClicked(ev: MouseEvent): void;
 }
 import { CustomElement } from 'shared/components/element.js';
 import ConverseGif from 'shared/gif/index.js';

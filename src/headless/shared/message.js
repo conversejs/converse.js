@@ -26,15 +26,12 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
     }
 
     /**
-     * @param {Model[]} [models]
-     * @param {object} [options]
+     * @param {import('./types').MessageAttributes} attrs
+     * @param {import('@converse/skeletor').ModelOptions} options
      */
-    constructor(models, options) {
-        super(models, options);
+    constructor(attrs, options) {
+        super(attrs, options);
         this.file = null;
-
-        /** @type {import('./types').MessageAttributes} */
-        this.attributes;
     }
 
     initialize() {

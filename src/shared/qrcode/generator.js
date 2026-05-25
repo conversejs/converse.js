@@ -17,10 +17,10 @@ export class QRCodeModel {
         this.text = text;
         this.errorCorrectLevel = errorCorrectLevel;
         this.typeNumber = getTypeNumber(this.text, this.errorCorrectLevel);
-        this.modules = null;
+        /** @type {any[][]|null} */ this.modules = null;
         this.moduleCount = 0;
         this.dataCache = null;
-        this.dataList = [new QR8bitByte(this.text)];
+        /** @type {any[]} */ this.dataList = [new QR8bitByte(this.text)];
     }
 
     static get PAD0() {
@@ -56,7 +56,7 @@ export class QRCodeModel {
      */
     makeImpl(test, maskPattern) {
         this.moduleCount = this.typeNumber * 4 + 17;
-        this.modules = new Array(this.moduleCount);
+        /** @type {any[][]} */ (this.modules) = new Array(this.moduleCount);
         for (let row = 0; row < this.moduleCount; row++) {
             this.modules[row] = new Array(this.moduleCount);
             for (let col = 0; col < this.moduleCount; col++) {
@@ -199,6 +199,10 @@ export class QRCodeModel {
         this.modules[this.moduleCount - 8][8] = !test;
     }
 
+    /**
+     * @param {*} data
+     * @param {Number} maskPattern
+     */
     mapData(data, maskPattern) {
         let inc = -1;
         let row = this.moduleCount - 1;
@@ -235,6 +239,11 @@ export class QRCodeModel {
         }
     }
 
+    /**
+     * @param {Number} typeNumber
+     * @param {import('./types').ErrorCorrectLevel} errorCorrectLevel
+     * @param {any[]} dataList
+     */
     static createData(typeNumber, errorCorrectLevel, dataList) {
         let rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
         const buffer = new QRBitBuffer();
@@ -270,6 +279,11 @@ export class QRCodeModel {
         return QRCodeModel.createBytes(buffer, rsBlocks);
     }
 
+    /**
+     * @param {QRBitBuffer} buffer
+     * @param {QRRSBlock[]} rsBlocks
+     * @returns {number[]}
+     */
     static createBytes(buffer, rsBlocks) {
         let offset = 0;
         let maxDcCount = 0;
@@ -376,11 +390,20 @@ class QR8bitByte {
 }
 
 class QRRSBlock {
+    /**
+     * @param {number} totalCount
+     * @param {number} dataCount
+     */
     constructor(totalCount, dataCount) {
         this.totalCount = totalCount;
         this.dataCount = dataCount;
     }
 
+    /**
+     * @param {Number} typeNumber
+     * @param {import('./types').ErrorCorrectLevel} errorCorrectLevel
+     * @returns {QRRSBlock[]}
+     */
     static getRSBlocks(typeNumber, errorCorrectLevel) {
         let rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
         if (rsBlock == undefined) {
@@ -399,6 +422,11 @@ class QRRSBlock {
         return list;
     }
 
+    /**
+     * @param {Number} typeNumber
+     * @param {import('./types').ErrorCorrectLevel} errorCorrectLevel
+     * @returns {number[]|undefined}
+     */
     static getRsBlockTable(typeNumber, errorCorrectLevel) {
         switch (errorCorrectLevel) {
             case QRErrorCorrectLevelMap.L:
@@ -417,7 +445,7 @@ class QRRSBlock {
 
 class QRBitBuffer {
     constructor() {
-        this.buffer = [];
+        /** @type {number[]} */ this.buffer = [];
         this.length = 0;
     }
 

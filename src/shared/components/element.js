@@ -11,6 +11,7 @@ export class CustomElement extends EventEmitter(LitElement) {
         return this;
     }
 
+    /** @returns {void} */
     initialize() {
         return null;
     }

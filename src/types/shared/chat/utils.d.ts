@@ -27,7 +27,8 @@ export function getStandaloneButtons(promise: Promise<Array<HeadingButtonAttribu
  * @param {Promise<Array<object>>} promise
  */
 export function getDropdownButtons(promise: Promise<Array<object>>): Promise<import("lit-html").TemplateResult<1> | "">;
-export function onScrolledDown(model: any): void;
+/** @param {import('@converse/skeletor').Model} model */
+export function onScrolledDown(model: import("@converse/skeletor").Model): void;
 /**
  * Given a message object, returns a TemplateResult indicating a new day if
  * the passed in message is more than a day later than its predecessor.
@@ -41,10 +42,10 @@ export function getDayIndicator(message: Message): TemplateResult | undefined;
 export function getHats(message: MUCMessage): any[];
 export function getTonedEmojis(): any;
 /**
- * @param {object} data
+ * @param {any} data
  * @param {import('./types').EmojiMarkupOptions} options
  */
-export function getEmojiMarkup(data: object, options?: import("./types").EmojiMarkupOptions): any;
+export function getEmojiMarkup(data: any, options?: import("./types").EmojiMarkupOptions): any;
 /**
  * @param {string} text
  * @param {import('./types').EmojiMarkupOptions} options
@@ -63,10 +64,10 @@ export function addEmojisMarkup(text: string, options: import("./types").EmojiMa
  *
  * @param {String} str - String containing the shortname(s)
  * @param {import('./types').EmojiMarkupOptions} options
- * @returns {Array} An array of at least one string, or otherwise
+ * @returns {Array<string | import('lit').TemplateResult>} An array of at least one string, or otherwise
  * strings and lit TemplateResult objects.
  */
-export function shortnamesToEmojis(str: string, options?: import("./types").EmojiMarkupOptions): any[];
+export function shortnamesToEmojis(str: string, options?: import("./types").EmojiMarkupOptions): Array<string | import("lit").TemplateResult>;
 export type HeadingButtonAttributes = import("plugins/chatview/types").HeadingButtonAttributes;
 export type Message = import("@converse/headless").Message;
 export type MUCMessage = import("@converse/headless").MUCMessage;

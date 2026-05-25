@@ -13,7 +13,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
     new (...args: any[]): {
         [x: string]: any;
         disable_mam: boolean;
-        initialize(): Promise<void>;
+        initialize(): void;
         initNotifications(): void;
         notifications: Model<import("@converse/skeletor").ModelAttributes>;
         initUI(): void;
@@ -27,10 +27,10 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * Queue the creation of a message, to make sure that we don't run
          * into a race condition whereby we're creating a new message
          * before the collection has been fetched.
-         * @param {Object} attrs
-         * @param {Object} options
+         * @param {MessageAttributes|ErrorMessageAttributes|InfoMessageAttributes} attrs
+         * @param {import('@converse/skeletor').FetchOrCreateOptions} [options]
          */
-        createMessage(attrs: any, options: any): Promise<any>;
+        createMessage(attrs: import("./types").MessageAttributes | import("./types").ErrorMessageAttributes | import("./types").InfoMessageAttributes, options?: import("@converse/skeletor").FetchOrCreateOptions): Promise<any>;
         getMessagesCacheKey(): string;
         getMessagesCollection(): any;
         getNotificationsText(): any;

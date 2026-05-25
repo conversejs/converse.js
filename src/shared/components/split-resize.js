@@ -52,6 +52,9 @@ export default class SplitResize extends CustomElement {
 
     /**
      * Helper function gets a property from the properties object, with a default fallback
+     * @param {Record<string, any>} options
+     * @param {string} propName
+     * @param {any} def
      */
     getOption(options, propName, def) {
         const value = options[propName];
@@ -61,7 +64,14 @@ export default class SplitResize extends CustomElement {
         return def;
     }
 
+    /**
+     * @param {string} dim
+     * @param {string|number} size
+     * @param {string|number} gutSize
+     * @returns {Record<string, string|number>}
+     */
     getElementStyle(dim, size, gutSize) {
+        /** @type {Record<string, string|number>} */
         const style = {};
 
         if (!u.isString(size)) {
@@ -73,10 +83,23 @@ export default class SplitResize extends CustomElement {
         return style;
     }
 
+    /**
+     * @param {string} dim
+     * @param {number} gutSize
+     * @returns {Record<string, string>}
+     */
     defaultGutterStyleFn(dim, gutSize) {
+        /** @type {Record<string, string>} */
         return { [dim]: `${gutSize}px` };
     }
 
+    /**
+     * @param {number} gutterSize
+     * @param {boolean} isFirst
+     * @param {boolean} isLast
+     * @param {string} gutterAlign
+     * @returns {number}
+     */
     getGutterSize(gutterSize, isFirst, isLast, gutterAlign) {
         if (isFirst) {
             if (gutterAlign === 'end') {
@@ -99,7 +122,7 @@ export default class SplitResize extends CustomElement {
 
     /**
      * @param {HTMLElement} el
-     * @param {string} size
+     * @param {number} size
      * @param {string} gutSize
      */
     setElementSize(el, size, gutSize) {
@@ -116,16 +139,14 @@ export default class SplitResize extends CustomElement {
     }
 
     getSizes() {
-        return this.elements.map((element) => element.size);
+        return /** @type {Array<{size: number}>} */ (this.elements).map((element) => element.size);
     }
 
     /**
-     * Supports touch events, but not multitouch, so only the first
-     * finger `touches[0]` is counted.
      * @param {MouseEvent} e
      */
     getMousePosition(e) {
-        if ('touches' in e) return e.touches[0][this.clientAxis];
+        if ('touches' in e) return e.touches[0][/** @type {string} */ (this.clientAxis)];
         return e[this.clientAxis];
     }
 
@@ -226,7 +247,7 @@ export default class SplitResize extends CustomElement {
      * ------------------------------------------------
      * | <- start                             size -> |
      *
-     * @param {ResizablePair} pair
+     * @param {import('./types').ResizablePair} pair
      */
     calculateSizes(pair) {
         // Figure out the parent size minus padding.
@@ -269,6 +290,10 @@ export default class SplitResize extends CustomElement {
      * (and decreased from the other elements) to make space for the pixels
      * subtracted by the gutters.
      */
+    /**
+     * @param {number[]} sizesToTrim
+     * @returns {number[]}
+     */
     trimToMin(sizesToTrim) {
         // Try to get inner size of parent element.
         // If it's no supported, return original sizes.
@@ -284,6 +309,7 @@ export default class SplitResize extends CustomElement {
         // Keep track of the excess pixels, the amount of pixels over the desired percentage
         // Also keep track of the elements with pixels to spare, to decrease after if needed
         let excessPixels = 0;
+        /** @type {number[]} */
         const toSpare = [];
 
         const pixelSizes = sizesToTrim.map((size, i) => {
@@ -348,11 +374,11 @@ export default class SplitResize extends CustomElement {
         this.pair.dragging = false;
 
         // Remove the stored event listeners. This is why we store them.
-        global.removeEventListener('mouseup', this.pair.stop);
-        global.removeEventListener('touchend', this.pair.stop);
-        global.removeEventListener('touchcancel', this.pair.stop);
-        global.removeEventListener('mousemove', this.pair.move);
-        global.removeEventListener('touchmove', this.pair.move);
+        /** @type {Window} */ (global).removeEventListener('mouseup', this.pair.stop);
+        /** @type {Window} */ (global).removeEventListener('touchend', this.pair.stop);
+        /** @type {Window} */ (global).removeEventListener('touchcancel', this.pair.stop);
+        /** @type {Window} */ (global).removeEventListener('mousemove', this.pair.move);
+        /** @type {Window} */ (global).removeEventListener('touchmove', this.pair.move);
 
         // Clear bound function references
         this.pair.stop = null;
@@ -408,11 +434,11 @@ export default class SplitResize extends CustomElement {
         this.pair.move = /** @param {MouseEvent} e */ (e) => this.drag(e, options);
 
         // All the binding. `window` gets the stop events in case we drag out of the elements.
-        global.addEventListener('mouseup', this.pair.stop);
-        global.addEventListener('touchend', this.pair.stop);
-        global.addEventListener('touchcancel', this.pair.stop);
-        global.addEventListener('mousemove', this.pair.move);
-        global.addEventListener('touchmove', this.pair.move);
+        /** @type {Window} */ (global).addEventListener('mouseup', this.pair.stop);
+        /** @type {Window} */ (global).addEventListener('touchend', this.pair.stop);
+        /** @type {Window} */ (global).addEventListener('touchcancel', this.pair.stop);
+        /** @type {Window} */ (global).addEventListener('mousemove', this.pair.move);
+        /** @type {Window} */ (global).addEventListener('touchmove', this.pair.move);
 
         // Disable selection. Disable!
         a.addEventListener('selectstart', NOOP);
@@ -439,10 +465,10 @@ export default class SplitResize extends CustomElement {
     }
 
     /**
-     * @param {Object} element
+     * @param {import('./types').ResizableElement} element
      */
     adjustToMin(element) {
-        this.calculateSizes(this.pair);
+        this.calculateSizes(/** @type {import('./types').ResizablePair} */ (this.pair));
         this.adjust(this.pair.size - element.minSize - this.pair[bGutterSize]);
     }
 
@@ -470,24 +496,6 @@ export default class SplitResize extends CustomElement {
      *
      * Each pair of elements, resizable relative to one another, is handled independently.
      * Dragging the gutter between two elements only changes the dimensions of elements in that pair.
-     *
-     * A pair object is shaped like this:
-     *
-     * @typedef {Object} ResizablePair
-     * @property {(0|1)} a
-     * @property {(0|1)} b
-     * @property {('horizontal'|'vertical')} direction
-     * @property {boolean} dragging
-     * @property {number} aMin
-     * @property {number} bMin
-     * @property {number} dragOffset
-     * @property {number} size
-     * @property {number} start
-     * @property {number} end
-     * @property {HTMLElement} gutter
-     * @property {HTMLElement} parent
-     * @property {(this: Window, ev: Event) => any} stop
-     * @property {(this: Window, ev: Event) => any} move
      *
      * The basic sequence:
      *
@@ -583,6 +591,7 @@ export default class SplitResize extends CustomElement {
      * @param {HTMLElement} el
      * @param {number} i
      * @param {object} options
+     * @returns {import('./types').ResizableElement}
      */
     createElement(els, el, i, options) {
         // Set default options.sizes to equal percentages of the parent element.
@@ -614,7 +623,7 @@ export default class SplitResize extends CustomElement {
         const parentFlexDirection = parentStyle ? parentStyle.flexDirection : null;
 
         // Create the pair object with its metadata.
-        this.pair = /** @type {ResizablePair} */ ({
+        this.pair = /** @type {import('./types').ResizablePair & Record<string, any>} */ ({
             a: 0,
             b: 1,
             dragging: false,
@@ -634,7 +643,7 @@ export default class SplitResize extends CustomElement {
 
         const gutterElement = /** @type {HTMLElement} */ (this.firstElementChild);
         // Save bound event listener for removal later
-        this.pair[gutterStartDragging] = (e) => this.startDragging(e, options);
+        this.pair[gutterStartDragging] = /** @param {MouseEvent} e */ (e) => this.startDragging(e, options);
 
         // Attach bound event listener
         this.addEventListener('mousedown', this.pair[gutterStartDragging]);

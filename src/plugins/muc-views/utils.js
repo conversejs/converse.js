@@ -32,12 +32,13 @@ const COMMAND_TO_ROLE = {
  * Presents a confirmation modal to the user asking them to accept or decline a
  * MUC invitation.
  * @async
+ * @param {import('./types').MUCInvitationObj} obj
  */
 export function confirmDirectMUCInvitation({ contact, jid, reason }) {
     if (!reason) {
         return api.confirm(
             __('Invitation to a groupchat'),
-            __('%1$s has invited you to join the groupchat "%2$s"', contact, jid)
+            __('%1$s has invited you to join the groupchat "%2$s"', contact, jid),
         );
     } else {
         return api.confirm(
@@ -46,8 +47,8 @@ export function confirmDirectMUCInvitation({ contact, jid, reason }) {
                 '%1$s has invited you to join the groupchat "%2$s", and left the following reason: "%3$s"',
                 contact,
                 jid,
-                reason
-            )
+                reason,
+            ),
         );
     }
 }
@@ -154,15 +155,17 @@ export function getAutoCompleteListItem(muc, text, input) {
     const show_avatar = api.settings.get('muc_mention_autocomplete_show_avatar');
     if (show_avatar) {
         const t = text.label.toLowerCase();
-        avatar_model = muc.occupants.findWhere((o) => {
-            if (o.getDisplayName()?.toLowerCase()?.startsWith(t)) {
-                return o;
-            } else if (o.get('nickname')?.toLowerCase()?.startsWith(t)) {
-                return o;
-            } else if (o.get('jid')?.toLowerCase()?.startsWith(t)) {
-                return o;
-            }
-        });
+        avatar_model = muc.occupants.findWhere(
+            /** @param {import('@converse/headless').MUCOccupant} o */ (o) => {
+                if (o.getDisplayName()?.toLowerCase()?.startsWith(t)) {
+                    return o;
+                } else if (o.get('nickname')?.toLowerCase()?.startsWith(t)) {
+                    return o;
+                } else if (o.get('jid')?.toLowerCase()?.startsWith(t)) {
+                    return o;
+                }
+            },
+        );
     }
 
     const regex = new RegExp('(' + input + ')', 'ig');
@@ -179,7 +182,10 @@ export function getAutoCompleteListItem(muc, text, input) {
                   ></converse-avatar>`
                 : ''}
             <span class="autocomplete-item">
-                ${parts.map((txt) => (input && txt.match(regex) ? html`<mark>${txt}</mark>` : txt))}
+                ${parts.map(
+                    /** @param {Suggestion|string} txt */ (txt) =>
+                        input && txt.match(regex) ? html`<mark>${txt}</mark>` : txt,
+                )}
             </span>
         </li>
     `;
@@ -194,7 +200,13 @@ export async function getAutoCompleteList() {
 /**
  * @param {MUC} muc
  */
-function setRole(muc, command, args, required_affiliations = [], required_roles = []) {
+function setRole(
+    muc,
+    /** @type {keyof COMMAND_TO_ROLE} */ command,
+    /** @type {string} */ args,
+    /** @type {string[]} */ required_affiliations = [],
+    /** @type {string[]} */ required_roles = [],
+) {
     const role = COMMAND_TO_ROLE[command];
     if (!role) {
         throw Error(`ChatRoomView#setRole called with invalid command: ${command}`);
@@ -212,14 +224,19 @@ function setRole(muc, command, args, required_affiliations = [], required_roles 
     const reason = args.split(nick_or_jid, 2)[1].trim();
     // We're guaranteed to have an occupant due to getNickOrJIDFromCommandArgs
     const occupant = muc.getOccupant(nick_or_jid);
-    muc.setRole(occupant, role, reason, undefined, (e) => muc.onCommandError(e));
+    muc.setRole(occupant, role, reason, undefined, /** @param {Error} e */ (e) => muc.onCommandError(e));
     return true;
 }
 
 /**
  * @param {MUC} muc
  */
-function verifyAndSetAffiliation(muc, command, args, required_affiliations) {
+function verifyAndSetAffiliation(
+    muc,
+    /** @type {keyof COMMAND_TO_AFFILIATION} */ command,
+    /** @type {string} */ args,
+    /** @type {string[]} */ required_affiliations,
+) {
     const affiliation = COMMAND_TO_AFFILIATION[command];
     if (!affiliation) {
         throw Error(`verifyAffiliations called with invalid command: ${command}`);
@@ -245,13 +262,13 @@ function verifyAndSetAffiliation(muc, command, args, required_affiliations) {
             jid = nick_or_jid;
         } else {
             const message = __(
-                "Couldn't find a participant with that nickname. " + 'They might have left the groupchat.'
+                "Couldn't find a participant with that nickname. " + 'They might have left the groupchat.',
             );
             muc.createMessage({ message, 'type': 'error' });
             return;
         }
     }
-    const attrs = { jid, reason };
+    const attrs = /** @type {{ jid: string, reason: string, nick?: string }} */ ({ jid, reason });
     if (occupant && api.settings.get('auto_register_muc_nickname')) {
         attrs['nick'] = occupant.get('nick');
     }
@@ -259,7 +276,7 @@ function verifyAndSetAffiliation(muc, command, args, required_affiliations) {
     u.muc
         .setAffiliation(affiliation, muc.get('jid'), [attrs])
         .then(() => muc.occupants.fetchMembers())
-        .catch((err) => muc.onCommandError(err));
+        .catch(/** @param {Error} err */ (err) => muc.onCommandError(err));
 }
 
 /**
@@ -280,11 +297,15 @@ export function showModeratorToolsModal(muc, affiliation) {
     modal.show();
 }
 
-export function showOccupantModal(ev, occupant) {
-    api.modal.show('converse-muc-occupant-modal', { 'model': occupant }, ev);
+/**
+ * @param {Event} ev
+ * @param {import('@converse/headless').MUCOccupant} model
+ */
+export function showOccupantModal(ev, model) {
+    api.modal.show('converse-muc-occupant-modal', { model }, ev);
 }
 
-export function parseMessageForMUCCommands(data, handled) {
+export async function parseMessageForMUCCommands(data, handled) {
     const model = data.model;
     if (
         handled ||
@@ -366,9 +387,8 @@ export function parseMessageForMUCCommands(data, handled) {
                 'type': 'error',
             });
         } else {
-            model.registerNickname().then((err_msg) => {
-                err_msg && model.createMessage({ 'message': err_msg, 'type': 'error' });
-            });
+            const message = await model.registerNickname();
+            if (message) model.createMessage({ message, type: 'error' });
         }
         return true;
     } else if (command === 'revoke' && allowed_commands.includes(command)) {

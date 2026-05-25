@@ -6,9 +6,9 @@ export type ChatBoxBase = import("../../shared/chatbox").default;
 declare class ChatBoxes extends Collection<import("../../shared/chatbox").default> {
     /**
      * @param {ChatBoxBase[]} models
-     * @param {object} options
+     * @param {import('@converse/skeletor').CollectionOptions<ChatBoxBase>} options
      */
-    constructor(models: ChatBoxBase[], options: object);
+    constructor(models: ChatBoxBase[], options: import("@converse/skeletor").CollectionOptions<ChatBoxBase>);
     /**
      * @param {Collection} collection
      */

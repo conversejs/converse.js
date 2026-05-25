@@ -26,7 +26,7 @@ export function dragresizeOverIframeHandler(e) {
             () => {
                 iframe.style.pointerEvents = 'none';
             },
-            { once: true }
+            { once: true },
         );
 
         e.addEventListener(
@@ -34,16 +34,12 @@ export function dragresizeOverIframeHandler(e) {
             () => {
                 iframe.style.pointerEvents = 'initial';
             },
-            { once: true }
+            { once: true },
         );
     }
 }
 
-/**
- * @typedef {Object} ResizingData
- * @property {HTMLElement} chatbox
- * @property {string} direction
- */
+/** @type {import('./types').ResizingNamespace} */
 const resizing = {};
 
 /**
@@ -163,15 +159,16 @@ export function onMouseUp(ev) {
         return true;
     }
     ev.preventDefault();
-    const default_width = resizing.chatbox.model.get('default_width');
-    const default_height = resizing.chatbox.model.get('default_height');
-    const height = applyDragResistance(resizing.chatbox.height, default_height);
-    const width = applyDragResistance(resizing.chatbox.width, default_width);
+    const chatbox_el = resizing.chatbox;
+    const default_width = chatbox_el.model.get('default_width');
+    const default_height = chatbox_el.model.get('default_height');
+    const height = applyDragResistance(chatbox_el.height, default_height);
+    const width = applyDragResistance(chatbox_el.width, default_width);
 
     if (height !== default_height || width !== default_width) {
-        u.safeSave(resizing.chatbox.model, { height, width });
+        u.safeSave(chatbox_el.model, { height, width });
     } else {
-        u.safeSave(resizing.chatbox.model, { height: undefined, width: undefined });
+        u.safeSave(chatbox_el.model, { height: undefined, width: undefined });
     }
     delete resizing.chatbox;
     delete resizing.direction;

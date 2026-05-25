@@ -1,5 +1,4 @@
 export class HeadlinesFeedsList extends CustomElement {
-    initialize(): void;
     model: any;
     render(): import("lit-html").TemplateResult<1>;
     renderIfHeadline(model: any): void;

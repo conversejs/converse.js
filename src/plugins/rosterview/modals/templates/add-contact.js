@@ -22,7 +22,7 @@ export default (el) => {
     const i18n_search_or_address = using_xhr ? __('Search name or XMPP address') : i18n_xmpp_address;
 
     return html`<div class="modal-body">
-        <form class="converse-form add-xmpp-contact" @submit=${(ev) => el.addContactFromForm(ev)}>
+        <form class="converse-form add-xmpp-contact" @submit=${(/** @type {Event} */ ev) => el.addContactFromForm(ev)}>
             ${el.contact
                 ? html`<input type="hidden" name="jid" value="${el.contact.get('jid')}" />`
                 : html`<div class="mb-3">

@@ -32,7 +32,6 @@ export default class EmojiPicker extends CustomElement {
     _search_results: any[];
     debouncedFilter: import("lodash").DebouncedFunc<(input: HTMLInputElement) => any>;
     allowed_emojis: any;
-    initialize(): void;
     dropdown: Element;
     set search_results(value: any[]);
     get search_results(): any[];
@@ -42,10 +41,10 @@ export default class EmojiPicker extends CustomElement {
     current_skintone: any;
     setScrollPosition(): void;
     preserve_scroll: boolean;
-    updateSearchResults(changed: any): any[];
-    connectedCallback(): void;
+    /** @param {Map<PropertyKey, unknown>} changed */
+    updateSearchResults(changed: Map<PropertyKey, unknown>): any[];
     registerEvents(): void;
-    _onKeyDown: (ev: any) => void;
+    _onKeyDown: (ev: KeyboardEvent) => void;
     _onDropdownHide: () => void;
     unregisterEvents(): void;
     /**

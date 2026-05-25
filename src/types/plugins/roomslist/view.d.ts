@@ -1,5 +1,4 @@
 export class RoomsList extends CustomElement {
-    initialize(): void;
     model: RoomsListModel;
     render(): import("lit-html").TemplateResult<1>;
     /** @param {import('@converse/headless').Model} model */

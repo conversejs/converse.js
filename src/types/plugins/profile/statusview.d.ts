@@ -1,6 +1,5 @@
 export default Profile;
 declare class Profile extends CustomElement {
-    initialize(): void;
     model: any;
     render(): import("lit-html").TemplateResult<1>;
     /**

@@ -5,7 +5,6 @@ export default class ContactApprovalAlert extends CustomElement {
         };
     };
     contact: any;
-    initialize(): void;
     render(): import("lit-html").TemplateResult<1> | "";
     /**
      * @param {MouseEvent} ev

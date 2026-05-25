@@ -1,3 +1,3 @@
-import { html } from "lit";
+import { html } from 'lit';
 
-export default  (o) => html`<p>${o.text}</p>`;
+export default (o) => html`<p>${o.text}</p>`;

@@ -33,19 +33,19 @@ declare class DOMNavigator {
     /** @type {DOMNavigatorOptions} */
     options: import("./types").DOMNavigatorOptions;
     init(): void;
-    selected: any;
+    /** @type {HTMLElement|null} */ selected: HTMLElement | null;
     keydownHandler: (ev: KeyboardEvent) => void;
-    elements: {};
-    keys: {};
+    /** @type {Record<string, any[]>} */ elements: Record<string, any[]>;
+    /** @type {Record<string, string>} */ keys: Record<string, string>;
     enable(): void;
     enabled: boolean;
     disable(): void;
     destroy(): void;
     /**
-     * @param {'down'|'right'|'left'|'up'} direction
+     * @param {'down'|'right'|'left'|'up'|'home'|'end'} direction
      * @returns {HTMLElement}
      */
-    getNextElement(direction: "down" | "right" | "left" | "up"): HTMLElement;
+    getNextElement(direction: "down" | "right" | "left" | "up" | "home" | "end"): HTMLElement;
     /**
      * Select the given element.
      * @param {HTMLElement} el The DOM element to select.

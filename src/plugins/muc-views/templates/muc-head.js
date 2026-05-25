@@ -23,7 +23,7 @@ export default (el) => {
                 <a
                     data-room-jid="${el.model.get('jid')}"
                     title="${__('Show more information on this groupchat')}"
-                    @click=${(ev) => el.showRoomDetailsModal(ev)}
+                    @click=${(/** @type {Event} */ ev) => el.showRoomDetailsModal(ev)}
                 >
                     <converse-avatar
                         .model=${el.model}

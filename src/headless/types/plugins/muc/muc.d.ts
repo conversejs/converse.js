@@ -77,14 +77,14 @@ declare const MUC_base: {
     new (...args: any[]): {
         [x: string]: any;
         disable_mam: boolean;
-        initialize(): Promise<void>;
+        initialize(): void;
         initNotifications(): void;
         notifications: Model<import("@converse/skeletor").ModelAttributes>;
         initUI(): void;
         ui: Model<import("@converse/skeletor").ModelAttributes>;
         getDisplayName(): string;
         canPostMessages(): boolean;
-        createMessage(attrs: any, options: any): Promise<any>;
+        createMessage(attrs: import("../../shared/types").MessageAttributes | import("../../shared/types").ErrorMessageAttributes | import("../../shared/types").InfoMessageAttributes, options?: import("@converse/skeletor").FetchOrCreateOptions): Promise<any>;
         getMessagesCacheKey(): string;
         getMessagesCollection(): any;
         getNotificationsText(): any;
@@ -294,6 +294,8 @@ declare class MUC extends MUC_base {
      * @typedef {import('./types').NonOutcastAffiliation} NonOutcastAffiliation
      * @typedef {import('./types').MemberListItem} MemberListItem
      * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
+     * @typedef {import('../../shared/types').InfoMessageAttributes} InfoMessageAttributes
+     * @typedef {import('../../shared/types').ErrorMessageAttributes} ErrorMessageAttributes
      * @typedef {import('./types').MUCMessageAttributes} MUCMessageAttributes
      * @typedef {import('./types').MUCPresenceAttributes} MUCPresenceAttributes
      * @typedef {module:shared.converse.UserMessage} UserMessage

@@ -50,7 +50,6 @@ export default class AudioPlayer extends CustomElement {
     playback_speed: number;
     /** @type {HTMLAudioElement|null} */
     audio: HTMLAudioElement | null;
-    connectedCallback(): void;
     /**
      * Toggle play/pause
      * @param {Event} [ev]

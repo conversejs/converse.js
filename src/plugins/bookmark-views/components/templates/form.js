@@ -16,7 +16,7 @@ export default (el) => {
     const i18n_submit = el.bookmark ? __('Update') : __('Save');
 
     return html`
-        <form class="converse-form chatroom-form" @submit=${(ev) => el.onBookmarkFormSubmitted(ev)}>
+        <form class="converse-form chatroom-form" @submit=${(/** @type {Event} */ ev) => el.onBookmarkFormSubmitted(ev)}>
             <legend>${i18n_heading}</legend>
             <fieldset>
                 <label class="form-label" for="converse_muc_bookmark_name">${i18n_name}</label>
@@ -37,7 +37,7 @@ export default (el) => {
             </fieldset>
             <fieldset>
                 <input class="btn btn-primary" type="submit" value="${i18n_submit}">
-                    ${el.bookmark ? html`<input class="btn btn-secondary button-remove" type="button" value="${i18n_remove}" @click=${(ev) => el.removeBookmark(ev)}>` : '' }
+                    ${el.bookmark ? html`<input class="btn btn-secondary button-remove" type="button" value="${i18n_remove}" @click=${(/** @type {Event} */ ev) => el.removeBookmark(ev)}>` : '' }
             </fieldset>
         </form>
     `;

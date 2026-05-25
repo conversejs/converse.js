@@ -24,7 +24,7 @@ export default class Dropdown extends DropdownBase {
     constructor() {
         super();
         this.icon_classes = 'fa fa-bars';
-        this.items = [];
+        /** @type {any[]} */ this.items = [];
         this.id = u.getUniqueId();
     }
 
@@ -39,7 +39,7 @@ export default class Dropdown extends DropdownBase {
                 <converse-icon aria-hidden="true" size="1em" class="${this.icon_classes}">
             </button>
             <ul class="dropdown-menu" aria-labelledby="${this.id}">
-                ${this.items.map((b) => html`<li>${until(b, '')}</li>`)}
+                ${/** @type {any[]} */ (this.items).map((b) => html`<li>${until(b, '')}</li>`)}
             </ul>
         `;
     }
@@ -63,7 +63,7 @@ export default class Dropdown extends DropdownBase {
     }
 
     registerEvents() {
-        this._onKeyDown = (ev) => this.#onKeyDown(ev);
+        this._onKeyDown = /** @param {KeyboardEvent} ev */ (ev) => this.#onKeyDown(ev);
         this._onDropdownHide = () => this.#onDropdownHide();
         this.addEventListener('converse:dropdown:hide', this._onDropdownHide);
         this.addEventListener('keydown', this._onKeyDown);
@@ -82,7 +82,7 @@ export default class Dropdown extends DropdownBase {
         if (!this.navigator) {
             const options = /** @type DOMNavigatorOptions */ ({
                 selector: '.dropdown-menu li',
-                onSelected: (el) => el.focus(),
+                onSelected: /** @param {HTMLElement} el */ (el) => el.focus(),
             });
             this.navigator = new DOMNavigator(/** @type HTMLElement */ (this.menu), options);
         }

@@ -1,4 +1,4 @@
-import { api } from "@converse/headless";
+import { api } from '@converse/headless';
 import { __ } from 'i18n/index.js';
 import { html } from 'lit';
 
@@ -70,15 +70,17 @@ export default (el) => {
             ${el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message ? tplCheckmark() : ''}
             ${el.model.get('edited') ? tplEditedIcon(el) : ''}
         </span>
-        ${show_oob ? html`<div class="chat-msg__media">
-            <converse-texture
-                text="${el.model.get('oob_url')}"
-                .onImgClick="${(ev) => el.onImgClick(ev)}"
-                ?embed_audio="${render_media}"
-                ?embed_videos="${render_media}"
-                ?show_images="${render_media}"
-                />
-            </div>` : ''}
+        ${show_oob
+            ? html`<div class="chat-msg__media">
+                  <converse-texture
+                      text="${el.model.get('oob_url')}"
+                      .onImgClick="${/** @param {MouseEvent} ev */ (ev) => el.onImgClick(ev)}"
+                      ?embed_audio="${render_media}"
+                      ?embed_videos="${render_media}"
+                      ?show_images="${render_media}"
+                  />
+              </div>`
+            : ''}
         ${error_text ? html`<div class="chat-msg__error">${i18n_error}</div>` : ''}
     `;
 };

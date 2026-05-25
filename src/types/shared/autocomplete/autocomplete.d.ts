@@ -15,23 +15,23 @@ declare const AutoComplete_base: (new (...args: any[]) => {
 export class AutoComplete extends AutoComplete_base {
     /**
      * @param {HTMLElement} el
-     * @param {any} config
+     * @param {import('./types').AutoCompleteConfig} config
      */
-    constructor(el: HTMLElement, config?: any);
+    constructor(el: HTMLElement, config?: import("./types").AutoCompleteConfig);
     suggestions: any[];
     is_opened: boolean;
     match_current_word: boolean;
     suffix: string;
-    sort: (a: any, b: any) => number;
+    sort: (a: import("./suggestion.js").default, b: import("./suggestion.js").default) => number;
     filter: typeof FILTER_CONTAINS;
-    ac_triggers: any[];
-    include_triggers: any[];
+    /** @type {string[]} */ ac_triggers: string[];
+    /** @type {string[]} */ include_triggers: string[];
     min_chars: number;
     max_items: number;
     auto_first: boolean;
     data: (a: any, _v: any) => any;
     item: typeof getAutoCompleteItem;
-    container: Element | HTMLElement;
+    container: Element;
     input: HTMLInputElement;
     ul: HTMLElement;
     status: Element;
@@ -82,7 +82,7 @@ export class AutoComplete extends AutoComplete_base {
     evaluate(ev?: KeyboardEvent): Promise<void>;
 }
 export default AutoComplete;
+import Suggestion from './suggestion.js';
 import { FILTER_CONTAINS } from './utils.js';
 import { getAutoCompleteItem } from './utils.js';
-import Suggestion from './suggestion.js';
 //# sourceMappingURL=autocomplete.d.ts.map

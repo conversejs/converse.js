@@ -16,8 +16,8 @@ export default class MessageBody extends CustomElement {
     text: any;
     model: any;
     hide_url_previews: any;
-    initialize(): void;
-    onImgClick(ev: any): void;
+    /** @param {MouseEvent} ev */
+    onImgClick(ev: MouseEvent): void;
     onImgLoad(): void;
     render(): import("lit-html/directive").DirectiveResult<{
         new (_partInfo: import("lit-html/directive").PartInfo): {

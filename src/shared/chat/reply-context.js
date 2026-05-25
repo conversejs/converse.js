@@ -29,7 +29,7 @@ export default class ReplyContext extends CustomElement {
      * Get the message being replied to, if this message is a reply.
      * According to XEP-0461, for groupchat messages the stanza_id is used,
      * for other messages we check origin_id first, then msgid.
-     * @returns {import('@converse/headless/shared/message.js').default|undefined}
+     * @returns {import('@converse/headless/types/shared/message').default|undefined}
      */
     getRepliedMessage() {
         const reply_to_id = this.model.get('reply_to_id');
@@ -42,13 +42,13 @@ export default class ReplyContext extends CustomElement {
             const muc_jid = this.model_with_messages?.get('jid');
             if (muc_jid) {
                 return this.model_with_messages.messages.models.find(
-                    (m) => m.get(`stanza_id ${muc_jid}`) === reply_to_id
+                    (m) => m.get(`stanza_id ${muc_jid}`) === reply_to_id,
                 );
             }
         }
         // For non-groupchat, check origin_id first, then msgid (per XEP-0359)
         return this.model_with_messages.messages.models.find(
-            (m) => m.get('origin_id') === reply_to_id || m.get('msgid') === reply_to_id
+            (m) => m.get('origin_id') === reply_to_id || m.get('msgid') === reply_to_id,
         );
     }
 
@@ -84,7 +84,10 @@ export default class ReplyContext extends CustomElement {
         if (!replied_message) {
             // If the replied message is not found, show a generic reference
             return html`
-                <div class="chat-msg__reply-context chat-msg__reply-context--unavailable" @click=${(ev) => this.scrollToRepliedMessage(ev)}>
+                <div
+                    class="chat-msg__reply-context chat-msg__reply-context--unavailable"
+                    @click=${/** @param {MouseEvent} ev */ (ev) => this.scrollToRepliedMessage(ev)}
+                >
                     <converse-icon class="fa fa-reply" size="0.9em"></converse-icon>
                     <span class="chat-msg__reply-text">${__('Replying to a message')}</span>
                 </div>
@@ -96,7 +99,10 @@ export default class ReplyContext extends CustomElement {
         const truncated_body = body && body.length > 80 ? body.slice(0, 80) + '...' : body;
 
         return html`
-            <div class="chat-msg__reply-context" @click=${(ev) => this.scrollToRepliedMessage(ev)}>
+            <div
+                class="chat-msg__reply-context"
+                @click=${/** @param {MouseEvent} ev */ (ev) => this.scrollToRepliedMessage(ev)}
+            >
                 <converse-icon class="fa fa-reply" size="0.9em"></converse-icon>
                 <span class="chat-msg__reply-sender">${sender}</span>
                 <span class="chat-msg__reply-text">${truncated_body || __('(empty message)')}</span>

@@ -19,14 +19,14 @@ export default class Confirm extends BaseModal {
                     this.confirmation.reject();
                 }
             },
-            false
+            false,
         );
 
         this.onKeyDown = /** @param {KeyboardEvent} ev */ (ev) => {
             if (ev.key === constants.KEYCODES.ENTER) {
                 ev.preventDefault();
                 ev.stopPropagation();
-                const button = /** @type {HTMLFormElement} */(this.querySelector('form.confirm button[type=submit]'));
+                const button = /** @type {HTMLFormElement} */ (this.querySelector('form.confirm button[type=submit]'));
                 button.click();
             }
         };
@@ -69,7 +69,7 @@ export default class Confirm extends BaseModal {
                     field.challenge_failed = value !== field.challenge;
                 }
                 return field;
-            }
+            },
         );
 
         if (fields.filter((c) => c.challenge_failed).length) {

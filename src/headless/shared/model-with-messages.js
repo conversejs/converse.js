@@ -32,6 +32,8 @@ export default function ModelWithMessages(BaseModel) {
      * @typedef {import('../plugins/chat/model').default} ChatBox
      * @typedef {import('../plugins/muc/muc').default} MUC
      * @typedef {import('../plugins/muc/parsers').MUCMessageAttributes} MUCMessageAttributes
+     * @typedef {import('../shared/types').ErrorMessageAttributes} ErrorMessageAttributes
+     * @typedef {import('../shared/types').InfoMessageAttributes} InfoMessageAttributes
      * @typedef {import('../shared/types').MessageAttributes} MessageAttributes
      * @typedef {import('./message').default} BaseMessage
      */
@@ -43,7 +45,7 @@ export default function ModelWithMessages(BaseModel) {
             this.disable_mam = false;
         }
 
-        async initialize() {
+        initialize() {
             super.initialize();
 
             this.initUI();
@@ -77,8 +79,8 @@ export default function ModelWithMessages(BaseModel) {
          * Queue the creation of a message, to make sure that we don't run
          * into a race condition whereby we're creating a new message
          * before the collection has been fetched.
-         * @param {Object} attrs
-         * @param {Object} options
+         * @param {MessageAttributes|ErrorMessageAttributes|InfoMessageAttributes} attrs
+         * @param {import('@converse/skeletor').FetchOrCreateOptions} [options]
          */
         async createMessage(attrs, options) {
             attrs.time = attrs.time || new Date().toISOString();
@@ -199,7 +201,7 @@ export default function ModelWithMessages(BaseModel) {
          */
         async updateMessage(message, attrs) {
             const new_attrs = await this.getUpdatedMessageAttributes(message, attrs);
-            new_attrs && message.save(new_attrs);
+            if (new_attrs) message.save(new_attrs);
         }
 
         /**
@@ -230,7 +232,7 @@ export default function ModelWithMessages(BaseModel) {
             const message = this.messages.models.find(query);
             if (!message) {
                 attrs['older_versions'] = {};
-                return await this.createMessage(attrs); // eslint-disable-line no-return-await
+                return await this.createMessage(attrs);
             }
 
             const older_versions = message.get('older_versions') || {};
@@ -363,9 +365,9 @@ export default function ModelWithMessages(BaseModel) {
             const item = result.pop();
             if (!item) {
                 this.createMessage({
-                    'message': __('Sorry, looks like file upload is not supported by your server.'),
-                    'type': 'error',
-                    'is_ephemeral': true,
+                    message: __('Sorry, looks like file upload is not supported by your server.'),
+                    type: 'error',
+                    is_ephemeral: true,
                 });
                 return;
             }
@@ -377,9 +379,9 @@ export default function ModelWithMessages(BaseModel) {
 
             if (!slot_request_url) {
                 this.createMessage({
-                    'message': __('Sorry, looks like file upload is not supported by your server.'),
-                    'type': 'error',
-                    'is_ephemeral': true,
+                    message: __('Sorry, looks like file upload is not supported by your server.'),
+                    type: 'error',
+                    is_ephemeral: true,
                 });
                 return;
             }
@@ -582,7 +584,7 @@ export default function ModelWithMessages(BaseModel) {
                 this.messages
                     .filter({ sender: 'me' })
                     .reverse()
-                    .find((m) => m.get('editable'));
+                    .find(/** @param {BaseMessage} m */ (m) => m.get('editable'));
 
             message?.save('correcting', true);
         }
@@ -642,12 +644,14 @@ export default function ModelWithMessages(BaseModel) {
          */
         getMessageReferencedByError(attrs) {
             if (attrs.msgid) {
-                return this.messages.models.find((m) =>
-                    [m.get('msgid'), m.get('retraction_id'), m.get('origin_id')].includes(attrs.msgid),
+                return this.messages.models.find(
+                    /** @param {BaseMessage} m */ (m) =>
+                        [m.get('msgid'), m.get('retraction_id'), m.get('origin_id')].includes(attrs.msgid),
                 );
             } else if (attrs.reaction_to_id) {
-                return this.messages.models.find((m) =>
-                    [m.get('msgid'), m.get('origin_id')].includes(attrs.reaction_to_id),
+                return this.messages.models.find(
+                    /** @param {BaseMessage} m */ (m) =>
+                        [m.get('msgid'), m.get('origin_id')].includes(attrs.reaction_to_id),
                 );
             }
         }

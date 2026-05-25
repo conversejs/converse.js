@@ -1,5 +1,8 @@
 export default class UserDetailsModal extends BaseModal {
-    constructor(options: any);
+    /**
+     * @param {Record<string, any>} options
+     */
+    constructor(options: Record<string, any>);
     addListeners(): void;
     getContact(): any;
     /**

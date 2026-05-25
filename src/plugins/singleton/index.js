@@ -10,7 +10,7 @@ import './singleton.scss';
 
 converse.plugins.add('converse-singleton', {
 
-    enabled (_converse) {
+    enabled (/** @type {*} */ _converse) {
         return _converse.api.settings.get("singleton");
     },
 

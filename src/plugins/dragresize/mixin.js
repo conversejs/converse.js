@@ -43,8 +43,8 @@ export default function DragResizable(BaseCustomElement) {
             this.model.set(this.getDefaultDimensions());
 
             const style = window.getComputedStyle(flyout);
-            const min_width = style['min-width'];
-            const min_height = style['min-height'];
+            const min_width = /** @type {string} */ (style['min-width']);
+            const min_height = /** @type {string} */ (style['min-height']);
             this.model.set('min_width', min_width.endsWith('px') ? Number(min_width.replace(/px$/, '')) : 0);
             this.model.set('min_height', min_height.endsWith('px') ? Number(min_height.replace(/px$/, '')) : 0);
 

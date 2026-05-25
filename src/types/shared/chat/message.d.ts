@@ -23,7 +23,8 @@ export default class Message extends ObservableElement {
     renderFileProgress(): import("lit-html").TemplateResult<1> | "";
     renderChatMessage(): import("lit-html").TemplateResult<1>;
     shouldShowAvatar(): boolean;
-    onImgClick(ev: any): void;
+    /** @param {MouseEvent} ev */
+    onImgClick(ev: MouseEvent): void;
     onUnfurlAnimationEnd(): void;
     onRetryClicked(): Promise<void>;
     show_spinner: boolean;
@@ -32,9 +33,12 @@ export default class Message extends ObservableElement {
     getOccupantRole(): any;
     getExtraMessageClasses(): string;
     getRetractionText(): any;
-    showUserModal(ev: any): void;
-    showMessageVersionsModal(ev: any): void;
-    toggleSpoilerMessage(ev: any): void;
+    /** @param {MouseEvent} ev */
+    showUserModal(ev: MouseEvent): void;
+    /** @param {MouseEvent} ev */
+    showMessageVersionsModal(ev: MouseEvent): void;
+    /** @param {MouseEvent} [ev] */
+    toggleSpoilerMessage(ev?: MouseEvent): void;
 }
 import { ObservableElement } from 'shared/components/observable.js';
 //# sourceMappingURL=message.d.ts.map

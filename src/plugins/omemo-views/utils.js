@@ -133,7 +133,7 @@ function getTemplateForObjectURL(file_url, obj_url, richtext) {
     } else if (isVideoURL(file_url)) {
         return tplVideo(/** @type {string} */ (obj_url));
     } else {
-        return tplFile(obj_url, getFileName(file_url));
+        return tplFile(/** @type {string} */ (obj_url), getFileName(file_url));
     }
 }
 

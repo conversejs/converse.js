@@ -49,11 +49,11 @@ export default class Texture extends LitElement {
     embed_audio: boolean;
     embed_videos: boolean;
     hide_media_urls: boolean;
-    mentions: any[];
+    /** @type {any[]} */ mentions: any[];
     offset: number;
     render_styling: boolean;
     show_image_urls: boolean;
-    show_images: boolean;
+    /** @type {boolean} */ show_images: boolean;
     show_me_message: boolean;
     render(): import("lit-html/directive.js").DirectiveResult<{
         new (_partInfo: import("lit-html/directive.js").PartInfo): {

@@ -28,7 +28,7 @@ const tplNavigation = (el) => {
                                 role="tab"
                                 data-toggle="tab"
                                 data-name="about"
-                                @click=${(ev) => el.switchTab(ev)}
+                                @click=${(/** @type {Event} */ ev) => el.switchTab(ev)}
                                 >${i18n_about}</a
                             >
                         </li>`
@@ -43,7 +43,7 @@ const tplNavigation = (el) => {
                                 role="tab"
                                 data-toggle="tab"
                                 data-name="commands"
-                                @click=${(ev) => el.switchTab(ev)}
+                                @click=${(/** @type {Event} */ ev) => el.switchTab(ev)}
                                 >${i18n_commands}</a
                             >
                         </li>`
@@ -58,7 +58,7 @@ const tplNavigation = (el) => {
                                 role="tab"
                                 data-toggle="tab"
                                 data-name="disco"
-                                @click=${(ev) => el.switchTab(ev)}
+                                @click=${(/** @type {Event} */ ev) => el.switchTab(ev)}
                                 >${i18n_services}</a
                             >
                         </li>`

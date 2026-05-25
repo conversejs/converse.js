@@ -1,5 +1,4 @@
 export class ToastsContainer extends CustomElement {
-    initialize(): void;
     render(): import("lit-html").TemplateResult<1>;
 }
 export default ToastsContainer;

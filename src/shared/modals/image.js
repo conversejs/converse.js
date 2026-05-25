@@ -10,6 +10,9 @@ import './styles/image.scss';
 
 export default class ImageModal extends BaseModal {
 
+    /**
+     * @param {Record<string, any>} options
+     */
     constructor (options) {
         super(options);
         this.src = options.src;

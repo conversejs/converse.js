@@ -17,7 +17,6 @@ export default class MUCChatArea extends CustomElement {
     initialize(): Promise<void>;
     model: any;
     render(): import("lit-html").TemplateResult<1> | "";
-    connectedCallback(): void;
     hideSidebarIfSmallViewport: any;
     shouldShowSidebar(): boolean;
     getHelpMessages(): string[];

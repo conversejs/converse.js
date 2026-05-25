@@ -36,7 +36,6 @@ export class ChatToolbar extends CustomElement {
     show_call_button: boolean;
     show_emoji_button: boolean;
     show_location_button: boolean;
-    connectedCallback(): void;
     render(): import("lit-html").TemplateResult<1>;
     firstUpdated(): void;
     getButtons(): any;

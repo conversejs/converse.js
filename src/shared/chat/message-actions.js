@@ -11,16 +11,6 @@ const { Strophe } = converse.env;
 const { getMediaURLs } = u;
 const { CHATROOMS_TYPE } = constants;
 
-/**
- * @typedef {Object} MessageActionAttributes
- * An object which represents a message action (as shown in the message dropdown);
- * @property {String} i18n_text
- * @property {Function} handler
- * @property {String} button_class
- * @property {String} icon_class
- * @property {String} name
- */
-
 class MessageActions extends CustomElement {
     /**
      * @typedef {import('@converse/headless/types/utils/types').MediaURLMetadata} MediaURLMetadata
@@ -55,6 +45,7 @@ class MessageActions extends CustomElement {
         this.listenTo(this.model.chatbox.session, 'change:connection_status', () => this.requestUpdate());
     }
 
+    /** @param {import('@converse/headless').MUCOccupant} o */
     updateIfOwnOccupant(o) {
         const bare_jid = _converse.session.get('bare_jid');
         if (o.get('jid') === bare_jid) {
@@ -194,7 +185,7 @@ class MessageActions extends CustomElement {
                 if (api.settings.get('show_retraction_warning')) {
                     messages = [messages[0], retraction_warning, messages[1]];
                 }
-                !!(await api.confirm(__('Confirm'), messages)) && this.retractOtherMessage();
+                if (await api.confirm(__('Confirm'), messages)) this.retractOtherMessage();
             } else {
                 let messages = [
                     __('You are about to retract this message.'),
@@ -204,7 +195,7 @@ class MessageActions extends CustomElement {
                     messages = [messages[0], retraction_warning, messages[1]];
                 }
                 const reason = await api.prompt(__('Message Retraction'), messages, __('Optional reason'));
-                reason !== false && this.retractOtherMessage(reason);
+                if (reason !== false) this.retractOtherMessage(reason);
             }
         } else {
             const err_msg = __(`Sorry, you're not allowed to retract this message`);
@@ -289,7 +280,7 @@ class MessageActions extends CustomElement {
      *
      * Whether media is currently shown or hidden is determined by the { @link hasHiddenMedia } method.
      *
-     * @param { Array<MessageActionAttributes> } buttons - An array of objects representing action buttons
+     * @param { Array<import('./types').MessageActionButton> } buttons - An array of objects representing action buttons
      */
     addMediaRenderingToggle(buttons) {
         const urls = this.getMediaURLs();
@@ -297,7 +288,7 @@ class MessageActions extends CustomElement {
             const hidden = this.hasHiddenMedia(urls);
             buttons.push({
                 'i18n_text': hidden ? __('Show media') : __('Hide media'),
-                'handler': (ev) => this.onMediaToggleClicked(ev),
+                'handler': /** @param {MouseEvent} ev */ (ev) => this.onMediaToggleClicked(ev),
                 'button_class': 'chat-msg__action-hide-previews',
                 'icon_class': hidden ? 'fas fa-eye' : 'fas fa-eye-slash',
                 'name': 'hide',
@@ -378,13 +369,16 @@ class MessageActions extends CustomElement {
         textarea?.focus();
     }
 
+    /**
+     * @returns {Promise<import('./types').MessageActionButton[]>}
+     */
     async getActionButtons() {
         const buttons = [];
         if (this.model.get('editable')) {
             buttons.push(
-                /** @type {MessageActionAttributes} */ ({
+                /** @type {import('./types').MessageActionButton} */ ({
                     'i18n_text': this.model.get('correcting') ? __('Cancel Editing') : __('Edit'),
-                    'handler': (ev) => this.onMessageEditButtonClicked(ev),
+                    'handler': /** @param {MouseEvent} ev */ (ev) => this.onMessageEditButtonClicked(ev),
                     'button_class': 'chat-msg__action-edit',
                     'icon_class': 'fa fa-pencil-alt',
                     'name': 'edit',
@@ -398,7 +392,7 @@ class MessageActions extends CustomElement {
         if (retractable) {
             buttons.push({
                 'i18n_text': __('Retract'),
-                'handler': (ev) => this.onMessageRetractButtonClicked(ev),
+                'handler': /** @param {MouseEvent} ev */ (ev) => this.onMessageRetractButtonClicked(ev),
                 'button_class': 'chat-msg__action-retract',
                 'icon_class': 'fas fa-trash-alt',
                 'name': 'retract',
@@ -415,7 +409,7 @@ class MessageActions extends CustomElement {
 
         buttons.push({
             'i18n_text': __('Copy'),
-            'handler': (ev) => this.onMessageCopyButtonClicked(ev),
+            'handler': /** @param {MouseEvent} ev */ (ev) => this.onMessageCopyButtonClicked(ev),
             'button_class': 'chat-msg__action-copy',
             'icon_class': 'fas fa-copy',
             'name': 'copy',
@@ -426,7 +420,7 @@ class MessageActions extends CustomElement {
             if (this.canReply()) {
                 buttons.push({
                     'i18n_text': __('Reply'),
-                    'handler': (ev) => this.onMessageReplyButtonClicked(ev),
+                    'handler': /** @param {MouseEvent} ev */ (ev) => this.onMessageReplyButtonClicked(ev),
                     'button_class': 'chat-msg__action-reply',
                     'icon_class': 'fas fa-reply',
                     'name': 'reply',
@@ -434,7 +428,7 @@ class MessageActions extends CustomElement {
             }
             buttons.push({
                 'i18n_text': __('Quote'),
-                'handler': (ev) => this.onMessageQuoteButtonClicked(ev),
+                'handler': /** @param {MouseEvent} ev */ (ev) => this.onMessageQuoteButtonClicked(ev),
                 'button_class': 'chat-msg__action-quote',
                 'icon_class': 'fas fa-quote-right',
                 'name': 'quote',

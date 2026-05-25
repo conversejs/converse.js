@@ -14,6 +14,7 @@ const supports_html5_notification = 'Notification' in window;
 
 converse.env.Favico = Favico;
 
+/** @type {Favico} */
 let favicon;
 
 /**
@@ -21,9 +22,7 @@ let favicon;
  * @returns {boolean}
  */
 export function isMessageToHiddenChat(from) {
-    return isTestEnv() ||
-           (_converse.state.chatboxes.get(from)?.isHidden() ?? false) ||
-           document.hidden;
+    return isTestEnv() || (_converse.state.chatboxes.get(from)?.isHidden() ?? false) || document.hidden;
 }
 
 export function areDesktopNotificationsEnabled() {
@@ -51,7 +50,7 @@ export function updateUnreadFavicon() {
     if (api.settings.get('show_tab_notifications')) {
         favicon = favicon ?? new converse.env.Favico({ type: 'circle', animation: 'pop' });
         const chats = _converse.state.chatboxes.models;
-        const num_unread = chats.reduce((acc, chat) => acc + (chat.get('num_unread') || 0), 0);
+        const num_unread = chats.reduce((/** @type {number} */ acc, chat) => acc + (chat.get('num_unread') || 0), 0);
         favicon.badge(num_unread);
         /** @type navigator */ (navigator)
             .setAppBadge?.(num_unread)
@@ -66,7 +65,8 @@ export function updateUnreadFavicon() {
  */
 function isReferenced(references, muc_jid, nick) {
     const bare_jid = _converse.session.get('bare_jid');
-    const check = (r) => [bare_jid, `${muc_jid}/${nick}`].includes(r.uri.replace(/^xmpp:/, ''));
+    const check = /** @param {{uri: string}} r */ (r) =>
+        [bare_jid, `${muc_jid}/${nick}`].includes(r.uri.replace(/^xmpp:/, ''));
     return references.reduce((acc, r) => acc || (r.uri && check(r)), false);
 }
 

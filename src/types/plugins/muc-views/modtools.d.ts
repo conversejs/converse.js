@@ -46,7 +46,10 @@ export default class ModeratorTools extends CustomElement {
     affiliation: any;
     affiliations_filter: string;
     roles_filter: string;
-    updated(changed: any): void;
+    /** @type {import('@converse/headless').MUCOccupant[]} */
+    users_with_affiliation: import("@converse/headless").MUCOccupant[];
+    /** @type {import('@converse/headless').MUCOccupant[]} */
+    users_with_role: import("@converse/headless").MUCOccupant[];
     initialize(): Promise<void>;
     initialized: Promise<any> & {
         isResolved: boolean;
@@ -57,21 +60,21 @@ export default class ModeratorTools extends CustomElement {
     };
     muc: any;
     render(): import("lit-html").TemplateResult<1> | "";
-    switchTab(ev: any): void;
+    switchTab(ev: Event): void;
     onSearchAffiliationChange(): Promise<void>;
     loading_users_with_affiliation: boolean;
-    users_with_affiliation: any;
     onSearchRoleChange(): Promise<void>;
-    users_with_role: any;
     shouldFetchAffiliationsList(): boolean;
-    toggleForm(ev: any): void;
-    filterRoleResults(ev: any): void;
-    filterAffiliationResults(ev: any): void;
-    queryRole(ev: any): void;
-    queryAffiliation(ev: any): void;
-    alert(message: any, type: any): void;
-    alert_message: any;
-    alert_type: any;
+    /** @param {Event} ev */
+    toggleForm(ev: Event): void;
+    /** @param {Event} ev */
+    filterRoleResults(ev: Event): void;
+    filterAffiliationResults(ev: Event): void;
+    queryRole(ev: Event): void;
+    queryAffiliation(ev: Event): void;
+    alert(message: string, type: string): void;
+    alert_message: string;
+    alert_type: string;
     clearAlert(): void;
 }
 export type NonOutcastAffiliation = any;

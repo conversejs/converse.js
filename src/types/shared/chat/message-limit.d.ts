@@ -9,7 +9,6 @@ export default class MessageLimitIndicator extends CustomElement {
     };
     model: any;
     _draft_length: number;
-    connectedCallback(): void;
     render(): import("lit-html").TemplateResult<1> | "";
 }
 import { CustomElement } from 'shared/components/element.js';

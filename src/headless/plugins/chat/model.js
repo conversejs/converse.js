@@ -37,6 +37,10 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         };
     }
 
+    /**
+     * @param {import('@converse/skeletor').ModelAttributes} attrs
+     * @param {import('@converse/skeletor').ModelOptions} options
+     */
     constructor(attrs, options) {
         super(attrs, options);
         this.disable_mam = false;
@@ -71,7 +75,11 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         await api.waitUntil('presencesInitialized');
         const { presences } = _converse.state;
         this.presence = presences.get(jid) || presences.create({ jid });
-        this.presence.on('change:show', (item) => this.onPresenceChanged(item));
+        this.presence.on(
+            'change:show',
+            /** @param {import('../roster/presence').default} item */
+            (item) => this.onPresenceChanged(item),
+        );
     }
 
     /**
@@ -149,17 +157,17 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         const { __ } = _converse;
         const show = item.get('show');
         const fullname = this.getDisplayName();
-        let text;
+        let message;
         if (show === 'offline') {
-            text = __('%1$s has gone offline', fullname);
+            message = __('%1$s has gone offline', fullname);
         } else if (show === 'away') {
-            text = __('%1$s has gone away', fullname);
+            message = __('%1$s has gone away', fullname);
         } else if (show === 'dnd') {
-            text = __('%1$s is busy', fullname);
+            message = __('%1$s is busy', fullname);
         } else if (show === 'online') {
-            text = __('%1$s is online', fullname);
+            message = __('%1$s is online', fullname);
         }
-        text && this.createMessage({ message: text, type: 'info', is_ephemeral: true });
+        if (message) this.createMessage({ message, type: 'info', is_ephemeral: true });
     }
 
     async close() {

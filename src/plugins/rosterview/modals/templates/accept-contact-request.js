@@ -13,7 +13,7 @@ export default (el) => {
     const i18n_xmpp_address = __('XMPP Address');
 
     return html` <div class="modal-body">
-        <form class="converse-form" @submit=${(ev) => el.acceptContactRequest(ev)}>
+        <form class="converse-form" @submit=${(/** @type {Event} */ ev) => el.acceptContactRequest(ev)}>
             <div class="mb-3">
                 <label class="form-label clearfix" for="name">${i18n_nickname}:</label>
                 <input

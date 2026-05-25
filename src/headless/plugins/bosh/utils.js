@@ -19,7 +19,7 @@ async function initBOSHSession() {
     const id = BOSH_SESSION_ID;
     if (!bosh_session) {
         bosh_session = new Model({ id });
-        bosh_session.browserStorage = /** @type {any} */ (createStore(id, 'session'));
+        bosh_session.browserStorage = createStore(id, 'session');
         await new Promise((resolve) => bosh_session.fetch({ 'success': resolve, 'error': resolve }));
     }
 
@@ -33,7 +33,7 @@ async function initBOSHSession() {
     } else {
         // Keepalive
         const jid = bosh_session.get('jid');
-        jid && (await setUserJID(jid));
+        if (jid) await setUserJID(jid);
     }
     return bosh_session;
 }
@@ -113,7 +113,9 @@ export async function restoreBOSHSession() {
             connection.restore(jid, connection.onConnectStatusChanged);
             return true;
         } catch (e) {
-            !isTestEnv() && log.warn('Could not restore session for jid: ' + jid + ' Error message: ' + e.message);
+            if (!isTestEnv()) {
+                log.warn('Could not restore session for jid: ' + jid + ' Error message: ' + e.message);
+            }
             return false;
         }
     }

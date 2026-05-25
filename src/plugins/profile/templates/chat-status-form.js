@@ -86,7 +86,7 @@ export default (el) => {
                     autofocus
                     value="${status_message || ''}"
                     placeholder="${placeholder_status_message}"
-                    @input=${(ev) => (el._show_clear_button = !!ev.target.value)}
+                    @input=${(ev) => (el._show_clear_button = !! /** @type {HTMLInputElement} */ (ev.target).value)}
                 />
                 <button
                     type="button"

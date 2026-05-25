@@ -5,6 +5,9 @@ import '../components/bookmark-form.js';
 import { __ } from 'i18n';
 
 export default class BookmarkFormModal extends BaseModal {
+    /**
+     * @param {import('@converse/skeletor').ModelOptions} options
+     */
     constructor(options) {
         super(options);
         this.jid = null;
@@ -16,7 +19,6 @@ export default class BookmarkFormModal extends BaseModal {
     }
 
     getModalTitle() {
-        // eslint-disable-line class-methods-use-this
         return __('Bookmark');
     }
 }

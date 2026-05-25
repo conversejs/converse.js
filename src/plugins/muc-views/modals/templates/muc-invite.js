@@ -8,7 +8,7 @@ export default (el) => {
     const i18n_invite_label = __('XMPP Address');
     const i18n_reason = __('Optional reason for the invitation');
     return html`
-        <form class="converse-form" @submit=${(ev) => el.submitInviteForm(ev)}>
+        <form class="converse-form" @submit=${(/** @type {Event} */ ev) => el.submitInviteForm(ev)}>
             <fieldset>
                 <label class="form-label clearfix" for="invitee_jids">${i18n_invite_label}:</label>
                 ${ el.state.get('invalid_invite_jid') ? html`<div class="error error-feedback">${i18n_error_message}</div>` : '' }

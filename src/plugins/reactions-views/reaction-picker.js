@@ -8,13 +8,11 @@
  * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
  * @typedef {import('@converse/headless/types/shared/types').ChatBoxOrMUC} ChatBoxOrMUC
  */
-import { createPopper } from '@popperjs/core';
 import { CustomElement } from 'shared/components/element.js';
-import { api, u, _converse, EmojiPicker } from '@converse/headless';
+import { api, u } from '@converse/headless';
 import tplReactionPicker from './templates/reaction-picker.js';
 import { sendReaction, getPopularReactions } from './utils.js';
-import 'shared/components/dropdown.js';
-import 'shared/chat/emoji-picker.js';
+import './emoji-picker-dropdown.js';
 import 'shared/chat/styles/emoji.scss';
 import './reaction-picker.scss';
 
@@ -80,7 +78,9 @@ export default class ReactionPicker extends CustomElement {
         const btn = /** @type {HTMLElement} */ (ev.currentTarget ?? ev.target);
         this.#anchor_rect = btn?.getBoundingClientRect() ?? null;
         await api.emojis.initialize();
-        this.popular_reactions_promise = getPopularReactions(this.allowed_emojis);
+        /** @type {ChatBoxOrMUC|undefined} */
+        const chatbox = this.model?.collection?.chatbox;
+        this.popular_reactions_promise = getPopularReactions(chatbox?.get('allowed_reactions'));
         this.opened = true;
     }
 
@@ -88,8 +88,6 @@ export default class ReactionPicker extends CustomElement {
         if (!this.opened) return;
         this.#anchor_rect = null;
         this.popular_reactions_promise = null;
-        this._emoji_dropdown_popper?.destroy();
-        this._emoji_dropdown_popper = null;
         this.opened = false;
     }
 
@@ -147,70 +145,6 @@ export default class ReactionPicker extends CustomElement {
             const top = anchor.bottom - parent_rect.top;
             set('bottom', 'auto');
             set('top', `${top}px`);
-        }
-    }
-
-    /**
-     * @returns {string[]|undefined}
-     */
-    get allowed_emojis() {
-        /** @type {ChatBoxOrMUC|undefined} */
-        const chatbox = this.model?.collection?.chatbox;
-        return chatbox?.get('allowed_reactions');
-    }
-
-    /**
-     * Initialize the emoji picker for this chat if it doesn't exist
-     * and toggle the dropdown visibility.
-     * @param {Event} ev
-     * @returns {Promise<void>}
-     */
-    async toggleEmojiPickerDropdown(ev) {
-        const button = /** @type {HTMLElement} */ (ev.currentTarget);
-
-        await this.initEmojiPicker();
-        await this.updateComplete;
-
-        const dropdown = button.closest('.dropdown');
-        const menu = /** @type {HTMLElement|undefined|null} */ (dropdown?.querySelector('.dropdown-menu'));
-        if (!dropdown || !menu) return;
-
-        if (menu.classList.contains('show')) {
-            menu.classList.remove('show');
-            button.setAttribute('aria-expanded', 'false');
-            dropdown.dispatchEvent(new CustomEvent('converse:dropdown:hide', { bubbles: true }));
-            this._emoji_dropdown_popper?.destroy();
-            this._emoji_dropdown_popper = null;
-        } else {
-            menu.classList.add('show');
-            button.setAttribute('aria-expanded', 'true');
-            dropdown.dispatchEvent(new CustomEvent('converse:dropdown:show', { bubbles: true }));
-            this._emoji_dropdown_popper?.destroy();
-            this._emoji_dropdown_popper = createPopper(button, menu, {
-                placement: 'bottom-start',
-                modifiers: [{ name: 'flip' }, { name: 'offset', options: { offset: [0, 4] } }],
-            });
-        }
-    }
-
-    /**
-     * Initialize the emoji picker for this chat if it doesn't exist
-     * @returns {Promise<void>}
-     */
-    async initEmojiPicker() {
-        /** @type {ChatBoxOrMUC|undefined} */
-        const chatbox = this.model?.collection?.chatbox;
-        if (!chatbox) return;
-        if (!chatbox.emoji_picker) {
-            await api.emojis.initialize();
-
-            const bare_jid = _converse.session.get('bare_jid');
-            const id = `converse.emoji-${bare_jid}-${chatbox.get('jid')}`;
-            chatbox.emoji_picker = new EmojiPicker({ id });
-            u.initStorage(chatbox.emoji_picker, id);
-            await new Promise((resolve) => chatbox.emoji_picker.fetch({ 'success': resolve, 'error': resolve }));
-
-            this.requestUpdate();
         }
     }
 

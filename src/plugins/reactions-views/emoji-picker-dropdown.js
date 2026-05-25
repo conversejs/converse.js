@@ -3,6 +3,10 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+/**
+ * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
+ * @typedef {import('@converse/headless/types/shared/types').ChatBoxOrMUC} ChatBoxOrMUC
+ */
 import { html } from 'lit';
 import { _converse, api, u, EmojiPicker } from '@converse/headless';
 import DropdownBase from 'shared/components/dropdownbase.js';
@@ -13,23 +17,33 @@ import 'shared/chat/styles/emoji.scss';
 export default class EmojiPickerDropdown extends DropdownBase {
     static get properties() {
         return {
-            message_model: { type: Object },
+            'message_model': { type: Object },
         };
     }
 
     constructor() {
         super();
+        /** @type {BaseMessage|null} */
         this.message_model = null;
     }
 
+    /**
+     * @returns {ChatBoxOrMUC|undefined}
+     */
     get chatbox() {
         return this.message_model?.collection?.chatbox;
     }
 
+    /**
+     * @returns {string[]|undefined}
+     */
     get allowed_emojis() {
         return this.chatbox?.get('allowed_reactions');
     }
 
+    /**
+     * @returns {import('lit').TemplateResult}
+     */
     render() {
         return html`
             <button class="reaction-item more dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false">
@@ -67,23 +81,34 @@ export default class EmojiPickerDropdown extends DropdownBase {
 
     firstUpdated() {
         this.menu = /** @type {HTMLElement} */ (this.querySelector('.dropdown-menu'));
-        this.button = /** @type {HTMLButtonElement} */ (/** @type {unknown} */ (this.querySelector('button')));
-        this._onButtonClick = async (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            await this.#initPicker();
-            await this.updateComplete;
-            this.toggle();
-        };
+        this.button = /** @type {HTMLButtonElement} */ (this.querySelector('button'));
+
+        this._onButtonClick =
+            /** @param {MouseEvent} ev */
+            async (ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                await this.#initPicker();
+                await this.updateComplete;
+                this.toggle();
+            };
         this.button.addEventListener('click', this._onButtonClick);
     }
 
+    /**
+     * @param {import('lit').PropertyValues} changed
+     */
     updated(changed) {
         super.updated(changed);
         this.menu = /** @type {HTMLElement} */ (this.querySelector('.dropdown-menu'));
         this.button = /** @type {HTMLButtonElement} */ (/** @type {unknown} */ (this.querySelector('button')));
     }
 
+    /**
+     * Lazily creates and fetches the emoji picker model for the chatbox
+     * if one doesn't already exist.
+     * @returns {Promise<void>}
+     */
     async #initPicker() {
         const chatbox = this.chatbox;
         if (!chatbox || chatbox.emoji_picker) return;
@@ -98,4 +123,3 @@ export default class EmojiPickerDropdown extends DropdownBase {
 }
 
 api.elements.define('converse-emoji-picker-dropdown', EmojiPickerDropdown);
-

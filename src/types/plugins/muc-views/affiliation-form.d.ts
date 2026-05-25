@@ -28,5 +28,5 @@ declare class AffiliationForm extends CustomElement {
     alert_type: any;
     assignAffiliation(ev: any): Promise<void>;
 }
-import { CustomElement } from 'shared/components/element';
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=affiliation-form.d.ts.map

@@ -30,10 +30,6 @@ export default class SplitResize extends CustomElement {
     };
     render(): import("lit-html").TemplateResult<1>;
     /**
-     * @param {Map<string, any>} changed
-     */
-    updated(changed: Map<string, any>): void;
-    /**
      * Helper function gets a property from the properties object, with a default fallback
      */
     getOption(options: any, propName: any, def: any): any;

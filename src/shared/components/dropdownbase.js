@@ -3,11 +3,15 @@ import log from '@converse/log';
 import { CustomElement } from './element.js';
 
 export default class DropdownBase extends CustomElement {
+    /**
+     * @param {import('lit').PropertyValues} changed
+     */
     firstUpdated(changed) {
         super.firstUpdated(changed);
-        this.menu = this.querySelector('.dropdown-menu');
-        this.button = this.querySelector('button');
+        this.menu = /** @type { HTMLElement|null} */ (this.querySelector('.dropdown-menu'));
+        this.button = /** @type {HTMLButtonElement} */ (this.querySelector('button'));
 
+        /** @param {MouseEvent} ev */
         this._onButtonClick = (ev) => {
             ev.preventDefault();
             ev.stopPropagation();

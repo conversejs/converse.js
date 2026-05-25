@@ -2,11 +2,11 @@ export default MUC;
 declare const MUC_base: {
     new (...args: any[]): {
         [x: string]: any;
-        _vcard: import("../vcard").VCard;
+        _vcard: import("../vcard/vcard.js").default;
         lazy_load_vcard: boolean;
         initialize(): void;
-        readonly vcard: import("../vcard").VCard;
-        getVCard(): Promise<import("../vcard").VCard | null>;
+        readonly vcard: import("../vcard/vcard.js").default;
+        getVCard(): Promise<import("../vcard/vcard.js").default | null>;
         _browserStorage?: import("@converse/skeletor").BrowserStorage;
         _changing: boolean;
         _pending: boolean | import("@converse/skeletor").ModelOptions;
@@ -960,7 +960,7 @@ declare class MUC extends MUC_base {
     clearUnreadMsgCounter(): Promise<void>;
 }
 import { Model } from '@converse/skeletor';
-import ChatBoxBase from '../../shared/chatbox';
-import MUCSession from './session';
+import ChatBoxBase from '../../shared/chatbox.js';
+import MUCSession from './session.js';
 import { TimeoutError } from '../../shared/errors.js';
 //# sourceMappingURL=muc.d.ts.map

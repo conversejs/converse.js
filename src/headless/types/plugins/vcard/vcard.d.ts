@@ -14,5 +14,5 @@ declare class VCard extends Model<import("@converse/skeletor").ModelAttributes> 
     lazy_load: boolean;
     getDisplayName(): any;
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=vcard.d.ts.map

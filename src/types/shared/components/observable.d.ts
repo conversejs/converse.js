@@ -36,5 +36,5 @@ export class ObservableElement extends CustomElement {
      */
     onVisibilityChanged(_entry: IntersectionObserverEntry): void;
 }
-import { CustomElement } from "./element";
+import { CustomElement } from './element.js';
 //# sourceMappingURL=observable.d.ts.map

@@ -71,5 +71,5 @@ export function savedLoginInfo(jid: string): Promise<Model>;
  */
 export function safeSave(model: Model, attributes: any, options: any): void;
 export type ConversePrivateGlobal = any;
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=init.d.ts.map

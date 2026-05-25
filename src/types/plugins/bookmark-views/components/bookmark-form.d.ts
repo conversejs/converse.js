@@ -27,5 +27,5 @@ declare class MUCBookmarkForm extends CustomElement {
      */
     closeBookmarkForm(ev: Event): void;
 }
-import { CustomElement } from 'shared/components/element';
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=bookmark-form.d.ts.map

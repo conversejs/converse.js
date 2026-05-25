@@ -38,5 +38,5 @@ declare class DiscoBrowser extends CustomElement {
         error?: undefined;
     }>;
 }
-import { CustomElement } from 'shared/components/element';
+import { CustomElement } from '../../shared/components/element.js';
 //# sourceMappingURL=disco-browser.d.ts.map

@@ -7,6 +7,7 @@
 /**
  * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
  * @typedef {import('@converse/headless/types/shared/types').ChatBoxOrMUC} ChatBoxOrMUC
+ * @typedef {import('lit').TemplateResult} TemplateResult
  */
 import { CustomElement } from 'shared/components/element.js';
 import { api, u } from '@converse/headless';
@@ -51,12 +52,15 @@ export default class ReactionPicker extends CustomElement {
 
     /**
      * Render the reaction picker UI
-     * @returns {import('lit').TemplateResult|''}
+     * @returns {TemplateResult|''}
      */
     render() {
         return this.opened ? tplReactionPicker(this) : '';
     }
 
+    /**
+     * @param {import('lit').PropertyValues} changed
+     */
     updated(changed) {
         super.updated(changed);
         if (changed.has('opened')) {

@@ -24,6 +24,6 @@ export default class ContactApprovalAlert extends CustomElement {
      */
     close(ev: MouseEvent): Promise<void>;
 }
-import { CustomElement } from 'shared/components/element';
+import { CustomElement } from 'shared/components/element.js';
 import { RosterContact } from '@converse/headless';
 //# sourceMappingURL=approval-alert.d.ts.map

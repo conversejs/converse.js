@@ -44,8 +44,11 @@ export default class Dropdown extends DropdownBase {
         `;
     }
 
-    firstUpdated() {
-        super.firstUpdated();
+    /**
+     * @param {import('lit').PropertyValues} changed
+     */
+    firstUpdated(changed) {
+        super.firstUpdated(changed);
         this.initArrowNavigation();
     }
 

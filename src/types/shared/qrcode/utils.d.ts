@@ -18,5 +18,5 @@ export namespace QRUtil {
     function getLengthInBits(mode: any, type: any): 8 | 9 | 10 | 11 | 12 | 16 | 14 | 13;
     function getLostPoint(qrCode: any): number;
 }
-import QRPolynomial from "./polynomial";
+import QRPolynomial from './polynomial.js';
 //# sourceMappingURL=utils.d.ts.map

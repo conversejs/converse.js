@@ -18,5 +18,5 @@ declare class MUCNicknameForm extends CustomElement {
     submitNickname(ev: Event): void;
     closeModal(): void;
 }
-import { CustomElement } from 'shared/components/element';
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=nickname-form.d.ts.map

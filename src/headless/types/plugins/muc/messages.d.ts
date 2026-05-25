@@ -8,6 +8,6 @@ declare class MUCMessages extends Collection<MUCMessage> {
     model: typeof MUCMessage;
     fetched: any;
 }
-import MUCMessage from './message';
+import MUCMessage from './message.js';
 import { Collection } from '@converse/skeletor';
 //# sourceMappingURL=messages.d.ts.map

@@ -11,5 +11,5 @@ declare class MUCPasswordForm extends CustomElement {
     render(): import("lit-html").TemplateResult<1>;
     submitPassword(ev: any): void;
 }
-import { CustomElement } from 'shared/components/element';
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=password-form.d.ts.map

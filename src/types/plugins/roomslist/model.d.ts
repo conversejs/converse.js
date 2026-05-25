@@ -15,5 +15,5 @@ declare class RoomsListModel extends Model<import("./types").RoomsListAttrs> {
      */
     setDomain(jid: string): void;
 }
-import { Model } from "@converse/headless";
+import { Model } from '@converse/headless';
 //# sourceMappingURL=model.d.ts.map

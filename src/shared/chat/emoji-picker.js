@@ -51,6 +51,9 @@ export default class EmojiPicker extends CustomElement {
         this.dropdown = this.closest('converse-emoji-dropdown') || this.closest('.emoji-picker__dropdown');
     }
 
+    /**
+     * @param {import('lit').PropertyValues} changed
+     */
     firstUpdated(changed) {
         super.firstUpdated(changed);
         this.listenTo(this.state, 'change', (o) => this.onModelChanged(o.changed));
@@ -81,6 +84,9 @@ export default class EmojiPicker extends CustomElement {
         });
     }
 
+    /**
+     * @param {import('lit').PropertyValues} changed
+     */
     updated(changed) {
         if (changed.has('query')) this.updateSearchResults(changed);
         if (changed.has('current_category')) this.setScrollPosition();

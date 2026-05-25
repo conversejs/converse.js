@@ -38,7 +38,7 @@ export default class SplitResize extends CustomElement {
     }
 
     /**
-     * @param {Map<string, any>} changed
+     * @param {import('lit').PropertyValues} changed
      */
     updated(changed) {
         super.updated(changed);
@@ -293,7 +293,7 @@ export default class SplitResize extends CustomElement {
                 this.gutterSize,
                 i === 0,
                 i === sizesToTrim.length - 1,
-                this.gutterAlign
+                this.gutterAlign,
             );
             const elementMinSize = this.minSizes[i] + elementGutterSize;
 

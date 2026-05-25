@@ -24,12 +24,12 @@ const APPROVED_URL_PROTOCOLS = ['http:', 'https:', 'xmpp:', 'mailto:'];
 
 /**
  * @param {string} name
- * @param {{ new_password: string }} options
+ * @param {{ new_password?: boolean }} [options]
  */
-function getAutoCompleteProperty (name, options) {
+function getAutoCompleteProperty(name, options) {
     return {
         'muc#roomconfig_lang': 'language',
-        'muc#roomconfig_roomsecret': options?.new_password ? 'new-password' : 'current-password'
+        'muc#roomconfig_roomsecret': options?.new_password ? 'new-password' : 'current-password',
     }[name];
 }
 
@@ -45,11 +45,11 @@ export function getNameAndValue(field) {
     }
     let value;
     if (field.getAttribute('type') === 'checkbox') {
-        value = /** @type {HTMLInputElement} */(field).checked && 1 || 0;
-    } else if (field.tagName == "TEXTAREA") {
-        value = field.value.split('\n').filter(s => s.trim());
-    } else if (field.tagName == "SELECT") {
-        value = u.getSelectValues(/** @type {HTMLSelectElement} */(field));
+        value = /** @type {HTMLInputElement} */ (field).checked ? 1 : 0;
+    } else if (field.tagName == 'TEXTAREA') {
+        value = field.value.split('\n').filter((s) => s.trim());
+    } else if (field.tagName == 'SELECT') {
+        value = u.getSelectValues(/** @type {HTMLSelectElement} */ (field));
     } else {
         value = field.value;
     }
@@ -59,7 +59,7 @@ export function getNameAndValue(field) {
 /**
  * @param {HTMLElement} el
  */
-function slideOutWrapup (el) {
+function slideOutWrapup(el) {
     /* Wrapup function for slideOut. */
     el.removeAttribute('data-slider-marker');
     el.classList.remove('collapsed');
@@ -70,7 +70,7 @@ function slideOutWrapup (el) {
 /**
  * @param {string} url
  */
-export function getFileName (url) {
+export function getFileName(url) {
     try {
         const uri = u.getURL(url);
         return decodeURI(uri.pathname.split('/').pop());
@@ -87,7 +87,7 @@ export function getFileName (url) {
  * @param {HTMLElement} el
  * @returns {number}
  */
-function calculateElementHeight (el) {
+function calculateElementHeight(el) {
     return Array.from(el.children).reduce((result, child) => {
         if (child instanceof HTMLElement) {
             return result + child.offsetHeight;
@@ -100,7 +100,7 @@ function calculateElementHeight (el) {
  * @param {HTMLElement} el
  * @param {string} selector
  */
-function getNextElement (el, selector = '*') {
+function getNextElement(el, selector = '*') {
     let next_el = el.nextElementSibling;
     while (next_el !== null && !sizzle.matchesSelector(next_el, selector)) {
         next_el = next_el.nextElementSibling;
@@ -113,7 +113,7 @@ function getNextElement (el, selector = '*') {
  * @param {string} className
  * @param {Element} el
  */
-export function hasClass (className, el) {
+export function hasClass(className, el) {
     return el instanceof Element && el.classList.contains(className);
 }
 
@@ -122,7 +122,7 @@ export function hasClass (className, el) {
  * @param {string} className
  * @param {Element} el
  */
-export function addClass (className, el) {
+export function addClass(className, el) {
     if (el instanceof Element) el.classList.add(className);
     return el;
 }
@@ -132,7 +132,7 @@ export function addClass (className, el) {
  * @param {string} className
  * @param {Element} el
  */
-export function removeClass (className, el) {
+export function removeClass(className, el) {
     if (el instanceof Element) el.classList.remove(className);
     return el;
 }
@@ -141,7 +141,7 @@ export function removeClass (className, el) {
  * Remove an element from its parent
  * @param {Element} el
  */
-export function removeElement (el) {
+export function removeElement(el) {
     if (el instanceof Element && el.parentNode) el.parentNode.removeChild(el);
     return el;
 }
@@ -149,7 +149,7 @@ export function removeElement (el) {
 /**
  * @param {TemplateResult} tr
  */
-function getElementFromTemplateResult (tr) {
+function getElementFromTemplateResult(tr) {
     const div = document.createElement('div');
     render(tr, div);
     return div.firstElementChild;
@@ -158,7 +158,7 @@ function getElementFromTemplateResult (tr) {
 /**
  * @param {Element} el
  */
-function showElement (el) {
+function showElement(el) {
     removeClass('collapsed', el);
     removeClass('hidden', el);
 }
@@ -166,7 +166,7 @@ function showElement (el) {
 /**
  * @param {Element} el
  */
-function hideElement (el) {
+function hideElement(el) {
     if (el instanceof Element) el.classList.add('hidden');
     return el;
 }
@@ -175,7 +175,7 @@ function hideElement (el) {
  * @param {HTMLElement} el
  * @param {String} selector
  */
-export function ancestor (el, selector) {
+export function ancestor(el, selector) {
     let parent = el;
     while (parent !== null && !sizzle.matchesSelector(parent, selector)) {
         parent = parent.parentElement;
@@ -188,7 +188,7 @@ export function ancestor (el, selector) {
  * @param {HTMLElement} el
  * @param {String} selector
  */
-function nextUntil (el, selector) {
+function nextUntil(el, selector) {
     const matches = [];
     let sibling_el = el.nextElementSibling;
     while (sibling_el !== null && !sibling_el.matches(selector)) {
@@ -201,18 +201,14 @@ function nextUntil (el, selector) {
 /**
  * @param {string} string
  */
-function escapeHTML (string) {
-    return string
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+function escapeHTML(string) {
+    return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 /**
  * @param {string} protocol
  */
-function isProtocolApproved (protocol, safeProtocolsList = APPROVED_URL_PROTOCOLS) {
+function isProtocolApproved(protocol, safeProtocolsList = APPROVED_URL_PROTOCOLS) {
     return !!safeProtocolsList.includes(protocol);
 }
 
@@ -220,14 +216,14 @@ function isProtocolApproved (protocol, safeProtocolsList = APPROVED_URL_PROTOCOL
  * @param {string} url
  * @returns {TemplateResult|string}
  */
-export function getHyperlinkTemplate (url) {
+export function getHyperlinkTemplate(url) {
     const http_url = RegExp('^w{3}.', 'ig').test(url) ? `http://${url}` : url;
     try {
         const uri = u.getURL(http_url);
         if (isProtocolApproved(uri.protocol)) {
             return tplHyperlink(uri, url);
         }
-    return url;
+        return url;
     } catch (error) {
         log.debug(error);
     }
@@ -238,7 +234,7 @@ export function getHyperlinkTemplate (url) {
  * @param {HTMLElement} el - The HTML string
  * @param {Number} duration - The duration amount in milliseconds
  */
-export function slideOut (el, duration = 200) {
+export function slideOut(el, duration = 200) {
     return new Promise((resolve, reject) => {
         if (!el) {
             const err = 'An element needs to be passed in to slideOut';
@@ -267,7 +263,7 @@ export function slideOut (el, duration = 200) {
         const steps = duration / 17; // We assume 17ms per animation which is ~60FPS
         let height = 0;
 
-        function draw () {
+        function draw() {
             height += end_height / steps;
             if (height < end_height) {
                 el.style.height = height + 'px';
@@ -296,7 +292,7 @@ export function slideOut (el, duration = 200) {
  * @param {HTMLElement} el - The HTML string
  * @param {Number} duration - The duration amount in milliseconds
  */
-export function slideIn (el, duration = 200) {
+export function slideIn(el, duration = 200) {
     return new Promise((resolve, reject) => {
         if (!el) {
             const err = 'An element needs to be passed in to slideIn';
@@ -321,7 +317,7 @@ export function slideIn (el, duration = 200) {
 
         el.style.overflow = 'hidden';
 
-        function draw () {
+        function draw() {
             height -= original_height / steps;
             if (height > 0) {
                 el.style.height = height + 'px';
@@ -340,14 +336,14 @@ export function slideIn (el, duration = 200) {
 /**
  * @param {HTMLElement} el
  */
-function isInDOM (el) {
+function isInDOM(el) {
     return document.querySelector('body').contains(el);
 }
 
 /**
  * @param {HTMLElement} el
  */
-function isVisible (el) {
+function isVisible(el) {
     if (el === null) {
         return false;
     }
@@ -362,7 +358,7 @@ function isVisible (el) {
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
  * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
  * @param {import('@converse/headless/shared/types').XFormField} xfield - the field to convert
- * @param {Object} options
+ * @param {import('./types').XFormFieldOptions} [options]
  * @returns {TemplateResult}
  */
 export function xFormField2TemplateResult(xfield, options = {}) {
@@ -377,21 +373,19 @@ export function xFormField2TemplateResult(xfield, options = {}) {
             ...xfield,
             multiple: xfield.type === 'list-multi',
         });
-
     } else if (xfield['type'] === 'fixed') {
         return tplFormFixed(xfield);
-
     } else if (xfield['type'] === 'jid-multi' || xfield['type'] === 'text-multi') {
         return tplFormTextarea({
             ...default_vals,
             ...xfield,
-            value: (xfield !== undefined && xfield.values.length !== 0)
-                ? xfield.values.reduce((acc, x) => acc + '\n' + x) : ''
+            value:
+                xfield !== undefined && xfield.values.length !== 0
+                    ? xfield.values.reduce((acc, x) => acc + '\n' + x)
+                    : '',
         });
-
     } else if (xfield['type'] === 'boolean') {
         return tplFormCheckbox({ ...default_vals, ...xfield });
-
     } else if (xfield.var === 'username') {
         return tplFormUsername({
             ...default_vals,
@@ -418,15 +412,16 @@ export function xFormField2TemplateResult(xfield, options = {}) {
     } else if (xfield.type === 'datetime' || xfield.type === 'date') {
         const date = xfield.value ? dayjs(xfield.value) : null;
         const value = date?.isValid()
-            ? (xfield.type === 'datetime' ? date.format('YYYY-MM-DDTHH:mm:ss') : date.format('YYYY-MM-DD'))
+            ? xfield.type === 'datetime'
+                ? date.format('YYYY-MM-DDTHH:mm:ss')
+                : date.format('YYYY-MM-DD')
             : null;
         return tplDateInput({
             ...default_vals,
             ...xfield,
-            value
+            value,
         });
     } else {
-
         return tplFormInput({
             ...default_vals,
             ...xfield,
@@ -440,23 +435,24 @@ export function xFormField2TemplateResult(xfield, options = {}) {
  * @param {HTMLElement} el
  * @param {boolean} include_margin
  */
-export function getOuterWidth (el, include_margin=false) {
+export function getOuterWidth(el, include_margin = false) {
     let width = el.offsetWidth;
     if (!include_margin) {
         return width;
     }
     const style = window.getComputedStyle(el);
-    width += parseInt(style.marginLeft ? style.marginLeft : '0', 10) +
-             parseInt(style.marginRight ? style.marginRight : '0', 10);
+    width +=
+        parseInt(style.marginLeft ? style.marginLeft : '0', 10) +
+        parseInt(style.marginRight ? style.marginRight : '0', 10);
     return width;
 }
 
-
+/** @type {HTMLElement|null} */
 let root;
 
 export function getRootElement() {
     if (!root) {
-        root = document.querySelector('converse-root') || document.createElement("converse-root");
+        root = document.querySelector('converse-root') || document.createElement('converse-root');
     }
     return root;
 }
@@ -484,4 +480,3 @@ Object.assign(u, {
 });
 
 export default u;
-

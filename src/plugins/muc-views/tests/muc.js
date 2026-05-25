@@ -80,7 +80,8 @@ describe('Groupchats', function () {
     describe('A Groupchat', function () {
         it(
             'will be visible when opened as the first chat in fullscreen-view',
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['discoInitialized'],
                 { 'view_mode': 'fullscreen', 'auto_join_rooms': ['orchard@chat.shakespeare.lit'] },
                 async function (_converse) {
@@ -101,7 +102,8 @@ describe('Groupchats', function () {
 
         it(
             'Can be configured to show cached messages before being joined',
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['discoInitialized'],
                 {
                     muc_show_logs_before_join: true,
@@ -151,7 +153,8 @@ describe('Groupchats', function () {
 
         it(
             'maintains its state across reloads',
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 [],
                 {
                     clear_messages_on_reconnection: true,
@@ -177,7 +180,8 @@ describe('Groupchats', function () {
                     const first_msg_id = _converse.api.connection.get().getUniqueId();
                     const last_msg_id = _converse.api.connection.get().getUniqueId();
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, 
+                        mock.createRequest(
+                            _converse,
                             stx`<message xmlns="jabber:client"
                             to="romeo@montague.lit/orchard"
                             from="${muc_jid}">
@@ -383,7 +387,10 @@ describe('Groupchats', function () {
                     toggle.click();
                     await u.waitUntil(() => !u.isVisible(topic_el));
 
-                    stanza = stx`<message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                    stanza = stx`<message xmlns="jabber:client"
+                        to="${_converse.jid}"
+                        type="groupchat"
+                        from="jdev@conference.jabber.org/ralphm">
                         <subject>Another topic</subject>
                     </message>`;
                     _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
@@ -401,12 +408,18 @@ describe('Groupchats', function () {
                     const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
 
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, stx`
-                    <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                        mock.createRequest(
+                            _converse,
+                            stx`
+                    <message xmlns="jabber:client"
+                                to="${_converse.jid}"
+                                type="groupchat"
+                                from="jdev@conference.jabber.org/ralphm">
                         <subject>This is an older topic</subject>
                         <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>
                         <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>
-                    </message>`),
+                    </message>`,
+                        ),
                     );
                     await u.waitUntil(() => view.model.handleSubjectChange.calls.count());
                     expect(sizzle('.chat-info__message', view).length).toBe(0);
@@ -415,10 +428,16 @@ describe('Groupchats', function () {
                     expect(desc.textContent.trim()).toBe('This is an older topic');
 
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, stx`
-                    <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                        mock.createRequest(
+                            _converse,
+                            stx`
+                    <message xmlns="jabber:client"
+                                to="${_converse.jid}"
+                                type="groupchat"
+                                from="jdev@conference.jabber.org/ralphm">
                         <subject>This is a new topic</subject>
-                    </message>`),
+                    </message>`,
+                        ),
                     );
                     await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 2);
 
@@ -429,10 +448,16 @@ describe('Groupchats', function () {
 
                     // Doesn't show multiple subsequent topic change notifications
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, stx`
-                    <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                        mock.createRequest(
+                            _converse,
+                            stx`
+                    <message xmlns="jabber:client"
+                                to="${_converse.jid}"
+                                type="groupchat"
+                                from="jdev@conference.jabber.org/ralphm">
                         <subject>Yet another topic</subject>
-                    </message>`),
+                    </message>`,
+                        ),
                     );
                     await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 3);
                     await u.waitUntil(() => desc.textContent.trim() === 'Yet another topic');
@@ -440,10 +465,16 @@ describe('Groupchats', function () {
 
                     // Sow multiple subsequent topic change notification from someone else
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, stx`
-                    <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/some1">
+                        mock.createRequest(
+                            _converse,
+                            stx`
+                    <message xmlns="jabber:client"
+                                to="${_converse.jid}"
+                                type="groupchat"
+                                from="jdev@conference.jabber.org/some1">
                         <subject>Some1's topic</subject>
-                    </message>`),
+                    </message>`,
+                        ),
                     );
                     await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 4);
                     await u.waitUntil(() => desc.textContent.trim() === "Some1's topic");
@@ -452,7 +483,11 @@ describe('Groupchats', function () {
                     expect(el.textContent.trim()).toBe('Topic set by some1');
 
                     // Removes current topic
-                    const stanza = stx`<message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/some1">
+                    const stanza = stx`<message
+                            xmlns="jabber:client"
+                            to="${_converse.jid}"
+                            type="groupchat"
+                            from="jdev@conference.jabber.org/some1">
                         <subject/>
                     </message>`;
                     _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
@@ -469,7 +504,8 @@ describe('Groupchats', function () {
 
         it(
             'restores cached messages when it reconnects and clear_messages_on_reconnection and muc_clear_messages_on_leave are false',
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 [],
                 {
                     'clear_messages_on_reconnection': false,
@@ -595,21 +631,25 @@ describe('Groupchats', function () {
 
         it(
             'shows join/leave messages when users enter or exit a groupchat',
-            mock.initConverse(converse, ['chatBoxesFetched'], { 'muc_fetch_members': false }, async function (_converse) {
-                const muc_jid = 'coven@chat.shakespeare.lit';
-                const nick = 'some1';
-                const room_creation_promise = _converse.api.rooms.open(muc_jid, { nick });
-                await mock.waitForMUCDiscoInfo(_converse, muc_jid);
-                const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-                await u.waitUntil(() => sent_stanzas.filter((iq) => sizzle('presence history', iq).length));
+            mock.initConverse(
+                converse,
+                ['chatBoxesFetched'],
+                { 'muc_fetch_members': false },
+                async function (_converse) {
+                    const muc_jid = 'coven@chat.shakespeare.lit';
+                    const nick = 'some1';
+                    const room_creation_promise = _converse.api.rooms.open(muc_jid, { nick });
+                    await mock.waitForMUCDiscoInfo(_converse, muc_jid);
+                    const sent_stanzas = _converse.api.connection.get().sent_stanzas;
+                    await u.waitUntil(() => sent_stanzas.filter((iq) => sizzle('presence history', iq).length));
 
-                await _converse.api.waitUntil('chatRoomViewInitialized');
+                    await _converse.api.waitUntil('chatRoomViewInitialized');
 
-                /* We don't show join/leave messages for existing occupants. We
-                 * know about them because we receive their presences before we
-                 * receive our own.
-                 */
-                let presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
+                    /* We don't show join/leave messages for existing occupants. We
+                     * know about them because we receive their presences before we
+                     * receive our own.
+                     */
+                    let presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
                                           from="coven@chat.shakespeare.lit/oldguy"
                                           xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
@@ -618,17 +658,17 @@ describe('Groupchats', function () {
                               role="participant"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
-                /* <presence to="romeo@montague.lit/_converse.js-29092160"
-                 *           from="coven@chat.shakespeare.lit/some1">
-                 *      <x xmlns="http://jabber.org/protocol/muc#user">
-                 *          <item affiliation="owner" jid="romeo@montague.lit/_converse.js-29092160" role="moderator"/>
-                 *          <status code="110"/>
-                 *      </x>
-                 *  </presence></body>
-                 */
-                presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
+                    /* <presence to="romeo@montague.lit/_converse.js-29092160"
+                     *           from="coven@chat.shakespeare.lit/some1">
+                     *      <x xmlns="http://jabber.org/protocol/muc#user">
+                     *          <item affiliation="owner" jid="romeo@montague.lit/_converse.js-29092160" role="moderator"/>
+                     *          <status code="110"/>
+                     *      </x>
+                     *  </presence></body>
+                     */
+                    presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
                                           from="coven@chat.shakespeare.lit/some1"
                                           xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
@@ -638,19 +678,21 @@ describe('Groupchats', function () {
                         <status code="110"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
-                const view = await u.waitUntil(() => _converse.chatboxviews.get('coven@chat.shakespeare.lit'));
-                const csntext = await u.waitUntil(
-                    () => view.querySelector('.chat-content__notifications')?.textContent,
-                );
-                expect(csntext.trim()).toEqual('some1 has entered the groupchat');
+                    const view = await u.waitUntil(() => _converse.chatboxviews.get('coven@chat.shakespeare.lit'));
+                    const csntext = await u.waitUntil(
+                        () => view.querySelector('.chat-content__notifications')?.textContent,
+                    );
+                    expect(csntext.trim()).toEqual('some1 has entered the groupchat');
 
-                await room_creation_promise;
-                await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED);
-                await view.model.messages.fetched;
+                    await room_creation_promise;
+                    await u.waitUntil(
+                        () => view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED,
+                    );
+                    await view.model.messages.fetched;
 
-                presence = stx`
+                    presence = stx`
                     <presence to="romeo@montague.lit/_converse.js-29092160"
                             from="coven@chat.shakespeare.lit/newguy"
                             xmlns="jabber:client">
@@ -660,26 +702,26 @@ describe('Groupchats', function () {
                                 role="participant"/>
                         </x>
                     </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
-                await u.waitUntil(
-                    () =>
-                        view.querySelector('.chat-content__notifications').textContent.trim() ===
-                        'some1 and newguy have entered the groupchat',
-                );
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    await u.waitUntil(
+                        () =>
+                            view.querySelector('.chat-content__notifications').textContent.trim() ===
+                            'some1 and newguy have entered the groupchat',
+                    );
 
-                const msg = stx`<message from="coven@chat.shakespeare.lit/some1"
+                    const msg = stx`<message from="coven@chat.shakespeare.lit/some1"
                             to="romeo@montague.lit"
                             id="${u.getUniqueId()}"
                             type="groupchat"
                             xmlns="jabber:client">
                         <body>hello world</body>
                     </message>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, msg));
-                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, msg));
+                    await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
-                // Add another entrant, otherwise the above message will be
-                // collapsed if "newguy" leaves immediately again
-                presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
+                    // Add another entrant, otherwise the above message will be
+                    // collapsed if "newguy" leaves immediately again
+                    presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
                                           from="coven@chat.shakespeare.lit/newgirl"
                                           xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
@@ -688,15 +730,15 @@ describe('Groupchats', function () {
                               role="participant"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
-                await u.waitUntil(
-                    () =>
-                        view.querySelector('.chat-content__notifications').textContent.trim() ===
-                        'some1, newguy and newgirl have entered the groupchat',
-                );
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    await u.waitUntil(
+                        () =>
+                            view.querySelector('.chat-content__notifications').textContent.trim() ===
+                            'some1, newguy and newgirl have entered the groupchat',
+                    );
 
-                // Don't show duplicate join messages
-                presence = stx`<presence to="romeo@montague.lit/_converse.js-290918392"
+                    // Don't show duplicate join messages
+                    presence = stx`<presence to="romeo@montague.lit/_converse.js-290918392"
                                           from="coven@chat.shakespeare.lit/newguy"
                                           xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
@@ -705,21 +747,21 @@ describe('Groupchats', function () {
                               role="participant"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
-                /*  <presence
-                 *      from='coven@chat.shakespeare.lit/thirdwitch'
-                 *      to='crone1@shakespeare.lit/desktop'
-                 *      type='unavailable'>
-                 *  <status>Disconnected: Replaced by new connection</status>
-                 *  <x xmlns='http://jabber.org/protocol/muc#user'>
-                 *      <item affiliation='member'
-                 *          jid='hag66@shakespeare.lit/pda'
-                 *          role='none'/>
-                 *  </x>
-                 *  </presence>
-                 */
-                presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
+                    /*  <presence
+                     *      from='coven@chat.shakespeare.lit/thirdwitch'
+                     *      to='crone1@shakespeare.lit/desktop'
+                     *      type='unavailable'>
+                     *  <status>Disconnected: Replaced by new connection</status>
+                     *  <x xmlns='http://jabber.org/protocol/muc#user'>
+                     *      <item affiliation='member'
+                     *          jid='hag66@shakespeare.lit/pda'
+                     *          role='none'/>
+                     *  </x>
+                     *  </presence>
+                     */
+                    presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
                                           type="unavailable"
                                           from="coven@chat.shakespeare.lit/newguy"
                                           xmlns="jabber:client">
@@ -730,16 +772,16 @@ describe('Groupchats', function () {
                               role="none"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
-                await u.waitUntil(
-                    () =>
-                        view.querySelector('.chat-content__notifications').textContent.trim() ===
-                        'some1 and newgirl have entered the groupchat\nnewguy has left the groupchat',
-                );
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    await u.waitUntil(
+                        () =>
+                            view.querySelector('.chat-content__notifications').textContent.trim() ===
+                            'some1 and newgirl have entered the groupchat\nnewguy has left the groupchat',
+                    );
 
-                // When the user immediately joins again, we collapse the
-                // multiple join/leave messages.
-                presence = stx`
+                    // When the user immediately joins again, we collapse the
+                    // multiple join/leave messages.
+                    presence = stx`
                     <presence to="romeo@montague.lit/_converse.js-29092160"
                             from="coven@chat.shakespeare.lit/newguy"
                             xmlns="jabber:client">
@@ -749,15 +791,15 @@ describe('Groupchats', function () {
                                 role="participant"/>
                         </x>
                     </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
-                await u.waitUntil(
-                    () =>
-                        view.querySelector('.chat-content__notifications').textContent.trim() ===
-                        'some1, newgirl and newguy have entered the groupchat',
-                );
+                    await u.waitUntil(
+                        () =>
+                            view.querySelector('.chat-content__notifications').textContent.trim() ===
+                            'some1, newgirl and newguy have entered the groupchat',
+                    );
 
-                presence = stx`
+                    presence = stx`
                     <presence to="romeo@montague.lit/_converse.js-29092160"
                             from="coven@chat.shakespeare.lit/newguy"
                             type="unavailable"
@@ -768,14 +810,14 @@ describe('Groupchats', function () {
                                 role="none"/>
                         </x>
                     </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
-                await u.waitUntil(
-                    () =>
-                        view.querySelector('.chat-content__notifications').textContent.trim() ===
-                        'some1 and newgirl have entered the groupchat\nnewguy has left the groupchat',
-                );
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    await u.waitUntil(
+                        () =>
+                            view.querySelector('.chat-content__notifications').textContent.trim() ===
+                            'some1 and newgirl have entered the groupchat\nnewguy has left the groupchat',
+                    );
 
-                presence = stx`
+                    presence = stx`
                     <presence to="romeo@montague.lit/_converse.js-29092160"
                             from="coven@chat.shakespeare.lit/nomorenicks"
                             xmlns="jabber:client">
@@ -785,14 +827,14 @@ describe('Groupchats', function () {
                                 role="participant"/>
                         </x>
                     </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
-                await u.waitUntil(
-                    () =>
-                        view.querySelector('.chat-content__notifications').textContent.trim() ===
-                        'some1, newgirl and nomorenicks have entered the groupchat\nnewguy has left the groupchat',
-                );
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    await u.waitUntil(
+                        () =>
+                            view.querySelector('.chat-content__notifications').textContent.trim() ===
+                            'some1, newgirl and nomorenicks have entered the groupchat\nnewguy has left the groupchat',
+                    );
 
-                presence = stx`<presence to="romeo@montague.lit/_converse.js-290918392"
+                    presence = stx`<presence to="romeo@montague.lit/_converse.js-290918392"
                                                   from="coven@chat.shakespeare.lit/nomorenicks"
                                                   type="unavailable"
                                                   xmlns="jabber:client">
@@ -802,14 +844,14 @@ describe('Groupchats', function () {
                               role="none"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
-                await u.waitUntil(
-                    () =>
-                        view.querySelector('.chat-content__notifications').textContent.trim() ===
-                        'some1 and newgirl have entered the groupchat\nnewguy and nomorenicks have left the groupchat',
-                );
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    await u.waitUntil(
+                        () =>
+                            view.querySelector('.chat-content__notifications').textContent.trim() ===
+                            'some1 and newgirl have entered the groupchat\nnewguy and nomorenicks have left the groupchat',
+                    );
 
-                presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
+                    presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
                                                   from="coven@chat.shakespeare.lit/nomorenicks"
                                                   xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
@@ -818,15 +860,15 @@ describe('Groupchats', function () {
                               role="participant"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
-                await u.waitUntil(
-                    () =>
-                        view.querySelector('.chat-content__notifications').textContent.trim() ===
-                        'some1, newgirl and nomorenicks have entered the groupchat\nnewguy has left the groupchat',
-                );
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    await u.waitUntil(
+                        () =>
+                            view.querySelector('.chat-content__notifications').textContent.trim() ===
+                            'some1, newgirl and nomorenicks have entered the groupchat\nnewguy has left the groupchat',
+                    );
 
-                // Test a member joining and leaving
-                presence = stx`<presence to="romeo@montague.lit/_converse.js-290918392"
+                    // Test a member joining and leaving
+                    presence = stx`<presence to="romeo@montague.lit/_converse.js-290918392"
                                                   from="coven@chat.shakespeare.lit/insider"
                                                   xmlns="jabber:client">
                     <x xmlns="${Strophe.NS.MUC_USER}">
@@ -835,21 +877,21 @@ describe('Groupchats', function () {
                               role="participant"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
-                /*  <presence
-                 *      from='coven@chat.shakespeare.lit/thirdwitch'
-                 *      to='crone1@shakespeare.lit/desktop'
-                 *      type='unavailable'>
-                 *  <status>Disconnected: Replaced by new connection</status>
-                 *  <x xmlns='http://jabber.org/protocol/muc#user'>
-                 *      <item affiliation='member'
-                 *          jid='hag66@shakespeare.lit/pda'
-                 *          role='none'/>
-                 *  </x>
-                 *  </presence>
-                 */
-                presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
+                    /*  <presence
+                     *      from='coven@chat.shakespeare.lit/thirdwitch'
+                     *      to='crone1@shakespeare.lit/desktop'
+                     *      type='unavailable'>
+                     *  <status>Disconnected: Replaced by new connection</status>
+                     *  <x xmlns='http://jabber.org/protocol/muc#user'>
+                     *      <item affiliation='member'
+                     *          jid='hag66@shakespeare.lit/pda'
+                     *          role='none'/>
+                     *  </x>
+                     *  </presence>
+                     */
+                    presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
                             from="coven@chat.shakespeare.lit/insider"
                             type="unavailable"
                             xmlns="jabber:client">
@@ -860,20 +902,20 @@ describe('Groupchats', function () {
                                 role="none"/>
                         </x>
                     </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
-                await u.waitUntil(
-                    () =>
-                        view.querySelector('.chat-content__notifications').textContent.trim() ===
-                        'some1, newgirl and nomorenicks have entered the groupchat\nnewguy and insider have left the groupchat',
-                );
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    await u.waitUntil(
+                        () =>
+                            view.querySelector('.chat-content__notifications').textContent.trim() ===
+                            'some1, newgirl and nomorenicks have entered the groupchat\nnewguy and insider have left the groupchat',
+                    );
 
-                expect(view.model.occupants.length).toBe(5);
-                expect(view.model.occupants.findWhere({ 'jid': 'insider@montague.lit' }).get('presence')).toBe(
-                    'offline',
-                );
+                    expect(view.model.occupants.length).toBe(5);
+                    expect(view.model.occupants.findWhere({ 'jid': 'insider@montague.lit' }).get('presence')).toBe(
+                        'offline',
+                    );
 
-                // New girl leaves
-                presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
+                    // New girl leaves
+                    presence = stx`<presence to="romeo@montague.lit/_converse.js-29092160"
                                           type="unavailable"
                                           from="coven@chat.shakespeare.lit/newgirl"
                                           xmlns="jabber:client">
@@ -884,14 +926,15 @@ describe('Groupchats', function () {
                     </x>
                 </presence>`;
 
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
-                await u.waitUntil(
-                    () =>
-                        view.querySelector('.chat-content__notifications').textContent.trim() ===
-                        'some1 and nomorenicks have entered the groupchat\nnewguy, insider and newgirl have left the groupchat',
-                );
-                expect(view.model.occupants.length).toBe(4);
-            }),
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    await u.waitUntil(
+                        () =>
+                            view.querySelector('.chat-content__notifications').textContent.trim() ===
+                            'some1 and nomorenicks have entered the groupchat\nnewguy, insider and newgirl have left the groupchat',
+                    );
+                    expect(view.model.occupants.length).toBe(4);
+                },
+            ),
         );
 
         it(
@@ -905,7 +948,9 @@ describe('Groupchats', function () {
                         'romeo has entered the groupchat',
                 );
 
-                let presence = stx`<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="coven@chat.shakespeare.lit/fabio">
+                let presence = stx`<presence xmlns="jabber:client"
+                        to="romeo@montague.lit/orchard"
+                        from="coven@chat.shakespeare.lit/fabio">
                     <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="INI3xjRUioclBTP/aACfWi5m9UY=" hash="sha-1"/>
                     <x xmlns="http://jabber.org/protocol/muc#user">
                         <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
@@ -918,9 +963,13 @@ describe('Groupchats', function () {
                         'romeo and fabio have entered the groupchat',
                 );
 
-                presence = stx`<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="coven@chat.shakespeare.lit/Dele Olajide">
+                presence = stx`<presence xmlns="jabber:client"
+                        to="romeo@montague.lit/orchard"
+                        from="coven@chat.shakespeare.lit/Dele Olajide">
                     <x xmlns="http://jabber.org/protocol/muc#user">
-                        <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-39320524" role="participant"/>
+                        <item affiliation="none"
+                            jid="deleo@traderlynk.4ng.net/converse.js-39320524"
+                            role="participant"/>
                     </x>
                 </presence>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
@@ -929,7 +978,9 @@ describe('Groupchats', function () {
                         view.querySelector('.chat-content__notifications').textContent.trim() ===
                         'romeo, fabio and Dele Olajide have entered the groupchat',
                 );
-                presence = stx`<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="coven@chat.shakespeare.lit/jcbrand">
+                presence = stx`<presence xmlns="jabber:client"
+                        to="romeo@montague.lit/orchard"
+                        from="coven@chat.shakespeare.lit/jcbrand">
                     <x xmlns="http://jabber.org/protocol/muc#user">
                         <item affiliation="owner" jid="jc@opkode.com/converse.js-30645022" role="moderator"/>
                         <status code="110"/>
@@ -942,7 +993,10 @@ describe('Groupchats', function () {
                         'romeo, fabio and others have entered the groupchat',
                 );
 
-                presence = stx`<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" type="unavailable" from="coven@chat.shakespeare.lit/Dele Olajide">
+                presence = stx`<presence xmlns="jabber:client"
+                        to="romeo@montague.lit/orchard"
+                        type="unavailable"
+                        from="coven@chat.shakespeare.lit/Dele Olajide">
                     <x xmlns="http://jabber.org/protocol/muc#user">
                         <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-39320524" role="none"/>
                     </x>
@@ -1063,12 +1117,16 @@ describe('Groupchats', function () {
 
         it(
             "doesn't show the disconnection messages when join_leave_events is not in muc_show_info_messages setting",
-            mock.initConverse(converse, ['chatBoxesFetched'], { 'muc_show_info_messages': [] }, async function (_converse) {
-                spyOn(_converse.ChatRoom.prototype, 'onOccupantAdded').and.callThrough();
-                spyOn(_converse.ChatRoom.prototype, 'onOccupantRemoved').and.callThrough();
-                await mock.openAndEnterMUC(_converse, 'coven@chat.shakespeare.lit', 'some1');
-                const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                let presence = stx`<presence to="romeo@montague.lit/orchard"
+            mock.initConverse(
+                converse,
+                ['chatBoxesFetched'],
+                { 'muc_show_info_messages': [] },
+                async function (_converse) {
+                    spyOn(_converse.ChatRoom.prototype, 'onOccupantAdded').and.callThrough();
+                    spyOn(_converse.ChatRoom.prototype, 'onOccupantRemoved').and.callThrough();
+                    await mock.openAndEnterMUC(_converse, 'coven@chat.shakespeare.lit', 'some1');
+                    const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    let presence = stx`<presence to="romeo@montague.lit/orchard"
                                 from="coven@chat.shakespeare.lit/newguy"
                                 xmlns="jabber:client">
                         <x xmlns="${Strophe.NS.MUC_USER}">
@@ -1077,26 +1135,27 @@ describe('Groupchats', function () {
                                 role="participant"/>
                         </x>
                     </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
-                await u.waitUntil(() => view.model.onOccupantAdded.calls.count() === 2);
-                expect(view.model.notifications.get('entered')).toBeFalsy();
-                expect(view.querySelector('.chat-content__notifications').textContent.trim()).toBe('');
-                await mock.sendMessage(_converse, view, 'hello world');
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    await u.waitUntil(() => view.model.onOccupantAdded.calls.count() === 2);
+                    expect(view.model.notifications.get('entered')).toBeFalsy();
+                    expect(view.querySelector('.chat-content__notifications').textContent.trim()).toBe('');
+                    await mock.sendMessage(_converse, view, 'hello world');
 
-                presence = stx`<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" type="unavailable" from="coven@chat.shakespeare.lit/newguy">
+                    presence = stx`<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" type="unavailable" from="coven@chat.shakespeare.lit/newguy">
                     <status>Gotta go!</status>
                     <x xmlns="http://jabber.org/protocol/muc#user">
                         <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="none"/>
                     </x>
                 </presence>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
-                await u.waitUntil(() => view.model.onOccupantRemoved.calls.count());
-                expect(view.model.onOccupantRemoved.calls.count()).toBe(1);
-                expect(view.model.notifications.get('entered')).toBeFalsy();
-                await mock.sendMessage(_converse, view, 'hello world');
-                expect(view.querySelector('.chat-content__notifications').textContent.trim()).toBe('');
-            }),
+                    await u.waitUntil(() => view.model.onOccupantRemoved.calls.count());
+                    expect(view.model.onOccupantRemoved.calls.count()).toBe(1);
+                    expect(view.model.notifications.get('entered')).toBeFalsy();
+                    await mock.sendMessage(_converse, view, 'hello world');
+                    expect(view.querySelector('.chat-content__notifications').textContent.trim()).toBe('');
+                },
+            ),
         );
 
         it(

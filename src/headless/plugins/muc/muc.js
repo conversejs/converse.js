@@ -63,6 +63,8 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @typedef {import('./types').NonOutcastAffiliation} NonOutcastAffiliation
      * @typedef {import('./types').MemberListItem} MemberListItem
      * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
+     * @typedef {import('../../shared/types').InfoMessageAttributes} InfoMessageAttributes
+     * @typedef {import('../../shared/types').ErrorMessageAttributes} ErrorMessageAttributes
      * @typedef {import('./types').MUCMessageAttributes} MUCMessageAttributes
      * @typedef {import('./types').MUCPresenceAttributes} MUCPresenceAttributes
      * @typedef {module:shared.converse.UserMessage} UserMessage
@@ -1536,7 +1538,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         }
         if (show_error) {
             const message = __('Forbidden: you do not have the necessary affiliation in order to do that.');
-            this.createMessage({ message, 'type': 'error' });
+            this.createMessage({ message, type: 'error' });
         }
         return false;
     }
@@ -2005,12 +2007,8 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             if (!attrs.is_delayed && author) {
                 const message = subject ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
                 const prev_msg = this.messages.last();
-                if (
-                    prev_msg?.get('nick') !== attrs.nick ||
-                    prev_msg?.get('type') !== 'info' ||
-                    prev_msg?.get('message') !== message
-                ) {
-                    this.createMessage({ message, 'nick': attrs.nick, 'type': 'info', 'is_ephemeral': true });
+                if (prev_msg?.get('type') !== 'info' || prev_msg?.get('message') !== message) {
+                    this.createMessage({ message, type: 'info', is_ephemeral: true });
                 }
                 if (await this.isSubjectHidden()) {
                     this.toggleSubjectHiddenState();
@@ -2500,11 +2498,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             if (this.session.get('connection_status') === ROOMSTATUS.CONNECTING) {
                 this.setDisconnectionState(text);
             } else {
-                const attrs = {
-                    'type': 'error',
-                    'message': text,
-                    'is_ephemeral': true,
-                };
+                const attrs = /** @type {ErrorMessageAttributes} */ ({
+                    type: 'error',
+                    message: text,
+                    is_ephemeral: true,
+                });
                 this.createMessage(attrs);
             }
         }
@@ -2654,12 +2652,12 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
         const { STATUS_CODE_MESSAGES } = /** @type {UserMessage} */ (_converse.labels.muc);
         const message = STATUS_CODE_MESSAGES[code];
-        const data = {
+        const data = /** @type {InfoMessageAttributes} */ ({
             type: 'info',
             is_ephemeral: true,
             message,
             code,
-        };
+        });
 
         if (!is_self && ACTION_INFO_CODES.includes(code)) {
             data.message = this.getActionInfoMessage(code, attrs);

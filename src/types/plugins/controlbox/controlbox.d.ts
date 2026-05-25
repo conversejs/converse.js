@@ -19,8 +19,8 @@ declare const ControlBoxView_base: {
         setChatBoxHeight(height: number): void;
         setChatBoxWidth(width: number): void;
         createRenderRoot(): any;
-        initialize(): any;
-        connectedCallback(): any;
+        initialize(): void;
+        connectedCallback(): void;
         disconnectedCallback(): void;
         _events?: import("@converse/skeletor").EventHandlersMap;
         _listeners?: import("@converse/skeletor").EventListenerMap;
@@ -403,10 +403,8 @@ declare const ControlBoxView_base: {
  * `view_mode` it's a left-aligned sidebar.
  */
 declare class ControlBoxView extends ControlBoxView_base {
-    initialize(): void;
     viewportMediaQuery: MediaQueryList;
     renderOnViewportChange: () => void;
-    connectedCallback(): void;
     setModel(): void;
     render(): import("lit-html").TemplateResult<1> | "";
     close(ev: any): this;

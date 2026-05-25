@@ -18,11 +18,11 @@ export function FILTER_CONTAINS(text: string, input: string): boolean;
  */
 export function FILTER_STARTSWITH(text: string, input: string): boolean;
 /**
- * @param {string} a
- * @param {string} b
+ * @param {import('./suggestion').default} a
+ * @param {import('./suggestion').default} b
  * @returns {number}
  */
-export function SORT_BY_LENGTH(a: string, b: string): number;
+export function SORT_BY_LENGTH(a: import("./suggestion").default, b: import("./suggestion").default): number;
 /**
  * Renders an item for display in a list.
  * @param {string} text - The text to display.
@@ -31,10 +31,28 @@ export function SORT_BY_LENGTH(a: string, b: string): number;
  */
 export function getAutoCompleteItem(text: string, input: string): import("lit").TemplateResult;
 export namespace helpers {
-    function getElement(expr: any, el: any): any;
-    function bind(element: any, o: any): void;
-    function unbind(element: any, o: any): void;
-    function isMention(word: any, ac_triggers: any): any;
+    /**
+     * @param {string|HTMLElement} expr
+     * @param {HTMLElement} [el]
+     * @returns {HTMLElement|null}
+     */
+    function getElement(expr: string | HTMLElement, el?: HTMLElement): HTMLElement | null;
+    /**
+     * @param {HTMLElement} element
+     * @param {Record<string, Function>} o
+     */
+    function bind(element: HTMLElement, o: Record<string, Function>): void;
+    /**
+     * @param {HTMLElement} element
+     * @param {Record<string, Function>} o
+     */
+    function unbind(element: HTMLElement, o: Record<string, Function>): void;
+    /**
+     * @param {string} word
+     * @param {string[]} ac_triggers
+     * @returns {boolean}
+     */
+    function isMention(word: string, ac_triggers: string[]): boolean;
 }
-export function SORT_BY_QUERY_POSITION(a: any, b: any): number;
+export function SORT_BY_QUERY_POSITION(a: import("./suggestion").default, b: import("./suggestion").default): number;
 //# sourceMappingURL=utils.d.ts.map

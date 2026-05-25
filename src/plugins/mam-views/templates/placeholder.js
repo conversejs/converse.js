@@ -7,7 +7,7 @@ import tplSpinner from "templates/spinner.js";
  */
 export default (el) => {
     return el.model.get("fetching")
-        ? tplSpinner({ classes: "hor_centered" })
+        ? tplSpinner({ class: "hor_centered" })
         : html`<a @click="${(ev) => el.fetchMissingMessages(ev)}" title="${__('Click to load missing messages')}">
               <div class="message mam-placeholder"></div>
           </a>`;

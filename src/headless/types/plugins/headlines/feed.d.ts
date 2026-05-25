@@ -2,7 +2,11 @@
  * Shows headline messages
  */
 export default class HeadlinesFeed extends ChatBoxBase {
-    constructor(attrs: any, options: any);
+    /**
+     * @param {import('@converse/skeletor').ModelAttributes} attrs
+     * @param {import('@converse/skeletor').ModelOptions} options
+     */
+    constructor(attrs: import("@converse/skeletor").ModelAttributes, options: import("@converse/skeletor").ModelOptions);
     defaults(): {
         bookmarked: boolean;
         hidden: boolean;

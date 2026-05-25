@@ -5,6 +5,6 @@ export namespace BookmarkableChatRoomView {
      */
     function setBookmarkState(): void;
     function renderBookmarkForm(): void;
-    function showBookmarkModal(ev: any): void;
+    function showBookmarkModal(ev: Event): void;
 }
 //# sourceMappingURL=mixins.d.ts.map

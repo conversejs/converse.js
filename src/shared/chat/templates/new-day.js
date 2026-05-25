@@ -1,9 +1,8 @@
-import { html } from "lit";
-
+import { html } from 'lit';
 
 export default (o) => html`
     <div class="message date-separator" data-isodate="${o.time}">
-        <hr class="separator"/>
+        <hr class="separator" />
         <time class="separator-text" datetime="${o.time}"><span>${o.datestring}</span></time>
     </div>
 `;

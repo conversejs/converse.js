@@ -13,7 +13,8 @@ const i18n_occupant_hint = /** @param {MUCOccupant} o */ (o) => {
     return __('Click to mention %1$s in your message.', o.get('nick'));
 };
 
-let badges_definitions; // will be initialized at first call (to be sure that the __ function is correctly loaded).
+/** @type {Record<string, {label: string, classname: string, shortlabel?: string}>|null} */
+let badges_definitions = null; // will be initialized at first call (to be sure that the __ function is correctly loaded).
 
 /**
  * Inits badges definitions.
@@ -125,7 +126,9 @@ async function tplActionButtons(o) {
      *      return buttons;
      *  });
      */
-    const buttons = await api.hook('getOccupantActionButtons', o, []);
+    const buttons = /** @type {import('shared/chat/types').MessageActionButton[]} */ (
+        await api.hook('getOccupantActionButtons', o, [])
+    );
     if (!buttons?.length) {
         return '';
     }
@@ -151,7 +154,7 @@ async function tplActionButtons(o) {
 export default (el) => {
     const o = el.model;
     const { show, presence, affiliation } = el.model.attributes;
-    const hint_show = PRETTY_CHAT_STATUS[show || presence];
+    const hint_show = PRETTY_CHAT_STATUS[/** @type {string} */ (show || presence)];
     const role = o.get('role');
 
     let classes, color;

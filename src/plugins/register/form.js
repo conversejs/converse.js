@@ -1,8 +1,8 @@
-import { _converse, api, converse, log, constants, u, parsers, errors } from "@converse/headless";
-import tplFormInput from "templates/form_input.js";
-import tplFormUrl from "templates/form_url.js";
-import tplFormUsername from "templates/form_username.js";
-import tplChooseProvider from "./templates/choose_provider.js";
+import { _converse, api, converse, log, constants, u, parsers, errors } from '@converse/headless';
+import tplFormInput from 'templates/form_input.js';
+import tplFormUrl from 'templates/form_url.js';
+import tplFormUsername from 'templates/form_username.js';
+import tplChooseProvider from './templates/choose_provider.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { setActiveForm, fetchXMPPProviders } from './utils.js';
@@ -18,37 +18,38 @@ const FETCHING_FORM = 1;
 const REGISTRATION_FORM = 2;
 const REGISTRATION_FORM_ERROR = 3;
 
-
 class RegistrationForm extends CustomElement {
     /**
      * @typedef {import('strophe.js').Request} Request
      */
 
-    static get properties () {
+    static get properties() {
         return {
-            status : { type: String },
+            status: { type: String },
             domain: { type: String },
             service_url: { type: String },
             alert_message: { type: String },
             alert_type: { type: String },
             xmpp_providers: { type: Array },
             expanded_provider: { type: String },
-        }
+        };
     }
 
-    constructor () {
+    constructor() {
         super();
         this.urls = [];
+        /** @type {Record<string, any>} */
         this.fields = {};
         this.domain = null;
         this.alert_type = 'info';
+        /** @type {string[]} */
         this.xmpp_providers = [];
         this.expanded_provider = null;
-        this.setErrorMessage = /** @param {string} m */(m) => this.setMessage(m, 'danger');
-        this.setFeedbackMessage = /** @param {string} m */(m) => this.setMessage(m, 'info');
+        this.setErrorMessage = /** @param {string} m */ (m) => this.setMessage(m, 'danger');
+        this.setFeedbackMessage = /** @param {string} m */ (m) => this.setMessage(m, 'info');
     }
 
-    initialize () {
+    initialize() {
         this.reset();
         this.listenTo(_converse, 'connectionInitialized', () => this.registerHooks());
 
@@ -64,13 +65,13 @@ class RegistrationForm extends CustomElement {
             // are ready when the user starts typing.
             if (api.settings.get('xmpp_providers_url')) {
                 fetchXMPPProviders().then((providers) => {
-                    this.xmpp_providers = providers;
+                    this.xmpp_providers = /** @type {string[]} */ (/** @type {unknown} */ (providers));
                 });
             }
         }
     }
 
-    render () {
+    render() {
         return tplChooseProvider(this);
     }
 
@@ -87,7 +88,7 @@ class RegistrationForm extends CustomElement {
      * Hook into Strophe's _connect_cb, so that we can send an IQ
      * requesting the registration fields.
      */
-    registerHooks () {
+    registerHooks() {
         const conn = api.connection.get();
         const connect_cb = conn._connect_cb.bind(conn);
         conn._connect_cb = (req, callback, raw) => {
@@ -105,22 +106,24 @@ class RegistrationForm extends CustomElement {
      * @param {Request} req - The current request
      * @param {Function} callback - The callback function
      */
-    getRegistrationFields (req, callback) {
+    getRegistrationFields(req, callback) {
         const conn = api.connection.get();
         conn.connected = true;
 
         const body = /** @type {Element} */ (
             '_reqToData' in conn._proto ? conn._proto._reqToData(/** @type {Request} */ (req)) : req
         );
-        if (!body) { return; }
+        if (!body) {
+            return;
+        }
 
         if (conn._proto._connect_cb(body) === Strophe.Status.CONNFAIL) {
             this.status = CHOOSE_PROVIDER;
             this.setErrorMessage(__("Sorry, we're unable to connect to your chosen provider."));
             return false;
         }
-        const register = body.getElementsByTagName("register");
-        const mechanisms = body.getElementsByTagName("mechanism");
+        const register = body.getElementsByTagName('register');
+        const mechanisms = body.getElementsByTagName('mechanism');
         if (register.length === 0 && mechanisms.length === 0) {
             conn._proto._no_auth_received(callback);
             return false;
@@ -129,13 +132,16 @@ class RegistrationForm extends CustomElement {
             conn._changeConnectStatus(Strophe.Status.REGIFAIL);
             this.alert_type = 'danger';
             this.setErrorMessage(
-                __("Sorry, the given provider does not support in "+
-                   "band account registration. Please try with a "+
-                   "different provider."));
+                __(
+                    'Sorry, the given provider does not support in ' +
+                        'band account registration. Please try with a ' +
+                        'different provider.',
+                ),
+            );
             return true;
         }
         // Send an IQ stanza to get all required data fields
-        conn._addSysHandler((s) => this.onRegistrationFields(s), null, "iq", null, null);
+        conn._addSysHandler((s) => this.onRegistrationFields(s), null, 'iq', null, null);
         const stanza = stx`
             <iq type="get" id="${conn.getUniqueId('sendIQ')}" xmlns="jabber:client">
                 <query xmlns="${Strophe.NS.REGISTER}"></query>
@@ -150,8 +156,8 @@ class RegistrationForm extends CustomElement {
      * @method _converse.RegistrationForm#onRegistrationFields
      * @param {Element} stanza - The query stanza.
      */
-    onRegistrationFields (stanza) {
-        if (stanza.getAttribute("type") === "error") {
+    onRegistrationFields(stanza) {
+        if (stanza.getAttribute('type') === 'error') {
             this.reportErrors(stanza);
             if (api.settings.get('registration_domain')) {
                 this.status = REGISTRATION_FORM_ERROR;
@@ -167,16 +173,16 @@ class RegistrationForm extends CustomElement {
         return false;
     }
 
-    reset (settings) {
+    reset(settings) {
         const defaults = {
             fields: {},
             urls: [],
-            title: "",
-            instructions: "",
+            title: '',
+            instructions: '',
             registered: false,
             _registering: false,
             domain: null,
-            form_type: null
+            form_type: null,
         };
         Object.assign(this, defaults);
         if (settings) Object.assign(this, settings);
@@ -187,11 +193,11 @@ class RegistrationForm extends CustomElement {
      * Depending on the available input fields, we delegate to other methods.
      * @param {Event} ev
      */
-    onFormSubmission (ev) {
+    onFormSubmission(ev) {
         ev?.preventDefault?.();
-        const form = /** @type {HTMLFormElement} */(ev.target);
+        const form = /** @type {HTMLFormElement} */ (ev.target);
 
-        const domain_input = /** @type {HTMLInputElement} */(form.querySelector('input[name=domain]'));
+        const domain_input = /** @type {HTMLInputElement} */ (form.querySelector('input[name=domain]'));
         if (domain_input === null) {
             this.submitRegistrationForm(form);
         } else {
@@ -204,7 +210,7 @@ class RegistrationForm extends CustomElement {
      * Sets the domain and immediately fetches the registration form.
      * @param {string} jid - The provider's JID (domain)
      */
-    onProviderSelected (jid) {
+    onProviderSelected(jid) {
         if (jid) {
             this.fetchRegistrationForm(jid.trim());
         }
@@ -215,7 +221,7 @@ class RegistrationForm extends CustomElement {
      * @param {Event} ev
      * @param {string} jid - The provider's JID (domain)
      */
-    onToggleProviderDetails (ev, jid) {
+    onToggleProviderDetails(ev, jid) {
         ev?.preventDefault?.();
         this.expanded_provider = this.expanded_provider === jid ? null : jid;
     }
@@ -224,15 +230,15 @@ class RegistrationForm extends CustomElement {
      * Callback method that gets called when the user has chosen an XMPP provider
      * @param {HTMLFormElement} form - The form that was submitted
      */
-    onProviderChosen (form) {
-        const domain = /** @type {HTMLInputElement} */(form.querySelector('input[name=domain]'))?.value;
+    onProviderChosen(form) {
+        const domain = /** @type {HTMLInputElement} */ (form.querySelector('input[name=domain]'))?.value;
         if (domain) {
             const form_data = new FormData(form);
             let service_url = null;
             if (api.settings.get('show_connection_url_input')) {
-                service_url = /** @type {string} */(form_data.get('connection-url'));
+                service_url = /** @type {string} */ (form_data.get('connection-url'));
                 if (service_url.startsWith('wss:')) {
-                    api.settings.set("websocket_url", service_url);
+                    api.settings.set('websocket_url', service_url);
                 } else if (service_url.startsWith('https:')) {
                     api.settings.set('bosh_service_url', service_url);
                 } else {
@@ -254,7 +260,7 @@ class RegistrationForm extends CustomElement {
      * @param {string} domain_name - XMPP server domain
      * @param {string|null} [service_url]
      */
-    fetchRegistrationForm (domain_name, service_url) {
+    fetchRegistrationForm(domain_name, service_url) {
         this.status = FETCHING_FORM;
         this.reset({
             _registering: true,
@@ -273,7 +279,7 @@ class RegistrationForm extends CustomElement {
              * @param {number} s
              * @param {string} m
              */
-            (s, m) => this.onConnectStatusChanged(s, m)
+            (s, m) => this.onConnectStatusChanged(s, m),
         );
         return false;
     }
@@ -286,22 +292,22 @@ class RegistrationForm extends CustomElement {
      */
     onConnectStatusChanged(status_code, message) {
         log.debug('converse-register: onConnectStatusChanged');
-        if ([Strophe.Status.DISCONNECTED,
-            Strophe.Status.CONNFAIL,
-            Strophe.Status.REGIFAIL,
-             Strophe.Status.NOTACCEPTABLE,
-             Strophe.Status.CONFLICT
-            ].includes(status_code)) {
-
-            log.warn(
-                `Problem during registration: Strophe.Status is ${CONNECTION_STATUS[status_code]}`
-            );
+        if (
+            [
+                Strophe.Status.DISCONNECTED,
+                Strophe.Status.CONNFAIL,
+                Strophe.Status.REGIFAIL,
+                Strophe.Status.NOTACCEPTABLE,
+                Strophe.Status.CONFLICT,
+            ].includes(status_code)
+        ) {
+            log.warn(`Problem during registration: Strophe.Status is ${CONNECTION_STATUS[status_code]}`);
             this.abortRegistration(message);
         } else if (status_code === Strophe.Status.REGISTERED) {
-            log.debug("Registered successfully.");
+            log.debug('Registered successfully.');
             api.connection.get().reset();
 
-            if (["converse/login", "converse/register"].includes(window.location.hash)) {
+            if (['converse/login', 'converse/register'].includes(window.location.hash)) {
                 history.pushState(null, '', window.location.pathname);
             }
             setActiveForm('login');
@@ -310,9 +316,9 @@ class RegistrationForm extends CustomElement {
                 const connection = api.connection.get();
                 // automatically log the user in
                 connection.connect(
-                    this.fields.username.toLowerCase()+'@'+this.domain.toLowerCase(),
-                    this.fields.password,
-                    connection.onConnectStatusChanged
+                    /** @type {string} */ (this.fields.username).toLowerCase() + '@' + this.domain.toLowerCase(),
+                    /** @type {string} */ (this.fields.password),
+                    connection.onConnectStatusChanged,
                 );
                 this.setFeedbackMessage(__('Now logging you in'));
             } else {
@@ -322,16 +328,16 @@ class RegistrationForm extends CustomElement {
         }
     }
 
-    getLegacyFormFields () {
-        const input_fields = Object.keys(this.fields).map(key => {
-            if (key === "username") {
+    getLegacyFormFields() {
+        const input_fields = Object.keys(this.fields).map((key) => {
+            if (key === 'username') {
                 return tplFormUsername({
                     'domain': ` @${this.domain}`,
                     'name': key,
-                    'type': "text",
+                    'type': 'text',
                     'label': key,
                     'value': '',
-                    'required': true
+                    'required': true,
                 });
             } else {
                 return tplFormInput({
@@ -339,22 +345,22 @@ class RegistrationForm extends CustomElement {
                     'name': key,
                     'placeholder': key,
                     'required': true,
-                    'type': (key === 'password' || key === 'email') ? key : "text",
-                    'value': ''
-                })
+                    'type': key === 'password' || key === 'email' ? key : 'text',
+                    'value': '',
+                });
             }
         });
-        const urls = this.urls.map(u => tplFormUrl({'label': '', 'value': u}));
+        const urls = this.urls.map((u) => tplFormUrl({ 'label': '', 'value': u }));
         return [...input_fields, ...urls];
     }
 
     /**
      * @param {Element} stanza
      */
-    getFormFields (stanza) {
+    getFormFields(stanza) {
         if (this.form_type === 'xform') {
             const { fields } = parsers.parseXForm(stanza);
-            return fields?.map((f) => u.xFormField2TemplateResult(f, { domain: this.domain})) ?? [];
+            return fields?.map((f) => u.xFormField2TemplateResult(f, { domain: this.domain })) ?? [];
         } else {
             return this.getLegacyFormFields();
         }
@@ -365,7 +371,7 @@ class RegistrationForm extends CustomElement {
      * received from the XMPP server.
      * @param {Element} stanza - The IQ stanza received from the XMPP server.
      */
-    renderRegistrationForm (stanza) {
+    renderRegistrationForm(stanza) {
         this.form_fields = this.getFormFields(stanza);
         this.status = REGISTRATION_FORM;
     }
@@ -375,29 +381,32 @@ class RegistrationForm extends CustomElement {
      * XMPP server after attempted registration.
      * @param {Element} stanza - The IQ stanza received from the XMPP server
      */
-    async reportErrors (stanza) {
+    async reportErrors(stanza) {
         const error = await parsers.parseErrorStanza(stanza);
         if (error instanceof errors.ConflictError) {
-            this.setErrorMessage(
-                `${__('Registration failed.')} ${__('Please try a different username.')}`)
+            this.setErrorMessage(`${__('Registration failed.')} ${__('Please try a different username.')}`);
             return;
         }
 
         const error_els = Array.from(stanza.querySelectorAll('error'));
         if (error_els.length) {
             this.setErrorMessage(
-                `${__('Registration failed.')}${error_els.reduce((result, e) => `${result}\n${e.textContent}`, '')}`
+                `${__('Registration failed.')}${error_els.reduce((result, e) => `${result}\n${e.textContent}`, '')}`,
             );
         } else {
-            this.setErrorMessage(__('The provider rejected your registration attempt. '+
-                'Please check the values you entered for correctness.'));
+            this.setErrorMessage(
+                __(
+                    'The provider rejected your registration attempt. ' +
+                        'Please check the values you entered for correctness.',
+                ),
+            );
         }
     }
 
     /**
      * @param {Event} ev
      */
-    renderProviderChoiceForm (ev) {
+    renderProviderChoiceForm(ev) {
         ev?.preventDefault?.();
         const connection = api.connection.get();
         connection._proto._abortAllRequests();
@@ -408,7 +417,7 @@ class RegistrationForm extends CustomElement {
     /**
      * @param {string} message
      */
-    abortRegistration (message) {
+    abortRegistration(message) {
         const connection = api.connection.get();
         connection._proto._abortAllRequests();
         connection.reset();
@@ -430,22 +439,21 @@ class RegistrationForm extends CustomElement {
      * @method _converse.RegistrationForm#submitRegistrationForm
      * @param {HTMLElement} form - The HTML form that was submitted
      */
-    submitRegistrationForm (form) {
-        const /** @type {HTMLInputElement[]} */inputs = sizzle(':input:not([type=button]):not([type=submit])', form);
-        const iq = $iq({'type': 'set', 'id': u.getUniqueId()})
-                    .c("query", {xmlns:Strophe.NS.REGISTER});
+    submitRegistrationForm(form) {
+        const /** @type {HTMLInputElement[]} */ inputs = sizzle(':input:not([type=button]):not([type=submit])', form);
+        const iq = $iq({ 'type': 'set', 'id': u.getUniqueId() }).c('query', { xmlns: Strophe.NS.REGISTER });
 
         if (this.form_type === 'xform') {
-            iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
+            iq.c('x', { xmlns: Strophe.NS.XFORM, type: 'submit' });
 
-            const xml_nodes = inputs.map(i => u.webForm2xForm(i)).filter(n => n);
-            xml_nodes.forEach(n => iq.cnode(n).up());
+            const xml_nodes = inputs.map((i) => u.webForm2xForm(i)).filter((n) => n);
+            xml_nodes.forEach((n) => iq.cnode(n).up());
         } else {
-            inputs.forEach(input => iq.c(input.getAttribute('name'), {}, input.value));
+            inputs.forEach((input) => iq.c(input.getAttribute('name'), {}, input.value));
         }
 
         const connection = api.connection.get();
-        connection._addSysHandler(/** @param {Element} iq */(iq) => this.#onRegisterIQ(iq), null, "iq", null, null);
+        connection._addSysHandler(/** @param {Element} iq */ (iq) => this.#onRegisterIQ(iq), null, 'iq', null, null);
         connection.send(iq);
         this.setFields(iq.tree());
     }
@@ -455,7 +463,7 @@ class RegistrationForm extends CustomElement {
      * @method _converse.RegistrationForm#setFields
      * @param {Element} stanza - the IQ stanza that will be sent to the XMPP server.
      */
-    setFields (stanza) {
+    setFields(stanza) {
         const query = stanza.querySelector('query');
         const xform = sizzle(`x[xmlns="${Strophe.NS.XFORM}"]`, query);
         if (xform.length > 0) {
@@ -468,37 +476,44 @@ class RegistrationForm extends CustomElement {
     /**
      * @param {Element} query
      */
-    setFieldsFromLegacy (query) {
-        [].forEach.call(query.children, /** @param {Element} field */(field) => {
-            if (field.tagName.toLowerCase() === 'instructions') {
-                this.instructions = Strophe.getText(field);
-                return;
-            } else if (field.tagName.toLowerCase() === 'x') {
-                if (field.getAttribute('xmlns') === 'jabber:x:oob') {
-                    this.urls.concat(sizzle('url', field).map(u => u.textContent));
+    setFieldsFromLegacy(query) {
+        [].forEach.call(
+            query.children,
+            /** @param {Element} field */ (field) => {
+                if (field.tagName.toLowerCase() === 'instructions') {
+                    this.instructions = Strophe.getText(field);
+                    return;
+                } else if (field.tagName.toLowerCase() === 'x') {
+                    if (field.getAttribute('xmlns') === 'jabber:x:oob') {
+                        this.urls.concat(sizzle('url', field).map((u) => u.textContent));
+                    }
+                    return;
                 }
-                return;
-            }
-            this.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
-        });
+                /** @type {Record<string, any>} */ (this.fields)[/** @type {string} */ (field.tagName.toLowerCase())] =
+                    Strophe.getText(field);
+            },
+        );
         this.form_type = 'legacy';
     }
 
     /**
      * @param {Element} xform
      */
-    setFieldsFromXForm (xform) {
+    setFieldsFromXForm(xform) {
         this.title = xform.querySelector('title')?.textContent ?? '';
         this.instructions = xform.querySelector('instructions')?.textContent ?? '';
-        xform.querySelectorAll('field').forEach(field => {
-            const _var = field.getAttribute('var');
-            if (_var) {
-                this.fields[_var.toLowerCase()] = field.querySelector('value')?.textContent ?? '';
-            } else {
-                // TODO: other option seems to be type="fixed"
-                log.warn("Found field we couldn't parse");
-            }
-        });
+        xform.querySelectorAll('field').forEach(
+            /** @param {Element} field */ (field) => {
+                const _var = field.getAttribute('var');
+                if (_var) {
+                    /** @type {Record<string, any>} */ (this.fields)[_var.toLowerCase()] =
+                        field.querySelector('value')?.textContent ?? '';
+                } else {
+                    // TODO: other option seems to be type="fixed"
+                    log.warn("Found field we couldn't parse");
+                }
+            },
+        );
         this.form_type = 'xform';
     }
 
@@ -508,15 +523,15 @@ class RegistrationForm extends CustomElement {
      * register a new user.
      * @param {Element} stanza - The IQ stanza.
      */
-    #onRegisterIQ (stanza) {
+    #onRegisterIQ(stanza) {
         const connection = api.connection.get();
-        if (stanza.getAttribute("type") === "error") {
-            log.info("Registration failed.");
+        if (stanza.getAttribute('type') === 'error') {
+            log.info('Registration failed.');
             this.reportErrors(stanza);
 
-            const error_els = stanza.getElementsByTagName("error");
+            const error_els = stanza.getElementsByTagName('error');
             if (error_els.length !== 1) {
-                connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
+                connection._changeConnectStatus(Strophe.Status.REGIFAIL, 'unknown');
                 return false;
             }
 

@@ -44,7 +44,7 @@ export class Texture extends String {
      *  If set to `true`, then videos will always be rendered with a video
      *  player. If set to `false`, they won't, and if not defined, then the `embed_videos` setting
      *  is used to determine whether they should be rendered as videos or as hyperlinks.
-     * @param {Array} [options.mentions] - An array of mention references
+     * @param {import('./types').Mention[]} [options.mentions] - An array of mention references
      * @param {MediaURLMetadata[]} [options.media_urls] - An array of {@link MediaURLMetadata} objects,
      *  used to render media such as images, videos and audio. It might not be
      *  possible to have the media metadata available, so if this value is
@@ -62,7 +62,7 @@ export class Texture extends String {
         render_styling?: boolean;
         embed_audio?: boolean;
         embed_videos?: boolean;
-        mentions?: any[];
+        mentions?: import("./types").Mention[];
         media_urls?: import("@converse/headless/types/utils/types").MediaURLMetadata[];
         show_images?: boolean;
         show_me_message?: boolean;
@@ -72,7 +72,7 @@ export class Texture extends String {
     });
     embed_audio: boolean;
     embed_videos: boolean;
-    mentions: any[];
+    mentions: import("./types").Mention[];
     media_urls: import("@converse/headless/types/utils/types").MediaURLMetadata[];
     nick: string;
     offset: number;
@@ -83,7 +83,7 @@ export class Texture extends String {
         render_styling?: boolean;
         embed_audio?: boolean;
         embed_videos?: boolean;
-        mentions?: any[];
+        mentions?: import("./types").Mention[];
         media_urls?: import("@converse/headless/types/utils/types").MediaURLMetadata[];
         show_images?: boolean;
         show_me_message?: boolean;

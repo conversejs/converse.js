@@ -163,6 +163,27 @@ export type Reference = {
     uri: string;
 };
 
+export type ErrorOrInfoMessageAttributes = {
+    is_ephemeral?: boolean | number;
+    message: string;
+    reason?: string;
+    time?: string;
+};
+
+export type ErrorMessageAttributes = ErrorOrInfoMessageAttributes & {
+    chat_state?: boolean;
+    retry_event_id?: string;
+    type: 'error';
+};
+
+export type InfoMessageAttributes = ErrorOrInfoMessageAttributes & {
+    type: 'info';
+    code?: string;
+};
+
+/**
+ * Error attributes received on an error message stanza
+ */
 export type MessageErrorAttributes = {
     is_error: boolean; // Whether an error was received for this message
     error: string; // The error name
@@ -171,6 +192,8 @@ export type MessageErrorAttributes = {
     error_text: string; // The error text received from the server
     error_type: string; // The type of error received from the server
 };
+
+export type MessageStanzaTypes = 'chat' | 'headline' | 'groupchat' | 'error';
 
 export type MessageAttributes = EncryptionAttrs &
     MessageErrorAttributes & {
@@ -186,6 +209,7 @@ export type MessageAttributes = EncryptionAttrs &
         is_carbon: boolean; // Is this message a XEP-0280 Carbon?
         is_delayed: boolean; // Was delivery of this message was delayed as per XEP-0203?
         is_encrypted: boolean; //  Is this message XEP-0384  encrypted?
+        is_ephemeral: boolean | number;
         is_headline: boolean; // Is this a "headline" message?
         is_markable: boolean; // Can this message be marked with a XEP-0333 chat marker?
         is_marker: boolean; // Is this message a XEP-0333 Chat Marker?
@@ -218,7 +242,7 @@ export type MessageAttributes = EncryptionAttrs &
         thread: string; // The <thread> element value
         time: string; // The time (in ISO8601 format), either given by the XEP-0203 <delay> element, or of receipt.
         to: string; // The recipient JID
-        type: string; // The type of message
+        type: MessageStanzaTypes; // The type of message
     };
 
 export type FileUploadMessageAttributes = {

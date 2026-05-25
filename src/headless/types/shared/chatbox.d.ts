@@ -2,14 +2,14 @@ declare const ChatBoxBase_base: {
     new (...args: any[]): {
         [x: string]: any;
         disable_mam: boolean;
-        initialize(): Promise<void>;
+        initialize(): void;
         initNotifications(): void;
         notifications: Model<import("@converse/skeletor").ModelAttributes>;
         initUI(): void;
         ui: Model<import("@converse/skeletor").ModelAttributes>;
         getDisplayName(): string;
         canPostMessages(): boolean;
-        createMessage(attrs: any, options: any): Promise<any>;
+        createMessage(attrs: import("./types.js").MessageAttributes | import("./types.js").ErrorMessageAttributes | import("./types.js").InfoMessageAttributes, options?: import("@converse/skeletor").FetchOrCreateOptions): Promise<any>;
         getMessagesCacheKey(): string;
         getMessagesCollection(): any;
         getNotificationsText(): any;

@@ -8,6 +8,7 @@ export default class MessageHistory extends CustomElement {
         };
     };
     model: any;
+    /** @type {any[]} */
     messages: any[];
     /**
      * @param {(Message)} model

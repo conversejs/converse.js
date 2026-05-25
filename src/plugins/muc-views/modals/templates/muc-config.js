@@ -48,7 +48,7 @@ export default (el) => {
                     <converse-image-picker .model=${el.model} width="96" height="96"></converse-image-picker>
                 </div>` : ''}
 
-                ${fieldTemplates.length ? fieldTemplates : tplSpinner({ 'classes': 'hor_centered' })}
+                ${fieldTemplates.length ? fieldTemplates : tplSpinner({ 'class': 'hor_centered' })}
             </fieldset>
 
             ${fieldTemplates.length

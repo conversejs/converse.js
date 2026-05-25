@@ -46,7 +46,7 @@ function tplRoomItem(el, room) {
             data-room-jid="${room.get('jid')}"
             data-room-name="${room.getDisplayName()}"
             title="${__('Click to open this groupchat')}"
-            @click=${(ev) => el.openRoom(ev)}
+            @click=${(/** @type {Event} */ ev) => el.openRoom(ev)}
         >
             <converse-avatar
                 .model=${room}
@@ -72,7 +72,7 @@ function tplRoomItem(el, room) {
             data-room-jid="${room.get('jid')}"
             data-room-name="${room.getDisplayName()}"
             title="${i18n_leave_room}"
-            @click=${(ev) => el.closeRoom(ev)}
+            @click=${(/** @type {Event} */ ev) => el.closeRoom(ev)}
         >
             <converse-icon
                 class="fa fa-sign-out-alt"
@@ -97,7 +97,7 @@ function tplRoomDomainGroup(el, domain, rooms) {
             href="#"
             class="list-toggle muc-domain-group-toggle controlbox-padded"
             title="${i18n_title}"
-            @click=${(ev) => el.toggleDomainList(ev, domain)}
+            @click=${(/** @type {Event} */ ev) => el.toggleDomainList(ev, domain)}
         >
             <converse-icon
                 class="fa ${is_collapsed ? 'fa-caret-right' : 'fa-caret-down'}"
@@ -185,7 +185,7 @@ export default (el) => {
                     role="heading"
                     aria-level="3"
                     title="${i18n_desc_rooms}"
-                    @click=${(ev) => el.toggleRoomsList(ev)}
+                    @click=${(/** @type {Event} */ ev) => el.toggleRoomsList(ev)}
                 >
                     ${i18n_heading_chatrooms}
                     ${rooms.length

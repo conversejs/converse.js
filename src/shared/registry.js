@@ -1,5 +1,6 @@
 import { api } from "@converse/headless";
 
+/** @type {Record<string, any>} */
 const registry = {};
 
 /**

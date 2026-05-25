@@ -1,26 +1,24 @@
-
 export default class Stream {
-
-    constructor (data) {
-        if (data.toString().indexOf('ArrayBuffer') > 0) {
-            data = new Uint8Array(data);
-        }
-        this.data = data;
+    constructor(data) {
+        const data_arr = data && data.toString().indexOf('ArrayBuffer') > 0 ? new Uint8Array(data) : data;
+        this.data = data_arr;
         this.len = this.data.length;
         this.pos = 0;
     }
 
-    readByte () {
+    readByte() {
         if (this.pos >= this.data.length) {
             throw new Error('Attempted to read past end of stream.');
         }
-        if (this.data instanceof Uint8Array)
-            return this.data[this.pos++];
-        else
-            return this.data.charCodeAt(this.pos++) & 0xFF;
+        if (this.data instanceof Uint8Array) return this.data[this.pos++];
+        else return this.data.charCodeAt(this.pos++) & 0xff;
     }
 
-    readBytes (n) {
+    /**
+     * @param {number} n
+     * @returns {number[]}
+     */
+    readBytes(n) {
         const bytes = [];
         for (let i = 0; i < n; i++) {
             bytes.push(this.readByte());
@@ -28,7 +26,11 @@ export default class Stream {
         return bytes;
     }
 
-    read (n) {
+    /**
+     * @param {number} n
+     * @returns {string}
+     */
+    read(n) {
         let s = '';
         for (let i = 0; i < n; i++) {
             s += String.fromCharCode(this.readByte());
@@ -36,7 +38,8 @@ export default class Stream {
         return s;
     }
 
-    readUnsigned () { // Little-endian.
+    readUnsigned() {
+        // Little-endian.
         const a = this.readBytes(2);
         return (a[1] << 8) + a[0];
     }

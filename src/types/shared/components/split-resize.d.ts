@@ -1,53 +1,42 @@
 export default class SplitResize extends CustomElement {
-    initialize(): void;
-    pair: {
-        a: (0 | 1);
-        b: (0 | 1);
-        direction: ("horizontal" | "vertical");
-        dragging: boolean;
-        aMin: number;
-        bMin: number;
-        dragOffset: number;
-        size: number;
-        start: number;
-        end: number;
-        gutter: HTMLElement;
-        parent: HTMLElement;
-        stop: (this: Window, ev: Event) => any;
-        /**
-         * The basic sequence:
-         *
-         * 1. Set defaults to something sane. `options` doesn't have to be passed at all.
-         * 2. Initialize a bunch of strings based on the direction we're splitting.
-         *    A lot of the behavior in the rest of the library is parameterized down to
-         *    rely on CSS strings and classes.
-         * 3. Define the dragging helper functions, and a few helpers to go with them.
-         * 4. Loop through the elements while pairing them off. Every pair gets an
-         *    `pair` object and a gutter.
-         * 5. Actually size the pair elements, insert gutters and attach event listeners.
-         */
-        move: (this: Window, ev: Event) => any;
-    };
+    pair: import("./types").ResizablePair & Record<string, any>;
     render(): import("lit-html").TemplateResult<1>;
     /**
      * Helper function gets a property from the properties object, with a default fallback
+     * @param {Record<string, any>} options
+     * @param {string} propName
+     * @param {any} def
      */
-    getOption(options: any, propName: any, def: any): any;
-    getElementStyle(dim: any, size: any, gutSize: any): {};
-    defaultGutterStyleFn(dim: any, gutSize: any): {
-        [x: number]: string;
-    };
-    getGutterSize(gutterSize: any, isFirst: any, isLast: any, gutterAlign: any): any;
+    getOption(options: Record<string, any>, propName: string, def: any): any;
+    /**
+     * @param {string} dim
+     * @param {string|number} size
+     * @param {string|number} gutSize
+     * @returns {Record<string, string|number>}
+     */
+    getElementStyle(dim: string, size: string | number, gutSize: string | number): Record<string, string | number>;
+    /**
+     * @param {string} dim
+     * @param {number} gutSize
+     * @returns {Record<string, string>}
+     */
+    defaultGutterStyleFn(dim: string, gutSize: number): Record<string, string>;
+    /**
+     * @param {number} gutterSize
+     * @param {boolean} isFirst
+     * @param {boolean} isLast
+     * @param {string} gutterAlign
+     * @returns {number}
+     */
+    getGutterSize(gutterSize: number, isFirst: boolean, isLast: boolean, gutterAlign: string): number;
     /**
      * @param {HTMLElement} el
-     * @param {string} size
+     * @param {number} size
      * @param {string} gutSize
      */
-    setElementSize(el: HTMLElement, size: string, gutSize: string): void;
-    getSizes(): any[];
+    setElementSize(el: HTMLElement, size: number, gutSize: string): void;
+    getSizes(): number[];
     /**
-     * Supports touch events, but not multitouch, so only the first
-     * finger `touches[0]` is counted.
      * @param {MouseEvent} e
      */
     getMousePosition(e: MouseEvent): any;
@@ -99,36 +88,9 @@ export default class SplitResize extends CustomElement {
      * ------------------------------------------------
      * | <- start                             size -> |
      *
-     * @param {ResizablePair} pair
+     * @param {import('./types').ResizablePair} pair
      */
-    calculateSizes(pair: {
-        a: (0 | 1);
-        b: (0 | 1);
-        direction: ("horizontal" | "vertical");
-        dragging: boolean;
-        aMin: number;
-        bMin: number;
-        dragOffset: number;
-        size: number;
-        start: number;
-        end: number;
-        gutter: HTMLElement;
-        parent: HTMLElement;
-        stop: (this: Window, ev: Event) => any;
-        /**
-         * The basic sequence:
-         *
-         * 1. Set defaults to something sane. `options` doesn't have to be passed at all.
-         * 2. Initialize a bunch of strings based on the direction we're splitting.
-         *    A lot of the behavior in the rest of the library is parameterized down to
-         *    rely on CSS strings and classes.
-         * 3. Define the dragging helper functions, and a few helpers to go with them.
-         * 4. Loop through the elements while pairing them off. Every pair gets an
-         *    `pair` object and a gutter.
-         * 5. Actually size the pair elements, insert gutters and attach event listeners.
-         */
-        move: (this: Window, ev: Event) => any;
-    }): void;
+    calculateSizes(pair: import("./types").ResizablePair): void;
     /**
      * @param {HTMLElement} el
      */
@@ -139,7 +101,11 @@ export default class SplitResize extends CustomElement {
      * (and decreased from the other elements) to make space for the pixels
      * subtracted by the gutters.
      */
-    trimToMin(sizesToTrim: any): any;
+    /**
+     * @param {number[]} sizesToTrim
+     * @returns {number[]}
+     */
+    trimToMin(sizesToTrim: number[]): number[];
     /**
      * stopDragging is very similar to startDragging in reverse.
      * @param {Object} options
@@ -154,9 +120,9 @@ export default class SplitResize extends CustomElement {
      */
     startDragging(e: MouseEvent, options: any): void;
     /**
-     * @param {Object} element
+     * @param {import('./types').ResizableElement} element
      */
-    adjustToMin(element: any): void;
+    adjustToMin(element: import("./types").ResizableElement): void;
     /**
      * @param {Array<number>} newSizes
      */
@@ -166,24 +132,6 @@ export default class SplitResize extends CustomElement {
      *
      * Each pair of elements, resizable relative to one another, is handled independently.
      * Dragging the gutter between two elements only changes the dimensions of elements in that pair.
-     *
-     * A pair object is shaped like this:
-     *
-     * @typedef {Object} ResizablePair
-     * @property {(0|1)} a
-     * @property {(0|1)} b
-     * @property {('horizontal'|'vertical')} direction
-     * @property {boolean} dragging
-     * @property {number} aMin
-     * @property {number} bMin
-     * @property {number} dragOffset
-     * @property {number} size
-     * @property {number} start
-     * @property {number} end
-     * @property {HTMLElement} gutter
-     * @property {HTMLElement} parent
-     * @property {(this: Window, ev: Event) => any} stop
-     * @property {(this: Window, ev: Event) => any} move
      *
      * The basic sequence:
      *
@@ -211,28 +159,15 @@ export default class SplitResize extends CustomElement {
     position: string;
     positionEnd: string;
     clientSize: string;
-    elements: {
-        element: HTMLElement;
-        size: any;
-        minSize: any;
-        maxSize: any;
-        snapOffset: any;
-        i: number;
-    }[];
+    elements: import("./types").ResizableElement[];
     /**
      * @param {HTMLElement[]} els
      * @param {HTMLElement} el
      * @param {number} i
      * @param {object} options
+     * @returns {import('./types').ResizableElement}
      */
-    createElement(els: HTMLElement[], el: HTMLElement, i: number, options: object): {
-        element: HTMLElement;
-        size: any;
-        minSize: any;
-        maxSize: any;
-        snapOffset: any;
-        i: number;
-    };
+    createElement(els: HTMLElement[], el: HTMLElement, i: number, options: object): import("./types").ResizableElement;
     /**
      * @param {object} options
      */

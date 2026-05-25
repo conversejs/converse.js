@@ -22,9 +22,7 @@ declare class BaseModal extends CustomElement {
         resolve: (value: any) => void;
         reject: (reason?: any) => void;
     };
-    connectedCallback(): void;
     get modal(): Modal;
-    initialize(): void;
     /**
      * @returns {TemplateResult|string}
      */
@@ -57,5 +55,4 @@ declare class BaseModal extends CustomElement {
 }
 import { CustomElement } from 'shared/components/element.js';
 import { Model } from '@converse/headless';
-import Modal from 'bootstrap/js/src/modal.js';
 //# sourceMappingURL=modal.d.ts.map

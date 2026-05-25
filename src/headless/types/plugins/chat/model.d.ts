@@ -77,14 +77,14 @@ declare const ChatBox_base: {
     new (...args: any[]): {
         [x: string]: any;
         disable_mam: boolean;
-        initialize(): Promise<void>;
+        initialize(): void;
         initNotifications(): void;
         notifications: import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>;
         initUI(): void;
         ui: import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>;
         getDisplayName(): string;
         canPostMessages(): boolean;
-        createMessage(attrs: any, options: any): Promise<any>;
+        createMessage(attrs: import("../../shared/types").MessageAttributes | import("../../shared/types").ErrorMessageAttributes | import("../../shared/types").InfoMessageAttributes, options?: import("@converse/skeletor").FetchOrCreateOptions): Promise<any>;
         getMessagesCacheKey(): string;
         getMessagesCollection(): any;
         getNotificationsText(): any;
@@ -368,7 +368,11 @@ declare const ChatBox_base: {
  * Represents a one-on-one chat conversation.
  */
 declare class ChatBox extends ChatBox_base {
-    constructor(attrs: any, options: any);
+    /**
+     * @param {import('@converse/skeletor').ModelAttributes} attrs
+     * @param {import('@converse/skeletor').ModelOptions} options
+     */
+    constructor(attrs: import("@converse/skeletor").ModelAttributes, options: import("@converse/skeletor").ModelOptions);
     /**
      * @typedef {import('./message.js').default} Message
      * @typedef {import('../muc/muc.js').default} MUC

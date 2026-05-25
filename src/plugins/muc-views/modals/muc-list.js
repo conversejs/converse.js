@@ -35,8 +35,8 @@ function insertRoomInfo(el, stanza) {
                 'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
                 'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
                 'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
-            })
-        )
+            }),
+        ),
     );
 }
 
@@ -54,13 +54,17 @@ function toggleRoomInfo(ev) {
         parent_el.insertAdjacentElement('beforeend', u.getElementFromTemplateResult(tplSpinner()));
         api.disco
             .info(/** @type HTMLElement */ (ev.target).getAttribute('data-room-jid'), null)
-            .then((stanza) => insertRoomInfo(parent_el, stanza))
-            .catch((e) => log.error(e));
+            .then(/** @param {Element} stanza */ (stanza) => insertRoomInfo(parent_el, stanza))
+            .catch(/** @param {Error} e */ (e) => log.error(e));
     }
 }
 
 export default class MUCListModal extends BaseModal {
-    constructor(options) {
+    /**
+     * @typedef {import('shared/types').EventWithInputTarget} EventWithInputTarget
+     */
+
+    constructor(/** @type {import('@converse/skeletor').ModelOptions} */ options) {
         super(options);
         this.items = [];
         this.loading_items = false;
@@ -83,11 +87,11 @@ export default class MUCListModal extends BaseModal {
                 'server_placeholder': this.model.get('muc_domain') || __('conference.example.org'),
                 'items': this.items,
                 'loading_items': this.loading_items,
-                'openRoom': (ev) => this.openRoom(ev),
-                'setDomainFromEvent': (ev) => this.setDomainFromEvent(ev),
-                'submitForm': (ev) => this.showRooms(ev),
-                'toggleRoomInfo': (ev) => this.toggleRoomInfo(ev),
-            })
+                'openRoom': (/** @type {MouseEvent} */ ev) => this.openRoom(ev),
+                'setDomainFromEvent': (/** @type {EventWithInputTarget} */ ev) => this.setDomainFromEvent(ev),
+                'submitForm': (/** @type {Event} */ ev) => this.showRooms(ev),
+                'toggleRoomInfo': (/** @type {MouseEvent} */ ev) => this.toggleRoomInfo(ev),
+            }),
         );
     }
 
@@ -100,7 +104,7 @@ export default class MUCListModal extends BaseModal {
      */
     openRoom(ev) {
         ev.preventDefault();
-        const el = /** @type {Element} */(ev.target);
+        const el = /** @type {Element} */ (ev.target);
         const jid = el.getAttribute('data-room-jid');
         const name = el.getAttribute('data-room-name');
         this.modal.hide();
@@ -116,14 +120,14 @@ export default class MUCListModal extends BaseModal {
     }
 
     onDomainChange() {
-        api.settings.get('auto_list_rooms') && this.updateRoomsList();
+        if (api.settings.get('auto_list_rooms')) this.updateRoomsList();
     }
 
     /**
      * Handle the IQ stanza returned from the server, containing
      * all its public groupchats.
      * @method _converse.ChatRoomView#onRoomsFound
-     * @param {HTMLElement} [iq]
+     * @param {Element} [iq]
      */
     onRoomsFound(iq) {
         this.loading_items = false;
@@ -153,24 +157,25 @@ export default class MUCListModal extends BaseModal {
                 <query xmlns="${Strophe.NS.DISCO_ITEMS}"></query>
             </iq>`;
         api.sendIQ(iq)
-            .then((iq) => this.onRoomsFound(iq))
+            .then(/** @param {Element} iq */ (iq) => this.onRoomsFound(iq))
             .catch(() => this.onRoomsFound());
     }
 
-    showRooms(ev) {
+    showRooms(/** @type {Event} */ ev) {
         ev.preventDefault();
         this.loading_items = true;
         this.requestUpdate();
 
-        const data = new FormData(ev.target);
+        const data = new FormData(/** @type {HTMLFormElement} */ (ev.target));
         this.model.setDomain(data.get('server'));
         this.updateRoomsList();
     }
 
+    /** @param {EventWithInputTarget} ev */
     setDomainFromEvent(ev) {
         this.model.setDomain(ev.target.value);
     }
-
+    /** @param {EventWithInputTarget} ev */
     setNick(ev) {
         this.model.save({ nick: ev.target.value });
     }

@@ -25,7 +25,8 @@ export default class EmojiPickerContent extends CustomElement {
     firstUpdated(): void;
     initIntersectionObserver(): void;
     observer: IntersectionObserver;
-    setCategoryOnVisibilityChange(entries: any): void;
+    /** @param {IntersectionObserverEntry[]} entries */
+    setCategoryOnVisibilityChange(entries: IntersectionObserverEntry[]): void;
     /**
      * @param {MouseEvent} ev
      */

@@ -33,7 +33,7 @@ export default class ReplyPreview extends CustomElement {
      * Get the message being replied to, if any.
      * According to XEP-0461, for groupchat messages the stanza_id is used,
      * for other messages we check origin_id first, then msgid.
-     * @returns {import('@converse/headless/shared/message.js').default|undefined}
+     * @returns {import('@converse/headless/types/shared/message').default|undefined}
      */
     getReplyToMessage() {
         const reply_to_id = this.model.get('reply_to_id');
@@ -45,7 +45,7 @@ export default class ReplyPreview extends CustomElement {
             return this.model.messages.models.find((m) => m.get(attr) === reply_to_id);
         } else {
             return this.model.messages.models.find(
-                (m) => m.get('origin_id') === reply_to_id || m.get('msgid') === reply_to_id
+                (m) => m.get('origin_id') === reply_to_id || m.get('msgid') === reply_to_id,
             );
         }
     }
@@ -71,7 +71,12 @@ export default class ReplyPreview extends CustomElement {
                     <span class="reply-preview__sender">${__('Replying to %1$s', sender)}</span>
                     <span class="reply-preview__text">${truncated_body}</span>
                 </div>
-                <button type="button" class="reply-preview__cancel" @click=${() => this.cancelReply()} title="${__('Cancel reply')}">
+                <button
+                    type="button"
+                    class="reply-preview__cancel"
+                    @click=${() => this.cancelReply()}
+                    title="${__('Cancel reply')}"
+                >
                     <converse-icon class="fa fa-times" size="1em"></converse-icon>
                 </button>
             </div>

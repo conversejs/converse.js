@@ -35,9 +35,10 @@ export default class MessageBody extends CustomElement {
         this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
     }
 
+    /** @param {MouseEvent} ev */
     onImgClick (ev) {
         ev.preventDefault();
-        api.modal.show('converse-image-modal', { src: ev.target.src }, ev);
+        api.modal.show('converse-image-modal', { src: /** @type {HTMLImageElement} */(ev.target).src }, ev);
     }
 
     onImgLoad () {
@@ -47,11 +48,12 @@ export default class MessageBody extends CustomElement {
     render () {
         const callback = () => this.model.collection?.trigger('rendered', this.model);
         const offset = 0;
+        /** @type {{ [key: string]: any }} */
         const options = {
             media_urls: this.model.get('media_urls'),
             mentions: this.model.get('references'),
             nick: this.model.chatbox.get('nick'),
-            onImgClick: (ev) => this.onImgClick(ev),
+            onImgClick: /** @param {MouseEvent} ev */ (ev) => this.onImgClick(ev),
             onImgLoad: () => this.onImgLoad(),
             render_styling: !this.model.get('is_unstyled') && api.settings.get('allow_message_styling'),
             show_me_message: true,

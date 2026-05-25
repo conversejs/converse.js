@@ -92,6 +92,7 @@ export async function getDropdownButtons(promise) {
         : '';
 }
 
+/** @param {import('@converse/skeletor').Model} model */
 export function onScrolledDown(model) {
     if (!model.isHidden()) {
         if (api.settings.get('allow_url_history_change')) {
@@ -164,14 +165,14 @@ export function getTonedEmojis() {
         converse.emojis.toned = u.unique(
             Object.values(converse.emojis.json.people)
                 .filter((person) => person.sn.includes('_tone'))
-                .map((person) => person.sn.replace(/_tone[1-5]/, ''))
+                .map((person) => person.sn.replace(/_tone[1-5]/, '')),
         );
     }
     return converse.emojis.toned;
 }
 
 /**
- * @param {object} data
+ * @param {any} data
  * @param {import('./types').EmojiMarkupOptions} options
  */
 export function getEmojiMarkup(data, options = { unicode_only: false, add_title_wrapper: false }) {
@@ -245,7 +246,7 @@ export function addEmojisMarkup(text, options) {
  *
  * @param {String} str - String containing the shortname(s)
  * @param {import('./types').EmojiMarkupOptions} options
- * @returns {Array} An array of at least one string, or otherwise
+ * @returns {Array<string | import('lit').TemplateResult>} An array of at least one string, or otherwise
  * strings and lit TemplateResult objects.
  */
 export function shortnamesToEmojis(str, options = { unicode_only: false, add_title_wrapper: false }) {

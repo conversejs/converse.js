@@ -73,10 +73,10 @@ export default class EmojiPicker extends CustomElement {
         return tplEmojiPicker(this, {
             current_category: this.current_category,
             current_skintone: this.current_skintone,
-            onCategoryPicked: (ev) => this.chooseCategory(ev),
+            onCategoryPicked: /** @param {MouseEvent} ev */ (ev) => this.chooseCategory(ev),
             onSearchInputFocus: () => this.disableArrowNavigation(),
-            onSearchInputKeyDown: (ev) => this.onSearchInputKeyDown(ev),
-            onSkintonePicked: (ev) => this.chooseSkinTone(ev),
+            onSearchInputKeyDown: /** @param {KeyboardEvent} ev */ (ev) => this.onSearchInputKeyDown(ev),
+            onSkintonePicked: /** @param {MouseEvent} ev */ (ev) => this.chooseSkinTone(ev),
             query: this.query,
             search_results: this.search_results,
             render_emojis: this.render_emojis,
@@ -111,16 +111,21 @@ export default class EmojiPicker extends CustomElement {
         }
     }
 
+    /** @param {Map<PropertyKey, unknown>} changed */
     updateSearchResults(changed) {
         const old_query = changed.get('query');
         const contains = FILTER_CONTAINS;
         if (this.query) {
             if (this.query === old_query) {
                 return this.search_results;
-            } else if (old_query && this.query.includes(old_query)) {
-                this.search_results = this.search_results.filter((e) => contains(e.sn, this.query));
+            } else if (old_query && this.query.includes(/** @type {string} */ (old_query))) {
+                this.search_results = this.search_results.filter(
+                    /** @param {{ sn: string }} e */ (e) => contains(e.sn, this.query),
+                );
             } else {
-                this.search_results = converse.emojis.list.filter((e) => contains(e.sn, this.query));
+                this.search_results = /** @type {any[]} */ (converse.emojis.list).filter(
+                    /** @param {{ sn: string }} e */ (e) => contains(e.sn, this.query),
+                );
             }
         } else if (this.search_results.length) {
             // Avoid re-rendering by only setting to new empty array if it wasn't empty before
@@ -139,7 +144,7 @@ export default class EmojiPicker extends CustomElement {
     }
 
     registerEvents() {
-        this._onKeyDown = (ev) => this.#onKeyDown(ev);
+        this._onKeyDown = /** @param {KeyboardEvent} ev */ (ev) => this.#onKeyDown(ev);
         this._onDropdownHide = () => this.#onDropdownHide();
         this.addEventListener('keydown', this._onKeyDown);
         this.dropdown?.addEventListener('converse:dropdown:hide', this._onDropdownHide);
@@ -215,13 +220,13 @@ export default class EmojiPicker extends CustomElement {
      * @param {MouseEvent} ev
      */
     chooseCategory(ev) {
-        ev.preventDefault && ev.preventDefault();
-        ev.stopPropagation && ev.stopPropagation();
+        if (ev.preventDefault) ev.preventDefault();
+        if (ev.stopPropagation) ev.stopPropagation();
         const target = /** @type {Element} */ (ev.target ?? ev.relatedTarget);
         const el = target.matches('li') ? target : u.ancestor(target, 'li');
         this.setCategoryForElement(el);
         this.navigator.select(el);
-        !this.navigator.enabled && this.navigator.enable();
+        if (!this.navigator.enabled) this.navigator.enable();
     }
 
     /**
@@ -232,8 +237,10 @@ export default class EmojiPicker extends CustomElement {
         if (ev.key === KEYCODES.TAB) {
             if (target.value) {
                 ev.preventDefault();
-                const match = converse.emojis.shortnames.find((sn) => FILTER_CONTAINS(sn, target.value));
-                match && this.state.set({ 'query': match });
+                const match = converse.emojis.shortnames.find(
+                    /** @param {string} sn */ (sn) => FILTER_CONTAINS(sn, target.value),
+                );
+                if (match) this.state.set({ query: match });
             } else if (!this.navigator.enabled) {
                 this.enableArrowNavigation(ev);
             }

@@ -18,7 +18,7 @@ export default (el) => {
     const i18n_invite = __('Invite');
     if (conn_status === converse.ROOMSTATUS.ENTERED) {
         return html`${el.muc.ui.get('scrolled') && el.model.get('num_unread')
-            ? html`<div class="new-msgs-indicator" @click=${(ev) => el.viewUnreadMessages(ev)}>▼ ${unread_msgs} ▼</div>`
+            ? html`<div class="new-msgs-indicator" @click=${(/** @type {Event} */ ev) => el.viewUnreadMessages(ev)}>▼ ${unread_msgs} ▼</div>`
             : ''}
         ${el.canPostMessages()
             ? html`<converse-muc-message-form .model=${el.model}></converse-muc-message-form>`

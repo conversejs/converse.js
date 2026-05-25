@@ -9,7 +9,7 @@ export default (el) => {
     return html`<button
         type="button"
         class="btn toggle-controlbox ${el.model?.get('closed') ? '' : 'hidden'}"
-        @click=${(ev) => showControlBox(ev)}
+        @click=${(/** @type {Event} */ ev) => showControlBox(ev)}
     >
         <span class="toggle-feedback">${__('Chat')}</span>
     </button>`;

@@ -40,8 +40,8 @@ export default function DragResizable<T extends import("shared/components/types"
          */
         setChatBoxWidth(width: number): void;
         createRenderRoot(): any;
-        initialize(): any;
-        connectedCallback(): any;
+        initialize(): void;
+        connectedCallback(): void;
         disconnectedCallback(): void;
         _events?: import("@converse/skeletor").EventHandlersMap;
         _listeners?: import("@converse/skeletor").EventListenerMap;

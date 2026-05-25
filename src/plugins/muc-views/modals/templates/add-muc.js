@@ -40,7 +40,7 @@ export default (el) => {
 
     return html` <form
         class="converse-form add-chatroom needs-validation"
-        @submit=${(ev) => el.openChatRoom(ev)}
+        @submit=${(/** @type {Event} */ ev) => el.openChatRoom(ev)}
         novalidate
     >
         <div class="mb-3">

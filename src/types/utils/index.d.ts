@@ -107,9 +107,9 @@ declare const _default: {
     getHyperlinkTemplate(url: string): TemplateResult | string;
     slideOut(el: HTMLElement, duration?: number): Promise<any>;
     slideIn(el: HTMLElement, duration?: number): Promise<any>;
-    xFormField2TemplateResult(xfield: import("headless/shared/types.js").XFormField, options?: any): TemplateResult;
+    xFormField2TemplateResult(xfield: import("headless/shared/types.js").XFormField, options?: import("./types.js").XFormFieldOptions): TemplateResult;
     getOuterWidth(el: HTMLElement, include_margin?: boolean): number;
-    getRootElement(): any;
+    getRootElement(): HTMLElement;
     default: {
         getRandomInt: typeof import("headless/types/utils/index.js").getRandomInt;
         getUniqueId: typeof import("headless/types/utils/index.js").getUniqueId;
@@ -290,7 +290,7 @@ declare const _default: {
         '3g2': string;
         '7z': string;
     };
-    getAuthorStyle(occupant: any): string | TemplateResult;
+    getAuthorStyle(occupant: import("@converse/headless").MUCOccupant): string | TemplateResult;
 };
 export default _default;
 import * as html from './html.js';

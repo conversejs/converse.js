@@ -36,6 +36,7 @@ export default class ConverseGIFElement extends CustomElement {
     }
 
     initGIF () {
+        /** @type {Record<string, any>} */
         const options = {
             'autoplay': this.autoplay,
             'loop': !this.noloop,
@@ -46,6 +47,9 @@ export default class ConverseGIFElement extends CustomElement {
         this.supergif = new ConverseGif(this, options);
     }
 
+    /**
+     * @param {import('lit').PropertyValues} changed
+     */
     updated (changed) {
         if (!this.supergif || changed.has('src')) {
             this.initGIF();
@@ -67,7 +71,7 @@ export default class ConverseGIFElement extends CustomElement {
             html`<canvas class="gif-canvas"
                 @mouseover=${() => this.setHover()}
                 @mouseleave=${() => this.unsetHover()}
-                @click=${ev => this.onControlsClicked(ev)}><img class="gif" src="${this.src}"></a></canvas>`;
+                @click=${/** @param {MouseEvent} ev */ ev => this.onControlsClicked(ev)}><img class="gif" src="${this.src}"></a></canvas>`;
     }
 
     renderErrorFallback () {
@@ -90,6 +94,7 @@ export default class ConverseGIFElement extends CustomElement {
         if (this.supergif) this.supergif.hovering = false;
     }
 
+    /** @param {MouseEvent} ev */
     onControlsClicked (ev) {
         ev.preventDefault();
         if (this.supergif.playing) {

@@ -83,7 +83,7 @@ export default class DropdownBase extends CustomElement {
             });
         }
 
-        this._onDocumentClick = (ev) => {
+        this._onDocumentClick = /** @param {MouseEvent} ev */ (ev) => {
             if (!this.contains(/** @type {Node} */ (ev.target))) {
                 this.hide();
             }

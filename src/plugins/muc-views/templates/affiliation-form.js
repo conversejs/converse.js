@@ -12,7 +12,7 @@ export default (el) => {
     const assignable_affiliations = occupant.getAssignableAffiliations();
 
     return html`
-        <form class="affiliation-form" @submit=${(ev) => el.assignAffiliation(ev)}>
+        <form class="affiliation-form" @submit=${(/** @type {Event} */ ev) => el.assignAffiliation(ev)}>
             ${el.alert_message ? html`<div class="alert alert-${el.alert_type}" role="alert">${el.alert_message}</div>` : '' }
             <div class="mb-3">
                 <div class="row">

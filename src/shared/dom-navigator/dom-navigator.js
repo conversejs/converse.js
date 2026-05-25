@@ -96,11 +96,11 @@ class DOMNavigator {
     }
 
     init() {
-        this.selected = null;
+        /** @type {HTMLElement|null} */ this.selected = null;
         this.keydownHandler = null;
-        this.elements = {};
+        /** @type {Record<string, any[]>} */ this.elements = {};
         // Create hotkeys map.
-        this.keys = {};
+        /** @type {Record<string, string>} */ this.keys = {};
         this.options.down.forEach((key) => (this.keys[key] = DOMNavigator.DIRECTION.down));
         this.options.end.forEach((key) => (this.keys[key] = DOMNavigator.DIRECTION.end));
         this.options.home.forEach((key) => (this.keys[key] = DOMNavigator.DIRECTION.home));
@@ -132,7 +132,7 @@ class DOMNavigator {
     }
 
     /**
-     * @param {'down'|'right'|'left'|'up'} direction
+     * @param {'down'|'right'|'left'|'up'|'home'|'end'} direction
      * @returns {HTMLElement}
      */
     getNextElement(direction) {
@@ -152,13 +152,13 @@ class DOMNavigator {
                 const left = this.selected.offsetLeft;
                 const top = this.selected.offsetTop + this.selected.offsetHeight;
                 const els = this.elementsAfter(0, top);
-                const getDistance = (el) => Math.abs(el.offsetLeft - left) + Math.abs(el.offsetTop - top);
+                const getDistance = /** @param {HTMLElement} el */ (el) => Math.abs(el.offsetLeft - left) + Math.abs(el.offsetTop - top);
                 el = DOMNavigator.getClosestElement(els, getDistance);
             } else if (direction == DOMNavigator.DIRECTION.up) {
                 const left = this.selected.offsetLeft;
                 const top = this.selected.offsetTop - 1;
                 const els = this.elementsBefore(Infinity, top);
-                const getDistance = (el) => Math.abs(left - el.offsetLeft) + Math.abs(top - el.offsetTop);
+                const getDistance = /** @param {HTMLElement} el */ (el) => Math.abs(left - el.offsetLeft) + Math.abs(top - el.offsetTop);
                 el = DOMNavigator.getClosestElement(els, getDistance);
             } else {
                 throw new Error('getNextElement: invalid direction value');
@@ -179,7 +179,7 @@ class DOMNavigator {
             el.matches(this.options.jump_to_picked) &&
             direction === this.options.jump_to_picked_direction
         ) {
-            el = this.container.querySelector(this.options.jump_to_picked_selector) || el;
+            el = /** @type {HTMLElement} */ (this.container.querySelector(this.options.jump_to_picked_selector)) || el;
         }
         return el;
     }
@@ -316,7 +316,7 @@ class DOMNavigator {
      */
     elementsAfter(left, top) {
         return this.getElements(DOMNavigator.DIRECTION.down).filter(
-            (el) => el.offsetLeft >= left && el.offsetTop >= top,
+            /** @param {HTMLElement} el */ (el) => el.offsetLeft >= left && el.offsetTop >= top,
         );
     }
 
@@ -327,7 +327,9 @@ class DOMNavigator {
      * @returns {HTMLElement[]} An array of elements.
      */
     elementsBefore(left, top) {
-        return this.getElements(DOMNavigator.DIRECTION.up).filter((el) => el.offsetLeft <= left && el.offsetTop <= top);
+        return this.getElements(DOMNavigator.DIRECTION.up).filter(
+            /** @param {HTMLElement} el */ (el) => el.offsetLeft <= left && el.offsetTop <= top
+        );
     }
 
     /**
@@ -336,7 +338,9 @@ class DOMNavigator {
      */
     handleKeydown(ev) {
         const keys = keycodes;
-        const direction = ev.shiftKey ? this.keys[`${keys.SHIFT}${ev.key}`] : this.keys[ev.key];
+        const direction = /** @type {'down'|'right'|'left'|'up'|'home'|'end'} */ (
+            ev.shiftKey ? this.keys[`${keys.SHIFT}${ev.key}`] : this.keys[ev.key]
+        );
         if (direction) {
             ev.preventDefault();
             ev.stopPropagation();

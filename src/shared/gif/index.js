@@ -34,12 +34,12 @@ export default class ConverseGif {
         this.patchCanvas = document.createElement("canvas");
 
         this.ctx_scaled = false;
-        this.frames = [];
+        /** @type {any[]} */ this.frames = [];
         this.load_error = null;
         this.playing = this.options.autoplay;
 
-        this.frame_idx = 0;
-        this.iteration_count = 0;
+        /** @type {number} */ this.frame_idx = 0;
+        /** @type {number} */ this.iteration_count = 0;
         this.start = null;
         this.hovering = null;
         this.frameImageData = null;
@@ -142,6 +142,10 @@ export default class ConverseGif {
         requestAnimationFrame((ts) => this.onAnimationFrame(ts, timestamp, delay));
     }
 
+    /**
+     * @param {number} w
+     * @param {number} h
+     */
     setSizes(w, h) {
         this.canvas.width = w * this.getCanvasScale();
         this.canvas.height = h * this.getCanvasScale();
@@ -153,6 +157,11 @@ export default class ConverseGif {
         this.offscreenCanvas.getContext("2d").setTransform(1, 0, 0, 1, 0, 0);
     }
 
+    /**
+     * @param {number} pos
+     * @param {number} length
+     * @param {boolean} draw
+     */
     doShowProgress(pos, length, draw) {
         if (draw && this.options.show_progress_bar) {
             let height = this.options.progress_bar_height;
@@ -211,6 +220,9 @@ export default class ConverseGif {
         this.el.requestUpdate();
     }
 
+    /**
+     * @param {number} i
+     */
     manageDisposal(i) {
         if (i <= 0) return;
 
@@ -410,8 +422,11 @@ export default class ConverseGif {
             }
             promise.resolve(h.response);
         };
-        h.onprogress = (e) => e.lengthComputable && this.doShowProgress(e.loaded, e.total, true);
-        h.onerror = (e) => {
+        h.onprogress = (e) => {
+            if (!e.lengthComputable) return;
+            this.doShowProgress(e.loaded, e.total, true);
+        };
+        h.onerror = /** @param {ProgressEvent} e */ (e) => {
             log.error(e);
             this.showError();
         };

@@ -1,8 +1,6 @@
 export default LoginForm;
 declare class LoginForm extends CustomElement {
-    initialize(): void;
     handler: () => void;
-    connectedCallback(): void;
     render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {SubmitEvent} ev

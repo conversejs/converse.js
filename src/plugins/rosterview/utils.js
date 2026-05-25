@@ -137,7 +137,7 @@ export function toggleGroup(ev, name) {
     if (collapsed.includes(name)) {
         roster.state.save(
             'collapsed_groups',
-            collapsed.filter((n) => n !== name),
+            collapsed.filter(/** @param {string} n */ (n) => n !== name),
         );
     } else {
         roster.state.save('collapsed_groups', [...collapsed, name]);
@@ -284,8 +284,8 @@ export function populateContactsMap(contacts_map, contact) {
  * @returns {(-1|0|1)}
  */
 export function contactsComparator(contact1, contact2) {
-    const status1 = contact1.getStatus();
-    const status2 = contact2.getStatus();
+    const status1 = /** @type {string} */ (contact1.getStatus());
+    const status2 = /** @type {string} */ (contact2.getStatus());
     if (STATUS_WEIGHTS[status1] === STATUS_WEIGHTS[status2]) {
         const name1 = contact1.getDisplayName().toLowerCase();
         const name2 = contact2.getDisplayName().toLowerCase();
@@ -300,6 +300,8 @@ export function contactsComparator(contact1, contact2) {
  * @param {string} b
  */
 export function groupsComparator(a, b) {
+    /** @type {Record<string, number>} */
+    /** @type {Record<string, number>} */
     const HEADER_WEIGHTS = {};
     const {
         HEADER_CURRENT_CONTACTS,
@@ -310,27 +312,27 @@ export function groupsComparator(a, b) {
         HEADER_UNSAVED_CONTACTS,
     } = _converse.labels;
 
-    HEADER_WEIGHTS[HEADER_UNREAD] = 0;
-    HEADER_WEIGHTS[HEADER_UNSAVED_CONTACTS] = 1;
-    HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
-    HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS] = 3;
-    HEADER_WEIGHTS[HEADER_UNGROUPED] = 4;
-    HEADER_WEIGHTS[HEADER_PENDING_CONTACTS] = 5;
+    HEADER_WEIGHTS[/** @type {string} */ (HEADER_UNREAD)] = 0;
+    HEADER_WEIGHTS[/** @type {string} */ (HEADER_UNSAVED_CONTACTS)] = 1;
+    HEADER_WEIGHTS[/** @type {string} */ (HEADER_REQUESTING_CONTACTS)] = 2;
+    HEADER_WEIGHTS[/** @type {string} */ (HEADER_CURRENT_CONTACTS)] = 3;
+    HEADER_WEIGHTS[/** @type {string} */ (HEADER_UNGROUPED)] = 4;
+    HEADER_WEIGHTS[/** @type {string} */ (HEADER_PENDING_CONTACTS)] = 5;
 
     const WEIGHTS = HEADER_WEIGHTS;
     const special_groups = Object.keys(HEADER_WEIGHTS);
-    const a_is_special = special_groups.includes(a);
-    const b_is_special = special_groups.includes(b);
+    const a_is_special = special_groups.includes(/** @type {string} */ (a));
+    const b_is_special = special_groups.includes(/** @type {string} */ (b));
     if (!a_is_special && !b_is_special) {
-        return a.toLowerCase() < b.toLowerCase() ? -1 : a.toLowerCase() > b.toLowerCase() ? 1 : 0;
+        return (/** @type {string} */ (a)).toLowerCase() < (/** @type {string} */ (b)).toLowerCase() ? -1 : (/** @type {string} */ (a)).toLowerCase() > (/** @type {string} */ (b)).toLowerCase() ? 1 : 0;
     } else if (a_is_special && b_is_special) {
-        return WEIGHTS[a] < WEIGHTS[b] ? -1 : WEIGHTS[a] > WEIGHTS[b] ? 1 : 0;
+        return WEIGHTS[/** @type {string} */ (a)] < WEIGHTS[/** @type {string} */ (b)] ? -1 : WEIGHTS[/** @type {string} */ (a)] > WEIGHTS[/** @type {string} */ (b)] ? 1 : 0;
     } else if (!a_is_special && b_is_special) {
         const a_header = HEADER_CURRENT_CONTACTS;
-        return WEIGHTS[a_header] < WEIGHTS[b] ? -1 : WEIGHTS[a_header] > WEIGHTS[b] ? 1 : 0;
+        return WEIGHTS[/** @type {string} */ (a_header)] < WEIGHTS[/** @type {string} */ (b)] ? -1 : WEIGHTS[/** @type {string} */ (a_header)] > WEIGHTS[/** @type {string} */ (b)] ? 1 : 0;
     } else if (a_is_special && !b_is_special) {
         const b_header = HEADER_CURRENT_CONTACTS;
-        return WEIGHTS[a] < WEIGHTS[b_header] ? -1 : WEIGHTS[a] > WEIGHTS[b_header] ? 1 : 0;
+        return WEIGHTS[/** @type {string} */ (a)] < WEIGHTS[/** @type {string} */ (b_header)] ? -1 : WEIGHTS[/** @type {string} */ (a)] > WEIGHTS[/** @type {string} */ (b_header)] ? 1 : 0;
     }
 }
 

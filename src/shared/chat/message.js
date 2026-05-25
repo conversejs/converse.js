@@ -113,9 +113,10 @@ export default class Message extends ObservableElement {
         );
     }
 
+    /** @param {MouseEvent} ev */
     onImgClick(ev) {
         ev.preventDefault();
-        api.modal.show('converse-image-modal', { src: ev.target.src }, ev);
+        api.modal.show('converse-image-modal', { src: /** @type {HTMLImageElement} */(ev.target).src }, ev);
     }
 
     onUnfurlAnimationEnd() {
@@ -190,6 +191,7 @@ export default class Message extends ObservableElement {
         }
     }
 
+    /** @param {MouseEvent} ev */
     showUserModal(ev) {
         if (this.model.get('sender') === 'me') {
             api.modal.show('converse-profile-modal', { model: _converse.state.xmppstatus }, ev);
@@ -202,11 +204,13 @@ export default class Message extends ObservableElement {
         }
     }
 
+    /** @param {MouseEvent} ev */
     showMessageVersionsModal(ev) {
         ev.preventDefault();
         api.modal.show('converse-message-versions-modal', { 'model': this.model }, ev);
     }
 
+    /** @param {MouseEvent} [ev] */
     toggleSpoilerMessage(ev) {
         ev?.preventDefault();
         this.model.save({ 'is_spoiler_visible': !this.model.get('is_spoiler_visible') });

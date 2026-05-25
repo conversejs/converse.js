@@ -2,9 +2,12 @@ import './alert.js';
 import Confirm from './confirm.js';
 import { api, Model } from '@converse/headless';
 
+/** @type {any[]} */
 let modals = [];
+/** @type {Record<string, any>} */
 let modals_map = {};
 
+/** @type {Record<string, any>} */
 let toasts_map = {};
 
 const modal_api = {

@@ -5,7 +5,6 @@ declare class ConverseBackground extends CustomElement {
             type: BooleanConstructor;
         };
     };
-    initialize(): void;
     render(): import("lit-html").TemplateResult<1>;
     setThemeAttributes(): void;
 }

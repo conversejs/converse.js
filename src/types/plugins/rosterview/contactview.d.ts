@@ -10,7 +10,6 @@ export default class RosterContactView extends ObservableElement {
             type: NumberConstructor;
         };
     };
-    initialize(): void;
     render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {MouseEvent} ev

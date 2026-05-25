@@ -19,8 +19,8 @@ declare const HeadlinesFeedView_base: {
         setChatBoxHeight(height: number): void;
         setChatBoxWidth(width: number): void;
         createRenderRoot(): any;
-        initialize(): any;
-        connectedCallback(): any;
+        initialize(): void;
+        connectedCallback(): void;
         disconnectedCallback(): void;
         _events?: import("@converse/skeletor").EventHandlersMap;
         _listeners?: import("@converse/skeletor").EventListenerMap;

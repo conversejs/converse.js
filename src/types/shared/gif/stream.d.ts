@@ -4,8 +4,16 @@ export default class Stream {
     len: any;
     pos: number;
     readByte(): number;
-    readBytes(n: any): number[];
-    read(n: any): string;
+    /**
+     * @param {number} n
+     * @returns {number[]}
+     */
+    readBytes(n: number): number[];
+    /**
+     * @param {number} n
+     * @returns {string}
+     */
+    read(n: number): string;
     readUnsigned(): number;
 }
 //# sourceMappingURL=stream.d.ts.map

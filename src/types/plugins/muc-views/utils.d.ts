@@ -2,12 +2,9 @@
  * Presents a confirmation modal to the user asking them to accept or decline a
  * MUC invitation.
  * @async
+ * @param {import('./types').MUCInvitationObj} obj
  */
-export function confirmDirectMUCInvitation({ contact, jid, reason }: {
-    contact: any;
-    jid: any;
-    reason: any;
-}): any;
+export function confirmDirectMUCInvitation({ contact, jid, reason }: import("./types").MUCInvitationObj): any;
 /**
  * @param {string} jid
  */
@@ -37,8 +34,12 @@ export function getAutoCompleteList(): Promise<any[]>;
  * @param {string} [affiliation]
  */
 export function showModeratorToolsModal(muc: MUC, affiliation?: string): void;
-export function showOccupantModal(ev: any, occupant: any): void;
-export function parseMessageForMUCCommands(data: any, handled: any): any;
+/**
+ * @param {Event} ev
+ * @param {import('@converse/headless').MUCOccupant} model
+ */
+export function showOccupantModal(ev: Event, model: import("@converse/headless").MUCOccupant): void;
+export function parseMessageForMUCCommands(data: any, handled: any): Promise<any>;
 export type MUC = import("@converse/headless/types/plugins/muc/muc.js").default;
 export type Avatar = import("shared/avatar/avatar").default;
 export type Suggestion = import("shared/autocomplete/suggestion").default;

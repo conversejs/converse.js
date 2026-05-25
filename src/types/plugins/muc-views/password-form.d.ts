@@ -6,7 +6,6 @@ declare class MUCPasswordForm extends CustomElement {
         };
     };
     jid: any;
-    connectedCallback(): void;
     model: any;
     render(): import("lit-html").TemplateResult<1>;
     submitPassword(ev: any): void;

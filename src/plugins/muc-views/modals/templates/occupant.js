@@ -64,7 +64,7 @@ export default (el) => {
                                 <a href="#"
                                    data-form="affiliation-form"
                                    class="toggle-form"
-                                   @click=${(ev) => el.toggleForm(ev)}><converse-icon class="fa fa-wrench" size="1em"></converse-icon>
+                                   @click=${(/** @type {Event} */ ev) => el.toggleForm(ev)}><converse-icon class="fa fa-wrench" size="1em"></converse-icon>
                                 </a>` : ''
                             }
                         </div>
@@ -78,7 +78,7 @@ export default (el) => {
                                 <a href="#"
                                    data-form="row-form"
                                    class="toggle-form"
-                                   @click=${(ev) => el.toggleForm(ev)}><converse-icon class="fa fa-wrench" size="1em"></converse-icon>
+                                   @click=${(/** @type {Event} */ ev) => el.toggleForm(ev)}><converse-icon class="fa fa-wrench" size="1em"></converse-icon>
                                 </a>` : ''
                             }
                         </div>

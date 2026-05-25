@@ -11,7 +11,6 @@ export default class BaseChatView extends CustomElement {
     model: any;
     viewportMediaQuery: MediaQueryList;
     renderOnViewportChange: () => void;
-    connectedCallback(): void;
     /**
      * @param {MouseEvent} ev
      */

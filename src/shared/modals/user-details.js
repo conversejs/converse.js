@@ -7,6 +7,9 @@ import { tplUserDetailsModal } from './templates/user-details.js';
 import './styles/user-details.scss';
 
 export default class UserDetailsModal extends BaseModal {
+    /**
+     * @param {Record<string, any>} options
+     */
     constructor(options) {
         super(options);
         this.tab = 'profile';

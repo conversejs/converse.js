@@ -58,7 +58,7 @@ export default (o) => {
             href="#"
             class="list-toggle group-toggle controlbox-padded"
             title="${i18n_title}"
-            @click=${(ev) => toggleGroup(ev, o.name)}
+            @click=${(/** @type {Event} */ ev) => toggleGroup(ev, o.name)}
         >
             <converse-icon
                 color="var(--chat-color)"

@@ -16,6 +16,7 @@ function getCSS(color, append_style = '') {
 }
 
 /**
+ * @param {import('@converse/headless').MUCOccupant} occupant
  * @returns {string|TemplateResult}
  */
 export function getAuthorStyle(occupant) {

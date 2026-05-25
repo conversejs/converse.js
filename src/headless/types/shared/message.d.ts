@@ -4,18 +4,16 @@ export default BaseMessage;
  */
 declare class BaseMessage extends Model<import("@converse/skeletor").ModelAttributes> {
     /**
-     * @param {Model[]} [models]
-     * @param {object} [options]
+     * @param {import('./types').MessageAttributes} attrs
+     * @param {import('@converse/skeletor').ModelOptions} options
      */
-    constructor(models?: Model[], options?: object);
+    constructor(attrs: import("./types").MessageAttributes, options: import("@converse/skeletor").ModelOptions);
     defaults(): {
         msgid: string;
         time: string;
         is_ephemeral: boolean;
     };
     file: any;
-    /** @type {import('./types').MessageAttributes} */
-    attributes: import("./types").MessageAttributes;
     initialize(): void;
     lazy_load_vcard: boolean;
     chatbox: any;

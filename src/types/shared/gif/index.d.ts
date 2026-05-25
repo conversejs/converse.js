@@ -22,11 +22,11 @@ export default class ConverseGif {
     offscreenCanvas: HTMLCanvasElement;
     patchCanvas: HTMLCanvasElement;
     ctx_scaled: boolean;
-    frames: any[];
+    /** @type {any[]} */ frames: any[];
     load_error: boolean;
     playing: boolean;
-    frame_idx: number;
-    iteration_count: number;
+    /** @type {number} */ frame_idx: number;
+    /** @type {number} */ iteration_count: number;
     start: any;
     hovering: any;
     frameImageData: ImageData;
@@ -68,8 +68,17 @@ export default class ConverseGif {
      * before the currently being shown frame should be replaced by a new one.
      */
     onAnimationFrame(timestamp: DOMHighResTimeStamp, previous_timestamp: DOMHighResTimeStamp, frame_delay: number): void;
-    setSizes(w: any, h: any): void;
-    doShowProgress(pos: any, length: any, draw: any): void;
+    /**
+     * @param {number} w
+     * @param {number} h
+     */
+    setSizes(w: number, h: number): void;
+    /**
+     * @param {number} pos
+     * @param {number} length
+     * @param {boolean} draw
+     */
+    doShowProgress(pos: number, length: number, draw: boolean): void;
     /**
      * Starts parsing the GIF stream data by calling `parseGIF` and passing in
      * a map of handler functions.
@@ -97,7 +106,10 @@ export default class ConverseGif {
     };
     drawError(): void;
     showError(): void;
-    manageDisposal(i: any): void;
+    /**
+     * @param {number} i
+     */
+    manageDisposal(i: number): void;
     /**
      * Draws a gif frame at a specific index inside the canvas.
      * @param {boolean} show_pause_on_hover - The frame index

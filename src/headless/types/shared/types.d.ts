@@ -102,6 +102,24 @@ export type Reference = {
     type: string;
     uri: string;
 };
+export type ErrorOrInfoMessageAttributes = {
+    is_ephemeral?: boolean | number;
+    message: string;
+    reason?: string;
+    time?: string;
+};
+export type ErrorMessageAttributes = ErrorOrInfoMessageAttributes & {
+    chat_state?: boolean;
+    retry_event_id?: string;
+    type: 'error';
+};
+export type InfoMessageAttributes = ErrorOrInfoMessageAttributes & {
+    type: 'info';
+    code?: string;
+};
+/**
+ * Error attributes received on an error message stanza
+ */
 export type MessageErrorAttributes = {
     is_error: boolean;
     error: string;
@@ -113,6 +131,7 @@ export type MessageErrorAttributes = {
     error_text: string;
     error_type: string;
 };
+export type MessageStanzaTypes = 'chat' | 'headline' | 'groupchat' | 'error';
 export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     body: string;
     chat_state: string;
@@ -126,6 +145,7 @@ export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     is_carbon: boolean;
     is_delayed: boolean;
     is_encrypted: boolean;
+    is_ephemeral: boolean | number;
     is_headline: boolean;
     is_markable: boolean;
     is_marker: boolean;
@@ -158,7 +178,7 @@ export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     thread: string;
     time: string;
     to: string;
-    type: string;
+    type: MessageStanzaTypes;
 };
 export type FileUploadMessageAttributes = {
     body: string;

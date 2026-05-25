@@ -7,7 +7,6 @@
  */
 export default class ConverseRoot extends CustomElement {
     render(): import("lit-html").TemplateResult<1>;
-    initialize(): void;
     setThemeAttributes(): void;
 }
 import { CustomElement } from 'shared/components/element.js';

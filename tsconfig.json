@@ -1,29 +1,13 @@
 {
-  "include": [
-      "src/**/*.js",
-      "src/**/*.ts"
-  ],
-  "exclude": [
-      "**/dist/**/*",
-      "src/**/tests/**/*",
-      "src/headless/",
-      "src/log/",
-      "src/types/**/*",
-      "src/website.js",
-  ],
+  "include": ["src/**/*.js", "src/**/*.ts"],
+  "exclude": ["**/dist/**/*", "src/**/tests/**/*", "src/headless/", "src/log/", "src/types/**/*", "src/website.js"],
   "compilerOptions": {
     "target": "es2020",
     "module": "esnext",
 
-    "types": [
-      "@types/webappsec-credential-management"
-    ],
+    "types": ["@types/webappsec-credential-management"],
 
-    "lib": [
-      "es2023",
-      "dom",
-      "dom.iterable"
-    ],
+    "lib": ["es2023", "dom", "dom.iterable"],
 
     "allowJs": true,
     "checkJs": true,

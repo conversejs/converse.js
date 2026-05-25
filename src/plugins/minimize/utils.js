@@ -14,7 +14,7 @@ const { ACTIVE } = constants;
 /**
  * @param {ChatBox|MUC} chat
  */
-export function initializeChat (chat) {
+export function initializeChat(chat) {
     chat.on('change:hidden', () => onMinimizedChanged(chat));
 
     if (chat.get('id') === 'controlbox') {
@@ -26,7 +26,7 @@ export function initializeChat (chat) {
     });
 }
 
-function getChatBoxWidth (view) {
+function getChatBoxWidth(view) {
     if (view.model.get('id') === 'controlbox') {
         // We return the width of the controlbox or its toggle,
         // depending on which is visible.
@@ -42,24 +42,27 @@ function getChatBoxWidth (view) {
     return 0;
 }
 
-function getShownChats () {
-    return _converse.state.chatboxviews.filter(el =>
-        // The controlbox can take a while to close,
-        // so we need to check its state. That's why we checked the 'closed' state.
-        !el.model.get('hidden') && !el.model.get('closed') && u.isVisible(el)
+function getShownChats() {
+    return _converse.state.chatboxviews.filter(
+        (el) =>
+            // The controlbox can take a while to close,
+            // so we need to check its state. That's why we checked the 'closed' state.
+            !el.model.get('hidden') && !el.model.get('closed') && u.isVisible(el),
     );
 }
 
-function getMinimizedWidth () {
+function getMinimizedWidth() {
     const minimized_el = document.querySelector('converse-minimized-chats');
     return _converse.state.chatboxes.pluck('hidden').includes(true) ? u.getOuterWidth(minimized_el, true) : 0;
 }
 
-function getBoxesWidth (newchat) {
+function getBoxesWidth(newchat) {
     const new_id = newchat ? newchat.model.get('id') : null;
     const newchat_width = newchat ? u.getOuterWidth(newchat, true) : 0;
-    return Object.values(_converse.state.chatboxviews.xget(new_id))
-        .reduce((memo, view) => memo + getChatBoxWidth(view), newchat_width);
+    return Object.values(_converse.state.chatboxviews.xget(new_id)).reduce(
+        (memo, view) => memo + getChatBoxWidth(view),
+        newchat_width,
+    );
 }
 
 /**
@@ -69,8 +72,8 @@ function getBoxesWidth (newchat) {
  * to create space.
  * @param {ChatView|MUCView|ControlBoxView|HeadlinesFeedView} [newchat]
  */
-export function trimChats (newchat) {
-    if (api.settings.get('no_trimming') || api.settings.get("view_mode") !== 'overlayed') {
+export function trimChats(newchat) {
+    if (api.settings.get('no_trimming') || api.settings.get('view_mode') !== 'overlayed') {
         return;
     }
     const shown_chats = getShownChats();
@@ -86,7 +89,7 @@ export function trimChats (newchat) {
     }
     const minimized_el = document.querySelector('converse-minimized-chats');
     if (minimized_el) {
-        while ((getMinimizedWidth() + getBoxesWidth(newchat)) > body_width) {
+        while (getMinimizedWidth() + getBoxesWidth(newchat) > body_width) {
             const new_id = newchat ? newchat.model.get('id') : null;
             const oldest_chat = getOldestMaximizedChat([new_id]);
             if (oldest_chat) {
@@ -100,7 +103,7 @@ export function trimChats (newchat) {
     }
 }
 
-function getOldestMaximizedChat (exclude_ids) {
+function getOldestMaximizedChat(/** @type {string[]} */ exclude_ids) {
     // Get oldest view (if its id is not excluded)
     exclude_ids.push('controlbox');
     let i = 0;
@@ -115,38 +118,37 @@ function getOldestMaximizedChat (exclude_ids) {
     return model;
 }
 
-export function addMinimizeButtonToChat (view, buttons) {
+export function addMinimizeButtonToChat(view, buttons) {
     const data = {
         'a_class': 'toggle-chatbox-button',
-        'handler': ev => minimize(ev, view.model),
+        'handler': /** @param {Event} ev */ (ev) => minimize(ev, view.model),
         'i18n_text': __('Minimize'),
         'i18n_title': __('Minimize this chat'),
-        'icon_class': "fa-minus",
+        'icon_class': 'fa-minus',
         'name': 'minimize',
-        'standalone': _converse.api.settings.get("view_mode") === 'overlayed'
-    }
-    const names = buttons.map(t => t.name);
+        'standalone': _converse.api.settings.get('view_mode') === 'overlayed',
+    };
+    const names = buttons.map((t) => t.name);
     const idx = names.indexOf('close');
     return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
 }
 
-export function addMinimizeButtonToMUC (view, buttons) {
+export function addMinimizeButtonToMUC(view, buttons) {
     const data = {
         'a_class': 'toggle-chatbox-button',
-        'handler': ev => minimize(ev, view.model),
+        'handler': /** @param {Event} ev */ (ev) => minimize(ev, view.model),
         'i18n_text': __('Minimize'),
         'i18n_title': __('Minimize this groupchat'),
-        'icon_class': "fa-minus",
+        'icon_class': 'fa-minus',
         'name': 'minimize',
-        'standalone': _converse.api.settings.get("view_mode") === 'overlayed'
-    }
-    const names = buttons.map(t => t.name);
+        'standalone': _converse.api.settings.get('view_mode') === 'overlayed',
+    };
+    const names = buttons.map((t) => t.name);
     const idx = names.indexOf('signout');
     return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
 }
 
-
-export function maximize (ev, chatbox) {
+export function maximize(ev, chatbox) {
     if (ev?.preventDefault) {
         ev.preventDefault();
     } else {
@@ -154,11 +156,11 @@ export function maximize (ev, chatbox) {
     }
     u.safeSave(chatbox, {
         'hidden': false,
-        'time_opened': new Date().getTime()
+        'time_opened': new Date().getTime(),
     });
 }
 
-export function minimize (ev, model) {
+export function minimize(ev, model) {
     if (ev?.preventDefault) {
         ev.preventDefault();
     } else {
@@ -166,7 +168,7 @@ export function minimize (ev, model) {
     }
     u.safeSave(model, {
         'hidden': true,
-        'time_minimized': new Date().toISOString()
+        'time_minimized': new Date().toISOString(),
     });
 }
 
@@ -174,7 +176,7 @@ export function minimize (ev, model) {
  * Will trigger {@link _converse#chatBoxMaximized}
  * @param {ChatBox|MUC} model
  */
-function onMaximized (model) {
+function onMaximized(model) {
     if (!model.isScrolledUp()) {
         model.clearUnreadMsgCounter();
     }
@@ -195,7 +197,7 @@ function onMaximized (model) {
  *
  * Will trigger {@link _converse#chatBoxMinimized}
  */
-function onMinimized (model) {
+function onMinimized(model) {
     /**
      * Triggered when a previously maximized chat gets Minimized
      * @event _converse#chatBoxMinimized
@@ -208,7 +210,7 @@ function onMinimized (model) {
 /**
  * @param {ChatBox|MUC} model
  */
-export function onMinimizedChanged (model) {
+export function onMinimizedChanged(model) {
     if (model.get('hidden')) {
         onMinimized(model);
     } else {

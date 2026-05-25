@@ -1,6 +1,5 @@
 export default ControlboxButtons;
 declare class ControlboxButtons extends CustomElement {
-    initialize(): void;
     model: any;
     render(): import("lit-html").TemplateResult<1>;
     /**

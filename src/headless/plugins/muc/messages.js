@@ -6,8 +6,12 @@ import { Collection } from '@converse/skeletor';
  * @extends {Collection<MUCMessage>}
  */
 class MUCMessages extends Collection {
-    constructor(attrs, options = {}) {
-        super(attrs, Object.assign({ comparator: 'time' }, options));
+    /**
+     * @param {import('@converse/skeletor').ModelAttributes[]} [models]
+     * @param {import('@converse/skeletor').CollectionOptions<MUCMessage>} [options]
+     */
+    constructor(models, options = {}) {
+        super(models, Object.assign({ comparator: 'time' }, options));
         this.model = MUCMessage;
         this.fetched = null;
     }

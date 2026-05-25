@@ -42,11 +42,11 @@ export default class Texture extends LitElement {
         this.embed_audio = false;
         this.embed_videos = false;
         this.hide_media_urls = false;
-        this.mentions = [];
+        /** @type {any[]} */ this.mentions = [];
         this.offset = 0;
         this.render_styling = false;
         this.show_image_urls = true;
-        this.show_images = false;
+        /** @type {boolean} */ this.show_images = false;
         this.show_me_message = false;
     }
 

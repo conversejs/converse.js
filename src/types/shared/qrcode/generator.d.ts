@@ -1,8 +1,18 @@
 export class QRCodeModel {
     static get PAD0(): number;
     static get PAD1(): number;
-    static createData(typeNumber: any, errorCorrectLevel: any, dataList: any): any[];
-    static createBytes(buffer: any, rsBlocks: any): any[];
+    /**
+     * @param {Number} typeNumber
+     * @param {import('./types').ErrorCorrectLevel} errorCorrectLevel
+     * @param {any[]} dataList
+     */
+    static createData(typeNumber: number, errorCorrectLevel: import("./types").ErrorCorrectLevel, dataList: any[]): number[];
+    /**
+     * @param {QRBitBuffer} buffer
+     * @param {QRRSBlock[]} rsBlocks
+     * @returns {number[]}
+     */
+    static createBytes(buffer: QRBitBuffer, rsBlocks: QRRSBlock[]): number[];
     /**
      * @param {String} text
      * @param {import('./types').ErrorCorrectLevel} errorCorrectLevel
@@ -11,10 +21,10 @@ export class QRCodeModel {
     text: string;
     errorCorrectLevel: number;
     typeNumber: number;
-    modules: any[];
+    /** @type {any[][]|null} */ modules: any[][] | null;
     moduleCount: number;
-    dataCache: any[];
-    dataList: QR8bitByte[];
+    dataCache: number[];
+    /** @type {any[]} */ dataList: any[];
     /**
      * @param {number} row
      * @param {number} col
@@ -47,24 +57,14 @@ export class QRCodeModel {
      * @param {Number} maskPattern
      */
     setupTypeInfo(test: boolean, maskPattern: number): void;
-    mapData(data: any, maskPattern: any): void;
-}
-declare class QR8bitByte {
     /**
-     * @param {string} data
+     * @param {*} data
+     * @param {Number} maskPattern
      */
-    constructor(data: string);
-    mode: number;
-    data: string;
-    parsedData: any;
-    getLength(): any;
-    /**
-     * @param {QRBitBuffer} buffer
-     */
-    write(buffer: QRBitBuffer): void;
+    mapData(data: any, maskPattern: number): void;
 }
 declare class QRBitBuffer {
-    buffer: any[];
+    /** @type {number[]} */ buffer: number[];
     length: number;
     /**
      * @param {Number} index
@@ -80,6 +80,27 @@ declare class QRBitBuffer {
      * @param {Boolean} bit
      */
     putBit(bit: boolean): void;
+}
+declare class QRRSBlock {
+    /**
+     * @param {Number} typeNumber
+     * @param {import('./types').ErrorCorrectLevel} errorCorrectLevel
+     * @returns {QRRSBlock[]}
+     */
+    static getRSBlocks(typeNumber: number, errorCorrectLevel: import("./types").ErrorCorrectLevel): QRRSBlock[];
+    /**
+     * @param {Number} typeNumber
+     * @param {import('./types').ErrorCorrectLevel} errorCorrectLevel
+     * @returns {number[]|undefined}
+     */
+    static getRsBlockTable(typeNumber: number, errorCorrectLevel: import("./types").ErrorCorrectLevel): number[] | undefined;
+    /**
+     * @param {number} totalCount
+     * @param {number} dataCount
+     */
+    constructor(totalCount: number, dataCount: number);
+    totalCount: number;
+    dataCount: number;
 }
 export {};
 //# sourceMappingURL=generator.d.ts.map

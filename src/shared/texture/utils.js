@@ -69,9 +69,13 @@ export function collapseLineBreaks(text) {
     });
 }
 
-export const tplMentionWithNick = (o) =>
+export const tplMentionWithNick = /** @param {{uri: string, mention: string}} o */ (o) =>
     html`<span class="mention mention--self badge badge-info" data-uri="${o.uri}">${o.mention}</span>`;
 
+/**
+ * @param {{uri: string, mention: string}} o
+ * @returns {import('lit').TemplateResult}
+ */
 export function tplMention(o) {
     return html`<span class="mention" data-uri="${o.uri}">${o.mention}</span>`;
 }

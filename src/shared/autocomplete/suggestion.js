@@ -3,8 +3,7 @@
  */
 class Suggestion extends String {
     /**
-     * @param {any} data - The auto-complete data. Ideally an object e.g. { label, value },
-     *      which specifies the value and human-presentable label of the suggestion.
+     * @param {import("./types").AutoCompleteData} data
      * @param {string} query - The query string being auto-completed
      */
     constructor(data, query) {

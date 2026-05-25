@@ -14,6 +14,7 @@ export default class MessageHistory extends CustomElement {
     constructor() {
         super();
         this.model = null;
+        /** @type {any[]} */
         this.messages = [];
     }
 

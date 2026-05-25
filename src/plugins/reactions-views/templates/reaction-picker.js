@@ -1,12 +1,11 @@
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
+import '../emoji-picker-dropdown.js';
 
 /**
  * @param {import('../reaction-picker').default} el
  */
 export default (el) => {
-    const anchor_name = `--reaction-anchor-${el.picker_id}`;
-
     const renderReactions = async () => {
         const popular_reactions = await el.popular_reactions_promise;
         return html`${popular_reactions.map(
@@ -18,49 +17,10 @@ export default (el) => {
     return html`
         <div class="reaction-picker popular ${el.dropup ? 'dropup' : ''} ${el.shifted ? 'shifted' : ''}">
             ${until(renderReactions(), html``)}
-
-            <div class="dropdown emoji-picker__dropdown">
-                <button
-                    class="reaction-item more dropdown-toggle"
-                    type="button"
-                    id="${el.picker_id}-dropdown"
-                    style="anchor-name: ${anchor_name}"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                    @click=${(ev) => el.toggleEmojiPickerDropdown(ev)}
-                >
-                    <converse-icon class="fas fa-plus" size="1em"></converse-icon>
-                </button>
-                <ul
-                    class="dropdown-menu"
-                    aria-labelledby="${el.picker_id}-dropdown"
-                    style="position-anchor: ${anchor_name}"
-                >
-                    <li>
-                        ${el.model?.collection?.chatbox?.emoji_picker
-                            ? html`
-                                  <converse-emoji-picker
-                                      .state=${el.model.collection.chatbox.emoji_picker}
-                                      .model=${el.model.collection.chatbox}
-                                      .allowed_emojis=${el.allowed_emojis}
-                                      @emojiSelected=${(ev) => {
-                                          ev.stopPropagation();
-                                          el.onEmojiSelected(ev.detail.value);
-                                      }}
-                                      ?render_emojis=${true}
-                                      current_category="${el.model.collection.chatbox.emoji_picker.get(
-                                          'current_category'
-                                      ) || ''}"
-                                      current_skintone="${el.model.collection.chatbox.emoji_picker.get(
-                                          'current_skintone'
-                                      ) || ''}"
-                                      query="${el.model.collection.chatbox.emoji_picker.get('query') || ''}"
-                                  ></converse-emoji-picker>
-                              `
-                            : ''}
-                    </li>
-                </ul>
-            </div>
+            <converse-emoji-picker-dropdown
+                .message_model=${el.model}
+                @emoji-picker-selected=${(ev) => el.onEmojiSelected(ev.detail.emoji)}
+            ></converse-emoji-picker-dropdown>
         </div>
     `;
 };

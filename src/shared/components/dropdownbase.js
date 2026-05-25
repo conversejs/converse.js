@@ -51,7 +51,7 @@ export default class DropdownBase extends CustomElement {
             log.error('DropdownBase.toggle called but this.menu is not set');
             return;
         }
-        this.menu.classList.contains('show') ? this.hide() : this.show();
+        return this.menu.classList.contains('show') ? this.hide() : this.show();
     }
 
     /** Show the dropdown */

@@ -7,5 +7,6 @@
  * It allows users to react to messages with emojis.
  */
 import './plugin.js';
+import './emoji-picker-dropdown.js';
 import './reaction-picker.js';
 import './reactions.js';

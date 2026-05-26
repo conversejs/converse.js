@@ -485,7 +485,7 @@ class RegistrationForm extends CustomElement {
                     return;
                 } else if (field.tagName.toLowerCase() === 'x') {
                     if (field.getAttribute('xmlns') === 'jabber:x:oob') {
-                        this.urls.concat(sizzle('url', field).map((u) => u.textContent));
+                        this.urls = this.urls.concat(sizzle('url', field).map((u) => u.textContent));
                     }
                     return;
                 }

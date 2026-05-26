@@ -5,23 +5,24 @@ declare namespace modal_api {
          * Shows a modal of type `ModalClass` to the user.
          * Will create a new instance of that class if an existing one isn't
          * found.
-         * @param {string|any} name
+         * @param {string} name
          * @param {Object} [properties] - Optional properties that will be set on a newly created modal instance.
-         * @param {Event} [ev] - The DOM event that causes the modal to be shown.
          */
-        function show(name: string | any, properties?: any, ev?: Event): any;
+        function show(name: string, properties?: any): import("./modal").default;
         /**
          * Return a modal with the passed-in identifier, if it exists.
          * @param {String} id
+         * @return {import('./modal').default}
          */
-        function get(id: string): any;
+        function get(id: string): import("./modal").default;
         /**
          * Create a modal of the passed-in type.
          * @param {String} name
          * @param {Object} [properties] - Optional properties that will be
          *  set on the modal instance.
+         * @return {import('./modal').default}
          */
-        function create(name: string, properties?: any): HTMLElement;
+        function create(name: string, properties?: any): import("./modal").default;
         /**
          * Remove a particular modal
          * @param {String} name
@@ -69,7 +70,12 @@ declare namespace modal_api {
         /**
          * @param {String} [name]
          */
-        function get(name?: string): any;
+        function get(name?: string): import("./types").ToastProperties | {
+            title?: string;
+            body?: string;
+            name: string;
+            type: "info" | "danger";
+        }[];
         /**
          * @param {String} [name]
          */

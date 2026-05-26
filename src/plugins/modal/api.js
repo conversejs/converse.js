@@ -2,13 +2,14 @@ import './alert.js';
 import Confirm from './confirm.js';
 import { api, Model } from '@converse/headless';
 
-/** @type {any[]} */
+/** @type {import('./modal').default[]} */
 let modals = [];
-/** @type {Record<string, any>} */
+
+/** @type {Record<string, import('./modal').default>} */
 let modals_map = {};
 
-/** @type {Record<string, any>} */
-let toasts_map = {};
+/** @type {Record<string, import('./types').ToastProperties>} */
+const toasts_map = {};
 
 const modal_api = {
     /**
@@ -21,28 +22,20 @@ const modal_api = {
          * Shows a modal of type `ModalClass` to the user.
          * Will create a new instance of that class if an existing one isn't
          * found.
-         * @param {string|any} name
+         * @param {string} name
          * @param {Object} [properties] - Optional properties that will be set on a newly created modal instance.
-         * @param {Event} [ev] - The DOM event that causes the modal to be shown.
          */
-        show(name, properties, ev) {
-            let modal;
-            if (typeof name === 'string') {
-                modal = this.get(name) ?? this.create(name, properties);
-                Object.assign(modal, properties);
-            } else {
-                // Legacy...
-                const ModalClass = name;
-                const id = ModalClass.id ?? properties.id;
-                modal = this.get(id) ?? this.create(ModalClass, properties);
-            }
-            modal.show(ev);
+        show(name, properties) {
+            const modal = this.get(name) ?? this.create(name, properties);
+            Object.assign(modal, properties);
+            modal.show();
             return modal;
         },
 
         /**
          * Return a modal with the passed-in identifier, if it exists.
          * @param {String} id
+         * @return {import('./modal').default}
          */
         get(id) {
             return modals_map[id] ?? modals.filter((m) => m.id == id).pop();
@@ -53,9 +46,10 @@ const modal_api = {
          * @param {String} name
          * @param {Object} [properties] - Optional properties that will be
          *  set on the modal instance.
+         * @return {import('./modal').default}
          */
         create(name, properties) {
-            const ModalClass = customElements.get(name);
+            const ModalClass = /** @type {typeof import('./modal').default} */ (customElements.get(name));
             const modal = (modals_map[name] = new ModalClass(properties));
             return modal;
         },

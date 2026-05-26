@@ -9,22 +9,17 @@
   ],
   "homepage": "https://conversejs.org",
   "license": "MPL-2.0",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./types/index.d.ts",
-        "default": "./dist/converse-headless.esm.js"
-      },
-      "require": {
-        "types": "./types/index.d.ts",
-        "default": "./dist/converse-headless.js"
-      }
+"exports": {
+        ".": {
+            "import": {
+                "types": "./types/index.d.ts",
+                "default": "./dist/converse-headless.js"
+            }
+        },
+        "./dist/*": "./dist/*"
     },
-    "./dist/*": "./dist/*"
-  },
-  "main": "./dist/converse-headless.js",
-  "types": "./types/index.d.ts",
-  "module": "./dist/converse-headless.esm.js",
+    "main": "./dist/converse-headless.js",
+    "types": "./types/index.d.ts",
   "files": [
     "README.md",
     "dist/",

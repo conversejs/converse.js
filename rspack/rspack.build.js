@@ -13,12 +13,27 @@ const buildConfig = (_env, argv) => {
             'converse.min': path.resolve(__dirname, '../src/index.js'),
         },
         devtool: isDev ? 'cheap-module-source-map' : 'source-map',
+        experiments: {
+            outputModule: true,
+            topLevelAwait: true,
+        },
+        output: {
+            module: true,
+            chunkFormat: 'module',
+            chunkLoading: 'import',
+            filename: '[name].js',
+            chunkFilename: 'chunkjs/[name].js',
+            library: {
+                type: 'module',
+            },
+        },
         optimization: {
             minimize: !isDev,
-            moduleIds: 'named', // Helps with debugging
+            moduleIds: 'named',
             minimizer: [
                 new rspack.SwcJsMinimizerRspackPlugin({
                     minimizerOptions: {
+                        module: true,
                         minify: true,
                         mangle: true,
                         compress: {

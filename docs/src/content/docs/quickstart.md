@@ -23,14 +23,14 @@ Add these lines to your HTML `<head>`:
 
 ```html
 <link rel="stylesheet" href="https://cdn.conversejs.org/dist/converse.min.css">
-<script src="https://cdn.conversejs.org/dist/converse.min.js"></script>
+<script type="module" src="https://cdn.conversejs.org/dist/converse.min.js"></script>
 ```
 
 You can also pin to a specific version:
 
 ```html
 <link rel="stylesheet" href="https://cdn.conversejs.org/13.0.0/dist/converse.min.css">
-<script src="https://cdn.conversejs.org/13.0.0/dist/converse.min.js"></script>
+<script type="module" src="https://cdn.conversejs.org/13.0.0/dist/converse.min.js"></script>
 ```
 
 ### Alternative: Self-host
@@ -57,7 +57,7 @@ Check your server's documentation — this is often the easiest path.
 Add this before your closing `</body>` tag:
 
 ```html
-<script>
+<script type="module">
     converse.initialize({
         // Replace with your XMPP server's BOSH or WebSocket URL
         bosh_service_url: 'https://your-xmpp-server:5280/bosh',
@@ -75,10 +75,10 @@ Add this before your closing `</body>` tag:
 <head>
     <title>My Chat</title>
     <link rel="stylesheet" href="https://cdn.conversejs.org/13.0.0/dist/converse.min.css">
-    <script src="https://cdn.conversejs.org/13.0.0/dist/converse.min.js"></script>
+    <script type="module" src="https://cdn.conversejs.org/13.0.0/dist/converse.min.js"></script>
 </head>
 <body>
-    <script>
+    <script type="module">
         converse.initialize({
             bosh_service_url: 'https://conversejs.org/http-bind/',
         });

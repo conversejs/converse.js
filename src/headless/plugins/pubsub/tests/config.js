@@ -1,5 +1,5 @@
 import mock from '../../../tests/mock.js';
-import converse from '../../../dist/converse-headless.esm.js';
+import converse from '../../../dist/converse-headless.js';
 
 const { sizzle, stx, u, errors } = converse.env;
 

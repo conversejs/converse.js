@@ -35,34 +35,11 @@ export default (_env, argv) => {
                         /node_modules\/pluggable/,
                         /node_modules\/@converse/,
                     ],
-                    type: 'javascript/auto', // Let RSPack handle these files with built-in SWC
+                    type: 'javascript/auto',
                 },
             ],
         },
     };
-
-    const nonMinConfig = merge(common, {
-        ...sharedConfig,
-        optimization: {
-            minimize: false,
-        },
-        output: {
-            path: path.resolve(__dirname, '../src/headless/dist'),
-            filename: 'converse-headless.js',
-            chunkFilename: 'converse-headless.js',
-            globalObject: 'this',
-        },
-    });
-
-    const minConfig = merge(common, {
-        ...sharedConfig,
-        output: {
-            path: path.resolve(__dirname, '../src/headless/dist'),
-            filename: 'converse-headless.min.js',
-            chunkFilename: 'converse-headless.min.js',
-            globalObject: 'this',
-        },
-    });
 
     const nonMinESMConfig = merge(common, {
         ...sharedConfig,
@@ -75,8 +52,8 @@ export default (_env, argv) => {
         },
         output: {
             path: path.resolve(__dirname, '../src/headless/dist'),
-            filename: 'converse-headless.esm.js',
-            chunkFilename: 'converse-headless.esm.js',
+            filename: 'converse-headless.js',
+            chunkFilename: 'converse-headless.js',
             library: {
                 type: 'module',
             },
@@ -91,8 +68,8 @@ export default (_env, argv) => {
         },
         output: {
             path: path.resolve(__dirname, '../src/headless/dist'),
-            filename: 'converse-headless.min.esm.js',
-            chunkFilename: 'converse-headless.min.esm.js',
+            filename: 'converse-headless.min.js',
+            chunkFilename: 'converse-headless.min.js',
             library: {
                 type: 'module',
             },
@@ -100,10 +77,6 @@ export default (_env, argv) => {
     });
 
     return [
-        // CJS Build
-        nonMinConfig,
-        minConfig,
-        // ESM Build
         nonMinESMConfig,
         minESMConfig,
     ];

@@ -5,6 +5,10 @@
 ### Backwards incompatible changes
 
 - `api.modal.show` no longer takes a modal instance as first parameter
+- The CJS build has been removed. Only ESM builds are produced.
+  If you include Converse via a `<script>` tag, you must add `type="module"`:
+  `<script type="module" src="converse.js"></script>`.
+  Any inline scripts calling `converse.initialize()` must also use `type="module"`.
 
 ## 13.0.1 (2026-05-27)
 

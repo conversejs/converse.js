@@ -1,5 +1,5 @@
 import mock from '../../../tests/mock.js';
-import converse from '../../../dist/converse-headless.esm.js';
+import converse from '../../../dist/converse-headless.js';
 
 const { Strophe, u, stx } = converse.env;
 
@@ -83,4 +83,3 @@ describe('Message Reactions (XEP-0444)', function () {
         }),
     );
 });
-

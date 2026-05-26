@@ -1,5 +1,5 @@
 import mock from '../../../shared/tests/mock.js';
-import converse from '../../../../dist/converse.esm.js';
+import converse from '../../../../dist/converse.js';
 
 const { Strophe, stx, sizzle, u } = converse.env;
 

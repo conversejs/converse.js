@@ -51,10 +51,9 @@ For development, you can use:
 
 For production builds, you can use:
 
-- `npm run build` - Creates minified production builds (ESM and CJS)
+- `npm run build` - Creates minified production builds
 - `npm run build:headless` - Builds the headless package
 - `npm run build:esm` - Builds only the ESM bundle
-- `npm run build:cjs` - Builds only the CommonJS bundle
 
 ## Special builds
 
@@ -116,8 +115,6 @@ The RSPack build configuration files are located in the `rspack/` directory:
 
 - `rspack.common.js` - Shared configuration used by all builds
 - `rspack.build.js` - Main production build configuration
-- `rspack.build.esm.js` - ESM-specific build configuration
-- `rspack.build.cjs.js` - CommonJS-specific build configuration
 - `rspack.headless.js` - Headless build configuration
 - `rspack.nodeps.js` - No-dependencies build configuration
 - `rspack.serve.js` - Development server configuration
@@ -126,16 +123,12 @@ The RSPack build configuration files are located in the `rspack/` directory:
 
 After building, the following files will be generated in the `dist/` directory:
 
-- `converse.js` - Main CommonJS bundle
-- `converse.min.js` - Minified CommonJS bundle
-- `converse.esm.js` - Main ESM bundle
-- `converse.min.esm.js` - Minified ESM bundle
+- `converse.js` - Main ESM bundle
+- `converse.min.js` - Minified ESM bundle
 - `converse.css` - Main CSS bundle
 - `converse.min.css` - Minified CSS bundle
 
 The headless build generates files in `src/headless/dist/`:
 
-- `converse-headless.js` - Headless CommonJS bundle
-- `converse-headless.min.js` - Minified headless CommonJS bundle
-- `converse-headless.esm.js` - Headless ESM bundle
-- `converse-headless.min.esm.js` - Minified headless ESM bundle
+- `converse-headless.js` - Headless ESM bundle
+- `converse-headless.min.js` - Minified headless ESM bundle

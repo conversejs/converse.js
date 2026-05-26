@@ -18,7 +18,7 @@ export default function (config) {
             },
             'src/shared/tests/tests.css',
             'dist/converse.css',
-            { pattern: 'dist/converse.esm.js', included: false },
+            { pattern: 'dist/converse.js', included: false },
             { pattern: 'dist/images/**/*.*', included: false },
             { pattern: 'dist/webfonts/**/*.*', included: false },
             { pattern: 'logo/conversejs-filled.svg', watched: false, included: false, served: true, nocache: false },

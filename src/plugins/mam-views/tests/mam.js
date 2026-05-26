@@ -1,5 +1,5 @@
 import mock from '../../../shared/tests/mock.js';
-import converse from '../../../../dist/converse.esm.js';
+import converse from '../../../../dist/converse.js';
 
 const { stx, u, Model, Strophe, sizzle, dayjs } = converse.env;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;

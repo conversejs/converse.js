@@ -18,7 +18,7 @@ export default function (config) {
                 type: 'json',
             },
             { pattern: 'src/headless/dist/*.js.map', included: false },
-            { pattern: 'src/headless/dist/converse-headless.esm.js', type: 'module' },
+            { pattern: 'src/headless/dist/converse-headless.js', type: 'module' },
             { pattern: 'src/headless/tests/*.js', type: 'module' },
             { pattern: 'src/headless/plugins/vcard/tests/update.js', type: 'module' },
             { pattern: 'src/headless/plugins/blocklist/tests/*.js', type: 'module' },

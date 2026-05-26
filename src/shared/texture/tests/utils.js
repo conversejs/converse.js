@@ -1,4 +1,4 @@
-import converse from '../../../../dist/converse.esm.js';
+import converse from '../../../../dist/converse.js';
 
 const { getURLRanges } = converse.env.u;
 

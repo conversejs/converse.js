@@ -46,10 +46,6 @@ export default (_env, argv) => {
         optimization: {
             minimize: false,
         },
-        experiments: {
-            outputModule: true,
-            topLevelAwait: true,
-        },
         output: {
             path: path.resolve(__dirname, '../src/headless/dist'),
             filename: 'converse-headless.js',
@@ -62,10 +58,6 @@ export default (_env, argv) => {
 
     const minESMConfig = merge(common, {
         ...sharedConfig,
-        experiments: {
-            outputModule: true,
-            topLevelAwait: true,
-        },
         output: {
             path: path.resolve(__dirname, '../src/headless/dist'),
             filename: 'converse-headless.min.js',

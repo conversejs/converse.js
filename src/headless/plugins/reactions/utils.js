@@ -58,7 +58,7 @@ export function getDuplicateMessageQueries(chatbox, queries, attrs) {
  * @param {BaseMessage} message
  * @param {MessageAttributes|MUCMessageAttributes} new_attrs
  * @param {MessageAttrsWithReactions|MUCMessageAttrsWithReactions} original_attrs
- * @returns {MessageAttrsWithReactions|MUCMessageAttrsWithReactions} - Updated attributes
+ * @returns {MessageAttrsWithReactions|MUCMessageAttrsWithReactions}
  */
 export function getUpdatedMessageAttributes(message, new_attrs, original_attrs) {
     const incoming_reactions = original_attrs?.reactions;
@@ -137,7 +137,7 @@ export function onBeforeMessageCreated(chatbox, attrs, data) {
  * @param {ChatBoxOrMUC} chatbox
  * @param {BaseMessage} message - The newly created message model
  */
-export async function onAfterMessageCreated(chatbox, message) {
+export function onAfterMessageCreated(chatbox, message) {
     const msgid = message.get('msgid');
     const origin_id = message.get('origin_id');
 
@@ -204,7 +204,6 @@ export function getOwnReactionJID(chatbox) {
     }
     return Strophe.getBareJidFromJid(api.connection.get().jid);
 }
-
 
 Object.assign(u, {
     reactions: {

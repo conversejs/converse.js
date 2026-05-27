@@ -2077,19 +2077,17 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     async getUpdatedMessageAttributes(message, attrs) {
         const new_attrs = {
             ...(await super.getUpdatedMessageAttributes(message, attrs)),
-            ...pick(attrs, ['from_muc', 'occupant_id']),
+            from_muc: attrs.from_muc,
         };
 
         if (this.isMUCReflectedMessage(message, attrs)) {
             const stanza_id_keys = Object.keys(attrs).filter((k) => k.startsWith('stanza_id'));
-            Object.assign(
-                new_attrs,
-                { ...pick(attrs, stanza_id_keys) },
-                attrs.body !== undefined ? { body: attrs.body } : {},
-            );
-            if (!message.get('received')) {
-                new_attrs.received = new Date().toISOString();
-            }
+            return {
+                ...new_attrs,
+                ...pick(attrs, [...stanza_id_keys, 'occupant_id']),
+                ...(message.get('received') ? {} : { received: new Date().toISOString() }),
+                ...(attrs.body !== undefined ? { body: attrs.body } : {}),
+            };
         }
         return new_attrs;
     }

@@ -38,7 +38,7 @@ export function getDuplicateMessageQueries(chatbox: ChatBoxOrMUC, queries: objec
  * @param {BaseMessage} message
  * @param {MessageAttributes|MUCMessageAttributes} new_attrs
  * @param {MessageAttrsWithReactions|MUCMessageAttrsWithReactions} original_attrs
- * @returns {MessageAttrsWithReactions|MUCMessageAttrsWithReactions} - Updated attributes
+ * @returns {MessageAttrsWithReactions|MUCMessageAttrsWithReactions}
  */
 export function getUpdatedMessageAttributes(message: BaseMessage, new_attrs: MessageAttributes | MUCMessageAttributes, original_attrs: MessageAttrsWithReactions | MUCMessageAttrsWithReactions): MessageAttrsWithReactions | MUCMessageAttrsWithReactions;
 /**
@@ -86,7 +86,7 @@ export function onBeforeMessageCreated(chatbox: ChatBoxOrMUC, attrs: MessageAttr
  * @param {ChatBoxOrMUC} chatbox
  * @param {BaseMessage} message - The newly created message model
  */
-export function onAfterMessageCreated(chatbox: ChatBoxOrMUC, message: BaseMessage): Promise<void>;
+export function onAfterMessageCreated(chatbox: ChatBoxOrMUC, message: BaseMessage): void;
 /**
  * Returns the key under which the current user's reactions are stored
  * on a given message's `reactions` map.

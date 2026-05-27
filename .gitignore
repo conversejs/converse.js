@@ -69,5 +69,6 @@ node_modules
 /vendor/
 .aider*
 .prompts/
+.agents
 
 Session.vim

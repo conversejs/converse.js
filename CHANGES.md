@@ -6,6 +6,11 @@
 
 - `api.modal.show` no longer takes a modal instance as first parameter
 
+## 13.0.1 (2026-05-27)
+
+- Fix attribution bug where wrong JID is applied to message based on reactions
+- Strip `xmpp:` prefix and query params from MUC JID entered in join modal
+
 ## 13.0.0 (2026-05-20)
 
 - #1855: Use default or locked domain when adding contacts or starting new chats

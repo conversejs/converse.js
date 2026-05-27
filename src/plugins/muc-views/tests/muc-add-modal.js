@@ -7,7 +7,7 @@ describe('The "Groupchats" Add modal', function () {
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             const modal = await mock.openAddMUCModal(_converse);
 
-            const muc_jid = 'lounge@muc.montague.lit';
+            let muc_jid = 'xmpp:lounge@muc.montague.lit?join';
 
             let label_name = modal.querySelector('label[for="chatroom"]');
             expect(modal.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
@@ -21,9 +21,11 @@ describe('The "Groupchats" Add modal', function () {
             modal.querySelector('input[name="chatroom"]').value = muc_jid;
             modal.querySelector('form input[type="submit"]').click();
 
+            muc_jid = 'lounge@muc.montague.lit';
             await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             await u.waitUntil(() => _converse.chatboxes.length);
             await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
+            expect(_converse.chatboxes.models.map((m) => m.get('id')).includes(muc_jid)).toBe(true);
         }),
     );
 

@@ -55,7 +55,15 @@ export function isSameDomain(jid1, jid2) {
  * @param {string} jid
  */
 export function getJIDFromURI(jid) {
-    return jid.startsWith('xmpp:') && jid.endsWith('?join') ? jid.replace(/^xmpp:/, '').replace(/\?join$/, '') : jid;
+    let result = jid;
+    if (result.startsWith('xmpp:')) {
+        result = result.substring(5);
+    }
+    const idx = result.indexOf('?');
+    if (idx >= 0) {
+        result = result.substring(0, idx);
+    }
+    return result;
 }
 
 /**

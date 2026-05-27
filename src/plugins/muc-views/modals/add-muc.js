@@ -17,7 +17,7 @@ export default class AddMUCModal extends BaseModal {
             () => {
                 /** @type {HTMLInputElement} */ (this.querySelector('input[name="chatroom"]'))?.focus();
             },
-            false
+            false,
         );
     }
 
@@ -73,7 +73,9 @@ export default class AddMUCModal extends BaseModal {
     async openChatRoom(ev) {
         ev.preventDefault();
 
-        const autocomplete_el = /** @type {import('shared/autocomplete/component').default} */ (this.querySelector('converse-autocomplete'));
+        const autocomplete_el = /** @type {import('shared/autocomplete/component').default} */ (
+            this.querySelector('converse-autocomplete')
+        );
         if ((await autocomplete_el.onChange()).error_message) return;
 
         const { escapeNode, getNodeFromJid, getDomainFromJid } = Strophe;
@@ -138,8 +140,8 @@ export default class AddMUCModal extends BaseModal {
             const muc_service = await u.muc.getDefaultMUCService();
             if (!muc_service) {
                 return __(
-                    "No default groupchat service found. "+
-                    "You'll need to specify the full address, for example room@conference.example.org"
+                    'No default groupchat service found. ' +
+                        "You'll need to specify the full address, for example room@conference.example.org",
                 );
             }
         }

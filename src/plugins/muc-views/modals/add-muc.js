@@ -35,7 +35,7 @@ export default class AddMUCModal extends BaseModal {
      */
     parseRoomDataFromEvent(form) {
         const data = new FormData(form);
-        const jid = /** @type {string} */ (data.get('chatroom'))?.trim();
+        const jid = u.getJIDFromURI(/** @type {string} */ (data.get('chatroom'))?.trim());
         let nick;
         if (api.settings.get('locked_muc_nickname')) {
             nick = _converse.exports.getDefaultMUCNickname();

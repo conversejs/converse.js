@@ -13,10 +13,6 @@ const buildConfig = (_env, argv) => {
             'converse.min': path.resolve(__dirname, '../src/index.js'),
         },
         devtool: isDev ? 'cheap-module-source-map' : 'source-map',
-        experiments: {
-            outputModule: true,
-            topLevelAwait: true,
-        },
         output: {
             module: true,
             chunkFormat: 'module',
@@ -77,7 +73,7 @@ const buildConfig = (_env, argv) => {
                             loader: 'sass-loader',
                             options: {
                                 sassOptions: {
-                                    silenceDeprecations: ['color-functions', 'global-builtin', 'import', 'mixed-decls'],
+                                    silenceDeprecations: ['color-functions', 'global-builtin', 'import'],
                                     includePaths: [
                                         path.resolve(__dirname, '../node_modules/'),
                                         path.resolve(__dirname, '../src/'),

@@ -1,6 +1,6 @@
 # Changelog
 
-## 13.0.1 (Unreleased)
+## 13.0.1 (2026-05-27)
 
 - Fix attribution bug where wrong JID is applied to message based on reactions
 - Strip `xmpp:` prefix and query params from MUC JID entered in join modal

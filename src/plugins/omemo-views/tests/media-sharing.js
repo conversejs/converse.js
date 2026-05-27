@@ -1,5 +1,5 @@
 /*global mock, converse */
-const { omemo, Strophe, stx, u, sizzle } = converse.env;
+const { Strophe, stx, u, sizzle } = converse.env;
 
 describe('The OMEMO module', function () {
     it(
@@ -53,13 +53,13 @@ describe('The OMEMO module', function () {
             await u.waitUntil(() => sent_stanzas.filter((s) => sizzle('body', s).length).pop(), 1000);
 
             // Test reception of an encrypted file
-            let obj = await u.omemo.encryptMessage(
+            const obj = await u.omemo.encryptMessage(
                 'aesgcm://upload.example.org/b9e3eaaa-2eae-4900-ae41/k9mKam2JT.jpg#6b5ba0f96eae',
             );
 
             // XXX: Normally the key will be encrypted via libsignal.
             // However, we're mocking libsignal in the tests, so we include it as plaintext in the message.
-            let stanza = stx`<message from="${contact_jid}"
+            const stanza = stx`<message from="${contact_jid}"
                         to="${_converse.api.connection.get().jid}"
                         type="chat"
                         id="${_converse.api.connection.get().getUniqueId()}"

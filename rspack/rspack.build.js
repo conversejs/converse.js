@@ -28,6 +28,7 @@ const buildConfig = (_env, argv) => {
             moduleIds: 'named',
             minimizer: [
                 new rspack.SwcJsMinimizerRspackPlugin({
+                    test: /\.min\.js$/,
                     minimizerOptions: {
                         module: true,
                         minify: true,
@@ -41,7 +42,6 @@ const buildConfig = (_env, argv) => {
                         },
                     },
                 }),
-                new rspack.LightningCssMinimizerRspackPlugin(),
             ],
         },
         module: {
@@ -73,6 +73,7 @@ const buildConfig = (_env, argv) => {
                             loader: 'sass-loader',
                             options: {
                                 sassOptions: {
+                                    style: 'expanded',
                                     silenceDeprecations: ['color-functions', 'global-builtin', 'import'],
                                     includePaths: [
                                         path.resolve(__dirname, '../node_modules/'),
@@ -87,9 +88,6 @@ const buildConfig = (_env, argv) => {
             ],
         },
         plugins: [
-            new rspack.CssExtractRspackPlugin({
-                filename: '../dist/converse.min.css',
-            }),
             new rspack.CssExtractRspackPlugin({
                 filename: '../dist/converse.css',
             }),

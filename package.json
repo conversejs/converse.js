@@ -44,7 +44,8 @@
   ],
   "scripts": {
     "build": "npm run build:website-min-css && npm run build:headless && npm run build:esm",
-    "build:esm": "rspack build --config rspack/rspack.build.js",
+    "build:esm": "rspack build --config rspack/rspack.build.js && npm run build:converse-min-css",
+    "build:converse-min-css": "npx clean-css-cli dist/converse.css > dist/converse.min.css",
     "build:headless": "rspack build --config rspack/rspack.headless.js",
     "build:website-css": "sass --quiet --load-path=node_modules src/shared/styles/website.scss dist/website.css",
     "build:website-min-css": "npm run build:website-css && npx clean-css-cli dist/website.css > dist/website.min.css",

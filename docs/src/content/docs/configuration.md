@@ -227,6 +227,8 @@ This setting determines whether a user may decide whether Converse is `trusted` 
 
 This is done via a _This is a trusted device_ checkbox in the login form. If this setting is set to `true` or `off`, the checkbox will be shown to the user, otherwise not.
 
+The checkbox is hidden automatically when the configured persistent browser storage backend is unavailable, for example in private browsing modes that disable IndexedDB or localStorage.
+
 When this setting is set to `true`, the checkbox will be checked by default. To not have it checked by default, set this setting to `off`.
 
 If the user indicates that this device/browser is not trusted, then effectively it's the same as setting [clear_cache_on_logout](#clear_cache_on_logout) to `true` and [persistent_store](#persistent_store) to `sessionStorage`.

@@ -21,6 +21,7 @@
   If you include Converse via a `<script>` tag, you must add `type="module"`:
   `<script type="module" src="converse.js"></script>`.
   Any inline scripts calling `converse.initialize()` must also use `type="module"`.
+- #2405: Hide the trusted device login checkbox when persistent browser storage is unavailable.
 
 ## 13.0.1 (2026-05-27)
 

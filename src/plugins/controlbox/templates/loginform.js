@@ -1,5 +1,5 @@
 import { html } from 'lit';
-import { _converse, api, constants } from '@converse/headless';
+import { _converse, api, constants, converse } from '@converse/headless';
 import tplSpinner from 'templates/spinner.js';
 import { CONNECTION_STATUS_CSS_CLASS } from '../constants.js';
 import { __ } from 'i18n';
@@ -7,6 +7,7 @@ import 'shared/components/brand-heading.js';
 import 'shared/components/footer.js';
 
 const { ANONYMOUS, EXTERNAL, LOGIN, PREBIND, CONNECTION_STATUS } = constants;
+const { u } = converse.env;
 
 /**
  * @param {boolean} checked
@@ -83,7 +84,8 @@ function tplAuthFields() {
     const locked_domain = api.settings.get('locked_domain');
     const default_domain = api.settings.get('default_domain');
     const placeholder_username = ((locked_domain || default_domain) && __('Username')) || __('user@domain');
-    const show_trust_checkbox = api.settings.get('allow_user_trust_override');
+    const allow_user_trust_override = api.settings.get('allow_user_trust_override');
+    const show_trust_checkbox = allow_user_trust_override && u.isPersistentStorageAvailable();
 
     return html`
         <div class="mb-3">
@@ -104,7 +106,7 @@ function tplAuthFields() {
         </div>
         ${authentication !== EXTERNAL ? tplPasswordInput() : ''}
         ${api.settings.get('show_connection_url_input') ? tplConnectionURLInput() : ''}
-        ${show_trust_checkbox ? tplTrustCheckbox(show_trust_checkbox === 'off' ? false : true) : ''}
+        ${show_trust_checkbox ? tplTrustCheckbox(allow_user_trust_override === 'off' ? false : true) : ''}
         <div class="text-center mb-3">
             <button class="btn btn-primary px-5 mx-auto" type="submit">${i18n_login}</button>
         </div>

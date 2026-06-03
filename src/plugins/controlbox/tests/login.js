@@ -92,4 +92,34 @@ describe('The Login Form', function () {
             },
         ),
     );
+
+    it(
+        'does not show the trusted device checkbox when persistent storage is unavailable',
+        mock.initConverse(
+            converse,
+            ['chatBoxesInitialized'],
+            { auto_login: false, allow_registration: false },
+            async function (_converse) {
+                const is_persistent_storage_available = u.isPersistentStorageAvailable;
+                u.isPersistentStorageAvailable = () => false;
+
+                try {
+                    mock.toggleControlBox(_converse);
+                    const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
+                    await u.waitUntil(() => cbview.querySelector('input[name="jid"]'));
+
+                    expect(cbview.querySelectorAll('input[type="checkbox"]').length).toBe(0);
+
+                    cbview.querySelector('input[name="jid"]').value = 'romeo@montague.lit';
+                    cbview.querySelector('input[name="password"]').value = 'secret';
+                    cbview.querySelector('button[type="submit"]').click();
+
+                    expect(_converse.config.get('trusted')).toBe(false);
+                    expect(u.getDefaultStorageType()).toBe('session');
+                } finally {
+                    u.isPersistentStorageAvailable = is_persistent_storage_available;
+                }
+            },
+        ),
+    );
 });

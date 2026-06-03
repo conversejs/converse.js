@@ -25,6 +25,26 @@ function storeUsesIndexedDB(type) {
 }
 
 /**
+ * @returns {boolean}
+ */
+export function isPersistentStorageAvailable() {
+    const store = settings.get('persistent_store');
+    if (store === 'sessionStorage') {
+        return typeof window.sessionStorage !== 'undefined';
+    } else if (store === 'BrowserExtLocal' || store === 'BrowserExtSync') {
+        return true;
+    }
+
+    const driver =
+        store === 'localStorage'
+            ? BrowserStorage.localForage.LOCALSTORAGE
+            : store === 'IndexedDB'
+              ? BrowserStorage.localForage.INDEXEDDB
+              : undefined;
+    return driver ? BrowserStorage.localForage.supports(driver) : true;
+}
+
+/**
  * @param {string} id
  * @param {import('./types').StorageType} type
  * @returns {BrowserStorage}

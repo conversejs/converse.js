@@ -38,15 +38,22 @@ class DeviceList extends Model {
             try {
                 ids = await this.fetchDevicesFromServer();
             } catch (e) {
+                // We deliberately leave this (empty) device list in place
+                // instead of destroying it. `onDevicesFound` runs from within
+                // `initialize`, so destroying here would orphan the model
+                // mid-initialization (removing it from the collection and
+                // storage while `this.initialized` is still pending, and
+                // running `publishCurrentDevice` on a destroyed model).
+                // Transient failures recover instead via `fetchDevices(true)`
+                // in `getDevicesForContact`, and via a fresh server fetch on
+                // the next reload.
                 if (e === null) {
                     log.error(`Timeout error while fetching OMEMO devices for ${this.get("jid")}`);
-                    this.destroy();
                 } else if (u.isElement(e) && (await parsers.parseErrorStanza(e)) instanceof errors.ItemNotFoundError) {
                     log.debug(`No OMEMO devices found for ${this.get("jid")}`);
                 } else {
                     log.error(`Could not fetch OMEMO devices for ${this.get("jid")}`);
                     log.error(e);
-                    this.destroy();
                 }
             }
             const bare_jid = _converse.session.get("bare_jid");

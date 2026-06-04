@@ -32,6 +32,7 @@ class RegistrationForm extends CustomElement {
             alert_type: { type: String },
             xmpp_providers: { type: Array },
             expanded_provider: { type: String },
+            show_manual_registration_domain: { type: Boolean },
         };
     }
 
@@ -45,6 +46,7 @@ class RegistrationForm extends CustomElement {
         /** @type {string[]} */
         this.xmpp_providers = [];
         this.expanded_provider = null;
+        this.show_manual_registration_domain = false;
         this.setErrorMessage = /** @param {string} m */ (m) => this.setMessage(m, 'danger');
         this.setFeedbackMessage = /** @param {string} m */ (m) => this.setMessage(m, 'info');
     }
@@ -214,6 +216,16 @@ class RegistrationForm extends CustomElement {
         if (jid) {
             this.fetchRegistrationForm(jid.trim());
         }
+    }
+
+    /**
+     * Toggles the manual registration-domain disclosure shown beneath the
+     * categorized provider list.
+     * @param {Event} ev
+     */
+    toggleManualRegistrationDomain(ev) {
+        ev?.preventDefault?.();
+        this.show_manual_registration_domain = !this.show_manual_registration_domain;
     }
 
     /**

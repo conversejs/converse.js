@@ -126,6 +126,50 @@ describe('The Registration Form', function () {
     );
 
     it(
+        'lets the user enter a provider domain manually alongside the provider list',
+        mock.initConverse(
+            converse,
+            ['chatBoxesInitialized'],
+            { auto_login: false, discover_connection_methods: false, allow_registration: true },
+            async function (_converse) {
+                const { api } = _converse;
+
+                const toggle = await u.waitUntil(() => document.querySelector('.toggle-controlbox'));
+                toggle.click();
+
+                const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
+                await u.waitUntil(() => u.isVisible(cbview));
+
+                cbview.querySelector('.toggle-register-login').click();
+
+                const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
+                spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
+
+                // The manual-entry form is collapsed by default
+                const form = cbview.querySelector('#converse-register');
+                expect(form.querySelector('input[name=domain]')).toBeNull();
+
+                // Expanding the disclosure reveals the domain input
+                const toggle_link = form.querySelector('.manual-registration-domain__toggle a');
+                expect(toggle_link).not.toBeNull();
+                toggle_link.click();
+
+                const domain_input = await u.waitUntil(() =>
+                    cbview.querySelector('.manual-registration-domain__form input[name=domain]'),
+                );
+                expect(domain_input).not.toBeNull();
+
+                // Submitting the manual form fetches the registration form
+                domain_input.value = 'conversejs.org';
+                cbview.querySelector('.manual-registration-domain__form').requestSubmit();
+                expect(registerview.fetchRegistrationForm).toHaveBeenCalled();
+
+                api.connection.destroy();
+            },
+        ),
+    );
+
+    it(
         "allows the user to choose an XMPP provider's domain in fullscreen view mode",
         mock.initConverse(
             converse,

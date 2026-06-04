@@ -260,6 +260,49 @@ function tplProviderList(el) {
 }
 
 /**
+ * Renders the free-text "enter a provider domain manually" fields, shared
+ * between the legacy domain-input form and the disclosure beneath the
+ * categorized provider list.
+ * @returns {import('lit').TemplateResult}
+ */
+function tplManualDomainFields() {
+    const href_providers = api.settings.get('providers_link');
+    const domain_placeholder = api.settings.get('domain_placeholder');
+    const i18n_providers = __('Tip: A list of public XMPP providers is available');
+    const i18n_providers_link = __('here');
+    const i18n_register = __('Fetch registration form');
+    return html`
+        <div class="form-group">
+            <label for="reg-domain">${__('Please enter the XMPP provider to register with:')}</label>
+            <input
+                class="form-control"
+                required="required"
+                type="text"
+                name="domain"
+                placeholder="${domain_placeholder}"
+            />
+            <p class="form-text text-muted">
+                ${i18n_providers}
+                <a href="${href_providers}" class="url" target="_blank" rel="noopener">${i18n_providers_link}</a>.
+            </p>
+        </div>
+        ${api.settings.get('show_connection_url_input')
+            ? html` <div class="form-group">
+                  <label for="reg-connection-url">${__('Connection URL')}</label>
+                  <input
+                      class="form-control"
+                      id="reg-connection-url"
+                      type="text"
+                      name="connection-url"
+                      placeholder="${__('e.g. https://example.org/http-bind')}"
+                  />
+              </div>`
+            : ''}
+        <input class="btn btn-primary" type="submit" value="${i18n_register}" />
+    `;
+}
+
+/**
  * @param {import('../form.js').default} el
  */
 function tplChooseProvider(el) {
@@ -285,10 +328,6 @@ function tplChooseProvider(el) {
 
     // If xmpp_providers_url is not set, show the legacy domain input form
     if (!xmpp_providers_url) {
-        const i18n_providers = __('Tip: A list of public XMPP providers is available');
-        const i18n_providers_link = __('here');
-        const i18n_register = __('Fetch registration form');
-        const domain_placeholder = api.settings.get('domain_placeholder');
         return html`
             <form
                 id="converse-register"
@@ -296,34 +335,7 @@ function tplChooseProvider(el) {
                 @submit=${(/** @type {Event} */ ev) => el.onFormSubmission(ev)}
             >
                 <legend class="col-form-label">${i18n_create_account}</legend>
-                <div class="form-group">
-                    <label for="reg-domain">${__('Please enter the XMPP provider to register with:')}</label>
-                    <input
-                        class="form-control"
-                        required="required"
-                        type="text"
-                        name="domain"
-                        placeholder="${domain_placeholder}"
-                    />
-                    <p class="form-text text-muted">
-                        ${i18n_providers}
-                        <a href="${href_providers}" class="url" target="_blank" rel="noopener">${i18n_providers_link}</a
-                        >.
-                    </p>
-                </div>
-                ${api.settings.get('show_connection_url_input')
-                    ? html` <div class="form-group">
-                          <label for="reg-connection-url">${__('Connection URL')}</label>
-                          <input
-                              class="form-control"
-                              id="reg-connection-url"
-                              type="text"
-                              name="connection-url"
-                              placeholder="${__('e.g. https://example.org/http-bind')}"
-                          />
-                      </div>`
-                    : ''}
-                <input class="btn btn-primary" type="submit" value="${i18n_register}" />
+                ${tplManualDomainFields()}
                 <div class="switch-form">
                     <p class="mb-1">${i18n_existing_account}</p>
                     <a class="login-here toggle-register-login" href="#converse/login">${i18n_login}</a>
@@ -336,6 +348,9 @@ function tplChooseProvider(el) {
     const i18n_choose_provider = __('Choose an XMPP provider to register with:');
     const has_providers = el.xmpp_providers?.length > 0;
     const i18n_browse_all = __('Browse all providers');
+    const show_manual = el.show_manual_registration_domain;
+    const i18n_manual_prompt = __("Don't see your provider?");
+    const i18n_manual_toggle = show_manual ? __('Hide manual entry') : __('Enter a provider manually');
 
     return html`
         <div id="converse-register" class="converse-form">
@@ -349,6 +364,26 @@ function tplChooseProvider(el) {
                       </p>
                   `
                 : tplSpinner({ 'class': 'hor_centered' })}
+            <div class="manual-registration-domain">
+                <p class="manual-registration-domain__toggle">
+                    ${i18n_manual_prompt}
+                    <a
+                        href="#"
+                        class="url"
+                        aria-expanded="${show_manual}"
+                        @click=${(/** @type {Event} */ ev) => el.toggleManualRegistrationDomain(ev)}
+                        >${i18n_manual_toggle}</a
+                    >
+                </p>
+                ${show_manual
+                    ? html`<form
+                          class="converse-form manual-registration-domain__form"
+                          @submit=${(/** @type {Event} */ ev) => el.onFormSubmission(ev)}
+                      >
+                          ${tplManualDomainFields()}
+                      </form>`
+                    : ''}
+            </div>
             <div class="switch-form">
                 <p class="mb-1">${i18n_existing_account}</p>
                 <a class="login-here toggle-register-login" href="#converse/login">${i18n_login}</a>

@@ -74,6 +74,27 @@ converse-registration-form {
         }
     }
 
+    // --- Manual registration-domain disclosure ---
+    .manual-registration-domain {
+        margin-top: 1em;
+
+        .manual-registration-domain__toggle {
+            text-align: center;
+            font-size: 0.95em;
+            color: var(--text-color-lighten, #aaa);
+            margin-bottom: 0.5em;
+
+            a {
+                color: var(--link-color);
+                cursor: pointer;
+            }
+        }
+
+        .manual-registration-domain__form {
+            @include fade-in;
+        }
+    }
+
     // --- XMPP Providers list container ---
     .xmpp-providers-list {
         max-height: 310px;

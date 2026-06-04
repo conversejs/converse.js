@@ -17,7 +17,7 @@ const emojis = {
 
             let json;
             try {
-                const path = api.settings.get('assets_path');
+                const path = api.settings.get('assets_path').replace(/\/$/, '');
                 const response = await fetch(`${path}/emoji.json`);
                 if (!response.ok) throw new Error('Failed to fetch emoji.json');
                 json = await response.json();

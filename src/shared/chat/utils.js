@@ -208,7 +208,7 @@ export function getEmojiMarkup(data, options = { unicode_only: false, add_title_
             draggable="false"
             title="${shortname}"
             alt="${shortname}"
-            src="${url.startsWith('.') ? `${api.settings.get('assets_path')}/${url}` : url}"
+            src="${url.startsWith('.') ? `${api.settings.get('assets_path').replace(/\/$/, '')}/${url}` : url}"
         />`;
     }
 }

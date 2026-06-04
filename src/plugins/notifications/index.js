@@ -29,7 +29,7 @@ converse.plugins.add('converse-notification', {
             show_chat_state_notifications: false,
             show_desktop_notifications: true,
             show_tab_notifications: true,
-            sounds_path: api.settings.get('assets_path') + '/sounds/'
+            sounds_path: api.settings.get('assets_path').replace(/\/$/, '') + '/sounds/'
         });
 
         /************************ Event Handlers ************************/

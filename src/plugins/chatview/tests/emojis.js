@@ -464,5 +464,14 @@ describe('Emojis', function () {
                 },
             ),
         );
+        it(
+            'does not produce double slashes in asset URLs when assets_path ends with /',
+            mock.initConverse(converse, ['chatBoxesFetched'], { 'assets_path': '/dist/' }, async function (_converse) {
+                const path = _converse.api.settings.get('assets_path').replace(/\/$/, '');
+                expect(path).toBe('/dist');
+                expect(path.endsWith('/')).toBe(false);
+                expect(`${path}/emoji.json`).toBe('/dist/emoji.json');
+            }),
+        );
     });
 });

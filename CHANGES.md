@@ -2,6 +2,8 @@
 
 ## 14.0.0 (Unreleased)
 
+- Fix: Strip trailing slash from `assets_path` to prevent double-slash asset URLs (fixes #4041)
+
 ### Backwards incompatible changes
 
 - `api.modal.show` no longer takes a modal instance as first parameter

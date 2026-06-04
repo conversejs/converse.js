@@ -56,7 +56,16 @@ class DeviceList extends Model {
         }
     }
 
-    fetchDevices() {
+    /**
+     * @param {boolean} [refresh=false] - Discard any previously memoized
+     *      result and fetch the devices anew. Used to recover from a state
+     *      where an earlier fetch failed or the contact had not yet published
+     *      their device list.
+     */
+    fetchDevices(refresh = false) {
+        if (refresh) {
+            this._devices_promise = undefined;
+        }
         if (this._devices_promise === undefined) {
             this._devices_promise = new Promise((resolve) => {
                 this.devices.fetch({

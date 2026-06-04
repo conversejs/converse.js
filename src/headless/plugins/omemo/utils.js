@@ -223,6 +223,15 @@ export async function getDevicesForContact(jid) {
     await api.waitUntil('OMEMOInitialized');
     const devicelist = await api.omemo.devicelists.get(jid, true);
     await devicelist.fetchDevices();
+    if (devicelist.devices.length === 0) {
+        // We don't have any devices for this contact. This can happen when an
+        // earlier fetch failed (e.g. due to a connectivity issue) or because
+        // the contact had not yet published their device list when we last
+        // checked. The result of `fetchDevices` is memoized, so without an
+        // explicit refresh we'd never query the server again for the lifetime
+        // of this device list. Force a re-fetch so we can recover.
+        await devicelist.fetchDevices(true);
+    }
     return devicelist.devices;
 }
 

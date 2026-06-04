@@ -451,6 +451,25 @@ describe('The OMEMO module', function () {
                 </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
+            // getDevicesForContact retries on empty results, so expect a second IQ
+            const selector = `iq[to="${contact_jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`;
+            const retry_iq = await u.waitUntil(() => {
+                const iqs = Array.from(_converse.api.connection.get().IQ_stanzas)
+                    .filter((iq) => iq.querySelector(selector));
+                return iqs.length >= 2 ? iqs[iqs.length - 1] : null;
+            });
+            stanza = stx`
+                <iq from="${contact_jid}"
+                    id="${retry_iq.getAttribute('id')}"
+                    to="${_converse.bare_jid}"
+                    type="error"
+                    xmlns="jabber:client">
+                    <error type="cancel">
+                        <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                    </error>
+                </iq>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+
             await u.waitUntil(() => !view.model.get('omemo_supported'));
             await u.waitUntil(
                 () =>

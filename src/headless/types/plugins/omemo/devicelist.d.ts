@@ -15,7 +15,13 @@ declare class DeviceList extends Model<import("@converse/skeletor").ModelAttribu
      * @param {import('./devices').default} collection
      */
     onDevicesFound(collection: import("./devices").default): Promise<void>;
-    fetchDevices(): Promise<any>;
+    /**
+     * @param {boolean} [refresh=false] - Discard any previously memoized
+     *      result and fetch the devices anew. Used to recover from a state
+     *      where an earlier fetch failed or the contact had not yet published
+     *      their device list.
+     */
+    fetchDevices(refresh?: boolean): Promise<any>;
     _devices_promise: Promise<any>;
     /**
      * @returns {Promise<string>}

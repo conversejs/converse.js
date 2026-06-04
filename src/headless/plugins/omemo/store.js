@@ -94,13 +94,16 @@ class OMEMOStore extends Model {
 
     /**
      * @param {string} key_id
+     * @returns {Promise<{ keyPair: import('libomemo.js').KeyPair }|void>}
      */
     loadPreKey(key_id) {
         const res = this.getPreKeys()[key_id];
         if (res) {
             return Promise.resolve({
-                'privKey': u.base64ToArrayBuffer(res.privKey),
-                'pubKey': u.base64ToArrayBuffer(res.pubKey),
+                keyPair: {
+                    privKey: u.base64ToArrayBuffer(res.privKey),
+                    pubKey: u.base64ToArrayBuffer(res.pubKey),
+                },
             });
         }
         return Promise.resolve();
@@ -132,14 +135,16 @@ class OMEMOStore extends Model {
 
     /**
      * @param {string} _key_id
-     * @returns {import('libomemo.js').KeyPair|void}
+     * @returns {{ keyPair: import('libomemo.js').KeyPair }|void}
      */
     loadSignedPreKey(_key_id) {
         const res = this.get('signed_prekey');
         if (res) {
             return {
-                privKey: u.base64ToArrayBuffer(res.privKey),
-                pubKey: u.base64ToArrayBuffer(res.pubKey),
+                keyPair: {
+                    privKey: u.base64ToArrayBuffer(res.privKey),
+                    pubKey: u.base64ToArrayBuffer(res.pubKey),
+                },
             };
         }
     }

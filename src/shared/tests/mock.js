@@ -231,11 +231,50 @@ Object.assign(window.libomemo, {
                 'body': 'c1ph3R73X7',
                 'registrationId': '1337',
             });
-        this.decryptPreKeyWhisperMessage = (key_and_tag) => {
-            return Promise.resolve(key_and_tag);
+
+        // The real libomemo SessionCipher/SessionBuilder reach into the store
+        // (loadSignedPreKey, loadPreKey, getIdentityKeyPair, ...) and rely on a
+        // specific return shape. We deliberately exercise those store methods
+        // here, the same way libomemo does, so that store-interface regressions
+        // are caught by tests.
+        this.decryptPreKeyWhisperMessage = async (key_and_tag) => {
+            // Mirror libomemo's SessionBuilder.processV3 + initSession.
+            const signed_prekey = await storage.loadSignedPreKey(0);
+            if (signed_prekey === undefined) {
+                throw new Error('Missing Signed PreKey for PreKeyWhisperMessage');
+            }
+            // libomemo passes `signedPreKeyPair.keyPair` to initSession, which
+            // then reads `ourSignedKey.privKey`. Dereferencing it here throws the
+            // same TypeError at runtime if the store returns the wrong shape.
+            if (!signed_prekey.keyPair.privKey) {
+                throw new Error('Signed PreKey is missing a private key');
+            }
+
+            const prekey_ids = Object.keys(storage.getPreKeys());
+            if (prekey_ids.length) {
+                const prekey = await storage.loadPreKey(prekey_ids[0]);
+                // libomemo passes `preKeyPair.keyPair` to initSession, which
+                // then reads `ourEphemeralKey.privKey`.
+                if (!prekey.keyPair.privKey) {
+                    throw new Error('PreKey is missing a private key');
+                }
+            }
+
+            const identity_keypair = await storage.getIdentityKeyPair();
+            if (!identity_keypair.privKey) {
+                throw new Error('Identity keypair is missing a private key');
+            }
+
+            return key_and_tag;
         };
-        this.decryptWhisperMessage = (key_and_tag) => {
-            return Promise.resolve(key_and_tag);
+        this.decryptWhisperMessage = async (key_and_tag) => {
+            // Mirror libomemo's SessionCipher.doDecryptWhisperMessage, which
+            // reads the identity keypair from the store.
+            const identity_keypair = await storage.getIdentityKeyPair();
+            if (!identity_keypair.privKey) {
+                throw new Error('Identity keypair is missing a private key');
+            }
+            return key_and_tag;
         };
     },
     'SessionBuilder': function (_storage, _remote_address) {

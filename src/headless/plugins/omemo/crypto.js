@@ -30,7 +30,27 @@ export function getCrypto() {
     // Without this, the Emscripten-generated code fetches the wasm with a bare
     // relative path (e.g. "curve25519_compiled.wasm") which fetch() resolves
     // against the page URL, not the module URL.
-    globalThis.__WASM_BASE__ = new URL('./', import.meta.url).href;
+    // We can't use import.meta.url because rspack statically inlines it as the
+    // source file path. Instead, find the script URL of converse.js or
+    // converse-headless.js at runtime and use its directory.
+    let script_base;
+    if (typeof document !== 'undefined') {
+        const scripts = /** @type {HTMLScriptElement[]} */ (Array.from(document.querySelectorAll('script[src]')));
+        for (const el of scripts) {
+            if (
+                el.src.includes('converse-headless') ||
+                el.src.includes('converse.js') ||
+                el.src.includes('converse.min.js')
+            ) {
+                script_base = el.src.slice(0, el.src.lastIndexOf('/') + 1);
+                break;
+            }
+        }
+    }
+    if (!script_base && typeof location !== 'undefined') {
+        script_base = location.origin + location.pathname.slice(0, location.pathname.lastIndexOf('/') + 1);
+    }
+    if (script_base) globalThis.__WASM_BASE__ = script_base;
 
     // @ts-expect-error - resolved at runtime from dist/, not source
     _promise = import(/* webpackIgnore: true */ './libomemo.esm.min.js').catch((e) => {

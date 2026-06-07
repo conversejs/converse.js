@@ -38,11 +38,11 @@ declare class OMEMOStore extends Model<import("./types").OMEMOStoreAttributes> {
     getPreKeys(): any;
     /**
      * @param {string} key_id
+     * @returns {Promise<{ keyPair: import('libomemo.js').KeyPair }|void>}
      */
-    loadPreKey(key_id: string): Promise<void> | Promise<{
-        privKey: any;
-        pubKey: any;
-    }>;
+    loadPreKey(key_id: string): Promise<{
+        keyPair: import("libomemo.js").KeyPair;
+    } | void>;
     /**
      * @param {number} key_id
      * @param {import('libomemo.js').KeyPair} key_pair
@@ -54,9 +54,11 @@ declare class OMEMOStore extends Model<import("./types").OMEMOStoreAttributes> {
     removePreKey(key_id: string): Promise<void>;
     /**
      * @param {string} _key_id
-     * @returns {import('libomemo.js').KeyPair|void}
+     * @returns {{ keyPair: import('libomemo.js').KeyPair }|void}
      */
-    loadSignedPreKey(_key_id: string): import("libomemo.js").KeyPair | void;
+    loadSignedPreKey(_key_id: string): {
+        keyPair: import("libomemo.js").KeyPair;
+    } | void;
     /**
      * @param {import('libomemo.js').SignedPreKey} spk
      */

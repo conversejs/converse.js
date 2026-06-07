@@ -25,6 +25,9 @@ declare class RegistrationForm extends CustomElement {
         expanded_provider: {
             type: StringConstructor;
         };
+        show_manual_registration_domain: {
+            type: BooleanConstructor;
+        };
     };
     urls: any[];
     /** @type {Record<string, any>} */
@@ -34,6 +37,7 @@ declare class RegistrationForm extends CustomElement {
     /** @type {string[]} */
     xmpp_providers: string[];
     expanded_provider: any;
+    show_manual_registration_domain: boolean;
     setErrorMessage: (m: string) => void;
     setFeedbackMessage: (m: string) => void;
     status: number;
@@ -76,6 +80,12 @@ declare class RegistrationForm extends CustomElement {
      * @param {string} jid - The provider's JID (domain)
      */
     onProviderSelected(jid: string): void;
+    /**
+     * Toggles the manual registration-domain disclosure shown beneath the
+     * categorized provider list.
+     * @param {Event} ev
+     */
+    toggleManualRegistrationDomain(ev: Event): void;
     /**
      * Toggles the expanded detail panel for a provider row.
      * @param {Event} ev

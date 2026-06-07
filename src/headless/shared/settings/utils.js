@@ -2,6 +2,7 @@ import isEqual from 'lodash-es/isEqual.js';
 import pick from 'lodash-es/pick.js';
 import { EventEmitter } from '@converse/skeletor';
 import { DEFAULT_SETTINGS } from './constants.js';
+import { normalizeSettings } from './schema.js';
 import { merge } from '../../utils/object.js';
 
 let app_settings;
@@ -19,7 +20,7 @@ export function initAppSettings(settings) {
     app_settings = new AppSettings();
 
     // Allow only whitelisted settings to be overwritten via converse.initialize
-    const allowed_settings = pick(settings, Object.keys(DEFAULT_SETTINGS));
+    const allowed_settings = normalizeSettings(pick(settings, Object.keys(DEFAULT_SETTINGS)));
     Object.assign(app_settings, DEFAULT_SETTINGS, allowed_settings);
 }
 
@@ -39,7 +40,7 @@ export function extendAppSettings(settings) {
     // initialization_settings (i.e. the settings passed in via converse.initialize).
     const allowed_keys = Object.keys(settings).filter((k) => k in DEFAULT_SETTINGS);
     const allowed_site_settings = pick(init_settings, allowed_keys);
-    const updated_settings = Object.assign(pick(settings, allowed_keys), allowed_site_settings);
+    const updated_settings = normalizeSettings(Object.assign(pick(settings, allowed_keys), allowed_site_settings));
     merge(app_settings, updated_settings);
 }
 
@@ -75,6 +76,7 @@ export function updateAppSettings(key, val) {
         attrs[key] = val;
     }
 
+    attrs = normalizeSettings(attrs);
     const allowed_keys = Object.keys(attrs).filter((k) => k in DEFAULT_SETTINGS);
     const changed = {};
     allowed_keys.forEach((k) => {

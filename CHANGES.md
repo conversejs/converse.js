@@ -3,6 +3,7 @@
 ## 14.0.0 (Unreleased)
 
 - fix: `isTrustedIdentity` in OMEMO store wasn't properly loading the identity
+- fix: strip trailing slashes from `assets_path` to prevent double-slash asset URLs (#4041)
 
 ### Backwards incompatible changes
 

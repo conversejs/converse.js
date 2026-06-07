@@ -92,4 +92,28 @@ describe("Configuration settings", function () {
             expect(changed).toEqual(false);
         }));
     });
+
+    describe("the assets_path setting", function () {
+
+        it("has its trailing slash stripped when passed in via converse.initialize",
+                initConverse(converse, [], { assets_path: '/dist/' }, function (_converse) {
+            expect(_converse.api.settings.get('assets_path')).toBe('/dist');
+        }));
+
+        it("has its trailing slash stripped when updated at runtime",
+                initConverse(converse, [], {}, function (_converse) {
+            const { api } = _converse;
+
+            api.settings.set('assets_path', '/cdn/assets/');
+            expect(api.settings.get('assets_path')).toBe('/cdn/assets');
+
+            // Multiple trailing slashes are collapsed, the rest is left intact.
+            api.settings.set({ assets_path: '/cdn/assets//' });
+            expect(api.settings.get('assets_path')).toBe('/cdn/assets');
+
+            // A path without a trailing slash is left untouched.
+            api.settings.set('assets_path', '/dist');
+            expect(api.settings.get('assets_path')).toBe('/dist');
+        }));
+    });
 });

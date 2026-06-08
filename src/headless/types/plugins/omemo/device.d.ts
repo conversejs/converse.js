@@ -1,8 +1,8 @@
 export default Device;
 /**
- * @extends {Model<import('./types').DeviceAttributes>}
+ * @extends {OMEMOVersionAwareModel<import('./types').DeviceAttributes>}
  */
-declare class Device extends Model<import("./types").DeviceAttributes> {
+declare class Device extends OMEMOVersionAwareModel<import("./types").DeviceAttributes> {
     constructor(attributes?: Partial<import("./types").DeviceAttributes>, options?: import("@converse/skeletor").ModelOptions);
     defaults(): {
         trusted: 0;
@@ -27,5 +27,5 @@ declare class Device extends Model<import("./types").DeviceAttributes> {
      */
     getBundle(): Promise<import("./types").Bundle>;
 }
-import { Model } from '@converse/skeletor';
+import { OMEMOVersionAwareModel } from './profiles.js';
 //# sourceMappingURL=device.d.ts.map

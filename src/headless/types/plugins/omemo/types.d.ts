@@ -1,10 +1,18 @@
 import { MUCMessageAttributes } from '../../plugins/muc/types';
-import { MessageAttributes, ModelAttributes } from '../../shared/types';
+import { JIDModelAttributes, MessageAttributes, ModelAttributes } from '../../shared/types';
 declare global {
     interface Window {
         libomemo?: Record<string, unknown>;
     }
 }
+export type OMEMOVersion = 'eu.siacs.conversations.axolotl' | 'urn:xmpp:omemo:2';
+export type OMEMOProfile = {
+    version: OMEMOVersion;
+    readonly devicelist_node: string;
+    readonly bundle_node_prefix: string;
+    usesSCE: boolean;
+    encodePubKey: (b64: string) => string;
+};
 export type CounterpartyPreKey = {
     id: number;
     key: string;
@@ -19,9 +27,8 @@ export type Bundle = {
     prekeys: CounterpartyPreKey[];
     fingerprint?: string;
 };
-export type DeviceAttributes = ModelAttributes & {
+export type DeviceAttributes = JIDModelAttributes & {
     id: number;
-    jid: string;
     bundle?: Bundle;
     trusted: 0 | 1 | -1;
     active: boolean;

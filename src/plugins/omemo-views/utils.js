@@ -8,7 +8,7 @@
 import { html } from 'lit';
 import { __ } from 'i18n';
 import { until } from 'lit/directives/until.js';
-import { _converse, api, log, u, constants } from '@converse/headless';
+import { _converse, api, converse, log, u, constants } from '@converse/headless';
 import tplAudio from 'shared/texture/templates/audio.js';
 import tplFile from 'templates/file.js';
 import tplImage from 'shared/texture/templates/image.js';
@@ -16,6 +16,7 @@ import tplVideo from 'shared/texture/templates/video.js';
 import { MIMETYPES_MAP } from 'utils/file.js';
 import { getFileName } from 'utils/html.js';
 
+const { Strophe } = converse.env;
 const { CHATROOMS_TYPE } = constants;
 const { hexToArrayBuffer, isAudioURL, isError, isImageURL, isVideoURL } = u;
 
@@ -157,7 +158,7 @@ function addEncryptedFiles(text, offset, richtext) {
                 objs.push({ url, start, end });
                 return url;
             },
-            parse_options
+            parse_options,
         );
     } catch (error) {
         log.debug(error);
@@ -183,10 +184,13 @@ export function handleEncryptedFiles(richtext) {
          * @param {string} text
          * @param {number} offset
          */
-        (text, offset) => addEncryptedFiles(text, offset, richtext)
+        (text, offset) => addEncryptedFiles(text, offset, richtext),
     );
 }
 
+/**
+ * @param {import('shared/components/element').CustomElement} el
+ */
 export function onChatComponentInitialized(el) {
     el.listenTo(el.model.messages, 'add', (message) => {
         if (message.get('is_encrypted') && !message.get('is_error')) {
@@ -199,20 +203,43 @@ export function onChatComponentInitialized(el) {
         } else {
             // Manually trigger an update, setting omemo_active to
             // false above will automatically trigger one.
-            el.querySelector('converse-chat-toolbar')?.requestUpdate();
+            //
+            /*** @type {import('shared/components/element').CustomElement} */
+            (el.querySelector('converse-chat-toolbar'))?.requestUpdate();
         }
     });
     el.listenTo(el.model, 'change:omemo_active', () => {
-        el.querySelector('converse-chat-toolbar').requestUpdate();
+        /*** @type {import('shared/components/element').CustomElement} */
+        (el.querySelector('converse-chat-toolbar')).requestUpdate();
     });
 }
 
 /**
+ * Generate the displayable fingerprints for a contact's devices for a single
+ * OMEMO version.
+ * @param {string} jid
+ * @param {import('@converse/headless/types/plugins/omemo/types').OMEMOVersion} [version]
+ */
+async function generateFingerprintsForVersion(jid, version) {
+    const devices = await u.omemo.getDevicesForContact(jid, version);
+    return Promise.all(
+        devices.map(
+            /** @param {import('@converse/headless/types/plugins/omemo/device').default} d */
+            (d) => u.omemo.generateFingerprint(d),
+        ),
+    );
+}
+
+/**
+ * Generate the displayable fingerprints for a contact's devices across both
+ * OMEMO versions.
  * @param {string} jid
  */
 export async function generateFingerprints(jid) {
-    const devices = await u.omemo.getDevicesForContact(jid);
-    return Promise.all(devices.map((d) => u.omemo.generateFingerprint(d)));
+    await Promise.all([
+        generateFingerprintsForVersion(jid, Strophe.NS.OMEMO).catch((e) => log.error(e)),
+        generateFingerprintsForVersion(jid, Strophe.NS.OMEMO2).catch((e) => log.error(e)),
+    ]);
 }
 
 /**
@@ -238,14 +265,14 @@ function toggleOMEMO(ev) {
             messages = [
                 __(
                     'Cannot use end-to-end encryption in this groupchat, ' +
-                        'either the groupchat has some anonymity or not all participants support OMEMO.'
+                        'either the groupchat has some anonymity or not all participants support OMEMO.',
                 ),
             ];
         } else {
             messages = [
                 __(
                     "Cannot use end-to-end encryption because %1$s uses a client that doesn't support OMEMO.",
-                    toolbar_el.model.contact.getDisplayName()
+                    toolbar_el.model.contact.getDisplayName(),
                 ),
             ];
         }
@@ -269,7 +296,7 @@ export function getOMEMOToolbarButton(toolbar_el, buttons) {
     } else if (is_muc) {
         title = __(
             'This groupchat needs to be members-only and non-anonymous in ' +
-                'order to support OMEMO encrypted messages'
+                'order to support OMEMO encrypted messages',
         );
     } else {
         title = __('OMEMO encryption is not supported');

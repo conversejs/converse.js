@@ -1,4 +1,5 @@
 export function generateDeviceID(): Promise<string>;
+export { VersionedOMEMOStore } from "./versioned-store.js";
 export default OMEMOStore;
 /**
  * @extends {Model<import('./types').OMEMOStoreAttributes>}
@@ -31,16 +32,16 @@ declare class OMEMOStore extends Model<import("./types").OMEMOStoreAttributes> {
     loadIdentityKey(address: string): ArrayBuffer;
     /**
      * @param {string} address
-     * @param {string} identity_key
+     * @param {ArrayBuffer} identity_key
      * @returns {boolean}
      */
-    saveIdentity(address: string, identity_key: string): boolean;
+    saveIdentity(address: string, identity_key: ArrayBuffer): boolean;
     getPreKeys(): any;
     /**
-     * @param {string} key_id
+     * @param {string|number} key_id
      * @returns {Promise<{ keyPair: import('libomemo.js').KeyPair }|void>}
      */
-    loadPreKey(key_id: string): Promise<{
+    loadPreKey(key_id: string | number): Promise<{
         keyPair: import("libomemo.js").KeyPair;
     } | void>;
     /**
@@ -49,9 +50,9 @@ declare class OMEMOStore extends Model<import("./types").OMEMOStoreAttributes> {
      */
     storePreKey(key_id: number, key_pair: import("libomemo.js").KeyPair): void;
     /**
-     * @param {string} key_id
+     * @param {string|number} key_id
      */
-    removePreKey(key_id: string): Promise<void>;
+    removePreKey(key_id: string | number): Promise<void>;
     /**
      * @param {string} _key_id
      * @returns {{ keyPair: import('libomemo.js').KeyPair }|void}
@@ -63,6 +64,13 @@ declare class OMEMOStore extends Model<import("./types").OMEMOStoreAttributes> {
      * @param {import('libomemo.js').SignedPreKey} spk
      */
     storeSignedPreKey(spk: import("libomemo.js").SignedPreKey): void;
+    /**
+     * Store the v2 (urn:xmpp:omemo:2) signed prekey. Kept separate from the
+     * legacy SPK because the signature covers different bytes (32-byte curve vs
+     * 33-byte curve form).
+     * @param {import('libomemo.js').SignedPreKey} spk
+     */
+    storeSignedPreKeyV2(spk: import("libomemo.js").SignedPreKey): void;
     /**
      * @param {number} key_id
      */
@@ -107,10 +115,25 @@ declare class OMEMOStore extends Model<import("./types").OMEMOStoreAttributes> {
      * By generating a bundle, and publishing it via PubSub, we allow other
      * clients to download it and start asynchronous encrypted sessions with us,
      * even if we're offline at that time.
+     *
+     * Generates both legacy (0.3.0) and v2 (omemo:2) bundle material and
+     * publishes both PEP nodes.
      */
     generateBundle(): Promise<void>;
-    fetchSession(): Promise<any>;
-    _setup_promise: Promise<any>;
+    /**
+     * Backfills omemo:2 key material for an already provisioned device.
+     *
+     * Stores created before omemo:2 support have a device_id, identity key and
+     * legacy signed prekey, but no `signed_prekey_omemo2`.
+     *
+     * This generates the missing v2 signed prekey, reusing the existing
+     * identity key so our fingerprint and device_id are unchanged. The v2 bundle
+     * itself is published by the regular {@link OMEMOStore#publishBundle} call in
+     * initOMEMO, which runs right after the session is restored.
+     */
+    ensureV2SignedPreKey(): Promise<void>;
+    fetchSession(): Promise<void>;
+    #private;
 }
 import { Model } from '@converse/skeletor';
 //# sourceMappingURL=store.d.ts.map

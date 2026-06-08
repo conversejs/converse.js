@@ -481,6 +481,79 @@ describe('OMEMO Trust Verification', function () {
                 expect(device.get('trusted')).toBe(TRUSTED);
             }),
         );
+
+        it(
+            'tracks trust per version when a device id appears in both the legacy and omemo:2 lists',
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+                const { Devices } = _converse.exports;
+                const { UNDECIDED, UNTRUSTED } = _converse.constants;
+                await mock.waitForRoster(_converse, 'current', 1);
+                const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                await mock.initializedOMEMO(_converse);
+
+                // The same physical device id is published to both the legacy and
+                // the omemo:2 device list. Each version has its own identity key
+                // (fingerprint) and therefore its own, independent trust state.
+                const legacy_devices = new Devices(null, { version: 'eu.siacs.conversations.axolotl' });
+                u.initStorage(legacy_devices, `converse.test-fp-legacy-${contact_jid}`);
+                const v2_devices = new Devices(null, { version: 'urn:xmpp:omemo:2' });
+                u.initStorage(v2_devices, `converse.test-fp-v2-${contact_jid}`);
+
+                const legacy_device = await legacy_devices.create(
+                    { id: '555', jid: contact_jid, bundle: { fingerprint: 'aaaa' } },
+                    { promise: true },
+                );
+                const v2_device = await v2_devices.create(
+                    { id: '555', jid: contact_jid, bundle: { fingerprint: 'bbbb' } },
+                    { promise: true },
+                );
+                expect(legacy_device.getVersion()).toBe('eu.siacs.conversations.axolotl');
+                expect(v2_device.getVersion()).toBe('urn:xmpp:omemo:2');
+
+                // Feed the prepared lists to the real component (bypassing the
+                // network fetch in initialize()).
+                const orig_get = _converse.api.omemo.devicelists.get;
+                _converse.api.omemo.devicelists.get = (_jid, _create, version) =>
+                    Promise.resolve(
+                        version === 'urn:xmpp:omemo:2'
+                            ? { devices: v2_devices, initialized: Promise.resolve() }
+                            : { devices: legacy_devices, initialized: Promise.resolve() },
+                    );
+
+                const el = document.createElement('converse-omemo-fingerprints');
+                el.setAttribute('jid', contact_jid);
+                document.body.appendChild(el);
+
+                // Both devices render their own fingerprint row.
+                await u.waitUntil(() => el.querySelectorAll('.fingerprint').length === 2, 1000);
+
+                expect(legacy_device.get('trusted')).toBe(UNDECIDED);
+                expect(v2_device.get('trusted')).toBe(UNDECIDED);
+
+                // Untrust the *omemo:2* device. This must update the v2 device and
+                // leave the legacy device of the same id untouched. The pre-fix
+                // handler resolved by id alone and would have written to legacy.
+                const v2_untrusted = el.querySelector(
+                    'input[type="radio"][value="-1"][data-version="urn:xmpp:omemo:2"]',
+                );
+                v2_untrusted.click();
+                await u.waitUntil(() => v2_device.get('trusted') === UNTRUSTED);
+                expect(v2_device.get('trusted')).toBe(UNTRUSTED);
+                expect(legacy_device.get('trusted')).toBe(UNDECIDED);
+
+                // Untrusting the legacy device is likewise independent.
+                const legacy_untrusted = el.querySelector(
+                    'input[type="radio"][value="-1"][data-version="eu.siacs.conversations.axolotl"]',
+                );
+                legacy_untrusted.click();
+                await u.waitUntil(() => legacy_device.get('trusted') === UNTRUSTED);
+                expect(legacy_device.get('trusted')).toBe(UNTRUSTED);
+                expect(v2_device.get('trusted')).toBe(UNTRUSTED);
+
+                _converse.api.omemo.devicelists.get = orig_get;
+                el.remove();
+            }),
+        );
     });
 
     describe('Inactive devices and trust', function () {

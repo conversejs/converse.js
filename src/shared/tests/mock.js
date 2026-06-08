@@ -222,6 +222,8 @@ window.libomemo.OMEMOAddress.prototype.toString = function () {
     return this.name + '.' + this.deviceId;
 };
 Object.assign(window.libomemo, {
+    // Mock Ed25519 key conversion: just return the input as-is (real impl converts Curve25519 → Ed25519)
+    'curvePubKeyToEd25519PubKey': async (curve_key) => new Uint8Array(curve_key).slice(0, 32).buffer,
     'SessionCipher': function (storage, remote_address) {
         this.remoteAddress = remote_address;
         this.storage = storage;
@@ -398,6 +400,23 @@ function bundleHasBeenPublished(_converse) {
         .pop();
 }
 
+function v2BundleHasBeenPublished(_converse) {
+    const { Strophe } = _converse.env;
+    const selector = `publish[node="${Strophe.NS.OMEMO2_BUNDLES}:123456789"]`;
+    return Array.from(_converse.api.connection.get().IQ_stanzas)
+        .filter((iq) => iq.querySelector(selector))
+        .pop();
+}
+
+function ownV2DeviceHasBeenPublished(_converse) {
+    const { Strophe } = _converse.env;
+    return Array.from(_converse.api.connection.get().IQ_stanzas)
+        .filter((iq) =>
+            iq.querySelector(`iq[from="${_converse.bare_jid}"] publish[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`),
+        )
+        .pop();
+}
+
 function bundleIQRequestSent(_converse, jid, device_id) {
     return Array.from(_converse.api.connection.get().IQ_stanzas)
         .filter((iq) =>
@@ -437,38 +456,157 @@ async function bundleFetched(
     _converse.api.connection.get()._dataRecv(createRequest(_converse, stanza));
 }
 
+/**
+ * Sends an empty IQ result for the given request stanza.
+ */
+function sendIQResult(_converse, iq_stanza) {
+    const { stx } = _converse.env;
+    const stanza = stx`<iq from="${_converse.bare_jid}"
+                            id="${iq_stanza.getAttribute('id')}"
+                            to="${_converse.bare_jid}"
+                            type="result"
+                            xmlns="jabber:client"/>`;
+    _converse.api.connection.get()._dataRecv(createRequest(_converse, stanza));
+}
+
+// Responds to the v2 (urn:xmpp:omemo:2) IQs which are published in the
+// background during OMEMO initialization.
+const deferred_v2_jids = new Set();
+
+// The currently-running background v2 responder's stop function. Persisted at
+// module scope so each `initializedOMEMO` can stop the previous one and start a
+// fresh one bound to the current connection (the responder must outlive
+// `initializedOMEMO` itself, since sends happen afterwards).
+let stop_v2_responder = null;
+
+/**
+ * Mark a contact's omemo:2 device list as test-managed: the background
+ * responder will not auto-answer its fetch, leaving the test to provide it.
+ * @param {string} jid
+ */
+function deferV2DeviceList(jid) {
+    deferred_v2_jids.add(jid);
+}
+
+function startV2Responder(_converse) {
+    const { stx, Strophe } = _converse.env;
+    const handled = new WeakSet();
+    let active = true;
+
+    const respond = () => {
+        if (!active) return;
+        const conn = _converse.api.connection.get();
+        if (!conn) return;
+        const iqs = Array.from(conn.IQ_stanzas);
+
+        // Own v2 device list fetch
+        const v2_fetch_selector = `iq[to="${_converse.bare_jid}"] items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`;
+        iqs.filter((iq) => !handled.has(iq) && iq.querySelector(v2_fetch_selector)).forEach((iq) => {
+            handled.add(iq);
+            const result = stx`<iq from="${_converse.bare_jid}"
+                                   id="${iq.getAttribute('id')}"
+                                   to="${conn.jid}"
+                                   xmlns="jabber:server"
+                                   type="result">
+                <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <items node="${Strophe.NS.OMEMO2_DEVICELIST}">
+                        <item><devices xmlns="${Strophe.NS.OMEMO2_DEVICELIST}"/></item>
+                    </items>
+                </pubsub>
+            </iq>`;
+            conn._dataRecv(createRequest(_converse, result));
+        });
+
+        // Contact v2 device list fetch — answer with an empty list (no omemo:2
+        // entry) unless the test opted to manage this jid itself. This keeps the
+        // many legacy send tests working now that the send path fetches each
+        // contact's v2 device list.
+        iqs.filter(
+            (iq) =>
+                !handled.has(iq) &&
+                iq.getAttribute('to') &&
+                iq.getAttribute('to') !== _converse.bare_jid &&
+                iq.querySelector(`items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`),
+        ).forEach((iq) => {
+            const to = iq.getAttribute('to');
+            if (deferred_v2_jids.has(to)) return;
+            handled.add(iq);
+            const result = stx`<iq from="${to}"
+                                   id="${iq.getAttribute('id')}"
+                                   to="${conn.jid}"
+                                   xmlns="jabber:server"
+                                   type="result">
+                <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <items node="${Strophe.NS.OMEMO2_DEVICELIST}">
+                        <item><devices xmlns="${Strophe.NS.OMEMO2_DEVICELIST}"/></item>
+                    </items>
+                </pubsub>
+            </iq>`;
+            conn._dataRecv(createRequest(_converse, result));
+        });
+
+        // v2 device list publish + v2 bundle publish (both answered with empty result)
+        const publish_v2 = (iq) =>
+            iq.querySelector(`iq[from="${_converse.bare_jid}"] publish[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`) ||
+            iq.querySelector(`publish[node="${Strophe.NS.OMEMO2_BUNDLES}:123456789"]`);
+        iqs.filter((iq) => !handled.has(iq) && publish_v2(iq)).forEach((iq) => {
+            handled.add(iq);
+            sendIQResult(_converse, iq);
+        });
+    };
+
+    const interval = setInterval(respond, 50);
+    return () => {
+        active = false;
+        clearInterval(interval);
+    };
+}
+
 async function initializedOMEMO(
     _converse,
     identities = [{ 'category': 'pubsub', 'type': 'pep' }],
     features = ['http://jabber.org/protocol/pubsub#publish-options'],
 ) {
-    const { stx, u } = _converse.env;
+    const { u } = _converse.env;
     await waitUntilDiscoConfirmed(_converse, _converse.bare_jid, identities, features);
+
+    // Respond to the background v2 IQs throughout initialization *and* for the
+    // rest of the test — the send path fetches each contact's v2 device list,
+    // which happens after this helper returns. Stop any responder left over from
+    // a previous test and reset the test-managed jids, then start a fresh one
+    // bound to the current connection. The responder only ever answers omemo:2
+    // IQs, so if it outlives the test it's a no-op for non-OMEMO tests and is
+    // replaced by the next `initializedOMEMO`.
+    stop_v2_responder?.();
+    deferred_v2_jids.clear();
+    stop_v2_responder = startV2Responder(_converse);
+
+    // Respond to legacy device list fetch
     await deviceListFetched(_converse, _converse.bare_jid, ['482886413b977930064a5888b92134fe']);
+
+    // Respond to legacy device list publish
     let iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse));
+    sendIQResult(_converse, iq_stanza);
 
-    let stanza = stx`<iq from="${_converse.bare_jid}"
-                          id="${iq_stanza.getAttribute('id')}"
-                          to="${_converse.bare_jid}"
-                          type="result"
-                          xmlns="jabber:client"/>`;
-    _converse.api.connection.get()._dataRecv(createRequest(_converse, stanza));
-
+    // Respond to legacy bundle publish
     iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse));
+    sendIQResult(_converse, iq_stanza);
 
-    stanza = stx`<iq from="${_converse.bare_jid}"
-                          id="${iq_stanza.getAttribute('id')}"
-                          to="${_converse.bare_jid}"
-                          type="result"
-                          xmlns="jabber:client"/>`;
-    _converse.api.connection.get()._dataRecv(createRequest(_converse, stanza));
     await _converse.api.waitUntil('OMEMOInitialized');
+
+    // Drain any trailing background v2 IQs — the v2 device-list and bundle
+    // publishes can land just after OMEMOInitialized.
+    for (let i = 0; i < 4; i++) {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+    }
 }
 
 export default {
     bundleFetched,
     bundleHasBeenPublished,
     bundleIQRequestSent,
+    v2BundleHasBeenPublished,
+    ownV2DeviceHasBeenPublished,
     chatroom_names,
     chatroom_roles,
     checkHeaderToggling,
@@ -482,6 +620,7 @@ export default {
     cur_names,
     current_contacts_map,
     default_muc_features,
+    deferV2DeviceList,
     deviceListFetched,
     event,
     getContactJID,

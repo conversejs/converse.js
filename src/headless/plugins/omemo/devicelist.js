@@ -1,17 +1,27 @@
-import { getOpenPromise } from "@converse/openpromise";
-import { Model } from '@converse/skeletor';
+import { getOpenPromise } from '@converse/openpromise';
 import log from '@converse/log';
 import * as errors from '../../shared/errors.js';
-import { parsers } from "../../shared/index.js";
+import { parsers } from '../../shared/index.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
+import { OMEMOVersionAwareModel } from './profiles.js';
 
 const { Strophe, stx, sizzle, u } = converse.env;
 
-class DeviceList extends Model {
+/**
+ * @extends {OMEMOVersionAwareModel<import('../../shared/types').JIDModelAttributes>}
+ */
+class DeviceList extends OMEMOVersionAwareModel {
+    /**
+     * Whether the most recent server fetch for this device list failed
+     * (timeout/error) rather than authoritatively returning no devices.
+     * @type {boolean}
+     */
+    #last_fetch_failed = false;
+
     get idAttribute() {
-        return "jid";
+        return 'jid';
     }
 
     async initialize() {
@@ -22,9 +32,10 @@ class DeviceList extends Model {
     }
 
     initDevices() {
-        this.devices = new _converse.exports.Devices();
-        const bare_jid = _converse.session.get("bare_jid");
-        const id = `converse.devicelist-${bare_jid}-${this.get("jid")}`;
+        this.devices = new _converse.exports.Devices(null, { version: this.getVersion() });
+        const bare_jid = _converse.session.get('bare_jid');
+        const version_suffix = this.isV2() ? '-omemo2' : '';
+        const id = `converse.devicelist-${bare_jid}-${this.get('jid')}${version_suffix}`;
         u.initStorage(this.devices, id);
         return this.fetchDevices();
     }
@@ -32,11 +43,25 @@ class DeviceList extends Model {
     /**
      * @param {import('./devices').default} collection
      */
+    /**
+     * Whether the most recent server fetch for this device list failed
+     * (timeout or error stanza), as opposed to authoritatively returning no
+     * devices (an empty list or item-not-found). Callers use this to decide
+     * whether an empty device list is worth re-fetching: a genuine "no devices"
+     * answer is not (a PEP push will inform us if that changes, since we
+     * advertise `+notify`), but a transient failure is.
+     * @returns {boolean}
+     */
+    get lastFetchFailed() {
+        return this.#last_fetch_failed;
+    }
+
     async onDevicesFound(collection) {
         if (collection.length === 0) {
             let ids = [];
             try {
                 ids = await this.fetchDevicesFromServer();
+                this.#last_fetch_failed = false;
             } catch (e) {
                 // We deliberately leave this (empty) device list in place
                 // instead of destroying it. `onDevicesFound` runs from within
@@ -48,18 +73,26 @@ class DeviceList extends Model {
                 // in `getDevicesForContact`, and via a fresh server fetch on
                 // the next reload.
                 if (e === null) {
-                    log.error(`Timeout error while fetching OMEMO devices for ${this.get("jid")}`);
+                    this.#last_fetch_failed = true;
+                    log.error(`Timeout error while fetching OMEMO devices for ${this.get('jid')}`);
                 } else if (u.isElement(e) && (await parsers.parseErrorStanza(e)) instanceof errors.ItemNotFoundError) {
-                    log.debug(`No OMEMO devices found for ${this.get("jid")}`);
+                    // An authoritative "no such node" — the contact simply has
+                    // no device list for this OMEMO version. Not a failure, so
+                    // we don't keep retrying on every send.
+                    this.#last_fetch_failed = false;
+                    log.debug(`No OMEMO devices found for ${this.get('jid')}`);
                 } else {
-                    log.error(`Could not fetch OMEMO devices for ${this.get("jid")}`);
+                    this.#last_fetch_failed = true;
+                    log.error(`Could not fetch OMEMO devices for ${this.get('jid')}`);
                     log.error(e);
                 }
             }
-            const bare_jid = _converse.session.get("bare_jid");
-            if (this.get("jid") === bare_jid) {
+            const bare_jid = _converse.session.get('bare_jid');
+            if (this.get('jid') === bare_jid) {
                 this.publishCurrentDevice(ids);
             }
+        } else {
+            this.#last_fetch_failed = false;
         }
     }
 
@@ -92,11 +125,17 @@ class DeviceList extends Model {
      */
     async getOwnDeviceId() {
         const { omemo_store } = _converse.state;
-        let device_id = omemo_store.get("device_id");
-        if (!this.devices.get(device_id)) {
-            // Generate a new bundle if we cannot find our device
+        let device_id = omemo_store.get('device_id');
+        if (!device_id) {
+            // No bundle at all. Generate one (creates device in legacy list)
             await omemo_store.generateBundle();
-            device_id = omemo_store.get("device_id");
+            device_id = omemo_store.get('device_id');
+        }
+        if (!this.devices.get(device_id)) {
+            // generateBundle always creates the device in the legacy collection.
+            // For the v2 list we create a bare entry so publishDevices() includes us.
+            const jid = this.get('jid');
+            await this.devices.create({ id: device_id, jid }, { promise: true });
         }
         return device_id;
     }
@@ -105,8 +144,8 @@ class DeviceList extends Model {
      * @param {string[]} device_ids
      */
     async publishCurrentDevice(device_ids) {
-        const bare_jid = _converse.session.get("bare_jid");
-        if (this.get("jid") !== bare_jid) {
+        const bare_jid = _converse.session.get('bare_jid');
+        if (this.get('jid') !== bare_jid) {
             return; // We only publish for ourselves.
         }
         await api.omemo.session.restore();
@@ -114,7 +153,7 @@ class DeviceList extends Model {
         if (!_converse.state.omemo_store) {
             // Happens during tests. The connection gets torn down
             // before publishCurrentDevice has time to finish.
-            log.debug("publishCurrentDevice: omemo_store is not defined, likely a timing issue");
+            log.debug('publishCurrentDevice: omemo_store is not defined, likely a timing issue');
             return;
         }
         if (!device_ids.includes(await this.getOwnDeviceId())) {
@@ -126,18 +165,27 @@ class DeviceList extends Model {
      * @returns {Promise<import('./device').default[]>}
      */
     async fetchDevicesFromServer() {
-        const bare_jid = _converse.session.get("bare_jid");
+        const bare_jid = _converse.session.get('bare_jid');
+        const node = this.isV2() ? Strophe.NS.OMEMO2_DEVICELIST : Strophe.NS.OMEMO_DEVICELIST;
         const stanza = stx`
-            <iq type='get' from='${bare_jid}' to='${this.get("jid")}' xmlns="jabber:client">
+            <iq type='get' from='${bare_jid}' to='${this.get('jid')}' xmlns="jabber:client">
                 <pubsub xmlns='${Strophe.NS.PUBSUB}'>
-                    <items node='${Strophe.NS.OMEMO_DEVICELIST}'/>
+                    <items node='${node}'/>
                 </pubsub>
             </iq>`;
 
         const iq = await api.sendIQ(stanza);
-        const selector = `list[xmlns="${Strophe.NS.OMEMO}"] device`;
-        const device_ids = sizzle(selector, iq).map((d) => d.getAttribute("id"));
-        const jid = this.get("jid");
+
+        let device_ids;
+        if (this.isV2()) {
+            const selector = `devices[xmlns="${Strophe.NS.OMEMO2_DEVICELIST}"] device`;
+            device_ids = sizzle(selector, iq).map((d) => d.getAttribute('id'));
+        } else {
+            const selector = `list[xmlns="${Strophe.NS.OMEMO}"] device`;
+            device_ids = sizzle(selector, iq).map((d) => d.getAttribute('id'));
+        }
+
+        const jid = this.get('jid');
         return Promise.all(device_ids.map((id) => this.devices.create({ id, jid }, { promise: true })));
     }
 
@@ -147,22 +195,34 @@ class DeviceList extends Model {
      * See: https://xmpp.org/extensions/attic/xep-0384-0.3.0.html#usecases-announcing
      */
     publishDevices() {
-        const item = stx`
-            <item id='current'>
-                <list xmlns='${Strophe.NS.OMEMO}'>
-                    ${this.devices.filter((d) => d.get("active")).map((d) => stx`<device id='${d.get("id")}'/>`)}
-                </list>
-            </item>`;
-        const options = { access_model: "open" };
-        return api.pubsub.publish(null, Strophe.NS.OMEMO_DEVICELIST, item, options, false);
+        const active_devices = this.devices.filter((d) => d.get('active'));
+        let item;
+        if (this.isV2()) {
+            item = stx`
+                <item id='current'>
+                    <devices xmlns='${Strophe.NS.OMEMO2_DEVICELIST}'>
+                        ${active_devices.map((d) => stx`<device id='${d.get('id')}'/>`)}
+                    </devices>
+                </item>`;
+        } else {
+            item = stx`
+                <item id='current'>
+                    <list xmlns='${Strophe.NS.OMEMO}'>
+                        ${active_devices.map((d) => stx`<device id='${d.get('id')}'/>`)}
+                    </list>
+                </item>`;
+        }
+        const node = this.isV2() ? Strophe.NS.OMEMO2_DEVICELIST : Strophe.NS.OMEMO_DEVICELIST;
+        const options = { access_model: 'open' };
+        return api.pubsub.publish(null, node, item, options, false);
     }
 
     /**
      * @param {string[]} device_ids
      */
     async removeOwnDevices(device_ids) {
-        const bare_jid = _converse.session.get("bare_jid");
-        if (this.get("jid") !== bare_jid) {
+        const bare_jid = _converse.session.get('bare_jid');
+        if (this.get('jid') !== bare_jid) {
             throw new Error("Cannot remove devices from someone else's device list");
         }
         await Promise.all(
@@ -177,9 +237,9 @@ class DeviceList extends Model {
                                     log.error(e);
                                     resolve();
                                 },
-                            })
-                        )
-                )
+                            }),
+                        ),
+                ),
         );
         return this.publishDevices();
     }

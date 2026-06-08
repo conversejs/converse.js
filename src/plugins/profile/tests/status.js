@@ -1,7 +1,7 @@
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 
-const {u, Strophe} = converse.env;
+const { u, Strophe } = converse.env;
 
 describe('The Controlbox', function () {
     describe('The Status Widget', function () {
@@ -34,7 +34,7 @@ describe('The Controlbox', function () {
                     <show>dnd</show>
                     <priority>0</priority>
                     <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                    <c hash="sha-1" node="https://conversejs.org" ver="Hbd4V8rlZualGDSkxW/4bVlnudc=" xmlns="http://jabber.org/protocol/caps"/>
+                    <c hash="sha-1" node="https://conversejs.org" ver="aU8gtptxi4fPJB8IPibd7tJbTLE=" xmlns="http://jabber.org/protocol/caps"/>
                 </presence>`);
                 const view = await u.waitUntil(() => document.querySelector('converse-user-profile'));
                 const first_child = view.querySelector('.xmpp-status span:first-child');
@@ -65,7 +65,7 @@ describe('The Controlbox', function () {
                     <status>I am happy</status>
                     <priority>0</priority>
                     <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                    <c hash="sha-1" node="https://conversejs.org" ver="Hbd4V8rlZualGDSkxW/4bVlnudc=" xmlns="http://jabber.org/protocol/caps"/>
+                    <c hash="sha-1" node="https://conversejs.org" ver="aU8gtptxi4fPJB8IPibd7tJbTLE=" xmlns="http://jabber.org/protocol/caps"/>
                 </presence>`);
 
                 const view = await u.waitUntil(() => document.querySelector('converse-user-profile'));

@@ -6,7 +6,8 @@ const { Strophe, sizzle, u, stx } = converse.env;
 describe('A MUC', function () {
     it(
         'allows you to change your nickname via a modal',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             [],
             { view_mode: 'fullscreen', auto_register_muc_nickname: true },
             async function (_converse) {
@@ -48,7 +49,8 @@ describe('A MUC', function () {
 
                 // Two presence stanzas are received from the MUC service
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`
             <presence
                 xmlns="jabber:client"
@@ -72,7 +74,8 @@ describe('A MUC', function () {
 
                 // Check that the new nickname gets registered with the MUC
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`
             <presence
                 xmlns="jabber:client"
@@ -106,7 +109,8 @@ describe('A MUC', function () {
                 );
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<iq from="${muc_jid}"
                 id="${stanza.getAttribute('id')}"
                 to="${_converse.session.get('jid')}"
@@ -330,7 +334,8 @@ describe('A MUC', function () {
 
         it(
             "will use the nickname set in the global settings if the user doesn't have a VCard nickname",
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['chatBoxesFetched'],
                 {
                     blacklisted_plugins: ['converse-vcard'],
@@ -357,7 +362,9 @@ describe('A MUC', function () {
                 await mock.waitForMUCDiscoInfo(_converse, muc_jid);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, stx`
+                    mock.createRequest(
+                        _converse,
+                        stx`
                 <presence
                         from="${muc_jid}/romeo"
                         id="${u.getUniqueId()}"
@@ -368,7 +375,8 @@ describe('A MUC', function () {
                     <error by="${muc_jid}" type="cancel">
                         <conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                     </error>
-                </presence>`),
+                </presence>`,
+                    ),
                 );
 
                 const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
@@ -431,7 +439,7 @@ describe('A MUC', function () {
                         xmlns="jabber:client">
                     <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
-                        ver="Hbd4V8rlZualGDSkxW/4bVlnudc="/>>
+                        ver="aU8gtptxi4fPJB8IPibd7tJbTLE="/>>
                 </presence>`);
 
                 while (IQ_stanzas.length) IQ_stanzas.pop();
@@ -465,7 +473,7 @@ describe('A MUC', function () {
                         xmlns="jabber:client">
                     <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
-                        ver="Hbd4V8rlZualGDSkxW/4bVlnudc="/>>
+                        ver="aU8gtptxi4fPJB8IPibd7tJbTLE="/>>
                 </presence>`);
 
                 while (IQ_stanzas.length) IQ_stanzas.pop();
@@ -499,7 +507,7 @@ describe('A MUC', function () {
                         xmlns="jabber:client">
                     <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
-                        ver="Hbd4V8rlZualGDSkxW/4bVlnudc="/>>
+                        ver="aU8gtptxi4fPJB8IPibd7tJbTLE="/>>
                 </presence>`);
             }),
         );
@@ -536,7 +544,8 @@ describe('A MUC', function () {
 
         it(
             "doesn't show the nickname field if locked_muc_nickname is true",
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['chatBoxesFetched'],
                 {
                     locked_muc_nickname: true,
@@ -568,7 +577,8 @@ describe('A MUC', function () {
 
         it(
             'uses the JID node if muc_nickname_from_jid is set to true',
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['chatBoxesFetched'],
                 {
                     'muc_nickname_from_jid': true,

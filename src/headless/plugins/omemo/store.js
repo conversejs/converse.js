@@ -5,6 +5,7 @@ import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';
 import { getCrypto } from './crypto.js';
 import { getDeviceList } from './utils.js';
+export { VersionedOMEMOStore } from './versioned-store.js';
 
 const { Strophe, stx, u } = converse.env;
 
@@ -12,6 +13,9 @@ const { Strophe, stx, u } = converse.env;
  * @extends {Model<import('./types').OMEMOStoreAttributes>}
  */
 class OMEMOStore extends Model {
+    /** @type {Promise<void>} */
+    #setup_promise;
+
     get Direction() {
         return {
             SENDING: 1,
@@ -70,7 +74,7 @@ class OMEMOStore extends Model {
 
     /**
      * @param {string} address
-     * @param {string} identity_key
+     * @param {ArrayBuffer} identity_key
      * @returns {boolean}
      */
     saveIdentity(address, identity_key) {
@@ -93,7 +97,7 @@ class OMEMOStore extends Model {
     }
 
     /**
-     * @param {string} key_id
+     * @param {string|number} key_id
      * @returns {Promise<{ keyPair: import('libomemo.js').KeyPair }|void>}
      */
     loadPreKey(key_id) {
@@ -124,7 +128,7 @@ class OMEMOStore extends Model {
     }
 
     /**
-     * @param {string} key_id
+     * @param {string|number} key_id
      */
     removePreKey(key_id) {
         const prekeys = { ...this.getPreKeys() };
@@ -157,6 +161,24 @@ class OMEMOStore extends Model {
             throw new Error('storeSignedPreKey: expected an object');
         }
         this.save('signed_prekey', {
+            id: spk.keyId,
+            privKey: u.arrayBufferToBase64(spk.keyPair.privKey),
+            pubKey: u.arrayBufferToBase64(spk.keyPair.pubKey),
+            signature: u.arrayBufferToBase64(spk.signature),
+        });
+    }
+
+    /**
+     * Store the v2 (urn:xmpp:omemo:2) signed prekey. Kept separate from the
+     * legacy SPK because the signature covers different bytes (32-byte curve vs
+     * 33-byte curve form).
+     * @param {import('libomemo.js').SignedPreKey} spk
+     */
+    storeSignedPreKeyV2(spk) {
+        if (typeof spk !== 'object') {
+            throw new Error('storeSignedPreKeyV2: expected an object');
+        }
+        this.save('signed_prekey_omemo2', {
             id: spk.keyId,
             privKey: u.arrayBufferToBase64(spk.keyPair.privKey),
             pubKey: u.arrayBufferToBase64(spk.keyPair.pubKey),
@@ -200,9 +222,7 @@ class OMEMOStore extends Model {
      * @param {string} [address='']
      */
     removeAllSessions(address = '') {
-        const keys = Object.keys(this.attributes).filter((key) =>
-            key.startsWith('session' + address) ? key : false,
-        );
+        const keys = Object.keys(this.attributes).filter((key) => (key.startsWith('session' + address) ? key : false));
         const attrs = {};
         keys.forEach((key) => {
             attrs[key] = undefined;
@@ -212,6 +232,13 @@ class OMEMOStore extends Model {
     }
 
     publishBundle() {
+        // The v2 bundle publish runs in the background: failing it (e.g. on a
+        // server that doesn't support omemo:2) must not block legacy OMEMO setup.
+        this.#publishV2Bundle().catch((e) => log.error(e));
+        return this.#publishLegacyBundle();
+    }
+
+    #publishLegacyBundle() {
         const signed_prekey = this.get('signed_prekey');
         const node = `${Strophe.NS.OMEMO_BUNDLES}:${this.get('device_id')}`;
         const item = stx`
@@ -225,6 +252,47 @@ class OMEMOStore extends Model {
                         (prekey, id) => stx`<preKeyPublic preKeyId="${id}">${prekey.pubKey}</preKeyPublic>`,
                     )}
                     </prekeys>
+                </bundle>
+            </item>`;
+        const options = { access_model: 'open' };
+        return api.pubsub.publish(null, node, item, options, false);
+    }
+
+    async #publishV2Bundle() {
+        const spk = this.get('signed_prekey_omemo2');
+        if (!spk) {
+            log.warn('No v2 signed prekey found, skipping v2 bundle publication');
+            return;
+        }
+        const { curvePubKeyToEd25519PubKey } = await getCrypto();
+        const identity_keypair = this.get('identity_keypair');
+        const device_id = this.get('device_id');
+        const node = `${Strophe.NS.OMEMO2_BUNDLES}:${device_id}`;
+
+        // Ed25519 IK from curve pubkey
+        const curve_ik = u.base64ToArrayBuffer(identity_keypair.pubKey);
+        const ed25519_ik = await curvePubKeyToEd25519PubKey(curve_ik);
+        const ed25519_ik_b64 = u.arrayBufferToBase64(ed25519_ik);
+
+        // Strip leading byte from SPK pubkey (33 → 32 bytes) for v2 wire format
+        const spk_pub_raw = u.base64ToArrayBuffer(spk.pubKey);
+        const spk_pub_b64 = u.arrayBufferToBase64(spk_pub_raw.slice(1));
+
+        // Prekeys with stripped leading byte
+        const prekeys_obj = this.get('prekeys');
+        const prekey_items = Object.entries(prekeys_obj).map(([key_id, pk]) => {
+            const raw = u.base64ToArrayBuffer(/** @type {{pubKey:string}} */ (pk).pubKey);
+            const stripped = u.arrayBufferToBase64(raw.slice(1));
+            return stx`<pk id="${key_id}">${stripped}</pk>`;
+        });
+
+        const item = stx`
+            <item>
+                <bundle xmlns="${Strophe.NS.OMEMO2}">
+                    <spk id="${spk.id}">${spk_pub_b64}</spk>
+                    <spks>${spk.signature}</spks>
+                    <ik>${ed25519_ik_b64}</ik>
+                    <prekeys>${prekey_items}</prekeys>
                 </bundle>
             </item>`;
         const options = { access_model: 'open' };
@@ -290,6 +358,9 @@ class OMEMOStore extends Model {
      * By generating a bundle, and publishing it via PubSub, we allow other
      * clients to download it and start asynchronous encrypted sessions with us,
      * even if we're offline at that time.
+     *
+     * Generates both legacy (0.3.0) and v2 (omemo:2) bundle material and
+     * publishes both PEP nodes.
      */
     async generateBundle() {
         const { KeyHelper } = await getCrypto();
@@ -314,8 +385,13 @@ class OMEMOStore extends Model {
             },
         });
 
-        const signed_prekey = await KeyHelper.generateSignedPreKey(identity_keypair, 0);
+        // Generate both legacy and v2 signed prekeys (signatures differ in key encoding).
+        const [signed_prekey, signed_prekey_v2] = await Promise.all([
+            KeyHelper.generateSignedPreKey(identity_keypair, 0, Strophe.NS.OMEMO),
+            KeyHelper.generateSignedPreKey(identity_keypair, 0, Strophe.NS.OMEMO2),
+        ]);
         this.storeSignedPreKey(signed_prekey);
+        this.storeSignedPreKeyV2(signed_prekey_v2);
 
         const prekeys = await this.generatePreKeys();
 
@@ -332,15 +408,47 @@ class OMEMOStore extends Model {
         device.save('bundle', bundle);
     }
 
+    /**
+     * Backfills omemo:2 key material for an already provisioned device.
+     *
+     * Stores created before omemo:2 support have a device_id, identity key and
+     * legacy signed prekey, but no `signed_prekey_omemo2`.
+     *
+     * This generates the missing v2 signed prekey, reusing the existing
+     * identity key so our fingerprint and device_id are unchanged. The v2 bundle
+     * itself is published by the regular {@link OMEMOStore#publishBundle} call in
+     * initOMEMO, which runs right after the session is restored.
+     */
+    async ensureV2SignedPreKey() {
+        if (this.get('signed_prekey_omemo2') || !this.get('identity_keypair')) {
+            return;
+        }
+        log.info('Migrating OMEMO store: generating the missing omemo:2 signed prekey');
+        const { KeyHelper } = await getCrypto();
+        const signed_prekey_v2 = await KeyHelper.generateSignedPreKey(this.getIdentityKeyPair(), 0, Strophe.NS.OMEMO2);
+        this.storeSignedPreKeyV2(signed_prekey_v2);
+    }
+
     fetchSession() {
-        if (this._setup_promise === undefined) {
-            this._setup_promise = new Promise((resolve, reject) => {
+        if (this.#setup_promise === undefined) {
+            this.#setup_promise = new Promise((resolve, reject) => {
                 this.fetch({
                     success: () => {
                         if (!this.get('device_id')) {
                             this.generateBundle().then(resolve).catch(reject);
                         } else {
-                            resolve();
+                            // Existing store: backfill omemo:2 key material for
+                            // stores created before omemo:2 support. A migration
+                            // failure must not break legacy OMEMO, so resolve
+                            // regardless (we simply remain legacy-only until the
+                            // next successful attempt).
+                            this.ensureV2SignedPreKey()
+                                .then(resolve)
+                                .catch((e) => {
+                                    log.error('Could not migrate OMEMO store to omemo:2');
+                                    log.error(e);
+                                    resolve();
+                                });
                         }
                     },
                     /**
@@ -354,7 +462,7 @@ class OMEMOStore extends Model {
                 });
             });
         }
-        return this._setup_promise;
+        return this.#setup_promise;
     }
 }
 

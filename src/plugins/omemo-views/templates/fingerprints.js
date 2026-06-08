@@ -1,5 +1,6 @@
 import { __ } from 'i18n';
 import { html } from 'lit';
+import tplSpinner from 'templates/spinner.js';
 import { formatFingerprint } from '../utils.js';
 import { converse } from '@converse/headless';
 
@@ -32,6 +33,7 @@ const device_fingerprint = (el, device) => {
                                 type="radio"
                                 class="btn-check"
                                 name="${device.get('id')}"
+                                data-version="${device.getVersion()}"
                                 id="${id1}"
                                 autocomplete="off"
                                 value="1"
@@ -48,6 +50,7 @@ const device_fingerprint = (el, device) => {
                                 type="radio"
                                 class="btn-check"
                                 name="${device.get('id')}"
+                                data-version="${device.getVersion()}"
                                 id="${id2}"
                                 autocomplete="off"
                                 value="-1"
@@ -82,19 +85,22 @@ const device_fingerprint = (el, device) => {
 export default (el) => {
     const i18n_fingerprints = __('OMEMO Fingerprints');
     const i18n_no_devices = __('No OMEMO-enabled devices found');
-    const devices = el.devicelist.devices;
+    // Combine legacy and v2 devices for display; each has its own trust state.
+    const all_devices = el.getAllDevices?.() ?? el.devicelist?.devices?.models ?? [];
 
     const i18n_show_inactive = __('Show inactive devices');
-    const active_devices = devices?.filter((device) => device.get('active') !== false);
-    const inactive_devices = devices?.filter((device) => device.get('active') === false);
+    const active_devices = all_devices.filter((device) => device.get('active') !== false);
+    const inactive_devices = all_devices.filter((device) => device.get('active') === false);
 
     return html`
         <div class="fingerprints">
             <ul class="list-group mb-3">
                 <li class="list-group-item active">${i18n_fingerprints}</li>
-                ${active_devices.length
-                    ? active_devices.map((device) => device_fingerprint(el, device))
-                    : html`<li class="list-group-item">${i18n_no_devices}</li>`}
+                ${el.loading
+                    ? html`<li class="list-group-item">${tplSpinner()}</li>`
+                    : active_devices.length
+                      ? active_devices.map((device) => device_fingerprint(el, device))
+                      : html`<li class="list-group-item">${i18n_no_devices}</li>`}
                 <li class="list-group-item">
                     <div class="form-check">
                         <input

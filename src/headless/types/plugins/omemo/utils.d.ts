@@ -1,4 +1,17 @@
 /**
+ * Returns a VersionedOMEMOStore proxy for the given OMEMO version.
+ *
+ * The proxy implements the subset of libomemo's `OMEMOStore` interface that
+ * `SessionCipher` and `SessionBuilder` actually exercise at runtime (the
+ * crypto/session methods); the interface's raw key-value members
+ * (`store`/`put`/`get`/`remove`) are part of the reference `InMemoryStore` and
+ * are never called on a consumer store, so we present the proxy as an
+ * `OMEMOStore` here.
+ * @param {import('./types').OMEMOVersion} version
+ * @returns {import('libomemo.js').OMEMOStore}
+ */
+export function getVersionedStore(version: import("./types").OMEMOVersion): import("libomemo.js").OMEMOStore;
+/**
  * Register a pubsub handler for devices pushed from other connected clients
  */
 export function registerPEPPushHandler(): void;
@@ -8,10 +21,11 @@ export function registerPEPPushHandler(): void;
 export function initOMEMO(reconnecting: boolean): Promise<void>;
 /**
  * @param {String} jid - The Jabber ID for which the device list will be returned.
- * @param {boolean} [create=false] - Set to `true` if the device list
- *      should be created if it cannot be found.
+ * @param {boolean} [create=false] - Set to `true` if the device list should be
+ *      created if it cannot be found.
+ * @param {import('./types').OMEMOVersion} [version] - Defaults to legacy version.
  */
-export function getDeviceList(jid: string, create?: boolean): Promise<any>;
+export function getDeviceList(jid: string, create?: boolean, version?: import("./types").OMEMOVersion): Promise<any>;
 /**
  * @param {import('./device.js').default} device
  */
@@ -22,20 +36,25 @@ export function generateFingerprint(device: import("./device.js").default): Prom
  */
 export function handleMessageSendError(e: Error | errors.IQError | errors.UserFacingError, chat: import("../../shared/chatbox.js").default): void;
 /**
+ * Returns the device collection for a contact and OMEMO version.
+ * Doesn't throw on any failure, instead logs and returns an empty collection.
  * @param {string} jid
+ * @param {import('./types').OMEMOVersion} [version]
  * @returns {Promise<import('./devices.js').default>}
  */
-export function getDevicesForContact(jid: string): Promise<import("./devices.js").default>;
+export function getDevicesForContact(jid: string, version?: import("./types").OMEMOVersion): Promise<import("./devices.js").default>;
 /**
  * @param {string} jid
  * @param {number} id
+ * @param {import('./types').OMEMOVersion} [version]
  * @returns {Promise<import('libomemo.js').SessionCipher>}
  */
-export function getSessionCipher(jid: string, id: number): Promise<import("libomemo.js").SessionCipher>;
+export function getSessionCipher(jid: string, id: number, version?: import("./types").OMEMOVersion): Promise<import("libomemo.js").SessionCipher>;
 /**
  * @param {import('./device').default} device
+ * @param {import('./types').OMEMOVersion} [version]
  */
-export function getSession(device: import("./device").default): Promise<any>;
+export function getSession(device: import("./device").default, version?: import("./types").OMEMOVersion): Promise<string | void>;
 /**
  * @param {import('./types').EncryptedMessage} obj
  * @returns {Promise<string>}

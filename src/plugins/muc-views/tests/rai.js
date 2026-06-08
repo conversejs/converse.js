@@ -8,7 +8,8 @@ const { Strophe, u, stx, sizzle } = converse.env;
 describe('XEP-0437 Room Activity Indicators', function () {
     it(
         'will be activated for a MUC that becomes hidden',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             [],
             {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
@@ -91,13 +92,13 @@ describe('XEP-0437 Room Activity Indicators', function () {
             <presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">
                 <priority>0</priority>
                 <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="gdck24wSF+suQUiLraUQ715DZm0=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="FbNYz6snHqlCzoYc4qsybHgn624=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`);
                 expect(sent_stanzas[3]).toEqualStanza(stx`
             <presence to="montague.lit" xmlns="jabber:client">
                 <priority>0</priority>
                 <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="gdck24wSF+suQUiLraUQ715DZm0=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="FbNYz6snHqlCzoYc4qsybHgn624=" xmlns="http://jabber.org/protocol/caps"/>
                 <rai xmlns="urn:xmpp:rai:0"/>
             </presence>`);
 
@@ -129,7 +130,8 @@ describe('XEP-0437 Room Activity Indicators', function () {
 
     it(
         'will be activated for a MUC that starts out hidden',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             [],
             {
                 allow_bookmarks: false, // Hack to get the rooms list to render
@@ -162,13 +164,13 @@ describe('XEP-0437 Room Activity Indicators', function () {
             <presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">
                 <priority>0</priority>
                 <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="gdck24wSF+suQUiLraUQ715DZm0=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="FbNYz6snHqlCzoYc4qsybHgn624=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`);
                 expect(sent_presences[2]).toEqualStanza(stx`
             <presence to="montague.lit" xmlns="jabber:client">
                 <priority>0</priority>
                 <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="gdck24wSF+suQUiLraUQ715DZm0=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="FbNYz6snHqlCzoYc4qsybHgn624=" xmlns="http://jabber.org/protocol/caps"/>
                 <rai xmlns="urn:xmpp:rai:0"/>
             </presence>`);
 
@@ -198,7 +200,8 @@ describe('XEP-0437 Room Activity Indicators', function () {
 
     it(
         'may not be activated due to server resource constraints',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             [],
             {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
@@ -218,18 +221,24 @@ describe('XEP-0437 Room Activity Indicators', function () {
 
                 const sent_presences = sent_stanzas.filter((s) => s.nodeName === 'presence');
                 expect(sent_presences[0]).toEqualStanza(stx`
-            <presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">
-                <priority>0</priority>
-                <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="gdck24wSF+suQUiLraUQ715DZm0=" xmlns="http://jabber.org/protocol/caps"/>
-            </presence>`);
+                    <presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">
+                        <priority>0</priority>
+                        <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
+                        <c hash="sha-1" node="https://conversejs.org"
+                            ver="FbNYz6snHqlCzoYc4qsybHgn624="
+                        xmlns="http://jabber.org/protocol/caps"/>
+                    </presence>`);
+
                 expect(sent_presences[1]).toEqualStanza(stx`
-            <presence to="montague.lit" xmlns="jabber:client">
-                <priority>0</priority>
-                <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                <c hash="sha-1" node="https://conversejs.org" ver="gdck24wSF+suQUiLraUQ715DZm0=" xmlns="http://jabber.org/protocol/caps"/>
-                <rai xmlns="urn:xmpp:rai:0"/>
-            </presence>`);
+                    <presence to="montague.lit" xmlns="jabber:client">
+                        <priority>0</priority>
+                        <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
+                        <c hash="sha-1" node="https://conversejs.org"
+                            ver="FbNYz6snHqlCzoYc4qsybHgn624="
+                            xmlns="http://jabber.org/protocol/caps"/>
+                        <rai xmlns="urn:xmpp:rai:0"/>
+                    </presence>`);
+
                 // If an error presence with "resource-constraint" is returned, we rejoin
                 const activity_stanza = stx`
             <presence type="error"

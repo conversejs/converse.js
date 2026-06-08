@@ -10,6 +10,9 @@ export type ReplaceableOpenPromise = ReturnType<typeof getOpenPromise> & {
     replace?: boolean;
 };
 export type ModelAttributes = Record<string, any>;
+export type JIDModelAttributes = ModelAttributes & {
+    jid: string;
+};
 export interface ModelOptions {
     collection?: Collection;
     parse?: boolean;

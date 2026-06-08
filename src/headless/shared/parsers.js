@@ -135,6 +135,9 @@ export function getEncryptionAttributes (stanza) {
     if (namespace) {
         attrs.is_encrypted = true;
         attrs.encryption_namespace = namespace;
+    } else if (sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO2}"]`, stanza).pop()) {
+        attrs.is_encrypted = true;
+        attrs.encryption_namespace = Strophe.NS.OMEMO2;
     } else if (sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).pop()) {
         attrs.is_encrypted = true;
         attrs.encryption_namespace = Strophe.NS.OMEMO;

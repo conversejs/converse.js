@@ -13,10 +13,12 @@ declare namespace _default {
              * The device list will be created if it doesn't exist already.
              * @method _converse.api.omemo.devicelists.get
              * @param {String} jid - The Jabber ID for which the device list will be returned.
-             * @param {boolean} create=false - Set to `true` if the device list
+             * @param {boolean} [create=false] - Set to `true` if the device list
              *      should be created if it cannot be found.
+             * @param {import('./types').OMEMOVersion} [version] - The OMEMO version.
+             *      Defaults to the legacy version.
              */
-            function get(jid: string, create?: boolean): Promise<any>;
+            function get(jid: string, create?: boolean, version?: import("./types").OMEMOVersion): Promise<any>;
         }
         namespace bundle {
             /**

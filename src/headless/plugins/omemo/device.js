@@ -1,18 +1,18 @@
-import { Model } from '@converse/skeletor';
 import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { IQError } from '../../shared/errors.js';
 import { UNDECIDED } from './constants.js';
-import { parseBundle } from './parsers.js';
+import { parseBundle, parseBundleV2 } from './parsers.js';
+import { OMEMOVersionAwareModel } from './profiles.js';
 
 const { Strophe, sizzle, stx, u } = converse.env;
 
 /**
- * @extends {Model<import('./types').DeviceAttributes>}
+ * @extends {OMEMOVersionAwareModel<import('./types').DeviceAttributes>}
  */
-class Device extends Model {
+class Device extends OMEMOVersionAwareModel {
     defaults() {
         return {
             trusted: UNDECIDED,
@@ -38,10 +38,15 @@ class Device extends Model {
      */
     async fetchBundleFromServer() {
         const bare_jid = _converse.session.get('bare_jid');
+        const device_id = this.get('id');
+        const is_v2 = this.isV2();
+        const bundle_node_prefix = is_v2 ? Strophe.NS.OMEMO2_BUNDLES : Strophe.NS.OMEMO_BUNDLES;
+        const bundle_xmlns = is_v2 ? Strophe.NS.OMEMO2 : Strophe.NS.OMEMO;
+
         const stanza = stx`
             <iq type="get" from="${bare_jid}" to="${this.get('jid')}" xmlns="jabber:client">
                 <pubsub xmlns="${Strophe.NS.PUBSUB}">
-                    <items node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"/>
+                    <items node="${bundle_node_prefix}:${device_id}"/>
                 </pubsub>
             </iq>`;
 
@@ -49,7 +54,7 @@ class Device extends Model {
         try {
             iq = await api.sendIQ(stanza);
         } catch (iq) {
-            log.error(`Could not fetch bundle for device ${this.get('id')} from ${this.get('jid')}`);
+            log.error(`Could not fetch bundle for device ${device_id} from ${this.get('jid')}`);
             log.error(iq);
             if (iq && iq.querySelector('error')) {
                 throw new IQError('Could not fetch bundle', iq);
@@ -59,9 +64,10 @@ class Device extends Model {
         if (iq.querySelector('error')) {
             throw new IQError('Could not fetch bundle', iq);
         }
-        const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, iq).pop();
-        const bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop();
-        const bundle = parseBundle(bundle_el);
+
+        const publish_el = sizzle(`items[node="${bundle_node_prefix}:${device_id}"]`, iq).pop();
+        const bundle_el = sizzle(`bundle[xmlns="${bundle_xmlns}"]`, publish_el).pop();
+        const bundle = is_v2 ? parseBundleV2(bundle_el) : parseBundle(bundle_el);
         this.save('bundle', bundle);
         return bundle;
     }

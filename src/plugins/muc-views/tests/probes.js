@@ -32,7 +32,10 @@ describe('Groupchats', function () {
                     stx`<presence to="${muc_jid}/ralphm" type="probe" xmlns="jabber:client">
                         <priority>0</priority>
                         <x xmlns="vcard-temp:x:update"/>
-                        <c hash="sha-1" node="https://conversejs.org" ver="Hbd4V8rlZualGDSkxW/4bVlnudc=" xmlns="http://jabber.org/protocol/caps"/>
+                        <c hash="sha-1"
+                            node="https://conversejs.org"
+                            ver="aU8gtptxi4fPJB8IPibd7tJbTLE="
+                            xmlns="http://jabber.org/protocol/caps"/>
                     </presence>`,
                 );
 
@@ -47,9 +50,12 @@ describe('Groupchats', function () {
                 expect(occupant.get('role')).toBe('participant');
 
                 // Check that unavailable but affiliated occupants don't get destroyed
-                stanza = stx`<message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="${muc_jid}/gonePhising">
-                    <body>This message from an unavailable user will trigger a presence probe</body>
-                </message>`;
+                stanza = stx`<message xmlns="jabber:client"
+                            to="${_converse.jid}"
+                            type="groupchat"
+                            from="${muc_jid}/gonePhising">
+                        <body>This message from an unavailable user will trigger a presence probe</body>
+                    </message>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
                 await u.waitUntil(() => view.model.messages.length === 2);
@@ -66,11 +72,15 @@ describe('Groupchats', function () {
                     stx`<presence to="${muc_jid}/gonePhising" type="probe" xmlns="jabber:client">
                         <priority>0</priority>
                         <x xmlns="vcard-temp:x:update"/>
-                        <c hash="sha-1" node="https://conversejs.org" ver="Hbd4V8rlZualGDSkxW/4bVlnudc=" xmlns="http://jabber.org/protocol/caps"/>
+                        <c hash="sha-1" node="https://conversejs.org" ver="aU8gtptxi4fPJB8IPibd7tJbTLE=" xmlns="http://jabber.org/protocol/caps"/>
                     </presence>`,
                 );
 
-                presence = stx`<presence xmlns="jabber:client" type="unavailable" to="${_converse.jid}" from="${muc_jid}/gonePhising">
+                presence = stx`<presence
+                        xmlns="jabber:client"
+                        type="unavailable"
+                        to="${_converse.jid}"
+                        from="${muc_jid}/gonePhising">
                     <x xmlns="http://jabber.org/protocol/muc#user">
                         <item affiliation="member" jid="gonePhishing@example.org/d34dBEEF" role="participant"/>
                     </x>

@@ -1,8 +1,11 @@
 import { initStorage } from '../../utils/storage.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import OMEMOStore from './store.js';
 import { generateFingerprint, getDeviceList } from './utils.js';
+
+const { Strophe } = converse.env;
 
 export default {
     /**
@@ -47,11 +50,13 @@ export default {
              * The device list will be created if it doesn't exist already.
              * @method _converse.api.omemo.devicelists.get
              * @param {String} jid - The Jabber ID for which the device list will be returned.
-             * @param {boolean} create=false - Set to `true` if the device list
+             * @param {boolean} [create=false] - Set to `true` if the device list
              *      should be created if it cannot be found.
+             * @param {import('./types').OMEMOVersion} [version] - The OMEMO version.
+             *      Defaults to the legacy version.
              */
-            async get(jid, create = false) {
-                return await getDeviceList(jid, create);
+            async get(jid, create = false, version = Strophe.NS.OMEMO) {
+                return await getDeviceList(jid, create, version);
             },
         },
 

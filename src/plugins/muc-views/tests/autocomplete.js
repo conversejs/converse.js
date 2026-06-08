@@ -12,7 +12,8 @@ describe('The nickname autocomplete feature', function () {
             // Nicknames from presences
             ['dick', 'harry'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                     to="tom@montague.lit/resource"
                     from="lounge@montague.lit/${nick}"
@@ -84,7 +85,8 @@ describe('The nickname autocomplete feature', function () {
             // Nicknames from presences
             ['dick', 'harry'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                         to="tom@montague.lit/resource"
                         from="lounge@montague.lit/${nick}"
@@ -149,15 +151,20 @@ describe('The nickname autocomplete feature', function () {
 
     it(
         'shows all autocompletion options when the user presses @ right after an allowed character',
-        mock.initConverse(converse, ['chatBoxesFetched'], { 'opening_mention_characters': ['('] }, async function (_converse) {
-            await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'tom');
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            { 'opening_mention_characters': ['('] },
+            async function (_converse) {
+                await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'tom');
+                const view = _converse.chatboxviews.get('lounge@montague.lit');
 
-            // Nicknames from presences
-            ['dick', 'harry'].forEach((nick) => {
-                _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
-                        stx`<presence
+                // Nicknames from presences
+                ['dick', 'harry'].forEach((nick) => {
+                    _converse.api.connection.get()._dataRecv(
+                        mock.createRequest(
+                            _converse,
+                            stx`<presence
                     to="tom@montague.lit/resource"
                     from="lounge@montague.lit/${nick}"
                     xmlns="jabber:client">
@@ -165,13 +172,13 @@ describe('The nickname autocomplete feature', function () {
                         <item affiliation="none" jid="${nick}@montague.lit/resource" role="participant"/>
                     </x>
                 </presence>`,
-                    ),
-                );
-            });
+                        ),
+                    );
+                });
 
-            // Nicknames from messages
-            await view.model.handleMessageStanza(
-                stx`<message
+                // Nicknames from messages
+                await view.model.handleMessageStanza(
+                    stx`<message
                     from="lounge@montague.lit/jane"
                     id="${u.getUniqueId()}"
                     to="romeo@montague.lit"
@@ -179,45 +186,46 @@ describe('The nickname autocomplete feature', function () {
                     xmlns="jabber:client">
                 <body>Hello world</body>
             </message>`,
-            );
+                );
 
-            await u.waitUntil(() => view.model.messages.last()?.get('received'));
+                await u.waitUntil(() => view.model.messages.last()?.get('received'));
 
-            // Test that pressing @ brings up all options
-            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            const at_event = {
-                'target': textarea,
-                'preventDefault': function preventDefault() {},
-                'stopPropagation': function stopPropagation() {},
-                'key': '@',
-            };
-            textarea.value = '(';
-            const message_form = view.querySelector('converse-muc-message-form');
-            message_form.onKeyDown(at_event);
-            textarea.value = '(@';
-            message_form.onKeyUp(at_event);
+                // Test that pressing @ brings up all options
+                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
+                const at_event = {
+                    'target': textarea,
+                    'preventDefault': function preventDefault() {},
+                    'stopPropagation': function stopPropagation() {},
+                    'key': '@',
+                };
+                textarea.value = '(';
+                const message_form = view.querySelector('converse-muc-message-form');
+                message_form.onKeyDown(at_event);
+                textarea.value = '(@';
+                message_form.onKeyUp(at_event);
 
-            await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 4);
-            const first_child = view.querySelector('.suggestion-box__results li:first-child');
-            const first_child_avatar = first_child.querySelector('converse-avatar');
-            expect(first_child_avatar.textContent.trim()).toBe('D');
-            expect(first_child.textContent.trim()).toBe('D dick');
+                await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 4);
+                const first_child = view.querySelector('.suggestion-box__results li:first-child');
+                const first_child_avatar = first_child.querySelector('converse-avatar');
+                expect(first_child_avatar.textContent.trim()).toBe('D');
+                expect(first_child.textContent.trim()).toBe('D dick');
 
-            const second_child = view.querySelector('.suggestion-box__results li:nth-child(2)');
-            const second_child_avatar = second_child.querySelector('converse-avatar');
-            expect(second_child_avatar.textContent.trim()).toBe('H');
-            expect(second_child.textContent.trim()).toBe('H harry');
+                const second_child = view.querySelector('.suggestion-box__results li:nth-child(2)');
+                const second_child_avatar = second_child.querySelector('converse-avatar');
+                expect(second_child_avatar.textContent.trim()).toBe('H');
+                expect(second_child.textContent.trim()).toBe('H harry');
 
-            const third_child = view.querySelector('.suggestion-box__results li:nth-child(3)');
-            const third_child_avatar = third_child.querySelector('converse-avatar');
-            expect(third_child_avatar.textContent.trim()).toBe('J');
-            expect(third_child.textContent.trim()).toBe('J jane');
+                const third_child = view.querySelector('.suggestion-box__results li:nth-child(3)');
+                const third_child_avatar = third_child.querySelector('converse-avatar');
+                expect(third_child_avatar.textContent.trim()).toBe('J');
+                expect(third_child.textContent.trim()).toBe('J jane');
 
-            const fourth_child = view.querySelector('.suggestion-box__results li:nth-child(4)');
-            const fourth_child_avatar = fourth_child.querySelector('converse-avatar');
-            expect(fourth_child_avatar.textContent.trim()).toBe('T');
-            expect(fourth_child.textContent.trim()).toBe('T tom');
-        }),
+                const fourth_child = view.querySelector('.suggestion-box__results li:nth-child(4)');
+                const fourth_child_avatar = fourth_child.querySelector('converse-avatar');
+                expect(fourth_child_avatar.textContent.trim()).toBe('T');
+                expect(fourth_child.textContent.trim()).toBe('T tom');
+            },
+        ),
     );
 
     it(
@@ -230,7 +238,8 @@ describe('The nickname autocomplete feature', function () {
             // Nicknames from presences
             ['bernard', 'naber', 'helberlo', 'john', 'jones'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                     to="tom@montague.lit/resource"
                     from="lounge@montague.lit/${nick}"
@@ -384,7 +393,8 @@ describe('The nickname autocomplete feature', function () {
 
             // Test that pressing tab twice selects
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence
                     to="romeo@montague.lit/orchard"
                     from="lounge@montague.lit/z3r0"
@@ -416,7 +426,8 @@ describe('The nickname autocomplete feature', function () {
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             expect(view.model.occupants.length).toBe(1);
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence
                     to="romeo@montague.lit/orchard"
                     from="lounge@montague.lit/some1"

@@ -10,7 +10,9 @@ describe('A Groupchat Message', function () {
             const muc_jid = 'lounge@montague.lit';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <presence
                 to="romeo@montague.lit/_converse.js-29092160"
                 from="coven@chat.shakespeare.lit/newguy"
@@ -18,7 +20,8 @@ describe('A Groupchat Message', function () {
                 <x xmlns="${Strophe.NS.MUC_USER}">
                     <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
                 </x>
-            </presence>`),
+            </presence>`,
+                ),
             );
 
             const msg_id = u.getUniqueId();
@@ -100,7 +103,9 @@ describe('A Groupchat Message', function () {
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <presence
                 to="romeo@montague.lit/_converse.js-29092160"
                 from="coven@chat.shakespeare.lit/newguy"
@@ -108,7 +113,8 @@ describe('A Groupchat Message', function () {
                 <x xmlns="${Strophe.NS.MUC_USER}">
                     <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
                 </x>
-            </presence>`),
+            </presence>`,
+                ),
             );
 
             const msg_id = u.getUniqueId();

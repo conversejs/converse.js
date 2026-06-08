@@ -9,21 +9,55 @@ import MUC from '../../plugins/muc/muc.js';
 import { getCrypto } from './crypto.js';
 import { KEY_ALGO, TAG_LENGTH, UNTRUSTED } from './constants.js';
 import DeviceLists from './devicelists.js';
+import { VersionedOMEMOStore } from './versioned-store.js';
+import { encryptSCE, decryptSCE } from './sce.js';
 
 const { u, Strophe, stx } = converse.env;
 const { arrayBufferToHex, base64ToArrayBuffer } = u;
 
 /**
+ * Returns a VersionedOMEMOStore proxy for the given OMEMO version.
+ *
+ * The proxy implements the subset of libomemo's `OMEMOStore` interface that
+ * `SessionCipher` and `SessionBuilder` actually exercise at runtime (the
+ * crypto/session methods); the interface's raw key-value members
+ * (`store`/`put`/`get`/`remove`) are part of the reference `InMemoryStore` and
+ * are never called on a consumer store, so we present the proxy as an
+ * `OMEMOStore` here.
+ * @param {import('./types').OMEMOVersion} version
+ * @returns {import('libomemo.js').OMEMOStore}
+ */
+export function getVersionedStore(version) {
+    return /** @type {import('libomemo.js').OMEMOStore} */ (
+        /** @type {unknown} */ (new VersionedOMEMOStore(_converse.state.omemo_store, version))
+    );
+}
+
+/**
  * @param {Element} stanza
  */
 async function updateDevicesFromStanza(stanza) {
-    const items_el = sizzle(`items[node="${Strophe.NS.OMEMO_DEVICELIST}"]`, stanza).pop();
-    if (!items_el) return;
+    // Detect which version's devicelist was pushed
+    let items_el = sizzle(`items[node="${Strophe.NS.OMEMO_DEVICELIST}"]`, stanza).pop();
+    let version = Strophe.NS.OMEMO;
 
-    const device_selector = `item list[xmlns="${Strophe.NS.OMEMO}"] device`;
-    const device_ids = sizzle(device_selector, items_el).map((d) => d.getAttribute('id'));
+    if (!items_el) {
+        items_el = sizzle(`items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`, stanza).pop();
+        if (!items_el) return;
+        version = Strophe.NS.OMEMO2;
+    }
+
+    let device_ids;
+    if (version === Strophe.NS.OMEMO2) {
+        const sel = `item devices[xmlns="${Strophe.NS.OMEMO2_DEVICELIST}"] device`;
+        device_ids = sizzle(sel, items_el).map((d) => d.getAttribute('id'));
+    } else {
+        const sel = `item list[xmlns="${Strophe.NS.OMEMO}"] device`;
+        device_ids = sizzle(sel, items_el).map((d) => d.getAttribute('id'));
+    }
+
     const jid = stanza.getAttribute('from');
-    const devicelist = await api.omemo.devicelists.get(jid, true);
+    const devicelist = await api.omemo.devicelists.get(jid, true, version);
     const devices = devicelist.devices;
     const removed_ids = devices.pluck('id').filter(/** @param {string} id */ (id) => !device_ids.includes(id));
 
@@ -59,16 +93,33 @@ async function updateDevicesFromStanza(stanza) {
  */
 async function updateBundleFromStanza(stanza) {
     const items_el = sizzle(`items`, stanza).pop();
-    if (!items_el || !items_el.getAttribute('node').startsWith(Strophe.NS.OMEMO_BUNDLES)) {
+    if (!items_el) return;
+
+    const node = items_el.getAttribute('node');
+    let version, device_id;
+
+    if (node.startsWith(Strophe.NS.OMEMO2_BUNDLES + ':')) {
+        version = Strophe.NS.OMEMO2;
+        device_id = node.slice(Strophe.NS.OMEMO2_BUNDLES.length + 1);
+    } else if (node.startsWith(Strophe.NS.OMEMO_BUNDLES + ':')) {
+        version = Strophe.NS.OMEMO;
+        device_id = node.slice(Strophe.NS.OMEMO_BUNDLES.length + 1);
+    } else {
         return;
     }
-    const device_id = items_el.getAttribute('node').split(':')[1];
+
     const jid = stanza.getAttribute('from');
     const bundle_el = sizzle(`item > bundle`, items_el).pop();
-    const devicelist = await api.omemo.devicelists.get(jid, true);
+    const devicelist = await api.omemo.devicelists.get(jid, true, version);
     const device = devicelist.devices.get(device_id) || devicelist.devices.create({ 'id': device_id, jid });
-    const bundle = u.omemo.parseBundle(bundle_el);
-    device.save({ bundle });
+
+    if (version === Strophe.NS.OMEMO2) {
+        const bundle = u.omemo.parseBundleV2(bundle_el);
+        device.save({ bundle });
+    } else {
+        const bundle = u.omemo.parseBundle(bundle_el);
+        device.save({ bundle });
+    }
 }
 
 /**
@@ -110,20 +161,36 @@ async function fetchDeviceLists() {
     await new Promise((resolve) => {
         _converse.state.devicelists.fetch({
             success: resolve,
-            /**
-             * @param {unknown} _m
-             * @param {unknown} e
-             */
             error: (_m, e) => {
                 log.error(e);
                 resolve();
             },
         });
     });
-    // Call API method to wait for our own device list to be fetched from the
-    // server or to be created. If we have no pre-existing OMEMO session, this
-    // will cause a new device and bundle to be generated and published.
+
+    _converse.state.devicelists_v2 = new DeviceLists();
+    const id_v2 = `converse.devicelists-v2-${bare_jid}`;
+    initStorage(_converse.state.devicelists_v2, id_v2);
+    await new Promise((resolve) => {
+        _converse.state.devicelists_v2.fetch({
+            success: resolve,
+            error: (_m, e) => {
+                log.error(e);
+                resolve();
+            },
+        });
+    });
+
+    // Ensure our own legacy device list exists (creates + publishes if needed).
+    // This is awaited (unlike the v2 fetch below) because OMEMO initialization
+    // depends on it: by the time `session.restore` runs and `OMEMOInitialized`
+    // fires, our own device must already be present in (and published to) the
+    // legacy device list, otherwise consumers race against `publishCurrentDevice`.
     await api.omemo.devicelists.get(bare_jid, true);
+    // Start v2 device list initialization without blocking legacy OMEMO setup.
+    // The v2 PEP fetch can take time and failing it (e.g. on servers that don't
+    // support omemo:2) must not prevent the legacy path from working.
+    api.omemo.devicelists.get(bare_jid, true, Strophe.NS.OMEMO2).catch((e) => log.error(e));
 }
 
 /**
@@ -156,12 +223,14 @@ export async function initOMEMO(reconnecting) {
 
 /**
  * @param {String} jid - The Jabber ID for which the device list will be returned.
- * @param {boolean} [create=false] - Set to `true` if the device list
- *      should be created if it cannot be found.
+ * @param {boolean} [create=false] - Set to `true` if the device list should be
+ *      created if it cannot be found.
+ * @param {import('./types').OMEMOVersion} [version] - Defaults to legacy version.
  */
-export async function getDeviceList(jid, create = false) {
-    const { devicelists } = _converse.state;
-    const list = devicelists.get(jid) || (create ? devicelists.create({ jid }) : null);
+export async function getDeviceList(jid, create = false, version = Strophe.NS.OMEMO) {
+    const collection = version === Strophe.NS.OMEMO2 ? _converse.state.devicelists_v2 : _converse.state.devicelists;
+
+    const list = collection.get(jid) || (create ? collection.create({ jid, version }) : null);
     await list?.initialized;
     return list;
 }
@@ -174,7 +243,12 @@ export async function generateFingerprint(device) {
         return;
     }
     const bundle = await device.getBundle();
-    bundle['fingerprint'] = arrayBufferToHex(base64ToArrayBuffer(bundle['identity_key']));
+    const raw = base64ToArrayBuffer(bundle['identity_key']);
+    // For legacy (33-byte Curve25519), strip the leading 0x05 encoding byte
+    // so the display fingerprint is always the 64-char (32-byte) key hex.
+    // For v2 (32-byte Ed25519), the key has no leading byte.
+    const fp_buf = device.isV2 && device.isV2() ? raw : raw.slice(1);
+    bundle['fingerprint'] = arrayBufferToHex(fp_buf);
     device.save('bundle', bundle);
     device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
 }
@@ -216,53 +290,61 @@ export function handleMessageSendError(e, chat) {
 }
 
 /**
+ * Returns the device collection for a contact and OMEMO version.
+ * Doesn't throw on any failure, instead logs and returns an empty collection.
  * @param {string} jid
+ * @param {import('./types').OMEMOVersion} [version]
  * @returns {Promise<import('./devices.js').default>}
  */
-export async function getDevicesForContact(jid) {
+export async function getDevicesForContact(jid, version = Strophe.NS.OMEMO) {
     await api.waitUntil('OMEMOInitialized');
-    const devicelist = await api.omemo.devicelists.get(jid, true);
-    await devicelist.fetchDevices();
-    if (devicelist.devices.length === 0) {
-        // We don't have any devices for this contact. This can happen when an
-        // earlier fetch failed (e.g. due to a connectivity issue) or because
-        // the contact had not yet published their device list when we last
-        // checked. The result of `fetchDevices` is memoized, so without an
-        // explicit refresh we'd never query the server again for the lifetime
-        // of this device list. Force a re-fetch so we can recover.
-        await devicelist.fetchDevices(true);
+    try {
+        const devicelist = await api.omemo.devicelists.get(jid, true, version);
+        await devicelist.fetchDevices();
+        // Only force a re-fetch when the previous attempt actually failed (timeout or error).
+        if (devicelist.devices.length === 0 && devicelist.lastFetchFailed) {
+            await devicelist.fetchDevices(true);
+        }
+        return devicelist.devices;
+    } catch (e) {
+        log.error(e);
+        return new _converse.exports.Devices(null, { version });
     }
-    return devicelist.devices;
 }
 
 /**
  * @param {string} jid
  * @param {number} id
+ * @param {import('./types').OMEMOVersion} [version]
  * @returns {Promise<import('libomemo.js').SessionCipher>}
  */
-export async function getSessionCipher(jid, id) {
+export async function getSessionCipher(jid, id, version = Strophe.NS.OMEMO) {
     const { OMEMOAddress, SessionCipher } = await getCrypto();
     const address = new OMEMOAddress(jid, id);
-    return new SessionCipher(_converse.state.omemo_store, address);
+    const store = getVersionedStore(version);
+    return new SessionCipher(store, address, version);
 }
 
 /**
  * @param {ArrayBuffer} key_and_tag
  * @param {import('./device').default} device
+ * @param {import('./types').OMEMOVersion} [version]
  */
-async function encryptKey(key_and_tag, device) {
-    const session_cipher = await getSessionCipher(device.get('jid'), Number(device.get('id')));
+async function encryptKey(key_and_tag, device, version = Strophe.NS.OMEMO) {
+    const session_cipher = await getSessionCipher(device.get('jid'), Number(device.get('id')), version);
     const payload = await session_cipher.encrypt(key_and_tag);
     return { payload, device };
 }
 
 /**
  * @param {import('./device').default} device
+ * @param {import('./types').OMEMOVersion} [version]
  */
-async function buildSession(device) {
+async function buildSession(device, version = Strophe.NS.OMEMO) {
     const { OMEMOAddress, SessionBuilder } = await getCrypto();
     const address = new OMEMOAddress(device.get('jid'), device.get('id'));
-    const sessionBuilder = new SessionBuilder(_converse.state.omemo_store, address);
+    const store = getVersionedStore(version);
+    const sessionBuilder = new SessionBuilder(store, address, version);
     const prekey = device.getRandomPreKey();
     const bundle = await device.getBundle();
     const device_id = device.get('id');
@@ -284,20 +366,22 @@ async function buildSession(device) {
 
 /**
  * @param {import('./device').default} device
+ * @param {import('./types').OMEMOVersion} [version]
  */
-export async function getSession(device) {
+export async function getSession(device, version = Strophe.NS.OMEMO) {
     if (!device.get('bundle')) {
         log.error(`Could not build an OMEMO session for device ${device.get('id')} because we don't have its bundle`);
         return null;
     }
     const { OMEMOAddress } = await getCrypto();
     const address = new OMEMOAddress(device.get('jid'), device.get('id'));
-    const session = await _converse.state.omemo_store.loadSession(address.toString());
+    const store = getVersionedStore(version);
+    const session = await store.loadSession(address.toString());
     if (session) {
         return session;
     } else {
         try {
-            return await buildSession(device);
+            return await buildSession(device, version);
         } catch (e) {
             log.error(`Could not build an OMEMO session for device ${device.get('id')}`);
             log.error(e);
@@ -307,57 +391,155 @@ export async function getSession(device) {
 }
 
 /**
+ * OMEMO in a MUC requires that real JIDs are visible (non-anonymous) and that
+ * the membership is restricted (members-only). This is the single source of
+ * truth for that rule.
+ * @param {MUC} chatroom
+ */
+function isOMEMOMUCEligible(chatroom) {
+    return !!(chatroom.features.get('nonanonymous') && chatroom.features.get('membersonly'));
+}
+
+/**
+ * A bundle-fetch error is "actionable" when it tells the user something they
+ * can fix and applies to the whole contact/server rather than a single stale
+ * device: presence-subscription-required or remote-server-not-found. These must
+ * abort the send and be surfaced; any other (benign) per-device failure is
+ * dropped silently so it only loses that one device.
+ * @param {unknown} e
+ * @returns {boolean}
+ */
+function isActionableBundleError(e) {
+    return (
+        e instanceof errors.IQError &&
+        sizzle(
+            `presence-subscription-required[xmlns="${Strophe.NS.PUBSUB_ERROR}"], ` +
+                `remote-server-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]`,
+            e.iq,
+        ).length > 0
+    );
+}
+
+/**
+ * Collects the set of recipient devices for a given chatbox, split by OMEMO
+ * version.  Deduplicates across versions (by device id) so each physical
+ * device is addressed exactly once. V2 is preferred when both versions are present.
  * @param {import('../../shared/chatbox.js').default} chatbox
- * @returns {Promise<import('./device.js').default[]>}
+ * @returns {Promise<{legacy: import('./device.js').default[], v2: import('./device.js').default[]}>}
  */
 async function getBundlesAndBuildSessions(chatbox) {
-    /**
-     * @typedef {import('./device.js').default} Device
-     */
     const { __ } = _converse;
     const no_devices_err = __('Sorry, no devices found to which we can send an OMEMO encrypted message.');
-    let devices;
+
+    let legacy_devices = [];
+    let v2_devices = [];
+
     if (chatbox instanceof MUC) {
-        const collections = await Promise.all(
-            chatbox.occupants.map(
-                /** @param {import('../../plugins/muc/occupant').default} o */
-                (o) => getDevicesForContact(o.get('jid')),
-            ),
+        // Defense-in-depth: OMEMO activation is already gated on this upstream
+        // (checkOMEMOSupported), but a room can flip to anonymous mid-session.
+        if (!isOMEMOMUCEligible(chatbox)) {
+            throw new errors.UserFacingError(
+                __('Cannot use OMEMO in this groupchat — it must be non-anonymous and members-only.'),
+            );
+        }
+        // Our own devices are included here via the self-occupant (it carries
+        // our real JID in a non-anonymous room); the our_id filter below then
+        // drops the sending device, exactly as the 1:1 branch does.
+        const occupants = chatbox.occupants.filter(
+            /** @param {import('../../plugins/muc/occupant').default} o */
+            (o) => o.get('jid'),
         );
-        devices = collections.reduce((a, b) => a.concat(b.models), []);
+        const [legacy_cols, v2_cols] = await Promise.all([
+            Promise.all(occupants.map((o) => getDevicesForContact(o.get('jid'), Strophe.NS.OMEMO))),
+            Promise.all(occupants.map((o) => getDevicesForContact(o.get('jid'), Strophe.NS.OMEMO2))),
+        ]);
+        legacy_devices = legacy_cols.flatMap((c) => c.models);
+        v2_devices = v2_cols.flatMap((c) => c.models);
     } else if (chatbox.get('type') === constants.PRIVATE_CHAT_TYPE) {
-        const their_devices = await getDevicesForContact(chatbox.get('jid'));
-        if (their_devices.length === 0) {
-            throw new errors.UserFacingError(no_devices_err);
-        }
+        const contact_jid = chatbox.get('jid');
         const bare_jid = _converse.session.get('bare_jid');
-        const own_list = await api.omemo.devicelists.get(bare_jid);
-        const own_devices = own_list.devices;
-        devices = [...own_devices.models, ...their_devices.models];
-    }
-    // Filter out our own device
-    const id = _converse.state.omemo_store.get('device_id');
-    devices = devices.filter(/** @param {Device} d */ (d) => d.get('id') !== id);
 
-    // Fetch bundles if necessary
-    await Promise.all(devices.map(/** @param {Device} d */ (d) => d.getBundle()));
+        // Fetch the contact's devices for both versions in parallel (same
+        // server, different PEP node), so v2 activates deterministically rather
+        // than only when the contact's v2 devicelist happens to already be
+        // cached (e.g. from a PEP push). An empty v2 list just means the contact
+        // doesn't support omemo:2, in which case we fall back to legacy.
+        const [their_legacy, their_v2] = await Promise.all([
+            getDevicesForContact(contact_jid, Strophe.NS.OMEMO),
+            getDevicesForContact(contact_jid, Strophe.NS.OMEMO2),
+        ]);
 
-    const sessions = await Promise.all(
-        devices.map(
-            /** @param {Device} [d] */ (d) => {
-                return (d && getSession(d)) || null;
-            },
-        ),
-    );
+        // Our own device lists are populated at init, so a cached lookup suffices.
+        const [own_legacy_list, own_v2_list] = await Promise.all([
+            api.omemo.devicelists.get(bare_jid, false, Strophe.NS.OMEMO),
+            api.omemo.devicelists.get(bare_jid, false, Strophe.NS.OMEMO2),
+        ]);
 
-    if (sessions.includes(null)) {
-        // We couldn't build a session for certain devices.
-        devices = devices.filter(/** @param {Device} d */ (d) => sessions[devices.indexOf(d)]);
-        if (devices.length === 0) {
+        if (their_legacy.length === 0 && their_v2.length === 0) {
             throw new errors.UserFacingError(no_devices_err);
         }
+
+        legacy_devices = [...(own_legacy_list?.devices.models ?? []), ...their_legacy.models];
+        v2_devices = [...(own_v2_list?.devices.models ?? []), ...their_v2.models];
     }
-    return devices;
+
+    // A device's identity for routing is the (bare JID, id) pair: device ids are
+    // unique only per user, so the JID is needed to disambiguate.
+    /** @param {string} jid @param {string} id */
+    const deviceKey = (jid, id) => `${Strophe.getBareJidFromJid(jid).toLowerCase()}/${id}`;
+
+    // Exclude our own sending device (we encrypt to our other devices, never the
+    // one composing the message).
+    const our_id = _converse.state.omemo_store.get('device_id');
+    const our_key = deviceKey(_converse.session.get('bare_jid'), our_id);
+    legacy_devices = legacy_devices.filter((d) => deviceKey(d.get('jid'), d.get('id')) !== our_key);
+    v2_devices = v2_devices.filter((d) => deviceKey(d.get('jid'), d.get('id')) !== our_key);
+
+    // Deduplicate across versions: a device that supports both is addressed via
+    // omemo:2 only (preferred), so we drop it from the legacy list here and never
+    // fetch its legacy bundle.
+    const v2_keys = new Set(v2_devices.map((d) => deviceKey(d.get('jid'), d.get('id'))));
+    legacy_devices = legacy_devices.filter((d) => !v2_keys.has(deviceKey(d.get('jid'), d.get('id'))));
+
+    // Fetch bundles for the remaining devices. A benign single-device failure
+    // (e.g. a stale/orphaned device with no published bundle) must only drop
+    // that one device, not abort the whole send — so fetchBundle swallows it and
+    // returns null. A genuinely actionable, contact-wide error
+    // (presence-subscription-required, remote-server-not-found) is rethrown
+    // instead: it aborts the send and propagates to the user, even when our own
+    // other devices are still reachable (encrypting only to ourselves would
+    // silently leave the intended recipient unable to read the message).
+    const fetchBundle = async (d) => {
+        try {
+            await d.getBundle();
+            return d;
+        } catch (e) {
+            if (isActionableBundleError(e)) throw e;
+            log.error(`Skipping device ${d.get('id')} of ${d.get('jid')}: could not fetch its OMEMO bundle`);
+            log.error(e);
+            return null;
+        }
+    };
+    const [legacy_fetched, v2_fetched] = await Promise.all([
+        Promise.all(legacy_devices.map(fetchBundle)),
+        Promise.all(v2_devices.map(fetchBundle)),
+    ]);
+    legacy_devices = legacy_devices.filter((_d, i) => legacy_fetched[i] !== null);
+    v2_devices = v2_devices.filter((_d, i) => v2_fetched[i] !== null);
+
+    // Build sessions, dropping devices where session establishment fails.
+    const [legacy_sessions, v2_sessions] = await Promise.all([
+        Promise.all(legacy_devices.map((d) => getSession(d, Strophe.NS.OMEMO))),
+        Promise.all(v2_devices.map((d) => getSession(d, Strophe.NS.OMEMO2))),
+    ]);
+    legacy_devices = legacy_devices.filter((_d, i) => legacy_sessions[i] !== null);
+    v2_devices = v2_devices.filter((_d, i) => v2_sessions[i] !== null);
+
+    if (legacy_devices.length === 0 && v2_devices.length === 0) {
+        // Nothing reachable and no actionable server error to explain why.
+        throw new errors.UserFacingError(no_devices_err);
+    }
+    return { legacy: legacy_devices, v2: v2_devices };
 }
 
 /**
@@ -412,20 +594,26 @@ export async function decryptMessage(obj) {
 }
 
 /**
- * @param {import('../../shared/chatbox').default} chat
- * @param {import('../../shared/types').MessageAndStanza} data
- * @return {Promise<import('../../shared/types').MessageAndStanza>}
+ * Groups an array of {payload, device} dicts by the device's bare JID.
+ * Used to produce <keys jid="..."> groupings in the v2 <encrypted> element.
+ * @param {Array<{payload: import('libomemo.js').EncryptResult, device: import('./device.js').default}>} dicts
+ * @returns {Map<string, Array<{payload: import('libomemo.js').EncryptResult, device: import('./device.js').default}>>}
  */
-export async function createOMEMOMessageStanza(chat, data) {
-    const { stanza } = data;
-    const { message } = data;
-    if (!message.get('is_encrypted')) {
-        return data;
+function groupByJID(dicts) {
+    const map = new Map();
+    for (const entry of dicts) {
+        const jid = entry.device.get('jid');
+        if (!map.has(jid)) map.set(jid, []);
+        map.get(jid).push(entry);
     }
-    if (!message.get('body')) {
-        throw new Error('No message body to encrypt!');
-    }
-    const devices = await getBundlesAndBuildSessions(chat);
+    return map;
+}
+
+/**
+ * @param {import('../../shared/message').default} message
+ * @param {import('./device').default[]} devices
+ */
+async function getLegacyEncryptedElement(message, devices) {
     const { key_and_tag, iv, payload } = await encryptMessage(message.get('plaintext'));
 
     // The 16 bytes key and the GCM authentication tag (The tag
@@ -433,12 +621,14 @@ export async function createOMEMOMessageStanza(chat, data) {
     // intended recipient device, i.e. both own devices as well as
     // devices associated with the contact, the result of this
     // concatenation is encrypted using the corresponding
-    // long-standing SignalProtocol session.
-    const dicts = await Promise.all(
+    // long-standing OMEMO session.
+    const legacy_dicts = await Promise.all(
         devices
-            .filter((device) => device.get('trusted') != UNTRUSTED && device.get('active'))
-            .map((device) => encryptKey(key_and_tag, device)),
+            .filter((d) => d.get('trusted') != UNTRUSTED && d.get('active'))
+            .map((d) => encryptKey(key_and_tag, d, Strophe.NS.OMEMO)),
     );
+
+    const sid = _converse.state.omemo_store.get('device_id');
 
     // An encrypted header is added to the message for
     // each device that is supposed to receive it.
@@ -446,27 +636,93 @@ export async function createOMEMOMessageStanza(chat, data) {
     // payload message is encrypted with,
     // and they are separately encrypted using the
     // session corresponding to the counterpart device.
-    stanza
-        .cnode(
-            stx`
-            <encrypted xmlns="${Strophe.NS.OMEMO}">
-                <header sid="${_converse.state.omemo_store.get('device_id')}">
-                    ${dicts.map(({ payload, device }) => {
-                        const prekey = 3 == payload.type;
-                        if (prekey) {
-                            return stx`<key rid="${device.get('id')}" prekey="true">${btoa(payload.body)}</key>`;
-                        }
-                        return stx`<key rid="${device.get('id')}">${btoa(payload.body)}</key>`;
-                    })}
-                    <iv>${iv}</iv>
-                </header>
-                <payload>${payload}</payload>
-            </encrypted>`,
-        )
-        .root();
+    return stx`<encrypted xmlns="${Strophe.NS.OMEMO}">
+            <header sid="${sid}">
+                ${legacy_dicts.map(({ payload: p, device }) => {
+                    const prekey = 3 == p.type;
+                    if (prekey) {
+                        return stx`<key rid="${device.get('id')}" prekey="true">${btoa(p.body)}</key>`;
+                    }
+                    return stx`<key rid="${device.get('id')}">${btoa(p.body)}</key>`;
+                })}
+                <iv>${iv}</iv>
+            </header>
+            <payload>${payload}</payload>
+        </encrypted>`;
+}
+
+/**
+ * @param {import('../../shared/chatbox').default} chat
+ * @param {import('../../shared/message').default} message
+ * @param {import('./device').default[]} devices
+ */
+async function getOMEMO2EncryptedElement(chat, message, devices) {
+    const is_muc = chat instanceof MUC;
+    const muc_jid = is_muc ? chat.get('jid') : null;
+    const bare_jid = _converse.session.get('bare_jid');
+
+    // Build SCE envelope and encrypt it
+    const { key_and_tag, payload } = await encryptSCE(message.get('plaintext'), {
+        from_jid: bare_jid,
+        to_jid: muc_jid,
+    });
+
+    const v2_dicts = await Promise.all(
+        devices
+            .filter((d) => d.get('trusted') != UNTRUSTED && d.get('active'))
+            .map((d) => encryptKey(key_and_tag, d, Strophe.NS.OMEMO2)),
+    );
+
+    // Group keys by recipient JID for the v2 <keys jid='...'> structure
+    const by_jid = groupByJID(v2_dicts);
+    const keys_elements = [];
+    for (const [jid, entries] of by_jid) {
+        const key_els = entries.map(({ payload: p, device }) => {
+            if (p.kex) {
+                return stx`<key rid="${device.get('id')}" kex="true">${btoa(p.body)}</key>`;
+            }
+            return stx`<key rid="${device.get('id')}">${btoa(p.body)}</key>`;
+        });
+        keys_elements.push(stx`<keys jid="${jid}">${key_els}</keys>`);
+    }
+
+    const sid = _converse.state.omemo_store.get('device_id');
+
+    return stx`<encrypted xmlns="${Strophe.NS.OMEMO2}">
+            <header sid="${sid}">${keys_elements}</header>
+            <payload>${payload}</payload>
+        </encrypted>`;
+}
+
+/**
+ * @param {import('../../shared/chatbox').default} chat
+ * @param {import('../../shared/types').MessageAndStanza} data
+ * @return {Promise<import('../../shared/types').MessageAndStanza>}
+ */
+export async function createOMEMOMessageStanza(chat, data) {
+    const { stanza } = data;
+    const { message } = data;
+
+    if (!message.get('is_encrypted')) return data;
+    if (!message.get('body')) throw new Error('No message body to encrypt!');
+
+    const { legacy, v2 } = await getBundlesAndBuildSessions(chat);
+
+    if (legacy.length > 0) {
+        stanza.cnode(await getLegacyEncryptedElement(message, legacy)).root();
+    }
+
+    if (v2.length > 0) {
+        stanza.cnode(await getOMEMO2EncryptedElement(chat, message, v2)).root();
+    }
 
     stanza.cnode(stx`<store xmlns="${Strophe.NS.HINTS}"/>`).root();
-    stanza.cnode(stx`<encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO}"/>`).root();
+
+    if (v2.length > 0) {
+        stanza.cnode(stx`<encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO2}"/>`).root();
+    } else if (legacy.length > 0) {
+        stanza.cnode(stx`<encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO}"/>`).root();
+    }
     return { message, stanza };
 }
 
@@ -483,7 +739,7 @@ export function getOutgoingMessageAttributes(chat, attrs) {
             is_encrypted: true,
             plaintext: attrs.body,
             body: __(
-                'This is an OMEMO encrypted message which your client doesn\u2019t seem to support. ' +
+                'This is an OMEMO encrypted message which your client doesn’t seem to support. ' +
                     'Find more information on https://conversations.im/omemo',
             ),
         };
@@ -507,8 +763,7 @@ async function checkOMEMOSupported(chatbox) {
     let supported;
     if (chatbox.get('type') === constants.CHATROOMS_TYPE) {
         await api.waitUntil('OMEMOInitialized');
-        const { features } = /** @type {MUC} */ (chatbox);
-        supported = features.get('nonanonymous') && features.get('membersonly');
+        supported = isOMEMOMUCEligible(/** @type {MUC} */ (chatbox));
     } else if (chatbox.get('type') === constants.PRIVATE_CHAT_TYPE) {
         supported = await contactHasOMEMOSupport(chatbox.get('jid'));
     }
@@ -523,7 +778,7 @@ async function checkOMEMOSupported(chatbox) {
  * @param {import('../../plugins/muc/occupant').default} occupant
  */
 async function onOccupantAdded(chatroom, occupant) {
-    if (occupant.isSelf() || !chatroom.features.get('nonanonymous') || !chatroom.features.get('membersonly')) {
+    if (occupant.isSelf() || !isOMEMOMUCEligible(chatroom)) {
         return;
     }
     const { __ } = _converse;
@@ -596,8 +851,11 @@ Object.assign(u, {
     omemo: {
         ...u.omemo,
         decryptMessage,
+        decryptSCE,
         encryptMessage,
+        encryptSCE,
         generateFingerprint,
         getDevicesForContact,
+        getVersionedStore,
     },
 });

@@ -10,11 +10,16 @@ export function formatFingerprintForQRCode(fp: string): string;
  * @param {import('shared/texture/texture.js').Texture} richtext
  */
 export function handleEncryptedFiles(richtext: import("shared/texture/texture.js").Texture): void;
-export function onChatComponentInitialized(el: any): void;
 /**
+ * @param {import('shared/components/element').CustomElement} el
+ */
+export function onChatComponentInitialized(el: import("shared/components/element").CustomElement): void;
+/**
+ * Generate the displayable fingerprints for a contact's devices across both
+ * OMEMO versions.
  * @param {string} jid
  */
-export function generateFingerprints(jid: string): Promise<any[]>;
+export function generateFingerprints(jid: string): Promise<void>;
 /**
  * @param {string} jid
  * @param {string} device_id

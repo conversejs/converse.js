@@ -74,7 +74,10 @@ converse.plugins.add('converse-omemo', {
         api.listen.on('getOutgoingMessageAttributes', getOutgoingMessageAttributes);
 
         api.listen.on('statusInitialized', initOMEMO);
-        api.listen.on('addClientFeatures', () => api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`));
+        api.listen.on('addClientFeatures', () => {
+            api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`);
+            api.disco.own.features.add(`${Strophe.NS.OMEMO2_DEVICELIST}+notify`);
+        });
 
         api.listen.on('parseMessage', parseEncryptedMessage);
         api.listen.on('parseMUCMessage', parseEncryptedMessage);
@@ -91,9 +94,15 @@ converse.plugins.add('converse-omemo', {
 
         api.listen.on('clearSession', () => {
             delete _converse.state.omemo_store;
-            if (u.shouldClearCache(_converse) && _converse.state.devicelists) {
-                _converse.state.devicelists.clearStore();
-                delete _converse.state.devicelists;
+            if (u.shouldClearCache(_converse)) {
+                if (_converse.state.devicelists) {
+                    _converse.state.devicelists.clearStore();
+                    delete _converse.state.devicelists;
+                }
+                if (_converse.state.devicelists_v2) {
+                    _converse.state.devicelists_v2.clearStore();
+                    delete _converse.state.devicelists_v2;
+                }
             }
         });
     },

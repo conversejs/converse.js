@@ -1,6 +1,8 @@
 /**
- * @typedef {import('../..//shared/types').MessageAttributes} MessageAttributes
+ * @typedef {import('../../shared/types').MessageAttributes} MessageAttributes
  * @typedef {import('../../plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {import('./types').MUCMessageAttrsWithEncryption} MUCMessageAttrsWithEncryption
+ * @typedef {import('./types').MessageAttrsWithEncryption} MessageAttrsWithEncryption
  */
 import sizzle from 'sizzle';
 import log from '@converse/log';
@@ -9,20 +11,33 @@ import _converse from '../../shared/_converse.js';
 import converse from '../../shared/api/public.js';
 import u from '../../utils/index.js';
 import { decryptMessage, getSessionCipher } from './utils.js';
+import { decryptSCE } from './sce.js';
 
 const { Strophe } = converse.env;
 
+const DECRYPTION_ERROR_ATTRS = {
+    error_type: 'Decryption',
+    is_ephemeral: true,
+    is_error: true,
+    type: 'error',
+};
+
+const NO_KEY_ERROR_ATTRS = {
+    ...DECRYPTION_ERROR_ATTRS,
+    error_condition: 'not-encrypted-for-this-device',
+};
+
+/**
+ * @param {Error} e
+ */
 function getDecryptionErrorAttributes(e) {
     const { __ } = _converse;
     return {
-        'error_text':
+        ...DECRYPTION_ERROR_ATTRS,
+        error_text:
             __('Sorry, could not decrypt a received OMEMO message due to an error.') + ` ${e.name} ${e.message}`,
-        'error_condition': e.name,
-        'error_message': e.message,
-        'error_type': 'Decryption',
-        'is_ephemeral': true,
-        'is_error': true,
-        'type': 'error',
+        error_condition: e.name,
+        error_message: e.message,
     };
 }
 
@@ -154,22 +169,12 @@ async function decryptPrekeyWhisperMessage(attrs) {
 }
 
 /**
- * Hook handler for {@link parseMessage} and {@link parseMUCMessage}, which
- * parses the passed in `message` stanza for OMEMO attributes and then sets
- * them on the attrs object.
- * @param {Element} stanza - The message stanza
+ * Decrypt a legacy OMEMO (eu.siacs.conversations.axolotl) message.
+ * @param {Element} stanza
  * @param {MUCMessageAttributes|MessageAttributes} attrs
- * @returns {Promise<MUCMessageAttributes| MessageAttributes|
-        import('./types').MUCMessageAttrsWithEncryption|import('./types').MessageAttrsWithEncryption>}
+ * @returns {Promise<MUCMessageAttributes|MessageAttributes|MUCMessageAttrsWithEncryption|MessageAttrsWithEncryption>}
  */
-export async function parseEncryptedMessage(stanza, attrs) {
-    if (
-        api.settings.get('clear_cache_on_logout') ||
-        !attrs.is_encrypted ||
-        attrs.encryption_namespace !== Strophe.NS.OMEMO
-    ) {
-        return attrs;
-    }
+async function decryptLegacyOMEMOMessage(stanza, attrs) {
     const encrypted_el = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).pop();
     const header = encrypted_el.querySelector('header');
     attrs.encrypted = { 'device_id': header.getAttribute('sid') };
@@ -184,13 +189,7 @@ export async function parseEncryptedMessage(stanza, attrs) {
             prekey: ['true', '1'].includes(key.getAttribute('prekey')),
         });
     } else {
-        return Object.assign(attrs, {
-            error_condition: 'not-encrypted-for-this-device',
-            error_type: 'Decryption',
-            is_ephemeral: true,
-            is_error: true,
-            type: 'error',
-        });
+        return Object.assign(attrs, NO_KEY_ERROR_ATTRS);
     }
     // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
     if (attrs.encrypted.prekey === true) {
@@ -201,7 +200,149 @@ export async function parseEncryptedMessage(stanza, attrs) {
 }
 
 /**
- * Given an XML element representing a user's OMEMO bundle, parse it
+ * Decrypt an OMEMO 2 message.
+ * @param {Element} stanza
+ * @param {MUCMessageAttributes|MessageAttributes} attrs
+ * @returns {Promise<MUCMessageAttributes|MessageAttributes|MUCMessageAttrsWithEncryption|MessageAttrsWithEncryption>}
+ */
+async function decryptOMEMO2Message(stanza, attrs) {
+    const encrypted_el = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO2}"]`, stanza).pop();
+    if (!encrypted_el) return attrs;
+
+    const header = encrypted_el.querySelector('header');
+    const sender_device_id = header.getAttribute('sid');
+
+    const device_id = await api.omemo?.getDeviceID();
+    if (!device_id) return attrs;
+
+    // Find our <key rid='...'> under any <keys jid='our_bare_jid'>
+    const bare_jid = _converse.session.get('bare_jid');
+    const keys_el = sizzle(`keys[jid="${bare_jid}"]`, encrypted_el).pop();
+    if (!keys_el) {
+        return Object.assign(attrs, NO_KEY_ERROR_ATTRS);
+    }
+
+    const key_el = keys_el.querySelector(`key[rid="${device_id}"]`);
+    if (!key_el) {
+        return Object.assign(attrs, NO_KEY_ERROR_ATTRS);
+    }
+
+    const from_jid = getJIDForDecryption(attrs);
+    const is_kex = key_el.getAttribute('kex') === 'true';
+    const key_b64 = key_el.textContent.trim();
+
+    attrs.encrypted = {
+        device_id: sender_device_id,
+        key: key_b64,
+        payload: encrypted_el.querySelector('payload')?.textContent?.trim() || null,
+        prekey: is_kex,
+    };
+
+    const session_cipher = await getSessionCipher(from_jid, parseInt(sender_device_id, 10), Strophe.NS.OMEMO2);
+    const key_bytes = u.base64ToArrayBuffer(key_b64);
+
+    let key_and_tag;
+    try {
+        if (is_kex) {
+            key_and_tag = await session_cipher.decryptPreKeyWhisperMessage(key_bytes, 'binary');
+            // After handling a key exchange, regenerate and publish prekeys
+            const { omemo_store } = _converse.state;
+            await omemo_store.generateMissingPreKeys();
+            await omemo_store.publishBundle();
+        } else {
+            key_and_tag = await session_cipher.decryptWhisperMessage(key_bytes, 'binary');
+        }
+    } catch (e) {
+        log.error(`OMEMO 2 decryption failed: ${e.name} ${e.message}`);
+        return Object.assign(attrs, getDecryptionErrorAttributes(e));
+    }
+
+    if (!attrs.encrypted.payload) {
+        // Empty/heartbeat message
+        return Object.assign(attrs, { 'is_only_key': true });
+    }
+
+    try {
+        const is_muc = 'from_real_jid' in attrs;
+        const muc_jid = is_muc ? attrs.from : null;
+        const plaintext = await decryptSCE(key_and_tag, attrs.encrypted.payload, {
+            sender_jid: from_jid,
+            to_jid: muc_jid,
+        });
+
+        // Update device active state
+        const devicelist = await api.omemo.devicelists.get(from_jid, true, Strophe.NS.OMEMO2);
+        let device = devicelist.devices.get(sender_device_id);
+        if (!device) {
+            device = await devicelist.devices.create({ 'id': sender_device_id, 'jid': from_jid }, { 'promise': true });
+        }
+        device.save('active', true);
+
+        if (plaintext) {
+            return Object.assign(attrs, { plaintext });
+        } else {
+            return Object.assign(attrs, { 'is_only_key': true });
+        }
+    } catch (e) {
+        log.error(`SCE decryption failed: ${e.name} ${e.message}`);
+        return Object.assign(attrs, getDecryptionErrorAttributes(e));
+    }
+}
+
+/**
+ * Hook handler for {@link parseMessage} and {@link parseMUCMessage}, which
+ * parses the passed in `message` stanza for OMEMO attributes and then sets
+ * them on the attrs object.
+ *
+ * A single stanza may carry both an `urn:xmpp:omemo:2` and a legacy
+ * `eu.siacs.conversations.axolotl` `<encrypted>` element: a sender that
+ * supports both addresses each recipient device in whichever version that
+ * device understands. The EME (XEP-0380) hint names only one method and exists
+ * for clients that can decrypt *neither* — it must not be used to pick a
+ * decryption path. So we route on which `<encrypted>` block actually contains a
+ * `<key>` for our own device, preferring omemo:2.
+ *
+ * @param {Element} stanza - The message stanza
+ * @param {MUCMessageAttributes|MessageAttributes} attrs
+ * @returns {Promise<MUCMessageAttributes| MessageAttributes|MUCMessageAttrsWithEncryption|MessageAttrsWithEncryption>}
+ */
+export async function parseEncryptedMessage(stanza, attrs) {
+    if (api.settings.get('clear_cache_on_logout') || !attrs.is_encrypted) {
+        return attrs;
+    }
+
+    const device_id = await api.omemo?.getDeviceID();
+    const bare_jid = _converse.session.get('bare_jid');
+
+    const v2_el = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO2}"]`, stanza).pop();
+    const legacy_el = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).pop();
+
+    const has_v2_key =
+        !!(v2_el && device_id) && sizzle(`keys[jid="${bare_jid}"] key[rid="${device_id}"]`, v2_el).length > 0;
+    const has_legacy_key = !!(legacy_el && device_id) && sizzle(`key[rid="${device_id}"]`, legacy_el).length > 0;
+
+    if (has_v2_key) {
+        return await decryptOMEMO2Message(stanza, attrs);
+    }
+    if (has_legacy_key) {
+        return await decryptLegacyOMEMOMessage(stanza, attrs);
+    }
+
+    // The message is OMEMO-encrypted but no <key> is addressed to this device.
+    // Only surface the "not encrypted for this device" error once we actually
+    // know our own device id, otherwise OMEMO isn't ready yet and we'd raise a
+    // spurious error during an init race.
+    if (device_id && (v2_el || legacy_el)) {
+        return Object.assign(attrs, NO_KEY_ERROR_ATTRS);
+    }
+
+    // Not an OMEMO message we can handle; leave attrs untouched so any EME
+    // fallback body is shown.
+    return attrs;
+}
+
+/**
+ * Given an XML element representing a legacy OMEMO bundle, parse it
  * and return a map.
  * @param {Element} bundle_el
  * @returns {import('./types').Bundle}
@@ -226,9 +367,39 @@ export function parseBundle(bundle_el) {
     };
 }
 
+/**
+ * Given an XML element representing an OMEMO 2 bundle, parse it
+ * and return a map using the same internal format as the legacy bundle.
+ *
+ * All key values are base64-encoded 32-byte raw Curve25519/Ed25519 bytes
+ * (the leading 0x05 byte is absent for v2).
+ *
+ * @param {Element} bundle_el
+ * @returns {import('./types').Bundle}
+ */
+export function parseBundleV2(bundle_el) {
+    const spk_el = bundle_el.querySelector('spk');
+    const prekeys = sizzle('prekeys > pk', bundle_el).map(
+        /** @param {Element} el */ (el) => ({
+            id: parseInt(el.getAttribute('id'), 10),
+            key: el.textContent.trim(),
+        }),
+    );
+    return {
+        identity_key: bundle_el.querySelector('ik').textContent.trim(),
+        signed_prekey: {
+            id: parseInt(spk_el.getAttribute('id'), 10),
+            public_key: spk_el.textContent.trim(),
+            signature: bundle_el.querySelector('spks').textContent.trim(),
+        },
+        prekeys,
+    };
+}
+
 Object.assign(u, {
     omemo: {
         ...u.omemo,
         parseBundle,
+        parseBundleV2,
     },
 });

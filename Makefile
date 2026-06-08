@@ -171,10 +171,10 @@ media:
 dist/converse-no-dependencies.js: src rspack/rspack.common.js rspack/rspack.nodeps.js @converse/headless node_modules
 	npm run nodeps
 
-dist/converse.js:: node_modules
+dist/converse.js:: src rspack/rspack.build.js rspack/rspack.common.js node_modules @converse/headless
 	npm run build
 
-dist/converse.css:: node_modules
+dist/converse.css:: src rspack/rspack.build.js rspack/rspack.common.js node_modules @converse/headless
 	npm run build
 
 dist/website.css:: node_modules src/shared/styles/website.scss

@@ -52,7 +52,11 @@ export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
     initialize() {
         super.initialize();
         this.on('change', (item) => {
-            if (item.changed?.status || item.changed?.status_message || item.changed?.show) {
+            // Use `hasChanged` (membership) rather than truthiness of the new value:
+            // clearing `show` (e.g. auto-away reset on user activity, or going back to
+            // 'online') sets it to undefined, which a `item.changed?.show` check would
+            // miss — leaving contacts seeing the stale away/xa presence.
+            if (item.hasChanged('status') || item.hasChanged('status_message') || item.hasChanged('show')) {
                 api.user.presence.send({
                     show: this.get('show'),
                     status: this.get('status_message'),

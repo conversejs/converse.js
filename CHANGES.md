@@ -2,8 +2,10 @@
 
 ## 14.0.0 (Unreleased)
 
+- #4041: fix: strip trailing slashes from `assets_path` to prevent double-slash asset URLs
 - fix: `isTrustedIdentity` in OMEMO store wasn't properly loading the identity
-- fix: strip trailing slashes from `assets_path` to prevent double-slash asset URLs (#4041)
+- fix: broadcast presence when the chat status (`show`) is cleared
+- fix: the idle status flag could never be cleared, leaving stale idle presence after the user became active again
 
 ### Backwards incompatible changes
 

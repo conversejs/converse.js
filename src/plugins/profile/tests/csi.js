@@ -1,4 +1,7 @@
 import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.js';
+
+const { u } = converse.env;
 
 describe('A chat state indication', function () {
     it(
@@ -89,6 +92,37 @@ describe('Automatic status change', function () {
 
             _converse.onUserActivity();
             expect(await _converse.api.user.status.get()).toBe('dnd');
+        }),
+    );
+
+    it(
+        'broadcasts an online presence to contacts when the user returns from auto-away',
+        mock.initConverse(converse, ['statusInitialized'], {}, async (_converse) => {
+            const { api } = _converse;
+            api.settings.set('auto_away', 3);
+
+            let i = 0;
+            while (i <= api.settings.get('auto_away')) {
+                _converse.onEverySecond();
+                i++;
+            }
+            expect(await api.user.status.get()).toBe('away');
+
+            const sent_stanzas = api.connection.get().sent_stanzas;
+
+            _converse.onUserActivity();
+            expect(await api.user.status.get()).toBe('online');
+
+            // Returning from auto-away must reach the network: the latest presence
+            // broadcast has no <show> (i.e. online), so contacts stop seeing the
+            // stale 'away'. Before clearing `show` actually notified, the last
+            // presence on the wire stayed the away one and this would time out.
+            const presence = await u.waitUntil(() => {
+                const presences = sent_stanzas.filter((s) => s.nodeName === 'presence');
+                const last = presences[presences.length - 1];
+                return last && !last.querySelector('show') ? last : null;
+            });
+            expect(presence.querySelector('show')).toBe(null);
         }),
     );
 });

@@ -154,7 +154,18 @@ export function registerIntervalHandler() {
     window.addEventListener('keypress', onUserActivity);
     window.addEventListener('mousemove', onUserActivity);
     window.addEventListener(u.getUnloadEvent(), onUserActivity, { 'once': true, 'passive': true });
-    everySecondTrigger = setInterval(onEverySecond, 1000);
+
+    // Clear any existing interval first, otherwise a reconnect (which fires
+    // `connected` again) orphans the previous timer: it keeps ticking
+    // `onEverySecond` and advances `idle_seconds` too fast.
+    clearInterval(everySecondTrigger);
+
+    // Don't run the real timer under test: the tests drive `onEverySecond`
+    // manually, and a background tick racing that would make CSI/auto-away
+    // fire a second early.
+    if (!u.isTestEnv()) {
+        everySecondTrigger = setInterval(onEverySecond, 1000);
+    }
 }
 
 export function tearDown() {

@@ -110,7 +110,7 @@ export default {
          * @param {import('./types').IdleStatus} status
          */
         set(status) {
-            if (status.idle) {
+            if (typeof status.idle === 'boolean') {
                 idle = status.idle;
             }
             if (typeof status.seconds === 'number') {

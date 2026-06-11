@@ -50,7 +50,7 @@ describe('OMEMO 2 message reception', function () {
                     <pubsub xmlns="${Strophe.NS.PUBSUB}">
                         <items node="${Strophe.NS.OMEMO2_DEVICELIST}">
                             <item>
-                                <devices xmlns="${Strophe.NS.OMEMO2_DEVICELIST}">
+                                <devices xmlns="${Strophe.NS.OMEMO2}">
                                     <device id="${sender_device_id}"/>
                                 </devices>
                             </item>

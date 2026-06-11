@@ -49,7 +49,7 @@ async function updateDevicesFromStanza(stanza) {
 
     let device_ids;
     if (version === Strophe.NS.OMEMO2) {
-        const sel = `item devices[xmlns="${Strophe.NS.OMEMO2_DEVICELIST}"] device`;
+        const sel = `item devices[xmlns="${Strophe.NS.OMEMO2}"] device`;
         device_ids = sizzle(sel, items_el).map((d) => d.getAttribute('id'));
     } else {
         const sel = `item list[xmlns="${Strophe.NS.OMEMO}"] device`;

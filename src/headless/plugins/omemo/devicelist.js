@@ -178,7 +178,7 @@ class DeviceList extends OMEMOVersionAwareModel {
 
         let device_ids;
         if (this.isV2()) {
-            const selector = `devices[xmlns="${Strophe.NS.OMEMO2_DEVICELIST}"] device`;
+            const selector = `devices[xmlns="${Strophe.NS.OMEMO2}"] device`;
             device_ids = sizzle(selector, iq).map((d) => d.getAttribute('id'));
         } else {
             const selector = `list[xmlns="${Strophe.NS.OMEMO}"] device`;
@@ -200,7 +200,7 @@ class DeviceList extends OMEMOVersionAwareModel {
         if (this.isV2()) {
             item = stx`
                 <item id='current'>
-                    <devices xmlns='${Strophe.NS.OMEMO2_DEVICELIST}'>
+                    <devices xmlns='${Strophe.NS.OMEMO2}'>
                         ${active_devices.map((d) => stx`<device id='${d.get('id')}'/>`)}
                     </devices>
                 </item>`;

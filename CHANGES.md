@@ -3,6 +3,7 @@
 ## 14.0.0 (Unreleased)
 
 - #4076: fix(omemo): don't send encrypted MUC messages to banned (outcast) or non-affiliated occupants
+- #2632: fix(omemo): preserve the original filename when downloading a received encrypted image
 - #4041: fix: strip trailing slashes from `assets_path` to prevent double-slash asset URLs
 - feat: add support for OMEMO 2 (`urn:xmpp:omemo:2`), using Stanza Content Encryption (XEP-0420)
 - fix: `isTrustedIdentity` in OMEMO store wasn't properly loading the identity

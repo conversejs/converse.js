@@ -100,7 +100,8 @@ async function getAndDecryptFile(url_text) {
         log.error(e);
         return null;
     }
-    const [filename, extension] = url.pathname.split('/').pop().split('.');
+    const filename = url.pathname.split('/').pop();
+    const extension = filename.split('.').pop();
     const mimetype = MIMETYPES_MAP[extension];
     try {
         const file = new File([content], filename, { 'type': mimetype });
@@ -124,8 +125,15 @@ function getTemplateForObjectURL(file_url, obj_url, richtext) {
     }
 
     if (isImageURL(file_url)) {
+        // The decrypted image is served from an opaque `blob:` URL which has lost
+        // the original filename, so the browser would otherwise save it as
+        // `index.png` or the blob uuid. Pass the original filename (recovered from
+        // the `aesgcm://` URL) so it's used as the `download` name. See #2632.
+        const filename = getFileName(file_url);
         return tplImage({
             src: obj_url,
+            href: obj_url,
+            filename,
             onClick: richtext.onImgClick,
             onLoad: richtext.onImgLoad,
         });

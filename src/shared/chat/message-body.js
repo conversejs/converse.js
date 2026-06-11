@@ -38,7 +38,8 @@ export default class MessageBody extends CustomElement {
     /** @param {MouseEvent} ev */
     onImgClick (ev) {
         ev.preventDefault();
-        api.modal.show('converse-image-modal', { src: /** @type {HTMLImageElement} */(ev.target).src }, ev);
+        const img = /** @type {HTMLImageElement} */ (ev.target);
+        api.modal.show('converse-image-modal', { src: img.src, filename: img.dataset.filename }, ev);
     }
 
     onImgLoad () {

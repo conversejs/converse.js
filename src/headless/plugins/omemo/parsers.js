@@ -228,8 +228,18 @@ async function decryptOMEMO2Message(stanza, attrs) {
     }
 
     const from_jid = getJIDForDecryption(attrs);
-    const is_kex = key_el.getAttribute('kex') === 'true';
     const key_b64 = key_el.textContent.trim();
+    const key_bytes = u.base64ToArrayBuffer(key_b64);
+
+    // Whether the <key> holds a key exchange (OMEMOKeyExchange) or a regular
+    // message (OMEMOAuthenticatedMessage). We detect this from the payload
+    // rather than trusting the `kex` attribute: libsignal-based senders (e.g.
+    // QXmpp/Kaidan) keep emitting key-exchange messages until they receive a
+    // reply, but only set kex="true" on the first one, leaving the repeats
+    // mislabelled. The two protobufs are unambiguous by their first tag byte —
+    // OMEMOKeyExchange begins with field 1 `pk_id` (varint → 0x08), whereas
+    // OMEMOAuthenticatedMessage begins with field 1 `mac` (bytes → 0x0A).
+    const is_kex = new Uint8Array(key_bytes)[0] === 0x08 || key_el.getAttribute('kex') === 'true';
 
     attrs.encrypted = {
         device_id: sender_device_id,
@@ -239,7 +249,6 @@ async function decryptOMEMO2Message(stanza, attrs) {
     };
 
     const session_cipher = await getSessionCipher(from_jid, parseInt(sender_device_id, 10), Strophe.NS.OMEMO2);
-    const key_bytes = u.base64ToArrayBuffer(key_b64);
 
     let key_and_tag;
     try {

@@ -25,7 +25,7 @@ import './plugins/chatboxes/index.js';
 import './plugins/disco/index.js'; // XEP-0030 Service discovery
 import './plugins/adhoc/index.js'; // XEP-0050 Ad Hoc Commands
 import './plugins/headlines/index.js'; // Support for headline messages
-import './plugins/jingle/index.js'; // XEP-0166 Jingle (RTP sessions)
+export { Call, Calls } from './plugins/jingle/index.js'; // XEP-0166 Jingle (RTP sessions)
 export { Device, Devices, DeviceList, DeviceLists } from './plugins/omemo/index.js'; // Support for headline messages
 
 // XEP-0313 Message Archive Management

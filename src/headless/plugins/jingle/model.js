@@ -1,0 +1,148 @@
+import { Model } from '@converse/skeletor';
+import _converse from '../../shared/_converse.js';
+import api from '../../shared/api/index.js';
+import log from '@converse/log';
+import ModelWithVCard from '../../shared/model-with-vcard.js';
+import ModelWithContact from '../../shared/model-with-contact.js';
+import ColorAwareModel from '../../shared/color.js';
+import { buildAccept, buildProceed, buildReject, buildRetract } from './jmi.js';
+import { CALL_DIRECTION, CALL_STATES, ENDED_REASONS } from './constants.js';
+
+/**
+ * A single 1:1 call. The UI only reads these attributes and calls these methods;
+ * the signalling lives below.
+ *
+ * Mixin stack = ChatBox's minus ModelWithMessages (a call has no message log),
+ * which gives us `call.contact` and `call.vcard` so `<converse-avatar>` works.
+ */
+class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
+    defaults() {
+        return {
+            direction: CALL_DIRECTION.OUTGOING,
+            media: ['audio'],
+            state: CALL_STATES.CALLING,
+            ended_reason: null,
+            started_at: null,
+            ended_at: null,
+            muted_audio: false,
+            muted_video: false,
+            remote_video: false,
+        };
+    }
+
+    /**
+     * @param {import('@converse/skeletor').ModelAttributes} attrs
+     * @param {import('@converse/skeletor').ModelOptions} [options]
+     */
+    constructor(attrs, options = {}) {
+        super(attrs, options);
+
+        // Not serializable, so they're plain props signalled by the `stream`
+        // event rather than skeletor attributes.
+        this.local_stream = null;
+        this.remote_stream = null;
+
+        // The Jingle RTP session, created lazily by startSession().
+        this.session = null;
+    }
+
+    initialize() {
+        super.initialize();
+        this.setModelContact(this.get('jid'));
+    }
+
+    get idAttribute() {
+        return 'id';
+    }
+
+    /** @returns {string} the Jingle session id */
+    get sid() {
+        return /** @type {string} */ (this.get('id'));
+    }
+
+    /** @returns {string} the peer's bare JID */
+    get peer() {
+        return /** @type {string} */ (this.get('jid'));
+    }
+
+    /** True while the call hasn't connected media yet (calling/ringing/connecting). */
+    isPreActive() {
+        return ![CALL_STATES.ACTIVE, CALL_STATES.ENDED, CALL_STATES.FAILED].includes(this.get('state'));
+    }
+
+    /**
+     * Incoming call: accept it. Sends `<proceed>` to the caller and `<accept>`
+     * to our own other devices so they stop ringing.
+     */
+    accept() {
+        if (this.get('direction') !== CALL_DIRECTION.INCOMING || !this.isPreActive()) return;
+
+        api.send(buildProceed(this.peer, this.sid));
+        api.send(buildAccept(_converse.session.get('bare_jid'), this.sid));
+        this.set('state', CALL_STATES.CONNECTING);
+        this.startSession();
+    }
+
+    /** Incoming call: decline it before it's active. */
+    reject() {
+        if (this.get('direction') !== CALL_DIRECTION.INCOMING || !this.isPreActive()) return;
+        api.send(buildReject(this.peer, this.sid));
+        this.end(ENDED_REASONS.DECLINED);
+    }
+
+    /** End the call from our side: retract a not-yet-answered outgoing call, otherwise terminate. */
+    hangup() {
+        if (this.get('direction') === CALL_DIRECTION.OUTGOING && this.isPreActive()) {
+            api.send(buildRetract(this.peer, this.sid));
+            this.end(ENDED_REASONS.CANCELLED);
+        } else {
+            // TODO: an active call needs a Jingle session-terminate.
+            this.end(ENDED_REASONS.SUCCESS);
+        }
+    }
+
+    /** Toggle the local microphone. */
+    toggleAudio() {
+        const muted = !this.get('muted_audio');
+        this.local_stream?.getAudioTracks().forEach((t) => (t.enabled = !muted));
+        this.set('muted_audio', muted);
+    }
+
+    toggleVideo() {
+        throw new Error('toggleVideo: not implemented (v1 audio only)');
+    }
+
+    addVideo() {
+        throw new Error('addVideo: not implemented (v1 audio only)');
+    }
+
+    /**
+     * End the call. Fires the app-wide `callEnded` event for toolbar/notification
+     * listeners; the call view removes itself from the collection once dismissed.
+     * @param {string} reason - one of {@link ENDED_REASONS}
+     */
+    end(reason) {
+        if ([CALL_STATES.ENDED, CALL_STATES.FAILED].includes(this.get('state'))) return;
+
+        this.set({
+            state: CALL_STATES.ENDED,
+            ended_reason: reason,
+            ended_at: Date.now(),
+        });
+
+        this.session?.close?.();
+        this.session = null;
+
+        api.trigger('callEnded', this);
+    }
+
+    /**
+     * Create the Jingle RTP session, lazily, once a call reaches `connecting`.
+     * Not yet implemented.
+     */
+    startSession() {
+        log.debug(`Call ${this.get('id')}: startSession() - RTPSession not yet implemented`);
+    }
+}
+
+export default Call;

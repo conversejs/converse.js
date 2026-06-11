@@ -1,5 +1,5 @@
 import { html } from 'lit';
-import { _converse, api, constants, converse } from '@converse/headless';
+import { _converse, api, constants, u } from '@converse/headless';
 import tplSpinner from 'templates/spinner.js';
 import { CONNECTION_STATUS_CSS_CLASS } from '../constants.js';
 import { __ } from 'i18n';
@@ -7,7 +7,6 @@ import 'shared/components/brand-heading.js';
 import 'shared/components/footer.js';
 
 const { ANONYMOUS, EXTERNAL, LOGIN, PREBIND, CONNECTION_STATUS } = constants;
-const { u } = converse.env;
 
 /**
  * @param {boolean} checked

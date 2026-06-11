@@ -96,20 +96,24 @@ async function updateBundleFromStanza(stanza) {
     if (!items_el) return;
 
     const node = items_el.getAttribute('node');
+    const item_el = sizzle(`item`, items_el).pop();
     let version, device_id;
 
-    if (node.startsWith(Strophe.NS.OMEMO2_BUNDLES + ':')) {
+    if (node === Strophe.NS.OMEMO2_BUNDLES) {
+        // omemo:2: a single bundles node; the device id is the item id.
         version = Strophe.NS.OMEMO2;
-        device_id = node.slice(Strophe.NS.OMEMO2_BUNDLES.length + 1);
+        device_id = item_el?.getAttribute('id');
     } else if (node.startsWith(Strophe.NS.OMEMO_BUNDLES + ':')) {
+        // legacy 0.3.0: a per-device node, device id is the node suffix.
         version = Strophe.NS.OMEMO;
         device_id = node.slice(Strophe.NS.OMEMO_BUNDLES.length + 1);
     } else {
         return;
     }
+    if (!device_id) return;
 
     const jid = stanza.getAttribute('from');
-    const bundle_el = sizzle(`item > bundle`, items_el).pop();
+    const bundle_el = sizzle(`bundle`, item_el).pop();
     const devicelist = await api.omemo.devicelists.get(jid, true, version);
     const device = devicelist.devices.get(device_id) || devicelist.devices.create({ 'id': device_id, jid });
 

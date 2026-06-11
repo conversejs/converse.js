@@ -267,7 +267,10 @@ class OMEMOStore extends Model {
         const { curvePubKeyToEd25519PubKey } = await getCrypto();
         const identity_keypair = this.get('identity_keypair');
         const device_id = this.get('device_id');
-        const node = `${Strophe.NS.OMEMO2_BUNDLES}:${device_id}`;
+        // Unlike legacy 0.3.0 (which uses a per-device node), omemo:2 stores every
+        // device's bundle as a separate item — keyed by item id = device id — in
+        // the single `urn:xmpp:omemo:2:bundles` node. See XEP-0384 §4.3.2.
+        const node = Strophe.NS.OMEMO2_BUNDLES;
 
         // Ed25519 IK from curve pubkey
         const curve_ik = u.base64ToArrayBuffer(identity_keypair.pubKey);
@@ -287,7 +290,7 @@ class OMEMOStore extends Model {
         });
 
         const item = stx`
-            <item>
+            <item id="${device_id}">
                 <bundle xmlns="${Strophe.NS.OMEMO2}">
                     <spk id="${spk.id}">${spk_pub_b64}</spk>
                     <spks>${spk.signature}</spks>
@@ -295,7 +298,9 @@ class OMEMOStore extends Model {
                     <prekeys>${prekey_items}</prekeys>
                 </bundle>
             </item>`;
-        const options = { access_model: 'open' };
+        // `max_items=max` is REQUIRED by XEP-0384: the shared bundles node must
+        // retain one item per device rather than only the latest.
+        const options = { access_model: 'open', max_items: 'max' };
         return api.pubsub.publish(null, node, item, options, false);
     }
 

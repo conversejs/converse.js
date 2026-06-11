@@ -40,14 +40,18 @@ class Device extends OMEMOVersionAwareModel {
         const bare_jid = _converse.session.get('bare_jid');
         const device_id = this.get('id');
         const is_v2 = this.isV2();
-        const bundle_node_prefix = is_v2 ? Strophe.NS.OMEMO2_BUNDLES : Strophe.NS.OMEMO_BUNDLES;
         const bundle_xmlns = is_v2 ? Strophe.NS.OMEMO2 : Strophe.NS.OMEMO;
+
+        // omemo:2 keeps all bundles in the single `urn:xmpp:omemo:2:bundles` node,
+        // addressed by item id = device id; legacy 0.3.0 uses a per-device node.
+        const bundle_node = is_v2 ? Strophe.NS.OMEMO2_BUNDLES : `${Strophe.NS.OMEMO_BUNDLES}:${device_id}`;
+        const items_el = is_v2
+            ? stx`<items node="${bundle_node}"><item id="${device_id}"/></items>`
+            : stx`<items node="${bundle_node}"/>`;
 
         const stanza = stx`
             <iq type="get" from="${bare_jid}" to="${this.get('jid')}" xmlns="jabber:client">
-                <pubsub xmlns="${Strophe.NS.PUBSUB}">
-                    <items node="${bundle_node_prefix}:${device_id}"/>
-                </pubsub>
+                <pubsub xmlns="${Strophe.NS.PUBSUB}">${items_el}</pubsub>
             </iq>`;
 
         let iq;
@@ -65,7 +69,7 @@ class Device extends OMEMOVersionAwareModel {
             throw new IQError('Could not fetch bundle', iq);
         }
 
-        const publish_el = sizzle(`items[node="${bundle_node_prefix}:${device_id}"]`, iq).pop();
+        const publish_el = sizzle(`items[node="${bundle_node}"]`, iq).pop();
         const bundle_el = sizzle(`bundle[xmlns="${bundle_xmlns}"]`, publish_el).pop();
         const bundle = is_v2 ? parseBundleV2(bundle_el) : parseBundle(bundle_el);
         this.save('bundle', bundle);

@@ -402,7 +402,7 @@ function bundleHasBeenPublished(_converse) {
 
 function v2BundleHasBeenPublished(_converse) {
     const { Strophe } = _converse.env;
-    const selector = `publish[node="${Strophe.NS.OMEMO2_BUNDLES}:123456789"]`;
+    const selector = `publish[node="${Strophe.NS.OMEMO2_BUNDLES}"]`;
     return Array.from(_converse.api.connection.get().IQ_stanzas)
         .filter((iq) => iq.querySelector(selector))
         .pop();
@@ -548,7 +548,7 @@ function startV2Responder(_converse) {
         // v2 device list publish + v2 bundle publish (both answered with empty result)
         const publish_v2 = (iq) =>
             iq.querySelector(`iq[from="${_converse.bare_jid}"] publish[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`) ||
-            iq.querySelector(`publish[node="${Strophe.NS.OMEMO2_BUNDLES}:123456789"]`);
+            iq.querySelector(`publish[node="${Strophe.NS.OMEMO2_BUNDLES}"]`);
         iqs.filter((iq) => !handled.has(iq) && publish_v2(iq)).forEach((iq) => {
             handled.add(iq);
             sendIQResult(_converse, iq);

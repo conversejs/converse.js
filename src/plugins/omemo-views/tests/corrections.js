@@ -241,7 +241,7 @@ describe('An OMEMO encrypted MUC message', function () {
             let stanza = stx`
             <presence to='romeo@montague.lit/orchard' from='lounge@montague.lit/newguy' xmlns="jabber:client">
                 <x xmlns='${Strophe.NS.MUC_USER}'>
-                    <item affiliation='none' jid='newguy@montague.lit/_converse.js-290929789' role='participant'/>
+                    <item affiliation='member' jid='newguy@montague.lit/_converse.js-290929789' role='participant'/>
                 </x>
             </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));

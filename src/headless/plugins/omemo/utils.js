@@ -15,6 +15,10 @@ import { encryptSCE, decryptSCE } from './sce.js';
 const { u, Strophe, stx } = converse.env;
 const { arrayBufferToHex, base64ToArrayBuffer } = u;
 
+// Affiliations whose members are valid recipients of OMEMO-encrypted MUC
+// messages (XEP-0384 §MUC). Excludes `outcast` (banned) and `none`.
+const OMEMO_MUC_AFFILIATIONS = ['member', 'admin', 'owner'];
+
 /**
  * Returns a VersionedOMEMOStore proxy for the given OMEMO version.
  *
@@ -446,12 +450,19 @@ async function getBundlesAndBuildSessions(chatbox) {
                 __('Cannot use OMEMO in this groupchat — it must be non-anonymous and members-only.'),
             );
         }
+        // Restrict recipients to the member/admin/owner affiliation lists, per
+        // XEP-0384 §MUC: the real JIDs of those three lists are the union of
+        // OMEMO recipients. This excludes `outcast` (banned) and `none`
+        // occupants, so encrypted key material is never addressed to a user who
+        // has been removed from the room.
+        //
         // Our own devices are included here via the self-occupant (it carries
-        // our real JID in a non-anonymous room); the our_id filter below then
-        // drops the sending device, exactly as the 1:1 branch does.
+        // our real JID and an eligible affiliation in a non-anonymous,
+        // members-only room); the our_id filter below then drops the sending
+        // device, exactly as the 1:1 branch does.
         const occupants = chatbox.occupants.filter(
             /** @param {import('../../plugins/muc/occupant').default} o */
-            (o) => o.get('jid'),
+            (o) => o.get('jid') && OMEMO_MUC_AFFILIATIONS.includes(o.get('affiliation')),
         );
         const [legacy_cols, v2_cols] = await Promise.all([
             Promise.all(occupants.map((o) => getDevicesForContact(o.get('jid'), Strophe.NS.OMEMO))),

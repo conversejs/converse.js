@@ -30,7 +30,11 @@ function storeUsesIndexedDB(type) {
 export function isPersistentStorageAvailable() {
     const store = settings.get('persistent_store');
     if (store === 'sessionStorage') {
-        return typeof window.sessionStorage !== 'undefined';
+        try {
+            return typeof globalThis.sessionStorage !== 'undefined';
+        } catch {
+            return false;
+        }
     } else if (store === 'BrowserExtLocal' || store === 'BrowserExtSync') {
         return true;
     }

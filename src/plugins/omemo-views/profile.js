@@ -10,18 +10,22 @@ export class Profile extends CustomElement {
     async initialize() {
         const bare_jid = _converse.session.get("bare_jid");
         this.devicelist = await api.omemo.devicelists.get(bare_jid, true);
+        this.devicelist_v2 = await api.omemo.devicelists.get(bare_jid, true, Strophe.NS.OMEMO2);
         await this.setAttributes();
-        this.listenTo(this.devicelist.devices, "change:bundle", () => this.requestUpdate());
-        this.listenTo(this.devicelist.devices, "reset", () => this.requestUpdate());
-        this.listenTo(this.devicelist.devices, "reset", () => this.requestUpdate());
-        this.listenTo(this.devicelist.devices, "remove", () => this.requestUpdate());
-        this.listenTo(this.devicelist.devices, "add", () => this.requestUpdate());
+        for (const list of [this.devicelist, this.devicelist_v2]) {
+            const update = () => this.requestUpdate();
+            this.listenTo(list.devices, "change:bundle", update);
+            this.listenTo(list.devices, "reset", update);
+            this.listenTo(list.devices, "remove", update);
+            this.listenTo(list.devices, "add", update);
+        }
         this.requestUpdate();
     }
 
     async setAttributes() {
         this.device_id = await api.omemo.getDeviceID();
         this.current_device = this.devicelist.devices.get(this.device_id);
+        this.current_device_v2 = this.devicelist_v2.devices.get(this.device_id);
         this.other_devices = this.devicelist.devices.filter((d) => d.get("id") !== this.device_id);
     }
 

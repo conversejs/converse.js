@@ -38,7 +38,7 @@ export async function answerV2DeviceList(_converse, jid, device_ids) {
  */
 export async function answerV2Bundle(_converse, jid, device_id) {
     const conn = _converse.api.connection.get();
-    const sel = `iq[to="${jid}"] items[node="${Strophe.NS.OMEMO2_BUNDLES}:${device_id}"]`;
+    const sel = `iq[to="${jid}"] items[node="${Strophe.NS.OMEMO2_BUNDLES}"]`;
     const iq = await u.waitUntil(() =>
         Array.from(conn.IQ_stanzas)
             .filter((i) => i.querySelector(sel))
@@ -49,8 +49,8 @@ export async function answerV2Bundle(_converse, jid, device_id) {
             _converse,
             stx`<iq from="${jid}" id="${iq.getAttribute('id')}" to="${conn.jid}" xmlns="jabber:server" type="result">
                 <pubsub xmlns="${Strophe.NS.PUBSUB}">
-                    <items node="${Strophe.NS.OMEMO2_BUNDLES}:${device_id}">
-                        <item>
+                    <items node="${Strophe.NS.OMEMO2_BUNDLES}">
+                        <item id="${device_id}">
                             <bundle xmlns="${Strophe.NS.OMEMO2}">
                                 <spk id="1">${btoa('v2-spk-pub')}</spk>
                                 <spks>${btoa('v2-spk-sig')}</spks>

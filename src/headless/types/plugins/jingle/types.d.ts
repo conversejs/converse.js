@@ -11,4 +11,29 @@ export type JingleConversionOptions = {
     initiator?: string;
     responder?: string;
 };
+export type CallMedia = 'audio' | 'video';
+export type CallDirection = 'incoming' | 'outgoing';
+export type CallState = 'calling' | 'ringing' | 'connecting' | 'active' | 'ended' | 'failed';
+export type CallEndedReason = 'success' | 'declined' | 'cancelled' | 'answered-elsewhere';
+export type JMIAction = 'propose' | 'ringing' | 'proceed' | 'reject' | 'retract' | 'accept' | 'finish';
+export type CallAttributes = {
+    id: string;
+    jid: string;
+    direction: CallDirection;
+    media: CallMedia[];
+    state: CallState;
+    ended_reason: CallEndedReason | null;
+    started_at: number | null;
+    ended_at: number | null;
+    muted_audio: boolean;
+    muted_video: boolean;
+    remote_video: boolean;
+};
+export type JMIData = {
+    action: JMIAction;
+    sid: string;
+    from: string;
+    to: string;
+    media: CallMedia[];
+};
 //# sourceMappingURL=types.d.ts.map

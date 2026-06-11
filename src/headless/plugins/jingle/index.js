@@ -1,4 +1,6 @@
 import converse from '../../shared/api/public.js';
+import Call from './model.js';
+import Calls from './calls.js';
 import {
     directionToSenders,
     jingleToSDP,
@@ -7,6 +9,7 @@ import {
     sendersToDirection,
     writeSDP,
 } from './utils.js';
+import './plugin.js';
 
 const { Strophe } = converse.env;
 
@@ -18,7 +21,8 @@ Strophe.addNamespace('JINGLE_RTP_SSMA', 'urn:xmpp:jingle:apps:rtp:ssma:0');
 Strophe.addNamespace('JINGLE_ICE', 'urn:xmpp:jingle:transports:ice-udp:1');
 Strophe.addNamespace('JINGLE_DTLS', 'urn:xmpp:jingle:apps:dtls:0');
 Strophe.addNamespace('JINGLE_GROUPING', 'urn:xmpp:jingle:apps:grouping:0');
+Strophe.addNamespace('JINGLE_MESSAGE', 'urn:xmpp:jingle-message:0');
 
 converse.env.jingle = { directionToSenders, jingleToSDP, parseSDP, sdpToJingle, sendersToDirection, writeSDP };
 
-converse.plugins.add('converse-jingle', {});
+export { Call, Calls };

@@ -22,6 +22,7 @@ export { Builder, Stanza } from "strophe.js";
 export { uploadFile, getUploadService } from "./shared/http-upload.js";
 export { Bookmark, Bookmarks } from "./plugins/bookmarks/index.js";
 export { ChatBox, Message, Messages } from "./plugins/chat/index.js";
+export { Call, Calls } from "./plugins/jingle/index.js";
 export { Device, Devices, DeviceList, DeviceLists } from "./plugins/omemo/index.js";
 export { MUCMessage, MUCMessages, MUC, MUCOccupant, MUCOccupants } from "./plugins/muc/index.js";
 export { MicroblogProfile, PubSubFeed, PubSubFeeds, PubSubMessage, PubSubMessages, buildCommentTree, computeThreadCounts, getAncestors } from "./plugins/microblog/index.js";

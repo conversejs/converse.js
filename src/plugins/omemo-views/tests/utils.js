@@ -21,7 +21,7 @@ export async function answerV2DeviceList(_converse, jid, device_ids) {
                 <pubsub xmlns="${Strophe.NS.PUBSUB}">
                     <items node="${Strophe.NS.OMEMO2_DEVICELIST}">
                         <item>
-                            <devices xmlns="${Strophe.NS.OMEMO2_DEVICELIST}">
+                            <devices xmlns="${Strophe.NS.OMEMO2}">
                                 ${device_ids.map((id) => stx`<device id="${id}"/>`)}
                             </devices>
                         </item>

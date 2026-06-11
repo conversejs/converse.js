@@ -510,7 +510,7 @@ function startV2Responder(_converse) {
                                    type="result">
                 <pubsub xmlns="${Strophe.NS.PUBSUB}">
                     <items node="${Strophe.NS.OMEMO2_DEVICELIST}">
-                        <item><devices xmlns="${Strophe.NS.OMEMO2_DEVICELIST}"/></item>
+                        <item><devices xmlns="${Strophe.NS.OMEMO2}"/></item>
                     </items>
                 </pubsub>
             </iq>`;
@@ -538,7 +538,7 @@ function startV2Responder(_converse) {
                                    type="result">
                 <pubsub xmlns="${Strophe.NS.PUBSUB}">
                     <items node="${Strophe.NS.OMEMO2_DEVICELIST}">
-                        <item><devices xmlns="${Strophe.NS.OMEMO2_DEVICELIST}"/></item>
+                        <item><devices xmlns="${Strophe.NS.OMEMO2}"/></item>
                     </items>
                 </pubsub>
             </iq>`;

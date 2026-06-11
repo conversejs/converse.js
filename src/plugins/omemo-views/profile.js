@@ -33,6 +33,17 @@ export class Profile extends CustomElement {
         return this.devicelist ? tplProfile(this) : tplSpinner();
     }
 
+    /** @param {MouseEvent} ev */
+    async copyFingerprint(ev) {
+        ev.preventDefault();
+        const button = /** @type {HTMLButtonElement} */ (ev.currentTarget);
+        await navigator.clipboard.writeText(button.dataset.fingerprint);
+        // Briefly swap the icon to a checkmark for feedback.
+        const icon = button.querySelector("converse-icon");
+        icon?.classList.replace("fa-copy", "fa-check");
+        setTimeout(() => icon?.classList.replace("fa-check", "fa-copy"), 1500);
+    }
+
     selectAll(ev) {
         // eslint-disable-line class-methods-use-this
         let sibling = u.ancestor(ev.target, "li");

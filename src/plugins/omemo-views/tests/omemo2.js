@@ -9,6 +9,20 @@ import { answerV2DeviceList, answerV2Bundle } from './utils.js';
 
 const { Strophe, sizzle, stx, u } = converse.env;
 
+/**
+ * Override the read-only `document.visibilityState` and fire a
+ * `visibilitychange` event, so focus-dependent behaviour can be tested.
+ * @param {DocumentVisibilityState} state
+ */
+function setVisibilityState(state) {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => state });
+    document.dispatchEvent(new Event('visibilitychange'));
+}
+
+function restoreVisibilityState() {
+    delete (/** @type {any} */ (document)).visibilityState;
+}
+
 describe('OMEMO 2 message reception', function () {
     it(
         'decrypts an incoming omemo:2 message and renders the plaintext',
@@ -147,10 +161,32 @@ describe('OMEMO 2 message reception', function () {
             expect(message.get('defer_ephemeral_timer')).toBe(true);
             expect(message.ephemeral_timer).toBeFalsy();
 
-            // Simulate the message scrolling into view; the countdown starts now.
+            // The message opts into focus-aware visibility, so being scrolled
+            // into view on a *background* tab must not start the countdown.
             const message_el = view.querySelector('converse-chat-message');
-            message_el.onVisibilityChanged(/** @type {any} */ ({ intersectionRatio: 1 }));
-            expect(message.ephemeral_timer).toBeTruthy();
+            expect(message_el.observableRequireFocus).toBe(true);
+            try {
+                setVisibilityState('hidden');
+                message_el.handleIntersectionCallback([/** @type {any} */ ({ intersectionRatio: 1 })]);
+                expect(message.ephemeral_timer).toBeFalsy();
+
+                // It then scrolls back out of view (e.g. pushed up by later
+                // messages) while still on the background tab.
+                message_el.handleIntersectionCallback([/** @type {any} */ ({ intersectionRatio: 0 })]);
+
+                // Returning to the tab must NOT start the countdown, because the
+                // message is no longer in view — the current intersection state
+                // is re-checked, not the stale first sighting.
+                setVisibilityState('visible');
+                expect(message.ephemeral_timer).toBeFalsy();
+
+                // Only once it's actually in view AND the tab is focused does the
+                // countdown start.
+                message_el.handleIntersectionCallback([/** @type {any} */ ({ intersectionRatio: 1 })]);
+                expect(message.ephemeral_timer).toBeTruthy();
+            } finally {
+                restoreVisibilityState();
+            }
         }),
     );
 

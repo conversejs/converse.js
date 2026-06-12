@@ -1,11 +1,11 @@
 import { Model } from '@converse/skeletor';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import log from '@converse/log';
 import ModelWithVCard from '../../shared/model-with-vcard.js';
 import ModelWithContact from '../../shared/model-with-contact.js';
 import ColorAwareModel from '../../shared/color.js';
 import { buildAccept, buildProceed, buildReject, buildRetract } from './jmi.js';
+import RTPSession from './rtp.js';
 import { CALL_DIRECTION, CALL_STATES, ENDED_REASONS } from './constants.js';
 
 /**
@@ -80,7 +80,6 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
         api.send(buildProceed(this.peer, this.sid));
         api.send(buildAccept(_converse.session.get('bare_jid'), this.sid));
         this.set('state', CALL_STATES.CONNECTING);
-        this.startSession();
     }
 
     /** Incoming call: decline it before it's active. */
@@ -122,13 +121,25 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
      * @param {string} reason - one of {@link ENDED_REASONS}
      */
     end(reason) {
+        this.markEnded(CALL_STATES.ENDED, reason);
+    }
+
+    /**
+     * Abnormal end - same teardown as {@link Call#end} but lands in `failed`.
+     * @param {string} reason - one of {@link ENDED_REASONS}
+     */
+    fail(reason) {
+        this.markEnded(CALL_STATES.FAILED, reason);
+    }
+
+    /**
+     * @param {string} state - the terminal state, `ended` or `failed`
+     * @param {string} reason - one of {@link ENDED_REASONS}
+     */
+    markEnded(state, reason) {
         if ([CALL_STATES.ENDED, CALL_STATES.FAILED].includes(this.get('state'))) return;
 
-        this.set({
-            state: CALL_STATES.ENDED,
-            ended_reason: reason,
-            ended_at: Date.now(),
-        });
+        this.set({ state, ended_reason: reason, ended_at: Date.now() });
 
         this.session?.close?.();
         this.session = null;
@@ -137,11 +148,13 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     }
 
     /**
-     * Create the Jingle RTP session, lazily, once a call reaches `connecting`.
-     * Not yet implemented.
+     * Create the Jingle RTP session once the call reaches `connecting`, and begin
+     * negotiating media.
+     * @param {string} peer_jid - full JID of the remote endpoint
      */
-    startSession() {
-        log.debug(`Call ${this.get('id')}: startSession() - RTPSession not yet implemented`);
+    startSession(peer_jid) {
+        this.session = new RTPSession(this, peer_jid);
+        this.session.initiate();
     }
 }
 

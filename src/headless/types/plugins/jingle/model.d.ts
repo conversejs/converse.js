@@ -255,7 +255,7 @@ declare class Call extends Call_base {
     };
     local_stream: any;
     remote_stream: any;
-    session: any;
+    session: RTPSession;
     initialize(): void;
     /** @returns {string} the Jingle session id */
     get sid(): string;
@@ -283,10 +283,22 @@ declare class Call extends Call_base {
      */
     end(reason: string): void;
     /**
-     * Create the Jingle RTP session, lazily, once a call reaches `connecting`.
-     * Not yet implemented.
+     * Abnormal end — same teardown as {@link Call#end} but lands in `failed`.
+     * @param {string} reason - one of {@link ENDED_REASONS}
      */
-    startSession(): void;
+    fail(reason: string): void;
+    /**
+     * @param {string} state - the terminal state, `ended` or `failed`
+     * @param {string} reason - one of {@link ENDED_REASONS}
+     */
+    markEnded(state: string, reason: string): void;
+    /**
+     * Create the Jingle RTP session once the call reaches `connecting`, and begin
+     * negotiating media.
+     * @param {string} peer_jid - full JID of the remote endpoint
+     */
+    startSession(peer_jid: string): void;
 }
 import { Model } from '@converse/skeletor';
+import RTPSession from './rtp.js';
 //# sourceMappingURL=model.d.ts.map

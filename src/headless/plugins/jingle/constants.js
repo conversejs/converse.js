@@ -18,6 +18,7 @@ export const ENDED_REASONS = {
     DECLINED: 'declined',
     CANCELLED: 'cancelled',
     ANSWERED_ELSEWHERE: 'answered-elsewhere',
+    NO_MEDIA: 'no-media',
 };
 
 export const JMI_ACTIONS = {

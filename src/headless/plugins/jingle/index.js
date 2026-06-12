@@ -8,7 +8,8 @@ import {
     sdpToJingle,
     sendersToDirection,
     writeSDP,
-} from './utils.js';
+} from './sdp.js';
+import RTPSession, { webrtc } from './rtp.js';
 import './plugin.js';
 
 const { Strophe } = converse.env;
@@ -23,6 +24,15 @@ Strophe.addNamespace('JINGLE_DTLS', 'urn:xmpp:jingle:apps:dtls:0');
 Strophe.addNamespace('JINGLE_GROUPING', 'urn:xmpp:jingle:apps:grouping:0');
 Strophe.addNamespace('JINGLE_MESSAGE', 'urn:xmpp:jingle-message:0');
 
-converse.env.jingle = { directionToSenders, jingleToSDP, parseSDP, sdpToJingle, sendersToDirection, writeSDP };
+converse.env.jingle = {
+    RTPSession,
+    directionToSenders,
+    jingleToSDP,
+    parseSDP,
+    sdpToJingle,
+    sendersToDirection,
+    webrtc,
+    writeSDP,
+};
 
-export { Call, Calls };
+export { Call, Calls, RTPSession };

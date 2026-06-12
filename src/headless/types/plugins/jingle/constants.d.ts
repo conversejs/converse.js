@@ -11,6 +11,7 @@ export namespace ENDED_REASONS {
     let DECLINED: string;
     let CANCELLED: string;
     let ANSWERED_ELSEWHERE: string;
+    let NO_MEDIA: string;
 }
 export namespace JMI_ACTIONS {
     export let PROPOSE: string;

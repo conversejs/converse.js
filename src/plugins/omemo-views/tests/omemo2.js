@@ -89,6 +89,53 @@ describe('OMEMO 2 message reception', function () {
     );
 
     it(
+        'shows an error for an undecryptable message that has no fallback body',
+        // Regression test for https://github.com/conversejs/converse.js/issues/2097
+        // An OMEMO message that we can't decrypt (here: not encrypted for this
+        // device) and which carries no fallback <body> must still be surfaced to
+        // the user instead of being silently dropped.
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.initializedOMEMO(_converse);
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+
+            const conn = api.connection.get();
+
+            // The message addresses our bare JID, but with a <key> for some other
+            // device of ours (rid="999999"), not the one we're running. There's
+            // no fallback <body>, so previously the message was dropped silently.
+            const stanza = stx`<message from="${contact_jid}"
+                    to="${conn.jid}"
+                    type="chat"
+                    id="${conn.getUniqueId()}"
+                    xmlns="jabber:client">
+                <encrypted xmlns="${Strophe.NS.OMEMO2}">
+                    <header sid="555">
+                        <keys jid="${_converse.bare_jid}">
+                            <key rid="999999">${btoa('not-for-this-device')}</key>
+                        </keys>
+                    </header>
+                    <payload>${btoa('irrelevant')}</payload>
+                </encrypted>
+                <encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO2}"/>
+            </message>`;
+            conn._dataRecv(mock.createRequest(_converse, stanza));
+
+            await u.waitUntil(() => view.model.messages.length === 1);
+            const message = view.model.messages.at(0);
+            expect(message.get('is_error')).toBe(true);
+            expect(message.get('type')).toBe('error');
+            expect(message.get('error_condition')).toBe('not-encrypted-for-this-device');
+
+            await u.waitUntil(() => view.querySelector('.chat-info__message'));
+            expect(view.querySelector('.chat-info .reason').textContent).toContain('could not be decrypted');
+        }),
+    );
+
+    it(
         'routes by which <encrypted> block addresses our device, not by the EME hint',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);

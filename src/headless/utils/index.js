@@ -80,6 +80,10 @@ export function prefixMentions(message) {
 function shouldCreateMessage(attrs) {
     return (
         attrs['retracted'] || // Retraction received *before* the message
+        // An error (e.g. a failed OMEMO decryption) should be surfaced to the
+        // user rather than silently dropped, even when the stanza carried no
+        // fallback body for us to show. See #2097.
+        attrs['is_error'] ||
         !isEmptyMessage(attrs)
     );
 }

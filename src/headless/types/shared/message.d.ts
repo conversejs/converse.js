@@ -25,6 +25,11 @@ declare class BaseMessage extends Model<import("@converse/skeletor").ModelAttrib
     setTimerForEphemeralMessage(): void;
     ephemeral_timer: NodeJS.Timeout;
     /**
+     * Start the auto-destruct countdown for this ephemeral message.
+     * Safe to call more than once; the running timer is reset each time.
+     */
+    startEphemeralTimer(): void;
+    /**
      * Returns a boolean indicating whether this message is ephemeral,
      * meaning it will get automatically removed after ten seconds.
      * @returns {boolean}

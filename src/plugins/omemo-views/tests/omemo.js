@@ -1145,6 +1145,29 @@ describe('The OMEMO module', function () {
     );
 
     it(
+        "doesn't add the OMEMO toolbar button on an untrusted device",
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+
+            // Simulate being logged in on an untrusted (e.g. public) device.
+            // OMEMO requires persistent storage of the key material, so the lock
+            // must never be offered, otherwise it can be toggled into a state
+            // that can never actually encrypt. See #2336.
+            _converse.state.config.save({ trusted: false });
+
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            const toolbar = await u.waitUntil(() => view.querySelector('.chat-toolbar'));
+            // Wait until the toolbar has actually rendered its buttons.
+            await u.waitUntil(() => toolbar.querySelector('button'));
+
+            expect(toolbar.querySelector('.toggle-omemo')).toBe(null);
+            expect(view.model.get('omemo_supported')).toBe(false);
+        }),
+    );
+
+    it(
         'shows OMEMO device fingerprints in the user details modal',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitUntilBlocklistInitialized(_converse);

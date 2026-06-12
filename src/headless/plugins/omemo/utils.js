@@ -775,6 +775,14 @@ export async function contactHasOMEMOSupport(jid) {
  * @param {import('../../shared/chatbox.js').default} chatbox
  */
 async function checkOMEMOSupported(chatbox) {
+    // OMEMO is never initialized on an untrusted device (see `initOMEMO`), so
+    // `OMEMOInitialized` never resolves and we'd wait forever below. Mark it
+    // unsupported up front so the UI doesn't offer encryption. See #2336.
+    if (!_converse.state.config.get('trusted')) {
+        chatbox.set('omemo_supported', false);
+        return;
+    }
+
     let supported;
     if (chatbox.get('type') === constants.CHATROOMS_TYPE) {
         await api.waitUntil('OMEMOInitialized');

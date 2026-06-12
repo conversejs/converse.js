@@ -294,6 +294,13 @@ function toggleOMEMO(ev) {
  * @param {Array<import('lit').TemplateResult>} buttons
  */
 export function getOMEMOToolbarButton(toolbar_el, buttons) {
+    // OMEMO requires persistent storage of the key material, which is
+    // unavailable on an untrusted device. Don't show the lock at all in that
+    // case, since it can never be activated. See #2336.
+    if (!_converse.state.config.get('trusted')) {
+        return buttons;
+    }
+
     const model = toolbar_el.model;
     const is_muc = model.get('type') === CHATROOMS_TYPE;
     let title;

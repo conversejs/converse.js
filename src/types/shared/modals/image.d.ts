@@ -4,6 +4,7 @@ export default class ImageModal extends BaseModal {
      */
     constructor(options: Record<string, any>);
     src: any;
+    filename: any;
     renderModal(): import("lit-html").TemplateResult<1>;
     getModalTitle(): import("lit-html").TemplateResult<1>;
 }

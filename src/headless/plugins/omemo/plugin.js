@@ -103,7 +103,14 @@ converse.plugins.add('converse-omemo', {
                     _converse.state.devicelists_v2.clearStore();
                     delete _converse.state.devicelists_v2;
                 }
+                if (_converse.state.omemo_active_states) {
+                    _converse.state.omemo_active_states.browserStorage?.clear();
+                }
             }
+            // Drop the in-memory reference so it's re-fetched from storage on
+            // the next login (keeping the remembered states across re-login,
+            // unless the cache was cleared above). See #1472.
+            delete _converse.state.omemo_active_states;
         });
     },
 });

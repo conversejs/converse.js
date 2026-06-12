@@ -1,5 +1,6 @@
 import sizzle from 'sizzle';
 import log from '@converse/log';
+import { Model } from '@converse/skeletor';
 import converse from '../../shared/api/public.js';
 import _converse from '../../shared/_converse.js';
 import { constants, errors } from '../../shared/index.js';
@@ -202,6 +203,47 @@ async function fetchDeviceLists() {
 }
 
 /**
+ * Loads (and caches on `_converse.state`) the persistent store that remembers
+ * whether OMEMO encryption was last enabled or disabled for a given chat.
+ *
+ * Unlike the chatbox itself (which is removed from storage when the chat is
+ * closed), this store persists across chat-close and re-login.
+ * @returns {Promise<Model<{id: string}>>}
+ */
+async function fetchOMEMOActiveStates() {
+    if (_converse.state.omemo_active_states) {
+        return _converse.state.omemo_active_states;
+    }
+    const bare_jid = _converse.session.get('bare_jid');
+    const id = `converse.omemo-active-states-${bare_jid}`;
+    const model = new Model({ id });
+    initStorage(model, id);
+    await new Promise((resolve) => model.fetch({ success: resolve, error: resolve }));
+    _converse.state.omemo_active_states = model;
+    return model;
+}
+
+/**
+ * Returns the remembered OMEMO active state for a chat, or `undefined` if the
+ * user has never made an explicit choice for it.
+ * @param {string} jid
+ * @returns {boolean|undefined}
+ */
+export function getOMEMOActiveState(jid) {
+    return /** @type {boolean|undefined} */ (_converse.state.omemo_active_states?.get(jid));
+}
+
+/**
+ * Persists the user's explicit choice to enable/disable OMEMO for a chat, so
+ * that it's remembered the next time the chat is opened.
+ * @param {string} jid
+ * @param {boolean} active
+ */
+export function setOMEMOActiveState(jid, active) {
+    _converse.state.omemo_active_states?.save({ [jid]: active });
+}
+
+/**
  * @param {boolean} reconnecting
  */
 export async function initOMEMO(reconnecting) {
@@ -214,6 +256,7 @@ export async function initOMEMO(reconnecting) {
     }
     try {
         await fetchDeviceLists();
+        await fetchOMEMOActiveStates();
         await api.omemo.session.restore();
         await _converse.state.omemo_store.publishBundle();
     } catch (e) {
@@ -773,8 +816,9 @@ export async function contactHasOMEMOSupport(jid) {
 
 /**
  * @param {import('../../shared/chatbox.js').default} chatbox
+ * @param {boolean} [restore=false] Whether to restore remembered OMEMO active state.
  */
-async function checkOMEMOSupported(chatbox) {
+async function checkOMEMOSupported(chatbox, restore = false) {
     // OMEMO is never initialized on an untrusted device (see `initOMEMO`), so
     // `OMEMOInitialized` never resolves and we'd wait forever below. Mark it
     // unsupported up front so the UI doesn't offer encryption. See #2336.
@@ -791,8 +835,15 @@ async function checkOMEMOSupported(chatbox) {
         supported = await contactHasOMEMOSupport(chatbox.get('jid'));
     }
     chatbox.set('omemo_supported', !!supported);
-    if (supported && api.settings.get('omemo_default')) {
-        chatbox.set('omemo_active', true);
+    if (supported && restore) {
+        // Restore the user's last explicit choice for this chat, falling back
+        // to `omemo_default` when no choice has been remembered yet
+        const remembered = getOMEMOActiveState(chatbox.get('jid'));
+        if (remembered !== undefined) {
+            chatbox.set('omemo_active', remembered);
+        } else if (api.settings.get('omemo_default')) {
+            chatbox.set('omemo_active', true);
+        }
     }
 }
 
@@ -825,7 +876,7 @@ async function onOccupantAdded(chatroom, occupant) {
  * @param {import('../../shared/chatbox.js').default} chatbox
  */
 export function onChatInitialized(chatbox) {
-    checkOMEMOSupported(chatbox);
+    checkOMEMOSupported(chatbox, true);
     if (chatbox.get('type') === constants.CHATROOMS_TYPE) {
         /** @type {MUC} */ (chatbox).occupants.on(
             'add',
@@ -879,6 +930,8 @@ Object.assign(u, {
         encryptSCE,
         generateFingerprint,
         getDevicesForContact,
+        getOMEMOActiveState,
         getVersionedStore,
+        setOMEMOActiveState,
     },
 });

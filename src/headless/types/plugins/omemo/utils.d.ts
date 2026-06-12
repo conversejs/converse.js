@@ -16,6 +16,20 @@ export function getVersionedStore(version: import("./types").OMEMOVersion): impo
  */
 export function registerPEPPushHandler(): void;
 /**
+ * Returns the remembered OMEMO active state for a chat, or `undefined` if the
+ * user has never made an explicit choice for it.
+ * @param {string} jid
+ * @returns {boolean|undefined}
+ */
+export function getOMEMOActiveState(jid: string): boolean | undefined;
+/**
+ * Persists the user's explicit choice to enable/disable OMEMO for a chat, so
+ * that it's remembered the next time the chat is opened.
+ * @param {string} jid
+ * @param {boolean} active
+ */
+export function setOMEMOActiveState(jid: string, active: boolean): void;
+/**
  * @param {boolean} reconnecting
  */
 export function initOMEMO(reconnecting: boolean): Promise<void>;

@@ -1168,6 +1168,39 @@ describe('The OMEMO module', function () {
     );
 
     it(
+        'remembers the encryption state after the chat is closed and reopened',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.initializedOMEMO(_converse);
+            await mock.openChatBoxFor(_converse, contact_jid);
+            await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid, ['555']));
+
+            const view = _converse.chatboxviews.get(contact_jid);
+            await u.waitUntil(() => view.model.get('omemo_supported'));
+
+            // Enable encryption via the toolbar toggle.
+            const toolbar = await u.waitUntil(() => view.querySelector('.chat-toolbar'));
+            const toggle = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
+            toggle.click();
+            expect(view.model.get('omemo_active')).toBe(true);
+
+            // Close the chat (as the user "leaving" it would). This removes the
+            // chatbox, and its `omemo_active` flag, from browserStorage.
+            view.model.close();
+            await u.waitUntil(() => !_converse.chatboxes.get(contact_jid));
+
+            // Reopen the chat with the same contact: the previously enabled
+            // encryption state should be remembered. See #1472.
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const reopened = _converse.chatboxviews.get(contact_jid);
+            await u.waitUntil(() => reopened.model.get('omemo_supported'));
+            await u.waitUntil(() => reopened.model.get('omemo_active') === true);
+            expect(reopened.model.get('omemo_active')).toBe(true);
+        }),
+    );
+
+    it(
         'shows OMEMO device fingerprints in the user details modal',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitUntilBlocklistInitialized(_converse);

@@ -217,8 +217,11 @@ export function onChatComponentInitialized(el) {
         }
     });
     el.listenTo(el.model, 'change:omemo_active', () => {
+        // The toolbar may not be rendered yet (e.g. when the remembered OMEMO
+        // state is restored during chat initialization), so guard the lookup.
+        //
         /*** @type {import('shared/components/element').CustomElement} */
-        (el.querySelector('converse-chat-toolbar')).requestUpdate();
+        (el.querySelector('converse-chat-toolbar'))?.requestUpdate();
     });
 }
 
@@ -286,7 +289,12 @@ function toggleOMEMO(ev) {
         }
         return api.alert('error', __('Error'), messages);
     }
-    toolbar_el.model.save({ 'omemo_active': !toolbar_el.model.get('omemo_active') });
+    const active = !toolbar_el.model.get('omemo_active');
+    toolbar_el.model.save({ 'omemo_active': active });
+
+    // Remember this choice so it's restored the next time the chat is opened,
+    // even after it's been closed or after re-login.
+    u.omemo.setOMEMOActiveState(toolbar_el.model.get('jid'), active);
 }
 
 /**

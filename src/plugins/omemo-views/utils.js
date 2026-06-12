@@ -173,6 +173,16 @@ function addEncryptedFiles(text, offset, richtext) {
         return;
     }
     objs.forEach((o) => {
+        const type = isImageURL(o.url) ? 'image' : isAudioURL(o.url) ? 'audio' : isVideoURL(o.url) ? 'video' : null;
+        // Generic files are rendered as download links rather than inline media
+        // previews, so they're not subject to the show/hide-media toggle. For
+        // actual media, honour the same render decision used for unencrypted
+        // media, so that hiding media also hides decrypted OMEMO media instead
+        // of always re-rendering it. When hidden, we leave the `aesgcm://` URL
+        // as plain text so the message collapses to its URL. See #2606.
+        if (type && !richtext.shouldRenderMedia(o.url, type)) {
+            return;
+        }
         const promise = getAndDecryptFile(o.url).then((obj_url) => getTemplateForObjectURL(o.url, obj_url, richtext));
 
         const template = html`${until(promise, '')}`;

@@ -262,7 +262,10 @@ class MessageActions extends CustomElement {
             .map((o) => ({ 'url': o['og:image'], 'is_image': true }))
             .filter((o) => isMediaURLDomainAllowed(o));
 
-        const url_strings = getMediaURLs(this.model.get('media_urls') || [], this.model.get('body'));
+        // Use the displayed message text rather than `body`: for an encrypted
+        // (OMEMO) message the media URL lives in the decrypted `plaintext`, and
+        // the `media_urls` offsets are relative to that text, not to `body`.
+        const url_strings = getMediaURLs(this.model.get('media_urls') || [], this.model.getMessageText());
         const media_urls = /** @type {MediaURLMetadata[]} */ (url_strings.filter((o) => isMediaURLDomainAllowed(o)));
         return [...new Set([...media_urls.map((o) => o.url), ...unfurls_to_show.map((o) => o.url)])];
     }

@@ -136,6 +136,60 @@ describe('The OMEMO module', function () {
     );
 
     it(
+        'allows the user to hide and show a received encrypted image',
+        // Regression test for https://github.com/conversejs/converse.js/issues/2606
+        // Hiding media must also collapse decrypted OMEMO media, instead of
+        // always re-rendering it.
+        mock.initConverse(converse, ['chatBoxesFetched'], { 'render_media': true }, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+
+            const png_b64 =
+                'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+            const png_bytes = Uint8Array.from(atob(png_b64), (c) => c.charCodeAt(0));
+
+            // Return a fresh Response each call, since the body stream can only
+            // be read once and the image is fetched again when re-shown.
+            spyOn(window, 'fetch').and.callFake(() =>
+                Promise.resolve(new Response(png_bytes.buffer, { status: 200 })),
+            );
+            spyOn(crypto.subtle, 'importKey').and.returnValue(Promise.resolve(/** @type {CryptoKey} */ ({})));
+            spyOn(crypto.subtle, 'decrypt').and.returnValue(Promise.resolve(png_bytes.buffer));
+
+            const iv = '0'.repeat(24);
+            const key = '0'.repeat(64);
+            const aesgcm_url = `aesgcm://upload.example.org/b9e3eaaa-2eae-4900-ae41/k9mKam2JT.jpg#${iv}${key}`;
+            const stanza = stx`<message from="${contact_jid}"
+                        to="${_converse.api.connection.get().jid}"
+                        type="chat"
+                        id="${_converse.api.connection.get().getUniqueId()}"
+                        xmlns="jabber:client">
+                    <body>${aesgcm_url}</body>
+                </message>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+
+            // The decrypted image is rendered by default.
+            await u.waitUntil(() => view.querySelector('converse-chat-message-body img.chat-image'), 5000);
+
+            const actions_el = view.querySelector('converse-message-actions');
+            await u.waitUntil(() => actions_el.textContent.includes('Hide media'));
+
+            // Hiding media collapses the image and leaves the URL as text.
+            actions_el.querySelector('.chat-msg__action-hide-previews').click();
+            await u.waitUntil(() => actions_el.textContent.includes('Show media'));
+            await u.waitUntil(() => !view.querySelector('converse-chat-message-body img.chat-image'));
+            expect(view.querySelector('converse-chat-message-body').textContent.includes(aesgcm_url)).toBe(true);
+
+            // Showing media renders the decrypted image again.
+            actions_el.querySelector('.chat-msg__action-hide-previews').click();
+            await u.waitUntil(() => actions_el.textContent.includes('Hide media'));
+            await u.waitUntil(() => view.querySelector('converse-chat-message-body img.chat-image'), 5000);
+        }),
+    );
+
+    it(
         'implements XEP-0454 to encrypt uploaded files',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const base_url = 'https://example.org/';

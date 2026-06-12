@@ -4,6 +4,7 @@
 
 - #1472: feat(omemo): remember the per-chat encryption (on/off) state across chat-close and re-login
 - #2336: fix(omemo): hide the encryption toggle on an untrusted device, where OMEMO can't be used
+- #2606: fix(omemo): hiding media now also hides decrypted OMEMO media instead of re-rendering it
 - #2632: fix(omemo): preserve the original filename when downloading a received encrypted image
 - #4041: fix: strip trailing slashes from `assets_path` to prevent double-slash asset URLs
 - #4076: fix(omemo): don't send encrypted MUC messages to banned (outcast) or non-affiliated occupants

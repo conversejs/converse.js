@@ -62,6 +62,7 @@ export default function (config) {
             { pattern: 'src/plugins/rosterview/tests/*.js', type: 'module' },
             { pattern: 'src/plugins/reactions-views/tests/*.js', type: 'module' },
             { pattern: 'src/plugins/rosterview/tests/requesting_contacts.js', type: 'module' },
+            { pattern: 'src/shared/components/tests/*.js', type: 'module' },
             { pattern: 'src/shared/modals/tests/*.js', type: 'module' },
             { pattern: 'src/shared/texture/tests/*.js', type: 'module' },
             { pattern: 'src/utils/tests/*.js', type: 'module' },

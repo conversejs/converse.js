@@ -121,10 +121,21 @@ export default class Message extends ObservableElement {
     }
 
     /**
-     * Called (once) when this message scrolls into view. For ephemeral messages
-     * whose deletion was deferred until they've been seen (e.g. an OMEMO
-     * "couldn't be decrypted" notice), this is where we start the countdown, so
-     * we're more confident the user actually saw the message.
+     * @param {import("lit").PropertyValues} changed
+     */
+    firstUpdated(changed) {
+        // Messages whose ephemeral auto-removal is deferred (e.g. an OMEMO
+        // "couldn't be decrypted" notice) should only be considered "seen" once
+        // the message is in view AND the tab is focused, so we're confident the
+        // user actually saw it before it's removed.
+        this.observableRequireFocus = !!this.model?.get('defer_ephemeral_timer');
+        super.firstUpdated(changed);
+    }
+
+    /**
+     * Called (once) when this message has been seen by the user. For ephemeral
+     * messages whose deletion was deferred until then, this is where we start
+     * the auto-destruct countdown.
      * @param {IntersectionObserverEntry} entry
      */
     onVisibilityChanged(entry) {

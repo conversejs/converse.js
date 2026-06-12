@@ -12,6 +12,10 @@ converse.plugins.add('converse-jingle', {
     initialize() {
         api.promises.add(['callsInitialized']);
 
+        api.settings.extend({
+            call_ice_servers: [],
+        });
+
         const exports = { Call, Calls };
         Object.assign(_converse.exports, exports);
 

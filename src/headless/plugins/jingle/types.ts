@@ -23,7 +23,7 @@ export type CallDirection = 'incoming' | 'outgoing';
 
 export type CallState = 'calling' | 'ringing' | 'connecting' | 'active' | 'ended' | 'failed';
 
-export type CallEndedReason = 'success' | 'declined' | 'cancelled' | 'answered-elsewhere';
+export type CallEndedReason = 'success' | 'declined' | 'cancelled' | 'answered-elsewhere' | 'no-media';
 
 export type JMIAction = 'propose' | 'ringing' | 'proceed' | 'reject' | 'retract' | 'accept' | 'finish';
 

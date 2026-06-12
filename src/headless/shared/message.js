@@ -76,12 +76,29 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
     setTimerForEphemeralMessage() {
         if (this.ephemeral_timer) {
             clearTimeout(this.ephemeral_timer);
+            this.ephemeral_timer = null;
         }
+        if (!this.isEphemeral()) return;
+
+        // Some ephemeral messages (e.g. an OMEMO "couldn't be decrypted" notice)
+        // shouldn't start counting down until we're confident the user has seen
+        // them. For those the countdown is started externally (by the view, once
+        // the message scrolls into view) via `startEphemeralTimer`.
+        if (this.get('defer_ephemeral_timer')) return;
+
+        this.startEphemeralTimer();
+    }
+
+    /**
+     * Start the auto-destruct countdown for this ephemeral message.
+     * Safe to call more than once; the running timer is reset each time.
+     */
+    startEphemeralTimer() {
         const is_ephemeral = this.isEphemeral();
-        if (is_ephemeral) {
-            const timeout = typeof is_ephemeral === 'number' ? is_ephemeral : 10000;
-            this.ephemeral_timer = setTimeout(() => this.safeDestroy(), timeout);
-        }
+        if (!is_ephemeral) return;
+        if (this.ephemeral_timer) clearTimeout(this.ephemeral_timer);
+        const timeout = typeof is_ephemeral === 'number' ? is_ephemeral : 10000;
+        this.ephemeral_timer = setTimeout(() => this.safeDestroy(), timeout);
     }
 
     /**

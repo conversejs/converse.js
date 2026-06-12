@@ -120,6 +120,20 @@ export default class Message extends ObservableElement {
         api.modal.show('converse-image-modal', { src: img.src, filename: img.dataset.filename }, ev);
     }
 
+    /**
+     * Called (once) when this message scrolls into view. For ephemeral messages
+     * whose deletion was deferred until they've been seen (e.g. an OMEMO
+     * "couldn't be decrypted" notice), this is where we start the countdown, so
+     * we're more confident the user actually saw the message.
+     * @param {IntersectionObserverEntry} entry
+     */
+    onVisibilityChanged(entry) {
+        super.onVisibilityChanged(entry);
+        if (this.model?.get('defer_ephemeral_timer')) {
+            this.model.startEphemeralTimer();
+        }
+    }
+
     onUnfurlAnimationEnd() {
         if (this.model.get('url_preview_transition') === 'fade-out') {
             this.model.save({

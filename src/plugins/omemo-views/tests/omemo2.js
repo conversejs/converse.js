@@ -99,6 +99,14 @@ describe('OMEMO 2 message reception', function () {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.initializedOMEMO(_converse);
+
+            // Stub out IntersectionObserver so the message's visibility is driven
+            // manually below, instead of the observer firing as soon as the
+            // (visible) message is rendered.
+            spyOn(window, 'IntersectionObserver').and.returnValue(
+                /** @type {any} */ ({ observe() {}, unobserve() {}, disconnect() {} }),
+            );
+
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
 
@@ -132,6 +140,17 @@ describe('OMEMO 2 message reception', function () {
 
             await u.waitUntil(() => view.querySelector('.chat-info__message'));
             expect(view.querySelector('.chat-info .reason').textContent).toContain('could not be decrypted');
+
+            // The ephemeral auto-destruct countdown must not start until the
+            // message has been seen, so we're confident the user saw it. See #2097.
+            expect(message.get('is_ephemeral')).toBe(true);
+            expect(message.get('defer_ephemeral_timer')).toBe(true);
+            expect(message.ephemeral_timer).toBeFalsy();
+
+            // Simulate the message scrolling into view; the countdown starts now.
+            const message_el = view.querySelector('converse-chat-message');
+            message_el.onVisibilityChanged(/** @type {any} */ ({ intersectionRatio: 1 }));
+            expect(message.ephemeral_timer).toBeTruthy();
         }),
     );
 

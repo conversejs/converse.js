@@ -22,10 +22,20 @@ const DECRYPTION_ERROR_ATTRS = {
     type: 'error',
 };
 
-const NO_KEY_ERROR_ATTRS = {
-    ...DECRYPTION_ERROR_ATTRS,
-    error_condition: 'not-encrypted-for-this-device',
-};
+/**
+ * @returns {object}
+ */
+function getNoKeyErrorAttrs() {
+    const { __ } = _converse;
+    return {
+        ...DECRYPTION_ERROR_ATTRS,
+        error_condition: 'not-encrypted-for-this-device',
+        error_text: __(
+            'Received an OMEMO encrypted message which could not be decrypted, ' +
+                'because it was not encrypted for this device.',
+        ),
+    };
+}
 
 /**
  * @param {Error} e
@@ -189,7 +199,7 @@ async function decryptLegacyOMEMOMessage(stanza, attrs) {
             prekey: ['true', '1'].includes(key.getAttribute('prekey')),
         });
     } else {
-        return Object.assign(attrs, NO_KEY_ERROR_ATTRS);
+        return Object.assign(attrs, getNoKeyErrorAttrs());
     }
     // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
     if (attrs.encrypted.prekey === true) {
@@ -219,12 +229,12 @@ async function decryptOMEMO2Message(stanza, attrs) {
     const bare_jid = _converse.session.get('bare_jid');
     const keys_el = sizzle(`keys[jid="${bare_jid}"]`, encrypted_el).pop();
     if (!keys_el) {
-        return Object.assign(attrs, NO_KEY_ERROR_ATTRS);
+        return Object.assign(attrs, getNoKeyErrorAttrs());
     }
 
     const key_el = keys_el.querySelector(`key[rid="${device_id}"]`);
     if (!key_el) {
-        return Object.assign(attrs, NO_KEY_ERROR_ATTRS);
+        return Object.assign(attrs, getNoKeyErrorAttrs());
     }
 
     const from_jid = getJIDForDecryption(attrs);
@@ -342,7 +352,7 @@ export async function parseEncryptedMessage(stanza, attrs) {
     // know our own device id, otherwise OMEMO isn't ready yet and we'd raise a
     // spurious error during an init race.
     if (device_id && (v2_el || legacy_el)) {
-        return Object.assign(attrs, NO_KEY_ERROR_ATTRS);
+        return Object.assign(attrs, getNoKeyErrorAttrs());
     }
 
     // Not an OMEMO message we can handle; leave attrs untouched so any EME

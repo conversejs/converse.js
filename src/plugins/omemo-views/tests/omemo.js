@@ -429,6 +429,81 @@ describe('The OMEMO module', function () {
     );
 
     it(
+        'publishes our device and bundle on the first login of a brand-new account',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            // Regression test for #2985: on a brand-new account (no device list
+            // on the server yet) the device list and bundle must be published
+            // on the *first* login, and our own device must appear exactly once
+            // (no phantom duplicate "other" devices).
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilDiscoConfirmed(
+                _converse,
+                _converse.bare_jid,
+                [{ 'category': 'pubsub', 'type': 'pep' }],
+                ['http://jabber.org/protocol/pubsub#publish-options'],
+            );
+
+            // The server has no device list for this fresh account, so respond
+            // to the own device-list fetch with an empty list.
+            let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, _converse.bare_jid, []));
+            expect(iq_stanza.querySelector('items').getAttribute('node')).toBe(
+                'eu.siacs.conversations.axolotl.devicelist',
+            );
+
+            await u.waitUntil(() => _converse.state.omemo_store);
+
+            // Our own device must be generated and added exactly once.
+            const devicelist = _converse.state.devicelists.get(_converse.bare_jid);
+            await u.waitUntil(() => devicelist.devices.length === 1);
+            expect(devicelist.devices.at(0).get('id')).toBe('123456789');
+
+            // The device list must be published to the server on this first login...
+            iq_stanza = await u.waitUntil(() => mock.ownDeviceHasBeenPublished(_converse));
+            const published_ids = Array.from(iq_stanza.querySelectorAll('publish list device')).map((d) =>
+                d.getAttribute('id'),
+            );
+            expect(published_ids).toEqual(['123456789']);
+            _converse.api.connection
+                .get()
+                ._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<iq xmlns="jabber:client" from="${_converse.bare_jid}" id="${iq_stanza.getAttribute('id')}" to="${_converse.bare_jid}" type="result"/>`,
+                    ),
+                );
+
+            // ...as must the bundle.
+            iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
+            _converse.api.connection
+                .get()
+                ._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<iq xmlns="jabber:client" from="${_converse.bare_jid}" id="${iq_stanza.getAttribute('id')}" to="${_converse.bare_jid}" type="result"/>`,
+                    ),
+                );
+
+            await _converse.api.waitUntil('OMEMOInitialized');
+
+            // After initialization there must still be exactly one own device
+            // (the user has no other devices connected), and it must have a bundle.
+            expect(devicelist.devices.length).toBe(1);
+            expect(devicelist.devices.at(0).get('id')).toBe('123456789');
+            expect(devicelist.devices.at(0).get('bundle')).toBeTruthy();
+
+            // Simulate a reload/re-login: a fresh store must reuse the persisted
+            // device_id rather than generate a new one. Regenerating would leave
+            // the original device in the published list and add a second, which
+            // is the "phantom 2 other devices" symptom reported in #2985.
+            const id = `converse.omemosession-${_converse.bare_jid}`;
+            const reloaded_store = new _converse.exports.OMEMOStore({ id });
+            u.initStorage(reloaded_store, id);
+            await new Promise((resolve) => reloaded_store.fetch({ success: resolve, error: resolve }));
+            expect(reloaded_store.get('device_id')).toBe('123456789');
+        }),
+    );
+
+    it(
         'updates device lists based on PEP messages',
         mock.initConverse(converse, [], { 'allow_non_roster_messaging': true }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);

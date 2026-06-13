@@ -26,6 +26,18 @@ export function sendersToDirection(senders: JingleSenders, is_initiator: boolean
  */
 export function candidateToElement(candidate: SdpCandidate): Element;
 /**
+ * Parse a browser ICE candidate line ("candidate:...") into an {@link SdpCandidate}.
+ * @param {string} line
+ * @returns {SdpCandidate}
+ */
+export function candidateFromLine(line: string): SdpCandidate;
+/**
+ * Format an {@link SdpCandidate} back into a browser ICE candidate line.
+ * @param {SdpCandidate} c
+ * @returns {string}
+ */
+export function candidateToLine(c: SdpCandidate): string;
+/**
  * @param {Element} el
  * @returns {SdpCandidate}
  */
@@ -37,6 +49,22 @@ export function elementToCandidate(el: Element): SdpCandidate;
  * @returns {Element}
  */
 export function sdpToJingle(sdp: SessionDescription, options: JingleConversionOptions): Element;
+/**
+ * Build a Jingle transport-info `<jingle>` carrying a single trickled candidate.
+ * @param {SdpCandidate} candidate
+ * @param {{ sid: string, mid: string, ufrag: string, pwd: string,
+ *           initiator?: string, responder?: string, creator?: 'initiator'|'responder' }} options
+ * @returns {Element}
+ */
+export function buildTransportInfo(candidate: SdpCandidate, options: {
+    sid: string;
+    mid: string;
+    ufrag: string;
+    pwd: string;
+    initiator?: string;
+    responder?: string;
+    creator?: "initiator" | "responder";
+}): Element;
 /**
  * Convert a received Jingle stanza payload into a parsed SDP structure that can
  * be serialised with sdp-transform's `write()`.

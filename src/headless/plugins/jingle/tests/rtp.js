@@ -197,6 +197,66 @@ describe('A Jingle RTP session', function () {
     );
 
     it(
+        'trickles a locally gathered ICE candidate as transport-info',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+
+            webrtc_handle.pc.onicecandidate({
+                candidate: { candidate: 'candidate:1 1 udp 2113937151 192.0.2.1 10000 typ host', sdpMid: '0' },
+            });
+
+            const ti = await u.waitUntil(() => lastJingleIq(_converse, 'transport-info'));
+            expect(ti.getAttribute('to')).toBe(`${jid}/phone`);
+            const candidate = sizzle('candidate', ti).pop();
+            expect(candidate.getAttribute('ip')).toBe('192.0.2.1');
+            expect(candidate.getAttribute('port')).toBe('10000');
+            expect(candidate.getAttribute('type')).toBe('host');
+
+            // A null candidate marks the end of gathering and sends nothing further.
+            webrtc_handle.pc.onicecandidate({ candidate: null });
+            expect(lastJingleIq(_converse, 'transport-info')).toBe(ti);
+        })
+    );
+
+    it(
+        'adds a remote candidate from an inbound transport-info',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+
+            const ti = stx`
+                <jingle xmlns="${JINGLE}" action="transport-info" sid="${sid}">
+                    <content xmlns="${JINGLE}" creator="initiator" name="0">
+                        <transport
+                            xmlns="urn:xmpp:jingle:transports:ice-udp:1" ufrag="abc"
+                            pwd="thispasswordisatleast22chars">
+                            <candidate
+                                component="1" foundation="1" generation="0" id="c1" ip="192.0.2.9"
+                                network="0" port="20000" priority="2113937151" protocol="udp" type="host"/>
+                        </transport>
+                    </content>
+                </jingle>`;
+            receiveIq(_converse, `${jid}/phone`, 'ti-iq', ti);
+
+            await u.waitUntil(() => webrtc_handle.pc.candidates.length);
+            expect(webrtc_handle.pc.candidates[0].candidate).toContain('192.0.2.9 20000 typ host');
+            expect(webrtc_handle.pc.candidates[0].sdpMid).toBe('0');
+            expect(sentIq(_converse, 'result', 'ti-iq')).toBeDefined();
+        })
+    );
+
+    it(
         'fails the call when capturing the microphone is denied',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             installFakeWebRTC({ getUserMedia: () => Promise.reject(new Error('NotAllowedError')) });

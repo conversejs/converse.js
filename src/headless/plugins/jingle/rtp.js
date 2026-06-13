@@ -2,10 +2,19 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from '@converse/log';
-import { jingleToSDP, parseSDP, sdpToJingle, writeSDP } from './sdp.js';
+import {
+    buildTransportInfo,
+    candidateFromLine,
+    candidateToLine,
+    elementToCandidate,
+    jingleToSDP,
+    parseSDP,
+    sdpToJingle,
+    writeSDP,
+} from './sdp.js';
 import { ENDED_REASONS } from './constants.js';
 
-const { stx } = converse.env;
+const { Strophe, sizzle, stx } = converse.env;
 
 // Swappable WebRTC backend: the browser globals in production, fakes in the
 // signalling specs. The media-loopback test leaves these as the real thing.
@@ -23,15 +32,25 @@ class RTPSession {
     /**
      * @param {import('./model.js').default} call
      * @param {string} peer_jid - full JID of the remote endpoint
+     * @param {boolean} [is_initiator=true] - whether we offer (outgoing) or answer
      */
-    constructor(call, peer_jid) {
+    constructor(call, peer_jid, is_initiator = true) {
         this.call = call;
         this.peer_jid = peer_jid;
+        this.is_initiator = is_initiator;
         this.pc = null;
     }
 
     get sid() {
         return this.call.sid;
+    }
+
+    get initiator() {
+        return this.is_initiator ? _converse.session.get('jid') : this.peer_jid;
+    }
+
+    get responder() {
+        return this.is_initiator ? this.peer_jid : _converse.session.get('jid');
     }
 
     /** Open the peer connection, capture the mic, and send a session-initiate. */
@@ -46,8 +65,8 @@ class RTPSession {
             const jingle = sdpToJingle(parseSDP(offer.sdp), {
                 action: 'session-initiate',
                 sid: this.sid,
-                initiator: _converse.session.get('jid'),
-                responder: this.peer_jid,
+                initiator: this.initiator,
+                responder: this.responder,
                 is_initiator: true,
             });
             this.sendJingle(jingle);
@@ -60,6 +79,23 @@ class RTPSession {
     createConnection() {
         const iceServers = api.settings.get('call_ice_servers') ?? [];
         this.pc = new webrtc.RTCPeerConnection({ iceServers });
+        this.pc.onicecandidate = (ev) => this.onLocalCandidate(ev);
+    }
+
+    /** A locally gathered ICE candidate: trickle it to the peer. */
+    onLocalCandidate(ev) {
+        if (!ev.candidate?.candidate) return; // a null candidate marks the end of gathering
+
+        const local = parseSDP(this.pc.localDescription.sdp).media[0];
+        const jingle = buildTransportInfo(candidateFromLine(ev.candidate.candidate), {
+            sid: this.sid,
+            mid: ev.candidate.sdpMid ?? local.mid,
+            ufrag: local.iceUfrag,
+            pwd: local.icePwd,
+            initiator: this.initiator,
+            responder: this.responder,
+        });
+        this.sendJingle(jingle);
     }
 
     async addLocalMedia() {
@@ -83,6 +119,9 @@ class RTPSession {
             case 'session-accept':
                 this.onSessionAccept(jingle);
                 break;
+            case 'transport-info':
+                this.onTransportInfo(jingle);
+                break;
         }
     }
 
@@ -94,6 +133,17 @@ class RTPSession {
         } catch (e) {
             log.error(e);
         }
+    }
+
+    /** @param {Element} jingle - a transport-info carrying one or more candidates */
+    onTransportInfo(jingle) {
+        sizzle('content', jingle).forEach((content) => {
+            const mid = content.getAttribute('name');
+            sizzle(`transport[xmlns="${Strophe.NS.JINGLE_ICE}"] > candidate`, content).forEach((el) => {
+                const candidate = { candidate: candidateToLine(elementToCandidate(el)), sdpMid: mid };
+                this.pc.addIceCandidate(candidate).catch((e) => log.error(e));
+            });
+        });
     }
 
     /** @param {Element} jingle - a `<jingle>` payload from {@link sdpToJingle} */

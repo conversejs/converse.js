@@ -108,6 +108,26 @@ export function candidateToElement(candidate) {
 }
 
 /**
+ * Parse a browser ICE candidate line ("candidate:...") into an {@link SdpCandidate}.
+ * @param {string} line
+ * @returns {SdpCandidate}
+ */
+export function candidateFromLine(line) {
+    return parse(`m=audio 9 RTP/AVP 0\r\na=${line}\r\n`).media[0].candidates[0];
+}
+
+/**
+ * Format an {@link SdpCandidate} back into a browser ICE candidate line.
+ * @param {SdpCandidate} c
+ * @returns {string}
+ */
+export function candidateToLine(c) {
+    let line = `candidate:${c.foundation} ${c.component} ${c.transport} ${c.priority} ${c.ip} ${c.port} typ ${c.type}`;
+    if (c.raddr !== undefined) line += ` raddr ${c.raddr} rport ${c.rport}`;
+    return `${line} generation ${c.generation ?? 0}`;
+}
+
+/**
  * @param {Element} el
  * @returns {SdpCandidate}
  */
@@ -243,6 +263,27 @@ export function sdpToJingle(sdp, options) {
                 </group>`
                     : ''
             }
+        </jingle>`;
+}
+
+/**
+ * Build a Jingle transport-info `<jingle>` carrying a single trickled candidate.
+ * @param {SdpCandidate} candidate
+ * @param {{ sid: string, mid: string, ufrag: string, pwd: string,
+ *           initiator?: string, responder?: string, creator?: 'initiator'|'responder' }} options
+ * @returns {Element}
+ */
+export function buildTransportInfo(candidate, options) {
+    const { sid, mid, ufrag, pwd, initiator, responder, creator = 'initiator' } = options;
+    return stx`
+        <jingle xmlns="${Strophe.NS.JINGLE}" action="transport-info" sid="${sid}"
+                ${initiator ? Stanza.unsafeXML(`initiator="${initiator}"`) : ''}
+                ${responder ? Stanza.unsafeXML(`responder="${responder}"`) : ''}>
+            <content xmlns="${Strophe.NS.JINGLE}" creator="${creator}" name="${mid}">
+                <transport xmlns="${Strophe.NS.JINGLE_ICE}" ufrag="${ufrag}" pwd="${pwd}">
+                    ${candidateToElement(candidate)}
+                </transport>
+            </content>
         </jingle>`;
 }
 

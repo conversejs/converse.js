@@ -16,6 +16,12 @@ export function dial(jid: string, { audio }?: {
  * @returns {boolean} true so the handler stays registered
  */
 export function handleJingleMessage(stanza: Element): boolean;
-/** Register the inbound JMI handler on the current connection (re-run on (re)connect). */
+/**
+ * Route one inbound Jingle IQ to the relevant call's {@link RTPSession} and ack it.
+ * @param {Element} iq
+ * @returns {boolean} true so the handler stays registered
+ */
+export function handleJingleIq(iq: Element): boolean;
+/** Register the inbound JMI + Jingle-IQ handlers on the connection (re-run on (re)connect). */
 export function registerCallHandlers(): void;
 //# sourceMappingURL=utils.d.ts.map

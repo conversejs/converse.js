@@ -26,6 +26,14 @@ declare class RTPSession {
     initiate(): Promise<void>;
     createConnection(): void;
     addLocalMedia(): Promise<void>;
+    /**
+     * Dispatch an inbound Jingle action (already routed to this session).
+     * @param {string} action
+     * @param {Element} jingle
+     */
+    handleJingle(action: string, jingle: Element): void;
+    /** @param {Element} jingle */
+    onSessionAccept(jingle: Element): Promise<void>;
     /** @param {Element} jingle - a `<jingle>` payload from {@link sdpToJingle} */
     sendJingle(jingle: Element): void;
     close(): void;

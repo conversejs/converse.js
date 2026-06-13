@@ -2,7 +2,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from '@converse/log';
-import { parseSDP, sdpToJingle } from './sdp.js';
+import { jingleToSDP, parseSDP, sdpToJingle, writeSDP } from './sdp.js';
 import { ENDED_REASONS } from './constants.js';
 
 const { stx } = converse.env;
@@ -71,6 +71,29 @@ class RTPSession {
         this.call.local_stream = stream;
         stream.getTracks().forEach((track) => this.pc.addTrack(track, stream));
         this.call.trigger('stream', { kind: 'local' });
+    }
+
+    /**
+     * Dispatch an inbound Jingle action (already routed to this session).
+     * @param {string} action
+     * @param {Element} jingle
+     */
+    handleJingle(action, jingle) {
+        switch (action) {
+            case 'session-accept':
+                this.onSessionAccept(jingle);
+                break;
+        }
+    }
+
+    /** @param {Element} jingle */
+    async onSessionAccept(jingle) {
+        try {
+            const sdp = writeSDP(jingleToSDP(jingle, { is_initiator: true, sid: this.sid }));
+            await this.pc.setRemoteDescription({ type: 'answer', sdp });
+        } catch (e) {
+            log.error(e);
+        }
     }
 
     /** @param {Element} jingle - a `<jingle>` payload from {@link sdpToJingle} */

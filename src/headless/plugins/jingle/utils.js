@@ -7,7 +7,7 @@ import Call from './model.js';
 import { buildPropose, buildReject, buildRinging, parseJMI } from './jmi.js';
 import { CALL_DIRECTION, CALL_STATES, ENDED_REASONS } from './constants.js';
 
-const { Strophe, sizzle } = converse.env;
+const { Strophe, sizzle, stx } = converse.env;
 
 // XEP-0353 (JMI) call signalling. These drive the `Call` models in
 // `_converse.state.calls`; the models send their own stanzas via `api.send`.
@@ -151,7 +151,44 @@ export function handleJingleMessage(stanza) {
     return true;
 }
 
-/** Register the inbound JMI handler on the current connection (re-run on (re)connect). */
+/** @param {Element} iq */
+function buildIqResult(iq) {
+    return stx`<iq xmlns="jabber:client" type="result" to="${iq.getAttribute('from')}" id="${iq.getAttribute('id')}"/>`;
+}
+
+/** @param {Element} iq */
+function buildItemNotFound(iq) {
+    return stx`
+        <iq xmlns="jabber:client" type="error" to="${iq.getAttribute('from')}" id="${iq.getAttribute('id')}">
+            <error type="cancel">
+                <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+            </error>
+        </iq>`;
+}
+
+/**
+ * Route one inbound Jingle IQ to the relevant call's {@link RTPSession} and ack it.
+ * @param {Element} iq
+ * @returns {boolean} true so the handler stays registered
+ */
+export function handleJingleIq(iq) {
+    const jingle = sizzle(`> jingle[xmlns="${Strophe.NS.JINGLE}"]`, iq).pop();
+    if (!jingle) return true;
+
+    const session = _converse.state.calls?.get(jingle.getAttribute('sid'))?.session;
+    if (!session) {
+        api.send(buildItemNotFound(iq));
+        return true;
+    }
+
+    session.handleJingle(jingle.getAttribute('action'), jingle);
+    api.send(buildIqResult(iq));
+    return true;
+}
+
+/** Register the inbound JMI + Jingle-IQ handlers on the connection (re-run on (re)connect). */
 export function registerCallHandlers() {
-    api.connection.get().addHandler(handleJingleMessage, Strophe.NS.JINGLE_MESSAGE, 'message');
+    const connection = api.connection.get();
+    connection.addHandler(handleJingleMessage, Strophe.NS.JINGLE_MESSAGE, 'message');
+    connection.addHandler(handleJingleIq, Strophe.NS.JINGLE, 'iq', 'set');
 }

@@ -44,6 +44,28 @@ function receive(_converse, from, child) {
     _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 }
 
+function receiveIq(_converse, from, id, child) {
+    const iq = stx`
+        <iq xmlns="jabber:client" type="set" from="${from}" to="${_converse.bare_jid}" id="${id}">${child}</iq>`;
+    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, iq));
+}
+
+/** A sent IQ of the given type carrying the given id, if any. */
+function sentIq(_converse, type, id) {
+    return _converse.api.connection
+        .get()
+        .sent_stanzas.filter(
+            (s) => s.nodeName === 'iq' && s.getAttribute('type') === type && s.getAttribute('id') === id
+        )
+        .pop();
+}
+
+/** Build a `<jingle>` payload from our sample SDP for the given action. */
+function jingle(action, sid) {
+    const { parseSDP, sdpToJingle } = converse.env.jingle;
+    return sdpToJingle(parseSDP(OFFER_SDP), { action, sid, is_initiator: false });
+}
+
 async function getContactJid(_converse, i = 0) {
     await mock.waitForRoster(_converse, 'current');
     return mock.cur_names[i].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -137,6 +159,40 @@ describe('A Jingle RTP session', function () {
             expect(call.local_stream).toBeTruthy();
             expect(local_fired).toBe(true);
             expect(webrtc_handle.pc.senders.length).toBe(1);
+        })
+    );
+
+    it(
+        'applies the answer and acks when a session-accept arrives',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+
+            receiveIq(_converse, `${jid}/phone`, 'accept-iq', jingle('session-accept', sid));
+
+            await u.waitUntil(() => webrtc_handle.pc.remoteDescription);
+            expect(webrtc_handle.pc.remoteDescription.type).toBe('answer');
+            expect(webrtc_handle.pc.remoteDescription.sdp).toContain('m=audio');
+            expect(sentIq(_converse, 'result', 'accept-iq')).toBeDefined();
+        })
+    );
+
+    it(
+        'returns item-not-found for a Jingle IQ with an unknown session',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+
+            receiveIq(_converse, `${jid}/phone`, 'stray-iq', jingle('session-accept', 'no-such-sid'));
+
+            const error = sentIq(_converse, 'error', 'stray-iq');
+            expect(error).toBeDefined();
+            expect(sizzle('item-not-found', error).length).toBe(1);
         })
     );
 

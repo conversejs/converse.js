@@ -41,18 +41,6 @@ function getNoKeyErrorAttrs() {
 }
 
 /**
- * Whether a decryption failure is caused by the message being a duplicate that
- * we already decrypted once (libsignal raises a `MessageCounterError` when the
- * ratchet's message key has already been used). Per XEP-0384 §Business Rules,
- * clients MUST silently ignore these and not show any warning/error.
- * @param {Error} e
- * @returns {boolean}
- */
-function isDuplicateDecryptionError(e) {
-    return e?.name === 'MessageCounterError';
-}
-
-/**
  * @param {Error} e
  */
 function getDecryptionErrorAttributes(e) {
@@ -64,6 +52,20 @@ function getDecryptionErrorAttributes(e) {
         error_condition: e.name,
         error_message: e.message,
     };
+}
+
+/**
+ * @param {MUCMessageAttributes|MessageAttributes} attrs
+ * @param {Error} e
+ */
+function handleDecryptionError(attrs, e) {
+    if (e?.name === 'MessageCounterError') {
+        // XEP-0384: a message we already decrypted. Ignore it silently.
+        log.debug(`Ignoring a duplicate OMEMO message: ${e.message}`);
+        return attrs;
+    }
+    log.error(`OMEMO decryption failed: ${e.name} ${e.message}`);
+    return Object.assign(attrs, getDecryptionErrorAttributes(e));
 }
 
 /**
@@ -136,13 +138,7 @@ async function decryptWhisperMessage(attrs) {
         const plaintext = await handleDecryptedWhisperMessage(attrs, key_and_tag);
         return Object.assign(attrs, { plaintext });
     } catch (e) {
-        if (isDuplicateDecryptionError(e)) {
-            // XEP-0384: a message we already decrypted. Ignore it silently.
-            log.debug(`Ignoring a duplicate OMEMO message: ${e.message}`);
-            return attrs;
-        }
-        log.error(`${e.name} ${e.message}`);
-        return Object.assign(attrs, getDecryptionErrorAttributes(e));
+        return handleDecryptionError(attrs, e);
     }
 }
 
@@ -157,19 +153,7 @@ async function decryptPrekeyWhisperMessage(attrs) {
     try {
         key_and_tag = await session_cipher.decryptPreKeyWhisperMessage(key, 'binary');
     } catch (e) {
-        if (isDuplicateDecryptionError(e)) {
-            // XEP-0384: a message we already decrypted. Ignore it silently.
-            log.debug(`Ignoring a duplicate OMEMO message: ${e.message}`);
-            return attrs;
-        }
-        // TODO from the XEP: In all cases of decryption failure (other than a
-        // duplicate, handled above), clients SHOULD respond by forcibly doing a
-        // new key exchange and sending a new OMEMOKeyExchange with a potentially
-        // empty SCE payload. By building a new session with the original sender
-        // this way, the invalid session of the original sender will get
-        // overwritten with this newly created, valid session.
-        log.error(`${e.name} ${e.message}`);
-        return Object.assign(attrs, getDecryptionErrorAttributes(e));
+        return handleDecryptionError(attrs, e);
     }
     // TODO from the XEP:
     // When a client receives the first message for a given
@@ -289,13 +273,7 @@ async function decryptOMEMO2Message(stanza, attrs) {
             key_and_tag = await session_cipher.decryptWhisperMessage(key_bytes, 'binary');
         }
     } catch (e) {
-        if (isDuplicateDecryptionError(e)) {
-            // XEP-0384: a message we already decrypted. Ignore it silently.
-            log.debug(`Ignoring a duplicate OMEMO 2 message: ${e.message}`);
-            return attrs;
-        }
-        log.error(`OMEMO 2 decryption failed: ${e.name} ${e.message}`);
-        return Object.assign(attrs, getDecryptionErrorAttributes(e));
+        return handleDecryptionError(attrs, e);
     }
 
     if (!attrs.encrypted.payload) {

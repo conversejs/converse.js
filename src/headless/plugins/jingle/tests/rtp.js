@@ -257,6 +257,51 @@ describe('A Jingle RTP session', function () {
     );
 
     it(
+        'goes active and exposes the remote stream once connected',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+            const pc = webrtc_handle.pc;
+
+            const remote = fakeStream();
+            let remote_fired = false;
+            call.on('stream', ({ kind }) => kind === 'remote' && (remote_fired = true));
+            pc.ontrack({ streams: [remote] });
+            expect(call.remote_stream).toBe(remote);
+            expect(remote_fired).toBe(true);
+
+            pc.connectionState = 'connected';
+            pc.onconnectionstatechange();
+            expect(call.get('state')).toBe('active');
+            expect(typeof call.get('started_at')).toBe('number');
+        })
+    );
+
+    it(
+        'fails the call when the peer connection fails',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+
+            const pc = webrtc_handle.pc;
+            pc.connectionState = 'failed';
+            pc.onconnectionstatechange();
+            expect(call.get('state')).toBe('failed');
+            expect(call.get('ended_reason')).toBe('connectivity-error');
+        })
+    );
+
+    it(
         'fails the call when capturing the microphone is denied',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             installFakeWebRTC({ getUserMedia: () => Promise.reject(new Error('NotAllowedError')) });

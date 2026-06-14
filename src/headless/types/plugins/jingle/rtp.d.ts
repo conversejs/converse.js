@@ -29,6 +29,9 @@ declare class RTPSession {
     /** Open the peer connection, capture the mic, and send a session-initiate. */
     initiate(): Promise<void>;
     createConnection(): void;
+    /** The peer's media arrived: expose the remote stream. */
+    onRemoteTrack(ev: any): void;
+    onConnectionStateChange(): void;
     /** A locally gathered ICE candidate: trickle it to the peer. */
     onLocalCandidate(ev: any): void;
     addLocalMedia(): Promise<void>;

@@ -12,7 +12,7 @@ import {
     sdpToJingle,
     writeSDP,
 } from './sdp.js';
-import { ENDED_REASONS } from './constants.js';
+import { CALL_STATES, ENDED_REASONS } from './constants.js';
 
 const { Strophe, sizzle, stx } = converse.env;
 
@@ -80,6 +80,24 @@ class RTPSession {
         const iceServers = api.settings.get('call_ice_servers') ?? [];
         this.pc = new webrtc.RTCPeerConnection({ iceServers });
         this.pc.onicecandidate = (ev) => this.onLocalCandidate(ev);
+        this.pc.ontrack = (ev) => this.onRemoteTrack(ev);
+        this.pc.onconnectionstatechange = () => this.onConnectionStateChange();
+    }
+
+    /** The peer's media arrived: expose the remote stream. */
+    onRemoteTrack(ev) {
+        this.call.remote_stream = ev.streams[0];
+        this.call.trigger('stream', { kind: 'remote' });
+    }
+
+    onConnectionStateChange() {
+        if (this.pc.connectionState === 'connected') {
+            if (this.call.get('state') !== CALL_STATES.ACTIVE) {
+                this.call.set({ state: CALL_STATES.ACTIVE, started_at: Date.now() });
+            }
+        } else if (this.pc.connectionState === 'failed') {
+            this.call.fail(ENDED_REASONS.CONNECTIVITY_ERROR);
+        }
     }
 
     /** A locally gathered ICE candidate: trickle it to the peer. */

@@ -668,6 +668,80 @@ function groupByJID(dicts) {
 }
 
 /**
+ * Encrypt the given key material with the long-standing OMEMO session of each
+ * eligible (trusted + active) recipient device.
+ * @param {ArrayBuffer} key_and_tag
+ * @param {import('./device').default[]} devices
+ * @param {import('./types').OMEMOVersion} version
+ */
+function encryptKeyForDevices(key_and_tag, devices, version) {
+    return Promise.all(
+        devices
+            .filter((d) => d.get('trusted') != UNTRUSTED && d.get('active'))
+            .map((d) => encryptKey(key_and_tag, d, version)),
+    );
+}
+
+/**
+ * Build a legacy (eu.siacs.conversations.axolotl) `<encrypted>` element from
+ * the per-device encrypted keys. When `payload` is null the result is a
+ * KeyTransportElement (the `<payload>` is omitted), as used for heartbeats.
+ * @param {Array<{payload: import('libomemo.js').EncryptResult, device: import('./device.js').default}>} legacy_dicts
+ * @param {string} iv
+ * @param {string|null} payload
+ */
+function buildLegacyEncryptedElement(legacy_dicts, iv, payload) {
+    const sid = _converse.state.omemo_store.get('device_id');
+
+    // An encrypted header is added to the message for each device that is
+    // supposed to receive it. These headers simply contain the key that the
+    // payload message is encrypted with, and they are separately encrypted
+    // using the session corresponding to the counterpart device.
+    return stx`<encrypted xmlns="${Strophe.NS.OMEMO}">
+            <header sid="${sid}">
+                ${legacy_dicts.map(({ payload: p, device }) => {
+                    const prekey = 3 == p.type;
+                    if (prekey) {
+                        return stx`<key rid="${device.get('id')}" prekey="true">${btoa(p.body)}</key>`;
+                    }
+                    return stx`<key rid="${device.get('id')}">${btoa(p.body)}</key>`;
+                })}
+                <iv>${iv}</iv>
+            </header>
+            ${payload ? stx`<payload>${payload}</payload>` : ''}
+        </encrypted>`;
+}
+
+/**
+ * Build an OMEMO:2 (urn:xmpp:omemo:2) `<encrypted>` element from the per-device
+ * encrypted keys. When `payload` is null the `<payload>` is omitted, yielding
+ * an empty OMEMO message (used for heartbeats).
+ * @param {Array<{payload: import('libomemo.js').EncryptResult, device: import('./device.js').default}>} v2_dicts
+ * @param {string|null} payload
+ */
+function buildOMEMO2EncryptedElement(v2_dicts, payload) {
+    // Group keys by recipient JID for the v2 <keys jid='...'> structure
+    const by_jid = groupByJID(v2_dicts);
+    const keys_elements = [];
+    for (const [jid, entries] of by_jid) {
+        const key_els = entries.map(({ payload: p, device }) => {
+            if (p.kex) {
+                return stx`<key rid="${device.get('id')}" kex="true">${btoa(p.body)}</key>`;
+            }
+            return stx`<key rid="${device.get('id')}">${btoa(p.body)}</key>`;
+        });
+        keys_elements.push(stx`<keys jid="${jid}">${key_els}</keys>`);
+    }
+
+    const sid = _converse.state.omemo_store.get('device_id');
+
+    return stx`<encrypted xmlns="${Strophe.NS.OMEMO2}">
+            <header sid="${sid}">${keys_elements}</header>
+            ${payload ? stx`<payload>${payload}</payload>` : ''}
+        </encrypted>`;
+}
+
+/**
  * @param {import('../../shared/message').default} message
  * @param {import('./device').default[]} devices
  */
@@ -680,33 +754,8 @@ async function getLegacyEncryptedElement(message, devices) {
     // devices associated with the contact, the result of this
     // concatenation is encrypted using the corresponding
     // long-standing OMEMO session.
-    const legacy_dicts = await Promise.all(
-        devices
-            .filter((d) => d.get('trusted') != UNTRUSTED && d.get('active'))
-            .map((d) => encryptKey(key_and_tag, d, Strophe.NS.OMEMO)),
-    );
-
-    const sid = _converse.state.omemo_store.get('device_id');
-
-    // An encrypted header is added to the message for
-    // each device that is supposed to receive it.
-    // These headers simply contain the key that the
-    // payload message is encrypted with,
-    // and they are separately encrypted using the
-    // session corresponding to the counterpart device.
-    return stx`<encrypted xmlns="${Strophe.NS.OMEMO}">
-            <header sid="${sid}">
-                ${legacy_dicts.map(({ payload: p, device }) => {
-                    const prekey = 3 == p.type;
-                    if (prekey) {
-                        return stx`<key rid="${device.get('id')}" prekey="true">${btoa(p.body)}</key>`;
-                    }
-                    return stx`<key rid="${device.get('id')}">${btoa(p.body)}</key>`;
-                })}
-                <iv>${iv}</iv>
-            </header>
-            <payload>${payload}</payload>
-        </encrypted>`;
+    const legacy_dicts = await encryptKeyForDevices(key_and_tag, devices, Strophe.NS.OMEMO);
+    return buildLegacyEncryptedElement(legacy_dicts, iv, payload);
 }
 
 /**
@@ -725,31 +774,69 @@ async function getOMEMO2EncryptedElement(chat, message, devices) {
         to_jid: muc_jid,
     });
 
-    const v2_dicts = await Promise.all(
-        devices
-            .filter((d) => d.get('trusted') != UNTRUSTED && d.get('active'))
-            .map((d) => encryptKey(key_and_tag, d, Strophe.NS.OMEMO2)),
-    );
+    const v2_dicts = await encryptKeyForDevices(key_and_tag, devices, Strophe.NS.OMEMO2);
+    return buildOMEMO2EncryptedElement(v2_dicts, payload);
+}
 
-    // Group keys by recipient JID for the v2 <keys jid='...'> structure
-    const by_jid = groupByJID(v2_dicts);
-    const keys_elements = [];
-    for (const [jid, entries] of by_jid) {
-        const key_els = entries.map(({ payload: p, device }) => {
-            if (p.kex) {
-                return stx`<key rid="${device.get('id')}" kex="true">${btoa(p.body)}</key>`;
-            }
-            return stx`<key rid="${device.get('id')}">${btoa(p.body)}</key>`;
-        });
-        keys_elements.push(stx`<keys jid="${jid}">${key_els}</keys>`);
-    }
+/**
+ * Build a legacy heartbeat (KeyTransportElement): a fresh key/IV pair with no
+ * `<payload>` (XEP-0384 0.3.0 §Sending a key). Encrypting an empty plaintext
+ * with AES-GCM yields a valid 16-byte authentication tag and empty ciphertext,
+ * so we reuse {@link encryptMessage} and simply drop the payload.
+ * @param {import('./device').default[]} devices
+ */
+async function getLegacyHeartbeatElement(devices) {
+    const { key_and_tag, iv } = await encryptMessage('');
+    const legacy_dicts = await encryptKeyForDevices(key_and_tag, devices, Strophe.NS.OMEMO);
+    return buildLegacyEncryptedElement(legacy_dicts, iv, null);
+}
 
-    const sid = _converse.state.omemo_store.get('device_id');
+/**
+ * Build an OMEMO:2 heartbeat (empty OMEMO message): per XEP-0384, 32 zero-bytes
+ * are encrypted directly with the Double Ratchet session for each device and the
+ * `<payload>` is omitted altogether.
+ * @param {import('./device').default[]} devices
+ */
+async function getOMEMO2HeartbeatElement(devices) {
+    const zero_bytes = new ArrayBuffer(32);
+    const v2_dicts = await encryptKeyForDevices(zero_bytes, devices, Strophe.NS.OMEMO2);
+    return buildOMEMO2EncryptedElement(v2_dicts, null);
+}
 
-    return stx`<encrypted xmlns="${Strophe.NS.OMEMO2}">
-            <header sid="${sid}">${keys_elements}</header>
-            <payload>${payload}</payload>
-        </encrypted>`;
+/**
+ * Send an OMEMO heartbeat (an empty/payload-less OMEMO message) to `chat` for
+ * the given protocol version. Heartbeats forward the Double Ratchet so a peer's
+ * message counter restarts at 0; see the XEP-0384 "counter of 53 or higher"
+ * rule. The message carries no `<body>`, so it produces no visible/stored chat
+ * message. We reuse the normal send-path session setup so every (trusted,
+ * active) device gets the heartbeat and any missing sessions are (re)built.
+ * @param {import('../../shared/chatbox.js').default} chat
+ * @param {import('./types').OMEMOVersion} version
+ */
+export async function sendOMEMOHeartbeat(chat, version) {
+    const is_v2 = version === Strophe.NS.OMEMO2;
+    const { legacy, v2 } = await getBundlesAndBuildSessions(chat);
+    const devices = is_v2 ? v2 : legacy;
+    if (!devices.length) return;
+
+    const encrypted_el = is_v2
+        ? await getOMEMO2HeartbeatElement(devices)
+        : await getLegacyHeartbeatElement(devices);
+
+    const is_muc = chat instanceof MUC;
+    const connection = api.connection.get();
+    if (!connection) return;
+
+    const stanza = stx`<message xmlns="jabber:client"
+            from="${is_muc ? connection.jid : _converse.session.get('jid')}"
+            to="${chat.get('jid')}"
+            type="${is_muc ? 'groupchat' : 'chat'}"
+            id="${u.getUniqueId()}">
+        ${encrypted_el}
+        <encryption xmlns="${Strophe.NS.EME}" namespace="${is_v2 ? Strophe.NS.OMEMO2 : Strophe.NS.OMEMO}"/>
+        <store xmlns="${Strophe.NS.HINTS}"/>
+    </message>`;
+    api.send(stanza);
 }
 
 /**

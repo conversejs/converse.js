@@ -43,6 +43,10 @@ export class VersionedOMEMOStore {
     storeSession(address: string, record: string): Promise<any>;
     /** @param {string} address */
     removeSession(address: string): Promise<import("./store.js").default>;
+    /** @param {string} address @returns {string|undefined} */
+    loadHeartbeatKey(address: string): string | undefined;
+    /** @param {string} address @param {string} key_b64 @returns {Promise<void>} */
+    storeHeartbeatKey(address: string, key_b64: string): Promise<void>;
     /** @param {string} [address=''] */
     removeAllSessions(address?: string): Promise<void>;
     #private;

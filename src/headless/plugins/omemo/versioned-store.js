@@ -109,6 +109,16 @@ export class VersionedOMEMOStore {
         return this.#base.removeSession(this.#prefix + address);
     }
 
+    /** @param {string} address @returns {string|undefined} */
+    loadHeartbeatKey(address) {
+        return this.#base.loadHeartbeatKey(this.#prefix + address);
+    }
+
+    /** @param {string} address @param {string} key_b64 @returns {Promise<void>} */
+    storeHeartbeatKey(address, key_b64) {
+        return this.#base.storeHeartbeatKey(this.#prefix + address, key_b64);
+    }
+
     /** @param {string} [address=''] */
     removeAllSessions(address = '') {
         // We can't delegate to the base store's removeAllSessions: legacy keys

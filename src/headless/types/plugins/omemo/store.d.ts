@@ -89,6 +89,21 @@ declare class OMEMOStore extends Model<import("./types").OMEMOStoreAttributes> {
      */
     removeSession(address: string): Promise<Awaited<this>>;
     /**
+     * The ratchet key (base64) for which we last sent an OMEMO heartbeat to this
+     * session, or `undefined`. Used to enforce the XEP-0384 rule of sending at
+     * most one heartbeat per ratchet key, in a way that survives page reloads.
+     * @param {string} address
+     * @returns {string|undefined}
+     */
+    loadHeartbeatKey(address: string): string | undefined;
+    /**
+     * Records and persists the ratchet key we just heartbeated for.
+     * @param {string} address
+     * @param {string} key_b64 - base64 of the ratchet key we just heartbeated for
+     * @returns {Promise<void>}
+     */
+    storeHeartbeatKey(address: string, key_b64: string): Promise<void>;
+    /**
      * @param {string} [address='']
      */
     removeAllSessions(address?: string): Promise<void>;

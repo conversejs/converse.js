@@ -215,7 +215,31 @@ class OMEMOStore extends Model {
      * @param {string} address
      */
     removeSession(address) {
+        // Drop the heartbeat marker (see {@link loadHeartbeatKey}) together with
+        // the session, so a rebuilt session starts with a clean slate.
+        this.unset('heartbeat:' + address);
         return Promise.resolve(this.unset('session' + address));
+    }
+
+    /**
+     * The ratchet key (base64) for which we last sent an OMEMO heartbeat to this
+     * session, or `undefined`. Used to enforce the XEP-0384 rule of sending at
+     * most one heartbeat per ratchet key, in a way that survives page reloads.
+     * @param {string} address
+     * @returns {string|undefined}
+     */
+    loadHeartbeatKey(address) {
+        return this.get('heartbeat:' + address);
+    }
+
+    /**
+     * Records and persists the ratchet key we just heartbeated for.
+     * @param {string} address
+     * @param {string} key_b64 - base64 of the ratchet key we just heartbeated for
+     * @returns {Promise<void>}
+     */
+    storeHeartbeatKey(address, key_b64) {
+        return this.save('heartbeat:' + address, key_b64, { promise: true });
     }
 
     /**

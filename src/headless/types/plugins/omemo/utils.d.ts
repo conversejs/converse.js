@@ -75,6 +75,17 @@ export function getSession(device: import("./device").default, version?: import(
  */
 export function decryptMessage(obj: import("./types").EncryptedMessage): Promise<string>;
 /**
+ * Send an OMEMO heartbeat (an empty/payload-less OMEMO message) to `chat` for
+ * the given protocol version. Heartbeats forward the Double Ratchet so a peer's
+ * message counter restarts at 0; see the XEP-0384 "counter of 53 or higher"
+ * rule. The message carries no `<body>`, so it produces no visible/stored chat
+ * message. We reuse the normal send-path session setup so every (trusted,
+ * active) device gets the heartbeat and any missing sessions are (re)built.
+ * @param {import('../../shared/chatbox.js').default} chat
+ * @param {import('./types').OMEMOVersion} version
+ */
+export function sendOMEMOHeartbeat(chat: import("../../shared/chatbox.js").default, version: import("./types").OMEMOVersion): Promise<void>;
+/**
  * @param {import('../../shared/chatbox').default} chat
  * @param {import('../../shared/types').MessageAndStanza} data
  * @return {Promise<import('../../shared/types').MessageAndStanza>}

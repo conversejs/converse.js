@@ -221,6 +221,12 @@ window.libomemo.OMEMOAddress.prototype.getDeviceId = function () {
 window.libomemo.OMEMOAddress.prototype.toString = function () {
     return this.name + '.' + this.deviceId;
 };
+// The ratchet metadata that the mocked decrypt methods report alongside the
+// plaintext. Tests can override `counter`/`key` to drive the XEP-0384 heartbeat
+// logic; the default counter is below the heartbeat threshold so ordinary
+// decryption tests never trigger a heartbeat.
+window.libomemo.mock_ratchet = { counter: 0, key: new Uint8Array([5, 1, 2, 3]).buffer };
+
 Object.assign(window.libomemo, {
     // Mock Ed25519 key conversion: just return the input as-is (real impl converts Curve25519 → Ed25519)
     'curvePubKeyToEd25519PubKey': async (curve_key) => new Uint8Array(curve_key).slice(0, 32).buffer,
@@ -267,7 +273,7 @@ Object.assign(window.libomemo, {
                 throw new Error('Identity keypair is missing a private key');
             }
 
-            return key_and_tag;
+            return { plaintext: key_and_tag, ratchet: { ...window.libomemo.mock_ratchet } };
         };
         this.decryptWhisperMessage = async (key_and_tag) => {
             // Mirror libomemo's SessionCipher.doDecryptWhisperMessage, which
@@ -276,7 +282,7 @@ Object.assign(window.libomemo, {
             if (!identity_keypair.privKey) {
                 throw new Error('Identity keypair is missing a private key');
             }
-            return key_and_tag;
+            return { plaintext: key_and_tag, ratchet: { ...window.libomemo.mock_ratchet } };
         };
     },
     'SessionBuilder': function (_storage, _remote_address) {

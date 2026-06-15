@@ -10,10 +10,23 @@ import api from '../../shared/api/index.js';
 import _converse from '../../shared/_converse.js';
 import converse from '../../shared/api/public.js';
 import u from '../../utils/index.js';
-import { decryptMessage, getSessionCipher } from './utils.js';
+import { decryptMessage, getSessionCipher, sendOMEMOHeartbeat } from './utils.js';
+import { getCrypto } from './crypto.js';
+import { VersionedOMEMOStore } from './versioned-store.js';
 import { decryptSCE } from './sce.js';
 
 const { Strophe } = converse.env;
+
+// XEP-0384: "When a client receives the first message for a given ratchet key
+// with a counter of 53 or higher, it MUST send a heartbeat message."
+const HEARTBEAT_COUNTER_THRESHOLD = 53;
+
+// Synchronous guard to prevent concurrent heartbeat sends for the same session.
+// Two decryptions arriving in the same tick could both pass the store.loadHeartbeatKey
+// check before either storeHeartbeatKey() completes. This Set is checked and mutated
+// synchronously (no await), so it closes that window. The store check still handles
+// page reloads (the Set is cleared on reload).
+const heartbeat_in_flight = new Set();
 
 const DECRYPTION_ERROR_ATTRS = {
     error_type: 'Decryption',
@@ -79,8 +92,9 @@ function getJIDForDecryption(attrs) {
         from_jid = _converse.session.get('bare_jid');
     } else if (attrs.contact_jid) {
         from_jid = attrs.contact_jid;
-    } else if ('from_real_jid' in attrs) {
-        from_jid = attrs.from_real_jid;
+    } else if (attrs.type === 'groupchat') {
+        // MUC message: from_real_jid is the occupant's real JID, set by the MUC parser.
+        from_jid = /** @type {MUCMessageAttributes} */ (attrs).from_real_jid;
     } else {
         from_jid = attrs.from;
     }
@@ -99,6 +113,66 @@ function getJIDForDecryption(attrs) {
         throw new Error('Could not find JID to decrypt OMEMO message for');
     }
     return from_jid;
+}
+
+/**
+ * Implements the XEP-0384 heartbeat rule: when we've just decrypted the first
+ * message for a given ratchet key whose counter is >= 53, send a heartbeat (an
+ * empty OMEMO message) to forward the ratchet. We send at most one heartbeat per
+ * ratchet key; the dedup is persisted in the (versioned) OMEMO store so it
+ * survives page reloads (the peer only restarts its counter at 0 a round-trip
+ * after processing our heartbeat). Best-effort and fire-and-forget — failures
+ * are logged, never surfaced to the user.
+ *
+ * The legacy heartbeat is a `KeyTransportElement` (XEP-0384 0.3.0), which the
+ * older protocol defines and conforming clients already handle.
+ * @param {MUCMessageAttributes|MessageAttributes} attrs
+ * @param {string} from_jid - the (real) bare JID identifying the OMEMO session
+ * @param {string|number} device_id - the sender's device id
+ * @param {{counter: number, key: ArrayBuffer}|undefined} ratchet - from the decrypt result
+ * @param {import('./types').OMEMOVersion} version
+ */
+async function maybeSendOMEMOHeartbeat(attrs, from_jid, device_id, ratchet, version) {
+    if (!ratchet || ratchet.counter < HEARTBEAT_COUNTER_THRESHOLD) return;
+
+    const { OMEMOAddress } = await getCrypto();
+    const address = new OMEMOAddress(from_jid, parseInt(`${device_id}`, 10)).toString();
+    const ratchet_key_b64 = u.arrayBufferToBase64(ratchet.key);
+
+    if (heartbeat_in_flight.has(address)) return;
+    heartbeat_in_flight.add(address);
+    try {
+        const store = new VersionedOMEMOStore(_converse.state.omemo_store, version);
+        if (store.loadHeartbeatKey(address) === ratchet_key_b64) return;
+
+        // Send to the MUC room (groupchat) or the contact (1:1). The session is
+        // keyed by the sender's real JID, but the heartbeat is addressed to the chat.
+        // For MUC messages, attrs.from is the room JID and attrs.type is 'groupchat'.
+        // For 1:1, from_jid is the contact's bare JID (the chatbox key).
+        const chat_jid = attrs.type === 'groupchat' ? Strophe.getBareJidFromJid(attrs.from) : from_jid;
+        const chat = _converse.state.chatboxes?.get(chat_jid);
+        if (!chat) return;
+
+        await sendOMEMOHeartbeat(chat, version);
+        await store.storeHeartbeatKey(address, ratchet_key_b64);
+    } finally {
+        heartbeat_in_flight.delete(address);
+    }
+}
+
+/**
+ * Fire-and-forget wrapper around {@link maybeSendOMEMOHeartbeat}. Logs errors
+ * instead of letting them propagate to the caller.
+ * @param {MUCMessageAttributes|MessageAttributes} attrs
+ * @param {string} from_jid - the (real) bare JID identifying the OMEMO session
+ * @param {string|number} device_id - the sender's device id
+ * @param {{counter: number, key: ArrayBuffer}|undefined} ratchet - from the decrypt result
+ * @param {import('./types').OMEMOVersion} version
+ */
+function fireHeartbeat(attrs, from_jid, device_id, ratchet, version) {
+    maybeSendOMEMOHeartbeat(attrs, from_jid, device_id, ratchet, version).catch((e) =>
+        log.error(`Could not send OMEMO heartbeat: ${e}`),
+    );
 }
 
 /**
@@ -134,9 +208,15 @@ async function decryptWhisperMessage(attrs) {
     const session_cipher = await getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
     const key = u.base64ToArrayBuffer(attrs.encrypted.key);
     try {
-        const key_and_tag = await session_cipher.decryptWhisperMessage(key, 'binary');
+        const { plaintext: key_and_tag, ratchet } = await session_cipher.decryptWhisperMessage(key, 'binary');
         const plaintext = await handleDecryptedWhisperMessage(attrs, key_and_tag);
-        return Object.assign(attrs, { plaintext });
+        fireHeartbeat(attrs, from_jid, attrs.encrypted.device_id, ratchet, Strophe.NS.OMEMO);
+        if (plaintext) {
+            return Object.assign(attrs, { plaintext });
+        } else {
+            // Empty/heartbeat message (KeyTransportElement with no <payload>).
+            return Object.assign(attrs, { 'is_only_key': true });
+        }
     } catch (e) {
         return handleDecryptionError(attrs, e);
     }
@@ -149,20 +229,13 @@ async function decryptPrekeyWhisperMessage(attrs) {
     const from_jid = getJIDForDecryption(attrs);
     const session_cipher = await getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
     const key = u.base64ToArrayBuffer(attrs.encrypted.key);
-    let key_and_tag;
+    let key_and_tag, ratchet;
     try {
-        key_and_tag = await session_cipher.decryptPreKeyWhisperMessage(key, 'binary');
+        ({ plaintext: key_and_tag, ratchet } = await session_cipher.decryptPreKeyWhisperMessage(key, 'binary'));
     } catch (e) {
         return handleDecryptionError(attrs, e);
     }
-    // TODO from the XEP:
-    // When a client receives the first message for a given
-    // ratchet key with a counter of 53 or higher, it MUST send
-    // a heartbeat message. Heartbeat messages are normal OMEMO
-    // encrypted messages where the SCE payload does not include
-    // any elements. These heartbeat messages cause the ratchet
-    // to forward, thus consequent messages will have the
-    // counter restarted from 0.
+    fireHeartbeat(attrs, from_jid, attrs.encrypted.device_id, ratchet, Strophe.NS.OMEMO);
     try {
         const plaintext = await handleDecryptedWhisperMessage(attrs, key_and_tag);
         const { omemo_store } = _converse.state;
@@ -261,20 +334,25 @@ async function decryptOMEMO2Message(stanza, attrs) {
 
     const session_cipher = await getSessionCipher(from_jid, parseInt(sender_device_id, 10), Strophe.NS.OMEMO2);
 
-    let key_and_tag;
+    let key_and_tag, ratchet;
     try {
         if (is_kex) {
-            key_and_tag = await session_cipher.decryptPreKeyWhisperMessage(key_bytes, 'binary');
+            ({ plaintext: key_and_tag, ratchet } = await session_cipher.decryptPreKeyWhisperMessage(
+                key_bytes,
+                'binary',
+            ));
             // After handling a key exchange, regenerate and publish prekeys
             const { omemo_store } = _converse.state;
             await omemo_store.generateMissingPreKeys();
             await omemo_store.publishBundle();
         } else {
-            key_and_tag = await session_cipher.decryptWhisperMessage(key_bytes, 'binary');
+            ({ plaintext: key_and_tag, ratchet } = await session_cipher.decryptWhisperMessage(key_bytes, 'binary'));
         }
     } catch (e) {
         return handleDecryptionError(attrs, e);
     }
+
+    fireHeartbeat(attrs, from_jid, sender_device_id, ratchet, Strophe.NS.OMEMO2);
 
     if (!attrs.encrypted.payload) {
         // Empty/heartbeat message
@@ -282,7 +360,7 @@ async function decryptOMEMO2Message(stanza, attrs) {
     }
 
     try {
-        const is_muc = 'from_real_jid' in attrs;
+        const is_muc = attrs.type === 'groupchat';
         const muc_jid = is_muc ? attrs.from : null;
         const plaintext = await decryptSCE(key_and_tag, attrs.encrypted.payload, {
             sender_jid: from_jid,

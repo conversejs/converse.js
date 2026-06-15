@@ -47,6 +47,13 @@ declare class RTPSession {
     /** @param {Element} jingle - a transport-info carrying one or more candidates */
     onTransportInfo(jingle: Element): void;
     flushCandidates(): void;
+    /** @param {Element} jingle - the peer hung up */
+    onSessionTerminate(jingle: Element): void;
+    /**
+     * Tell the peer we're hanging up.
+     * @param {string} reason - one of {@link ENDED_REASONS}
+     */
+    terminate(reason: string): void;
     /** @param {Element} jingle - a `<jingle>` payload from {@link sdpToJingle} */
     sendJingle(jingle: Element): void;
     close(): void;

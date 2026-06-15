@@ -91,11 +91,15 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
 
     /** End the call from our side: retract a not-yet-answered outgoing call, otherwise terminate. */
     hangup() {
-        if (this.get('direction') === CALL_DIRECTION.OUTGOING && this.isPreActive()) {
+        if (this.session) {
+            // Past session-initiate, so it's a Jingle session-terminate, not a JMI retract.
+            const reason = this.get('state') === CALL_STATES.ACTIVE ? ENDED_REASONS.SUCCESS : ENDED_REASONS.CANCELLED;
+            this.session.terminate(reason);
+            this.end(reason);
+        } else if (this.get('direction') === CALL_DIRECTION.OUTGOING && this.isPreActive()) {
             api.send(buildRetract(this.peer, this.sid));
             this.end(ENDED_REASONS.CANCELLED);
         } else {
-            // TODO: an active call needs a Jingle session-terminate.
             this.end(ENDED_REASONS.SUCCESS);
         }
     }

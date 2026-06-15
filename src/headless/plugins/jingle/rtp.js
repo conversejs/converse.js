@@ -16,6 +16,23 @@ import { CALL_STATES, ENDED_REASONS } from './constants.js';
 
 const { Strophe, sizzle, stx } = converse.env;
 
+// Our end reason -> the Jingle <reason> condition we send on session-terminate.
+const REASON_ELEMENT = {
+    [ENDED_REASONS.SUCCESS]: () => stx`<success/>`,
+    [ENDED_REASONS.CANCELLED]: () => stx`<cancel/>`,
+    [ENDED_REASONS.DECLINED]: () => stx`<decline/>`,
+};
+
+// A received Jingle <reason> condition -> our end reason.
+const REASON_FROM_JINGLE = {
+    success: ENDED_REASONS.SUCCESS,
+    decline: ENDED_REASONS.DECLINED,
+    busy: ENDED_REASONS.DECLINED,
+    cancel: ENDED_REASONS.CANCELLED,
+    'connectivity-error': ENDED_REASONS.CONNECTIVITY_ERROR,
+    timeout: ENDED_REASONS.CONNECTIVITY_ERROR,
+};
+
 // Swappable WebRTC backend: the browser globals in production, fakes in the
 // signalling specs. The media-loopback test leaves these as the real thing.
 export const webrtc = {
@@ -140,6 +157,9 @@ class RTPSession {
             case 'transport-info':
                 this.onTransportInfo(jingle);
                 break;
+            case 'session-terminate':
+                this.onSessionTerminate(jingle);
+                break;
         }
     }
 
@@ -164,8 +184,33 @@ class RTPSession {
         });
     }
 
+    /** @param {Element} jingle - the peer hung up */
+    onSessionTerminate(jingle) {
+        const condition = sizzle('reason > *', jingle).pop()?.tagName ?? 'success';
+        const reason = REASON_FROM_JINGLE[condition] ?? ENDED_REASONS.SUCCESS;
+        if (reason === ENDED_REASONS.CONNECTIVITY_ERROR) {
+            this.call.fail(reason);
+        } else {
+            this.call.end(reason);
+        }
+    }
+
+    /**
+     * Tell the peer we're hanging up.
+     * @param {string} reason - one of {@link ENDED_REASONS}
+     */
+    terminate(reason) {
+        const condition = (REASON_ELEMENT[reason] ?? REASON_ELEMENT[ENDED_REASONS.SUCCESS])();
+        const jingle = stx`
+            <jingle xmlns="${Strophe.NS.JINGLE}" action="session-terminate" sid="${this.sid}">
+                <reason>${condition}</reason>
+            </jingle>`;
+        this.sendJingle(jingle);
+    }
+
     /** @param {Element} jingle - a `<jingle>` payload from {@link sdpToJingle} */
     sendJingle(jingle) {
+        if (!api.connection.connected()) return; // nothing to send to (e.g. terminating on disconnect)
         const iq = stx`<iq xmlns="jabber:client" type="set" to="${this.peer_jid}">${jingle}</iq>`;
         api.sendIQ(iq).catch((e) => log.error(e));
     }

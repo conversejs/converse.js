@@ -103,6 +103,99 @@ describe('OMEMO 2 message reception', function () {
     );
 
     it(
+        'extracts body-coupled metadata (references/reply/oob/spoiler) from the SCE content',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.initializedOMEMO(_converse);
+            mock.deferV2DeviceList(contact_jid); // we answer this contact's v2 list ourselves
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+
+            const our_device_id = _converse.state.omemo_store.get('device_id');
+            const sender_device_id = '555';
+            const plaintext = 'Hi juliet, look here';
+
+            // The contact builds the SCE payload with body-coupled metadata
+            // encrypted inside <content>.
+            const extensions = [
+                stx`<reference xmlns="${Strophe.NS.REFERENCE}" begin="3" end="9" type="mention" uri="xmpp:juliet@capulet.lit"></reference>`,
+                stx`<reply xmlns="${Strophe.NS.REPLY}" id="replied-to-id" to="${contact_jid}"></reply>`,
+                stx`<x xmlns="${Strophe.NS.OUTOFBAND}"><url>https://example.org/file.txt</url></x>`,
+                stx`<spoiler xmlns="${Strophe.NS.SPOILER}">a spoiler</spoiler>`,
+            ];
+            const { key_and_tag, payload } = await u.omemo.encryptSCE(
+                plaintext,
+                { from_jid: contact_jid, to_jid: null },
+                extensions,
+            );
+
+            // Answer the contact's v2 device-list IQ fetched during decryption.
+            const conn = api.connection.get();
+            const v2_dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`;
+            const interval = setInterval(() => {
+                const iq = Array.from(conn.IQ_stanzas)
+                    .filter((i) => i.querySelector(v2_dl_selector) && !i.dataset_handled)
+                    .pop();
+                if (!iq) return;
+                iq.dataset_handled = true;
+                const result = stx`<iq from="${contact_jid}"
+                                       id="${iq.getAttribute('id')}"
+                                       to="${conn.jid}"
+                                       xmlns="jabber:server"
+                                       type="result">
+                    <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                        <items node="${Strophe.NS.OMEMO2_DEVICELIST}">
+                            <item>
+                                <devices xmlns="${Strophe.NS.OMEMO2}">
+                                    <device id="${sender_device_id}"/>
+                                </devices>
+                            </item>
+                        </items>
+                    </pubsub>
+                </iq>`;
+                conn._dataRecv(mock.createRequest(_converse, result));
+            }, 50);
+
+            const stanza = stx`<message from="${contact_jid}"
+                    to="${conn.jid}"
+                    type="chat"
+                    id="${conn.getUniqueId()}"
+                    xmlns="jabber:client">
+                <body>This is a fallback message</body>
+                <encrypted xmlns="${Strophe.NS.OMEMO2}">
+                    <header sid="${sender_device_id}">
+                        <keys jid="${_converse.bare_jid}">
+                            <key rid="${our_device_id}">${u.arrayBufferToBase64(key_and_tag)}</key>
+                        </keys>
+                    </header>
+                    <payload>${payload}</payload>
+                </encrypted>
+                <encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO2}"/>
+            </message>`;
+            conn._dataRecv(mock.createRequest(_converse, stanza));
+
+            await new Promise((resolve) => view.model.messages.once('rendered', resolve));
+            clearInterval(interval);
+
+            const message = view.model.messages.at(0);
+            expect(message.get('plaintext')).toBe(plaintext);
+
+            const references = message.get('references');
+            expect(references.length).toBe(1);
+            expect(references[0].uri).toBe('xmpp:juliet@capulet.lit');
+            expect(references[0].value).toBe('juliet');
+
+            expect(message.get('reply_to_id')).toBe('replied-to-id');
+            expect(message.get('reply_to')).toBe(contact_jid);
+            expect(message.get('oob_url')).toBe('https://example.org/file.txt');
+            expect(message.get('is_spoiler')).toBe(true);
+            expect(message.get('spoiler_hint')).toBe('a spoiler');
+        }),
+    );
+
+    it(
         'shows an error for an undecryptable message that has no fallback body',
         // Regression test for https://github.com/conversejs/converse.js/issues/2097
         // An OMEMO message that we can't decrypt (here: not encrypted for this
@@ -366,6 +459,54 @@ describe('OMEMO 2 sending', function () {
             expect(legacy_enc).toBeTruthy();
             expect(sizzle(`key[rid="482886413b977930064a5888b92134fe"]`, legacy_enc).length).toBe(1);
             expect(sizzle(`key[rid="555"]`, legacy_enc).length).toBe(0);
+        }),
+    );
+
+    it(
+        'does not leak the reply in cleartext for an encrypted message',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.initializedOMEMO(_converse);
+            mock.deferV2DeviceList(contact_jid); // we answer this contact's v2 list ourselves
+            await mock.openChatBoxFor(_converse, contact_jid);
+
+            const view = _converse.chatboxviews.get(contact_jid);
+            view.model.set('omemo_active', true);
+            // Reply state is read by getOutgoingMessageAttributes for the next send.
+            view.model.set({ reply_to_id: 'replied-to-id', reply_to: contact_jid });
+
+            const rendered = mock.sendMessage(_converse, view, 'This is an encrypted reply');
+
+            await mock.deviceListFetched(_converse, contact_jid, ['555']);
+            await answerV2DeviceList(_converse, contact_jid, ['555']);
+            await mock.bundleFetched(_converse, {
+                jid: _converse.bare_jid,
+                device_id: '482886413b977930064a5888b92134fe',
+                identity_key: '300000',
+                signed_prekey_id: '4224',
+                signed_prekey_public: '100000',
+                signed_prekey_sig: '200000',
+                prekeys: ['1991', '1992', '1993'],
+            });
+            await answerV2Bundle(_converse, contact_jid, '555');
+
+            await rendered;
+
+            const sent_stanza = await u.waitUntil(
+                () =>
+                    _converse.api.connection
+                        .get()
+                        .sent_stanzas.filter((s) => s.querySelector('encrypted'))
+                        .pop(),
+                1000,
+            );
+
+            // The encrypted message must be sent (omemo:2 payload present)...
+            expect(sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO2}"] payload`, sent_stanza).length).toBe(1);
+            // ...but the body-coupled <reply> must NOT appear in cleartext — it
+            // now lives encrypted inside the SCE <content> instead.
+            expect(sizzle(`> reply[xmlns="${Strophe.NS.REPLY}"]`, sent_stanza).length).toBe(0);
         }),
     );
 

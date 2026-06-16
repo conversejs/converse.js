@@ -759,6 +759,40 @@ async function getLegacyEncryptedElement(message, devices) {
 }
 
 /**
+ * Build the body-coupled metadata elements (XEP-0372 references, XEP-0461
+ * reply, OOB url, spoiler) that go inside the OMEMO 2 SCE `<content>` envelope.
+ *
+ * These mirror the cleartext builders in `createMessageStanza`
+ * ({@link module:headless-shared-model-with-messages}), but for encrypted
+ * messages they live encrypted inside `<content>` instead of in cleartext.
+ * Legacy OMEMO 1 recipients don't get them (its payload is a string, not an
+ * element tree) and degrade gracefully.
+ * @param {import('../../shared/message').default} message
+ * @returns {import('strophe.js').Builder[]}
+ */
+function getSCEExtensions(message) {
+    const { oob_url, is_spoiler, spoiler_hint, references, reply_to_id, reply_to } = message.attributes;
+    const extensions = [];
+    if (oob_url) {
+        extensions.push(stx`<x xmlns="${Strophe.NS.OUTOFBAND}"><url>${oob_url}</url></x>`);
+    }
+    if (is_spoiler) {
+        extensions.push(stx`<spoiler xmlns="${Strophe.NS.SPOILER}">${spoiler_hint ?? ''}</spoiler>`);
+    }
+    references?.forEach((ref) => {
+        extensions.push(stx`<reference xmlns="${Strophe.NS.REFERENCE}"
+                begin="${ref.begin}"
+                end="${ref.end}"
+                type="${ref.type}"
+                uri="${ref.uri}"></reference>`);
+    });
+    if (reply_to_id) {
+        extensions.push(stx`<reply xmlns="${Strophe.NS.REPLY}" id="${reply_to_id}" to="${reply_to || ''}"></reply>`);
+    }
+    return extensions;
+}
+
+/**
  * @param {import('../../shared/chatbox').default} chat
  * @param {import('../../shared/message').default} message
  * @param {import('./device').default[]} devices
@@ -768,11 +802,13 @@ async function getOMEMO2EncryptedElement(chat, message, devices) {
     const muc_jid = is_muc ? chat.get('jid') : null;
     const bare_jid = _converse.session.get('bare_jid');
 
-    // Build SCE envelope and encrypt it
-    const { key_and_tag, payload } = await encryptSCE(message.get('plaintext'), {
-        from_jid: bare_jid,
-        to_jid: muc_jid,
-    });
+    // Build SCE envelope and encrypt it. Body-coupled metadata
+    // (references/reply/oob/spoiler) is encrypted inside <content>.
+    const { key_and_tag, payload } = await encryptSCE(
+        message.get('plaintext'),
+        { from_jid: bare_jid, to_jid: muc_jid },
+        getSCEExtensions(message),
+    );
 
     const v2_dicts = await encryptKeyForDevices(key_and_tag, devices, Strophe.NS.OMEMO2);
     return buildOMEMO2EncryptedElement(v2_dicts, payload);

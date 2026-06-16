@@ -74,6 +74,21 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          */
         getOutgoingMessageAttributes(_attrs?: import("./types").MessageAttributes): Promise<import("./types").MessageAttributes>;
         /**
+         * Look up the message being replied to (XEP-0461). For groupchat the
+         * `reply_to_id` is a XEP-0359 stanza_id; otherwise it's the origin_id or msgid.
+         * @param {string} reply_to_id
+         * @returns {BaseMessage|undefined}
+         */
+        getReferencedMessage(reply_to_id: string): import("./message").default | undefined;
+        /**
+         * XEP-0461 compatibility fallback. When sending a reply, prepend a
+         * XEP-0393 `>`-quoted copy of the replied-to text to the body, so clients
+         * that don't support structured replies still see the context.
+         * @param {MessageAttributes} attrs
+         * @returns {MessageAttributes}
+         */
+        addReplyFallback(attrs: import("./types").MessageAttributes): import("./types").MessageAttributes;
+        /**
          * Responsible for sending off a text message inside an ongoing chat conversation.
          * @param {Object} [attrs] - A map of attributes to be saved on the message
          * @returns {Promise<BaseMessage>}

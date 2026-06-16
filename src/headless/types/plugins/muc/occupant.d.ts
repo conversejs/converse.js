@@ -99,6 +99,8 @@ declare const MUCOccupant_base: {
         queueMessage(attrs: import("../../shared/types").MessageAttributes): any;
         msg_chain: any;
         getOutgoingMessageAttributes(_attrs?: import("../../shared/types").MessageAttributes): Promise<import("../../shared/types").MessageAttributes>;
+        getReferencedMessage(reply_to_id: string): import("../../shared/message").default | undefined;
+        addReplyFallback(attrs: import("../../shared/types").MessageAttributes): import("../../shared/types").MessageAttributes;
         sendMessage(attrs?: any): Promise<import("../../shared/message").default>;
         retractOwnMessage(message: import("../../shared/message").default): void;
         sendFiles(files: File[]): Promise<void>;

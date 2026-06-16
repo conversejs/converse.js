@@ -24,6 +24,8 @@ declare const ChatBoxBase_base: {
         queueMessage(attrs: import("./types.js").MessageAttributes): any;
         msg_chain: any;
         getOutgoingMessageAttributes(_attrs?: import("./types.js").MessageAttributes): Promise<import("./types.js").MessageAttributes>;
+        getReferencedMessage(reply_to_id: string): import("./message.js").default | undefined;
+        addReplyFallback(attrs: import("./types.js").MessageAttributes): import("./types.js").MessageAttributes;
         sendMessage(attrs?: any): Promise<import("./message.js").default>;
         retractOwnMessage(message: import("./message.js").default): void;
         sendFiles(files: File[]): Promise<void>;

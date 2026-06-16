@@ -58,7 +58,17 @@ declare class BaseMessage extends Model<import("@converse/skeletor").ModelAttrib
      * @returns { Boolean }
      */
     mayBeRetracted(): boolean;
-    getMessageText(): any;
+    getMessageText(): string;
+    /**
+     * Strip the XEP-0461 compatibility fallback — the `>`-quoted copy of the
+     * replied-to message — from `text`. Converse renders the reply context from
+     * the structured `<reply>`, so per XEP-0461 it must not also show the quoted
+     * fallback. Offsets are XEP-0426 Unicode code points, so we slice on the
+     * code-point array rather than UTF-16 units.
+     * @param {string} text
+     * @returns {string}
+     */
+    stripReplyFallback(text: string): string;
     /**
      * Send out an IQ stanza to request a file upload slot.
      * https://xmpp.org/extensions/xep-0363.html#request

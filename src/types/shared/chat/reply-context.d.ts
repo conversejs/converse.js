@@ -14,8 +14,6 @@ export default class ReplyContext extends CustomElement {
     model_with_messages: any;
     /**
      * Get the message being replied to, if this message is a reply.
-     * According to XEP-0461, for groupchat messages the stanza_id is used,
-     * for other messages we check origin_id first, then msgid.
      * @returns {import('@converse/headless/types/shared/message').default|undefined}
      */
     getRepliedMessage(): import("@converse/headless/types/shared/message").default | undefined;

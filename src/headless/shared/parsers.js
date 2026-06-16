@@ -3,11 +3,11 @@
  */
 import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js';
-import log from "@converse/log";
+import log from '@converse/log';
 import { decodeHTMLEntities } from '../utils/html.js';
 import { getAttributes } from '../utils/stanza.js';
 import { rejectMessage } from './actions.js';
-import { XFORM_TYPE_MAP,  XFORM_VALIDATE_TYPE_MAP } from './constants.js';
+import { XFORM_TYPE_MAP, XFORM_VALIDATE_TYPE_MAP } from './constants.js';
 import * as errors from './errors.js';
 import _converse from './_converse.js';
 import api from './api/index.js';
@@ -96,7 +96,7 @@ export async function parseErrorStanza(stanza) {
  *      the message stanza.
  * @returns {Object}
  */
-export function getStanzaIDs (stanza, original_stanza) {
+export function getStanzaIDs(stanza, original_stanza) {
     // Generic stanza ids
     const sids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
     const sid_attrs = sids.reduce((acc, s) => {
@@ -128,7 +128,7 @@ export function getStanzaIDs (stanza, original_stanza) {
  * @param {Element} stanza
  * @returns {import('./types').EncryptionAttrs}
  */
-export function getEncryptionAttributes (stanza) {
+export function getEncryptionAttributes(stanza) {
     const eme_tag = sizzle(`encryption[xmlns="${Strophe.NS.EME}"]`, stanza).pop();
     const namespace = eme_tag?.getAttribute('namespace');
     const attrs = {};
@@ -151,7 +151,7 @@ export function getEncryptionAttributes (stanza) {
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
  * @returns {import('./types').RetractionAttrs | {}}
  */
-export function getDeprecatedRetractionAttributes (stanza, original_stanza) {
+export function getDeprecatedRetractionAttributes(stanza, original_stanza) {
     const fastening = sizzle(`> apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
     if (fastening) {
         const applies_to_id = fastening.getAttribute('id');
@@ -162,7 +162,7 @@ export function getDeprecatedRetractionAttributes (stanza, original_stanza) {
             return {
                 editable: false,
                 retracted: time,
-                retracted_id: applies_to_id
+                retracted_id: applies_to_id,
             };
         }
     }
@@ -175,7 +175,7 @@ export function getDeprecatedRetractionAttributes (stanza, original_stanza) {
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
  * @returns {import('./types').RetractionAttrs | {}}
  */
-export function getRetractionAttributes (stanza, original_stanza) {
+export function getRetractionAttributes(stanza, original_stanza) {
     const retraction = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();
     if (retraction) {
         const delay = sizzle(`> delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
@@ -183,7 +183,7 @@ export function getRetractionAttributes (stanza, original_stanza) {
         return {
             editable: false,
             retracted: time,
-            retracted_id: retraction.getAttribute('id')
+            retracted_id: retraction.getAttribute('id'),
         };
     } else {
         const tombstone =
@@ -194,7 +194,7 @@ export function getRetractionAttributes (stanza, original_stanza) {
                 editable: false,
                 is_tombstone: true,
                 retracted: tombstone.getAttribute('stamp'),
-                retraction_id: tombstone.getAttribute('id')
+                retraction_id: tombstone.getAttribute('id'),
             };
         }
     }
@@ -205,7 +205,7 @@ export function getRetractionAttributes (stanza, original_stanza) {
  * @param {Element} stanza
  * @param {Element} original_stanza
  */
-export function getCorrectionAttributes (stanza, original_stanza) {
+export function getCorrectionAttributes(stanza, original_stanza) {
     const el = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
     if (el) {
         const replace_id = el.getAttribute('id');
@@ -214,7 +214,7 @@ export function getCorrectionAttributes (stanza, original_stanza) {
             const time = delay ? dayjs(delay.getAttribute('stamp')).toISOString() : new Date().toISOString();
             return {
                 replace_id,
-                'edited': time
+                'edited': time,
             };
         }
     }
@@ -224,33 +224,36 @@ export function getCorrectionAttributes (stanza, original_stanza) {
 /**
  * @param {Element} stanza
  */
-export function getOpenGraphMetadata (stanza) {
+export function getOpenGraphMetadata(stanza) {
     const fastening = sizzle(`> apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
     if (fastening) {
         const applies_to_id = fastening.getAttribute('id');
         const meta = sizzle(`> meta[xmlns="${Strophe.NS.XHTML}"]`, fastening);
         if (meta.length) {
             const msg_limit = api.settings.get('message_limit');
-            const data = meta.reduce((acc, el) => {
-                const property = el.getAttribute('property');
-                if (property) {
-                    let value = decodeHTMLEntities(el.getAttribute('content') || '');
-                    if (msg_limit && property === 'og:description' && value.length >= msg_limit) {
-                        value = `${value.slice(0, msg_limit)}${decodeHTMLEntities('&#8230;')}`;
+            const data = meta.reduce(
+                (acc, el) => {
+                    const property = el.getAttribute('property');
+                    if (property) {
+                        let value = decodeHTMLEntities(el.getAttribute('content') || '');
+                        if (msg_limit && property === 'og:description' && value.length >= msg_limit) {
+                            value = `${value.slice(0, msg_limit)}${decodeHTMLEntities('&#8230;')}`;
+                        }
+                        acc[property] = value;
                     }
-                    acc[property] = value;
-                }
-                return acc;
-            }, {
-                ogp_for_id: applies_to_id,
-            });
+                    return acc;
+                },
+                {
+                    ogp_for_id: applies_to_id,
+                },
+            );
 
             const url = data['og:url'];
             if (url?.startsWith('/') && data['og:site_name']?.toLowerCase() === 'github') {
                 data['og:url'] = `https://github.com${url}`;
             }
 
-            if ("og:description" in data || "og:title" in data || "og:image" in data) {
+            if ('og:description' in data || 'og:title' in data || 'og:image' in data) {
                 return data;
             }
         }
@@ -258,27 +261,26 @@ export function getOpenGraphMetadata (stanza) {
     return {};
 }
 
-
 /**
  * @param {Element} stanza
  */
-export function getSpoilerAttributes (stanza) {
+export function getSpoilerAttributes(stanza) {
     const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, stanza).pop();
     return {
         'is_spoiler': !!spoiler,
-        'spoiler_hint': spoiler?.textContent
+        'spoiler_hint': spoiler?.textContent,
     };
 }
 
 /**
  * @param {Element} stanza
  */
-export function getOutOfBandAttributes (stanza) {
+export function getOutOfBandAttributes(stanza) {
     const xform = sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza).pop();
     if (xform) {
         return {
             'oob_url': xform.querySelector('url')?.textContent,
-            'oob_desc': xform.querySelector('desc')?.textContent
+            'oob_desc': xform.querySelector('desc')?.textContent,
         };
     }
     return {};
@@ -288,7 +290,7 @@ export function getOutOfBandAttributes (stanza) {
  * Returns the human readable error message contained in a `groupchat` message stanza of type `error`.
  * @param {Element} stanza - The message stanza
  */
-export function getErrorAttributes (stanza) {
+export function getErrorAttributes(stanza) {
     if (stanza.getAttribute('type') === 'error') {
         const error = stanza.querySelector('error');
         const text = sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop();
@@ -308,15 +310,34 @@ export function getErrorAttributes (stanza) {
  * @param {Element} stanza - The message stanza
  * @returns {Object} An object containing reply_to_id and reply_to if present
  */
-export function getReplyAttributes (stanza) {
+export function getReplyAttributes(stanza) {
     const reply = sizzle(`reply[xmlns="${Strophe.NS.REPLY}"]`, stanza).pop();
     if (reply) {
         return {
             reply_to_id: reply.getAttribute('id'),
-            reply_to: reply.getAttribute('to')
+            reply_to: reply.getAttribute('to'),
         };
     }
     return {};
+}
+
+/**
+ * Parse the XEP-0428 fallback indication for the XEP-0461 reply fallback body,
+ * i.e. the code-point range of the `>`-quoted text that supporting clients
+ * strip from the displayed body.
+ * @param {Element} stanza - The message stanza (or decrypted SCE `<content>`)
+ * @returns {{reply_fallback?: {start: number, end: number}}}
+ */
+export function getFallbackAttributes(stanza) {
+    const fallback = sizzle(`fallback[xmlns="${Strophe.NS.FALLBACK}"][for="${Strophe.NS.REPLY}"]`, stanza).pop();
+    const body = fallback ? sizzle('> body', fallback).pop() : null;
+    if (!body) return {};
+    return {
+        reply_fallback: {
+            start: Number(body.getAttribute('start')),
+            end: Number(body.getAttribute('end')),
+        },
+    };
 }
 
 /**
@@ -324,29 +345,32 @@ export function getReplyAttributes (stanza) {
  * @param {Element} stanza - The message stanza
  * @returns {import('./types').XEP372Reference[]}
  */
-export function getReferences (stanza) {
-    return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza).map(ref => {
-        const anchor = ref.getAttribute('anchor');
-        const text = stanza.querySelector(anchor ? `#${anchor}` : 'body')?.textContent;
-        if (!text) {
-            log.warn(`Could not find referenced text for ${ref}`);
-            return null;
-        }
-        const begin = Number(ref.getAttribute('begin'));
-        const end = Number(ref.getAttribute('end'));
-        return {
-            begin, end,
-            type: ref.getAttribute('type'),
-            value: text.slice(begin, end),
-            uri: ref.getAttribute('uri')
-        };
-    }).filter(r => r);
+export function getReferences(stanza) {
+    return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza)
+        .map((ref) => {
+            const anchor = ref.getAttribute('anchor');
+            const text = stanza.querySelector(anchor ? `#${anchor}` : 'body')?.textContent;
+            if (!text) {
+                log.warn(`Could not find referenced text for ${ref}`);
+                return null;
+            }
+            const begin = Number(ref.getAttribute('begin'));
+            const end = Number(ref.getAttribute('end'));
+            return {
+                begin,
+                end,
+                type: ref.getAttribute('type'),
+                value: text.slice(begin, end),
+                uri: ref.getAttribute('uri'),
+            };
+        })
+        .filter((r) => r);
 }
 
 /**
  * @param {Element} stanza
  */
-export function getReceiptId (stanza) {
+export function getReceiptId(stanza) {
     const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop();
     return receipt?.getAttribute('id');
 }
@@ -356,7 +380,7 @@ export function getReceiptId (stanza) {
  * @param {Element} stanza - The message stanza
  * @returns {Boolean}
  */
-export function isCarbon (stanza) {
+export function isCarbon(stanza) {
     const xmlns = Strophe.NS.CARBONS;
     return (
         sizzle(`message > received[xmlns="${xmlns}"]`, stanza).length > 0 ||
@@ -368,7 +392,7 @@ export function isCarbon (stanza) {
  * Returns the XEP-0085 chat state contained in a message stanza
  * @param {Element} stanza - The message stanza
  */
-export function getChatState (stanza) {
+export function getChatState(stanza) {
     return sizzle(
         `
         composing[xmlns="${NS.CHATSTATES}"],
@@ -376,7 +400,7 @@ export function getChatState (stanza) {
         inactive[xmlns="${NS.CHATSTATES}"],
         active[xmlns="${NS.CHATSTATES}"],
         gone[xmlns="${NS.CHATSTATES}"]`,
-        stanza
+        stanza,
     ).pop()?.nodeName;
 }
 
@@ -384,7 +408,7 @@ export function getChatState (stanza) {
  * @param {Element} stanza
  * @param {Object} attrs
  */
-export function isValidReceiptRequest (stanza, attrs) {
+export function isValidReceiptRequest(stanza, attrs) {
     return (
         attrs.sender !== 'me' &&
         !attrs.is_carbon &&
@@ -398,7 +422,7 @@ export function isValidReceiptRequest (stanza, attrs) {
  * i.e. it's not forwarded as part of a larger protocol, like MAM.
  * @param { Element } stanza
  */
-export function throwErrorIfInvalidForward (stanza) {
+export function throwErrorIfInvalidForward(stanza) {
     const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
     if (bare_forward) {
         rejectMessage(stanza, 'Forwarded messages not part of an encapsulating protocol are not supported');
@@ -413,14 +437,15 @@ export function throwErrorIfInvalidForward (stanza) {
  * @param {Element} stanza - The message stanza
  * @returns {Element}
  */
-export function getChatMarker (stanza) {
+export function getChatMarker(stanza) {
     // If we receive more than one marker (which shouldn't happen), we take
     // the highest level of acknowledgement.
-    return sizzle(`
+    return sizzle(
+        `
         acknowledged[xmlns="${Strophe.NS.MARKERS}"],
         displayed[xmlns="${Strophe.NS.MARKERS}"],
         received[xmlns="${Strophe.NS.MARKERS}"]`,
-        stanza
+        stanza,
     ).pop();
 }
 
@@ -428,7 +453,7 @@ export function getChatMarker (stanza) {
  * @param {Element} stanza
  * @returns {boolean}
  */
-export function isHeadline (stanza) {
+export function isHeadline(stanza) {
     return stanza.getAttribute('type') === 'headline';
 }
 
@@ -436,7 +461,7 @@ export function isHeadline (stanza) {
  * @param {Element} stanza
  * @returns {Promise<boolean>}
  */
-export async function isMUCPrivateMessage (stanza) {
+export async function isMUCPrivateMessage(stanza) {
     const bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
     return !!(await api.rooms.get(bare_jid));
 }
@@ -445,7 +470,7 @@ export async function isMUCPrivateMessage (stanza) {
  * @param {Element} stanza
  * @returns {boolean}
  */
-export function isServerMessage (stanza) {
+export function isServerMessage(stanza) {
     if (sizzle(`mentions[xmlns="${Strophe.NS.MENTIONS}"]`, stanza).pop()) {
         return false;
     }
@@ -466,7 +491,7 @@ export function isServerMessage (stanza) {
  * @param {Element} original_stanza - The message stanza
  * @returns {boolean}
  */
-export function isArchived (original_stanza) {
+export function isArchived(original_stanza) {
     return !!sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
 }
 
@@ -495,7 +520,7 @@ function parseXFormField(field, readonly, stanza) {
                     required: !!field.querySelector('required'),
                     ...result,
                 };
-            }
+            },
         );
         return {
             type,
@@ -551,7 +576,8 @@ function parseXFormField(field, readonly, stanza) {
             required: !!field.querySelector('required'),
             ...result,
         };
-    } else if (v === 'ocr') { // Captcha
+    } else if (v === 'ocr') {
+        // Captcha
         const uri = field.querySelector('uri');
         const el = sizzle('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
         return {
@@ -580,11 +606,11 @@ function parseXFormField(field, readonly, stanza) {
  * @param {Element} field
  */
 export function getInputType(field) {
-    const type = XFORM_TYPE_MAP[field.getAttribute('type')]
+    const type = XFORM_TYPE_MAP[field.getAttribute('type')];
     if (type == 'text') {
-        const datatypes = field.getElementsByTagNameNS("http://jabber.org/protocol/xdata-validate", "validate");
+        const datatypes = field.getElementsByTagNameNS('http://jabber.org/protocol/xdata-validate', 'validate');
         if (datatypes.length === 1) {
-            const datatype = datatypes[0].getAttribute("datatype");
+            const datatype = datatypes[0].getAttribute('datatype');
             return XFORM_VALIDATE_TYPE_MAP[datatype] || type;
         }
     }
@@ -616,7 +642,7 @@ export function parseXForm(stanza) {
         if (reported) {
             const reported_fields = reported ? Array.from(reported.querySelectorAll(':scope > field')) : [];
             const items = Array.from(x.querySelectorAll(':scope > item'));
-            return /** @type {import('./types').XForm} */({
+            return /** @type {import('./types').XForm} */ ({
                 ...result,
                 reported: /** @type {import('./types').XFormReportedField[]} */ (reported_fields.map(getAttributes)),
                 items: items.map((item) => {

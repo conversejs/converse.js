@@ -237,6 +237,7 @@ export type MessageAttributes = EncryptionAttrs &
         replace_id: string; // The `id` attribute of a XEP-0308 <replace> element
         reply_to_id: string; // The `id` attribute of a XEP-0461 <reply> element (message being replied to)
         reply_to: string; // The `to` attribute of a XEP-0461 <reply> element (JID of the original message sender)
+        reply_fallback: { start: number; end: number }; // XEP-0428 code-point range of the XEP-0461 reply fallback (quoted body) to strip on display
         retracted: string; // An ISO8601 string recording the time that the message was retracted
         retracted_id: string; // The `id` attribute of a XEP-424 <retracted> element
         sender: 'me' | 'them'; // Whether the message was sent by the current user or someone else

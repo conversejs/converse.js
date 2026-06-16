@@ -93,6 +93,19 @@ export function getErrorAttributes(stanza: Element): {
  */
 export function getReplyAttributes(stanza: Element): any;
 /**
+ * Parse the XEP-0428 fallback indication for the XEP-0461 reply fallback body,
+ * i.e. the code-point range of the `>`-quoted text that supporting clients
+ * strip from the displayed body.
+ * @param {Element} stanza - The message stanza (or decrypted SCE `<content>`)
+ * @returns {{reply_fallback?: {start: number, end: number}}}
+ */
+export function getFallbackAttributes(stanza: Element): {
+    reply_fallback?: {
+        start: number;
+        end: number;
+    };
+};
+/**
  * Given a message stanza, find and return any XEP-0372 references
  * @param {Element} stanza - The message stanza
  * @returns {import('./types').XEP372Reference[]}

@@ -17,6 +17,7 @@ import { decryptSCE } from './sce.js';
 import {
     getChatMarker,
     getChatState,
+    getFallbackAttributes,
     getOutOfBandAttributes,
     getReferences,
     getReplyAttributes,
@@ -400,6 +401,7 @@ async function decryptOMEMO2Message(stanza, attrs, chatbox) {
             attrs,
             { references: getReferences(content) },
             getReplyAttributes(content),
+            getFallbackAttributes(content),
             getOutOfBandAttributes(content),
             getSpoilerAttributes(content),
         );

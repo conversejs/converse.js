@@ -1182,6 +1182,9 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             await u.getMediaURLsMetadata(text),
         );
 
+        // Add XEP-0461 reply fallback before the hook
+        attrs = this.addReplyFallback(attrs);
+
         // Clear reply state after capturing it
         if (reply_to_id) {
             this.save({ reply_to_id: undefined, reply_to: undefined });

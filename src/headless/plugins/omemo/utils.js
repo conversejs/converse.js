@@ -759,20 +759,26 @@ async function getLegacyEncryptedElement(message, devices) {
 }
 
 /**
- * Build the body-coupled metadata elements (XEP-0372 references, XEP-0461
- * reply, OOB url, spoiler) that go inside the OMEMO 2 SCE `<content>` envelope.
+ * Build the metadata elements (XEP-0085 chat state, XEP-0372 references,
+ * XEP-0461 reply, OOB url, spoiler) that go inside the OMEMO 2 SCE `<content>`
+ * envelope.
  *
  * These mirror the cleartext builders in `createMessageStanza`
  * ({@link module:headless-shared-model-with-messages}), but for encrypted
- * messages they live encrypted inside `<content>` instead of in cleartext.
- * Legacy OMEMO 1 recipients don't get them (its payload is a string, not an
- * element tree) and degrade gracefully.
+ * messages they live encrypted inside `<content>` instead of in cleartext — so
+ * we don't leak who you mentioned/replied to, nor an XEP-0085 chat state, on
+ * every encrypted message. Legacy OMEMO 1 recipients don't get them (its
+ * payload is a string, not an element tree) and degrade gracefully.
  * @param {import('../../shared/message').default} message
  * @returns {import('strophe.js').Builder[]}
  */
 function getSCEExtensions(message) {
     const { oob_url, is_spoiler, spoiler_hint, references, reply_to_id, reply_to } = message.attributes;
-    const extensions = [];
+    // The `<active/>` chat state that `createMessageStanza` would otherwise add
+    // in cleartext is carried here instead (it's gated out of the cleartext
+    // stanza for encrypted messages), so it still clears the recipient's typing
+    // indicator without leaking activity metadata to the server.
+    const extensions = [stx`<active xmlns="${Strophe.NS.CHATSTATES}"/>`];
     if (oob_url) {
         extensions.push(stx`<x xmlns="${Strophe.NS.OUTOFBAND}"><url>${oob_url}</url></x>`);
     }

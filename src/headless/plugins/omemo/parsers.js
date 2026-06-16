@@ -405,9 +405,11 @@ async function decryptOMEMO2Message(stanza, attrs, chatbox) {
         );
         if (body) attrs.plaintext = body;
 
-        // Chat state and markers are only overridden when actually present in
-        // the content: the cleartext stanza of an encrypted message always
-        // carries a `<active/>` chat state, which we must not wipe.
+        // The chat state now travels encrypted inside <content> (it's gated out
+        // of the cleartext stanza for encrypted messages), so we read it from
+        // there. Chat state and markers are only applied when actually present,
+        // so a metadata-only message (e.g. a reaction) gets no spurious chat
+        // state and any cleartext one from a non-SCE sender isn't clobbered.
         const chat_state = getChatState(content);
         if (chat_state) attrs.chat_state = chat_state;
         const marker = getChatMarker(content);

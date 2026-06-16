@@ -13,6 +13,7 @@ export namespace ENDED_REASONS {
     let ANSWERED_ELSEWHERE: string;
     let NO_MEDIA: string;
     let CONNECTIVITY_ERROR: string;
+    let FAILED_APPLICATION: string;
 }
 export namespace JMI_ACTIONS {
     export let PROPOSE: string;

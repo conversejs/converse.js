@@ -50,6 +50,12 @@ declare class RTPSession {
     /** @param {Element} jingle - the peer hung up */
     onSessionTerminate(jingle: Element): void;
     /**
+     * Abnormal end on our side: tell the peer with a session-terminate, then fail
+     * the call locally.
+     * @param {string} reason - one of {@link ENDED_REASONS}
+     */
+    fail(reason: string): void;
+    /**
      * Tell the peer we're hanging up.
      * @param {string} reason - one of {@link ENDED_REASONS}
      */

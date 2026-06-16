@@ -29,7 +29,8 @@ export type CallEndedReason =
     | 'cancelled'
     | 'answered-elsewhere'
     | 'no-media'
-    | 'connectivity-error';
+    | 'connectivity-error'
+    | 'failed-application';
 
 export type JMIAction = 'propose' | 'ringing' | 'proceed' | 'reject' | 'retract' | 'accept' | 'finish';
 

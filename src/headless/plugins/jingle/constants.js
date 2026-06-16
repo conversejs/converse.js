@@ -20,6 +20,7 @@ export const ENDED_REASONS = {
     ANSWERED_ELSEWHERE: 'answered-elsewhere',
     NO_MEDIA: 'no-media',
     CONNECTIVITY_ERROR: 'connectivity-error',
+    FAILED_APPLICATION: 'failed-application',
 };
 
 export const JMI_ACTIONS = {

@@ -118,11 +118,11 @@ class FakePeerConnection {
 let saved;
 
 /** Swap the browser WebRTC backend for fakes; returns a handle to the live PC. */
-function installFakeWebRTC({ getUserMedia } = {}) {
+function installFakeWebRTC({ getUserMedia, pcOverrides } = {}) {
     saved = { RTCPeerConnection: webrtc.RTCPeerConnection, getUserMedia: webrtc.getUserMedia };
     const handle = { pc: null };
     webrtc.RTCPeerConnection = function (config) {
-        handle.pc = new FakePeerConnection(config);
+        handle.pc = Object.assign(new FakePeerConnection(config), pcOverrides);
         return handle.pc;
     };
     webrtc.getUserMedia = getUserMedia ?? (() => Promise.resolve(fakeStream()));
@@ -389,6 +389,28 @@ describe('A Jingle RTP session', function () {
 
             await u.waitUntil(() => call.get('state') === 'failed');
             expect(call.get('ended_reason')).toBe('no-media');
+            // The peer is told, so it stops waiting for a session-initiate.
+            expect(lastJingleIq(_converse, 'session-terminate')).toBeDefined();
+        })
+    );
+
+    it(
+        'fails and tells the peer when the answer cannot be applied',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            installFakeWebRTC({ pcOverrides: { setRemoteDescription: () => Promise.reject(new Error('bad sdp')) } });
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+
+            receiveIq(_converse, `${jid}/phone`, 'accept-iq', jingle('session-accept', sid));
+
+            await u.waitUntil(() => call.get('state') === 'failed');
+            expect(call.get('ended_reason')).toBe('failed-application');
+            const term = lastJingleIq(_converse, 'session-terminate');
+            expect(sizzle('reason > failed-application', term).length).toBe(1);
         })
     );
 });

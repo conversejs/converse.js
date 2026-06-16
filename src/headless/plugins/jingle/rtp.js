@@ -21,6 +21,9 @@ const REASON_ELEMENT = {
     [ENDED_REASONS.SUCCESS]: () => stx`<success/>`,
     [ENDED_REASONS.CANCELLED]: () => stx`<cancel/>`,
     [ENDED_REASONS.DECLINED]: () => stx`<decline/>`,
+    [ENDED_REASONS.NO_MEDIA]: () => stx`<media-error/>`,
+    [ENDED_REASONS.CONNECTIVITY_ERROR]: () => stx`<connectivity-error/>`,
+    [ENDED_REASONS.FAILED_APPLICATION]: () => stx`<failed-application/>`,
 };
 
 // A received Jingle <reason> condition -> our end reason.
@@ -30,8 +33,18 @@ const REASON_FROM_JINGLE = {
     busy: ENDED_REASONS.DECLINED,
     cancel: ENDED_REASONS.CANCELLED,
     'connectivity-error': ENDED_REASONS.CONNECTIVITY_ERROR,
+    'failed-transport': ENDED_REASONS.CONNECTIVITY_ERROR,
     timeout: ENDED_REASONS.CONNECTIVITY_ERROR,
+    'media-error': ENDED_REASONS.NO_MEDIA,
+    'failed-application': ENDED_REASONS.FAILED_APPLICATION,
 };
+
+// End reasons that land the call in `failed` rather than `ended`.
+const FAILURE_REASONS = [
+    ENDED_REASONS.NO_MEDIA,
+    ENDED_REASONS.CONNECTIVITY_ERROR,
+    ENDED_REASONS.FAILED_APPLICATION,
+];
 
 // Swappable WebRTC backend: the browser globals in production, fakes in the
 // signalling specs. The media-loopback test leaves these as the real thing.
@@ -89,7 +102,7 @@ class RTPSession {
             this.sendJingle(jingle);
         } catch (e) {
             log.error(e);
-            this.call.fail(ENDED_REASONS.NO_MEDIA);
+            this.fail(ENDED_REASONS.NO_MEDIA);
         }
     }
 
@@ -187,7 +200,7 @@ class RTPSession {
             this.sendJingle(reply);
         } catch (e) {
             log.error(e);
-            this.call.fail(ENDED_REASONS.NO_MEDIA);
+            this.fail(ENDED_REASONS.NO_MEDIA);
         }
     }
 
@@ -198,6 +211,7 @@ class RTPSession {
             await this.pc.setRemoteDescription({ type: 'answer', sdp });
         } catch (e) {
             log.error(e);
+            this.fail(ENDED_REASONS.FAILED_APPLICATION);
         }
     }
 
@@ -216,11 +230,21 @@ class RTPSession {
     onSessionTerminate(jingle) {
         const condition = sizzle('reason > *', jingle).pop()?.tagName ?? 'success';
         const reason = REASON_FROM_JINGLE[condition] ?? ENDED_REASONS.SUCCESS;
-        if (reason === ENDED_REASONS.CONNECTIVITY_ERROR) {
+        if (FAILURE_REASONS.includes(reason)) {
             this.call.fail(reason);
         } else {
             this.call.end(reason);
         }
+    }
+
+    /**
+     * Abnormal end on our side: tell the peer with a session-terminate, then fail
+     * the call locally.
+     * @param {string} reason - one of {@link ENDED_REASONS}
+     */
+    fail(reason) {
+        this.terminate(reason);
+        this.call.fail(reason);
     }
 
     /**

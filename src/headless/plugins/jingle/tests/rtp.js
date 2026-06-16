@@ -350,6 +350,35 @@ describe('A Jingle RTP session', function () {
     );
 
     it(
+        'answers an incoming call with session-accept',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="in1"><description xmlns="${RTP}" media="audio"/></propose>`
+            );
+            const call = _converse.state.calls.get('in1');
+            call.accept();
+            expect(call.get('state')).toBe('connecting');
+
+            receiveIq(_converse, `${jid}/phone`, 'init-iq', jingle('session-initiate', 'in1'));
+
+            const accept = await u.waitUntil(() => lastJingleIq(_converse, 'session-accept'));
+            expect(accept.getAttribute('to')).toBe(`${jid}/phone`);
+            expect(sizzle(`description[xmlns="${RTP}"]`, accept).pop().getAttribute('media')).toBe('audio');
+            expect(call.local_stream).toBeTruthy();
+            expect(sentIq(_converse, 'result', 'init-iq')).toBeDefined();
+
+            webrtc_handle.pc.connectionState = 'connected';
+            webrtc_handle.pc.onconnectionstatechange();
+            expect(call.get('state')).toBe('active');
+        })
+    );
+
+    it(
         'fails the call when capturing the microphone is denied',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             installFakeWebRTC({ getUserMedia: () => Promise.reject(new Error('NotAllowedError')) });

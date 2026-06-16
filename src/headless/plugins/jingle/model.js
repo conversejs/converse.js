@@ -152,13 +152,22 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     }
 
     /**
-     * Create the Jingle RTP session once the call reaches `connecting`, and begin
-     * negotiating media.
+     * Outgoing call: create the Jingle RTP session once the call reaches
+     * `connecting`, and begin negotiating media.
      * @param {string} peer_jid - full JID of the remote endpoint
      */
     startSession(peer_jid) {
         this.session = new RTPSession(this, peer_jid);
         this.session.initiate();
+    }
+
+    /**
+     * Incoming call: create the answering session. The caller's session-initiate
+     * drives the rest; the peer (caller) is the Jingle initiator.
+     * @param {string} peer_jid - full JID of the caller
+     */
+    answerSession(peer_jid) {
+        this.session = new RTPSession(this, peer_jid, false);
     }
 }
 

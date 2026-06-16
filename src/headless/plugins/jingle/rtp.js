@@ -151,6 +151,9 @@ class RTPSession {
      */
     handleJingle(action, jingle) {
         switch (action) {
+            case 'session-initiate':
+                this.onSessionInitiate(jingle);
+                break;
             case 'session-accept':
                 this.onSessionAccept(jingle);
                 break;
@@ -160,6 +163,31 @@ class RTPSession {
             case 'session-terminate':
                 this.onSessionTerminate(jingle);
                 break;
+        }
+    }
+
+    /** @param {Element} jingle - the caller's offer; answer it. */
+    async onSessionInitiate(jingle) {
+        try {
+            this.createConnection();
+            const offer = writeSDP(jingleToSDP(jingle, { is_initiator: false, sid: this.sid }));
+            await this.pc.setRemoteDescription({ type: 'offer', sdp: offer });
+
+            await this.addLocalMedia();
+            const answer = await this.pc.createAnswer();
+            await this.pc.setLocalDescription(answer);
+
+            const reply = sdpToJingle(parseSDP(answer.sdp), {
+                action: 'session-accept',
+                sid: this.sid,
+                initiator: this.initiator,
+                responder: this.responder,
+                is_initiator: false,
+            });
+            this.sendJingle(reply);
+        } catch (e) {
+            log.error(e);
+            this.call.fail(ENDED_REASONS.NO_MEDIA);
         }
     }
 

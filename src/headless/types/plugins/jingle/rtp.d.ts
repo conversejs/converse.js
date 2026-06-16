@@ -41,6 +41,8 @@ declare class RTPSession {
      * @param {Element} jingle
      */
     handleJingle(action: string, jingle: Element): void;
+    /** @param {Element} jingle - the caller's offer; answer it. */
+    onSessionInitiate(jingle: Element): Promise<void>;
     /** @param {Element} jingle */
     onSessionAccept(jingle: Element): Promise<void>;
     /** @param {Element} jingle - a transport-info carrying one or more candidates */

@@ -293,11 +293,17 @@ declare class Call extends Call_base {
      */
     markEnded(state: string, reason: string): void;
     /**
-     * Create the Jingle RTP session once the call reaches `connecting`, and begin
-     * negotiating media.
+     * Outgoing call: create the Jingle RTP session once the call reaches
+     * `connecting`, and begin negotiating media.
      * @param {string} peer_jid - full JID of the remote endpoint
      */
     startSession(peer_jid: string): void;
+    /**
+     * Incoming call: create the answering session. The caller's session-initiate
+     * drives the rest; the peer (caller) is the Jingle initiator.
+     * @param {string} peer_jid - full JID of the caller
+     */
+    answerSession(peer_jid: string): void;
 }
 import { Model } from '@converse/skeletor';
 import RTPSession from './rtp.js';

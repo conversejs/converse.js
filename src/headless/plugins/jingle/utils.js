@@ -175,13 +175,21 @@ export function handleJingleIq(iq) {
     const jingle = sizzle(`> jingle[xmlns="${Strophe.NS.JINGLE}"]`, iq).pop();
     if (!jingle) return true;
 
-    const session = _converse.state.calls?.get(jingle.getAttribute('sid'))?.session;
+    const action = jingle.getAttribute('action');
+    const call = _converse.state.calls?.get(jingle.getAttribute('sid'));
+
+    if (action === 'session-initiate' && call?.isPreActive() && !call.session) {
+        if (call.get('direction') !== CALL_DIRECTION.INCOMING) return true; // we initiate outgoing calls
+        call.answerSession(jingle.getAttribute('initiator') || iq.getAttribute('from'));
+    }
+
+    const session = call?.session;
     if (!session) {
         api.send(buildItemNotFound(iq));
         return true;
     }
 
-    session.handleJingle(jingle.getAttribute('action'), jingle);
+    session.handleJingle(action, jingle);
     api.send(buildIqResult(iq));
     return true;
 }

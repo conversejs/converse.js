@@ -14,6 +14,12 @@ import { decryptMessage, getSessionCipher, sendOMEMOHeartbeat } from './utils.js
 import { getCrypto } from './crypto.js';
 import { VersionedOMEMOStore } from './versioned-store.js';
 import { decryptSCE } from './sce.js';
+import {
+    getOutOfBandAttributes,
+    getReferences,
+    getReplyAttributes,
+    getSpoilerAttributes,
+} from '../../shared/parsers.js';
 
 const { Strophe } = converse.env;
 
@@ -362,7 +368,7 @@ async function decryptOMEMO2Message(stanza, attrs) {
     try {
         const is_muc = attrs.type === 'groupchat';
         const muc_jid = is_muc ? attrs.from : null;
-        const plaintext = await decryptSCE(key_and_tag, attrs.encrypted.payload, {
+        const { body, content } = await decryptSCE(key_and_tag, attrs.encrypted.payload, {
             sender_jid: from_jid,
             to_jid: muc_jid,
         });
@@ -375,8 +381,18 @@ async function decryptOMEMO2Message(stanza, attrs) {
         }
         device.save('active', true);
 
-        if (plaintext) {
-            return Object.assign(attrs, { plaintext });
+        if (body) {
+            // Body-coupled metadata (references/reply/oob/spoiler) lives encrypted
+            // inside the SCE <content>, so we re-run the normal parsers against the
+            // decrypted content — not the wire stanza — overriding the (empty)
+            // values parsed from the cleartext stanza.
+            return Object.assign(
+                attrs,
+                { plaintext: body, references: getReferences(content) },
+                getReplyAttributes(content),
+                getOutOfBandAttributes(content),
+                getSpoilerAttributes(content),
+            );
         } else {
             return Object.assign(attrs, { 'is_only_key': true });
         }

@@ -74,17 +74,24 @@ async function deriveKeys(content_key) {
  *   - <to> MUST for MUC (included when muc_jid is provided)
  *   - <time> MAY (omitted for now)
  *
+ * The `extensions` are extra element builders (XEP-0372 references, XEP-0461
+ * reply, OOB url, spoiler) spliced into `<content>` right after `<body>`, so
+ * body-coupled metadata is encrypted alongside the body instead of leaking in
+ * cleartext. They live inside the authenticated `<content>` and are therefore
+ * covered by the SCE HMAC.
+ *
  * @param {string} body - plaintext message body
  * @param {{from_jid: string, to_jid: string|null}} affixes
+ * @param {import('strophe.js').Builder[]} [extensions] - extra <content> children
  * @returns {import('strophe.js').Builder}
  */
-function buildSCEEnvelope(body, { from_jid, to_jid }) {
+function buildSCEEnvelope(body, { from_jid, to_jid }, extensions = []) {
     const rpad_len = 1 + Math.floor(Math.random() * 100);
     const rpad = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(rpad_len))));
 
     return stx`
         <envelope xmlns="${Strophe.NS.SCE}">
-            <content><body xmlns="jabber:client">${body}</body></content>
+            <content><body xmlns="jabber:client">${body}</body>${extensions}</content>
             <rpad>${rpad}</rpad>
             <from xmlns="${Strophe.NS.SCE}" jid="${from_jid}"/>
             ${to_jid ? stx`<to xmlns="${Strophe.NS.SCE}" jid="${to_jid}"/>` : ''}
@@ -100,14 +107,15 @@ function buildSCEEnvelope(body, { from_jid, to_jid }) {
  *
  * @param {string} plaintext - the message body to encrypt
  * @param {{from_jid: string, to_jid: string|null}} affixes
+ * @param {import('strophe.js').Builder[]} [extensions] - body-coupled metadata elements
  * @returns {Promise<{key_and_tag: ArrayBuffer, payload: string}>}
  */
-export async function encryptSCE(plaintext, affixes) {
+export async function encryptSCE(plaintext, affixes, extensions = []) {
     // Random 32-byte content key
     const content_key = crypto.getRandomValues(new Uint8Array(32)).buffer;
     const { encKey, authKey, iv } = await deriveKeys(content_key);
 
-    const envelope = buildSCEEnvelope(plaintext, affixes);
+    const envelope = buildSCEEnvelope(plaintext, affixes, extensions);
     const plaintext_bytes = new TextEncoder().encode(envelope.toString());
 
     // AES-256-CBC encryption
@@ -133,10 +141,15 @@ export async function encryptSCE(plaintext, affixes) {
 /**
  * Decrypt an SCE/OMEMO 2 payload.
  *
+ * Returns both the plaintext body string and the decrypted `<content>` element,
+ * so callers can re-run the normal stanza parsers (references/reply/oob/spoiler)
+ * against the authenticated content. `body`/`content` are `null` for a
+ * heartbeat (payload-less / bodyless) message.
+ *
  * @param {ArrayBuffer} key_and_tag - 48-byte tuple: content_key(32) ‖ HMAC(16)
  * @param {string} payload_b64 - base64-encoded AES-256-CBC ciphertext
  * @param {{sender_jid: string, to_jid?: string|null}} expected_affixes - for validation
- * @returns {Promise<string|null>} - plaintext message body
+ * @returns {Promise<{body: string|null, content: Element|null}>}
  */
 export async function decryptSCE(key_and_tag, payload_b64, expected_affixes) {
     if (key_and_tag.byteLength !== 48) {
@@ -163,14 +176,17 @@ export async function decryptSCE(key_and_tag, payload_b64, expected_affixes) {
     const plaintext_bytes = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, aes_key, ciphertext);
     const envelope_xml = new TextDecoder().decode(plaintext_bytes);
 
-    return parseSCEEnvelope(envelope_xml, expected_affixes);
+    const content = parseSCEEnvelope(envelope_xml, expected_affixes);
+    const body = content ? (sizzle('> body', content).pop()?.textContent ?? null) : null;
+    return { body, content };
 }
 
 /**
- * Parse an SCE <envelope> and validate affixes, returning the message body.
+ * Parse an SCE <envelope>, validate its affixes and return the decrypted
+ * `<content>` element (or `null` for a heartbeat with no `<content>`/`<body>`).
  * @param {string} envelope_xml
  * @param {{sender_jid: string, to_jid?: string|null}} expected_affixes
- * @returns {string}
+ * @returns {Element|null}
  */
 function parseSCEEnvelope(envelope_xml, { sender_jid, to_jid }) {
     const parser = new DOMParser();
@@ -207,5 +223,5 @@ function parseSCEEnvelope(envelope_xml, { sender_jid, to_jid }) {
         // Empty/heartbeat message — no body
         return null;
     }
-    return body_el.textContent;
+    return content_el;
 }

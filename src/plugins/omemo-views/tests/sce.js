@@ -21,7 +21,7 @@ describe('OMEMO 2 SCE encryption', function () {
             const decrypted = await u.omemo.decryptSCE(key_and_tag, payload, {
                 sender_jid: 'romeo@montague.lit',
             });
-            expect(decrypted).toBe(plaintext);
+            expect(decrypted.body).toBe(plaintext);
         }),
     );
 
@@ -35,7 +35,33 @@ describe('OMEMO 2 SCE encryption', function () {
             const decrypted = await u.omemo.decryptSCE(key_and_tag, payload, {
                 sender_jid: 'romeo@montague.lit',
             });
-            expect(decrypted).toBe(plaintext);
+            expect(decrypted.body).toBe(plaintext);
+        }),
+    );
+
+    it(
+        'encrypts body-coupled metadata extensions inside <content> and exposes them on decryption',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            const { stx } = converse.env;
+            const { Strophe } = converse.env;
+            const plaintext = 'Hello @juliet, see the airlock';
+            const affixes = { from_jid: 'romeo@montague.lit', to_jid: null };
+            const extensions = [
+                stx`<reference xmlns="${Strophe.NS.REFERENCE}" begin="6" end="13" type="mention" uri="xmpp:juliet@capulet.lit"></reference>`,
+                stx`<reply xmlns="${Strophe.NS.REPLY}" id="some-msg-id" to="juliet@capulet.lit"></reply>`,
+            ];
+
+            const { key_and_tag, payload } = await u.omemo.encryptSCE(plaintext, affixes, extensions);
+
+            // The metadata must not leak in cleartext (the payload is ciphertext)
+            expect(atob(payload).includes('juliet@capulet.lit')).toBe(false);
+
+            const { body, content } = await u.omemo.decryptSCE(key_and_tag, payload, {
+                sender_jid: 'romeo@montague.lit',
+            });
+            expect(body).toBe(plaintext);
+            expect(content.querySelector('reference').getAttribute('uri')).toBe('xmpp:juliet@capulet.lit');
+            expect(content.querySelector('reply').getAttribute('id')).toBe('some-msg-id');
         }),
     );
 
@@ -53,7 +79,7 @@ describe('OMEMO 2 SCE encryption', function () {
                 sender_jid: 'romeo@montague.lit',
                 to_jid: muc_jid,
             });
-            expect(decrypted).toBe(plaintext);
+            expect(decrypted.body).toBe(plaintext);
 
             // Wrong to_jid is rejected
             let error;

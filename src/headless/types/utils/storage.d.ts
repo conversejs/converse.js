@@ -3,6 +3,10 @@
  */
 export function getDefaultStorageType(): import("./types").StorageType;
 /**
+ * @returns {boolean}
+ */
+export function isPersistentStorageAvailable(): boolean;
+/**
  * @param {string} id
  * @param {import('./types').StorageType} type
  * @returns {BrowserStorage}

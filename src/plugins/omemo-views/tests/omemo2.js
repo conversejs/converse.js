@@ -196,6 +196,94 @@ describe('OMEMO 2 message reception', function () {
     );
 
     it(
+        'applies an incoming encrypted (omemo:2) reaction to its target message',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.initializedOMEMO(_converse);
+            mock.deferV2DeviceList(contact_jid); // we answer this contact's v2 list ourselves
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+
+            const conn = api.connection.get();
+            const our_device_id = _converse.state.omemo_store.get('device_id');
+            const sender_device_id = '555';
+
+            // A (cleartext) message for the reaction to target.
+            await _converse.handleMessageStanza(
+                stx`<message xmlns="jabber:client" from="${contact_jid}" to="${conn.jid}" type="chat" id="omemo-react-target">
+                    <body>React to me</body>
+                </message>`,
+            );
+            await u.waitUntil(() => view.model.messages.findWhere({ msgid: 'omemo-react-target' }));
+            const msg_model = view.model.messages.findWhere({ msgid: 'omemo-react-target' });
+
+            // The contact sends a bodyless, SCE-encrypted XEP-0444 reaction.
+            const extensions = [
+                stx`<reactions xmlns="urn:xmpp:reactions:0" id="omemo-react-target"><reaction>👍</reaction></reactions>`,
+            ];
+            const { key_and_tag, payload } = await u.omemo.encryptSCE(
+                null,
+                { from_jid: contact_jid, to_jid: null },
+                extensions,
+            );
+
+            // Answer the contact's v2 device-list IQ fetched during decryption.
+            const v2_dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`;
+            const interval = setInterval(() => {
+                const iq = Array.from(conn.IQ_stanzas)
+                    .filter((i) => i.querySelector(v2_dl_selector) && !i.dataset_handled)
+                    .pop();
+                if (!iq) return;
+                iq.dataset_handled = true;
+                const result = stx`<iq from="${contact_jid}"
+                                       id="${iq.getAttribute('id')}"
+                                       to="${conn.jid}"
+                                       xmlns="jabber:server"
+                                       type="result">
+                    <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                        <items node="${Strophe.NS.OMEMO2_DEVICELIST}">
+                            <item>
+                                <devices xmlns="${Strophe.NS.OMEMO2}">
+                                    <device id="${sender_device_id}"/>
+                                </devices>
+                            </item>
+                        </items>
+                    </pubsub>
+                </iq>`;
+                conn._dataRecv(mock.createRequest(_converse, result));
+            }, 50);
+
+            const stanza = stx`<message from="${contact_jid}"
+                    to="${conn.jid}"
+                    type="chat"
+                    id="${conn.getUniqueId()}"
+                    xmlns="jabber:client">
+                <encrypted xmlns="${Strophe.NS.OMEMO2}">
+                    <header sid="${sender_device_id}">
+                        <keys jid="${_converse.bare_jid}">
+                            <key rid="${our_device_id}">${u.arrayBufferToBase64(key_and_tag)}</key>
+                        </keys>
+                    </header>
+                    <payload>${payload}</payload>
+                </encrypted>
+                <encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO2}"/>
+            </message>`;
+            conn._dataRecv(mock.createRequest(_converse, stanza));
+
+            await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('👍'));
+            clearInterval(interval);
+
+            expect(msg_model.get('reactions')[contact_jid]).toContain('👍');
+            // The reaction must not create a separate visible message, and must
+            // not clobber the target message's body.
+            expect(view.model.messages.length).toBe(1);
+            expect(msg_model.get('body')).toBe('React to me');
+        }),
+    );
+
+    it(
         'shows an error for an undecryptable message that has no fallback body',
         // Regression test for https://github.com/conversejs/converse.js/issues/2097
         // An OMEMO message that we can't decrypt (here: not encrypted for this

@@ -13,9 +13,11 @@
  *
  * @param {Element} stanza - The message stanza
  * @param {MUCMessageAttributes|MessageAttributes} attrs
+ * @param {import('../muc/muc.js').default} [chatbox] - The MUC model (only for
+ *   `parseMUCMessage`); used to re-parse encrypted reactions from the SCE content.
  * @returns {Promise<MUCMessageAttributes| MessageAttributes|MUCMessageAttrsWithEncryption|MessageAttrsWithEncryption>}
  */
-export function parseEncryptedMessage(stanza: Element, attrs: MUCMessageAttributes | MessageAttributes): Promise<MUCMessageAttributes | MessageAttributes | MUCMessageAttrsWithEncryption | MessageAttrsWithEncryption>;
+export function parseEncryptedMessage(stanza: Element, attrs: MUCMessageAttributes | MessageAttributes, chatbox?: import("../muc/muc.js").default): Promise<MUCMessageAttributes | MessageAttributes | MUCMessageAttrsWithEncryption | MessageAttrsWithEncryption>;
 /**
  * Given an XML element representing a legacy OMEMO bundle, parse it
  * and return a map.

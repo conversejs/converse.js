@@ -15,6 +15,8 @@ import { getCrypto } from './crypto.js';
 import { VersionedOMEMOStore } from './versioned-store.js';
 import { decryptSCE } from './sce.js';
 import {
+    getChatMarker,
+    getChatState,
     getOutOfBandAttributes,
     getReferences,
     getReplyAttributes,
@@ -293,9 +295,10 @@ async function decryptLegacyOMEMOMessage(stanza, attrs) {
  * Decrypt an OMEMO 2 message.
  * @param {Element} stanza
  * @param {MUCMessageAttributes|MessageAttributes} attrs
+ * @param {import('../muc/muc.js').default} [chatbox] - The MUC model (for re-parsing reactions)
  * @returns {Promise<MUCMessageAttributes|MessageAttributes|MUCMessageAttrsWithEncryption|MessageAttrsWithEncryption>}
  */
-async function decryptOMEMO2Message(stanza, attrs) {
+async function decryptOMEMO2Message(stanza, attrs, chatbox) {
     const encrypted_el = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO2}"]`, stanza).pop();
     if (!encrypted_el) return attrs;
 
@@ -381,21 +384,65 @@ async function decryptOMEMO2Message(stanza, attrs) {
         }
         device.save('active', true);
 
-        if (body) {
-            // Body-coupled metadata (references/reply/oob/spoiler) lives encrypted
-            // inside the SCE <content>, so we re-run the normal parsers against the
-            // decrypted content — not the wire stanza — overriding the (empty)
-            // values parsed from the cleartext stanza.
-            return Object.assign(
-                attrs,
-                { plaintext: body, references: getReferences(content) },
-                getReplyAttributes(content),
-                getOutOfBandAttributes(content),
-                getSpoilerAttributes(content),
-            );
-        } else {
+        if (!content) {
+            // Payload present but no <content> at all — nothing to surface.
             return Object.assign(attrs, { 'is_only_key': true });
         }
+
+        // A payload-bearing SCE envelope is never a heartbeat (those carry no
+        // <payload> and are handled above). Its <content> may hold a <body>
+        // with body-coupled metadata (references/reply/oob/spoiler), or it may
+        // be a metadata-only message (chat state / marker / reaction) with no
+        // <body>. Either way we re-run the normal parsers against the decrypted,
+        // authenticated <content> — not the wire stanza, which carries none of
+        // this for an encrypted message.
+        Object.assign(
+            attrs,
+            { references: getReferences(content) },
+            getReplyAttributes(content),
+            getOutOfBandAttributes(content),
+            getSpoilerAttributes(content),
+        );
+        if (body) attrs.plaintext = body;
+
+        // Chat state and markers are only overridden when actually present in
+        // the content: the cleartext stanza of an encrypted message always
+        // carries a `<active/>` chat state, which we must not wipe.
+        const chat_state = getChatState(content);
+        if (chat_state) attrs.chat_state = chat_state;
+        const marker = getChatMarker(content);
+        if (marker) {
+            attrs.is_marker = true;
+            attrs.marker_id = marker.getAttribute('id');
+        }
+        if (sizzle(`markable[xmlns="${Strophe.NS.MARKERS}"]`, content).length) {
+            attrs.is_markable = true;
+        }
+
+        /**
+         * *Hook* which lets plugins parse metadata from the decrypted SCE
+         * `<content>` of an OMEMO:2 message, the same way they parse a wire
+         * stanza via `parseMessage`/`parseMUCMessage`. This keeps plugin-specific
+         * parsing (e.g. XEP-0444 reactions) in the plugin instead of coupling it
+         * to OMEMO. The `chatbox` is forwarded so MUC-aware parsers can resolve
+         * room context.
+         * @event _converse#parseEncryptedContent
+         * @param {Element} content - The decrypted SCE `<content>` element
+         * @param {object} attrs - The message attributes parsed so far
+         * @param {import('../muc/muc.js').default} [chatbox] - The MUC model, if any
+         * @example api.listen.on('parseEncryptedContent', parseReactionsMessage);
+         */
+        attrs = await api.hook('parseEncryptedContent', content, attrs, chatbox);
+
+        // A content that surfaced nothing the user acts on (no body and no
+        // chat state / marker / reaction) is treated as a key-transport message
+        // so it isn't shown as a blank message. `reaction_to_id` is added by the
+        // reactions plugin via the hook above, so it's not on the base type.
+        const has_reaction = !!(/** @type {{reaction_to_id?: string}} */ (attrs)).reaction_to_id;
+        if (!body && !attrs.chat_state && !attrs.is_marker && !attrs.is_markable && !has_reaction) {
+            return Object.assign(attrs, { 'is_only_key': true });
+        }
+        return attrs;
     } catch (e) {
         log.error(`SCE decryption failed: ${e.name} ${e.message}`);
         return Object.assign(attrs, getDecryptionErrorAttributes(e));
@@ -417,9 +464,11 @@ async function decryptOMEMO2Message(stanza, attrs) {
  *
  * @param {Element} stanza - The message stanza
  * @param {MUCMessageAttributes|MessageAttributes} attrs
+ * @param {import('../muc/muc.js').default} [chatbox] - The MUC model (only for
+ *   `parseMUCMessage`); used to re-parse encrypted reactions from the SCE content.
  * @returns {Promise<MUCMessageAttributes| MessageAttributes|MUCMessageAttrsWithEncryption|MessageAttrsWithEncryption>}
  */
-export async function parseEncryptedMessage(stanza, attrs) {
+export async function parseEncryptedMessage(stanza, attrs, chatbox) {
     if (api.settings.get('clear_cache_on_logout') || !attrs.is_encrypted) {
         return attrs;
     }
@@ -435,7 +484,7 @@ export async function parseEncryptedMessage(stanza, attrs) {
     const has_legacy_key = !!(legacy_el && device_id) && sizzle(`key[rid="${device_id}"]`, legacy_el).length > 0;
 
     if (has_v2_key) {
-        return await decryptOMEMO2Message(stanza, attrs);
+        return await decryptOMEMO2Message(stanza, attrs, chatbox);
     }
     if (has_legacy_key) {
         return await decryptLegacyOMEMOMessage(stanza, attrs);

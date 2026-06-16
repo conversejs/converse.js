@@ -89,12 +89,8 @@ declare const _default: {
     getLongestSubstring(string: string, candidates: string[]): string;
     isString(s: any): boolean;
     getDefaultStorageType(): import("headless/types/utils/types.js").StorageType;
-    createStore(id: string, type: import(
-    /**
-     * @param {{uri: string, mention: string}} o
-     * @returns {import('lit').TemplateResult}
-     */
-    "headless/types/utils/types.js").StorageType): import("@converse/skeletor").BrowserStorage;
+    isPersistentStorageAvailable(): boolean;
+    createStore(id: string, type: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").BrowserStorage;
     initStorage(model: import("headless/types/utils/types.js").StorageModel, id: string, type?: import("headless/types/utils/types.js").StorageType): void;
     isErrorStanza(stanza: Element): boolean;
     isForbiddenError(stanza: Element): boolean;

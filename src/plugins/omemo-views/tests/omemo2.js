@@ -595,6 +595,9 @@ describe('OMEMO 2 sending', function () {
             // ...but the body-coupled <reply> must NOT appear in cleartext — it
             // now lives encrypted inside the SCE <content> instead.
             expect(sizzle(`> reply[xmlns="${Strophe.NS.REPLY}"]`, sent_stanza).length).toBe(0);
+            // The XEP-0085 chat state must not leak in cleartext either; it's
+            // carried encrypted inside the SCE <content>.
+            expect(sizzle(`> active[xmlns="${Strophe.NS.CHATSTATES}"]`, sent_stanza).length).toBe(0);
         }),
     );
 

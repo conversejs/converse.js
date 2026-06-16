@@ -340,7 +340,6 @@ describe('The OMEMO module', function () {
                 type="chat"
                 xmlns="jabber:client">
                     <body>${fallback}</body>
-                    <active xmlns="http://jabber.org/protocol/chatstates"/>
                     <request xmlns="urn:xmpp:receipts"/>
                     <origin-id id="${sent_stanza.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>
                     <encrypted xmlns="eu.siacs.conversations.axolotl">

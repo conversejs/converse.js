@@ -44,6 +44,7 @@ declare const _default: {
     getLongestSubstring(string: string, candidates: string[]): string;
     isString(s: any): boolean;
     getDefaultStorageType(): import("./types").StorageType;
+    isPersistentStorageAvailable(): boolean;
     createStore(id: string, type: import("./types").StorageType): import("@converse/skeletor").BrowserStorage;
     initStorage(model: import("./types").StorageModel, id: string, type?: import("./types").StorageType): void;
     isErrorStanza(stanza: Element): boolean;

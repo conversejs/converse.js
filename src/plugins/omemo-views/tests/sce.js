@@ -66,6 +66,32 @@ describe('OMEMO 2 SCE encryption', function () {
     );
 
     it(
+        'round-trips a metadata-only (bodyless) message such as a reaction',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            const { stx } = converse.env;
+            const affixes = { from_jid: 'romeo@montague.lit', to_jid: null };
+            const extensions = [
+                stx`<reactions xmlns="urn:xmpp:reactions:0" id="target-msg-id"><reaction>👍</reaction></reactions>`,
+            ];
+
+            // No body — this is a metadata-only stanza.
+            const { key_and_tag, payload } = await u.omemo.encryptSCE(null, affixes, extensions);
+
+            const { body, content } = await u.omemo.decryptSCE(key_and_tag, payload, {
+                sender_jid: 'romeo@montague.lit',
+            });
+            // A bodyless content must NOT be mistaken for a heartbeat: content is
+            // surfaced, body is null.
+            expect(body).toBe(null);
+            expect(content).toBeTruthy();
+            expect(content.querySelector('body')).toBe(null);
+            const reactions = content.getElementsByTagNameNS('urn:xmpp:reactions:0', 'reactions')[0];
+            expect(reactions.getAttribute('id')).toBe('target-msg-id');
+            expect(reactions.querySelector('reaction').textContent).toBe('👍');
+        }),
+    );
+
+    it(
         'includes a <to> affix for MUC messages and validates it on decryption',
         mock.initConverse(converse, [], {}, async function (_converse) {
             const plaintext = 'This is a groupchat message';

@@ -26,6 +26,7 @@ converse.plugins.add('converse-reactions', {
     initialize() {
         api.listen.on('parseMessage', parseReactionsMessage);
         api.listen.on('parseMUCMessage', parseReactionsMessage);
+        api.listen.on('parseEncryptedContent', parseReactionsMessage);
 
         api.listen.on('getDuplicateMessageQueries', getDuplicateMessageQueries);
         api.listen.on('getUpdatedMessageAttributes', getUpdatedMessageAttributes);

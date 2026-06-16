@@ -122,6 +122,7 @@ describe('OMEMO 2 message reception', function () {
             const extensions = [
                 stx`<reference xmlns="${Strophe.NS.REFERENCE}" begin="3" end="9" type="mention" uri="xmpp:juliet@capulet.lit"></reference>`,
                 stx`<reply xmlns="${Strophe.NS.REPLY}" id="replied-to-id" to="${contact_jid}"></reply>`,
+                stx`<fallback xmlns="${Strophe.NS.FALLBACK}" for="${Strophe.NS.REPLY}"><body start="0" end="7"/></fallback>`,
                 stx`<x xmlns="${Strophe.NS.OUTOFBAND}"><url>https://example.org/file.txt</url></x>`,
                 stx`<spoiler xmlns="${Strophe.NS.SPOILER}">a spoiler</spoiler>`,
             ];
@@ -188,6 +189,8 @@ describe('OMEMO 2 message reception', function () {
             expect(references[0].value).toBe('juliet');
 
             expect(message.get('reply_to_id')).toBe('replied-to-id');
+            // The XEP-0428 fallback marker is parsed from the decrypted SCE content.
+            expect(message.get('reply_fallback')).toEqual({ start: 0, end: 7 });
             expect(message.get('reply_to')).toBe(contact_jid);
             expect(message.get('oob_url')).toBe('https://example.org/file.txt');
             expect(message.get('is_spoiler')).toBe(true);
@@ -595,6 +598,8 @@ describe('OMEMO 2 sending', function () {
             // ...but the body-coupled <reply> must NOT appear in cleartext — it
             // now lives encrypted inside the SCE <content> instead.
             expect(sizzle(`> reply[xmlns="${Strophe.NS.REPLY}"]`, sent_stanza).length).toBe(0);
+            // Nor may the XEP-0461/0428 reply fallback marker leak in cleartext.
+            expect(sizzle(`> fallback[xmlns="${Strophe.NS.FALLBACK}"]`, sent_stanza).length).toBe(0);
             // The XEP-0085 chat state must not leak in cleartext either; it's
             // carried encrypted inside the SCE <content>.
             expect(sizzle(`> active[xmlns="${Strophe.NS.CHATSTATES}"]`, sent_stanza).length).toBe(0);

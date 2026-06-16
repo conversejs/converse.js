@@ -174,14 +174,32 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
     }
 
     getMessageText() {
+        let text;
         if (this.get('is_encrypted')) {
             const { __ } = _converse;
-            return this.get('plaintext') || this.get('body') || __('Undecryptable OMEMO message');
+            text = this.get('plaintext') || this.get('body') || __('Undecryptable OMEMO message');
         } else if (['groupchat', 'chat', 'normal'].includes(this.get('type'))) {
-            return this.get('body');
+            text = this.get('body');
         } else {
-            return this.get('message');
+            text = this.get('message');
         }
+        return this.stripReplyFallback(text);
+    }
+
+    /**
+     * Strip the XEP-0461 compatibility fallback — the `>`-quoted copy of the
+     * replied-to message — from `text`. Converse renders the reply context from
+     * the structured `<reply>`, so per XEP-0461 it must not also show the quoted
+     * fallback. Offsets are XEP-0426 Unicode code points, so we slice on the
+     * code-point array rather than UTF-16 units.
+     * @param {string} text
+     * @returns {string}
+     */
+    stripReplyFallback(text) {
+        const fallback = this.get('reply_fallback');
+        if (!text || !fallback || !this.get('reply_to_id')) return text;
+        const chars = [...text];
+        return chars.slice(0, fallback.start).join('') + chars.slice(fallback.end).join('');
     }
 
     /**
@@ -215,7 +233,7 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
         // to be manually set via document.cookie, so we're leaving it out here.
         return {
             headers: headers
-                .map((h) => ({ 'name': h.getAttribute('name'), 'value': h.textContent }))
+                .map((h) => ({ name: h.getAttribute('name'), value: h.textContent }))
                 .filter((h) => ['Authorization', 'Expires'].includes(h.name)),
         };
     }

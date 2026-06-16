@@ -759,16 +759,13 @@ async function getLegacyEncryptedElement(message, devices) {
 }
 
 /**
- * Build the metadata elements (XEP-0085 chat state, XEP-0372 references,
- * XEP-0461 reply, OOB url, spoiler) that go inside the OMEMO 2 SCE `<content>`
- * envelope.
+ * Build the metadata elements that go inside the OMEMO 2 SCE `<content>` envelope.
  *
  * These mirror the cleartext builders in `createMessageStanza`
  * ({@link module:headless-shared-model-with-messages}), but for encrypted
- * messages they live encrypted inside `<content>` instead of in cleartext — so
- * we don't leak who you mentioned/replied to, nor an XEP-0085 chat state, on
- * every encrypted message. Legacy OMEMO 1 recipients don't get them (its
- * payload is a string, not an element tree) and degrade gracefully.
+ * messages they live encrypted inside `<content>` instead of in cleartext.
+ * Legacy OMEMO 1 recipients don't get them (its payload is a string, not an element)
+ * and degrade gracefully.
  * @param {import('../../shared/message').default} message
  * @returns {import('strophe.js').Builder[]}
  */
@@ -794,6 +791,14 @@ function getSCEExtensions(message) {
     });
     if (reply_to_id) {
         extensions.push(stx`<reply xmlns="${Strophe.NS.REPLY}" id="${reply_to_id}" to="${reply_to || ''}"></reply>`);
+        const reply_fallback = message.get('reply_fallback');
+        if (reply_fallback) {
+            extensions.push(
+                stx`<fallback xmlns="${Strophe.NS.FALLBACK}" for="${Strophe.NS.REPLY}">
+                    <body start="${reply_fallback.start}" end="${reply_fallback.end}"/>
+                </fallback>`,
+            );
+        }
     }
     return extensions;
 }
@@ -861,9 +866,7 @@ export async function sendOMEMOHeartbeat(chat, version) {
     const devices = is_v2 ? v2 : legacy;
     if (!devices.length) return;
 
-    const encrypted_el = is_v2
-        ? await getOMEMO2HeartbeatElement(devices)
-        : await getLegacyHeartbeatElement(devices);
+    const encrypted_el = is_v2 ? await getOMEMO2HeartbeatElement(devices) : await getLegacyHeartbeatElement(devices);
 
     const is_muc = chat instanceof MUC;
     const connection = api.connection.get();

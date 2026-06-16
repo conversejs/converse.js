@@ -27,29 +27,10 @@ export default class ReplyContext extends CustomElement {
 
     /**
      * Get the message being replied to, if this message is a reply.
-     * According to XEP-0461, for groupchat messages the stanza_id is used,
-     * for other messages we check origin_id first, then msgid.
      * @returns {import('@converse/headless/types/shared/message').default|undefined}
      */
     getRepliedMessage() {
-        const reply_to_id = this.model.get('reply_to_id');
-        if (!reply_to_id) return undefined;
-
-        const message_type = this.model.get('type');
-        if (message_type === 'groupchat') {
-            // For groupchat, the reply_to_id is a stanza_id
-            // We need to find a message where the stanza_id matches
-            const muc_jid = this.model_with_messages?.get('jid');
-            if (muc_jid) {
-                return this.model_with_messages.messages.models.find(
-                    (m) => m.get(`stanza_id ${muc_jid}`) === reply_to_id,
-                );
-            }
-        }
-        // For non-groupchat, check origin_id first, then msgid (per XEP-0359)
-        return this.model_with_messages.messages.models.find(
-            (m) => m.get('origin_id') === reply_to_id || m.get('msgid') === reply_to_id,
-        );
+        return this.model_with_messages?.getReferencedMessage(this.model.get('reply_to_id'));
     }
 
     /**

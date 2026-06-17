@@ -1,5 +1,6 @@
 import log from '@converse/log';
 import { Strophe } from 'strophe.js';
+import _converse from './_converse.js';
 import api from './api/index.js';
 import converse from './api/public.js';
 import { CHAT_STATES, MARKER_TYPES } from './constants.js';
@@ -22,25 +23,48 @@ export function rejectMessage(stanza, text) {
                     <not-allowed xmlns="${Strophe.NS.STANZAS}"/>
                     <text xmlns="${Strophe.NS.STANZAS}">${text}</text>
                 </error>
-            </message>`
+            </message>`,
     );
     log.warn(`Rejecting message stanza with the following reason: ${text}`);
     log.warn(stanza);
 }
 
 /**
- * Send out a XEP-0333 chat marker
+ * Send out a XEP-0333 chat marker.
+ * @fires sendMarker
  * @param {string} to_jid
  * @param {string} id - The id of the message being marked
  * @param {import("./types").MessageMarkerType} type - The marker type
  * @param {string} [msg_type]
- * @return void
  */
-export function sendMarker(to_jid, id, type, msg_type) {
+export async function sendMarker(to_jid, id, type, msg_type) {
     if (!MARKER_TYPES.includes(type)) {
         log.error(`Invalid marker type: ${type}`);
         return;
     }
+    const bare_jid = Strophe.getBareJidFromJid(to_jid);
+    const chatbox = _converse.state.chatboxes?.get(bare_jid);
+
+    /**
+     * Hook which lets plugins handle sending a chat marker (such as OMEMO
+     * which sends an encrypted version). If any hook listener returns
+     * `{ handled: true }` the cleartext stanza is suppressed.
+     *
+     * Context: the {@link ChatBox} / {@link MUC} model for `to_jid`, or
+     * `undefined` if not found.
+     *
+     * Hook data: `{ to_jid, id, type, msg_type, handled: false }`
+     *
+     * @example
+     *  api.listen.on('sendMarker', async (chatbox, data) => {
+     *      if (!chatbox?.get('omemo_active')) return data;
+     *      await sendEncryptedMarker(chatbox, data);
+     *      return { ...data, handled: true };
+     *  });
+     */
+    const { handled } = await api.hook('sendMarker', chatbox, { to_jid, id, type, msg_type, handled: false });
+    if (handled) return;
+
     const stanza = stx`
         <message from="${api.connection.get().jid}"
                 id="${u.getUniqueId()}"
@@ -89,12 +113,15 @@ export function sendChatState(jid, chat_state) {
         if (Array.isArray(allowed) && !allowed.includes(chat_state)) {
             return;
         }
+        // When OMEMO is active the OMEMO plugin sends an encrypted SCE version;
+        // suppress the cleartext stanza so only one notification goes out.
+        if (_converse.state.chatboxes?.get(jid)?.get('omemo_active')) return;
         api.send(
             stx`<message id="${u.getUniqueId()}" to="${jid}" type="chat" xmlns="jabber:client">
                 <${Stanza.unsafeXML(chat_state)} xmlns="${Strophe.NS.CHATSTATES}"/>
                 <no-store xmlns="${Strophe.NS.HINTS}"/>
                 <no-permanent-store xmlns="${Strophe.NS.HINTS}"/>
-            </message>`
+            </message>`,
         );
     }
 }

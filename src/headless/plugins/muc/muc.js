@@ -1216,6 +1216,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      */
     sendChatState() {
         if (
+            this.get('omemo_active') ||
             !api.settings.get('send_chat_state_notifications') ||
             !this.get('chat_state') ||
             !this.isEntered() ||
@@ -1223,10 +1224,12 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         ) {
             return;
         }
+
         const allowed = api.settings.get('send_chat_state_notifications');
         if (Array.isArray(allowed) && !allowed.includes(this.get('chat_state'))) {
             return;
         }
+
         const chat_state = this.get('chat_state');
         if (chat_state === GONE) return; // <gone/> is not applicable within MUC context
 

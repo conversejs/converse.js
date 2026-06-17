@@ -173,7 +173,7 @@ function buildDescription(media) {
                     name="${rtp.codec}"
                     ${rtp.rate ? Stanza.unsafeXML(`clockrate="${rtp.rate}"`) : ''}
                     ${rtp.encoding && rtp.encoding > 1 ? Stanza.unsafeXML(`channels="${rtp.encoding}"`) : ''}>
-                    ${fmtp ? parseFmtpConfig(fmtp).map((p) => stx`<parameter name="${p.name}" value="${p.value}"/>`) : ''}
+                    ${fmtp ? parseFmtpConfig(fmtp).map((p) => stx`<parameter ${p.name ? Stanza.unsafeXML(`name="${p.name}"`) : ''} value="${p.value}"/>`) : ''}
                     ${fbs.map(
                         (fb) =>
                             stx`<rtcp-fb xmlns="${Strophe.NS.JINGLE_RTP_FB}" type="${fb.type}" ${fb.subtype ? Stanza.unsafeXML(`subtype="${fb.subtype}"`) : ''}/>`

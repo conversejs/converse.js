@@ -274,6 +274,12 @@ class RTPSession {
     }
 
     close() {
+        // Closing the peer connection doesn't release the mic/camera - the
+        // local getUserMedia tracks have to be stopped explicitly, otherwise the
+        // OS keeps showing the device as in use after the call ends.
+        this.call.local_stream?.getTracks().forEach((track) => track.stop());
+        this.call.local_stream = null;
+        this.call.remote_stream = null;
         this.pc?.close();
         this.pc = null;
     }

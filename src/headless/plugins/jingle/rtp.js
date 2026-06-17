@@ -69,6 +69,7 @@ class RTPSession {
         this.peer_jid = peer_jid;
         this.is_initiator = is_initiator;
         this.pc = null;
+        this.pending_candidates = [];
     }
 
     get sid() {
@@ -190,6 +191,7 @@ class RTPSession {
             // from the builder's role (the caller) - not our own.
             const offer = writeSDP(jingleToSDP(jingle, { is_initiator: true, sid: this.sid }));
             await this.pc.setRemoteDescription({ type: 'offer', sdp: offer });
+            this.flushCandidates();
 
             await this.addLocalMedia();
             const answer = await this.pc.createAnswer();
@@ -215,6 +217,7 @@ class RTPSession {
             // The answer is the peer's (responder's) perspective; render it as such.
             const sdp = writeSDP(jingleToSDP(jingle, { is_initiator: false, sid: this.sid }));
             await this.pc.setRemoteDescription({ type: 'answer', sdp });
+            this.flushCandidates();
         } catch (e) {
             log.error(e);
             this.fail(ENDED_REASONS.FAILED_APPLICATION);
@@ -227,9 +230,20 @@ class RTPSession {
             const mid = content.getAttribute('name');
             sizzle(`transport[xmlns="${Strophe.NS.JINGLE_ICE}"] > candidate`, content).forEach((el) => {
                 const candidate = { candidate: candidateToLine(elementToCandidate(el)), sdpMid: mid };
-                this.pc.addIceCandidate(candidate).catch((e) => log.error(e));
+                // A peer can trickle candidates before its description is applied;
+                // addIceCandidate rejects until then, so hold them back.
+                if (this.pc.remoteDescription) {
+                    this.pc.addIceCandidate(candidate).catch((e) => log.error(e));
+                } else {
+                    this.pending_candidates.push(candidate);
+                }
             });
         });
+    }
+
+    flushCandidates() {
+        this.pending_candidates.forEach((c) => this.pc.addIceCandidate(c).catch((e) => log.error(e)));
+        this.pending_candidates = [];
     }
 
     /** @param {Element} jingle - the peer hung up */

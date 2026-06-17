@@ -225,7 +225,7 @@ describe('A Jingle RTP session', function () {
     );
 
     it(
-        'adds a remote candidate from an inbound transport-info',
+        'buffers an inbound candidate until the remote description is applied',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const webrtc_handle = installFakeWebRTC();
             const jid = await getContactJid(_converse);
@@ -248,11 +248,14 @@ describe('A Jingle RTP session', function () {
                     </content>
                 </jingle>`;
             receiveIq(_converse, `${jid}/phone`, 'ti-iq', ti);
+            expect(webrtc_handle.pc.candidates.length).toBe(0);
+            expect(sentIq(_converse, 'result', 'ti-iq')).toBeDefined();
+
+            receiveIq(_converse, `${jid}/phone`, 'accept-iq', jingle('session-accept', sid));
 
             await u.waitUntil(() => webrtc_handle.pc.candidates.length);
             expect(webrtc_handle.pc.candidates[0].candidate).toContain('192.0.2.9 20000 typ host');
             expect(webrtc_handle.pc.candidates[0].sdpMid).toBe('0');
-            expect(sentIq(_converse, 'result', 'ti-iq')).toBeDefined();
         })
     );
 

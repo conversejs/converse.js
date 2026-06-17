@@ -305,8 +305,11 @@ export async function generateFingerprint(device) {
 }
 
 /**
+ * Surface a user-facing alert for a failed encrypted send and re-throw, so the
+ * send pipeline (the `createMessageStanza` handler) aborts. Always throws.
  * @param {Error|errors.IQError|errors.UserFacingError} e
  * @param {import('../../shared/chatbox.js').default} chat
+ * @returns {never}
  */
 export function handleMessageSendError(e, chat) {
     const { __ } = _converse;
@@ -742,11 +745,11 @@ function buildOMEMO2EncryptedElement(v2_dicts, payload) {
 }
 
 /**
- * @param {import('../../shared/message').default} message
+ * @param {string} plaintext - the message body to encrypt (the legacy payload)
  * @param {import('./device').default[]} devices
  */
-async function getLegacyEncryptedElement(message, devices) {
-    const { key_and_tag, iv, payload } = await encryptMessage(message.get('plaintext'));
+async function getLegacyEncryptedElement(plaintext, devices) {
+    const { key_and_tag, iv, payload } = await encryptMessage(plaintext);
 
     // The 16 bytes key and the GCM authentication tag (The tag
     // SHOULD have at least 128 bit) are concatenated and for each
@@ -805,21 +808,18 @@ function getSCEExtensions(message) {
 
 /**
  * @param {import('../../shared/chatbox').default} chat
- * @param {import('../../shared/message').default} message
+ * @param {string|null} plaintext - the SCE `<body>` (omitted when falsy, e.g. a metadata-only message)
+ * @param {import('strophe.js').Builder[]} extensions - extra elements for the SCE `<content>`
  * @param {import('./device').default[]} devices
  */
-async function getOMEMO2EncryptedElement(chat, message, devices) {
+async function getOMEMO2EncryptedElement(chat, plaintext, extensions, devices) {
     const is_muc = chat instanceof MUC;
     const muc_jid = is_muc ? chat.get('jid') : null;
     const bare_jid = _converse.session.get('bare_jid');
 
     // Build SCE envelope and encrypt it. Body-coupled metadata
-    // (references/reply/oob/spoiler) is encrypted inside <content>.
-    const { key_and_tag, payload } = await encryptSCE(
-        message.get('plaintext'),
-        { from_jid: bare_jid, to_jid: muc_jid },
-        getSCEExtensions(message),
-    );
+    // (references/reply/oob/spoiler/reactions) is encrypted inside <content>.
+    const { key_and_tag, payload } = await encryptSCE(plaintext, { from_jid: bare_jid, to_jid: muc_jid }, extensions);
 
     const v2_dicts = await encryptKeyForDevices(key_and_tag, devices, Strophe.NS.OMEMO2);
     return buildOMEMO2EncryptedElement(v2_dicts, payload);
@@ -869,11 +869,9 @@ export async function sendOMEMOHeartbeat(chat, version) {
     const encrypted_el = is_v2 ? await getOMEMO2HeartbeatElement(devices) : await getLegacyHeartbeatElement(devices);
 
     const is_muc = chat instanceof MUC;
-    const connection = api.connection.get();
-    if (!connection) return;
 
     const stanza = stx`<message xmlns="jabber:client"
-            from="${is_muc ? connection.jid : _converse.session.get('jid')}"
+            from="${_converse.session.get('jid')}"
             to="${chat.get('jid')}"
             type="${is_muc ? 'groupchat' : 'chat'}"
             id="${u.getUniqueId()}">
@@ -885,35 +883,65 @@ export async function sendOMEMOHeartbeat(chat, version) {
 }
 
 /**
+ * Encrypt `plaintext` (and, for omemo:2, `extensions` inside the SCE
+ * `<content>`) for every reachable recipient device of `chat`, returning the
+ * OMEMO `<encrypted>` element(s) to attach to a message stanza plus the EME
+ * (XEP-0380) namespace to advertise.
+ *
+ * @param {import('../../shared/chatbox').default} chat
+ * @param {string|null} plaintext - the body (legacy payload / omemo:2 SCE `<body>`)
+ * @param {import('strophe.js').Builder[]} [extensions] - encrypted SCE `<content>` children
+ * @returns {Promise<{elements: import('strophe.js').Builder[], eme_ns: string}>}
+ */
+export async function getEncryptedElements(chat, plaintext, extensions = []) {
+    const { legacy, v2 } = await getBundlesAndBuildSessions(chat);
+
+    const elements = [];
+    if (legacy.length > 0) {
+        elements.push(await getLegacyEncryptedElement(plaintext, legacy));
+    }
+    if (v2.length > 0) {
+        elements.push(await getOMEMO2EncryptedElement(chat, plaintext, extensions, v2));
+    }
+    // Advertise the newest method present (v2 if any device uses it). If both
+    // device sets are empty getBundlesAndBuildSessions has already thrown.
+    const eme_ns = v2.length > 0 ? Strophe.NS.OMEMO2 : Strophe.NS.OMEMO;
+    return { elements, eme_ns };
+}
+
+/**
+ * Handler for the `createMessageStanza` hook: for an encrypted outgoing chat
+ * message, attach the OMEMO `<encrypted>` element(s) (plus store + EME hints) to
+ * the stanza that was built from the Message model. Non-encrypted messages pass
+ * through untouched. A send failure is surfaced to the user via
+ * {@link handleMessageSendError} (which re-throws to abort the send).
+ *
  * @param {import('../../shared/chatbox').default} chat
  * @param {import('../../shared/types').MessageAndStanza} data
  * @return {Promise<import('../../shared/types').MessageAndStanza>}
  */
-export async function createOMEMOMessageStanza(chat, data) {
-    const { stanza } = data;
-    const { message } = data;
+export async function createMessageStanzaHandler(chat, data) {
+    const { stanza, message } = data;
 
     if (!message.get('is_encrypted')) return data;
-    if (!message.get('body')) throw new Error('No message body to encrypt!');
 
-    const { legacy, v2 } = await getBundlesAndBuildSessions(chat);
+    try {
+        if (!message.get('body')) throw new Error('No message body to encrypt!');
 
-    if (legacy.length > 0) {
-        stanza.cnode(await getLegacyEncryptedElement(message, legacy)).root();
+        const { elements, eme_ns } = await getEncryptedElements(
+            chat,
+            message.get('plaintext'),
+            getSCEExtensions(message),
+        );
+        for (const el of elements) {
+            stanza.cnode(el).root();
+        }
+        stanza.cnode(stx`<store xmlns="${Strophe.NS.HINTS}"/>`).root();
+        stanza.cnode(stx`<encryption xmlns="${Strophe.NS.EME}" namespace="${eme_ns}"/>`).root();
+        return { message, stanza };
+    } catch (e) {
+        handleMessageSendError(e, chat); // surfaces a user-facing alert and re-throws
     }
-
-    if (v2.length > 0) {
-        stanza.cnode(await getOMEMO2EncryptedElement(chat, message, v2)).root();
-    }
-
-    stanza.cnode(stx`<store xmlns="${Strophe.NS.HINTS}"/>`).root();
-
-    if (v2.length > 0) {
-        stanza.cnode(stx`<encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO2}"/>`).root();
-    } else if (legacy.length > 0) {
-        stanza.cnode(stx`<encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO}"/>`).root();
-    }
-    return { message, stanza };
 }
 
 /**

@@ -9,10 +9,9 @@ import OMEMOStore from './store.js';
 import omemo_api from './api.js';
 import { parseEncryptedMessage } from './parsers.js';
 import {
-    createOMEMOMessageStanza,
+    createMessageStanzaHandler,
     encryptFile,
     getOutgoingMessageAttributes,
-    handleMessageSendError,
     initOMEMO,
     onChatInitialized,
     registerPEPPushHandler,
@@ -51,23 +50,8 @@ converse.plugins.add('converse-omemo', {
         Object.assign(_converse, exports); // DEPRECATED
         Object.assign(_converse.exports, exports);
 
-        api.listen.on(
-            'createMessageStanza',
-            /**
-             * @param {import('../../shared/chatbox.js').default} chat
-             * @param {import('../../shared/types').MessageAndStanza} data
-             */
-            async (chat, data) => {
-                try {
-                    data = await createOMEMOMessageStanza(chat, data);
-                } catch (e) {
-                    handleMessageSendError(e, chat);
-                }
-                return data;
-            },
-        );
-
         api.listen.on('connected', registerPEPPushHandler);
+        api.listen.on('createMessageStanza', createMessageStanzaHandler);
 
         api.listen.on('chatRoomInitialized', onChatInitialized);
         api.listen.on('chatBoxInitialized', onChatInitialized);

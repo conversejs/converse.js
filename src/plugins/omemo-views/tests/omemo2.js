@@ -287,6 +287,99 @@ describe('OMEMO 2 message reception', function () {
     );
 
     it(
+        'suppresses the emoji fallback body of an encrypted reaction',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.initializedOMEMO(_converse);
+            mock.deferV2DeviceList(contact_jid); // we answer this contact's v2 list ourselves
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+
+            const conn = api.connection.get();
+            const our_device_id = _converse.state.omemo_store.get('device_id');
+            const sender_device_id = '555';
+
+            // A (cleartext) message for the reaction to target.
+            await _converse.handleMessageStanza(
+                stx`<message xmlns="jabber:client" from="${contact_jid}" to="${conn.jid}" type="chat" id="omemo-react-fb-target">
+                    <body>React to me with a fallback</body>
+                </message>`,
+            );
+            await u.waitUntil(() => view.model.messages.findWhere({ msgid: 'omemo-react-fb-target' }));
+            const msg_model = view.model.messages.findWhere({ msgid: 'omemo-react-fb-target' });
+
+            // The contact sends an SCE-encrypted XEP-0444 reaction whose body
+            // carries a quote of the reacted-to message plus the emoji as a
+            // legacy fallback, marked by a whole-body XEP-0428
+            // <fallback for="urn:xmpp:reactions:0">.
+            const extensions = [
+                stx`<reactions xmlns="urn:xmpp:reactions:0" id="omemo-react-fb-target"><reaction>👍</reaction></reactions>`,
+                stx`<fallback xmlns="${Strophe.NS.FALLBACK}" for="urn:xmpp:reactions:0"><body/></fallback>`,
+            ];
+            const { key_and_tag, payload } = await u.omemo.encryptSCE(
+                '> React to me with a fallback\n👍',
+                { from_jid: contact_jid, to_jid: null },
+                extensions,
+            );
+
+            // Answer the contact's v2 device-list IQ fetched during decryption.
+            const v2_dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`;
+            const interval = setInterval(() => {
+                const iq = Array.from(conn.IQ_stanzas)
+                    .filter((i) => i.querySelector(v2_dl_selector) && !i.dataset_handled)
+                    .pop();
+                if (!iq) return;
+                iq.dataset_handled = true;
+                const result = stx`<iq from="${contact_jid}"
+                                       id="${iq.getAttribute('id')}"
+                                       to="${conn.jid}"
+                                       xmlns="jabber:server"
+                                       type="result">
+                    <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                        <items node="${Strophe.NS.OMEMO2_DEVICELIST}">
+                            <item>
+                                <devices xmlns="${Strophe.NS.OMEMO2}">
+                                    <device id="${sender_device_id}"/>
+                                </devices>
+                            </item>
+                        </items>
+                    </pubsub>
+                </iq>`;
+                conn._dataRecv(mock.createRequest(_converse, result));
+            }, 50);
+
+            const stanza = stx`<message from="${contact_jid}"
+                    to="${conn.jid}"
+                    type="chat"
+                    id="${conn.getUniqueId()}"
+                    xmlns="jabber:client">
+                <encrypted xmlns="${Strophe.NS.OMEMO2}">
+                    <header sid="${sender_device_id}">
+                        <keys jid="${_converse.bare_jid}">
+                            <key rid="${our_device_id}">${u.arrayBufferToBase64(key_and_tag)}</key>
+                        </keys>
+                    </header>
+                    <payload>${payload}</payload>
+                </encrypted>
+                <encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO2}"/>
+            </message>`;
+            conn._dataRecv(mock.createRequest(_converse, stanza));
+
+            await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('👍'));
+            clearInterval(interval);
+
+            expect(msg_model.get('reactions')[contact_jid]).toContain('👍');
+            // The emoji fallback body must NOT be surfaced as a standalone
+            // message, and must not clobber the target message's body/plaintext.
+            expect(view.model.messages.length).toBe(1);
+            expect(msg_model.get('body')).toBe('React to me with a fallback');
+            expect(msg_model.get('plaintext')).toBeFalsy();
+        }),
+    );
+
+    it(
         'shows an error for an undecryptable message that has no fallback body',
         // Regression test for https://github.com/conversejs/converse.js/issues/2097
         // An OMEMO message that we can't decrypt (here: not encrypted for this
@@ -603,6 +696,193 @@ describe('OMEMO 2 sending', function () {
             // The XEP-0085 chat state must not leak in cleartext either; it's
             // carried encrypted inside the SCE <content>.
             expect(sizzle(`> active[xmlns="${Strophe.NS.CHATSTATES}"]`, sent_stanza).length).toBe(0);
+        }),
+    );
+
+    it(
+        'encrypts an outgoing reaction instead of sending it in cleartext',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.initializedOMEMO(_converse);
+            mock.deferV2DeviceList(contact_jid); // we answer this contact's v2 list ourselves
+            await mock.openChatBoxFor(_converse, contact_jid);
+
+            const view = _converse.chatboxviews.get(contact_jid);
+            view.model.set('omemo_active', true);
+
+            const conn = api.connection.get();
+
+            // A received message for us to react to.
+            await _converse.handleMessageStanza(
+                stx`<message xmlns="jabber:client" from="${contact_jid}" to="${conn.jid}" type="chat" id="omemo-react-send-target">
+                    <body>React to me</body>
+                </message>`,
+            );
+            await u.waitUntil(() => view.querySelector('.chat-msg[data-msgid="omemo-react-send-target"]'));
+
+            // Open the reaction picker for the target message and select an emoji.
+            // This kicks off the (async, encrypted) reaction send.
+            const msg_el = view.querySelector('.chat-msg[data-msgid="omemo-react-send-target"]');
+            const toggle_el = await u.waitUntil(() =>
+                msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle'),
+            );
+            toggle_el.click();
+            const action_el = await u.waitUntil(() => msg_el.querySelector('.chat-msg__action-reaction'));
+            action_el.click();
+            const picker_el = await u.waitUntil(() => msg_el.querySelector('converse-reaction-picker'));
+            picker_el.onEmojiSelected('👍');
+
+            // The encrypted send fetches recipient devices/bundles for both
+            // versions, exactly like a normal message send.
+            await mock.deviceListFetched(_converse, contact_jid, ['555']);
+            await answerV2DeviceList(_converse, contact_jid, ['555']);
+            await mock.bundleFetched(_converse, {
+                jid: _converse.bare_jid,
+                device_id: '482886413b977930064a5888b92134fe',
+                identity_key: '300000',
+                signed_prekey_id: '4224',
+                signed_prekey_public: '100000',
+                signed_prekey_sig: '200000',
+                prekeys: ['1991', '1992', '1993'],
+            });
+            await answerV2Bundle(_converse, contact_jid, '555');
+
+            const sent_stanza = await u.waitUntil(
+                () => conn.sent_stanzas.filter((s) => s.querySelector('encrypted')).pop(),
+                1000,
+            );
+
+            // The reaction is encrypted: an omemo:2 <encrypted> payload is sent
+            // (the structured <reactions> lives inside the SCE <content>)...
+            expect(sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO2}"] payload`, sent_stanza).length).toBe(1);
+            // ...and our own legacy device is addressed via the legacy element.
+            expect(sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, sent_stanza).length).toBe(1);
+            // The EME hint advertises omemo:2 (the newest method present).
+            const eme = sizzle(`encryption[xmlns="${Strophe.NS.EME}"]`, sent_stanza).pop();
+            expect(eme.getAttribute('namespace')).toBe(Strophe.NS.OMEMO2);
+
+            // Crucially, neither the structured <reactions> nor the emoji body
+            // may leak in cleartext.
+            expect(sizzle(`> reactions[xmlns="${Strophe.NS.REACTIONS}"]`, sent_stanza).length).toBe(0);
+            expect(sizzle(`> body`, sent_stanza).length).toBe(0);
+
+            // The optimistic local update still applies our reaction.
+            const msg_model = view.model.messages.findWhere({ msgid: 'omemo-react-send-target' });
+            await u.waitUntil(() => msg_model.get('reactions')?.[_converse.bare_jid]?.includes('👍'));
+            expect(msg_model.get('reactions')[_converse.bare_jid]).toContain('👍');
+        }),
+    );
+
+    it(
+        'quotes the reacted-to message in the encrypted reaction fallback body',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.initializedOMEMO(_converse);
+            mock.deferV2DeviceList(contact_jid); // we answer this contact's v2 list ourselves
+            await mock.openChatBoxFor(_converse, contact_jid);
+
+            const view = _converse.chatboxviews.get(contact_jid);
+            view.model.set('omemo_active', true);
+            const conn = api.connection.get();
+
+            const target_text =
+                'But soft, what light through yonder airlock breaks, and who on earth goes there in the dead of night?';
+            await _converse.handleMessageStanza(
+                stx`<message xmlns="jabber:client" from="${contact_jid}" to="${conn.jid}" type="chat" id="omemo-react-quote-target">
+                    <body>${target_text}</body>
+                </message>`,
+            );
+            await u.waitUntil(() => view.querySelector('.chat-msg[data-msgid="omemo-react-quote-target"]'));
+
+            // Intercept the encrypted send before any crypto/IQ work, so we can
+            // inspect the (otherwise encrypted) fallback body and SCE extensions.
+            const send_spy = spyOn(api.omemo, 'send');
+
+            const msg_el = view.querySelector('.chat-msg[data-msgid="omemo-react-quote-target"]');
+            const toggle_el = await u.waitUntil(() =>
+                msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle'),
+            );
+            toggle_el.click();
+            const action_el = await u.waitUntil(() => msg_el.querySelector('.chat-msg__action-reaction'));
+            action_el.click();
+            const picker_el = await u.waitUntil(() => msg_el.querySelector('converse-reaction-picker'));
+            picker_el.onEmojiSelected('👍');
+
+            await u.waitUntil(() => send_spy.calls.count() > 0);
+            const [chat_arg, body_arg, extensions_arg] = send_spy.calls.mostRecent().args;
+
+            expect(chat_arg).toBe(view.model);
+
+            // The body is a `>`-quote of the reacted-to text (truncated to the
+            // first 80 code points + an ellipsis) followed by the emoji.
+            const [quote_line, emoji_line] = body_arg.split('\n');
+            expect(quote_line.startsWith('> But soft, what light through yonder')).toBe(true);
+            expect(quote_line.endsWith('…')).toBe(true);
+            expect(quote_line).not.toContain('dead of night');
+            expect([...quote_line].length).toBe(2 + 80 + 1); // "> " + 80 code points + "…"
+            expect(emoji_line).toBe('👍');
+
+            // The structured <reactions> and a whole-body XEP-0428 fallback
+            // marker travel as encrypted SCE extensions (not in the body).
+            const ext_els = extensions_arg.map((e) => (e instanceof Element ? e : e.tree()));
+            expect(ext_els.some((el) => el.localName === 'reactions')).toBe(true);
+            const fallback = ext_els.find((el) => el.localName === 'fallback');
+            expect(fallback.getAttribute('for')).toBe('urn:xmpp:reactions:0');
+            // Whole-body marker: no start/end range.
+            expect(fallback.querySelector('body').getAttribute('start')).toBe(null);
+        }),
+    );
+
+    it(
+        'rolls back the optimistic reaction when the encrypted send fails',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.initializedOMEMO(_converse);
+            mock.deferV2DeviceList(contact_jid); // we answer this contact's v2 list ourselves
+            await mock.openChatBoxFor(_converse, contact_jid);
+
+            const view = _converse.chatboxviews.get(contact_jid);
+            view.model.set('omemo_active', true);
+            const conn = api.connection.get();
+
+            await _converse.handleMessageStanza(
+                stx`<message xmlns="jabber:client" from="${contact_jid}" to="${conn.jid}" type="chat" id="omemo-react-fail-target">
+                    <body>React to me</body>
+                </message>`,
+            );
+            await u.waitUntil(() => view.querySelector('.chat-msg[data-msgid="omemo-react-fail-target"]'));
+            const msg_model = view.model.messages.findWhere({ msgid: 'omemo-react-fail-target' });
+
+            // Make the encrypted send fail (e.g. no reachable devices). The real
+            // api.omemo.send would have already alerted the user before rejecting.
+            // Reject from a callFake (not a pre-built rejected promise) so the
+            // rejection is created at call time and awaited immediately.
+            spyOn(api.omemo, 'send').and.callFake(async () => {
+                throw new Error('no devices');
+            });
+            spyOn(converse.env.log, 'error');
+
+            const msg_el = view.querySelector('.chat-msg[data-msgid="omemo-react-fail-target"]');
+            const toggle_el = await u.waitUntil(() =>
+                msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle'),
+            );
+            toggle_el.click();
+            const action_el = await u.waitUntil(() => msg_el.querySelector('.chat-msg__action-reaction'));
+            action_el.click();
+            const picker_el = await u.waitUntil(() => msg_el.querySelector('converse-reaction-picker'));
+            picker_el.onEmojiSelected('👍');
+
+            // The optimistic reaction is applied, then rolled back once the send
+            // rejects — so we end up with no reaction from ourselves.
+            await u.waitUntil(() => converse.env.log.error.calls.count() > 0);
+            await u.waitUntil(() => !msg_model.get('reactions')?.[_converse.bare_jid]?.length);
+            expect(msg_model.get('reactions')?.[_converse.bare_jid]).toBeFalsy();
         }),
     );
 

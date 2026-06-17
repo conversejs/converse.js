@@ -301,6 +301,7 @@ describe('A Jingle RTP session', function () {
             pc.onconnectionstatechange();
             expect(call.get('state')).toBe('failed');
             expect(call.get('ended_reason')).toBe('connectivity-error');
+            expect(lastJingleIq(_converse, 'session-terminate')).toBeDefined();
         })
     );
 

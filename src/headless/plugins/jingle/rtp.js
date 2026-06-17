@@ -125,12 +125,13 @@ class RTPSession {
     }
 
     onConnectionStateChange() {
+        if (!this.pc) return;
         if (this.pc.connectionState === 'connected') {
             if (this.call.get('state') !== CALL_STATES.ACTIVE) {
                 this.call.set({ state: CALL_STATES.ACTIVE, started_at: Date.now() });
             }
         } else if (this.pc.connectionState === 'failed') {
-            this.call.fail(ENDED_REASONS.CONNECTIVITY_ERROR);
+            this.fail(ENDED_REASONS.CONNECTIVITY_ERROR);
         }
     }
 

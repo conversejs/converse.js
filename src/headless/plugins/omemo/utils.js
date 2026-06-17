@@ -794,7 +794,7 @@ function getSCEExtensions(message) {
     });
     if (reply_to_id) {
         extensions.push(stx`<reply xmlns="${Strophe.NS.REPLY}" id="${reply_to_id}" to="${reply_to || ''}"></reply>`);
-        const reply_fallback = message.get('reply_fallback');
+        const reply_fallback = message.get('fallback')?.[Strophe.NS.REPLY];
         if (reply_fallback) {
             extensions.push(
                 stx`<fallback xmlns="${Strophe.NS.FALLBACK}" for="${Strophe.NS.REPLY}">

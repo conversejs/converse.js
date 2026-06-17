@@ -172,10 +172,10 @@ export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     replace_id: string;
     reply_to_id: string;
     reply_to: string;
-    reply_fallback: {
+    fallback: Record<string, {
         start: number;
         end: number;
-    };
+    } | null>;
     retracted: string;
     retracted_id: string;
     sender: 'me' | 'them';

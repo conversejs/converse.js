@@ -322,22 +322,35 @@ export function getReplyAttributes(stanza) {
 }
 
 /**
- * Parse the XEP-0428 fallback indication for the XEP-0461 reply fallback body,
- * i.e. the code-point range of the `>`-quoted text that supporting clients
- * strip from the displayed body.
+ * Parse all XEP-0428 `<fallback>` elements and return them as a
+ * namespace-keyed map.
+ *
+ * The value for each namespace is:
+ *  - `{ start, end }` when `<body start="…" end="…"/>` provides a code-point
+ *    range (XEP-0461 reply fallback), so the range can be stripped from display.
+ *  - `null` when there is no range — either a bare `<body/>` or no `<body>`
+ *    child at all (XEP-0444 reaction fallback, XEP-0424 retraction fallback),
+ *    meaning the whole body is a fallback for clients that lack the feature.
+ *
  * @param {Element} stanza - The message stanza (or decrypted SCE `<content>`)
- * @returns {{reply_fallback?: {start: number, end: number}}}
+ * @returns {{ fallback?: Record<string, {start: number, end: number}|null> }}
  */
 export function getFallbackAttributes(stanza) {
-    const fallback = sizzle(`fallback[xmlns="${Strophe.NS.FALLBACK}"][for="${Strophe.NS.REPLY}"]`, stanza).pop();
-    const body = fallback ? sizzle('> body', fallback).pop() : null;
-    if (!body) return {};
-    return {
-        reply_fallback: {
-            start: Number(body.getAttribute('start')),
-            end: Number(body.getAttribute('end')),
-        },
-    };
+    /** @type {Record<string, {start: number, end: number}|null>} */
+    const fallback = {};
+
+    for (const el of sizzle(`fallback[xmlns="${Strophe.NS.FALLBACK}"]`, stanza)) {
+        const ns = el.getAttribute('for');
+        if (!ns) continue;
+        const body = sizzle('> body', el).pop();
+        const start = body?.getAttribute('start');
+        const end = body?.getAttribute('end');
+        fallback[ns] = start != null && end != null
+            ? { start: Number(start), end: Number(end) }
+            : null;
+    }
+
+    return Object.keys(fallback).length ? { fallback } : {};
 }
 
 /**

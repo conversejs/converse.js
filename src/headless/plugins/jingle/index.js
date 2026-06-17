@@ -10,6 +10,7 @@ import {
     writeSDP,
 } from './sdp.js';
 import RTPSession, { webrtc } from './rtp.js';
+import { fetchExternalServices, serviceToIceServer } from './extdisco.js';
 import './plugin.js';
 
 const { Strophe } = converse.env;
@@ -23,14 +24,17 @@ Strophe.addNamespace('JINGLE_ICE', 'urn:xmpp:jingle:transports:ice-udp:1');
 Strophe.addNamespace('JINGLE_DTLS', 'urn:xmpp:jingle:apps:dtls:0');
 Strophe.addNamespace('JINGLE_GROUPING', 'urn:xmpp:jingle:apps:grouping:0');
 Strophe.addNamespace('JINGLE_MESSAGE', 'urn:xmpp:jingle-message:0');
+Strophe.addNamespace('EXTDISCO', 'urn:xmpp:extdisco:2');
 
 converse.env.jingle = {
     RTPSession,
     directionToSenders,
+    fetchExternalServices,
     jingleToSDP,
     parseSDP,
     sdpToJingle,
     sendersToDirection,
+    serviceToIceServer,
     webrtc,
     writeSDP,
 };

@@ -183,7 +183,9 @@ class RTPSession {
     async onSessionInitiate(jingle) {
         try {
             this.createConnection();
-            const offer = writeSDP(jingleToSDP(jingle, { is_initiator: false, sid: this.sid }));
+            // A remote description carries the peer's perspective, so render it
+            // from the builder's role (the caller) - not our own.
+            const offer = writeSDP(jingleToSDP(jingle, { is_initiator: true, sid: this.sid }));
             await this.pc.setRemoteDescription({ type: 'offer', sdp: offer });
 
             await this.addLocalMedia();
@@ -207,7 +209,8 @@ class RTPSession {
     /** @param {Element} jingle */
     async onSessionAccept(jingle) {
         try {
-            const sdp = writeSDP(jingleToSDP(jingle, { is_initiator: true, sid: this.sid }));
+            // The answer is the peer's (responder's) perspective; render it as such.
+            const sdp = writeSDP(jingleToSDP(jingle, { is_initiator: false, sid: this.sid }));
             await this.pc.setRemoteDescription({ type: 'answer', sdp });
         } catch (e) {
             log.error(e);

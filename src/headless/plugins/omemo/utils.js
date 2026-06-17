@@ -957,6 +957,60 @@ async function sendOMEMO2ChatState(chatbox) {
 }
 
 /**
+ * Send a XEP-0333 chat marker for an OMEMO-active chat.
+ *
+ * Called from {@link sendMarker} in `shared/actions.js` when `omemo_active` is
+ * set. The cleartext path is suppressed in that case, so this function is solely
+ * responsible for the outgoing marker in encrypted sessions.
+ *
+ * - OMEMO:2 devices present → encrypted SCE stanza.
+ * - Legacy-only session (no v2 devices) → cleartext marker, matching what
+ *   other clients do for legacy OMEMO.
+ * - Mixed session (both v2 and legacy devices) → encrypted only; legacy
+ *   devices in a mixed session do not receive the marker.
+ *
+ * @param {import('../../shared/chatbox.js').default} chatbox
+ * @param {string} to_jid
+ * @param {string} msg_id - the `id` of the message being marked
+ * @param {string} type - marker type ('displayed', 'received', 'acknowledged')
+ * @param {string} [msg_type] - 'chat' or 'groupchat'; defaults to 'chat'
+ */
+export async function sendOMEMO2Marker(chatbox, to_jid, msg_id, type, msg_type) {
+    const stanza_type = msg_type || 'chat';
+    const { v2, legacy } = await getBundlesAndBuildSessions(chatbox);
+
+    if (v2.length) {
+        const el = await getOMEMO2EncryptedElement(
+            chatbox,
+            null,
+            [stx`<${Stanza.unsafeXML(type)} xmlns="${Strophe.NS.MARKERS}" id="${msg_id}"/>`],
+            v2,
+        );
+        api.send(
+            stx`<message xmlns="jabber:client"
+                    from="${_converse.session.get('jid')}"
+                    to="${to_jid}"
+                    type="${stanza_type}"
+                    id="${u.getUniqueId()}">
+                ${el}
+                <encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO2}"/>
+            </message>`,
+        );
+    } else if (legacy.length) {
+        // Legacy-only session: send cleartext marker, same as non-OMEMO clients do.
+        api.send(
+            stx`<message from="${_converse.session.get('jid')}"
+                    id="${u.getUniqueId()}"
+                    to="${to_jid}"
+                    type="${stanza_type}"
+                    xmlns="jabber:client">
+                <${Stanza.unsafeXML(type)} xmlns="${Strophe.NS.MARKERS}" id="${msg_id}"/>
+            </message>`,
+        );
+    }
+}
+
+/**
  * Encrypt `plaintext` (and, for omemo:2, `extensions` inside the SCE
  * `<content>`) for every reachable recipient device of `chat`, returning the
  * OMEMO `<encrypted>` element(s) to attach to a message stanza plus the EME

@@ -53,9 +53,10 @@ describe('A XEP-0333 Chat Marker', function () {
             const sent_stanzas = [];
             spyOn(_converse.api.connection.get(), 'send').and.callFake((s) => sent_stanzas.push(s));
             await _converse.handleMessageStanza(stanza);
-            const sent_messages = sent_stanzas.map((s) => s?.nodeTree ?? s).filter((e) => e.nodeName === 'message');
 
-            await u.waitUntil(() => sent_messages.length === 2);
+            const getMessages = () => sent_stanzas.map((s) => s?.nodeTree ?? s).filter((e) => e.nodeName === 'message');
+            await u.waitUntil(() => getMessages().length === 2);
+            const sent_messages = getMessages();
             expect(sent_messages[0]).toEqualStanza(stx`
             <message id="${sent_messages[0].getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">
                 <active xmlns="http://jabber.org/protocol/chatstates"/>

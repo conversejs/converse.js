@@ -208,13 +208,18 @@ function buildDescription(media) {
 
 /**
  * @param {MediaDescription} media
+ * @param {SessionDescription} [session] - for the session-level DTLS fallback
  * @returns {Element}
  */
-function buildTransport(media) {
-    const fp = media.fingerprint;
+function buildTransport(media, session) {
+    // Firefox advertises the DTLS fingerprint/setup once at the session level;
+    // Chrome repeats it on every m-line. Jingle carries it per transport, so
+    // fall back to the session-level value when this m-line doesn't have its own.
+    const fp = media.fingerprint ?? session?.fingerprint;
+    const setup = media.setup ?? session?.setup;
     const dtls = Strophe.NS.JINGLE_DTLS;
     const fingerprint = fp
-        ? stx`<fingerprint xmlns="${dtls}" hash="${fp.type}" setup="${media.setup}">${fp.hash}</fingerprint>`
+        ? stx`<fingerprint xmlns="${dtls}" hash="${fp.type}" setup="${setup}">${fp.hash}</fingerprint>`
         : '';
     return stx`
         <transport xmlns="${Strophe.NS.JINGLE_ICE}" ufrag="${media.iceUfrag}" pwd="${media.icePwd}">
@@ -226,16 +231,17 @@ function buildTransport(media) {
 /**
  * @param {MediaDescription} media
  * @param {JingleConversionOptions} options
+ * @param {SessionDescription} [session] - for the session-level DTLS fallback
  * @returns {Element}
  */
-function buildContent(media, options) {
+function buildContent(media, options, session) {
     const { is_initiator, creator = 'initiator' } = options;
     const direction = /** @type {SdpDirection} */ (media.direction ?? 'sendrecv');
     const senders = directionToSenders(direction, is_initiator);
     return stx`
         <content xmlns="${Strophe.NS.JINGLE}" creator="${creator}" name="${media.mid}" senders="${senders}">
             ${buildDescription(media)}
-            ${buildTransport(media)}
+            ${buildTransport(media, session)}
         </content>`;
 }
 
@@ -254,7 +260,7 @@ export function sdpToJingle(sdp, options) {
                 ${sid ? Stanza.unsafeXML(`sid="${sid}"`) : ''}
                 ${initiator ? Stanza.unsafeXML(`initiator="${initiator}"`) : ''}
                 ${responder ? Stanza.unsafeXML(`responder="${responder}"`) : ''}>
-            ${sdp.media.map((m) => buildContent(m, options))}
+            ${sdp.media.map((m) => buildContent(m, options, sdp))}
             ${
                 bundle
                     ? stx`

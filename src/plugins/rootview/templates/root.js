@@ -8,6 +8,7 @@ export default () => {
         <converse-app-container></converse-app-container>
         <converse-modals id="converse-modals" class="modals"></converse-modals>
         <converse-toasts></converse-toasts>
+        <converse-calls></converse-calls>
         <converse-fontawesome></converse-fontawesome>
     `;
 };

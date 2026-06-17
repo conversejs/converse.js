@@ -10,12 +10,14 @@ import { _converse } from './shared/index.js';
 import { i18n } from './shared/index.js';
 import log from '@converse/log';
 import u from './utils/index.js';
-export const constants: typeof shared_constants & typeof muc_constants & typeof omemo_constants;
+/** @type {typeof shared_constants & typeof muc_constants & typeof omemo_constants & typeof jingle_constants} */
+export const constants: typeof shared_constants & typeof muc_constants & typeof omemo_constants & typeof jingle_constants;
 import { parsers } from './shared/index.js';
 import * as errors from './shared/errors.js';
 import { constants as shared_constants } from './shared/index.js';
 import * as muc_constants from './plugins/muc/constants.js';
 import * as omemo_constants from './plugins/omemo/constants.js';
+import * as jingle_constants from './plugins/jingle/constants.js';
 export { BaseMessage, ModelWithMessages, api, converse, _converse, i18n, log, u, parsers, errors };
 export { Collection, EventEmitter, Model } from "@converse/skeletor";
 export { Builder, Stanza } from "strophe.js";

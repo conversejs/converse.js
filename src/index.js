@@ -28,6 +28,7 @@ import './plugins/chatview/index.js'; // Renders standalone chat boxes for singl
 import './plugins/controlbox/index.js'; // The control box
 import './plugins/disco-views/index.js'; // Adds a service discovery browser component
 import './plugins/headlines-view/index.js';
+import './plugins/jingle/index.js'; // UI for 1:1 audio calls
 import './plugins/mam-views/index.js';
 import './plugins/minimize/index.js'; // Allows chat boxes to be minimized
 import './plugins/muc-views/index.js'; // Views related to MUC

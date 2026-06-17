@@ -1,0 +1,105 @@
+converse-calls {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    pointer-events: none;
+
+    .call-card {
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 16rem;
+        max-width: 22rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        background-color: var(--chat-header-bg-color);
+        color: var(--chat-header-fg-color);
+        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.3);
+
+        .avatar {
+            flex: 0 0 auto;
+        }
+
+        .call-info {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+
+            .call-name {
+                font-weight: bold;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .call-status {
+                font-size: 0.85em;
+                opacity: 0.85;
+            }
+        }
+
+        .call-actions {
+            flex: 0 0 auto;
+            display: flex;
+            gap: 0.5rem;
+
+            .call-action {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 2.5rem;
+                height: 2.5rem;
+                border-radius: 50%;
+                border: none;
+
+                &.accept,
+                &.hangup,
+                &.reject,
+                &.mute.is-muted {
+                    color: #fff;
+                    converse-icon {
+                        fill: #fff;
+                    }
+                }
+
+                &.accept {
+                    background-color: var(--chat-status-online, #1a9707);
+                }
+
+                &.hangup,
+                &.reject,
+                &.mute.is-muted {
+                    background-color: var(--error-color, #e7605e);
+                }
+
+                &.mute {
+                    color: var(--chat-header-fg-color);
+                    background-color: color-mix(in srgb, var(--chat-header-fg-color) 25%, transparent);
+
+                    converse-icon {
+                        fill: var(--chat-header-fg-color);
+                    }
+
+                    &:hover {
+                        background-color: color-mix(in srgb, var(--chat-header-fg-color) 40%, transparent);
+                    }
+                }
+            }
+        }
+    }
+
+    .call-card--ended,
+    .call-card--failed {
+        opacity: 0.75;
+    }
+
+    audio {
+        display: none;
+    }
+}

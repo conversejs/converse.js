@@ -10,6 +10,7 @@ export default () => {
         <converse-chats class="converse-chatboxes row justify-content-start g-0 ${extra_classes.join(' ')}"></converse-chats>
         <converse-modals id="converse-modals" class="modals"></converse-modals>
         <converse-toasts></converse-toasts>
+        <converse-calls></converse-calls>
         <converse-fontawesome></converse-fontawesome>
     `;
 };

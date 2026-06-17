@@ -49,7 +49,8 @@ export { VCard, VCards } from './plugins/vcard/index.js'; // XEP-0054 VCard-temp
 
 import * as omemo_constants from './plugins/omemo/constants.js';
 import * as muc_constants from './plugins/muc/constants.js';
-const constants = Object.assign({}, shared_constants, muc_constants, omemo_constants);
+import * as jingle_constants from './plugins/jingle/constants.js';
+const constants = Object.assign({}, shared_constants, muc_constants, omemo_constants, jingle_constants);
 
 Object.assign(_converse.constants, constants);
 

@@ -195,7 +195,7 @@ export async function decryptSCE(key_and_tag, payload_b64, expected_affixes) {
  */
 function parseSCEEnvelope(envelope_xml, { sender_jid, to_jid }) {
     const parser = new DOMParser();
-    const doc = parser.parseFromString(envelope_xml, 'application/xml');
+    const doc = parser.parseFromString(envelope_xml, 'text/xml');
 
     const envelope = doc.documentElement;
     if (!envelope || envelope.localName !== 'envelope' || envelope.namespaceURI !== Strophe.NS.SCE) {

@@ -190,7 +190,7 @@ describe('OMEMO 2 message reception', function () {
 
             expect(message.get('reply_to_id')).toBe('replied-to-id');
             // The XEP-0428 fallback marker is parsed from the decrypted SCE content.
-            expect(message.get('reply_fallback')).toEqual({ start: 0, end: 7 });
+            expect(message.get('fallback')?.[Strophe.NS.REPLY]).toEqual({ start: 0, end: 7 });
             expect(message.get('reply_to')).toBe(contact_jid);
             expect(message.get('oob_url')).toBe('https://example.org/file.txt');
             expect(message.get('is_spoiler')).toBe(true);

@@ -196,7 +196,7 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
      * @returns {string}
      */
     stripReplyFallback(text) {
-        const fallback = this.get('reply_fallback');
+        const fallback = this.get('fallback')?.[Strophe.NS.REPLY];
         if (!text || !fallback || !this.get('reply_to_id')) return text;
         const chars = [...text];
         return chars.slice(0, fallback.start).join('') + chars.slice(fallback.end).join('');

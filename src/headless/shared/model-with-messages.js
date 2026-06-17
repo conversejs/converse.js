@@ -341,7 +341,7 @@ export default function ModelWithMessages(BaseModel) {
             }
 
             // XEP-0426/0428 count fallback offsets in Unicode code points.
-            attrs.reply_fallback = { start: 0, end: [...quote].length };
+            attrs.fallback = { [Strophe.NS.REPLY]: { start: 0, end: [...quote].length } };
             return attrs;
         }
 
@@ -816,10 +816,12 @@ export default function ModelWithMessages(BaseModel) {
                     from: attrs.from,
                     msgid: attrs.msgid,
                 };
-                // XXX: Need to take XEP-428 <fallback> into consideration
-                if (!attrs.is_encrypted && attrs.body) {
-                    // We can't match the message if it's a reflected
-                    // encrypted message (e.g. via MAM or in a MUC)
+                if (!attrs.is_encrypted && !attrs.fallback && attrs.body) {
+                    // Skip body matching for encrypted messages (body is ciphertext /
+                    // EME fallback, not the plaintext) and for messages with a XEP-0428
+                    // <fallback> body marker (body includes display-only content such as
+                    // quoted text or reaction emoji — msgid + from is sufficient for
+                    // identity in those cases).
                     query['body'] = attrs.body;
                 }
                 return query;
@@ -1032,10 +1034,10 @@ export default function ModelWithMessages(BaseModel) {
                 references,
                 reply_to_id,
                 reply_to,
-                reply_fallback,
                 spoiler_hint,
                 type,
             } = message.attributes;
+            const reply_fallback = message.get('fallback')?.[Strophe.NS.REPLY];
 
             const stanza = stx`
                 <message xmlns="jabber:client"

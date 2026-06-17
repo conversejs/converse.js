@@ -107,8 +107,11 @@ class RTPSession {
     }
 
     createConnection() {
-        const iceServers = api.settings.get('call_ice_servers') ?? [];
-        this.pc = new webrtc.RTCPeerConnection({ iceServers });
+        // The configured servers plus whatever the server advertised via
+        // XEP-0215 (discovered on connect, see the jingle plugin).
+        const configured = api.settings.get('call_ice_servers') ?? [];
+        const discovered = _converse.state.ice_servers ?? [];
+        this.pc = new webrtc.RTCPeerConnection({ iceServers: [...configured, ...discovered] });
         this.pc.onicecandidate = (ev) => this.onLocalCandidate(ev);
         this.pc.ontrack = (ev) => this.onRemoteTrack(ev);
         this.pc.onconnectionstatechange = () => this.onConnectionStateChange();

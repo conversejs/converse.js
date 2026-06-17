@@ -5,6 +5,12 @@ import Call from './model.js';
 import Calls from './calls.js';
 import calls_api from './api.js';
 import { registerCallHandlers } from './utils.js';
+import { fetchExternalServices } from './extdisco.js';
+
+/** Cache the server's advertised STUN/TURN services (XEP-0215) for new calls. */
+async function discoverIceServers() {
+    _converse.state.ice_servers = await fetchExternalServices();
+}
 
 converse.plugins.add('converse-jingle', {
     dependencies: ['converse-disco', 'converse-roster', 'converse-vcard'],
@@ -37,9 +43,13 @@ converse.plugins.add('converse-jingle', {
         api.listen.on('connected', registerCallHandlers);
         api.listen.on('reconnected', registerCallHandlers);
 
+        api.listen.on('connected', discoverIceServers);
+        api.listen.on('reconnected', discoverIceServers);
+
         api.listen.on('clearSession', () => {
             _converse.state.calls?.forEach((c) => c.hangup());
             _converse.state.calls?.reset();
+            delete _converse.state.ice_servers;
         });
     },
 });

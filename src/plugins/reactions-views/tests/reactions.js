@@ -1,7 +1,58 @@
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
+import { buildReactionFallbackBody } from '../fallback.js';
 
 const { Strophe, sizzle, stx, u } = converse.env;
+
+describe('buildReactionFallbackBody', function () {
+    it('prefixes the text with "> " and appends the emoji on a new line', function () {
+        expect(buildReactionFallbackBody('Hello world', ['👍'])).toBe('> Hello world\n👍');
+    });
+
+    it('joins multiple emojis without a separator', function () {
+        expect(buildReactionFallbackBody('Hello', ['👍', '❤️'])).toBe('> Hello\n👍❤️');
+    });
+
+    it('truncates to 80 code points and appends an ellipsis', function () {
+        const long_text = 'a'.repeat(90);
+        const result = buildReactionFallbackBody(long_text, ['👍']);
+        const [quote] = result.split('\n');
+        expect(quote).toBe('> ' + 'a'.repeat(80) + '…');
+    });
+
+    it('does not truncate text that is exactly 80 code points', function () {
+        const exact = 'a'.repeat(80);
+        expect(buildReactionFallbackBody(exact, ['👍'])).toBe(`> ${exact}\n👍`);
+    });
+
+    it('counts code points, not UTF-16 units, when truncating', function () {
+        // Each '𝄞' (U+1D11E MUSICAL SYMBOL G CLEF) is 1 code point but 2 UTF-16 units.
+        const musical = '𝄞'.repeat(81);
+        const result = buildReactionFallbackBody(musical, ['👍']);
+        const [quote] = result.split('\n');
+        expect([...quote].length).toBe(2 + 80 + 1); // "> " + 80 code points + "…"
+    });
+
+    it('collapses internal whitespace to a single space', function () {
+        expect(buildReactionFallbackBody('Hello   world\nand\tthere', ['👍'])).toBe('> Hello world and there\n👍');
+    });
+
+    it('returns bare emoji when the text is empty', function () {
+        expect(buildReactionFallbackBody('', ['👍'])).toBe('👍');
+    });
+
+    it('returns bare emoji when the text is null', function () {
+        expect(buildReactionFallbackBody(null, ['👍'])).toBe('👍');
+    });
+
+    it('returns bare emoji when the text is whitespace-only', function () {
+        expect(buildReactionFallbackBody('   ', ['👍'])).toBe('👍');
+    });
+
+    it('returns an empty string when the emoji set is empty (retraction)', function () {
+        expect(buildReactionFallbackBody('Hello world', [])).toBe('');
+    });
+});
 
 describe('Message Reactions (XEP-0444)', function () {
     const popular_emojis = [':thumbsup:', ':heart:', ':tada:', ':joy:', ':open_mouth:'];

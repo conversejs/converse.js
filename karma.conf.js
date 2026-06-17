@@ -60,6 +60,7 @@ export default function (config) {
             { pattern: 'src/plugins/roomslist/tests/*.js', type: 'module' },
             { pattern: 'src/plugins/rootview/tests/*.js', type: 'module' },
             { pattern: 'src/plugins/rosterview/tests/*.js', type: 'module' },
+            { pattern: 'src/plugins/reactions-views/fallback.js', included: false, served: true },
             { pattern: 'src/plugins/reactions-views/tests/*.js', type: 'module' },
             { pattern: 'src/plugins/rosterview/tests/requesting_contacts.js', type: 'module' },
             { pattern: 'src/shared/components/tests/*.js', type: 'module' },

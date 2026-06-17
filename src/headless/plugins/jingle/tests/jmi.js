@@ -94,7 +94,7 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
 
             const ringing = lastJMI(_converse, 'ringing');
             expect(ringing).toBeDefined();
-            expect(ringing.getAttribute('to')).toBe(jid);
+            expect(ringing.getAttribute('to')).toBe(`${jid}/phone`); // the caller's full JID
             expect(sizzle(`ringing[xmlns="${JMI}"]`, ringing).pop().getAttribute('id')).toBe('incoming1');
         }),
     );
@@ -115,7 +115,7 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
             expect(_converse.state.calls.get('busy1')).toBeUndefined();
             const reject = lastJMI(_converse, 'reject');
             expect(reject).toBeDefined();
-            expect(reject.getAttribute('to')).toBe(jid_b);
+            expect(reject.getAttribute('to')).toBe(`${jid_b}/phone`); // the caller's full JID
         }),
     );
 
@@ -159,10 +159,33 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
             );
             const call = _converse.state.calls.get('carbon1');
 
-            // A sibling device sends <accept> to our own bare JID.
-            receive(_converse, _converse.bare_jid, stx`<accept xmlns="${JMI}" id="carbon1"/>`);
+            // A sibling device (a different resource of ours) sends <accept> to
+            // our bare JID; the server routes it to this device too.
+            receive(_converse, `${_converse.bare_jid}/sibling`, stx`<accept xmlns="${JMI}" id="carbon1"/>`);
             expect(call.get('state')).toBe('ended');
             expect(call.get('ended_reason')).toBe('answered-elsewhere');
+        }),
+    );
+
+    it(
+        'does not end an incoming call when our own <accept> echoes back',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse);
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="self1"><description xmlns="${RTP}" media="audio"/></propose>`,
+            );
+            const call = _converse.state.calls.get('self1');
+
+            call.accept(); // sends <proceed> to the caller and <accept> to our own bare JID
+            expect(call.get('state')).toBe('connecting');
+
+            // That <accept> comes back to this same resource - it must not be
+            // mistaken for a sibling device answering.
+            receive(_converse, _converse.session.get('jid'), stx`<accept xmlns="${JMI}" id="self1"/>`);
+            expect(call.get('state')).toBe('connecting');
+            expect(call.get('ended_reason')).toBe(null);
         }),
     );
 
@@ -211,7 +234,7 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
             expect(call.get('state')).toBe('connecting');
 
             const proceed = lastJMI(_converse, 'proceed');
-            expect(proceed.getAttribute('to')).toBe(jid);
+            expect(proceed.getAttribute('to')).toBe(`${jid}/phone`); // the caller's full JID
 
             const accept = lastJMI(_converse, 'accept');
             expect(Strophe.getBareJidFromJid(accept.getAttribute('to'))).toBe(_converse.bare_jid);

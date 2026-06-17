@@ -65,6 +65,17 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
         return /** @type {string} */ (this.get('jid'));
     }
 
+    /**
+     * The peer's full JID when known - the caller's resource for an incoming
+     * call (the `<propose>`'s `from`), else the bare JID. JMI `<proceed>`,
+     * `<ringing>` and `<reject>` must be addressed to the initiator's full JID:
+     * peers (e.g. Conversations) ignore them otherwise.
+     * @returns {string}
+     */
+    get peer_full_jid() {
+        return /** @type {string} */ (this.get('full_jid') || this.get('jid'));
+    }
+
     /** True while the call hasn't connected media yet (calling/ringing/connecting). */
     isPreActive() {
         return ![CALL_STATES.ACTIVE, CALL_STATES.ENDED, CALL_STATES.FAILED].includes(this.get('state'));
@@ -77,7 +88,7 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     accept() {
         if (this.get('direction') !== CALL_DIRECTION.INCOMING || !this.isPreActive()) return;
 
-        api.send(buildProceed(this.peer, this.sid));
+        api.send(buildProceed(this.peer_full_jid, this.sid));
         api.send(buildAccept(_converse.session.get('bare_jid'), this.sid));
         this.set('state', CALL_STATES.CONNECTING);
     }
@@ -85,7 +96,7 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     /** Incoming call: decline it before it's active. */
     reject() {
         if (this.get('direction') !== CALL_DIRECTION.INCOMING || !this.isPreActive()) return;
-        api.send(buildReject(this.peer, this.sid));
+        api.send(buildReject(this.peer_full_jid, this.sid));
         this.end(ENDED_REASONS.DECLINED);
     }
 

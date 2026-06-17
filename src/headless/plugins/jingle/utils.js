@@ -88,6 +88,11 @@ export function handleJingleMessage(stanza) {
     const { calls } = _converse.state;
     const bare_from = Strophe.getBareJidFromJid(from);
     const is_carbon = bare_from === _converse.session.get('bare_jid');
+    // Our own `<accept>` is addressed to our bare JID so sibling devices stop
+    // ringing, but the server routes it back to this device too. A real sibling
+    // action carries that sibling's full JID; ours carries our own. Without this
+    // we'd tear down the very call we just accepted as "answered elsewhere".
+    const is_self = from === _converse.session.get('jid');
     let call = calls.get(sid);
 
     switch (action) {
@@ -99,7 +104,7 @@ export function handleJingleMessage(stanza) {
                 if (live.get('jid') === bare_from && live.get('direction') === CALL_DIRECTION.OUTGOING) {
                     if (!resolveGlare(live, sid)) break; // we won the glare; ignore theirs
                 } else {
-                    api.send(buildReject(bare_from, sid)); // busy with someone/something else
+                    api.send(buildReject(from, sid)); // busy with someone/something else
                     break;
                 }
             }
@@ -107,13 +112,14 @@ export function handleJingleMessage(stanza) {
             call = new Call({
                 id: sid,
                 jid: bare_from,
+                full_jid: from, // the caller's resource; replies must be addressed here
                 direction: CALL_DIRECTION.INCOMING,
                 state: CALL_STATES.RINGING,
                 media,
             });
             calls.add(call);
             api.trigger('callInvited', call);
-            api.send(buildRinging(bare_from, sid));
+            api.send(buildRinging(from, sid));
             break;
         }
         case 'ringing':
@@ -122,23 +128,24 @@ export function handleJingleMessage(stanza) {
             }
             break;
         case 'proceed':
-            if (is_carbon) {
+            if (is_carbon && !is_self) {
                 call?.end(ENDED_REASONS.ANSWERED_ELSEWHERE);
-            } else if (call?.get('direction') === CALL_DIRECTION.OUTGOING) {
+            } else if (!is_carbon && call?.get('direction') === CALL_DIRECTION.OUTGOING) {
                 call.set('state', CALL_STATES.CONNECTING);
                 call.startSession(from); // the proceed's full JID is the peer we negotiate with
             }
             break;
         case 'accept':
-            // A sibling device answered an incoming call we're also ringing for.
-            if (is_carbon && call?.get('direction') === CALL_DIRECTION.INCOMING) {
+            // A sibling device answered an incoming call we're also ringing for
+            // (our own accept echo is filtered out by `is_self`).
+            if (is_carbon && !is_self && call?.get('direction') === CALL_DIRECTION.INCOMING) {
                 call.end(ENDED_REASONS.ANSWERED_ELSEWHERE);
             }
             break;
         case 'reject':
-            if (is_carbon) {
+            if (is_carbon && !is_self) {
                 call?.end(ENDED_REASONS.ANSWERED_ELSEWHERE);
-            } else if (call?.get('direction') === CALL_DIRECTION.OUTGOING) {
+            } else if (!is_carbon && call?.get('direction') === CALL_DIRECTION.OUTGOING) {
                 call.end(ENDED_REASONS.DECLINED);
             }
             break;

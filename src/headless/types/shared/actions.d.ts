@@ -6,14 +6,14 @@
  */
 export function rejectMessage(stanza: Element, text: string): void;
 /**
- * Send out a XEP-0333 chat marker
+ * Send out a XEP-0333 chat marker.
+ * @fires sendMarker
  * @param {string} to_jid
  * @param {string} id - The id of the message being marked
  * @param {import("./types").MessageMarkerType} type - The marker type
  * @param {string} [msg_type]
- * @return void
  */
-export function sendMarker(to_jid: string, id: string, type: import("./types").MessageMarkerType, msg_type?: string): void;
+export function sendMarker(to_jid: string, id: string, type: import("./types").MessageMarkerType, msg_type?: string): Promise<void>;
 /**
  * @param {string} to_jid
  * @param {string} id

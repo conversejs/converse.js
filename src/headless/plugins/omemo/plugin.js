@@ -15,6 +15,7 @@ import {
     initOMEMO,
     onChatInitialized,
     registerPEPPushHandler,
+    sendOMEMO2Marker,
     setEncryptedFileURL,
 } from './utils.js';
 
@@ -65,6 +66,12 @@ converse.plugins.add('converse-omemo', {
 
         api.listen.on('parseMessage', parseEncryptedMessage);
         api.listen.on('parseMUCMessage', parseEncryptedMessage);
+
+        api.listen.on('sendMarker', async (chatbox, data) => {
+            if (!chatbox?.get('omemo_active')) return data;
+            await sendOMEMO2Marker(chatbox, data.to_jid, data.id, data.type, data.msg_type).catch(() => {});
+            return { ...data, handled: true };
+        });
 
         api.listen.on('afterFileUploaded', setEncryptedFileURL);
         api.listen.on(

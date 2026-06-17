@@ -443,6 +443,13 @@ async function decryptOMEMO2Message(stanza, attrs, chatbox) {
         // so it isn't shown as a blank message. `reaction_to_id` is added by the
         // reactions plugin via the hook above, so it's not on the base type.
         const has_reaction = !!(/** @type {{reaction_to_id?: string}} */ (attrs)).reaction_to_id;
+        if (has_reaction) {
+            // The emoji body is only a legacy-OMEMO fallback (marked by a
+            // XEP-0428 <fallback for="urn:xmpp:reactions:0">); the structured
+            // <reactions> is what we act on. Drop it so the emoji isn't surfaced
+            // as a standalone message alongside the reaction.
+            delete (/** @type {{plaintext?: string}} */ (attrs)).plaintext;
+        }
         if (!body && !attrs.chat_state && !attrs.is_marker && !attrs.is_markable && !has_reaction) {
             return Object.assign(attrs, { 'is_only_key': true });
         }

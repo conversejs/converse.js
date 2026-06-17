@@ -2261,7 +2261,6 @@ function getReactionCounts(view) {
 }
 
 async function chooseReactionViaUI(view, msgid, emoji) {
-    debugger;
     const msg_el = await u.waitUntil(() => view.querySelector(`.chat-msg[data-msgid="${msgid}"]`));
     const dropdown_el = await u.waitUntil(() => msg_el?.querySelector('converse-message-actions converse-dropdown'));
     const toggle_el = await u.waitUntil(() => dropdown_el?.querySelector('.dropdown-toggle'));

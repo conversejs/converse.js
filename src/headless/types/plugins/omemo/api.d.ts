@@ -4,6 +4,23 @@ declare namespace _default {
          * Returns the device ID of the current device.
          */
         function getDeviceID(): Promise<any>;
+        /**
+         * Encrypt and send a message to `chat` for every OMEMO version its
+         * recipients support, without persisting a Message model. This is the
+         * encrypted counterpart of a raw `api.send`.
+         *
+         * On failure (e.g. no reachable devices, or a presence/server error) a
+         * user-facing alert is shown and the error is re-thrown — the same way an
+         * encrypted chat-message send fails — so callers can roll back any
+         * optimistic state. Awaits the encryption; resolves once the stanza is
+         * handed to `api.send`.
+         *
+         * @method _converse.api.omemo.send
+         * @param {import('../../shared/chatbox.js').default} chat
+         * @param {string} plaintext - the message body (may be empty)
+         * @param {import('strophe.js').Builder[]} [extensions] - encrypted SCE `<content>` children
+         */
+        function send(chat: import("../../shared/chatbox.js").default, plaintext: string, extensions?: import("strophe.js").Builder[]): Promise<void>;
         namespace session {
             function restore(): Promise<void>;
         }

@@ -45,10 +45,13 @@ export function getDeviceList(jid: string, create?: boolean, version?: import(".
  */
 export function generateFingerprint(device: import("./device.js").default): Promise<void>;
 /**
+ * Surface a user-facing alert for a failed encrypted send and re-throw, so the
+ * send pipeline (the `createMessageStanza` handler) aborts. Always throws.
  * @param {Error|errors.IQError|errors.UserFacingError} e
  * @param {import('../../shared/chatbox.js').default} chat
+ * @returns {never}
  */
-export function handleMessageSendError(e: Error | errors.IQError | errors.UserFacingError, chat: import("../../shared/chatbox.js").default): void;
+export function handleMessageSendError(e: Error | errors.IQError | errors.UserFacingError, chat: import("../../shared/chatbox.js").default): never;
 /**
  * Returns the device collection for a contact and OMEMO version.
  * Doesn't throw on any failure, instead logs and returns an empty collection.
@@ -86,11 +89,32 @@ export function decryptMessage(obj: import("./types").EncryptedMessage): Promise
  */
 export function sendOMEMOHeartbeat(chat: import("../../shared/chatbox.js").default, version: import("./types").OMEMOVersion): Promise<void>;
 /**
+ * Encrypt `plaintext` (and, for omemo:2, `extensions` inside the SCE
+ * `<content>`) for every reachable recipient device of `chat`, returning the
+ * OMEMO `<encrypted>` element(s) to attach to a message stanza plus the EME
+ * (XEP-0380) namespace to advertise.
+ *
+ * @param {import('../../shared/chatbox').default} chat
+ * @param {string|null} plaintext - the body (legacy payload / omemo:2 SCE `<body>`)
+ * @param {import('strophe.js').Builder[]} [extensions] - encrypted SCE `<content>` children
+ * @returns {Promise<{elements: import('strophe.js').Builder[], eme_ns: string}>}
+ */
+export function getEncryptedElements(chat: import("../../shared/chatbox").default, plaintext: string | null, extensions?: import("strophe.js").Builder[]): Promise<{
+    elements: import("strophe.js").Builder[];
+    eme_ns: string;
+}>;
+/**
+ * Handler for the `createMessageStanza` hook: for an encrypted outgoing chat
+ * message, attach the OMEMO `<encrypted>` element(s) (plus store + EME hints) to
+ * the stanza that was built from the Message model. Non-encrypted messages pass
+ * through untouched. A send failure is surfaced to the user via
+ * {@link handleMessageSendError} (which re-throws to abort the send).
+ *
  * @param {import('../../shared/chatbox').default} chat
  * @param {import('../../shared/types').MessageAndStanza} data
  * @return {Promise<import('../../shared/types').MessageAndStanza>}
  */
-export function createOMEMOMessageStanza(chat: import("../../shared/chatbox").default, data: import("../../shared/types").MessageAndStanza): Promise<import("../../shared/types").MessageAndStanza>;
+export function createMessageStanzaHandler(chat: import("../../shared/chatbox").default, data: import("../../shared/types").MessageAndStanza): Promise<import("../../shared/types").MessageAndStanza>;
 /**
  * @param {import('../../shared/chatbox.js').default} chat
  * @param {import('../../shared/types').MessageAttributes} attrs

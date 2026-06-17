@@ -13,7 +13,7 @@ import DeviceLists from './devicelists.js';
 import { VersionedOMEMOStore } from './versioned-store.js';
 import { encryptSCE, decryptSCE } from './sce.js';
 
-const { u, Strophe, stx } = converse.env;
+const { u, Strophe, stx, Stanza } = converse.env;
 const { arrayBufferToHex, base64ToArrayBuffer } = u;
 
 // Affiliations whose members are valid recipients of OMEMO-encrypted MUC
@@ -883,6 +883,80 @@ export async function sendOMEMOHeartbeat(chat, version) {
 }
 
 /**
+ * Send a XEP-0085 chat state notification for an OMEMO-active chat.
+ *
+ * Called from the `change:chat_state` listener added by {@link onChatInitialized}.
+ * The cleartext path in `sendChatState` / `MUC#sendChatState` is suppressed
+ * when `omemo_active`, so this function is solely responsible for the outgoing
+ * notification in encrypted sessions.
+ *
+ * - OMEMO:2 devices present → encrypted SCE stanza with `<no-store>` hints.
+ * - Legacy-only session (no v2 devices) → cleartext stanza, matching what
+ *   other clients do for legacy OMEMO.
+ * - Mixed session (both v2 and legacy devices) → encrypted only; legacy
+ *   devices in a mixed session do not receive a CSN.
+ *
+ * @param {import('../../shared/chatbox.js').default} chatbox
+ */
+async function sendOMEMO2ChatState(chatbox) {
+    if (!chatbox.get('omemo_active')) return;
+
+    const chat_state = chatbox.get('chat_state');
+    if (!chat_state) return;
+
+    const allowed = api.settings.get('send_chat_state_notifications');
+    if (!allowed || (Array.isArray(allowed) && !allowed.includes(chat_state))) {
+        return;
+    }
+
+    const is_muc = chatbox instanceof MUC;
+    if (is_muc) {
+        // Mirror the guards in MUC#sendChatState
+        if (!(/** @type {MUC} */ (chatbox).isEntered())) return;
+        if (
+            /** @type {MUC} */ (chatbox).features?.get('moderated') &&
+            /** @type {MUC} */ (chatbox).getOwnRole() === 'visitor'
+        )
+            return;
+        if (chat_state === 'gone') return; // <gone/> not applicable in MUC
+    }
+
+    const jid = chatbox.get('jid');
+    const type = is_muc ? 'groupchat' : 'chat';
+    const { v2, legacy } = await getBundlesAndBuildSessions(chatbox);
+
+    if (v2.length) {
+        const el = await getOMEMO2EncryptedElement(
+            chatbox,
+            null,
+            [stx`<${Stanza.unsafeXML(chat_state)} xmlns="${Strophe.NS.CHATSTATES}"/>`],
+            v2,
+        );
+        api.send(
+            stx`<message xmlns="jabber:client"
+                    from="${_converse.session.get('jid')}"
+                    to="${jid}"
+                    type="${type}"
+                    id="${u.getUniqueId()}">
+                ${el}
+                <encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO2}"/>
+                <no-store xmlns="${Strophe.NS.HINTS}"/>
+                <no-permanent-store xmlns="${Strophe.NS.HINTS}"/>
+            </message>`,
+        );
+    } else if (legacy.length) {
+        // Legacy-only session: send cleartext, same as non-OMEMO clients do.
+        api.send(
+            stx`<message to="${jid}" type="${type}" xmlns="jabber:client">
+                <${Stanza.unsafeXML(chat_state)} xmlns="${Strophe.NS.CHATSTATES}"/>
+                <no-store xmlns="${Strophe.NS.HINTS}"/>
+                <no-permanent-store xmlns="${Strophe.NS.HINTS}"/>
+            </message>`,
+        );
+    }
+}
+
+/**
  * Encrypt `plaintext` (and, for omemo:2, `extensions` inside the SCE
  * `<content>`) for every reachable recipient device of `chat`, returning the
  * OMEMO `<encrypted>` element(s) to attach to a message stanza plus the EME
@@ -1037,6 +1111,9 @@ async function onOccupantAdded(chatroom, occupant) {
  */
 export function onChatInitialized(chatbox) {
     checkOMEMOSupported(chatbox, true);
+
+    chatbox.on('change:chat_state', () => sendOMEMO2ChatState(chatbox));
+
     if (chatbox.get('type') === constants.CHATROOMS_TYPE) {
         /** @type {MUC} */ (chatbox).occupants.on(
             'add',

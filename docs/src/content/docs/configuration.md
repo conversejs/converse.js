@@ -437,6 +437,21 @@ Please refer to your XMPP server's documentation on how to enable BOSH. For more
 
 A more modern alternative to BOSH is to use [websockets](https://developer.mozilla.org/en/docs/WebSockets). Please see the `websocket-url` configuration setting.
 
+### call_ice_servers
+
+- Default: `[]`
+
+A list of ICE servers (STUN and/or TURN) used to establish the media connection for 1:1 audio calls. Each entry is an [RTCIceServer](https://developer.mozilla.org/en-US/docs/Web/API/RTCIceServer) object, for example:
+
+```javascript
+call_ice_servers: [
+    { urls: 'stun:stun.example.org:3478' },
+    { urls: 'turn:turn.example.org:3478', username: 'user', credential: 'secret' },
+]
+```
+
+Converse also discovers servers advertised by your XMPP server via [XEP-0215](https://xmpp.org/extensions/xep-0215.html). The servers configured here are used in addition to those, so leaving this empty is fine when your server already advertises STUN/TURN.
+
 ### clear_cache_on_logout
 
 - Default: `false`
@@ -1700,7 +1715,7 @@ See also [emoji_image_path](#emoji_image_path).
 
 ```javascript
 {
-    call: false,
+    call: true,
     spoiler: false,
     emoji: true,
 }
@@ -1709,7 +1724,7 @@ See also [emoji_image_path](#emoji_image_path).
 Allows you to show or hide buttons on the chatboxes' toolbars.
 
 - _call_:  
-  Provides a button with a picture of a telephone on it. When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.
+  Shows a telephone button in 1:1 chats that starts an audio call with the contact. Pressing it also emits a `callButtonClicked` event, which a third-party library can use to initiate a call of its own instead:
 
     ```javascript
     converse.listen.on('callButtonClicked', function (data) {

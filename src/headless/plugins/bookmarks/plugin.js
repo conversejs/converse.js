@@ -127,6 +127,7 @@ converse.plugins.add('converse-bookmarks', {
         api.listen.on('clearSession', () => {
             const { state } = _converse;
             if (state.bookmarks) {
+                state.bookmarks.stopListening();
                 state.bookmarks.clearStore({ silent: true });
                 const { fetched_flag_key } = getStorageKeys();
                 _converse.state.session.set(fetched_flag_key, undefined);

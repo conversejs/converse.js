@@ -5,8 +5,6 @@
  */
 import { html } from "lit";
 import { api, u } from "@converse/headless";
-import 'plugins/muc-views/modals/add-muc.js';
-import 'plugins/muc-views/modals/muc-list.js';
 import { __ } from 'i18n';
 import { getUnreadMsgsDisplay } from "shared/chat/utils.js";
 

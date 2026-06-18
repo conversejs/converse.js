@@ -4,7 +4,7 @@ declare const MUC_base: {
         [x: string]: any;
         initialize(): void;
         bookmark: any;
-        setBookmark(bookmark: any): void;
+        setBookmark(bookmark: import("@converse/skeletor").Model | null): void;
         _browserStorage?: import("@converse/skeletor").BrowserStorage;
         _changing: boolean;
         _pending: boolean | import("@converse/skeletor").ModelOptions;

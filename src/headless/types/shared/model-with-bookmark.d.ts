@@ -7,7 +7,13 @@ export default function ModelWithBookmark<T extends import("./types").ModelExten
         [x: string]: any;
         initialize(): void;
         bookmark: any;
-        setBookmark(bookmark: any): void;
+        /**
+         * Associate this model with a bookmark (or clear it by passing `null`).
+         * Idempotent: re-binding the same bookmark is a no-op, and rebinding a
+         * different one detaches the previous listener first.
+         * @param {import('@converse/skeletor').Model|null} bookmark
+         */
+        setBookmark(bookmark: import("@converse/skeletor").Model | null): void;
         _browserStorage?: import("@converse/skeletor").BrowserStorage;
         _changing: boolean;
         _pending: boolean | import("@converse/skeletor").ModelOptions;

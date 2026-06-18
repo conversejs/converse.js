@@ -52,9 +52,12 @@ declare class Bookmarks extends Collection<Bookmark> {
      */
     fetchBookmarksFromServer(deferred: Promise<any>): Promise<void>;
     /**
-     * @param {Bookmark} bookmark
+     * Associate an open room with its bookmark, if both exist. Safe to call
+     * repeatedly (see {@link ModelWithBookmark#setBookmark}) and for any chatbox
+     * type — non-MUC boxes simply have no `setBookmark` method.
+     * @param {string} jid
      */
-    markRoomAsBookmarked(bookmark: Bookmark): void;
+    linkRoom(jid: string): void;
     /**
      * @param {Bookmark} bookmark
      */
@@ -79,15 +82,19 @@ declare class Bookmarks extends Collection<Bookmark> {
     onBookmarksReceivedError(deferred: any, iq: Element): Promise<void>;
     getUnopenedBookmarks(): Promise<Bookmark[]>;
     /**
-     *
+     * Pin a bookmark to the top of the lists (XEP-0469) by adding a `<pinned/>`
+     * element to its extensions. The `pinned` attribute is derived from the
+     * extensions by {@link Bookmark}, so we only need to update the latter.
      * @param {Bookmark} bookmark
+     * @returns {Promise<void|Element>}
      */
-    pinBookmark(bookmark: Bookmark): void;
+    pinBookmark(bookmark: Bookmark): Promise<void | Element>;
     /**
-     *
+     * Unpin a bookmark (XEP-0469) by removing its `<pinned/>` extension.
      * @param {Bookmark} bookmark
+     * @returns {Promise<void|Element>}
      */
-    unpinBookmark(bookmark: Bookmark): void;
+    unpinBookmark(bookmark: Bookmark): Promise<void | Element>;
 }
 import Bookmark from './model.js';
 import { Collection } from '@converse/skeletor';

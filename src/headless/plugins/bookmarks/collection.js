@@ -32,25 +32,37 @@ class Bookmarks extends Collection {
     }
 
     async initialize() {
+        const { chatboxes } = _converse.state;
+
         this.on('add', (bm) =>
             this.openBookmarkedRoom(bm)
-                .then((bm) => this.markRoomAsBookmarked(bm))
-                .catch((e) => log.fatal(e))
+                .then((bm) => this.linkRoom(bm.get('jid')))
+                .catch((e) => log.fatal(e)),
         );
         this.on('change:autojoin', this.onAutoJoinChanged, this);
         this.on(
             'remove',
-            /** @param { Bookmark } bookmark }*/ (bookmark) => {
+            /** @param {Bookmark} bookmark */ (bookmark) => {
+                chatboxes.get(bookmark.get('jid'))?.setBookmark?.(null);
                 this.sendRemoveBookmarkStanza(bookmark);
                 this.leaveRoom(bookmark);
-            }
+            },
         );
+
+        // A room may be opened *after* its bookmark already exists (e.g. a
+        // non-autojoin bookmark that the user opens manually), so we link on
+        // chatbox-add as well as on bookmark-add.
+        this.listenTo(chatboxes, 'add', /** @param {MUC} cb */ (cb) => this.linkRoom(cb.get('jid')));
 
         const { storage_key, fetched_flag_key } = getStorageKeys();
         this.fetched_flag = fetched_flag_key;
         initStorage(this, storage_key);
 
         await this.fetchBookmarks();
+
+        // Reconcile any rooms that were already open before the bookmarks
+        // finished loading.
+        chatboxes.forEach(/** @param {MUC} cb */ (cb) => this.linkRoom(cb.get('jid')));
 
         /**
          * Triggered once the {@link Bookmarks} collection
@@ -82,7 +94,6 @@ class Bookmarks extends Collection {
             const groupchat = await api.rooms.create(bookmark.get('jid'), {
                 nick: bookmark.get('nick'),
                 password: bookmark.get('password'),
-                pinned: bookmark.get('pinned'),
             });
             groupchat.maybeShow();
         }
@@ -169,18 +180,27 @@ class Bookmarks extends Collection {
         if (node === Strophe.NS.BOOKMARKS2) {
             if (!bookmark) throw new Error('getPublishedItems: missing bookmark');
 
-            const extensions = bookmark.get('extensions') ?? [];
+            // Parse each extension defensively
+            const extensions = (bookmark.get('extensions') ?? [])
+                .map(
+                    /** @param {string} e */ (e) => {
+                        try {
+                            return Stanza.fromString(e);
+                        } catch (err) {
+                            log.error(`Ignoring invalid bookmark extension: ${e}`);
+                            log.error(err);
+                            return null;
+                        }
+                    },
+                )
+                .filter(Boolean);
             return stx`<item id="${bookmark.get('jid')}">
                         <conference xmlns="${Strophe.NS.BOOKMARKS2}"
                                 name="${bookmark.get('name') || nothing}"
                                 autojoin="${bookmark.get('autojoin')}">
                             ${bookmark.get('nick') ? stx`<nick>${bookmark.get('nick')}</nick>` : ''}
                             ${bookmark.get('password') ? stx`<password>${bookmark.get('password')}</password>` : ''}
-                        ${
-                            extensions.length
-                                ? stx`<extensions>${extensions.map((e) => Stanza.fromString(e))}</extensions>`
-                                : ''
-                        }
+                        ${extensions.length ? stx`<extensions>${extensions}</extensions>` : ''}
                         </conference>
                     </item>`;
         } else {
@@ -192,7 +212,7 @@ class Bookmarks extends Collection {
                         jid="${model.get('jid')}">
                         ${model.get('nick') ? stx`<nick>${model.get('nick')}</nick>` : ''}
                         ${model.get('password') ? stx`<password>${model.get('password')}</password>` : ''}
-                    </conference>`
+                    </conference>`,
                 )}
                 </storage>
             </item>`;
@@ -246,12 +266,14 @@ class Bookmarks extends Collection {
     }
 
     /**
-     * @param {Bookmark} bookmark
+     * Associate an open room with its bookmark, if both exist. Safe to call
+     * repeatedly (see {@link ModelWithBookmark#setBookmark}) and for any chatbox
+     * type — non-MUC boxes simply have no `setBookmark` method.
+     * @param {string} jid
      */
-    markRoomAsBookmarked(bookmark) {
+    linkRoom(jid) {
         const { chatboxes } = _converse.state;
-        const groupchat = chatboxes.get(bookmark.get('jid'));
-        groupchat?.setBookmark(bookmark);
+        chatboxes.get(jid)?.setBookmark?.(this.get(jid) ?? null);
     }
 
     /**
@@ -283,7 +305,7 @@ class Bookmarks extends Collection {
             (attrs) => {
                 const bookmark = this.get(attrs.jid);
                 bookmark ? bookmark.save(attrs) : this.create(attrs);
-            }
+            },
         );
     }
 
@@ -310,7 +332,7 @@ class Bookmarks extends Collection {
             api.alert('error', __('Timeout Error'), [
                 __(
                     'The server did not return your bookmarks within the allowed time. ' +
-                        'You can reload the page to request them again.'
+                        'You can reload the page to request them again.',
                 ),
             ]);
             deferred?.reject(new Error('Could not fetch bookmarks'));
@@ -337,45 +359,32 @@ class Bookmarks extends Collection {
     }
 
     /**
-     * 
+     * Pin a bookmark to the top of the lists (XEP-0469) by adding a `<pinned/>`
+     * element to its extensions. The `pinned` attribute is derived from the
+     * extensions by {@link Bookmark}, so we only need to update the latter.
      * @param {Bookmark} bookmark
+     * @returns {Promise<void|Element>}
      */
     pinBookmark(bookmark) {
-        const extensions = [...bookmark.get('extensions'), `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`];
-
-        bookmark.set('pinned', true);
-        
-        try {
-            api.bookmarks.set({
-                jid: bookmark.get('jid'),
-                extensions,
-            });
-        } catch (error) {
-            bookmark.set('pinned', false);
-            log.error('Error while trying to pin bookmark');
-            log.error(error);
-        }
+        if (bookmark.get('pinned')) return Promise.resolve();
+        const extensions = [
+            ...(bookmark.get('extensions') ?? []),
+            `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`,
+        ];
+        return api.bookmarks.set({ jid: bookmark.get('jid'), extensions });
     }
 
     /**
-     * 
+     * Unpin a bookmark (XEP-0469) by removing its `<pinned/>` extension.
      * @param {Bookmark} bookmark
+     * @returns {Promise<void|Element>}
      */
     unpinBookmark(bookmark) {
-        const extensions = bookmark.get('extensions').filter(/** @param {String} e */ e => !(e.includes('<pinned')));
-
-        bookmark.set('pinned', false);
-        
-        try {
-            api.bookmarks.set({
-                jid: bookmark.get('jid'),
-                extensions,
-            });
-        } catch (error) {
-            bookmark.set('pinned', true);
-            log.error('Error while trying to unpin bookmark');
-            log.error(error);
-        }
+        const ns = Strophe.NS.BOOKMARKS_PINNING;
+        const extensions = (bookmark.get('extensions') ?? []).filter(
+            /** @param {string} e */ (e) => !(e.includes('<pinned') && e.includes(ns)),
+        );
+        return api.bookmarks.set({ jid: bookmark.get('jid'), extensions });
     }
 }
 

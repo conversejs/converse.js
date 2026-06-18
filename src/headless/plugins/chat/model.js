@@ -6,7 +6,6 @@ import converse from '../../shared/api/public.js';
 import log from '@converse/log';
 import { isUniView } from '../../utils/session.js';
 import { sendChatState, sendMarker } from '../../shared/actions.js';
-import ModelWithBookmark from '../../shared/model-with-bookmark.js';
 import ModelWithMessages from '../../shared/model-with-messages.js';
 import ModelWithVCard from '../../shared/model-with-vcard.js';
 import ModelWithContact from '../../shared/model-with-contact.js';
@@ -18,9 +17,7 @@ const { Strophe, u } = converse.env;
 /**
  * Represents a one-on-one chat conversation.
  */
-class ChatBox extends ModelWithBookmark(
-    ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBoxBase))))
-) {
+class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBoxBase)))) {
     /**
      * @typedef {import('./message.js').default} Message
      * @typedef {import('../muc/muc.js').default} MUC

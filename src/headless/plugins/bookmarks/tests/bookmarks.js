@@ -712,4 +712,48 @@ describe('A bookmark', function () {
                 </iq>`);
         }),
     );
+
+    it(
+        'drops malformed extensions instead of breaking the publish',
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const muc_jid = 'theplay@conference.shakespeare.lit';
+            const { state } = _converse;
+
+            // A bookmark carrying a malformed extension alongside a valid one.
+            state.bookmarks.create({
+                jid: muc_jid,
+                autojoin: true,
+                name: 'The Play',
+                nick: 'romeo',
+                extensions: ['<not valid xml', `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`],
+            });
+
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
+            await u.waitUntil(() => state.chatboxes.length === 1);
+
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+            const bookmark = state.bookmarks.findWhere({ jid: muc_jid });
+
+            // Serializing/publishing must not throw: the malformed extension is
+            // dropped and the valid <pinned/> extension is preserved. (We don't
+            // await the publish itself, since the mock server never answers the
+            // IQ; we only care that the stanza was built and sent.)
+            state.bookmarks.sendBookmarkStanza(bookmark).catch(() => {});
+
+            const sent_stanza = await u.waitUntil(() =>
+                IQ_stanzas.filter(
+                    (s) => sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="The Play"]`, s).length
+                ).pop()
+            );
+
+            const extensions_els = sizzle('extensions', sent_stanza);
+            expect(extensions_els.length).toBe(1);
+            expect(extensions_els[0].children.length).toBe(1);
+            expect(extensions_els[0].children[0].tagName).toBe('pinned');
+            expect(extensions_els[0].children[0].namespaceURI).toBe(Strophe.NS.BOOKMARKS_PINNING);
+        }),
+    );
 });

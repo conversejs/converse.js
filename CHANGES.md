@@ -20,6 +20,12 @@
 
 ### Backwards incompatible changes
 
+- OMEMO now uses a WebAssembly crypto module (libomemo). If you serve Converse
+  under a strict Content-Security-Policy, you must add `'wasm-unsafe-eval'` to
+  your `script-src` directive, otherwise OMEMO fails to initialize with a
+  `WebAssembly.instantiate()` CSP error. This token is much narrower than
+  `'unsafe-eval'` (it permits WASM compilation only).
+  See the [security docs](https://conversejs.org/docs/security/) for the recommended CSP.
 - `api.modal.show` no longer takes a modal instance as first parameter
 - The CJS build has been removed. Only ESM builds are produced.
   If you include Converse via a `<script>` tag, you must add `type="module"`:

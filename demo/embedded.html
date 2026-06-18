@@ -69,21 +69,18 @@
 </section>
 </body>
 
-<script type="module">
-    converse.initialize({
-        authentication: 'anonymous',
-        auto_login: true,
-        auto_join_rooms: [
-            'anonymous@conference.nomnom.im',
-        ],
-        bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-        jid: 'nomnom.im', // XMPP server which allows anonymous login (doesn't
-                          // allow chatting with other XMPP servers).
-        notify_all_room_messages: [
-            'anonymous@conference.nomnom.im',
-        ],
-        singleton: true,
-        view_mode: 'embedded',
-    });
+<!-- Settings for converse.initialize(); bosh_service_url is a public test connection manager only. -->
+<script type="application/json" id="converse-config">
+{
+    "authentication": "anonymous",
+    "auto_login": true,
+    "auto_join_rooms": ["anonymous@conference.nomnom.im"],
+    "bosh_service_url": "https://conversejs.org/http-bind/",
+    "jid": "nomnom.im",
+    "notify_all_room_messages": ["anonymous@conference.nomnom.im"],
+    "singleton": true,
+    "view_mode": "embedded"
+}
 </script>
+<script type="module" src="../init.js"></script>
 </html>

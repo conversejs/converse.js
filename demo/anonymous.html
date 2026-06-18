@@ -20,7 +20,7 @@
 
         <link rel="manifest" href="/manifest.json" />
         <link type="text/css" rel="stylesheet" media="screen" href="/dist/converse.min.css" />
-        <script src="/dist/converse.min.js"></script>
+        <script type="module" src="/dist/converse.min.js"></script>
     </head>
 
     <body id="page-top" data-spy="scroll" class="converse-website">
@@ -65,29 +65,34 @@
         </section>
     </body>
 
-    <script type="module">
-        converse.initialize({
-            view_mode: 'overlayed',
-            allow_logout: false, // No point in logging out when we have auto_login as true.
-            allow_muc_invitations: false, // Doesn't make sense to allow because only
-            // roster contacts can be invited
-            allow_contact_requests: false, // Contacts from other servers cannot,
-            // be added and anonymous users don't
-            // know one another's JIDs, so disabling.
-            authentication: 'anonymous',
-            auto_login: true,
-            auto_join_rooms: ['anonymous@conference.nomnom.im'],
-            notify_all_room_messages: ['anonymous@conference.nomnom.im'],
-            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-            jid: 'nomnom.im', // XMPP server which allows anonymous login (doesn't
-            // allow chatting with other XMPP servers).
-            keepalive: true,
-            hide_muc_server: true, // Federation is disabled, so no use in
-            // showing the MUC server.
-            play_sounds: true,
-            show_controlbox_by_default: true,
-            strict_plugin_dependencies: false,
-        });
+    <!--
+        Settings for converse.initialize():
+        - allow_logout: false      No point in logging out when auto_login is true.
+        - allow_muc_invitations    Only roster contacts can be invited, so disabled.
+        - allow_contact_requests   Anonymous users don't know each other's JIDs, so disabled.
+        - bosh_service_url         Public test connection manager only.
+        - jid: nomnom.im           XMPP server allowing anonymous login (no federation).
+        - hide_muc_server          Federation is disabled, so no use showing the MUC server.
+    -->
+    <script type="application/json" id="converse-config">
+    {
+        "view_mode": "overlayed",
+        "allow_logout": false,
+        "allow_muc_invitations": false,
+        "allow_contact_requests": false,
+        "authentication": "anonymous",
+        "auto_login": true,
+        "auto_join_rooms": ["anonymous@conference.nomnom.im"],
+        "notify_all_room_messages": ["anonymous@conference.nomnom.im"],
+        "bosh_service_url": "https://conversejs.org/http-bind/",
+        "jid": "nomnom.im",
+        "keepalive": true,
+        "hide_muc_server": true,
+        "play_sounds": true,
+        "show_controlbox_by_default": true,
+        "strict_plugin_dependencies": false
+    }
     </script>
+    <script type="module" src="../init.js"></script>
 </html>
 

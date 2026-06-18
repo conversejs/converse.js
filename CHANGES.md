@@ -1,6 +1,6 @@
 # Changelog
 
-## 14.0.0 (Unreleased)
+## 14.0.0-beta.1 (2026-06-18)
 
 - #1472: feat(omemo): remember the per-chat encryption (on/off) state across chat-close and re-login
 - #2097: fix(omemo): surface an error for an undecryptable OMEMO message instead of silently dropping it when it carries no fallback body

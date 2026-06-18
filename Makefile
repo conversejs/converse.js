@@ -18,7 +18,12 @@ XGETTEXT			= xgettext
 
 
 # Internal variables.
-VERSION_FORMAT	= [0-9]+\.[0-9]+\.[0-9]+
+# Matches X.Y.Z and pre-releases like X.Y.Z-beta.1 / X.Y.Z-rc.2 / X.Y.Z-alpha.3,
+# so the version-string rewrites stay reversible across successive pre-release cuts.
+VERSION_FORMAT	= [0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?
+# npm dist-tag used by `make publish`. Override for pre-releases, e.g. NPM_TAG=beta,
+# to keep the `latest` tag (what plain `npm install` resolves to) on the stable line.
+NPM_TAG	?= latest
 
 .PHONY: all
 all: node_modules dist media
@@ -104,8 +109,8 @@ release-checkout:
 .PHONY: publish
 publish:
 	make release-checkout
-	cd release-$(BRANCH) && npm pack && npm publish
-	cd release-$(BRANCH)/src/headless && npm pack && npm publish
+	cd release-$(BRANCH) && npm pack && npm publish --tag $(NPM_TAG)
+	cd release-$(BRANCH)/src/headless && npm pack && npm publish --tag $(NPM_TAG)
 	find ./release-$(BRANCH)/ -name "converse.js-*.tgz" -exec mv {} . \;
 	find ./release-$(BRANCH)/src/headless -name "converse-headless-*.tgz" -exec mv {} . \;
 	rm -rf release-$(BRANCH)

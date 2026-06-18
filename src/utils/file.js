@@ -1,5 +1,3 @@
-import Compress from 'client-compress';
-
 export const MIMETYPES_MAP = {
     'aac': 'audio/aac',
     'abw': 'application/x-abiword',
@@ -109,6 +107,11 @@ export async function isImageWithAlphaChannel(image_file) {
 }
 
 /**
+ * Downscale and lossily (re)compress an image {@link File} to a {@link Blob}
+ * using native browser APIs.
+ *
+ * Images already smaller than `maxUncompressedSize` (KB), or browsers without
+ * `OffscreenCanvas`, are returned untouched.
  * @param {File} file
  * @param {import('./types').CompressionOptions} options
  * @returns {Promise<Blob>}
@@ -121,14 +124,28 @@ export async function compressImage(
         maxWidth: 256,
         maxHeight: 256,
         maxUncompressedSize: 100, // In KB
-    }
+    },
 ) {
-    if (options.maxUncompressedSize && file.size > options.maxUncompressedSize * 1024) {
-        delete options.maxUncompressedSize;
-        const compress = new Compress(options);
-        const conversions = await compress.compress([file]);
-        const { photo } = conversions[0];
-        return photo.data;
+    const small_enough = !options.maxUncompressedSize || file.size <= options.maxUncompressedSize * 1024;
+    if (small_enough || typeof OffscreenCanvas === 'undefined') {
+        return file;
     }
-    return file;
+
+    const bitmap = await createImageBitmap(file);
+
+    // Only ever scale down, preserving the aspect ratio.
+    const scale = Math.min(1, options.maxWidth / bitmap.width, options.maxHeight / bitmap.height);
+    const canvas = new OffscreenCanvas(Math.round(bitmap.width * scale), Math.round(bitmap.height * scale));
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+
+    // Re-encode as JPEG, lowering the quality until we're under the target size.
+    const target_bytes = options.targetSize * 1024 * 1024;
+    let quality = options.quality;
+    let blob = await canvas.convertToBlob({ type: 'image/jpeg', quality });
+    while (blob.size > target_bytes && quality > 0.1) {
+        quality -= 0.1;
+        blob = await canvas.convertToBlob({ type: 'image/jpeg', quality });
+    }
+    return blob;
 }

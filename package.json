@@ -141,7 +141,6 @@
     "@babel/runtime": "^7.27.6",
     "@converse/log": "file:src/log",
     "bootstrap": "^5.3.3",
-    "client-compress": "^2.2.2",
     "dompurify": "^3.0.8",
     "favico.js-slevomat": "^0.3.11",
     "gifuct-js": "^2.1.2",

@@ -5,6 +5,11 @@
  */
 export function isImageWithAlphaChannel(image_file: File): Promise<boolean>;
 /**
+ * Downscale and lossily (re)compress an image {@link File} to a {@link Blob}
+ * using native browser APIs.
+ *
+ * Images already smaller than `maxUncompressedSize` (KB), or browsers without
+ * `OffscreenCanvas`, are returned untouched.
  * @param {File} file
  * @param {import('./types').CompressionOptions} options
  * @returns {Promise<Blob>}

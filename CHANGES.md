@@ -1,5 +1,9 @@
 # Changelog
 
+## 14.0.0 (Unreleased)
+
+- Remove `client-compress` and use browser APIs
+
 ## 14.0.0-beta.1 (2026-06-18)
 
 - #1472: feat(omemo): remember the per-chat encryption (on/off) state across chat-close and re-login

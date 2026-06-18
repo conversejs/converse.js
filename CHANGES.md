@@ -1,6 +1,6 @@
 # Changelog
 
-## 14.0.0 (Unreleased)
+## 14.0.0-beta.2 (2026-06-18)
 
 - Remove `client-compress` and use browser APIs
 

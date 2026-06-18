@@ -1,5 +1,5 @@
 export const BOSH_WAIT: 59;
-export const VERSION_NAME: "v14.0.0-beta.1";
+export const VERSION_NAME: "v14.0.0-beta.2";
 export const PRES_SHOW_VALUES: string[];
 export const PRES_TYPE_VALUES: string[];
 export namespace STATUS_WEIGHTS {

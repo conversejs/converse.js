@@ -78,6 +78,12 @@ converse-calls {
                     background-color: var(--error-color, #e7605e);
                 }
 
+                // microphone-slash has a wider viewBox than the plain mic, so widen
+                // its box to stop the square sizing from shrinking it.
+                &.mute.is-muted converse-icon svg {
+                    width: 1.5em !important;
+                }
+
                 &.mute {
                     color: var(--chat-header-fg-color);
                     background-color: color-mix(in srgb, var(--chat-header-fg-color) 25%, transparent);

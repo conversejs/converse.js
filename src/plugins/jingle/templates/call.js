@@ -36,7 +36,7 @@ function tplActions(el) {
         const muted = call.get('muted_audio');
         const mute = tplButton(
             () => el.toggleMute(),
-            muted ? 'fa-volume-xmark' : 'fa-volume-high',
+            muted ? 'fa-microphone-slash' : 'fa-microphone',
             muted ? __('Unmute') : __('Mute'),
             `mute ${muted ? 'is-muted' : ''}`
         );

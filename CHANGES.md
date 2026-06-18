@@ -9,6 +9,7 @@
 - #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds
 - #3978: Add support for XEP-0202 Entity Time.
 - Full XEP-0172 User Nickname support.
+- feat: 1:1 audio calls over Jingle ([XEP-0167](https://xmpp.org/extensions/xep-0167.html)), set up with Jingle Message Initiation ([XEP-0353](https://xmpp.org/extensions/xep-0353.html)) and STUN/TURN discovery via [XEP-0215](https://xmpp.org/extensions/xep-0215.html). Adds the `call_ice_servers` setting and enables the toolbar `call` button by default.
 - fix(chatview): The contact's name and status message in a chat header were painted the same
   colour as the header itself.
 - fix(chatview): Show the contact's status message in the chat header again. It was read off the

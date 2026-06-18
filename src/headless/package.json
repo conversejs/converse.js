@@ -63,7 +63,7 @@
     "dayjs": "^1.11.8",
     "dompurify": "^3.0.8",
     "filesize": "^11.0.13",
-    "libomemo.js": "^2.0.0-rc.2",
+    "libomemo.js": "^2.0.0",
     "localforage-webextensionstorage-driver": "^3.0.0",
     "lodash-es": "^4.17.21",
     "pluggable.js": "3.0.1",

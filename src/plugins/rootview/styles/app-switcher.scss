@@ -1,0 +1,19 @@
+.conversejs {
+    converse-app-switcher {
+        box-shadow: 0 0 0.3em gray;
+        margin-right: 0.4em;
+        padding: 0.5em;
+        li {
+            margin-bottom: 1em;
+        }
+        .nav-link {
+            &.active {
+                // Use the theme's "selected/open item" colour. The previous
+                // `--highlight-color-hover` is the *hover* tint, which in dark
+                // themes (e.g. Dracula's `--darkgray`) sits almost on top of the
+                // background, leaving the active app looking unmarked.
+                background-color: var(--highlight-color) !important;
+            }
+        }
+    }
+}

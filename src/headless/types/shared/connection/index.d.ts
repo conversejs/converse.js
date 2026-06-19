@@ -5,7 +5,11 @@ declare const Connection_base: typeof import("../../../../node_modules/strophe.j
  * via BOSH or websocket inside a shared worker).
  */
 export class Connection extends Connection_base {
-    constructor(service: any, options: any);
+    /**
+     * @param {string} service - The BOSH or WebSocket service URL.
+     * @param {import('strophe.js').ConnectionOptions} options
+     */
+    constructor(service: string, options: import("strophe.js").ConnectionOptions);
     send_initial_presence: boolean;
     debouncedReconnect: import("lodash").DebouncedFunc<() => Promise<any>>;
     /** @param {Element} body */
@@ -106,11 +110,6 @@ export class Connection extends Connection_base {
  * The MockConnection class is used during testing, to mock an XMPP connection.
  */
 export class MockConnection extends Connection {
-    /**
-     * @param {string} service - The BOSH or WebSocket service URL.
-     * @param {import('strophe.js').ConnectionOptions} options - The configuration options
-     */
-    constructor(service: string, options: import("strophe.js").ConnectionOptions);
     sent_stanzas: any[];
     IQ_stanzas: any[];
     IQ_ids: any[];

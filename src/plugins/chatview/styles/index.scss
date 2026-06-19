@@ -1,69 +1,85 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/mixins";
-@import "shared/styles/_variables.scss";
-@import "./chatbox.scss";
-
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+@import 'shared/styles/_variables.scss';
+@import './chatbox.scss';
 
 /* ******************* Overlay and embedded styles *************************** */
 
 .conversejs {
-    converse-chats.converse-embedded,
-    converse-chats.converse-overlayed {
-        .controlbox-head {
-            padding: 0.5em;
-        }
-        .chat-head {
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-        }
-        .chatbox {
-            min-width: var(--overlayed-chat-width) !important;
-            width: var(--overlayed-chat-width);
-
-            .box-flyout {
+    converse-app-chat {
+        &.converse-embedded,
+        &.converse-overlayed {
+            .controlbox-head {
+                padding: 0.5em;
+            }
+            .chat-head {
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
+            .chatbox {
                 min-width: var(--overlayed-chat-width) !important;
                 width: var(--overlayed-chat-width);
-            }
-        }
-    }
 
-    converse-chats.converse-overlayed  {
-        .chat-head, .box-flyout {
-            border-top-left-radius: var(--chatbox-border-radius);
-            border-top-right-radius: var(--chatbox-border-radius);
-            @media screen and (max-height: $mobile-landscape-height) {
-                border-top-left-radius: 0;
-                border-top-right-radius: 0;
-            }
-            @media screen and (max-width: $mobile-portrait-length) {
-                border-top-left-radius: 0;
-                border-top-right-radius: 0;
+                .box-flyout {
+                    min-width: var(--overlayed-chat-width) !important;
+                    width: var(--overlayed-chat-width);
+                }
             }
         }
 
-        .flyout {
-            bottom: var(--overlayed-chatbox-hover-height);
-        }
-        .box-flyout {
-            height: var(--overlayed-chat-height);
-            min-height: calc(var(--overlayed-chat-height) / 2);
-        }
-        .minimized-chats-flyout .chat-head {
-            cursor: default;
-        }
-        .chat-textarea {
-            max-height: var(--overlayed-max-chat-textarea-height);
-        }
-        .chatbox {
-            .chat-body {
-                height: calc(100% - var(--overlayed-chat-head-height));
+        &.converse-overlayed {
+            display: flex;
+            flex-direction: row-reverse;
+
+            .brand-heading {
+                padding-inline-start: 1em;
+                width: 100%;
             }
-            .chatbox-title {
-                padding: 0.5rem 0.75rem 0 0.75rem;
+
+            .converse-svg-logo {
+                margin-right: 0.1em;
+                height: 1em;
             }
-            .chatbox-title--no-desc {
-                padding: 0.5rem 0.75rem;
+
+            .chat-head,
+            .box-flyout {
+                border-top-left-radius: var(--chatbox-border-radius);
+                border-top-right-radius: var(--chatbox-border-radius);
+                @media screen and (max-height: $mobile-landscape-height) {
+                    border-top-left-radius: 0;
+                    border-top-right-radius: 0;
+                }
+                @media screen and (max-width: $mobile-portrait-length) {
+                    border-top-left-radius: 0;
+                    border-top-right-radius: 0;
+                }
+            }
+
+            .flyout {
+                border: 0;
+                bottom: var(--overlayed-chatbox-hover-height);
+            }
+            .box-flyout {
+                height: var(--overlayed-chat-height);
+                min-height: calc(var(--overlayed-chat-height) / 2);
+            }
+            .minimized-chats-flyout .chat-head {
+                cursor: default;
+            }
+            .chat-textarea {
+                max-height: var(--overlayed-max-chat-textarea-height);
+            }
+            .chatbox {
+                .chat-body {
+                    height: calc(100% - var(--overlayed-chat-head-height));
+                }
+                .chatbox-title {
+                    padding: 0.5rem 0.75rem 0 0.75rem;
+                }
+                .chatbox-title--no-desc {
+                    padding: 0.5rem 0.75rem;
+                }
             }
         }
     }
@@ -78,11 +94,11 @@
 }
 
 .conversejs {
-    converse-chats.converse-embedded,
-    converse-chats.converse-fullscreen  {
+    converse-app-chat.converse-embedded,
+    converse-app-chat.converse-fullscreen {
         .flyout {
             border-radius: 0;
-            border:none;
+            border: none;
             bottom: 0;
         }
 
@@ -94,7 +110,7 @@
         }
     }
 
-    converse-chats.converse-fullscreen  {
+    converse-app-chat.converse-fullscreen {
         &:not(.converse-singleton) {
             .chatbox {
                 @include media-breakpoint-up(md) {
@@ -124,7 +140,7 @@
         }
     }
 
-    converse-chats.converse-embedded {
+    converse-app-chat.converse-embedded {
         .chat-head {
             font-size: var(--font-size-huge);
         }
@@ -147,7 +163,7 @@
 /* ******************* Fullpage styles *************************** */
 
 .conversejs {
-    converse-chats.converse-fullscreen  {
+    converse-app-chat.converse-fullscreen {
         .chatbox-btn {
             font-size: var(--fullpage-chatbox-button-size);
         }
@@ -183,10 +199,9 @@
     }
 }
 
-
 @include media-breakpoint-down(md) {
     .conversejs {
-        converse-chats:not(.converse-embedded)  {
+        converse-app-chat:not(.converse-embedded) {
             > .row {
                 flex-direction: row-reverse;
             }
@@ -208,8 +223,20 @@
             }
         }
 
-        converse-chats.converse-overlayed,
-        converse-chats.converse-fullscreen {
+        converse-app-chat.converse-overlayed,
+        converse-app-chat.converse-fullscreen {
+            .converse-app-chat {
+                .chatbox {
+                    .box-flyout {
+                        left: 0;
+                        bottom: 0;
+                        border-radius: 0;
+                        width: 100vw !important;
+                        height: var(--fullpage-chat-height);
+                    }
+                }
+            }
+
             .chat-head {
                 converse-controlbox-navback {
                     margin: auto 0;

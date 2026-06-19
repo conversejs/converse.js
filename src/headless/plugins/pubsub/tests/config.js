@@ -350,7 +350,7 @@ describe('The pubsub API', function () {
                         <pubsub xmlns="http://jabber.org/protocol/pubsub#owner">
                             <configure node="princely_musings">
                             <x xmlns="jabber:x:data" type="submit">
-                                <field var="FORM_TYPE" type="hidden"><value>http://jabber.org/protocol/pubsub#nodeconfig</value></field>
+                                <field var="FORM_TYPE" type="hidden"><value>http://jabber.org/protocol/pubsub#node_config</value></field>
                                 <field var="pubsub#title"><value/></field>
                                 <field var="pubsub#deliver_notifications"><value>true</value></field>
                                 <field var="pubsub#deliver_payloads"><value>true</value></field>
@@ -565,7 +565,7 @@ describe('The pubsub API', function () {
                         <pubsub xmlns="http://jabber.org/protocol/pubsub#owner">
                             <configure node="princely_musings">
                             <x xmlns="jabber:x:data" type="submit">
-                                <field var="FORM_TYPE" type="hidden"><value>http://jabber.org/protocol/pubsub#nodeconfig</value></field>
+                                <field var="FORM_TYPE" type="hidden"><value>http://jabber.org/protocol/pubsub#node_config</value></field>
                                 <field var="pubsub#access_model"><value>whitelist</value></field>
                             </x>
                             </configure>

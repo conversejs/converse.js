@@ -8,7 +8,7 @@ import { __ } from 'i18n';
 export const VIEW_PLUGINS = [
     'converse-adhoc-views',
     'converse-bookmark-views',
-    'converse-chatboxviews',
+    'converse-app-chat',
     'converse-chatview',
     'converse-controlbox',
     'converse-disco-views',

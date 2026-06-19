@@ -18,6 +18,10 @@ Strophe.Status.RECONNECTING = i + 1;
  * via BOSH or websocket inside a shared worker).
  */
 export class Connection extends Strophe.Connection {
+    /**
+     * @param {string} service - The BOSH or WebSocket service URL.
+     * @param {import('strophe.js/src/types/connection').ConnectionOptions} options
+     */
     constructor(service, options) {
         super(service, options);
         // For new sessions, we need to send out a presence stanza to notify

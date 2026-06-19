@@ -40,13 +40,17 @@ See our [quickstart guide](https://conversejs.org/docs/quickstart/) for more det
 <summary>Click to view screenshots</summary>
 
 ### Overlay Mode
+
 ![Screenshot of Converse in overlay mode](https://conversejs.org/media/screenshots/converse-overlayed.png)
 
 ### Fullpage Mode
+
 ![Screenshot of Converse in full-page mode](https://conversejs.org/media/screenshots/converse-enter-muc.png)
 
 ### Embedded Mode
+
 ![Screenshot of Converse in embedded mode](https://conversejs.org/media/screenshots/converse-prosody.png)
+
 </details>
 
 ## Live Demos
@@ -80,11 +84,11 @@ Comprehensive documentation is available at [conversejs.org/docs](https://conver
 
 Converse adapts to your needs with multiple display options:
 
-| Mode | Description |
-|------|-------------|
+| Mode                   | Description                                                         |
+| ---------------------- | ------------------------------------------------------------------- |
 | **Fullpage** (default) | Functions as a single-page application covering the entire viewport |
-| **Overlay** | Chat boxes appear on top of your website |
-| **Embedded** | Integrates into specific elements in your page's DOM |
+| **Overlay**            | Chat boxes appear on top of your website                            |
+| **Embedded**           | Integrates into specific elements in your page's DOM                |
 
 ## XMPP Protocol Support
 
@@ -93,54 +97,55 @@ Converse implements a wide range of XMPP Extensions (XEPs), making it one of the
 <details>
 <summary><strong>View all supported XEPs (45+)</strong></summary>
 
-| XEP | Name | Notes |
-|-----|------|-------|
-| [RFC-7395](https://tools.ietf.org/html/rfc7395) | XMPP Subprotocol for WebSocket | |
-| [XEP-0004](https://xmpp.org/extensions/xep-0004.html) | Data Forms | |
-| [XEP-0030](https://xmpp.org/extensions/xep-0030.html) | Service Discovery | |
-| [XEP-0045](https://xmpp.org/extensions/xep-0045.html) | Multi-user Chat | |
-| [XEP-0048](https://xmpp.org/extensions/xep-0048.html) | Bookmarks | |
-| [XEP-0050](https://xmpp.org/extensions/xep-0050.html) | Ad-Hoc Commands | |
-| [XEP-0054](https://xmpp.org/extensions/xep-0054.html) | VCard-temp | |
-| [XEP-0059](https://xmpp.org/extensions/xep-0059.html) | Result Set Management | |
-| [XEP-0060](https://xmpp.org/extensions/xep-0060.html) | Publish-Subscribe | Limited support |
-| [XEP-0066](https://xmpp.org/extensions/xep-0066.html) | Out of Band Data | |
-| [XEP-0077](https://xmpp.org/extensions/xep-0077.html) | In-band Registration | |
-| [XEP-0085](https://xmpp.org/extensions/xep-0085.html) | Chat State Notifications | |
-| [XEP-0115](https://xmpp.org/extensions/xep-0115.html) | Entity Capabilities | |
-| [XEP-0124](https://xmpp.org/extensions/xep-0124.html) | BOSH | |
-| [XEP-0144](https://xmpp.org/extensions/xep-0144.html) | Roster Item Exchange | |
-| [XEP-0156](https://xmpp.org/extensions/xep-0156.html) | Discovering Alternative XMPP Connection Methods | |
-| [XEP-0163](https://xmpp.org/extensions/xep-0163.html) | Personal Eventing Protocol | Limited support |
-| [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Receipt | |
-| [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management | |
-| [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping | |
-| [XEP-0203](https://xmpp.org/extensions/xep-0203.html) | Delayed Delivery | |
-| [XEP-0206](https://xmpp.org/extensions/xep-0206.html) | XMPP Over BOSH | |
-| [XEP-0245](https://xmpp.org/extensions/xep-0245.html) | The /me Command | |
-| [XEP-0249](https://xmpp.org/extensions/xep-0249.html) | Direct MUC Invitations | |
-| [XEP-0280](https://xmpp.org/extensions/xep-0280.html) | Message Carbons | |
-| [XEP-0297](https://xmpp.org/extensions/xep-0297.html) | Stanza Forwarding | Limited support |
-| [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | |
-| [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | |
-| [XEP-0316](https://xmpp.org/extensions/xep-0316.html) | MUC Eventing Protocol | Limited support |
-| [XEP-0317](https://xmpp.org/extensions/xep-0317.html) | Hats | Limited support |
-| [XEP-0333](https://xmpp.org/extensions/xep-0333.html) | Chat Markers | Limited support |
-| [XEP-0352](https://xmpp.org/extensions/xep-0352.html) | Client State Indication | |
-| [XEP-0357](https://xmpp.org/extensions/xep-0357.html) | Push Notifications | |
-| [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | |
-| [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | |
-| [XEP-0372](https://xmpp.org/extensions/xep-0372.html) | References | |
-| [XEP-0382](https://xmpp.org/extensions/xep-0382.html) | Spoiler Messages | |
-| [XEP-0384](https://xmpp.org/extensions/xep-0384.html) | OMEMO Encryption | |
-| [XEP-0393](https://xmpp.org/extensions/xep-0393.html) | Message Styling | |
-| [XEP-0422](https://xmpp.org/extensions/xep-0422.html) | Message Fastening | Limited support |
-| [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retractions | |
-| [XEP-0425](https://xmpp.org/extensions/xep-0425.html) | Message Moderation | |
-| [XEP-0437](https://xmpp.org/extensions/xep-0437.html) | Room Activity Indicators | |
-| [XEP-0453](https://xmpp.org/extensions/xep-0453.html) | DOAP Usage in XMPP | |
-| [XEP-0454](https://xmpp.org/extensions/xep-0454.html) | OMEMO Media Sharing | |
-| [XEP-0461](https://xmpp.org/extensions/xep-0461.html) | Message Replies | |
+| XEP                                                   | Name                                            | Notes           |
+| ----------------------------------------------------- | ----------------------------------------------- | --------------- |
+| [RFC-7395](https://tools.ietf.org/html/rfc7395)       | XMPP Subprotocol for WebSocket                  |                 |
+| [XEP-0004](https://xmpp.org/extensions/xep-0004.html) | Data Forms                                      |                 |
+| [XEP-0030](https://xmpp.org/extensions/xep-0030.html) | Service Discovery                               |                 |
+| [XEP-0045](https://xmpp.org/extensions/xep-0045.html) | Multi-user Chat                                 |                 |
+| [XEP-0048](https://xmpp.org/extensions/xep-0048.html) | Bookmarks                                       |                 |
+| [XEP-0050](https://xmpp.org/extensions/xep-0050.html) | Ad-Hoc Commands                                 |                 |
+| [XEP-0054](https://xmpp.org/extensions/xep-0054.html) | VCard-temp                                      |                 |
+| [XEP-0059](https://xmpp.org/extensions/xep-0059.html) | Result Set Management                           |                 |
+| [XEP-0060](https://xmpp.org/extensions/xep-0060.html) | Publish-Subscribe                               | Limited support |
+| [XEP-0066](https://xmpp.org/extensions/xep-0066.html) | Out of Band Data                                |                 |
+| [XEP-0077](https://xmpp.org/extensions/xep-0077.html) | In-band Registration                            |                 |
+| [XEP-0085](https://xmpp.org/extensions/xep-0085.html) | Chat State Notifications                        |                 |
+| [XEP-0115](https://xmpp.org/extensions/xep-0115.html) | Entity Capabilities                             |                 |
+| [XEP-0124](https://xmpp.org/extensions/xep-0124.html) | BOSH                                            |                 |
+| [XEP-0144](https://xmpp.org/extensions/xep-0144.html) | Roster Item Exchange                            |                 |
+| [XEP-0156](https://xmpp.org/extensions/xep-0156.html) | Discovering Alternative XMPP Connection Methods |                 |
+| [XEP-0163](https://xmpp.org/extensions/xep-0163.html) | Personal Eventing Protocol                      | Limited support |
+| [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Receipt                                 |                 |
+| [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management                               |                 |
+| [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping                                       |                 |
+| [XEP-0203](https://xmpp.org/extensions/xep-0203.html) | Delayed Delivery                                |                 |
+| [XEP-0206](https://xmpp.org/extensions/xep-0206.html) | XMPP Over BOSH                                  |                 |
+| [XEP-0245](https://xmpp.org/extensions/xep-0245.html) | The /me Command                                 |                 |
+| [XEP-0249](https://xmpp.org/extensions/xep-0249.html) | Direct MUC Invitations                          |                 |
+| [XEP-0280](https://xmpp.org/extensions/xep-0280.html) | Message Carbons                                 |                 |
+| [XEP-0297](https://xmpp.org/extensions/xep-0297.html) | Stanza Forwarding                               | Limited support |
+| [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction                         |                 |
+| [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management                      |                 |
+| [XEP-0316](https://xmpp.org/extensions/xep-0316.html) | MUC Eventing Protocol                           | Limited support |
+| [XEP-0317](https://xmpp.org/extensions/xep-0317.html) | Hats                                            | Limited support |
+| [XEP-0333](https://xmpp.org/extensions/xep-0333.html) | Chat Markers                                    | Limited support |
+| [XEP-0352](https://xmpp.org/extensions/xep-0352.html) | Client State Indication                         |                 |
+| [XEP-0357](https://xmpp.org/extensions/xep-0357.html) | Push Notifications                              |                 |
+| [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs                    |                 |
+| [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload                                |                 |
+| [XEP-0372](https://xmpp.org/extensions/xep-0372.html) | References                                      |                 |
+| [XEP-0382](https://xmpp.org/extensions/xep-0382.html) | Spoiler Messages                                |                 |
+| [XEP-0384](https://xmpp.org/extensions/xep-0384.html) | OMEMO Encryption                                |                 |
+| [XEP-0393](https://xmpp.org/extensions/xep-0393.html) | Message Styling                                 |                 |
+| [XEP-0422](https://xmpp.org/extensions/xep-0422.html) | Message Fastening                               | Limited support |
+| [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retractions                             |                 |
+| [XEP-0425](https://xmpp.org/extensions/xep-0425.html) | Message Moderation                              |                 |
+| [XEP-0437](https://xmpp.org/extensions/xep-0437.html) | Room Activity Indicators                        |                 |
+| [XEP-0453](https://xmpp.org/extensions/xep-0453.html) | DOAP Usage in XMPP                              |                 |
+| [XEP-0454](https://xmpp.org/extensions/xep-0454.html) | OMEMO Media Sharing                             |                 |
+| [XEP-0461](https://xmpp.org/extensions/xep-0461.html) | Message Replies                                 |                 |
+
 </details>
 
 ## Integration Options
@@ -148,22 +153,59 @@ Converse implements a wide range of XMPP Extensions (XEPs), making it one of the
 Converse integrates with popular platforms and frameworks:
 
 ### XMPP Servers
-| Server | Plugin |
-|--------|--------|
-| [Openfire](https://www.igniterealtime.org/projects/openfire/) | [inverse](https://www.igniterealtime.org/projects/openfire/plugins.jsp) |
-| [Prosody](https://prosody.im/) | [mod_conversejs](https://modules.prosody.im/mod_conversejs.html) |
-| [ejabberd](https://ejabberd.im/) | [mod_conversejs](https://docs.ejabberd.im/admin/configuration/modules/#mod_conversejs) |
+
+| Server                                                        | Plugin                                                                                 |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| [Openfire](https://www.igniterealtime.org/projects/openfire/) | [inverse](https://www.igniterealtime.org/projects/openfire/plugins.jsp)                |
+| [Prosody](https://prosody.im/)                                | [mod_conversejs](https://modules.prosody.im/mod_conversejs.html)                       |
+| [ejabberd](https://ejabberd.im/)                              | [mod_conversejs](https://docs.ejabberd.im/admin/configuration/modules/#mod_conversejs) |
 
 ### Web Frameworks & CMS
-| Platform | Integration |
-|----------|-------------|
-| [Elgg](https://elgg.org) | [plugin](https://elgg.org/plugins/2997196) |
-| [Peertube](https://github.com/JohnXLivingston/peertube-plugin-livechat) | [peertube-plugin-livechat](https://github.com/JohnXLivingston/peertube-plugin-livechat) |
-| [Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp) | [Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp) |
-| [Roundcube](https://roundcube.net) | [roundcube-converse.js-xmpp-plugin](https://github.com/devurandom/roundcube-converse.js-xmpp-plugin) |
-| [Tiki Wiki CMS Groupware](https://tiki.org) | [built-in optional feature](https://doc.tiki.org/XMPP) |
-| [Ubuntu-Touch](https://open-store.io/app/conversejs.luigi311) | [ConverseJS for Ubuntu-Touch](https://open-store.io/app/conversejs.luigi311) |
-| [WordPress](https://wordpress.org) | [ConverseJS Plugin](https://wordpress.org/plugins/conversejs/) |
+
+| Platform                                                                | Integration                                                                                          |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| [Elgg](https://elgg.org)                                                | [plugin](https://elgg.org/plugins/2997196)                                                           |
+| [Peertube](https://github.com/JohnXLivingston/peertube-plugin-livechat) | [peertube-plugin-livechat](https://github.com/JohnXLivingston/peertube-plugin-livechat)              |
+| [Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp)          | [Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp)                                       |
+| [Roundcube](https://roundcube.net)                                      | [roundcube-converse.js-xmpp-plugin](https://github.com/devurandom/roundcube-converse.js-xmpp-plugin) |
+| [Tiki Wiki CMS Groupware](https://tiki.org)                             | [built-in optional feature](https://doc.tiki.org/XMPP)                                               |
+| [Ubuntu-Touch](https://open-store.io/app/conversejs.luigi311)           | [ConverseJS for Ubuntu-Touch](https://open-store.io/app/conversejs.luigi311)                         |
+| [WordPress](https://wordpress.org)                                      | [ConverseJS Plugin](https://wordpress.org/plugins/conversejs/)                                       |
+
+## LLM and GenAI usage
+
+Large Language Models have been and may be used to assist with Converse's development,
+including writing and refactoring code, editing documentation and research.
+
+Converse does not implement its own cryptography. OMEMO end-to-end encryption is
+delegated to [libomemo.js](https://github.com/conversejs/libomemo.js); see that
+project's own [LLM and GenAI usage](https://github.com/conversejs/libomemo.js#llm-and-genai-usage)
+note for how its security-critical code is verified.
+
+Within Converse, correctness is checked independently of any AI. The test suite
+runs in a real browser, and every change, however it was drafted, is reviewed by
+a human maintainer who remains responsible for it, exactly as for any third-party
+contribution.
+
+### Contributing with AI assistance
+
+Using LLMs or coding agents to help write your contribution is allowed. AI is a
+legitimate tool, and we won't reject a patch simply because a model helped write
+it. But the bar is the same as for any other pull request:
+
+- **Understand what you submit.** You are responsible for your contribution. Be
+  able to explain how it works and why it's correct.
+- **Test it.** Your code must build and pass the test suite, and new behaviour
+  should come with tests.
+- **Disclose it.** Note in your pull request that AI tooling was used. This is
+  about honesty and giving reviewers context, not stigma.
+- **No slop.** Unreviewed, untested, auto-generated output thrown over the fence
+  will be closed. Volume is not contribution, and reviewing it costs maintainers
+  real time.
+
+If you're driving Converse with a coding agent, start with
+[`AGENTS.md`](./AGENTS.md), which documents the architecture, conventions and
+build/test workflow the project expects.
 
 ## Support the Project
 

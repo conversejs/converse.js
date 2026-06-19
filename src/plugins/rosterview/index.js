@@ -17,7 +17,7 @@ import 'shared/styles/status.scss';
 import './styles/roster.scss';
 
 converse.plugins.add('converse-rosterview', {
-    dependencies: ['converse-roster', 'converse-modal', 'converse-chatboxviews', 'converse-blocklist'],
+    dependencies: ['converse-roster', 'converse-modal', 'converse-app-chat', 'converse-blocklist'],
 
     initialize() {
         api.settings.extend({

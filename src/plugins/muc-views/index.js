@@ -3,27 +3,27 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
-import {api, converse, constants} from '@converse/headless';
-import '../chatboxviews/index.js';
+import { api, converse, constants } from '@converse/headless';
+import '../app-chat/index.js';
 import './affiliation-form.js';
 import './role-form.js';
 import MUCView from './muc.js';
-import {clearHistory, confirmDirectMUCInvitation, parseMessageForMUCCommands} from './utils.js';
+import { clearHistory, confirmDirectMUCInvitation, parseMessageForMUCCommands } from './utils.js';
 
-const {Strophe} = converse.env;
-const {CHATROOMS_TYPE} = constants;
+const { Strophe } = converse.env;
+const { CHATROOMS_TYPE } = constants;
 
 import './styles/index.scss';
 
 converse.MUC.VIEWS = {
     CONFIG: 'config-form',
-}
+};
 
 converse.plugins.add('converse-muc-views', {
     dependencies: ['converse-modal', 'converse-dragresize', 'converse-controlbox', 'converse-chatview'],
 
     initialize() {
-        const {_converse} = this;
+        const { _converse } = this;
 
         // Configuration values for this plugin
         // ====================================
@@ -47,7 +47,7 @@ converse.plugins.add('converse-muc-views', {
 
         const exports = {
             ChatRoomView: MUCView,
-            MUCView
+            MUCView,
         };
         Object.assign(_converse, exports); // DEPRECATED
         Object.assign(_converse.exports, exports);
@@ -85,5 +85,5 @@ converse.plugins.add('converse-muc-views', {
 
         api.listen.on('parseMessageForCommands', parseMessageForMUCCommands);
         api.listen.on('confirmDirectMUCInvitation', confirmDirectMUCInvitation);
-    }
+    },
 });

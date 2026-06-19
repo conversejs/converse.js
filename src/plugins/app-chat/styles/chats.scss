@@ -1,0 +1,20 @@
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+
+@include media-breakpoint-down(sm) {
+    .conversejs {
+        converse-app-chat {
+            width: 100%;
+        }
+
+        &.converse-fullscreen,
+        &.converse-overlayed {
+            .converse-app-chat {
+                margin: 0 !important;
+                flex-direction: row !important;
+                justify-content: space-between;
+            }
+        }
+    }
+}

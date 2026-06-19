@@ -1,5 +1,9 @@
 # Changelog
 
+## 14.0.0-beta.3 (2026-06-19)
+
+- Bump libomemo.js to version 2.0.1
+
 ## 14.0.0-beta.2 (2026-06-18)
 
 - Remove `client-compress` and use browser APIs

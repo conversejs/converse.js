@@ -1,0 +1,111 @@
+.conversejs {
+    converse-app-social {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+
+        .social-placeholder {
+            margin: auto;
+            text-align: center;
+            opacity: 0.6;
+        }
+    }
+
+    converse-social-feed {
+        background-color: var(--background-color);
+        display: block;
+        height: 100%;
+        overflow-y: auto;
+
+        .social-feed {
+            max-width: 42em;
+            margin: 0 auto;
+            padding: 1em;
+        }
+
+        .social-feed__empty {
+            opacity: 0.6;
+            text-align: center;
+            padding: 1em;
+        }
+    }
+
+    .social-compose {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5em;
+        margin-bottom: 1em;
+
+        .social-compose__textarea {
+            width: 100%;
+            resize: vertical;
+            padding: 0.5em;
+            border: 1px solid var(--foreground-color);
+            border-radius: 0.25em;
+            // Use the same themed colours as the chat textarea so the text
+            // stays legible in every theme (the previous `--background`/
+            // `--text-color` guesses fell back to white, hiding the text in
+            // dark themes like Dracula).
+            color: var(--foreground-color);
+            background-color: var(--background-color);
+            font-family: inherit;
+        }
+
+        .social-compose__toolbar {
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
+
+    converse-social-message {
+        display: block;
+
+        .social-post {
+            padding: 0.75em 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+            &__header {
+                display: flex;
+                align-items: baseline;
+                gap: 0.5em;
+                margin-bottom: 0.25em;
+            }
+
+            &__author {
+                font-weight: bold;
+            }
+
+            &__badge {
+                font-size: 0.85em;
+                opacity: 0.7;
+            }
+
+            &__time {
+                margin-left: auto;
+                font-size: 0.8em;
+                opacity: 0.6;
+            }
+
+            &__action {
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 0 0.25em;
+                color: var(--foreground-color);
+                opacity: 0.5;
+
+                &:hover {
+                    opacity: 1;
+                    color: var(--danger-color);
+                }
+            }
+
+            &__body {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+        }
+    }
+}

@@ -17,6 +17,30 @@ function receive(_converse, stanza) {
     _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 }
 
+/**
+ * Build a headline PEP event carrying a single plain-text microblog post.
+ * @param {string} from - The publisher's bare JID.
+ * @param {string} id - The PubSub item id.
+ * @param {string} body - The post body.
+ */
+function makePostStanza(from, id, body) {
+    return stx`
+        <message xmlns="jabber:client" from="${from}" to="${from}" type="headline">
+          <event xmlns="${PUBSUB_EVENT}">
+            <items node="${MICROBLOG_NODE}">
+              <item id="${id}" publisher="${from}">
+                <entry xmlns="${ATOM}">
+                  <title type="text">${body}</title>
+                  <id>tag:montague.lit,2024-01-01:posts-${id}</id>
+                  <published>2024-01-01T18:30:02Z</published>
+                  <updated>2024-01-01T18:30:02Z</updated>
+                </entry>
+              </item>
+            </items>
+          </event>
+        </message>`;
+}
+
 describe('The microblog plugin', function () {
     it(
         'parses an incoming PEP microblog event into the feed',
@@ -303,6 +327,52 @@ describe('The microblog plugin', function () {
 
             expect(publish).not.toHaveBeenCalled();
             expect(feed.messages.length).toBe(0);
+        }),
+    );
+
+    it(
+        'retracts a post and removes the local copy',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            const feed = await api.microblog.feeds.own();
+
+            receive(_converse, makePostStanza(bare_jid, 'post-1', 'a doomed post'));
+            await u.waitUntil(() => feed.messages.length === 1);
+
+            const retract = vi.spyOn(api.pubsub, 'retract').mockResolvedValue(undefined);
+            await feed.retractPost('post-1');
+
+            expect(retract).toHaveBeenCalledWith(bare_jid, MICROBLOG_NODE, 'post-1');
+            expect(feed.messages.length).toBe(0);
+        }),
+    );
+
+    it(
+        'removes a post when a retraction event arrives',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            const feed = await api.microblog.feeds.own();
+
+            receive(_converse, makePostStanza(bare_jid, 'post-1', 'soon to vanish'));
+            await u.waitUntil(() => feed.messages.length === 1);
+
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${bare_jid}" to="${bare_jid}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${MICROBLOG_NODE}">
+                      <retract id="post-1"/>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            await u.waitUntil(() => feed.messages.length === 0);
         }),
     );
 });

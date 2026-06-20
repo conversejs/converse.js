@@ -42,10 +42,14 @@ export function handleMicroblogEvent(message) {
             if (!isMicroblogNode(node)) continue;
 
             const items = sizzle('> item', items_el);
-            if (!items.length) continue;
+            const retracts = sizzle('> retract', items_el)
+                .map((el) => el.getAttribute('id'))
+                .filter(Boolean);
+            if (!items.length && !retracts.length) continue;
 
             const feed = feeds.getFeed(from, node, from === bare_jid);
-            feed?.addItems(items);
+            if (items.length) feed?.addItems(items);
+            if (retracts.length) feed?.removeItems(retracts);
         }
     } catch (e) {
         log.error(e);

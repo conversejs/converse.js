@@ -15,7 +15,7 @@ import PubSubMessage from './message.js';
  * persists itself. Storage is supplied via the `id` construction option so it is
  * available before the constructor's hydration step runs.
  *
- * @extends {Collection}
+ * @extends {Collection<PubSubMessage>}
  */
 class PubSubMessages extends Collection {
     get model() {
@@ -33,7 +33,13 @@ class PubSubMessages extends Collection {
      */
     initialize(_models, options = {}) {
         // Show the newest posts first.
-        this.comparator = (a, b) => (b.get('time') || '').localeCompare(a.get('time') || '');
+        this.comparator =
+            /**
+             * @param {PubSubMessage} a
+             * @param {PubSubMessage} b
+             */
+            (a, b) => (b.get('time') || '').localeCompare(a.get('time') || '');
+
         if (options.id) {
             this.storage = createStore(options.id);
         }

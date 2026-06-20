@@ -44,6 +44,18 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
         max_items?: number;
     }): Promise<void>;
     /**
+     * Remove posts from the feed by id, e.g. in response to a retraction event.
+     * @param {string[]} ids
+     */
+    removeItems(ids: string[]): void;
+    /**
+     * Retract (delete) one of our own posts: remove it from the node and drop
+     * the locally-cached copy.
+     * @param {string} id - The PubSub item id of the post
+     * @returns {Promise<void>}
+     */
+    retractPost(id: string): Promise<void>;
+    /**
      * Publish a new plain-text post to this feed's node.
      * @param {string} body
      * @returns {Promise<void>}

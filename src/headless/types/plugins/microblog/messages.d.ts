@@ -8,10 +8,10 @@ export default PubSubMessages;
  * persists itself. Storage is supplied via the `id` construction option so it is
  * available before the constructor's hydration step runs.
  *
- * @extends {Collection}
+ * @extends {Collection<PubSubMessage>}
  */
-declare class PubSubMessages extends Collection<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>> {
-    constructor(models?: import("@converse/skeletor").ModelAttributes | import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes> | import("@converse/skeletor").ModelAttributes[] | import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[], options?: import("@converse/skeletor").CollectionOptions<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>>);
+declare class PubSubMessages extends Collection<PubSubMessage> {
+    constructor(models?: import("@converse/skeletor").ModelAttributes | import("@converse/skeletor").ModelAttributes[] | PubSubMessage | PubSubMessage[], options?: import("@converse/skeletor").CollectionOptions<PubSubMessage>);
     get model(): typeof PubSubMessage;
     /**
      * @param {PubSubMessage[]} [_models]
@@ -22,6 +22,6 @@ declare class PubSubMessages extends Collection<import("@converse/skeletor").Mod
         id?: string;
     }): void;
 }
-import { Collection } from '@converse/skeletor';
 import PubSubMessage from './message.js';
+import { Collection } from '@converse/skeletor';
 //# sourceMappingURL=messages.d.ts.map

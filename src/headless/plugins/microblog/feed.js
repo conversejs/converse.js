@@ -94,6 +94,25 @@ class PubSubFeed extends Model {
     }
 
     /**
+     * Remove posts from the feed by id, e.g. in response to a retraction event.
+     * @param {string[]} ids
+     */
+    removeItems(ids) {
+        ids.forEach((id) => this.messages.get(id)?.destroy());
+    }
+
+    /**
+     * Retract (delete) one of our own posts: remove it from the node and drop
+     * the locally-cached copy.
+     * @param {string} id - The PubSub item id of the post
+     * @returns {Promise<void>}
+     */
+    async retractPost(id) {
+        await api.pubsub.retract(this.get('jid'), this.get('node'), id);
+        this.messages.get(id)?.destroy();
+    }
+
+    /**
      * Publish a new plain-text post to this feed's node.
      * @param {string} body
      * @returns {Promise<void>}

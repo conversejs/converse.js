@@ -9,6 +9,7 @@ export const VIEW_PLUGINS = [
     'converse-adhoc-views',
     'converse-bookmark-views',
     'converse-app-chat',
+    'converse-app-social',
     'converse-chatview',
     'converse-controlbox',
     'converse-disco-views',

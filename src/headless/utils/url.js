@@ -100,6 +100,14 @@ export function isVideoURL(url, headers) {
 
 /**
  * @param {string|URL} url
+ * @returns {boolean}
+ */
+export function isWebPURL(url) {
+    return checkFileTypes([".webp"], url);
+}
+
+/**
+ * @param {string|URL} url
  * @param {Headers} [headers]
  * @returns {boolean}
  */
@@ -213,6 +221,7 @@ export async function getMetadataForURL(o) {
         is_audio: isAudioURL(o.url, headers),
         is_image: isImageURL(o.url, headers),
         is_video: isVideoURL(o.url, headers),
+        is_webp: isWebPURL(o.url),
         is_encrypted: isEncryptedFileURL(o.url),
     };
 }

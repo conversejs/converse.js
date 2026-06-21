@@ -19,6 +19,14 @@ import { getStorageKeys } from './utils.js';
 const { Strophe, stx } = converse.env;
 
 /**
+ * The `<pinned/>` extension element (XEP-0469), serialized as a string.
+ * Wrapped in a function so the namespace (registered in the plugin) is only
+ * read at call time, not at module load.
+ * @returns {string}
+ */
+const getPinnedExtension = () => `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`;
+
+/**
  * @extends {Collection<Bookmark>}
  */
 class Bookmarks extends Collection {
@@ -367,11 +375,31 @@ class Bookmarks extends Collection {
      */
     pinBookmark(bookmark) {
         if (bookmark.get('pinned')) return Promise.resolve();
-        const extensions = [
-            ...(bookmark.get('extensions') ?? []),
-            `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`,
-        ];
+        const extensions = [...(bookmark.get('extensions') ?? []), getPinnedExtension()];
         return api.bookmarks.set({ jid: bookmark.get('jid'), extensions });
+    }
+
+    /**
+     * Pin a room to the top of the lists (XEP-0469). Pinning is an extension on
+     * a bookmark, so if the room isn't bookmarked yet we bookmark it first
+     * (with autojoin enabled, so the pin survives a reload) and include the
+     * `<pinned/>` extension in the same publish.
+     * @param {string} jid
+     * @returns {Promise<void|Element>}
+     */
+    pinRoom(jid) {
+        const bookmark = this.get(jid);
+        if (bookmark) return this.pinBookmark(bookmark);
+
+        const room = _converse.state.chatboxes.get(jid);
+        return api.bookmarks.set({
+            jid,
+            name: room?.get('name'),
+            nick: room?.get('nick'),
+            password: room?.get('password'),
+            autojoin: true,
+            extensions: [getPinnedExtension()],
+        });
     }
 
     /**

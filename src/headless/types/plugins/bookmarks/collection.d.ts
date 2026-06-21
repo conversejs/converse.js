@@ -90,6 +90,15 @@ declare class Bookmarks extends Collection<Bookmark> {
      */
     pinBookmark(bookmark: Bookmark): Promise<void | Element>;
     /**
+     * Pin a room to the top of the lists (XEP-0469). Pinning is an extension on
+     * a bookmark, so if the room isn't bookmarked yet we bookmark it first
+     * (with autojoin enabled, so the pin survives a reload) and include the
+     * `<pinned/>` extension in the same publish.
+     * @param {string} jid
+     * @returns {Promise<void|Element>}
+     */
+    pinRoom(jid: string): Promise<void | Element>;
+    /**
      * Unpin a bookmark (XEP-0469) by removing its `<pinned/>` extension.
      * @param {Bookmark} bookmark
      * @returns {Promise<void|Element>}

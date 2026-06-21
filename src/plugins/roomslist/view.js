@@ -92,11 +92,7 @@ export class RoomsList extends CustomElement {
         ev.preventDefault();
         const target = /** @type {HTMLElement} */ (ev.currentTarget);
         const jid = target.getAttribute('data-room-jid');
-        const { bookmarks } = _converse.state;
-        bookmarks
-            .where({ jid })
-            .forEach(/** @param {import('@converse/headless').Bookmark} b */ (b) =>
-                bookmarks.pinBookmark(b));
+        _converse.state.bookmarks.pinRoom(jid);
     }
 
     /** @param {Event} ev */

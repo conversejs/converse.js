@@ -1,9 +1,28 @@
+import { Stanza } from 'strophe.js';
 import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 
-const { u } = converse.env;
+const { Strophe, u } = converse.env;
+
+/**
+ * Whether a serialized extension string is the XEP-0469 `<pinned/>` element.
+ * Parses and compares the element's local name and namespace, so it's robust to
+ * attribute order, whitespace, quoting and namespace-prefix differences — and
+ * isn't fooled by e.g. `<pinnedfoo/>` or a nested `<pinned/>` inside another
+ * extension. Unparseable strings are treated as "not pinned" (and preserved).
+ * @param {string} e
+ * @returns {boolean}
+ */
+export function isPinnedExtension(e) {
+    try {
+        const el = Stanza.toElement(e);
+        return el.localName === 'pinned' && el.namespaceURI === Strophe.NS.BOOKMARKS_PINNING;
+    } catch {
+        return false;
+    }
+}
 
 /**
  * @returns {import('shared/types').StorageKeys}

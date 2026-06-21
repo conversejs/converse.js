@@ -100,10 +100,7 @@ export class RoomsList extends CustomElement {
         ev.preventDefault();
         const target = /** @type {HTMLElement} */ (ev.currentTarget);
         const jid = target.getAttribute('data-room-jid');
-        const { bookmarks } = _converse.state;
-        bookmarks
-            .where({ jid })
-            .forEach((b) => bookmarks.unpinBookmark(b));
+        _converse.state.bookmarks.unpinRoom(jid);
     }
 
     /** @param {Event} [ev] */

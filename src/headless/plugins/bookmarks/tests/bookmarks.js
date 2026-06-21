@@ -714,7 +714,7 @@ describe('A bookmark', function () {
     );
 
     it(
-        'drops malformed extensions instead of breaking the publish',
+        'normalizes extensions when publishing: drops malformed, dedups <pinned/>, preserves unknown',
         mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
@@ -722,26 +722,30 @@ describe('A bookmark', function () {
             const muc_jid = 'theplay@conference.shakespeare.lit';
             const { state } = _converse;
 
-            // A bookmark carrying a malformed extension alongside a valid one.
-            state.bookmarks.create({
+            // Already pinned, plus a malformed extension and an unrelated (unknown) one.
+            const bookmark = state.bookmarks.create({
                 jid: muc_jid,
                 autojoin: true,
                 name: 'The Play',
                 nick: 'romeo',
-                extensions: ['<not valid xml', `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`],
+                extensions: [
+                    '<not valid xml',
+                    '<note xmlns="urn:example:note"/>',
+                    `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`,
+                ],
             });
 
             await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             await u.waitUntil(() => state.chatboxes.length === 1);
+            expect(bookmark.get('pinned')).toBe(true);
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-            const bookmark = state.bookmarks.findWhere({ jid: muc_jid });
 
-            // Serializing/publishing must not throw: the malformed extension is
-            // dropped and the valid <pinned/> extension is preserved. (We don't
-            // await the publish itself, since the mock server never answers the
-            // IQ; we only care that the stanza was built and sent.)
-            state.bookmarks.sendBookmarkStanza(bookmark).catch(() => {});
+            // Re-pinning must still publish (self-healing if the server diverged), and the
+            // published <extensions> must drop the malformed entry, keep exactly one
+            // <pinned/> (no duplicate) and preserve the unknown extension. (We don't await
+            // the publish, since the mock server never answers the IQ.)
+            state.bookmarks.pinBookmark(bookmark).catch(() => {});
 
             const sent_stanza = await u.waitUntil(() =>
                 IQ_stanzas.filter(
@@ -749,11 +753,49 @@ describe('A bookmark', function () {
                 ).pop()
             );
 
-            const extensions_els = sizzle('extensions', sent_stanza);
-            expect(extensions_els.length).toBe(1);
-            expect(extensions_els[0].children.length).toBe(1);
-            expect(extensions_els[0].children[0].tagName).toBe('pinned');
-            expect(extensions_els[0].children[0].namespaceURI).toBe(Strophe.NS.BOOKMARKS_PINNING);
+            const children = Array.from(sizzle('extensions', sent_stanza)[0].children);
+            expect(children.length).toBe(2); // malformed dropped
+            expect(children.filter((c) => c.namespaceURI === Strophe.NS.BOOKMARKS_PINNING).length).toBe(1); // single <pinned/>
+            expect(children.filter((c) => c.namespaceURI === 'urn:example:note').length).toBe(1); // unknown preserved
+        }),
+    );
+
+    it(
+        'derives pinned-ness by element identity, not substring matching',
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const { state } = _converse;
+            const ns = Strophe.NS.BOOKMARKS_PINNING;
+
+            // A lookalike the old substring check would have mis-flagged as pinned.
+            const lookalike = state.bookmarks.create({
+                jid: 'a@conference.example',
+                name: 'A',
+                autojoin: false,
+                extensions: [`<pinnedfoo xmlns="${ns}"/>`],
+            });
+            expect(lookalike.get('pinned')).toBe(false);
+
+            // A real <pinned/> with reordered/extra attributes, single quotes and
+            // an explicit close tag must still count as pinned.
+            const pinned = state.bookmarks.create({
+                jid: 'b@conference.example',
+                name: 'B',
+                autojoin: false,
+                extensions: [`<pinned foo='bar' xmlns="${ns}"></pinned>`],
+            });
+            expect(pinned.get('pinned')).toBe(true);
+
+            // A <pinned/> nested inside another extension must not count.
+            const nested = state.bookmarks.create({
+                jid: 'c@conference.example',
+                name: 'C',
+                autojoin: false,
+                extensions: [`<wrap xmlns="urn:example:wrap"><pinned xmlns="${ns}"/></wrap>`],
+            });
+            expect(nested.get('pinned')).toBe(false);
         }),
     );
 });

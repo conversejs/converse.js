@@ -14,7 +14,7 @@ import log from '@converse/log';
 import { initStorage } from '../../utils/storage.js';
 import { parseStanzaForBookmarks } from './parsers.js';
 import '../../plugins/muc/index.js';
-import { getStorageKeys } from './utils.js';
+import { getStorageKeys, isPinnedExtension } from './utils.js';
 
 const { Strophe, stx } = converse.env;
 
@@ -25,6 +25,14 @@ const { Strophe, stx } = converse.env;
  * @returns {string}
  */
 const getPinnedExtension = () => `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`;
+
+/**
+ * Returns a copy of an extensions list with any XEP-0469 `<pinned/>` element(s)
+ * removed. Other (unknown) extensions are kept, as XEP-0402 requires.
+ * @param {string[]} [extensions]
+ * @returns {string[]}
+ */
+const withoutPinnedExtension = (extensions) => (extensions ?? []).filter((e) => !isPinnedExtension(e));
 
 /**
  * @extends {Collection<Bookmark>}
@@ -367,15 +375,18 @@ class Bookmarks extends Collection {
     }
 
     /**
-     * Pin a bookmark to the top of the lists (XEP-0469) by adding a `<pinned/>`
-     * element to its extensions. The `pinned` attribute is derived from the
-     * extensions by {@link Bookmark}, so we only need to update the latter.
+     * Pin a bookmark to the top of the lists (XEP-0469) by ensuring exactly one
+     * `<pinned/>` element is present in its extensions. We always (re)publish,
+     * even when the bookmark already looks pinned locally: the operation is
+     * idempotent (any existing `<pinned/>` is stripped before re-adding a single
+     * one, so it can't accumulate duplicates) and self-healing if our local
+     * state and the server's have diverged. The `pinned` attribute is derived
+     * from the extensions by {@link Bookmark}.
      * @param {Bookmark} bookmark
      * @returns {Promise<void|Element>}
      */
     pinBookmark(bookmark) {
-        if (bookmark.get('pinned')) return Promise.resolve();
-        const extensions = [...(bookmark.get('extensions') ?? []), getPinnedExtension()];
+        const extensions = [...withoutPinnedExtension(bookmark.get('extensions')), getPinnedExtension()];
         return api.bookmarks.set({ jid: bookmark.get('jid'), extensions });
     }
 
@@ -403,15 +414,24 @@ class Bookmarks extends Collection {
     }
 
     /**
+     * Unpin a room by its JID (XEP-0469). A no-op if the room isn't bookmarked
+     * (you can only unpin something that was pinned, which requires a bookmark).
+     * @param {string} jid
+     * @returns {Promise<void|Element>|void}
+     */
+    unpinRoom(jid) {
+        const bookmark = this.get(jid);
+        if (bookmark) return this.unpinBookmark(bookmark);
+    }
+
+    /**
      * Unpin a bookmark (XEP-0469) by removing its `<pinned/>` extension.
+     * Idempotent and self-healing for the same reasons as {@link pinBookmark}.
      * @param {Bookmark} bookmark
      * @returns {Promise<void|Element>}
      */
     unpinBookmark(bookmark) {
-        const ns = Strophe.NS.BOOKMARKS_PINNING;
-        const extensions = (bookmark.get('extensions') ?? []).filter(
-            /** @param {string} e */ (e) => !(e.includes('<pinned') && e.includes(ns)),
-        );
+        const extensions = withoutPinnedExtension(bookmark.get('extensions'));
         return api.bookmarks.set({ jid: bookmark.get('jid'), extensions });
     }
 }

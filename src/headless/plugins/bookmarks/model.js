@@ -1,5 +1,6 @@
 import { Model } from '@converse/skeletor';
 import converse from '../../shared/api/public.js';
+import { isPinnedExtension } from './utils.js';
 
 const { Strophe } = converse.env;
 
@@ -18,12 +19,7 @@ class Bookmark extends Model {
     }
 
     updatePinnedState() {
-        const ns = Strophe.NS.BOOKMARKS_PINNING;
-        const pinned =
-            this.get('extensions')?.some(
-                /** @param {string} e */ (e) => e.includes('<pinned') && e.includes(ns)
-            ) || false;
-        this.set('pinned', pinned);
+        this.set('pinned', this.get('extensions')?.some(isPinnedExtension) || false);
     }
 
     getDisplayName() {

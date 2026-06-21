@@ -13,6 +13,7 @@ declare const _default: {
     isGIFURL(url: string | URL): boolean;
     isAudioURL(url: string | URL, headers?: Headers): boolean;
     isVideoURL(url: string | URL, headers?: Headers): boolean;
+    isWebPURL(url: string | URL): boolean;
     isImageURL(url: string | URL, headers?: Headers): boolean;
     isEncryptedFileURL(url: string | URL): boolean;
     withinString(string: string, callback: Function, options?: import("headless/types/utils/types.js").ProcessStringOptions): string;
@@ -126,6 +127,7 @@ declare const _default: {
         isGIFURL(url: string | URL): boolean;
         isAudioURL(url: string | URL, headers?: Headers): boolean;
         isVideoURL(url: string | URL, headers?: Headers): boolean;
+        isWebPURL(url: string | URL): boolean;
         isImageURL(url: string | URL, headers?: Headers): boolean;
         isEncryptedFileURL(url: string | URL): boolean;
         withinString(string: string, callback: Function, options?: import("headless/types/utils/types.js").ProcessStringOptions): string;

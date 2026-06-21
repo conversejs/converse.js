@@ -87,4 +87,38 @@ describe("The bookmarks pin list", function () {
             expect(bookmarks_pin_list.querySelectorAll(".open-room").length).toBe(1);
             expect(main_list.querySelectorAll(".open-room").length).toBe(0);
         }));
+
+    it("bookmarks and pins a room that was not bookmarked yet",
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            const { api, state } = _converse;
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+            await mock.openControlBox(_converse);
+
+            const bookmarks_pin_list = document.querySelector('converse-pinned-bookmarks');
+            const main_list = document.querySelector('converse-rooms-list');
+
+            const muc_jid = 'lounge@montague.lit';
+            // Open a room *without* bookmarking it.
+            api.rooms.open(muc_jid, { nick: 'romeo' });
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
+
+            // It shows in the regular rooms list, not the pinned list, and has
+            // no bookmark yet.
+            await u.waitUntil(() => main_list.querySelectorAll(".open-room").length === 1);
+            expect(bookmarks_pin_list.querySelectorAll(".open-room").length).toBe(0);
+            expect(state.bookmarks.get(muc_jid)).toBeUndefined();
+
+            // Pinning it should bookmark it first, then pin it.
+            main_list.querySelector('.pin-room').click();
+
+            await u.waitUntil(() => bookmarks_pin_list.querySelectorAll(".open-room").length === 1);
+            expect(bookmarks_pin_list.querySelectorAll(".open-room").length).toBe(1);
+            expect(main_list.querySelectorAll(".open-room").length).toBe(0);
+
+            const bookmark = state.bookmarks.get(muc_jid);
+            expect(bookmark).toBeTruthy();
+            expect(bookmark.get('pinned')).toBe(true);
+            expect(bookmark.get('autojoin')).toBe(true);
+        }));
 });

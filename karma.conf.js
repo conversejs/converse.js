@@ -49,6 +49,7 @@ export default function (config) {
             { pattern: 'src/plugins/controlbox/tests/*.js', type: 'module' },
             { pattern: 'src/plugins/disco-views/tests/*.js', type: 'module' },
             { pattern: 'src/plugins/headlines-view/tests/*.js', type: 'module' },
+            { pattern: 'src/plugins/jingle/tests/*.js', type: 'module' },
             { pattern: 'src/plugins/mam-views/tests/*.js', type: 'module' },
             { pattern: 'src/plugins/minimize/tests/*.js', type: 'module' },
             { pattern: 'src/plugins/muc-views/tests/*.js', type: 'module' },

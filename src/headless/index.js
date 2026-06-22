@@ -25,6 +25,7 @@ import './plugins/chatboxes/index.js';
 import './plugins/disco/index.js'; // XEP-0030 Service discovery
 import './plugins/adhoc/index.js'; // XEP-0050 Ad Hoc Commands
 import './plugins/headlines/index.js'; // Support for headline messages
+export { Call, Calls } from './plugins/jingle/index.js'; // XEP-0166 Jingle (RTP sessions)
 export { Device, Devices, DeviceList, DeviceLists } from './plugins/omemo/index.js'; // Support for headline messages
 
 // XEP-0313 Message Archive Management
@@ -48,7 +49,8 @@ export { VCard, VCards } from './plugins/vcard/index.js'; // XEP-0054 VCard-temp
 
 import * as omemo_constants from './plugins/omemo/constants.js';
 import * as muc_constants from './plugins/muc/constants.js';
-const constants = Object.assign({}, shared_constants, muc_constants, omemo_constants);
+import * as jingle_constants from './plugins/jingle/constants.js';
+const constants = Object.assign({}, shared_constants, muc_constants, omemo_constants, jingle_constants);
 
 Object.assign(_converse.constants, constants);
 

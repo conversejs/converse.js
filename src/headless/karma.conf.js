@@ -27,6 +27,7 @@ export default function (config) {
             { pattern: 'src/headless/plugins/chat/tests/*.js', type: 'module' },
             { pattern: 'src/headless/plugins/disco/tests/*.js', type: 'module' },
             { pattern: 'src/headless/plugins/emoji/tests/*.js', type: 'module' },
+            { pattern: 'src/headless/plugins/jingle/tests/*.js', type: 'module' },
             { pattern: 'src/headless/plugins/mam/tests/*.js', type: 'module' },
             { pattern: 'src/headless/plugins/muc/tests/*.js', type: 'module' },
             { pattern: 'src/headless/plugins/ping/tests/*.js', type: 'module' },

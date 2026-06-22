@@ -19,6 +19,7 @@
 - #4041: fix: strip trailing slashes from `assets_path` to prevent double-slash asset URLs
 - #4076: fix(omemo): don't send encrypted MUC messages to banned (outcast) or non-affiliated occupants
 - feat: add support for OMEMO 2 (`urn:xmpp:omemo:2`), using Stanza Content Encryption (XEP-0420)
+- feat: 1:1 audio calls over Jingle ([XEP-0167](https://xmpp.org/extensions/xep-0167.html)), set up with Jingle Message Initiation ([XEP-0353](https://xmpp.org/extensions/xep-0353.html)) and STUN/TURN discovery via [XEP-0215](https://xmpp.org/extensions/xep-0215.html). Adds the `call_ice_servers` setting and enables the toolbar `call` button by default.
 - fix: `isTrustedIdentity` in OMEMO store wasn't properly loading the identity
 - fix: broadcast presence when the chat status (`show`) is cleared
 - fix: the idle status flag could never be cleared, leaving stale idle presence after the user became active again

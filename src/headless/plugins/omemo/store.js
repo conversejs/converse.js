@@ -458,23 +458,49 @@ class OMEMOStore extends Model {
         this.storeSignedPreKeyV2(signed_prekey_v2);
     }
 
+    /**
+     * Self-heal a partially-provisioned store before its bundle is published.
+     *
+     * A {@link OMEMOStore#generateBundle} interrupted after persisting the
+     * device_id and identity key (e.g. the tab is closed while the 100 prekeys
+     * are still being generated) leaves a store with a device_id but missing
+     * its signed prekeys and/or one-time prekeys.
+     *
+     * This backfills whatever key material is missing, reusing the existing
+     * identity key and device_id so the fingerprint stays unchanged.
+     * It also subsumes the omemo:2 migration for stores created before omemo:2
+     * support.
+     */
+    async ensureProvisioned() {
+        await this.ensureV2SignedPreKey();
+        const { KeyHelper } = await getCrypto();
+        if (!this.get('signed_prekey')) {
+            log.warn('OMEMO store is missing its legacy signed prekey; regenerating it');
+            const spk = await KeyHelper.generateSignedPreKey(this.getIdentityKeyPair(), 0, Strophe.NS.OMEMO);
+            this.storeSignedPreKey(spk);
+        }
+        if (Object.keys(this.getPreKeys()).length === 0) {
+            log.warn('OMEMO store has no prekeys (interrupted provisioning?); regenerating them');
+            await this.generatePreKeys();
+        }
+    }
+
     fetchSession() {
         if (this.#setup_promise === undefined) {
             this.#setup_promise = new Promise((resolve, reject) => {
                 this.fetch({
                     success: () => {
-                        if (!this.get('device_id')) {
+                        if (!this.get('device_id') || !this.get('identity_keypair')) {
+                            // No store yet, or a generateBundle() interrupted before
+                            // the identity key was persisted. (Re)generate a complete
+                            // bundle; any half-published device_id is left as an orphan.
                             this.generateBundle().then(resolve).catch(reject);
                         } else {
-                            // Existing store: backfill omemo:2 key material for
-                            // stores created before omemo:2 support. A migration
-                            // failure must not break legacy OMEMO, so resolve
-                            // regardless (we simply remain legacy-only until the
-                            // next successful attempt).
-                            this.ensureV2SignedPreKey()
+                            // Existing store: backfill any missing key material.
+                            this.ensureProvisioned()
                                 .then(resolve)
                                 .catch((e) => {
-                                    log.error('Could not migrate OMEMO store to omemo:2');
+                                    log.error('Could not repair/migrate the OMEMO store');
                                     log.error(e);
                                     resolve();
                                 });

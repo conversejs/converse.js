@@ -21,10 +21,10 @@ export function parseEncryptedMessage(stanza: Element, attrs: MUCMessageAttribut
 /**
  * Given an XML element representing a legacy OMEMO bundle, parse it
  * and return a map.
- * @param {Element} bundle_el
- * @returns {import('./types').Bundle}
+ * @param {Element} [bundle_el]
+ * @returns {?import('./types').Bundle} `null` if no bundle element was given.
  */
-export function parseBundle(bundle_el: Element): import("./types").Bundle;
+export function parseBundle(bundle_el?: Element): import("./types").Bundle | null;
 /**
  * Given an XML element representing an OMEMO 2 bundle, parse it
  * and return a map using the same internal format as the legacy bundle.
@@ -32,10 +32,10 @@ export function parseBundle(bundle_el: Element): import("./types").Bundle;
  * All key values are base64-encoded 32-byte raw Curve25519/Ed25519 bytes
  * (the leading 0x05 byte is absent for v2).
  *
- * @param {Element} bundle_el
- * @returns {import('./types').Bundle}
+ * @param {Element} [bundle_el]
+ * @returns {?import('./types').Bundle} `null` if no bundle element was given.
  */
-export function parseBundleV2(bundle_el: Element): import("./types").Bundle;
+export function parseBundleV2(bundle_el?: Element): import("./types").Bundle | null;
 export type MessageAttributes = import("../../shared/types").MessageAttributes;
 export type MUCMessageAttributes = import("../../plugins/muc/types").MUCMessageAttributes;
 export type MUCMessageAttrsWithEncryption = import("./types").MUCMessageAttrsWithEncryption;

@@ -593,6 +593,44 @@ describe('OMEMO 2 bundle parsing', function () {
     );
 });
 
+describe('OMEMO 2 store self-healing', function () {
+    it(
+        'backfills missing prekeys/signed-prekeys without changing the device id or identity key',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            await mock.initializedOMEMO(_converse);
+            const store = _converse.state.omemo_store;
+            const device_id = store.get('device_id');
+            const identity_keypair = store.get('identity_keypair');
+
+            // Simulate a generateBundle() interrupted after the device_id and
+            // identity key were persisted but before the prekeys (e.g. the tab
+            // was closed mid key-generation). Previously publishBundle() then
+            // threw on the absent prekeys and the device never recovered.
+            store.unset('prekeys');
+            store.unset('signed_prekey');
+            store.unset('signed_prekey_omemo2');
+            expect(Object.keys(store.getPreKeys()).length).toBe(0);
+
+            await store.ensureProvisioned();
+
+            // Key material is restored, and the device id + identity (fingerprint)
+            // are reused so trusted sessions and the published device id survive.
+            expect(store.get('device_id')).toBe(device_id);
+            expect(store.get('identity_keypair')).toEqual(identity_keypair);
+            expect(Object.keys(store.getPreKeys()).length).toBe(_converse.NUM_PREKEYS);
+            expect(store.get('signed_prekey')).toBeTruthy();
+            expect(store.get('signed_prekey_omemo2')).toBeTruthy();
+
+            // A complete store is left untouched (ensureProvisioned is a no-op).
+            const prekeys = store.get('prekeys');
+            const spk = store.get('signed_prekey');
+            await store.ensureProvisioned();
+            expect(store.get('prekeys')).toBe(prekeys);
+            expect(store.get('signed_prekey')).toBe(spk);
+        }),
+    );
+});
+
 describe('OMEMO 2 sending', function () {
     it(
         "fetches a contact's v2 devicelist on send and encrypts via omemo:2",

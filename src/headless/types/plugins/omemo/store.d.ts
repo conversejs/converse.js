@@ -147,6 +147,20 @@ declare class OMEMOStore extends Model<import("./types").OMEMOStoreAttributes> {
      * initOMEMO, which runs right after the session is restored.
      */
     ensureV2SignedPreKey(): Promise<void>;
+    /**
+     * Self-heal a partially-provisioned store before its bundle is published.
+     *
+     * A {@link OMEMOStore#generateBundle} interrupted after persisting the
+     * device_id and identity key (e.g. the tab is closed while the 100 prekeys
+     * are still being generated) leaves a store with a device_id but missing
+     * its signed prekeys and/or one-time prekeys.
+     *
+     * This backfills whatever key material is missing, reusing the existing
+     * identity key and device_id so the fingerprint stays unchanged.
+     * It also subsumes the omemo:2 migration for stores created before omemo:2
+     * support.
+     */
+    ensureProvisioned(): Promise<void>;
     fetchSession(): Promise<void>;
     #private;
 }

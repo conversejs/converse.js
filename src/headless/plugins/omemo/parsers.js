@@ -517,10 +517,11 @@ export async function parseEncryptedMessage(stanza, attrs, chatbox) {
 /**
  * Given an XML element representing a legacy OMEMO bundle, parse it
  * and return a map.
- * @param {Element} bundle_el
- * @returns {import('./types').Bundle}
+ * @param {Element} [bundle_el]
+ * @returns {?import('./types').Bundle} `null` if no bundle element was given.
  */
 export function parseBundle(bundle_el) {
+    if (!bundle_el) return null;
     const signed_prekey_public_el = bundle_el.querySelector('signedPreKeyPublic');
     const signed_prekey_signature_el = bundle_el.querySelector('signedPreKeySignature');
     const prekeys = sizzle(`prekeys > preKeyPublic`, bundle_el).map(
@@ -547,10 +548,11 @@ export function parseBundle(bundle_el) {
  * All key values are base64-encoded 32-byte raw Curve25519/Ed25519 bytes
  * (the leading 0x05 byte is absent for v2).
  *
- * @param {Element} bundle_el
- * @returns {import('./types').Bundle}
+ * @param {Element} [bundle_el]
+ * @returns {?import('./types').Bundle} `null` if no bundle element was given.
  */
 export function parseBundleV2(bundle_el) {
+    if (!bundle_el) return null;
     const spk_el = bundle_el.querySelector('spk');
     const prekeys = sizzle('prekeys > pk', bundle_el).map(
         /** @param {Element} el */ (el) => ({

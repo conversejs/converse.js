@@ -576,6 +576,21 @@ describe('OMEMO 2 bundle parsing', function () {
             expect(bundle.prekeys[2]).toEqual({ id: 3, key: btoa('prekey-3') });
         }),
     );
+
+    it(
+        'returns null instead of throwing when no bundle element is present',
+        mock.initConverse(converse, [], {}, function (_converse) {
+            // A stale/orphaned device with no published bundle makes the server
+            // answer the fetch with an empty result, so parseBundle*/V2 can be
+            // handed `undefined`. They must fail soft (return null) so the caller
+            // skips just that one device rather than crashing the whole send with
+            // "Cannot read properties of undefined (reading 'querySelector')".
+            expect(u.omemo.parseBundleV2(undefined)).toBe(null);
+            expect(u.omemo.parseBundleV2(null)).toBe(null);
+            expect(u.omemo.parseBundle(undefined)).toBe(null);
+            expect(u.omemo.parseBundle(null)).toBe(null);
+        }),
+    );
 });
 
 describe('OMEMO 2 sending', function () {

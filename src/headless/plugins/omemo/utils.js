@@ -122,13 +122,10 @@ async function updateBundleFromStanza(stanza) {
     const devicelist = await api.omemo.devicelists.get(jid, true, version);
     const device = devicelist.devices.get(device_id) || devicelist.devices.create({ 'id': device_id, jid });
 
-    if (version === Strophe.NS.OMEMO2) {
-        const bundle = u.omemo.parseBundleV2(bundle_el);
-        device.save({ bundle });
-    } else {
-        const bundle = u.omemo.parseBundle(bundle_el);
-        device.save({ bundle });
-    }
+    const bundle = version === Strophe.NS.OMEMO2 ? u.omemo.parseBundleV2(bundle_el) : u.omemo.parseBundle(bundle_el);
+    // A push without a parseable <bundle> (malformed or emptied item) yields
+    // null; don't overwrite a previously cached good bundle with it.
+    if (bundle) device.save({ bundle });
 }
 
 /**

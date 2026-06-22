@@ -71,6 +71,13 @@ class Device extends OMEMOVersionAwareModel {
 
         const publish_el = sizzle(`items[node="${bundle_node}"]`, iq).pop();
         const bundle_el = sizzle(`bundle[xmlns="${bundle_xmlns}"]`, publish_el).pop();
+        if (!bundle_el) {
+            // The IQ resolved as type="result" but carries no <bundle>.
+            // A stale/orphaned device with no published bundle can produce this.
+            // Throw a benign, non-actionable IQError so the caller skips this device.
+            log.warn(`No OMEMO bundle published for device ${device_id} of ${this.get('jid')}`);
+            throw new IQError('Could not fetch bundle', iq);
+        }
         const bundle = is_v2 ? parseBundleV2(bundle_el) : parseBundle(bundle_el);
         this.save('bundle', bundle);
         return bundle;

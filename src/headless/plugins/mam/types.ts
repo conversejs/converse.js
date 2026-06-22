@@ -1,5 +1,6 @@
 import { RSMQueryOptions } from 'shared/types';
 import { RSM } from '../../shared/rsm';
+import BaseMessage from '../../shared/message';
 
 export type MAMQueryOptions = {
     end?: string; // A date string in ISO-8601 format, before which messages should be returned.
@@ -21,7 +22,7 @@ export type ArchiveQueryOptions = FetchArchivedMessagesOptions & {
 };
 
 export type MAMQueryResult = {
-    messages: any[];
+    messages: BaseMessage[];
     rsm?: RSM; // You can call `next()` or `previous()` on this,
     // to get the RSM query parameters for the next or previous page in the result set.
     complete?: boolean;

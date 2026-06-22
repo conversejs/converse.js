@@ -84,7 +84,9 @@ export default {
                                 <field var="FORM_TYPE" type="hidden">
                                     <value>${Strophe.NS.PUBSUB}#node_config</value>
                                 </field>
-                                ${Object.entries(new_config).map(([k, v]) => stx`<field var="pubsub#${k}"><value>${v}</value></field>`)}
+                                ${Object.entries(new_config).map(
+                                    ([k, v]) => stx`<field var="pubsub#${k}"><value>${v}</value></field>`,
+                                )}
                             </x>
                         </configure>
                     </pubsub>
@@ -134,7 +136,9 @@ export default {
                         <field var="FORM_TYPE" type="hidden">
                             <value>${Strophe.NS.PUBSUB}#publish-options</value>
                         </field>
-                        ${Object.entries(options).map(([k, v]) => stx`<field var="pubsub#${k}"><value>${v}</value></field>`)}
+                        ${Object.entries(options).map(
+                            ([k, v]) => stx`<field var="pubsub#${k}"><value>${v}</value></field>`,
+                        )}
                     </x></publish-options>`
                             : ''
                     }
@@ -162,7 +166,7 @@ export default {
                     // (although Prosody returns it on the bare jid)
                     (await api.disco.supports(
                         Strophe.NS.PUBSUB + '#publish-options',
-                        Strophe.getDomainFromJid(entity_jid)
+                        Strophe.getDomainFromJid(entity_jid),
                     )));
 
             if (!supports_publish_options && strict_options) {
@@ -222,7 +226,9 @@ export default {
                                 <field var="FORM_TYPE" type="hidden">
                                     <value>${Strophe.NS.PUBSUB}#node_config</value>
                                 </field>
-                                ${Object.entries(config).map(([k, v]) => stx`<field var="pubsub#${k}"><value>${v}</value></field>`)}
+                                ${Object.entries(config).map(
+                                    ([k, v]) => stx`<field var="pubsub#${k}"><value>${v}</value></field>`,
+                                )}
                             </x>
                         </configure>
                     </pubsub>
@@ -232,7 +238,6 @@ export default {
 
         /**
          * Subscribes the local user to a PubSub node.
-         *
          * @method _converse.api.pubsub.subscribe
          * @param {string} jid - PubSub service JID.
          * @param {string} node - The node to subscribe to
@@ -309,7 +314,7 @@ export default {
              * XEP-0059 Result Set Management (`rsm`).
              *
              * @method _converse.api.pubsub.items.get
-             * @param {string} jid - The JID of the pubsub service where the node
+             * @param {string|null} jid - The JID of the pubsub service where the node
              *      resides. Pass a falsy value to query your own PEP service (bare JID).
              * @param {string} node - The node to retrieve items from
              * @param {import('./types').PubSubItemsOptions} [options]
@@ -345,8 +350,8 @@ export default {
                     throw await parseErrorStanza(error);
                 }
 
-                const items = Array.from(response.querySelectorAll('pubsub > items > item'));
-                const set = response.querySelector('pubsub > set');
+                const items = Array.from(response.querySelectorAll('> pubsub > items > item'));
+                const set = response.querySelector('> pubsub > set');
                 return {
                     items,
                     rsm: set ? new RSM({ ...(rsm_options ?? {}), xml: set }) : undefined,

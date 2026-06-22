@@ -1,4 +1,4 @@
-import { RSMQueryOptions } from 'shared/types.js';
+import { RSMQueryOptions } from 'shared/types';
 
 export type PubSubConfigOptions = {
     access_model?: 'authorize' | 'open' | 'presence' | 'roster' | 'whitelist';

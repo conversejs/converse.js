@@ -1,5 +1,13 @@
 # Changelog
 
+## 14.0.0-beta.4 (2026-06-22)
+
+- Bump libomemo.js to version 2.0.2
+- fix(omemo): Enable self-healing of abandoned or unpublished bundle
+- fix(omemo): Gracefully handle contact device listed but bundle not published
+- fix(theme): Clear the background class list before setting theme attributes.
+- feat(pubsub): Add new API methods to create, subscribe and unsubscribe.
+
 ## 14.0.0-beta.3 (2026-06-19)
 
 - Bump libomemo.js to version 2.0.1

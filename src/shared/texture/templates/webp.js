@@ -6,6 +6,6 @@ import 'shared/webp/component.js';
  * @param {boolean} hide_url
  */
 export default (url, hide_url) =>
-    html`<converse-webp src=${url}></converse-webp>${hide_url
+    html`<converse-webp autoplay noloop fallback="empty" src=${url}></converse-webp>${hide_url
             ? ''
-            : 'Deliberately not showing the URL for WebP images.'}`;
+            : html`<a target="_blank" rel="noopener" href="${url}">${url}</a>`}`;

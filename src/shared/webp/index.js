@@ -1,50 +1,65 @@
-import log from "@converse/log";
-import { getOpenPromise } from "@converse/openpromise";
+import ConverseGif from "shared/gif/index.js";
 
-export default class ConverseWebP {
+export default class ConverseWebP extends ConverseGif {
     /**
      * Create a new ConverseWebP instance.
      * @param {import('./component').default} el
+     * @param {import("shared/gif/types").ConverseGifOptions} opts
      */
-    constructor(el) {
+    constructor(el, opts) {
+        super(el, opts);
         this.el = el;
-        this.initialize();
-    }
-
-    async initialize() {
-        const data = await this.fetchWebP(this.el.src);
-        console.log("Fetched WebP data:", data);
     }
 
     /**
-     * Makes an HTTP request to fetch a WebP image.
-     * @param {string} url
-     * @returns {Promise<ArrayBuffer>} Returns a promise which resolves with the response data.
+     * @param {ArrayBuffer} data - The WebP file data, as returned by the server
      */
-    fetchWebP(url) {
-        const promise = getOpenPromise();
-        const h = new XMLHttpRequest();
-        h.open("GET", url, true);
-        h.responseType = "arraybuffer";
+    async handleGIFResponse(data) {
+        await this.loadWebPFrames(data);
+        this.setSizes(
+            this.options.width ?? this.frames[0].dims.width,
+            this.options.height ?? this.frames[0].dims.height
+        );
+        this.initPlayer();
+    }
 
-        h?.overrideMimeType("text/plain; charset=x-user-defined");
-        h.onload = () => {
-            if (h.status != 200) {
-                // this.showError();
-                return promise.reject();
-            }
-            promise.resolve(h.response);
-        };
-        h.onprogress = (e) => {
-            if (!e.lengthComputable) return;
-            // this.doShowProgress(e.loaded, e.total, true);
-        };
-        h.onerror = /** @param {ProgressEvent} e */ (e) => {
-            log.error(e);
-            // this.showError();
-        };
+    async loadWebPFrames(fileBuffer) {
+        const decoder = new ImageDecoder({ 
+            data: fileBuffer, 
+            type: 'image/webp' 
+        });
 
-        h.send();
-        return promise;
+        await decoder.tracks.ready;
+        const track = decoder.tracks.selectedTrack;
+        const totalFrames = track.frameCount;
+
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+
+        for (let i = 0; i < totalFrames; i++) {
+            const result = await decoder.decode({ frameIndex: i });
+            const frameImage = result.image;
+
+            tempCanvas.width = frameImage.codedWidth;
+            tempCanvas.height = frameImage.codedHeight;
+
+            tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+            tempCtx.drawImage(frameImage, 0, 0);
+            const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+
+            // Build the frame object structure expected by renderImage
+            this.frames.push({
+                dims: {
+                    width: frameImage.codedWidth,
+                    height: frameImage.codedHeight,
+                    left: 0, // WebP defaults to full frame context per VideoFrame
+                    top: 0
+                },
+                patch: imgData.data, 
+                delay: (frameImage.duration || 0) / 1000, 
+            });
+
+            frameImage.close();
+        }
     }
 }

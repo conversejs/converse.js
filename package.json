@@ -140,6 +140,7 @@
   "dependencies": {
     "@babel/runtime": "^7.27.6",
     "@converse/log": "file:src/log",
+    "@lit-labs/signals": "^0.3.0",
     "bootstrap": "^5.3.3",
     "dompurify": "^3.0.8",
     "favico.js-slevomat": "^0.3.11",

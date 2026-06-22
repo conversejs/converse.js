@@ -12,8 +12,8 @@ const { u } = converse.env;
  * Base class for all chat boxes. Provides common methods.
  */
 export default class ChatBoxBase extends ModelWithMessages(Model) {
-    async initialize() {
-        await super.initialize();
+    initialize() {
+        super.initialize();
         const jid = this.get('jid');
         if (!jid) {
             // XXX: The `validate` method will prevent this model

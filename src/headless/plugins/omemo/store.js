@@ -511,7 +511,7 @@ class OMEMOStore extends Model {
                      * @param {unknown} resp
                      */
                     error: (_model, resp) => {
-                        log.warn(`Could restoring OMEMO session, we'll generate a new one: ${resp}`);
+                        log.warn(`Could not restore OMEMO session, we'll generate a new one: ${resp}`);
                         this.generateBundle().then(resolve).catch(reject);
                     },
                 });

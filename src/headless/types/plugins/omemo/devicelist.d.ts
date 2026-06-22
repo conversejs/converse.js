@@ -4,14 +4,8 @@ export default DeviceList;
  */
 declare class DeviceList extends OMEMOVersionAwareModel<import("../../shared/types").JIDModelAttributes> {
     constructor(attributes?: Partial<import("../../shared/types").JIDModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
-    initialize(): Promise<void>;
-    initialized: Promise<any> & {
-        isResolved: boolean;
-        isPending: boolean;
-        isRejected: boolean;
-        resolve: (value: any) => void;
-        reject: (reason?: any) => void;
-    };
+    initialize(): void;
+    initialized: Promise<any>;
     initDevices(): Promise<any>;
     devices: any;
     /**

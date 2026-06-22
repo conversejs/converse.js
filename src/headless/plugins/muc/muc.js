@@ -99,8 +99,12 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         };
     }
 
-    async initialize() {
+    initialize() {
         super.initialize();
+        this.initialized = this.setup();
+    }
+
+    async setup() {
         this.on('change:closed', () => {
             if (!this.get('closed')) {
                 this.initialize();
@@ -108,7 +112,6 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         });
         if (this.get('closed')) return;
 
-        this.initialized = getOpenPromise();
         this.debouncedRejoin = debounce(this.rejoin, 250);
 
         this.initOccupants();
@@ -140,7 +143,6 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
          * @example _converse.api.listen.on('chatRoomInitialized', model => { ... });
          */
         await api.trigger('chatRoomInitialized', this, { synchronous: true });
-        this.initialized.resolve();
     }
 
     isEntered() {

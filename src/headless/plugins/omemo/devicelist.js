@@ -24,11 +24,9 @@ class DeviceList extends OMEMOVersionAwareModel {
         return 'jid';
     }
 
-    async initialize() {
+    initialize() {
         super.initialize();
-        this.initialized = getOpenPromise();
-        await this.initDevices();
-        this.initialized.resolve();
+        this.initialized = this.initDevices();
     }
 
     initDevices() {

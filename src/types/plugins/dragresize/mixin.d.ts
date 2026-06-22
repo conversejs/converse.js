@@ -54,6 +54,7 @@ export default function DragResizable<T extends import("shared/components/types"
         once(name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext, context?: import("@converse/skeletor").EventContext): any;
         listenToOnce(obj: any, name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
         trigger(name: string, ...args: any[]): any;
+        subscribe(event: string, callback: import("@converse/skeletor").EventCallback, context?: import("@converse/skeletor").EventContext): () => void;
         readonly renderOptions: import("lit-html").RenderOptions;
         __childPart: any;
         update(changedProperties: import("lit").PropertyValues): void;

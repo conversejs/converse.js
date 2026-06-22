@@ -7,14 +7,8 @@ export default Message;
  * @example const msg = new Message({'message': 'hello world!'});
  */
 declare class Message extends BaseMessage {
-    initialize(): Promise<void>;
-    initialized: Promise<any> & {
-        isResolved: boolean;
-        isPending: boolean;
-        isRejected: boolean;
-        resolve: (value: any) => void;
-        reject: (reason?: any) => void;
-    };
+    initialized: Promise<void>;
+    setup(): Promise<void>;
     setContact(): any;
     getDisplayName(): any;
 }

@@ -22,15 +22,13 @@ class RosterContacts extends Collection {
     initialize() {
         const bare_jid = _converse.session.get('bare_jid');
         const id = `roster.state-${bare_jid}-${this.get('jid')}`;
-        this.state = new Model(
-            /** @type {import('./types').ContactsStateAttrs} */ ({ id, 'collapsed_groups': [] })
-        );
+        this.state = new Model(/** @type {import('./types').ContactsStateAttrs} */ ({ id, 'collapsed_groups': [] }));
         initStorage(this.state, id);
         this.state.fetch();
         api.listen.on(
             'chatBoxClosed',
             /** @param {import('../../shared/chatbox').default} model */
-            (model) => this.removeUnsavedContact(model)
+            (model) => this.removeUnsavedContact(model),
         );
     }
 
@@ -66,7 +64,7 @@ class RosterContacts extends Collection {
             },
             Strophe.NS.ROSTER,
             'iq',
-            'set'
+            'set',
         );
     }
 
@@ -89,7 +87,7 @@ class RosterContacts extends Collection {
             },
             Strophe.NS.ROSTERX,
             'message',
-            null
+            null,
         );
     }
 
@@ -208,10 +206,10 @@ class RosterContacts extends Collection {
                 },
                 ...attributes,
             },
-            { sort: false }
+            { sort: false },
         );
 
-        if (contact && subscribe) contact.subscribe(message);
+        if (contact && subscribe) contact.subscribeToPresence(message);
 
         return contact;
     }
@@ -228,7 +226,7 @@ class RosterContacts extends Collection {
         const contact = this.get(bare_jid);
         const { RosterContact } = _converse.exports;
         if (contact instanceof RosterContact) {
-            contact.authorize().subscribe();
+            contact.authorize().subscribeToPresence();
         } else {
             // Can happen when a subscription is retried or roster was deleted
             const nickname = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop()?.textContent || undefined;
@@ -239,7 +237,7 @@ class RosterContacts extends Collection {
                 subscription: 'from',
             });
             if (contact instanceof RosterContact) {
-                contact.authorize(auth_msg).subscribe(sub_msg);
+                contact.authorize(auth_msg).subscribeToPresence(sub_msg);
             }
         }
     }
@@ -361,7 +359,13 @@ class RosterContacts extends Collection {
 
         const ask = item.getAttribute('ask');
         const nickname = item.getAttribute('name');
-        const groups = [...new Set(sizzle('group', item).map((e) => e.textContent?.trim()).filter((n) => n))];
+        const groups = [
+            ...new Set(
+                sizzle('group', item)
+                    .map((e) => e.textContent?.trim())
+                    .filter((n) => n),
+            ),
+        ];
 
         if (contact) {
             // We only find out about requesting contacts via the

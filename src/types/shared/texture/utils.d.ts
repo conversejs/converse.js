@@ -90,7 +90,7 @@ declare const _default: {
     isString(s: any): boolean;
     getDefaultStorageType(): import("headless/types/utils/types.js").StorageType;
     isPersistentStorageAvailable(): boolean;
-    createStore(id: string, type: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").BrowserStorage;
+    createStore(id: string, type: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").PersistentStorage;
     initStorage(model: import("headless/types/utils/types.js").StorageModel, id: string, type?: import("headless/types/utils/types.js").StorageType): void;
     isErrorStanza(stanza: Element): boolean;
     isForbiddenError(stanza: Element): boolean;
@@ -115,7 +115,7 @@ declare const _default: {
     isFunction(val: unknown): boolean;
     isUndefined(x: unknown): boolean;
     isErrorObject(o: unknown): boolean;
-    isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").BrowserStorage;
+    isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").PersistentStorage;
     isEmpty(obj: any | undefined | null): boolean;
     isValidJID(jid?: string | null): boolean;
     isValidMUCJID(jid: string): boolean;
@@ -124,7 +124,15 @@ declare const _default: {
     getJIDFromURI(jid: string): string;
     isOwnJID(jid: string, include_resource?: boolean): boolean;
     maybeAppendDomain(jid: string): string;
-    initPlugins(_converse: ConversePrivateGlobal): void;
+    initPlugins(_converse: 
+    /**
+     * Given a specific index "i" of "text", return the directive it matches or null otherwise.
+     * @param {import('./texture').Texture} text - The text in which  the directive appears
+     * @param {Number} i - The directive index
+     * @param {Boolean} opening - Whether we're looking for an opening or closing directive
+     * @returns {string|null}
+     */
+    ConversePrivateGlobal): void;
     initClientConfig(_converse: ConversePrivateGlobal): Promise<void>;
     initSessionStorage(_converse: ConversePrivateGlobal): Promise<void>;
     initPersistentStorage(_converse: ConversePrivateGlobal, store_name: string, key?: string): void;

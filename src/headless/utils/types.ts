@@ -1,4 +1,4 @@
-import { BrowserStorage, IEventEmitter } from '@converse/skeletor';
+import { PersistentStorage, IEventEmitter } from '@converse/skeletor';
 
 export type CommonUtils = Record<string, Function>;
 
@@ -37,5 +37,5 @@ export type MediaURLMetadata = MediaURLIndexes & {
 export type StorageType = 'persistent' | 'session';
 
 export type StorageModel = IEventEmitter & {
-    browserStorage: BrowserStorage;
+    browserStorage: PersistentStorage;
 };

@@ -1,4 +1,4 @@
-import { BrowserStorage } from '@converse/skeletor';
+import { PersistentStorage } from '@converse/skeletor';
 import _converse from '../shared/_converse.js';
 import { settings_api } from '../shared/settings/api.js';
 import { getUnloadEvent } from './session.js';
@@ -41,17 +41,17 @@ export function isPersistentStorageAvailable() {
 
     const driver =
         store === 'localStorage'
-            ? BrowserStorage.localForage.LOCALSTORAGE
+            ? PersistentStorage.localForage.LOCALSTORAGE
             : store === 'IndexedDB'
-              ? BrowserStorage.localForage.INDEXEDDB
+              ? PersistentStorage.localForage.INDEXEDDB
               : undefined;
-    return driver ? BrowserStorage.localForage.supports(driver) : true;
+    return driver ? PersistentStorage.localForage.supports(driver) : true;
 }
 
 /**
  * @param {string} id
  * @param {import('./types').StorageType} type
- * @returns {BrowserStorage}
+ * @returns {PersistentStorage}
  */
 export function createStore(id, type) {
     const name = type || getDefaultStorageType();
@@ -59,7 +59,7 @@ export function createStore(id, type) {
     if (typeof s === 'undefined') {
         throw new TypeError(`createStore: Could not find store for ${id}`);
     }
-    return new BrowserStorage(id, s, storeUsesIndexedDB(type));
+    return new PersistentStorage(id, s, storeUsesIndexedDB(type));
 }
 
 /**

@@ -28,7 +28,7 @@ export function isErrorObject(o: unknown): boolean;
  * @param {import('@converse/skeletor').Model} model
  * @returns {import('@converse/skeletor').BrowserStorage}
  */
-export function isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").BrowserStorage;
+export function isPersistableModel(model: import("@converse/skeletor").Model): import("@converse/skeletor").PersistentStorage;
 /**
  * Check if an object is empty (null, undefined, not an object, or has no own keys).
  * @param {Object|undefined|null} obj

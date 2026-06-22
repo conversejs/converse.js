@@ -11,6 +11,7 @@ declare const AutoComplete_base: (new (...args: any[]) => {
     once(name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext, context?: import("@converse/skeletor").EventContext): any;
     listenToOnce(obj: any, name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
     trigger(name: string, ...args: any[]): any;
+    subscribe(event: string, callback: import("@converse/skeletor").EventCallback, context?: import("@converse/skeletor").EventContext): () => void;
 }) & ObjectConstructor;
 export class AutoComplete extends AutoComplete_base {
     /**

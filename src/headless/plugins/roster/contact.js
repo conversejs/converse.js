@@ -1,4 +1,3 @@
-import { getOpenPromise } from '@converse/openpromise';
 import { Model } from '@converse/skeletor';
 import '../../plugins/status/api.js';
 import _converse from '../../shared/_converse.js';
@@ -22,10 +21,14 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
         };
     }
 
-    async initialize(attrs) {
-        this.lazy_load_vcard = true;
+    initialize(attrs) {
         super.initialize();
-        this.initialized = getOpenPromise();
+        this.initialized = this.setup(attrs);
+    }
+
+    async setup(attrs) {
+        this.lazy_load_vcard = true;
+
         await this.setPresence();
         const { jid } = attrs;
         this.set({
@@ -52,7 +55,6 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
          * @param {RosterContact} contact
          */
         await api.trigger('rosterContactInitialized', this, { synchronous: true });
-        this.initialized.resolve();
     }
 
     async setPresence() {
@@ -83,7 +85,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
      * @param {string} [message] - An optional message to explain the
      *      reason for the subscription request.
      */
-    subscribe(message) {
+    subscribeToPresence(message) {
         api.user.presence.send({
             type: 'subscribe',
             to: this.get('jid'),

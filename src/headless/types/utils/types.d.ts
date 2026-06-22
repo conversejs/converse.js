@@ -1,4 +1,4 @@
-import { BrowserStorage, IEventEmitter } from '@converse/skeletor';
+import { PersistentStorage, IEventEmitter } from '@converse/skeletor';
 export type CommonUtils = Record<string, Function>;
 type PluginUtilsKeys = 'muc' | 'mam' | 'omemo' | 'roster' | 'reactions' | 'bookmarks' | 'emojis';
 export type PluginUtils = Record<PluginUtilsKeys, CommonUtils>;
@@ -28,7 +28,7 @@ export type MediaURLMetadata = MediaURLIndexes & {
 };
 export type StorageType = 'persistent' | 'session';
 export type StorageModel = IEventEmitter & {
-    browserStorage: BrowserStorage;
+    browserStorage: PersistentStorage;
 };
 export {};
 //# sourceMappingURL=types.d.ts.map

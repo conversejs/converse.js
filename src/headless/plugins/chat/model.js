@@ -1,4 +1,3 @@
-import { getOpenPromise } from '@converse/openpromise';
 import { PRIVATE_CHAT_TYPE, INACTIVE } from '../../shared/constants.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
@@ -46,10 +45,12 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         this.disable_mam = false;
     }
 
-    async initialize() {
+    initialize() {
         super.initialize();
-        this.initialized = getOpenPromise();
+        this.initialized = this.setup();
+    }
 
+    async setup() {
         const jid = this.get('jid');
         this.setPresence(jid);
         await this.setModelContact(jid);
@@ -65,7 +66,6 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
          * @example _converse.api.listen.on('chatBoxInitialized', model => { ... });
          */
         await api.trigger('chatBoxInitialized', this, { synchronous: true });
-        this.initialized.resolve();
     }
 
     /**

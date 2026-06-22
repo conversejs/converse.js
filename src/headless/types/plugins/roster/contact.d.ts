@@ -7,24 +7,31 @@ declare const RosterContact_base: {
         initialize(): void;
         readonly vcard: import("../vcard/vcard.js").default;
         getVCard(): Promise<import("../vcard/vcard.js").default | null>;
-        _browserStorage?: import("@converse/skeletor").BrowserStorage;
+        "__#4@#private": any;
+        _storage?: import("@converse/skeletor").PersistentStorage;
         _changing: boolean;
         _pending: boolean | import("@converse/skeletor").ModelOptions;
         _previousAttributes?: import("@converse/skeletor").ModelAttributes;
         _url: string;
         _urlRoot: string;
+        attrs: import("@converse/skeletor").ModelAttributes;
         attributes: import("@converse/skeletor").ModelAttributes;
         changed: Partial<import("@converse/skeletor").ModelAttributes>;
         cid: string;
         collection?: import("@converse/skeletor").Collection;
         id: string | number;
+        hydrated?: Promise<void>;
         validationError: string | number | null;
-        browserStorage: import("@converse/skeletor").BrowserStorage;
+        storage: import("@converse/skeletor").PersistentStorage;
+        browserStorage: import("@converse/skeletor").PersistentStorage;
+        readonly autoSync: boolean;
+        readonly autoSyncDelay: number;
         readonly idAttribute: string;
         readonly cidPrefix: string;
         preinitialize(...args: any[]): void;
         validate(attrs: import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): string | number | null | void;
         defaults(): Partial<import("@converse/skeletor").ModelAttributes>;
+        readonly computed: import("@converse/skeletor").ComputedProperties<any>;
         toJSON(): import("@converse/skeletor").ModelAttributes;
         sync(method: import("@converse/skeletor").SyncOperation, model: Model<any>, options: import("@converse/skeletor").Options): any;
         get<K extends string | number>(attr: K): import("@converse/skeletor").ModelAttributes[K];
@@ -53,6 +60,8 @@ declare const RosterContact_base: {
         parse(resp: any, options?: import("@converse/skeletor").ModelOptions): void | Partial<import("@converse/skeletor").ModelAttributes>;
         isNew(): boolean;
         isValid(options?: import("@converse/skeletor").ModelOptions): boolean;
+        subscribe(event: string, callback: import("@converse/skeletor").EventCallback, context?: unknown): () => void;
+        subscribe(callback: (model: any, changed: Partial<import("@converse/skeletor").ModelAttributes>) => void): () => void;
         _validate(attrs: import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): boolean;
         _events?: import("@converse/skeletor").EventHandlersMap;
         _listeners?: import("@converse/skeletor").EventListenerMap;
@@ -80,25 +89,32 @@ declare const RosterContact_base: {
         getIdentifier(): any;
         getColor(): Promise<string>;
         getAvatarStyle(append_style?: string): Promise<string>;
-        _browserStorage?: import("@converse/skeletor").BrowserStorage;
+        "__#4@#private": any;
+        _storage?: import("@converse/skeletor").PersistentStorage;
         _changing: boolean;
         _pending: boolean | import("@converse/skeletor").ModelOptions;
         _previousAttributes?: import("@converse/skeletor").ModelAttributes;
         _url: string;
         _urlRoot: string;
+        attrs: import("@converse/skeletor").ModelAttributes;
         attributes: import("@converse/skeletor").ModelAttributes;
         changed: Partial<import("@converse/skeletor").ModelAttributes>;
         cid: string;
         collection?: import("@converse/skeletor").Collection;
         id: string | number;
+        hydrated?: Promise<void>;
         validationError: string | number | null;
-        browserStorage: import("@converse/skeletor").BrowserStorage;
+        storage: import("@converse/skeletor").PersistentStorage;
+        browserStorage: import("@converse/skeletor").PersistentStorage;
+        readonly autoSync: boolean;
+        readonly autoSyncDelay: number;
         readonly idAttribute: string;
         readonly cidPrefix: string;
         preinitialize(...args: any[]): void;
         initialize(attrs?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): void;
         validate(attrs: import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): string | number | null | void;
         defaults(): Partial<import("@converse/skeletor").ModelAttributes>;
+        readonly computed: import("@converse/skeletor").ComputedProperties<any>;
         toJSON(): import("@converse/skeletor").ModelAttributes;
         sync(method: import("@converse/skeletor").SyncOperation, model: Model<any>, options: import("@converse/skeletor").Options): any;
         get<K extends string | number>(attr: K): import("@converse/skeletor").ModelAttributes[K];
@@ -127,6 +143,8 @@ declare const RosterContact_base: {
         parse(resp: any, options?: import("@converse/skeletor").ModelOptions): void | Partial<import("@converse/skeletor").ModelAttributes>;
         isNew(): boolean;
         isValid(options?: import("@converse/skeletor").ModelOptions): boolean;
+        subscribe(event: string, callback: import("@converse/skeletor").EventCallback, context?: unknown): () => void;
+        subscribe(callback: (model: any, changed: Partial<import("@converse/skeletor").ModelAttributes>) => void): () => void;
         _validate(attrs: import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): boolean;
         _events?: import("@converse/skeletor").EventHandlersMap;
         _listeners?: import("@converse/skeletor").EventListenerMap;
@@ -154,14 +172,9 @@ declare class RosterContact extends RosterContact_base {
         groups: any[];
         num_unread: number;
     };
-    initialize(attrs: any): Promise<void>;
-    initialized: Promise<any> & {
-        isResolved: boolean;
-        isPending: boolean;
-        isRejected: boolean;
-        resolve: (value: any) => void;
-        reject: (reason?: any) => void;
-    };
+    initialize(attrs: any): void;
+    initialized: Promise<void>;
+    setup(attrs: any): Promise<void>;
     setPresence(): Promise<void>;
     presence: any;
     getStatus(): any;
@@ -176,7 +189,7 @@ declare class RosterContact extends RosterContact_base {
      * @param {string} [message] - An optional message to explain the
      *      reason for the subscription request.
      */
-    subscribe(message?: string): this;
+    subscribeToPresence(message?: string): this;
     /**
      * Upon receiving the presence stanza of type "subscribed",
      * the user SHOULD acknowledge receipt of that subscription

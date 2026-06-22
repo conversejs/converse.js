@@ -11,6 +11,7 @@ declare const ConversePrivateGlobal_base: (new (...args: any[]) => {
     once(name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext, context?: import("@converse/skeletor").EventContext): any;
     listenToOnce(obj: any, name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
     trigger(name: string, ...args: any[]): any;
+    subscribe(event: string, callback: import("@converse/skeletor").EventCallback, context?: import("@converse/skeletor").EventContext): () => void;
 }) & ObjectConstructor;
 /**
  * A private, closured namespace containing the private api (via {@link _converse.api})
@@ -101,7 +102,7 @@ export class ConversePrivateGlobal extends ConversePrivateGlobal_base {
     ___(str: string): string;
 }
 export default _converse;
-export type BrowserStorage = import("@converse/skeletor").BrowserStorage;
+export type BrowserStorage = import("@converse/skeletor").PersistentStorage;
 export type Collection = import("@converse/skeletor").Collection;
 export type DiscoState = import("../plugins/disco/index").DiscoState;
 export type Profile = import("../plugins/status/profile").default;

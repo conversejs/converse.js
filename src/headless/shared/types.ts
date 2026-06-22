@@ -1,7 +1,7 @@
 import { Builder } from 'strophe.js';
 import { Collection, Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
-import BaseMessage from './message.js';
+import BaseMessage from './message';
 
 export type MessageAndStanza = {
     message: BaseMessage; // The message object from which the stanza is created and which gets persisted to storage.
@@ -24,6 +24,18 @@ export interface ModelOptions {
     unset?: boolean;
     silent?: boolean;
 }
+
+// XEP-0059 Result Set Management
+// ------------------------------
+
+// XEP-0059 RSM Attributes that can be used to filter query results
+// Specifying both "after" and "before" is undefined behavior.
+export type RSMQueryOptions = {
+    after?: string; // The XEP-0359 stanza ID *after* which messages should be returned. Implies forward paging.
+    before?: string; // The XEP-0359 stanza ID *before* which messages should be returned. Implies backward paging.
+    index?: number; // The index of the results page to return.
+    max?: number; // The maximum number of items to return.
+};
 
 export type RSMResult = {
     count?: string;

@@ -1,7 +1,7 @@
 import { Builder } from 'strophe.js';
 import { Collection, Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
-import BaseMessage from './message.js';
+import BaseMessage from './message';
 export type MessageAndStanza = {
     message: BaseMessage;
     stanza: Builder;
@@ -19,6 +19,12 @@ export interface ModelOptions {
     unset?: boolean;
     silent?: boolean;
 }
+export type RSMQueryOptions = {
+    after?: string;
+    before?: string;
+    index?: number;
+    max?: number;
+};
 export type RSMResult = {
     count?: string;
     first?: string;

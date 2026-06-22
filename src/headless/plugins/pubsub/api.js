@@ -7,9 +7,10 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import log from '@converse/log';
 import { parseErrorStanza } from '../../shared/parsers.js';
+import { RSM } from '../../shared/rsm.js';
 import { parseStanzaForPubSubConfig } from './parsers.js';
 
-const { Strophe, stx } = converse.env;
+const { Strophe, stx, Stanza } = converse.env;
 
 export default {
     /**
@@ -297,6 +298,60 @@ export default {
                 subid: el.hasAttribute('subid') ? el.getAttribute('subid') : undefined,
             }));
             return subs;
+        },
+
+        items: {
+            /**
+             * Retrieves items from a PubSub node (XEP-0060 § 6.5 "Retrieve Items").
+             *
+             * Supports requesting the most recent N items (`max_items`), specific
+             * item ids (`item_ids`), and paging through large result sets with
+             * XEP-0059 Result Set Management (`rsm`).
+             *
+             * @method _converse.api.pubsub.items.get
+             * @param {string} jid - The JID of the pubsub service where the node
+             *      resides. Pass a falsy value to query your own PEP service (bare JID).
+             * @param {string} node - The node to retrieve items from
+             * @param {import('./types').PubSubItemsOptions} [options]
+             * @returns {Promise<import('./types').PubSubItemsResult>}
+             */
+            async get(jid, node, options = {}) {
+                if (!node) throw new Error('api.pubsub.items.get: node value required');
+
+                const bare_jid = _converse.session.get('bare_jid');
+                const full_jid = _converse.session.get('jid');
+                const entity_jid = jid || bare_jid;
+
+                const { max_items, item_ids, rsm: rsm_options } = options;
+                const rsm = rsm_options ? new RSM(rsm_options) : null;
+
+                const stanza = stx`
+                    <iq xmlns="jabber:client"
+                        type="get"
+                        from="${full_jid}"
+                        to="${entity_jid}">
+                    <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                        <items node="${node}"${max_items ? Stanza.unsafeXML(` max_items="${max_items}"`) : ''}>
+                            ${item_ids?.map((id) => stx`<item id="${id}"/>`) ?? ''}
+                        </items>
+                        ${rsm ? Stanza.fromString(rsm.toString()) : ''}
+                    </pubsub>
+                    </iq>`;
+
+                let response;
+                try {
+                    response = await api.sendIQ(stanza);
+                } catch (error) {
+                    throw await parseErrorStanza(error);
+                }
+
+                const items = Array.from(response.querySelectorAll('pubsub > items > item'));
+                const set = response.querySelector('pubsub > set');
+                return {
+                    items,
+                    rsm: set ? new RSM({ ...(rsm_options ?? {}), xml: set }) : undefined,
+                };
+            },
         },
     },
 };

@@ -17,7 +17,7 @@ export default class Toast extends CustomElement {
     body: string;
     header: string;
     type: string;
-    timeoutId: NodeJS.Timeout;
+    timeoutId: number;
     render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {MouseEvent} [ev]

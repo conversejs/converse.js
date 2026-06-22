@@ -1,3 +1,5 @@
+import { RSMQueryOptions } from 'shared/types.js';
+
 export type PubSubConfigOptions = {
     access_model?: 'authorize' | 'open' | 'presence' | 'roster' | 'whitelist';
     // Payload XSLT
@@ -44,6 +46,22 @@ export type PubSubConfigOptions = {
 export type PubSubSubscription = {
     node: string;
     jid: string;
-    subscription: 'subscribed'|'unconfigured';
+    subscription: 'subscribed' | 'unconfigured';
     subid?: string;
+};
+
+export type PubSubItemsOptions = {
+    // Restrict the result to the N most recent items.
+    max_items?: number;
+    // Request specific item ids instead of all items.
+    item_ids?: string[];
+    // Page through large result sets via XEP-0059 Result Set Management.
+    rsm?: RSMQueryOptions;
+};
+
+export type PubSubItemsResult = {
+    // The `<item/>` elements returned by the node (each wraps its payload).
+    items: Element[];
+    // RSM result for paging, present when the service includes a `<set/>` element.
+    rsm?: import('../../shared/rsm.js').RSM;
 };

@@ -49,7 +49,7 @@ declare class BaseModal extends CustomElement {
      * @param {boolean} [is_ephemeral=true]
      */
     alert(message?: string | null, type?: "info" | "primary" | "secondary" | "danger", is_ephemeral?: boolean): void;
-    alertTimeout: NodeJS.Timeout;
+    alertTimeout: number;
     show(): Promise<void>;
     #private;
 }

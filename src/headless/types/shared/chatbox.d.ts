@@ -31,7 +31,7 @@ declare const ChatBoxBase_base: {
         sendFiles(files: File[]): Promise<void>;
         setEditable(attrs: any, send_time: string): void;
         setChatState(state: string, options?: object): any;
-        chat_state_timeout: NodeJS.Timeout;
+        chat_state_timeout: number;
         onMessageAdded(message: import("./message.js").default): void;
         onMessageUploadChanged(message: import("./message.js").default): Promise<void>;
         onMessageCorrecting(message: import("./message.js").default): void;

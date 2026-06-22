@@ -20,7 +20,7 @@ export default class ChatContent extends CustomElement {
     window_top: number;
     window_bottom: number;
     scrollHandler: (ev: Event) => void;
-    mark_scrolled_debounce: NodeJS.Timeout;
+    mark_scrolled_debounce: number;
     initialize(): Promise<void>;
     render(): import("lit-html").TemplateResult<1> | "";
     scrollDown(): void;

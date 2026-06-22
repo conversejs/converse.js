@@ -102,8 +102,8 @@ declare const ChatView_base: {
         innerHTML: string;
         readonly localName: string;
         readonly namespaceURI: string | null;
-        onfullscreenchange: (this: Element, ev: Event) => any;
-        onfullscreenerror: (this: Element, ev: Event) => any;
+        onfullscreenchange: ((this: Element, ev: Event) => any) | null;
+        onfullscreenerror: ((this: Element, ev: Event) => any) | null;
         outerHTML: string;
         readonly ownerDocument: Document;
         readonly part: DOMTokenList;
@@ -117,10 +117,10 @@ declare const ChatView_base: {
         readonly tagName: string;
         attachShadow(init: ShadowRootInit): ShadowRoot;
         checkVisibility(options?: CheckVisibilityOptions): boolean;
-        closest<K extends keyof HTMLElementTagNameMap>(selector: K): HTMLElementTagNameMap[K];
-        closest<K extends keyof SVGElementTagNameMap>(selector: K): SVGElementTagNameMap[K];
-        closest<K extends keyof MathMLElementTagNameMap>(selector: K): MathMLElementTagNameMap[K];
-        closest<E extends Element = Element>(selectors: string): E;
+        closest<K extends keyof HTMLElementTagNameMap>(selector: K): HTMLElementTagNameMap[K] | null;
+        closest<K extends keyof SVGElementTagNameMap>(selector: K): SVGElementTagNameMap[K] | null;
+        closest<K extends keyof MathMLElementTagNameMap>(selector: K): MathMLElementTagNameMap[K] | null;
+        closest<E extends Element = Element>(selectors: string): E | null;
         computedStyleMap(): StylePropertyMapReadOnly;
         getAttribute(qualifiedName: string): string | null;
         getAttributeNS(namespace: string | null, localName: string): string | null;

@@ -126,7 +126,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @param {object} [options]
          */
         setChatState(state: string, options?: object): any;
-        chat_state_timeout: NodeJS.Timeout;
+        chat_state_timeout: number;
         /**
          * @param {BaseMessage} message
          */

@@ -177,3 +177,134 @@ describe('pubsub subscribe/unsubscribe API', function () {
         })
     );
 });
+
+describe('pubsub items API', function () {
+    it(
+        'sends correct IQ to retrieve items and returns them',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api, state } = _converse;
+            const own_jid = state.session.get('jid');
+            const sent = api.connection.get().sent_stanzas;
+            const service = 'pubsub.example.org';
+            const node = 'urn:xmpp:microblog:0';
+            const promise = api.pubsub.items.get(service, node, { max_items: 2 });
+
+            const stanza = await u.waitUntil(() => sent.filter((iq) => iq.querySelector('pubsub items')).pop());
+            expect(stanza).toEqualStanza(stx`
+                <iq type="get"
+                    from="${own_jid}"
+                    to="${service}"
+                    xmlns="jabber:client"
+                    id="${stanza.getAttribute('id')}">
+                  <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <items node="${node}" max_items="2"/>
+                  </pubsub>
+                </iq>`);
+
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`
+                <iq type="result"
+                    xmlns="jabber:client"
+                    from="${service}"
+                    to="${own_jid}"
+                    id="${stanza.getAttribute('id')}">
+                  <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <items node="${node}">
+                      <item id="item1"><entry xmlns="http://www.w3.org/2005/Atom"><title>One</title></entry></item>
+                      <item id="item2"><entry xmlns="http://www.w3.org/2005/Atom"><title>Two</title></entry></item>
+                    </items>
+                  </pubsub>
+                </iq>`,
+                ),
+            );
+            const result = await promise;
+            expect(result.items.map((i) => i.getAttribute('id'))).toEqual(['item1', 'item2']);
+            expect(result.items[0].querySelector('entry title').textContent).toBe('One');
+            expect(result.rsm).toBeUndefined();
+        })
+    );
+
+    it(
+        'requests specific item ids when passed item_ids',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api, state } = _converse;
+            const own_jid = state.session.get('jid');
+            const sent = api.connection.get().sent_stanzas;
+            const service = 'pubsub.example.org';
+            const node = 'urn:xmpp:microblog:0';
+            api.pubsub.items.get(service, node, { item_ids: ['a1', 'b2'] });
+
+            const stanza = await u.waitUntil(() => sent.filter((iq) => iq.querySelector('pubsub items')).pop());
+            expect(stanza).toEqualStanza(stx`
+                <iq type="get"
+                    from="${own_jid}"
+                    to="${service}"
+                    xmlns="jabber:client"
+                    id="${stanza.getAttribute('id')}">
+                  <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <items node="${node}">
+                      <item id="a1"/>
+                      <item id="b2"/>
+                    </items>
+                  </pubsub>
+                </iq>`);
+        })
+    );
+
+    it(
+        'pages through items via RSM and parses the result set',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api, state } = _converse;
+            const own_jid = state.session.get('jid');
+            const sent = api.connection.get().sent_stanzas;
+            const service = 'pubsub.example.org';
+            const node = 'urn:xmpp:microblog:0';
+            const promise = api.pubsub.items.get(service, node, { rsm: { max: 10 } });
+
+            const stanza = await u.waitUntil(() => sent.filter((iq) => iq.querySelector('pubsub items')).pop());
+            expect(stanza).toEqualStanza(stx`
+                <iq type="get"
+                    from="${own_jid}"
+                    to="${service}"
+                    xmlns="jabber:client"
+                    id="${stanza.getAttribute('id')}">
+                  <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <items node="${node}"/>
+                    <set xmlns="${Strophe.NS.RSM}"><max>10</max></set>
+                  </pubsub>
+                </iq>`);
+
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`
+                <iq type="result"
+                    xmlns="jabber:client"
+                    from="${service}"
+                    to="${own_jid}"
+                    id="${stanza.getAttribute('id')}">
+                  <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <items node="${node}">
+                      <item id="item1"><entry xmlns="http://www.w3.org/2005/Atom"><title>One</title></entry></item>
+                    </items>
+                    <set xmlns="${Strophe.NS.RSM}">
+                      <first index="0">item1</first>
+                      <last>item1</last>
+                      <count>30</count>
+                    </set>
+                  </pubsub>
+                </iq>`,
+                ),
+            );
+            const result = await promise;
+            expect(result.items.length).toBe(1);
+            expect(result.rsm.result.count).toBe(30);
+            expect(result.rsm.result.last).toBe('item1');
+        })
+    );
+});

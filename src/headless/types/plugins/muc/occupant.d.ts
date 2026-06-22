@@ -115,7 +115,7 @@ declare const MUCOccupant_base: {
         sendFiles(files: File[]): Promise<void>;
         setEditable(attrs: any, send_time: string): void;
         setChatState(state: string, options?: object): any;
-        chat_state_timeout: NodeJS.Timeout;
+        chat_state_timeout: number;
         onMessageAdded(message: import("../../shared/message").default): void;
         onMessageUploadChanged(message: import("../../shared/message").default): Promise<void>;
         onMessageCorrecting(message: import("../../shared/message").default): void;

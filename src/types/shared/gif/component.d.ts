@@ -26,7 +26,7 @@ export default class ConverseGIFElement extends CustomElement {
     render(): string | import("utils/html.js").TemplateResult;
     renderErrorFallback(): string | import("utils/html.js").TemplateResult;
     setHover(): void;
-    hover_timeout: NodeJS.Timeout;
+    hover_timeout: number;
     unsetHover(): void;
     /** @param {MouseEvent} ev */
     onControlsClicked(ev: MouseEvent): void;

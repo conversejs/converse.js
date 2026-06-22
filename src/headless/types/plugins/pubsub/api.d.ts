@@ -67,6 +67,23 @@ declare namespace _default {
          * @returns {Promise<import('./types').PubSubSubscription[]>}
          */
         function subscriptions(jid?: string, node?: string): Promise<import("./types").PubSubSubscription[]>;
+        namespace items {
+            /**
+             * Retrieves items from a PubSub node (XEP-0060 § 6.5 "Retrieve Items").
+             *
+             * Supports requesting the most recent N items (`max_items`), specific
+             * item ids (`item_ids`), and paging through large result sets with
+             * XEP-0059 Result Set Management (`rsm`).
+             *
+             * @method _converse.api.pubsub.items.get
+             * @param {string} jid - The JID of the pubsub service where the node
+             *      resides. Pass a falsy value to query your own PEP service (bare JID).
+             * @param {string} node - The node to retrieve items from
+             * @param {import('./types').PubSubItemsOptions} [options]
+             * @returns {Promise<import('./types').PubSubItemsResult>}
+             */
+            function get(jid: string, node: string, options?: import("./types").PubSubItemsOptions): Promise<import("./types").PubSubItemsResult>;
+        }
     }
 }
 export default _default;

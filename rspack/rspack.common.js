@@ -79,9 +79,6 @@ export default {
         ],
     },
     resolve: {
-        fallback: {
-            './drivers/nodeSQLiteStorage': false,
-        },
         extensions: ['.js'],
         modules: ['node_modules', path.resolve(__dirname, '../src')],
         alias: {

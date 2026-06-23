@@ -2,7 +2,7 @@ import { html } from 'lit';
 import Modal from 'bootstrap/js/src/modal.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { CustomElement } from 'shared/components/element.js';
-import { api, u, Model } from '@converse/headless';
+import { api, u, Model, log } from '@converse/headless';
 import { modal_close_button } from './templates/buttons.js';
 import tplModal from './templates/modal.js';
 
@@ -123,6 +123,14 @@ class BaseModal extends CustomElement {
 
     insertIntoDOM() {
         const container_el = document.querySelector('#converse-modals');
+        if (!container_el) {
+            // The #converse-modals container is part of the root view, so it's
+            // absent only when Converse hasn't rendered yet or has been torn down
+            // (e.g. between tests). insertIntoDOM is deferred via setTimeout, so it
+            // can fire after teardown; bail out instead of throwing.
+            log.debug('BaseModal.insertIntoDOM: #converse-modals not found, skipping insertion');
+            return;
+        }
         container_el.insertAdjacentElement('beforeend', this);
     }
 

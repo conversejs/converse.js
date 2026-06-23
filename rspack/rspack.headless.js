@@ -43,6 +43,7 @@ export default (_env, argv) => {
                 fs: false,
                 path: false,
                 crypto: false,
+                './drivers/nodeSQLiteStorage': false,
             },
         },
     };

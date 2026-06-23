@@ -542,7 +542,12 @@ async function handleRosterAddOrEdit(jid, params) {
 async function handleRosterRemove(jid) {
     try {
         await api.waitUntil('chatBoxesFetched');
-        await api.contacts.remove(jid);
+        const contact = await api.contacts.get(jid);
+        if (contact) {
+            await api.contacts.remove(jid);
+        } else {
+            log.warn(`Cannot remove ${jid} as they are not in the roster.`);
+        }
     } catch (err) {
         api.alert('error', __('Error'), [__('Failed to remove %1$s from your roster', jid)]);
     }

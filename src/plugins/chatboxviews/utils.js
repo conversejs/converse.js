@@ -19,6 +19,13 @@ export function calculateViewportHeightUnit () {
 export async function routeToQueryAction(jid, query_params) {
     const action = query_params?.get('action');
 
+    try {
+        await api.waitUntil('chatBoxesFetched');
+    } catch (e) {
+        log.error('routeToQueryAction: Timeout waiting for chatBoxesFetched');
+        return;
+    }
+
     if (!action) {
         // No action specified, just open the chat
         log.debug(`routeToQueryAction (chatboxviews): Opening chat for "${jid}"`);

@@ -3,7 +3,8 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
-import { __, api, converse, constants } from '@converse/headless';
+import { api, converse, constants } from '@converse/headless';
+import { __ } from 'i18n';
 import '../chatboxviews/index.js';
 import './affiliation-form.js';
 import './role-form.js';

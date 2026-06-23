@@ -62,12 +62,9 @@ describe("XMPP URI Query Actions (XEP-0147) - ChatBoxes", function () {
         window.history.replaceState = jasmine.createSpy('replaceState');
 
         // Mock URI with message action
-        window.location.hash = '#converse/action?uri=xmpp%3Aromeo%40montague.lit%3Faction%3Dmessage%26body%3DHello';
+        window.location.hash = '#converse/action?uri=xmpp%3Aromeo%40montague.lit%3Fmessage%3Bbody%3DHello';
 
         try {
-            // Spy on the connection send method to verify XMPP stanza sending
-            spyOn(api.connection.get(), 'send');
-
             // Execute the function
             await u.routeToQueryAction();
 
@@ -76,11 +73,8 @@ describe("XMPP URI Query Actions (XEP-0147) - ChatBoxes", function () {
             const chatbox = _converse.chatboxes.get('romeo@montague.lit');
             expect(chatbox).toBeDefined();
 
-            // Verify message was sent and stored in chat
-            await u.waitUntil(() => chatbox.messages.length > 0);
-            const message = chatbox.messages.at(0);
-            expect(message.get('message')).toBe('Hello');
-            expect(message.get('type')).toBe('chat');
+            // Verify message body was set as a draft
+            expect(chatbox.get('draft')).toBe('Hello');
         } finally {
             window.location.hash = originalHash;
             window.history.replaceState = originalReplaceState;

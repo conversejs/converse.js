@@ -40,7 +40,7 @@ converse.plugins.add('converse-chatboxviews', {
         api.listen.on('xmppURIAction', ({ jid, query_params, action }) => {
             // Handle actions that apply to chatboxes (both 1:1 and MUC)
             if (action === 'message' || !action) {
-                routeToQueryAction(jid, query_params);
+                routeToQueryAction(jid, query_params, action);
             }
         });
 

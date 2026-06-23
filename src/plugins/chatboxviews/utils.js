@@ -49,9 +49,9 @@ export async function routeToQueryAction(jid, query_params) {
  */
 async function handleMessageAction(jid, params) {
     const body = params.get('body') || '';
-    const chat = await api.chats.open(jid);
-
-    if (body && chat) {
-        chat.save({ draft: body });
+    if (body) {
+        await api.chats.open(jid, { draft: body });
+    } else {
+        await api.chats.open(jid);
     }
 }

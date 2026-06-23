@@ -52,6 +52,6 @@ async function handleMessageAction(jid, params) {
     const chat = await api.chats.open(jid);
 
     if (body && chat) {
-        await chat.sendMessage({ body });
+        chat.save({ draft: body });
     }
 }

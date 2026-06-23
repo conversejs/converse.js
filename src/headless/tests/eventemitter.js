@@ -1,4 +1,5 @@
 import mock from "../tests/mock.js";
+import converse from "../dist/converse-headless.js";
 
 const container = {};
 

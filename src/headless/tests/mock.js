@@ -607,12 +607,13 @@ async function _initConverse(converse, settings) {
 
     window._converse = _converse;
 
-    originalVCardGet = originalVCardGet || _converse.api.vcard.get;
-
-    if (!settings?.no_vcard_mocks && _converse.api.vcard) {
-        _converse.api.vcard.get = getMockVcardFetcher(_converse, settings);
-    } else {
-        _converse.api.vcard.get = originalVCardGet;
+    // The vcard plugin may be blacklisted, in which case there's no api to mock.
+    if (_converse.api.vcard) {
+        // Capture the real fetcher once, before we replace it with a mock.
+        originalVCardGet = originalVCardGet || _converse.api.vcard.get;
+        _converse.api.vcard.get = settings?.no_vcard_mocks
+            ? originalVCardGet
+            : getMockVcardFetcher(_converse, settings);
     }
 
     if (settings?.auto_login !== false) {

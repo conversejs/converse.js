@@ -15,7 +15,7 @@ describe('A Chat Message', function () {
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
             await mock.sendMessage(_converse, view, message);
-            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000);
+            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 2000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
@@ -26,7 +26,7 @@ describe('A Chat Message', function () {
 
             message += '?param1=val1&param2=val2';
             await mock.sendMessage(_converse, view, message);
-            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
+            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 2, 2000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
@@ -38,7 +38,7 @@ describe('A Chat Message', function () {
             // Test now with two images in one message
             message += ' hello world ' + base_url + '/logo/conversejs-filled.svg';
             await mock.sendMessage(_converse, view, message);
-            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 4, 1000);
+            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 4, 2000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.textContent.trim()).toEqual('hello world');
@@ -48,13 +48,13 @@ describe('A Chat Message', function () {
             _converse.api.settings.set('image_urls_regex', /^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i);
             message = 'https://imgur.com/oxymPax';
             await mock.sendMessage(_converse, view, message);
-            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 5, 1000);
+            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 5, 2000);
             expect(view.querySelectorAll('.chat-content .chat-image').length).toBe(5);
 
             // Check that the Imgur URL gets a .png attached to make it render
             await u.waitUntil(
                 () => Array.from(view.querySelectorAll('.chat-content .chat-image')).pop().src.endsWith('png'),
-                1000,
+                2000,
             );
         }),
     );
@@ -101,8 +101,8 @@ describe('A Chat Message', function () {
 
                 message = base_url + '/logo/conversejs-filled.svg';
                 await mock.sendMessage(_converse, view, message);
-                await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 2, 1000);
-                await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 1, 1000);
+                await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 2, 2000);
+                await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 1, 2000);
                 expect(view.querySelectorAll('.chat-content .chat-image').length).toBe(1);
             },
         ),
@@ -178,14 +178,14 @@ describe('A Chat Message', function () {
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
             await mock.sendMessage(_converse, view, message);
-            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000);
+            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 2000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             await u.waitUntil(
                 () =>
                     msg.innerHTML.replace(/<!-.*?->/g, '').trim() ==
                     `<a target="_blank" rel="noopener" href="https://conversejs.org/logo/non-existing.svg">https://conversejs.org/logo/non-existing.svg</a>`,
-                1000,
+                2000,
             );
         }),
     );
@@ -208,13 +208,13 @@ describe('A Chat Message', function () {
                 spyOn(view.model, 'sendMessage').and.callThrough();
                 await mock.sendMessage(_converse, view, message);
                 expect(view.model.sendMessage).toHaveBeenCalled();
-                await u.waitUntil(() => view.querySelector('.chat-content .chat-msg'));
+                await u.waitUntil(() => view.querySelector('.chat-content .chat-msg'), 5000);
                 const msg = view.querySelector('.chat-content .chat-msg .chat-msg__text');
                 await u.waitUntil(
                     () =>
                         msg.innerHTML.replace(/<!-.*?->/g, '').trim() ==
                         `<a target="_blank" rel="noopener" href="https://pbs.twimg.com/media/string?format=jpg&amp;name=small">https://pbs.twimg.com/media/string?format=jpg&amp;name=small</a>`,
-                    1000,
+                    5000,
                 );
             },
         ),

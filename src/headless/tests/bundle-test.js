@@ -1,3 +1,5 @@
+import "../dist/converse-headless.js";
+
 describe("The Headless Bundle", function() {
     it("should load properly", function() {
         expect(window.converse).toBeDefined();

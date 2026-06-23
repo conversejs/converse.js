@@ -1,4 +1,5 @@
 import { initConverse } from "../../../tests/mock.js";
+import converse from "../../../dist/converse-headless.js";
 
 describe("The \"settings\" API", function () {
     it("has methods 'get' and 'set' to set configuration settings",

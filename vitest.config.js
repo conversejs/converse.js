@@ -60,10 +60,7 @@ export default defineConfig({
         setupFiles,
         sequence: { shuffle: false },
         fileParallelism: false, // suite shares global #conversejs / storage state
-        // Karma runs every spec file in ONE long-lived page, so browser state
-        // (IndexedDB/localStorage) accumulates across files and many specs rely on
-        // that. Reuse a single page instead of reloading per file, to match.
-        isolate: false,
+        isolate: true, // Reload the page per test file
         projects: [
             {
                 extends: true,

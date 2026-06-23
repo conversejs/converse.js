@@ -39,6 +39,9 @@ describe('Popular Emojis', function () {
 
                 const popular_emojis = _converse.state.popular_emojis;
 
+                // The shortname->unicode lookup needs the emoji data loaded.
+                await _converse.api.emojis.initialize();
+
                 // Shortname input is converted to unicode before storage
                 popular_emojis.recordUsage([':thumbsup:', ':heart:', ':tada:']);
 

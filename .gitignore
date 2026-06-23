@@ -76,3 +76,7 @@ node_modules
 .agents
 
 Session.vim
+
+# Vitest browser-mode generated artifacts
+.vitest-attachments/
+**/__screenshots__/

@@ -11,10 +11,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    env:
-     DISPLAY: :99.0
 
     strategy:
       matrix:
@@ -28,7 +26,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - name: Run Karma tests
-      uses: GabrielBB/xvfb-action@v1
-      with:
-          run: make check ARGS=--single-run
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Chromium
+      run: npx playwright install --with-deps chromium
+    - name: Run linting, type checks and tests
+      run: make check

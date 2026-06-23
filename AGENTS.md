@@ -9,7 +9,7 @@ Bootstrap 5 and Lit UI components.
 - **Type**: XMPP/Jabber web-based chat client
 - **Build Tool**: Rspack (Webpack-compatible)
 - **UI Framework**: Lit (Web Components)
-- **Testing**: Karma + Jasmine
+- **Testing**: Vitest (browser mode, Playwright/Chromium) with a Jasmine-compat shim
 - **Styling**: SCSS with Bootstrap 5
 - **Language**: JavaScript
 - **Type System**: TypeScript via JSDoc annotations
@@ -108,34 +108,38 @@ npm run cdn                   # Build for CDN deployment
 
 ### Testing
 
-- **Framework**: Karma + Jasmine
-- **Test files**: Located in `tests/` subdirectory of each plugin
+- **Framework**: Vitest browser mode (Playwright/Chromium) with a Jasmine-compat shim (`vitest/setup.jasmine-shim.js`)
+- **Test files**: Located in `tests/` subdirectory of each plugin (auto-discovered by glob — no manual registration)
 - **Naming**: `*.js` (e.g., `chatbox.js`, `actions.js`, `corrections.js`)
 - **Mock data**: `src/headless/tests/mock.js` and `src/shared/tests/mock.js`
 
-**Always pass `--single-run`** — without it Karma waits for a browser indefinitely and hangs.
+**`npm test` is single-run by default** (it maps to `vitest run`); no `--single-run` flag is needed. Use
+`npm run test:browser` for a headed/watch session.
 
-**Always run `npm run dev` before running tests.** Karma tests run against the pre-built `dist/converse.js` bundle,
+**Always run `npm run dev` before running tests.** Vitest runs against the pre-built `dist/converse.js` bundle,
 not source files directly. If you skip the build, you will be testing against a stale bundle and changes to source
 files will have no effect.
 
 **The full test suite takes over a minute to run.** Avoid running it unless you need to verify that nothing has
-regressed across the entire codebase. When working on a specific feature, use `fdescribe`/`fit` instead (see below).
+regressed across the entire codebase. When working on a specific feature, pass a file path or use `fdescribe`/`fit`
+(see below).
 
 ```bash
 # Always build first, then test
-npm run dev && npm test -- --single-run
+npm run dev && npm test
 
-# Run tests (--single-run is mandatory)
-npm test -- --single-run                    # Run main tests (Karma)
+npm test                                    # Run main UI tests (headless Chromium)
 npm run test:all                            # Run both headless and main tests
-npm run test:headless -- --single-run       # Run headless tests only
-cd src/headless && npm test -- --single-run # Alternative way to run headless tests
+npm run test:headless                       # Run headless (core XMPP) tests only
+cd src/headless && npm test                 # Alternative way to run headless tests
+
+# Run only specific files (fastest turnaround) — pass a path/substring to vitest
+npx vitest run --project main src/plugins/chatview/tests/messages.js
 ```
 
 > **Which suite to run?** Tests for plugins under `src/headless/` (e.g. smacks, roster,
 > status, presence) live in the **headless** suite and will not be picked up by `npm test`.
-> Use `npm run test:headless -- --single-run` (or `npm run dev:headless` before it) when
+> Use `npm run test:headless` (or `npm run dev:headless` before it) when
 > working in that area. `npm test` only covers the UI plugins under `src/plugins/`.
 
 ```bash
@@ -145,21 +149,18 @@ make check                    # Runs lint + types + all tests
 
 #### Creating new test files
 
-When creating a new test file, add it to the `files` array in `karma.conf.js`:
-
-```javascript
-files: [
-    // ... existing files
-    { pattern: "src/plugins/my-plugin/tests/my-test.js", type: 'module' },
-],
-```
+Just drop the `*.js` file in a plugin's `tests/` directory — Vitest discovers it via the
+`include` globs in `vitest.config.js`. No manual registration is required (unlike the old
+Karma `files` array). Non-spec helpers in a `tests/` dir must be added to `commonExclude`
+in `vitest.config.js` so they aren't collected as empty test files.
 
 #### Focusing tests with `fdescribe` / `fit`
 
-**Prefer `fdescribe`/`fit` over `--grep` for running a subset of tests.** The `--grep`
-flag does a substring match on the full test name but is unreliable in practice. Instead,
-temporarily change `describe` → `fdescribe` or `it` → `fit` in the test file to focus
-only those tests, then revert before committing.
+**Prefer scoping a run to a file (`npx vitest run --project main path/to/test.js`), or
+`fdescribe`/`fit`, over `-t`/`--testNamePattern`.** To focus within a file, temporarily
+change `describe` → `fdescribe` or `it` → `fit`, then revert before committing. (The shim
+aliases `fdescribe`/`fit` to Vitest's `.only`; note a focused test only narrows within its
+own file, so combine it with a file path when running the whole suite.)
 
 ```javascript
 // Focus an entire suite:
@@ -170,6 +171,26 @@ fit('sends a correct XEP-0444 stanza when a reaction is added', ...);
 ```
 
 **Always revert `fdescribe`/`fit` back to `describe`/`it` before committing.**
+
+#### Jasmine shim vs. native Vitest APIs
+
+`vitest/setup.jasmine-shim.js` is a thin, **additive** compatibility layer (`spyOn`,
+`jasmine.*`, `fdescribe`/`fit`, `toEqualStanza`, matchers like `toBeTrue`/`toHaveSize`) that
+lets the existing Jasmine-era specs run unchanged. It does **not** shadow Vitest.
+
+**Write new tests with native Vitest APIs** (`vi.fn`, `vi.spyOn().mockReturnValue()`,
+`vi.useFakeTimers`, native matchers). Both styles work and can be mixed in one file:
+`globals: true` injects `vi`/`expect`/`describe`/`it` (no imports), `expect` is *extended*
+(native + Jasmine matchers coexist), and `spyOn()` returns the underlying Vitest mock (so
+`spy.and.returnValue(x)`/`spy.calls.count()` and `spy.mockReturnValue(x)`/
+`expect(spy).toHaveBeenCalledOnce()` both work on the same spy).
+
+Two caveats, independent of style:
+- **`vi.mock()` can't stub Converse internals** — specs import the prebuilt `dist/converse.js`
+  bundle (modules are inlined, no path to intercept). Stub at runtime: `vi.spyOn(converse.env.X, …)`,
+  `vi.spyOn(SomeClass.prototype, …)`, `vi.stubGlobal('Notification', …)`.
+- **No `.concurrent`** — the suite needs serial execution + shared browser state
+  (`fileParallelism: false`, `isolate: false`); concurrent tests break cumulative storage state.
 
 ### Code Quality
 

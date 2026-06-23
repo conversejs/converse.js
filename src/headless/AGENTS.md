@@ -159,7 +159,7 @@ describe('My Plugin', function () {
 - `mock.waitForRoster(_converse, type, length)` — Wait for roster IQ
 - `jasmine.toEqualStanza()` — Custom matcher for XML stanza comparison
 - `stx` template literal — Preferred way to create XML stanzas in tests
-- New test files must be added to `karma.conf.js` `files` array
+- New test files in a `tests/` directory are auto-discovered by Vitest (no manual registration)
 
 ## Common libraries (via `converse.env`)
 

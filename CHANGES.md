@@ -1,5 +1,9 @@
 # Changelog
 
+## 14.0.0 (Unreleased)
+
+- fix(omemo): detect omemo:2-only contacts as OMEMO-capable
+
 ## 14.0.0-beta.4 (2026-06-22)
 
 - Bump libomemo.js to version 2.0.2

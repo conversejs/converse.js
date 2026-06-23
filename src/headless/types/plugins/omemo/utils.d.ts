@@ -142,6 +142,8 @@ export function createMessageStanzaHandler(chat: import("../../shared/chatbox").
  */
 export function getOutgoingMessageAttributes(chat: import("../../shared/chatbox.js").default, attrs: import("../../shared/types").MessageAttributes): import("../../shared/types").MessageAttributes;
 /**
+ * Checks whether the contact advertises any OMEMO-compatible devices.
+ * Legacy is checked first and short-circuits.
  * @param {string} jid
  */
 export function contactHasOMEMOSupport(jid: string): Promise<boolean>;

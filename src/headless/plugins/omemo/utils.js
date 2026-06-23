@@ -1091,12 +1091,17 @@ export function getOutgoingMessageAttributes(chat, attrs) {
 }
 
 /**
+ * Checks whether the contact advertises any OMEMO-compatible devices.
+ * Legacy is checked first and short-circuits.
  * @param {string} jid
  */
 export async function contactHasOMEMOSupport(jid) {
-    /* Checks whether the contact advertises any OMEMO-compatible devices. */
-    const devices = await u.omemo.getDevicesForContact(jid);
-    return devices.length > 0;
+    const legacy = await u.omemo.getDevicesForContact(jid, Strophe.NS.OMEMO);
+    if (legacy.length > 0) {
+        return true;
+    }
+    const v2 = await u.omemo.getDevicesForContact(jid, Strophe.NS.OMEMO2);
+    return v2.length > 0;
 }
 
 /**

@@ -25,4 +25,4 @@ Add a test for any bug fixed or feature added.
 
 Tests can be found in various `./tests` folders in the Converse source code.
 
-To run the tests, you can run `make check` on Linux and Mac, or `./node_modules/bin/karma start karma.conf` on Windows.
+To run the tests, run `make check` on Linux and Mac, or `npm run test:all` on Windows.

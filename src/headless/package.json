@@ -49,8 +49,8 @@
     "directory": "src/headless"
   },
   "scripts": {
-    "test": "karma start karma.conf.js",
-    "test:browser": "karma start karma.conf --browsers Chrome",
+    "test": "cd ../.. && vitest run --project headless",
+    "test:browser": "cd ../.. && vitest --project headless --browser.headless=false",
     "types": "tsc -p tsconfig.json"
   },
   "bugs": {

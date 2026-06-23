@@ -7,7 +7,6 @@
       "**/*.js.map",
       "**/dist/**/*",
       "**/tests/*",
-      "karma.conf.js",
       "types/**/*",
   ],
   "compilerOptions": {

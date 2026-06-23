@@ -6,7 +6,7 @@
 </h2>
 
 [![XMPP Chat](https://conference.conversejs.org/muc_badge/discuss@conference.conversejs.org)](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org)
-[![CI Tests](https://github.com/conversejs/converse.js/actions/workflows/karma-tests.yml/badge.svg)](https://github.com/conversejs/converse.js/actions/workflows/karma-tests.yml)
+[![CI Tests](https://github.com/conversejs/converse.js/actions/workflows/tests.yml/badge.svg)](https://github.com/conversejs/converse.js/actions/workflows/tests.yml)
 [![Translation status](https://hosted.weblate.org/widgets/conversejs/-/svg-badge.svg)](https://hosted.weblate.org/engage/conversejs/?utm_source=widget)
 
 [Converse](https://conversejs.org) is a modern, feature-rich and 100% client-side [XMPP](https://xmpp.org) chat app that runs in a web browser.

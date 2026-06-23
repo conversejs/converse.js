@@ -1,7 +1,6 @@
 # You can set these variables from the command line.
 BOOTSTRAP			= ./node_modules/
 BUILDDIR			= ./docs
-KARMA				?= ./node_modules/.bin/karma
 CLEANCSS			?= ./node_modules/clean-css-cli/bin/cleancss
 HTTPSERVE_PORT		?= 8008
 HTTPS_SERVE_PORT	?= 8443

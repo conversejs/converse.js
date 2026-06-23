@@ -67,7 +67,9 @@ async function populateRoster(ignore_cache = false) {
     } finally {
         if (connection.send_initial_presence) {
             api.user.presence.send();
-            _converse.state.profile.save({ presence: 'online' });
+            // The profile may already be gone if the session was cleared while
+            // the roster fetch was still in flight (e.g. during reconnection).
+            _converse.state.profile?.save({ presence: 'online' });
         }
     }
 }

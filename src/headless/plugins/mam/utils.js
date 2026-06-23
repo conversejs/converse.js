@@ -170,6 +170,10 @@ export async function fetchArchivedMessages(model, options = {}, should_page = f
     const supported = await api.disco.supports(NS.MAM, mam_jid);
     if (!supported) return;
 
+    // The session may have been torn down while we were awaiting above. If so,
+    // there's no point querying the archive (and `api.archive.query` would throw).
+    if (!api.connection.connected()) return;
+
     const max = api.settings.get('archived_messages_page_size');
     const query = /** @type {import('./types').ArchiveQueryOptions} */ {
         is_groupchat: is_muc,

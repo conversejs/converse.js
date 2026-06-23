@@ -1,4 +1,5 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.js';
 
 const { u } = converse.env;
 
@@ -9,7 +10,7 @@ describe("XMPP URI Query Actions (XEP-0147) - URI Parsing", function () {
      * This tests the extractXMPPURI and parseXMPPURI functions
      */
     it("extracts and parses XMPP URI correctly",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
 
         const originalHash = window.location.hash;
         const originalReplaceState = window.history.replaceState;
@@ -19,7 +20,7 @@ describe("XMPP URI Query Actions (XEP-0147) - URI Parsing", function () {
         window.history.replaceState = replaceStateSpy;
 
         // Simulate a protocol handler URI by setting the hash
-        window.location.hash = '#converse/action?uri=xmpp%3Aromeo%40montague.lit%3Faction%3Dmessage%26body%3DHello';
+        window.location.hash = '#converse/action?uri=xmpp%3Aromeo%40montague.lit%3Fmessage%3Bbody%3DHello';
 
         try {
             // Call the function - this should extract and parse the URI
@@ -40,7 +41,7 @@ describe("XMPP URI Query Actions (XEP-0147) - URI Parsing", function () {
      * This tests the event-based delegation to plugin-specific handlers
      */
     it("triggers xmppURIAction event with parsed data",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
 
         const { api } = _converse;
         const originalHash = window.location.hash;
@@ -58,7 +59,7 @@ describe("XMPP URI Query Actions (XEP-0147) - URI Parsing", function () {
         });
 
         // Mock URI with message action
-        window.location.hash = '#converse/action?uri=xmpp%3Aromeo%40montague.lit%3Faction%3Dmessage%26body%3DHello';
+        window.location.hash = '#converse/action?uri=xmpp%3Aromeo%40montague.lit%3Fmessage%3Bbody%3DHello';
 
         try {
             // Execute the function
@@ -80,7 +81,7 @@ describe("XMPP URI Query Actions (XEP-0147) - URI Parsing", function () {
      * This ensures the function gracefully handles malformed JIDs
      */
     it("handles invalid JID gracefully and does not trigger event",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
 
         const { api } = _converse;
         const originalHash = window.location.hash;

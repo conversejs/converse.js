@@ -492,52 +492,94 @@ Object.assign(u, {
 });
 
 /**
- * Handle XEP-0147 "query actions" for roster management.
- * This function is called by the chatview plugin's routeToQueryAction.
+ * Handle XEP-0147 "query actions" for roster management and subscription.
  * Handles:
- *   - action=add-roster: adds a contact to the roster
+ *   - action=roster: adds or edits a contact in the roster
+ *   - action=remove: removes a contact from the roster
+ *   - action=subscribe: subscribes to a contact's presence
+ *   - action=unsubscribe: unsubscribes from a contact's presence
  *
- * @param {string} jid - The JID to add to the roster
- * @param {URLSearchParams} query_params - Query parameters from the URI
+ * @param {string} action - The XEP-0147 querytype
+ * @param {string} jid - The JID to perform the action on
+ * @param {URLSearchParams} query_params - Additional query parameters from the URI
  */
-export async function routeToQueryAction(jid, query_params) {
-    const action = query_params?.get('action');
-
-    if (action === 'add-roster') {
-        await handleRosterAction(jid, query_params);
+export async function handleRosterURIAction(action, jid, query_params) {
+    if (action === 'roster') {
+        await handleRosterAddOrEdit(jid, query_params);
+    } else if (action === 'remove') {
+        await handleRosterRemove(jid);
+    } else if (action === 'subscribe') {
+        await handleRosterSubscribe(jid);
+    } else if (action === 'unsubscribe') {
+        await handleRosterUnsubscribe(jid);
     } else {
-        log.debug(`routeToQueryAction (rosterview): Action "${action}" not handled`);
+        log.debug(`handleRosterURIAction (rosterview): Action "${action}" not handled`);
     }
 }
 
 /**
- * Handles the `action=add-roster` case.
- * Adds a contact to the roster with optional name and group.
- *
- * @param {string} jid - The JID of the contact to add
+ * Handles the `roster` action (adding or editing a contact).
+ * @param {string} jid - The JID of the contact
  * @param {URLSearchParams} params - Query parameters including 'name' and 'group'
  */
-async function handleRosterAction(jid, params) {
+async function handleRosterAddOrEdit(jid, params) {
     const name = params.get('name') || jid.split('@')[0];
     const group = params.get('group');
     const groups = group ? [group] : [];
 
     try {
-        // Check if user is connected before attempting to add contact
         if (!api.connection.connected()) {
             api.alert('warning', __('Not connected'), 
                 [__('Please login first before adding contacts to your roster.')]);
             return;
         }
 
-        await api.contacts.add(
-            { jid, name, groups },
-            true,   // persist on server
-            true,   // subscribe to presence
-            ''      // no custom message
-        );
+        await api.contacts.add({ jid, name, groups }, true, false, '');
     } catch (err) {
-        api.alert('error', __('Error'), 
-            [__('Failed to add %1$s to your roster', jid)]);
+        api.alert('error', __('Error'), [__('Failed to add %1$s to your roster', jid)]);
+    }
+}
+
+/**
+ * Handles the `remove` action.
+ * @param {string} jid - The JID of the contact
+ */
+async function handleRosterRemove(jid) {
+    try {
+        if (api.connection.connected()) {
+            await api.contacts.remove(jid);
+        }
+    } catch (err) {
+        api.alert('error', __('Error'), [__('Failed to remove %1$s from your roster', jid)]);
+    }
+}
+
+/**
+ * Handles the `subscribe` action.
+ * As per XEP-0147, SHOULD add to roster first.
+ * @param {string} jid - The JID of the contact
+ */
+async function handleRosterSubscribe(jid) {
+    try {
+        if (api.connection.connected()) {
+            await api.contacts.add({ jid }, true, true, '');
+        }
+    } catch (err) {
+        api.alert('error', __('Error'), [__('Failed to subscribe to %1$s', jid)]);
+    }
+}
+
+/**
+ * Handles the `unsubscribe` action.
+ * @param {string} jid - The JID of the contact
+ */
+async function handleRosterUnsubscribe(jid) {
+    try {
+        if (api.connection.connected()) {
+            const { converse } = _converse;
+            api.send(converse.env.$pres({ type: 'unsubscribe', to: jid }));
+        }
+    } catch (err) {
+        api.alert('error', __('Error'), [__('Failed to unsubscribe from %1$s', jid)]);
     }
 }

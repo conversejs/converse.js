@@ -1,15 +1,16 @@
-/*global mock, converse */
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.js';
 
 const { u } = converse.env;
 
 describe("XMPP URI Query Actions (XEP-0147) - Roster", function () {
 
     /**
-     * Test roster add functionality when action=add-roster
+     * Test roster add functionality when action=roster
      * This tests URI parsing and adding a contact to the roster
      */
-    it("adds a contact to roster when action=add-roster",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+    it("adds a contact to roster when action=roster",
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
 
         const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
@@ -19,8 +20,8 @@ describe("XMPP URI Query Actions (XEP-0147) - Roster", function () {
 
         window.history.replaceState = jasmine.createSpy('replaceState');
 
-        // Mock URI with add-roster action: ?uri=xmpp:juliet@capulet.lit?action=add-roster&name=Juliet&group=Friends
-        window.location.hash = '#converse/action?uri=xmpp%3Ajuliet%40capulet.lit%3Faction%3Dadd-roster%26name%3DJuliet%26group%3DFriends';
+        // Mock URI with roster action: ?roster;name=Juliet;group=Friends
+        window.location.hash = '#converse/action?uri=xmpp%3Ajuliet%40capulet.lit%3Froster%3Bname%3DJuliet%3Bgroup%3DFriends';
 
         try {
             // Spy on the contacts.add API method - return a resolved promise to avoid network calls
@@ -37,7 +38,7 @@ describe("XMPP URI Query Actions (XEP-0147) - Roster", function () {
                     groups: ['Friends']
                 },
                 true,  // persist on server
-                true,  // subscribe to presence
+                false, // subscribe to presence
                 ''     // no custom message
             );
         } finally {

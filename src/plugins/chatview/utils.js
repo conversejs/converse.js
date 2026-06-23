@@ -94,12 +94,10 @@ export async function routeToQueryAction(event) {
     const uri = extractXMPPURI(event);
     if (!uri) return;
 
-    const { jid, query_params } = parseXMPPURI(uri);
+    const { jid, action, query_params } = parseXMPPURI(uri);
     if (!u.isValidJID(jid)) {
         return log.warn(`routeToQueryAction: Invalid JID: "${jid}"`);
     }
-
-    const action = query_params?.get('action');
     
     // Trigger event to let specific plugins handle plugin-specific actions
     api.trigger('xmppURIAction', { jid, query_params, action });
@@ -130,12 +128,28 @@ export function extractXMPPURI(event) {
 }
 
 /**
- * Splits an xmpp: URI into a JID and query parameters.
+ * Splits an xmpp: URI into a JID, an action (querytype), and query parameters.
+ * XEP-0147 query parameters are separated by ';' instead of '&'.
  */
 export function parseXMPPURI(uri) {
     const [jid, query] = uri.split('?');
-    const query_params = new URLSearchParams(query || '');
-    return { jid, query_params };
+    let action = null;
+    const query_params = new URLSearchParams();
+
+    if (query) {
+        const parts = query.split(';');
+        if (parts.length > 0) {
+            action = parts[0]; // The first part is the action (e.g., 'roster')
+            for (let i = 1; i < parts.length; i++) {
+                const [key, value] = parts[i].split('=');
+                if (key) {
+                    query_params.set(key, value ? decodeURIComponent(value) : '');
+                }
+            }
+        }
+    }
+    
+    return { jid, action, query_params };
 }
 
 Object.assign(u,{

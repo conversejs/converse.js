@@ -85,5 +85,22 @@ converse.plugins.add('converse-muc-views', {
 
         api.listen.on('parseMessageForCommands', parseMessageForMUCCommands);
         api.listen.on('confirmDirectMUCInvitation', confirmDirectMUCInvitation);
+
+        api.listen.on('xmppURIAction', async ({ jid, query_params, action }) => {
+            if (action === 'join') {
+                const attrs = {};
+                // As per XEP-0147, the 'password' parameter maps to 'password'
+                if (query_params.has('password')) {
+                    attrs.password = query_params.get('password');
+                }
+                
+                try {
+                    await api.waitUntil('chatBoxesFetched');
+                    await api.rooms.open(jid, attrs, true);
+                } catch (err) {
+                    api.alert('error', __('Error'), [__('Failed to join the room %1$s', jid)]);
+                }
+            }
+        });
     }
 });

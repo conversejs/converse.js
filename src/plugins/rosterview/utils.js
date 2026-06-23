@@ -528,12 +528,7 @@ async function handleRosterAddOrEdit(jid, params) {
     const groups = group ? [group] : [];
 
     try {
-        if (!api.connection.connected()) {
-            api.alert('warning', __('Not connected'), 
-                [__('Please login first before adding contacts to your roster.')]);
-            return;
-        }
-
+        await api.waitUntil('chatBoxesFetched');
         await api.contacts.add({ jid, name, groups }, true, false, '');
     } catch (err) {
         api.alert('error', __('Error'), [__('Failed to add %1$s to your roster', jid)]);
@@ -546,9 +541,8 @@ async function handleRosterAddOrEdit(jid, params) {
  */
 async function handleRosterRemove(jid) {
     try {
-        if (api.connection.connected()) {
-            await api.contacts.remove(jid);
-        }
+        await api.waitUntil('chatBoxesFetched');
+        await api.contacts.remove(jid);
     } catch (err) {
         api.alert('error', __('Error'), [__('Failed to remove %1$s from your roster', jid)]);
     }
@@ -561,9 +555,8 @@ async function handleRosterRemove(jid) {
  */
 async function handleRosterSubscribe(jid) {
     try {
-        if (api.connection.connected()) {
-            await api.contacts.add({ jid }, true, true, '');
-        }
+        await api.waitUntil('chatBoxesFetched');
+        await api.contacts.add({ jid }, true, true, '');
     } catch (err) {
         api.alert('error', __('Error'), [__('Failed to subscribe to %1$s', jid)]);
     }
@@ -575,10 +568,9 @@ async function handleRosterSubscribe(jid) {
  */
 async function handleRosterUnsubscribe(jid) {
     try {
-        if (api.connection.connected()) {
-            const { converse } = _converse;
-            api.send(converse.env.$pres({ type: 'unsubscribe', to: jid }));
-        }
+        await api.waitUntil('chatBoxesFetched');
+        const { converse } = _converse;
+        api.send(converse.env.$pres({ type: 'unsubscribe', to: jid }));
     } catch (err) {
         api.alert('error', __('Error'), [__('Failed to unsubscribe from %1$s', jid)]);
     }

@@ -20,9 +20,19 @@ export default class ConverseWebP extends ConverseGif {
             this.options.width ?? this.frames[0].dims.width,
             this.options.height ?? this.frames[0].dims.height
         );
+
+        if (this.frames.length === 1) {
+            this.renderImage(false);
+            return;
+        }
+
         this.initPlayer();
     }
 
+    /**
+     * 
+     * @param {ArrayBuffer} fileBuffer 
+     */
     async loadWebPFrames(fileBuffer) {
         const decoder = new ImageDecoder({ 
             data: fileBuffer, 

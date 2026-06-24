@@ -20,6 +20,28 @@ export const COMMENTS_NODE_PREFIX = 'urn:xmpp:microblog:0:comments/';
  */
 export const SOCIAL_FEED_FEATURE = 'urn:xmpp:pubsub-social-feed:1';
 
+/**
+ * XEP-0330 (Pubsub Subscription): the PEP node holding the user's portable
+ * follow-list (the durable source of truth for who they follow), and the
+ * namespace of each list item's `<subscription>` payload.
+ */
+export const FOLLOWING_NODE = 'urn:xmpp:pubsub:subscription';
+export const NS_SUBSCRIPTION = 'urn:xmpp:pubsub:subscription:0';
+
+/**
+ * Node configuration for the follow-list, sent as XEP-0060 publish-options.
+ * Matches Movim's `generateConfig` so the same node interoperates: persistent,
+ * presence-readable (contacts can discover who you follow), unbounded, and
+ * notifying on retraction.
+ */
+export const FOLLOWING_PUBLISH_OPTIONS = {
+    persist_items: 'true',
+    access_model: 'presence',
+    send_last_published_item: 'never',
+    max_items: 'max',
+    notify_retract: 'true',
+};
+
 // Atom (RFC 4287) and the syndication threading extension (RFC 4685) namespaces.
 // Declared as plain constants (rather than read off `Strophe.NS`) so the parser
 // is independent of plugin-initialization order.

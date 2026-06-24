@@ -152,18 +152,9 @@ export async function onStatusInitialized(reconnecting) {
         // When reconnecting and not resuming a previous session,
         // we clear all cached presence data, since it might be stale
         // and we'll receive new presence updates
-        !api.connection.get().hasResumed() && (await clearPresences());
+        if (!api.connection.get().hasResumed()) await clearPresences();
     } else {
-        const presences = new _converse.exports.Presences();
-        Object.assign(_converse, { presences });
-        Object.assign(_converse.state, { presences });
-
-        const bare_jid = _converse.session.get('bare_jid');
-        const id = `converse.presences-${bare_jid}`;
-
-        initStorage(presences, id, 'session');
-        // We might be continuing an existing session, so we fetch cached presence data.
-        await new Promise((r) => presences.fetch({ success: r, error: r }));
+        Object.assign(_converse.state, { presences: new _converse.exports.Presences() });
     }
     /**
      * Triggered once the _converse.Presences collection has been

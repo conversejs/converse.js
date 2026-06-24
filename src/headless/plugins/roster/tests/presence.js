@@ -1,6 +1,8 @@
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 
+const { stx } = converse.env;
+
 // See: https://xmpp.org/rfcs/rfc3921.html
 
 describe('A received presence stanza', function () {
@@ -101,7 +103,9 @@ describe('A received presence stanza', function () {
                     from="${contact_jid}/older-priority-1-resource">
                 <priority>1</priority>
                 <show>dnd</show>
-                <delay xmlns="urn:xmpp:delay" stamp="2017-02-15T15:02:24Z" from="${contact_jid}/older-priority-1-resource"/>
+                <delay xmlns="urn:xmpp:delay"
+                    stamp="2017-02-15T15:02:24Z"
+                    from="${contact_jid}/older-priority-1-resource"/>
             </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
             expect(_converse.roster.get(contact_jid).presence.getStatus()).toBe('away');

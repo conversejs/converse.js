@@ -27,9 +27,9 @@ declare class Presence extends Model<import("./types").PresenceAttrs> {
      * Remove the passed in resource from the resources map.
      * Also redetermines the presence given that there's one less
      * resource.
-     * @param {string} name: The resource name
+     * @param {import('./types').PresenceAttributes} attrs
      */
-    removeResource(name: string): void;
+    removeResource({ resource: name }: import("./types").PresenceAttributes): void;
 }
 import { Model } from '@converse/skeletor';
 import Resources from './resources.js';

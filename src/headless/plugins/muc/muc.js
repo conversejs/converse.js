@@ -452,22 +452,22 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 }, {}),
             ),
         );
-        this.features.browserStorage = createStore(id, 'session');
-        this.features.listenTo(_converse, 'beforeLogout', () => this.features.browserStorage.flush());
+        this.features.storage = createStore(id, 'session');
+        this.features.listenTo(_converse, 'beforeLogout', () => this.features.storage.flush());
 
         id = `converse.muc-config-${bare_jid}-${this.get('jid')}`;
         this.config = new Model(/** @type {import('./types').MUCConfigAttributes} */ ({ id }));
-        this.config.browserStorage = createStore(id, 'session');
-        this.config.listenTo(_converse, 'beforeLogout', () => this.config.browserStorage.flush());
+        this.config.storage = createStore(id, 'session');
+        this.config.listenTo(_converse, 'beforeLogout', () => this.config.storage.flush());
     }
 
     initOccupants() {
         this.occupants = new _converse.exports.MUCOccupants();
         const bare_jid = _converse.session.get('bare_jid');
         const id = `converse.occupants-${bare_jid}${this.get('jid')}`;
-        this.occupants.browserStorage = createStore(id, 'session');
+        this.occupants.storage = createStore(id, 'session');
         this.occupants.chatroom = this;
-        this.occupants.listenTo(_converse, 'beforeLogout', () => this.occupants.browserStorage.flush());
+        this.occupants.listenTo(_converse, 'beforeLogout', () => this.occupants.storage.flush());
     }
 
     fetchOccupants() {

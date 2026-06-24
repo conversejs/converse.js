@@ -44,7 +44,6 @@ declare namespace _default {
         function create(jid: string, node: string, config: import("./types").PubSubConfigOptions): Promise<void>;
         /**
          * Subscribes the local user to a PubSub node.
-         *
          * @method _converse.api.pubsub.subscribe
          * @param {string} jid - PubSub service JID.
          * @param {string} node - The node to subscribe to
@@ -76,13 +75,13 @@ declare namespace _default {
              * XEP-0059 Result Set Management (`rsm`).
              *
              * @method _converse.api.pubsub.items.get
-             * @param {string} jid - The JID of the pubsub service where the node
+             * @param {string|null} jid - The JID of the pubsub service where the node
              *      resides. Pass a falsy value to query your own PEP service (bare JID).
              * @param {string} node - The node to retrieve items from
              * @param {import('./types').PubSubItemsOptions} [options]
              * @returns {Promise<import('./types').PubSubItemsResult>}
              */
-            function get(jid: string, node: string, options?: import("./types").PubSubItemsOptions): Promise<import("./types").PubSubItemsResult>;
+            function get(jid: string | null, node: string, options?: import("./types").PubSubItemsOptions): Promise<import("./types").PubSubItemsResult>;
         }
     }
 }

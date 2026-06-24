@@ -67,7 +67,7 @@ export async function initClientConfig(_converse) {
      */
     const id = 'converse.client-config';
     const config = new Model({ id, 'trusted': true });
-    config.browserStorage = createStore(id, 'session');
+    config.storage = createStore(id, 'session');
 
     Object.assign(_converse, { config }); // XXX DEPRECATED
     Object.assign(_converse.state, { config });

@@ -350,8 +350,8 @@ export default {
                     throw await parseErrorStanza(error);
                 }
 
-                const items = Array.from(response.querySelectorAll('> pubsub > items > item'));
-                const set = response.querySelector('> pubsub > set');
+                const items = Array.from(response.querySelectorAll('pubsub > items > item'));
+                const set = response.querySelector('pubsub > set');
                 return {
                     items,
                     rsm: set ? new RSM({ ...(rsm_options ?? {}), xml: set }) : undefined,

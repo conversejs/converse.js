@@ -69,9 +69,9 @@ export function createStore(id, type) {
  */
 export function initStorage(model, id, type) {
     type = type || getDefaultStorageType();
-    model.browserStorage = createStore(id, type);
+    model.storage = createStore(id, type);
     if (storeUsesIndexedDB(type)) {
-        const flush = () => model.browserStorage.flush();
+        const flush = () => model.storage.flush();
         const unloadevent = getUnloadEvent();
         window.addEventListener(unloadevent, flush);
         model.on('destroy', () => window.removeEventListener(unloadevent, flush));

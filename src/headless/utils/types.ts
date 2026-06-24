@@ -37,5 +37,5 @@ export type MediaURLMetadata = MediaURLIndexes & {
 export type StorageType = 'persistent' | 'session';
 
 export type StorageModel = IEventEmitter & {
-    browserStorage: PersistentStorage;
+    storage: PersistentStorage;
 };

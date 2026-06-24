@@ -53,7 +53,7 @@ export function isErrorObject(o) {
  * @returns {import('@converse/skeletor').BrowserStorage}
  */
 export function isPersistableModel(model) {
-    return model.browserStorage || model.collection?.browserStorage;
+    return model.storage || model.collection?.storage;
 }
 
 /**

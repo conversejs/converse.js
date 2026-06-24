@@ -31,25 +31,25 @@ class DiscoEntity extends Model {
 
         this.dataforms = new Collection();
         let id = `converse.dataforms-${this.get('jid')}`;
-        this.dataforms.browserStorage = createStore(id, 'session');
+        this.dataforms.storage = createStore(id, 'session');
 
         this.features = new Collection();
         id = `converse.features-${this.get('jid')}`;
-        this.features.browserStorage = createStore(id, 'session');
+        this.features.storage = createStore(id, 'session');
         this.listenTo(this.features, 'add', this.onFeatureAdded);
 
         this.fields = new Collection();
         id = `converse.fields-${this.get('jid')}`;
-        this.fields.browserStorage = createStore(id, 'session');
+        this.fields.storage = createStore(id, 'session');
         this.listenTo(this.fields, 'add', this.onFieldAdded);
 
         this.items = new Collection();
         id = `converse.items-${this.get('jid')}`;
-        this.items.browserStorage = createStore(id, 'session');
+        this.items.storage = createStore(id, 'session');
 
         this.identities = new Collection();
         id = `converse.identities-${this.get('jid')}`;
-        this.identities.browserStorage = createStore(id, 'session');
+        this.identities.storage = createStore(id, 'session');
 
         this.fetchFeatures(options);
     }
@@ -109,12 +109,12 @@ class DiscoEntity extends Model {
         if (options.ignore_cache) {
             await this.queryInfo(options);
         } else {
-            const store_id = this.features.browserStorage.name;
+            const store_id = this.features.storage.name;
 
             // Checking only whether features have been cached, even though
             // there are other things that should be cached as well. We assume
             // that if features have been cached, everything else has been also.
-            const result = await this.features.browserStorage.store.getItem(store_id);
+            const result = await this.features.storage.store.getItem(store_id);
             if ((result && result.length === 0) || result === null) {
                 await this.queryInfo();
             } else {

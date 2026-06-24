@@ -95,7 +95,7 @@ converse.plugins.add('converse-omemo', {
                     delete _converse.state.devicelists_v2;
                 }
                 if (_converse.state.omemo_active_states) {
-                    _converse.state.omemo_active_states.browserStorage?.clear();
+                    _converse.state.omemo_active_states.storage?.clear();
                 }
             }
             // Drop the in-memory reference so it's re-fetched from storage on

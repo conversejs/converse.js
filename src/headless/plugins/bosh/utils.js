@@ -19,7 +19,7 @@ async function initBOSHSession() {
     const id = BOSH_SESSION_ID;
     if (!bosh_session) {
         bosh_session = new Model({ id });
-        bosh_session.browserStorage = createStore(id, 'session');
+        bosh_session.storage = createStore(id, 'session');
         await new Promise((resolve) => bosh_session.fetch({ 'success': resolve, 'error': resolve }));
     }
 

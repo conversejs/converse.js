@@ -1494,7 +1494,7 @@ describe('The Contacts Roster', function () {
                 var new_roster = new _converse.RosterContacts();
                 // Roster items are yet to be fetched from browserStorage
                 expect(new_roster.length).toEqual(0);
-                new_roster.browserStorage = _converse.roster.browserStorage;
+                new_roster.storage = _converse.roster.storage;
                 await new Promise((success) => new_roster.fetch({ success }));
                 expect(new_roster.length).toEqual(num_contacts);
                 // Check that the roster items retrieved from browserStorage

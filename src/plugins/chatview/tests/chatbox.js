@@ -1005,7 +1005,7 @@ describe('Chatboxes', function () {
                 await mock.sendMessage(_converse, view, message);
 
                 expect(view.model.messages.length === 1).toBeTruthy();
-                const stored_messages = await view.model.messages.browserStorage.findAll();
+                const stored_messages = await view.model.messages.storage.findAll();
                 expect(stored_messages.length).toBe(1);
                 await u.waitUntil(() => view.querySelector('.chat-msg'));
 

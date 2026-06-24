@@ -68,7 +68,7 @@ export async function initializeDisco() {
     const bare_jid = _converse.session.get('bare_jid');
     const id = `converse.disco-entities-${bare_jid}`;
 
-    disco_entities.browserStorage = createStore(id, 'session');
+    disco_entities.storage = createStore(id, 'session');
     const collection = await disco_entities.fetchEntities();
 
     const domain = _converse.session.get('domain');
@@ -99,7 +99,7 @@ export function initStreamFeatures() {
         api.promises.add('streamFeaturesAdded');
 
         const stream_features = new Collection();
-        stream_features.browserStorage = createStore(id, 'session');
+        stream_features.storage = createStore(id, 'session');
         Object.assign(_converse, { stream_features }); // XXX: DEPRECATED
         Object.assign(_converse.state, { stream_features });
     }

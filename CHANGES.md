@@ -4,6 +4,7 @@
 
 - feat(version): Add XEP-0092 Software Version support and show the server's software version in the profile modal
 - fix(omemo): detect omemo:2-only contacts as OMEMO-capable
+- feat: add custom element with support for animated WebP images
 
 ## 14.0.0-beta.4 (2026-06-22)
 

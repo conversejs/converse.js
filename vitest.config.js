@@ -35,6 +35,9 @@ export default defineConfig({
         // inconsistent (some use one `../` too many and only resolved under Karma's
         // `/base/` URL prefix). Resolve the bundles by basename, depth-independent.
         alias: [
+            { find: /^shared\/(.*)$/, replacement: abs('src/shared/$1') },
+            { find: /^utils\/(.*)$/, replacement: abs('src/utils/$1') },
+            { find: /^templates\/(.*)$/, replacement: abs('src/templates/$1') },
             { find: /(?:\.\.\/)+dist\/converse\.js$/, replacement: abs('dist/converse.js') },
             {
                 find: /(?:\.\.\/)+dist\/converse-headless\.js$/,

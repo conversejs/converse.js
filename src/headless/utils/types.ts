@@ -32,6 +32,7 @@ export type MediaURLMetadata = MediaURLIndexes & {
     is_gif?: boolean;
     is_image?: boolean;
     is_video?: boolean;
+    is_webp?: boolean;
 };
 
 export type StorageType = 'persistent' | 'session';

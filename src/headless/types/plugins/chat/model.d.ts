@@ -418,7 +418,6 @@ declare class ChatBox extends ChatBox_base {
      * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
     defaults(): {
-        bookmarked: boolean;
         hidden: boolean;
         message_type: string;
         num_unread: number;

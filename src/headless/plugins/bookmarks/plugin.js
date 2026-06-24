@@ -16,6 +16,7 @@ const { Strophe } = converse.env;
 
 Strophe.addNamespace('BOOKMARKS', 'storage:bookmarks');
 Strophe.addNamespace('BOOKMARKS2', 'urn:xmpp:bookmarks:1');
+Strophe.addNamespace('BOOKMARKS_PINNING', 'urn:xmpp:bookmarks-pinning:0');
 
 converse.plugins.add('converse-bookmarks', {
     dependencies: ['converse-chatboxes', 'converse-muc'],
@@ -126,6 +127,7 @@ converse.plugins.add('converse-bookmarks', {
         api.listen.on('clearSession', () => {
             const { state } = _converse;
             if (state.bookmarks) {
+                state.bookmarks.stopListening();
                 state.bookmarks.clearStore({ silent: true });
                 const { fetched_flag_key } = getStorageKeys();
                 _converse.state.session.set(fetched_flag_key, undefined);

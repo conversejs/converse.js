@@ -108,7 +108,7 @@ describe('A MUC domain group', function () {
                 await mock.waitForRoster(_converse, 'current', 0);
                 await mock.openControlBox(_converse);
                 const controlbox = _converse.chatboxviews.get('controlbox');
-                const list = controlbox.querySelector('.list-container--openrooms');
+                const list = controlbox.querySelector('converse-rooms-list .list-container--openrooms');
                 const nick = 'JC';
                 const muc_jid = 'room@conference.shakespeare.lit';
                 _converse.api.rooms.open(muc_jid, { nick });

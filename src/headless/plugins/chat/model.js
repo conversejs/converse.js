@@ -26,7 +26,6 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
 
     defaults() {
         return {
-            bookmarked: false,
             hidden: isUniView() && !api.settings.get('singleton'),
             message_type: 'chat',
             num_unread: 0,

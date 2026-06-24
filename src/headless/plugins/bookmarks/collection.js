@@ -14,9 +14,25 @@ import log from '@converse/log';
 import { initStorage } from '../../utils/storage.js';
 import { parseStanzaForBookmarks } from './parsers.js';
 import '../../plugins/muc/index.js';
-import { getStorageKeys } from './utils.js';
+import { getStorageKeys, isPinnedExtension } from './utils.js';
 
 const { Strophe, stx } = converse.env;
+
+/**
+ * The `<pinned/>` extension element (XEP-0469), serialized as a string.
+ * Wrapped in a function so the namespace (registered in the plugin) is only
+ * read at call time, not at module load.
+ * @returns {string}
+ */
+const getPinnedExtension = () => `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`;
+
+/**
+ * Returns a copy of an extensions list with any XEP-0469 `<pinned/>` element(s)
+ * removed. Other (unknown) extensions are kept, as XEP-0402 requires.
+ * @param {string[]} [extensions]
+ * @returns {string[]}
+ */
+const withoutPinnedExtension = (extensions) => (extensions ?? []).filter((e) => !isPinnedExtension(e));
 
 /**
  * @extends {Collection<Bookmark>}
@@ -32,25 +48,37 @@ class Bookmarks extends Collection {
     }
 
     async initialize() {
+        const { chatboxes } = _converse.state;
+
         this.on('add', (bm) =>
             this.openBookmarkedRoom(bm)
-                .then((bm) => this.markRoomAsBookmarked(bm))
-                .catch((e) => log.fatal(e))
+                .then((bm) => this.linkRoom(bm.get('jid')))
+                .catch((e) => log.fatal(e)),
         );
         this.on('change:autojoin', this.onAutoJoinChanged, this);
         this.on(
             'remove',
-            /** @param { Bookmark } bookmark }*/ (bookmark) => {
+            /** @param {Bookmark} bookmark */ (bookmark) => {
+                chatboxes.get(bookmark.get('jid'))?.setBookmark?.(null);
                 this.sendRemoveBookmarkStanza(bookmark);
                 this.leaveRoom(bookmark);
-            }
+            },
         );
+
+        // A room may be opened *after* its bookmark already exists (e.g. a
+        // non-autojoin bookmark that the user opens manually), so we link on
+        // chatbox-add as well as on bookmark-add.
+        this.listenTo(chatboxes, 'add', /** @param {MUC} cb */ (cb) => this.linkRoom(cb.get('jid')));
 
         const { storage_key, fetched_flag_key } = getStorageKeys();
         this.fetched_flag = fetched_flag_key;
         initStorage(this, storage_key);
 
         await this.fetchBookmarks();
+
+        // Reconcile any rooms that were already open before the bookmarks
+        // finished loading.
+        chatboxes.forEach(/** @param {MUC} cb */ (cb) => this.linkRoom(cb.get('jid')));
 
         /**
          * Triggered once the {@link Bookmarks} collection
@@ -168,18 +196,27 @@ class Bookmarks extends Collection {
         if (node === Strophe.NS.BOOKMARKS2) {
             if (!bookmark) throw new Error('getPublishedItems: missing bookmark');
 
-            const extensions = bookmark.get('extensions') ?? [];
+            // Parse each extension defensively
+            const extensions = (bookmark.get('extensions') ?? [])
+                .map(
+                    /** @param {string} e */ (e) => {
+                        try {
+                            return Stanza.fromString(e);
+                        } catch (err) {
+                            log.error(`Ignoring invalid bookmark extension: ${e}`);
+                            log.error(err);
+                            return null;
+                        }
+                    },
+                )
+                .filter(Boolean);
             return stx`<item id="${bookmark.get('jid')}">
                         <conference xmlns="${Strophe.NS.BOOKMARKS2}"
                                 name="${bookmark.get('name') || nothing}"
                                 autojoin="${bookmark.get('autojoin')}">
                             ${bookmark.get('nick') ? stx`<nick>${bookmark.get('nick')}</nick>` : ''}
                             ${bookmark.get('password') ? stx`<password>${bookmark.get('password')}</password>` : ''}
-                        ${
-                            extensions.length
-                                ? stx`<extensions>${extensions.map((e) => Stanza.fromString(e))}</extensions>`
-                                : ''
-                        }
+                        ${extensions.length ? stx`<extensions>${extensions}</extensions>` : ''}
                         </conference>
                     </item>`;
         } else {
@@ -191,7 +228,7 @@ class Bookmarks extends Collection {
                         jid="${model.get('jid')}">
                         ${model.get('nick') ? stx`<nick>${model.get('nick')}</nick>` : ''}
                         ${model.get('password') ? stx`<password>${model.get('password')}</password>` : ''}
-                    </conference>`
+                    </conference>`,
                 )}
                 </storage>
             </item>`;
@@ -245,12 +282,14 @@ class Bookmarks extends Collection {
     }
 
     /**
-     * @param {Bookmark} bookmark
+     * Associate an open room with its bookmark, if both exist. Safe to call
+     * repeatedly (see {@link ModelWithBookmark#setBookmark}) and for any chatbox
+     * type — non-MUC boxes simply have no `setBookmark` method.
+     * @param {string} jid
      */
-    markRoomAsBookmarked(bookmark) {
+    linkRoom(jid) {
         const { chatboxes } = _converse.state;
-        const groupchat = chatboxes.get(bookmark.get('jid'));
-        groupchat?.save('bookmarked', true);
+        chatboxes.get(jid)?.setBookmark?.(this.get(jid) ?? null);
     }
 
     /**
@@ -282,7 +321,7 @@ class Bookmarks extends Collection {
             (attrs) => {
                 const bookmark = this.get(attrs.jid);
                 bookmark ? bookmark.save(attrs) : this.create(attrs);
-            }
+            },
         );
     }
 
@@ -309,7 +348,7 @@ class Bookmarks extends Collection {
             api.alert('error', __('Timeout Error'), [
                 __(
                     'The server did not return your bookmarks within the allowed time. ' +
-                        'You can reload the page to request them again.'
+                        'You can reload the page to request them again.',
                 ),
             ]);
             deferred?.reject(new Error('Could not fetch bookmarks'));
@@ -333,6 +372,67 @@ class Bookmarks extends Collection {
         await api.waitUntil('chatBoxesFetched');
         const { chatboxes } = _converse.state;
         return this.filter((b) => !chatboxes.get(b.get('jid')));
+    }
+
+    /**
+     * Pin a bookmark to the top of the lists (XEP-0469) by ensuring exactly one
+     * `<pinned/>` element is present in its extensions. We always (re)publish,
+     * even when the bookmark already looks pinned locally: the operation is
+     * idempotent (any existing `<pinned/>` is stripped before re-adding a single
+     * one, so it can't accumulate duplicates) and self-healing if our local
+     * state and the server's have diverged. The `pinned` attribute is derived
+     * from the extensions by {@link Bookmark}.
+     * @param {Bookmark} bookmark
+     * @returns {Promise<void|Element>}
+     */
+    pinBookmark(bookmark) {
+        const extensions = [...withoutPinnedExtension(bookmark.get('extensions')), getPinnedExtension()];
+        return api.bookmarks.set({ jid: bookmark.get('jid'), extensions });
+    }
+
+    /**
+     * Pin a room to the top of the lists (XEP-0469). Pinning is an extension on
+     * a bookmark, so if the room isn't bookmarked yet we bookmark it first
+     * (with autojoin enabled, so the pin survives a reload) and include the
+     * `<pinned/>` extension in the same publish.
+     * @param {string} jid
+     * @returns {Promise<void|Element>}
+     */
+    pinRoom(jid) {
+        const bookmark = this.get(jid);
+        if (bookmark) return this.pinBookmark(bookmark);
+
+        const room = _converse.state.chatboxes.get(jid);
+        return api.bookmarks.set({
+            jid,
+            name: room?.get('name'),
+            nick: room?.get('nick'),
+            password: room?.get('password'),
+            autojoin: true,
+            extensions: [getPinnedExtension()],
+        });
+    }
+
+    /**
+     * Unpin a room by its JID (XEP-0469). A no-op if the room isn't bookmarked
+     * (you can only unpin something that was pinned, which requires a bookmark).
+     * @param {string} jid
+     * @returns {Promise<void|Element>|void}
+     */
+    unpinRoom(jid) {
+        const bookmark = this.get(jid);
+        if (bookmark) return this.unpinBookmark(bookmark);
+    }
+
+    /**
+     * Unpin a bookmark (XEP-0469) by removing its `<pinned/>` extension.
+     * Idempotent and self-healing for the same reasons as {@link pinBookmark}.
+     * @param {Bookmark} bookmark
+     * @returns {Promise<void|Element>}
+     */
+    unpinBookmark(bookmark) {
+        const extensions = withoutPinnedExtension(bookmark.get('extensions'));
+        return api.bookmarks.set({ jid: bookmark.get('jid'), extensions });
     }
 }
 

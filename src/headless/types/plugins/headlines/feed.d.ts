@@ -8,7 +8,6 @@ export default class HeadlinesFeed extends ChatBoxBase {
      */
     constructor(attrs: import("@converse/skeletor").ModelAttributes, options: import("@converse/skeletor").ModelOptions);
     defaults(): {
-        bookmarked: boolean;
         hidden: boolean;
         message_type: string;
         num_unread: number;

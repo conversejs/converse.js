@@ -9,6 +9,7 @@ import BookmarkForm from './components/bookmark-form.js';
 import BookmarksView from './components/bookmarks-list.js';
 import { BookmarkableChatRoomView } from './mixins.js';
 import { removeBookmarkViaEvent } from './utils.js';
+import { PinnedBookmarksView } from './components/bookmarks-pin-list.js';
 
 import './styles/bookmarks.scss';
 
@@ -21,7 +22,7 @@ converse.plugins.add('converse-bookmark-views', {
      * an error will be raised if the plugin is not found. By default it's
      * false, which means these plugins are only loaded opportunistically.
      */
-    dependencies: ['converse-chatboxes', 'converse-muc', 'converse-muc-views'],
+    dependencies: ['converse-chatboxes', 'converse-muc', 'converse-muc-views', 'converse-roomslist'],
 
     initialize() {
         // Configuration values for this plugin
@@ -36,15 +37,11 @@ converse.plugins.add('converse-bookmark-views', {
             removeBookmarkViaEvent,
             MUCBookmarkForm: BookmarkForm,
             BookmarksView,
+            PinnedBookmarksView,
         };
 
         Object.assign(_converse, exports); // DEPRECATED
         Object.assign(_converse.exports, exports);
         Object.assign(_converse.exports.ChatRoomView.prototype, BookmarkableChatRoomView);
-
-        api.listen.on(
-            'chatRoomViewInitialized',
-            /** @param {BookmarkableChatRoomView} view */ (view) => view.setBookmarkState()
-        );
     },
 });

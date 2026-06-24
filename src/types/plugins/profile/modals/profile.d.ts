@@ -12,6 +12,9 @@ export default class ProfileModal extends BaseModal {
             type: BooleanConstructor;
             state: boolean;
         };
+        _server_version: {
+            state: boolean;
+        };
         model: {
             type: typeof Model;
         };
@@ -21,10 +24,21 @@ export default class ProfileModal extends BaseModal {
     };
     _show_clear_button: boolean;
     /**
+     * The software version of the user's server, as advertised via
+     * XEP-0092, or `null` if it hasn't been determined.
+     * @type {import('@converse/headless/types/plugins/version/types').SoftwareVersion|null}
+     */
+    _server_version: import("@converse/headless/types/plugins/version/types").SoftwareVersion | null;
+    /**
      * @param {Map<string, boolean>} changed - A map of changed properties.
      */
     willUpdate(changed: Map<string, boolean>): void;
     getModalTitle(): any;
+    /**
+     * Queries the user's server for its software version (XEP-0092) and stores
+     * the result, which causes the modal to re-render and show the details.
+     */
+    requestServerVersion(): Promise<void>;
     /**
      * @returns {TemplateResult}
      */

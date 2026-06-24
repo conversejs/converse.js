@@ -1,6 +1,23 @@
 .conversejs {
     converse-profile-modal {
 
+        .profile-property {
+            margin-bottom: 0.5em;
+
+            label {
+                margin-bottom: 0;
+                padding-bottom: 0;
+                font-size: 0.95em;
+                font-weight: normal;
+                color: var(--subdued-color);
+            }
+
+            .profile-property__value {
+                color: var(--text-color);
+                font-weight: 500;
+            }
+        }
+
         .fingerprint {
             color: var(--text-color);
         }

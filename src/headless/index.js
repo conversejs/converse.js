@@ -36,6 +36,7 @@ export { MUCMessage, MUCMessages, MUC, MUCOccupant, MUCOccupants } from './plugi
 import './plugins/ping/index.js'; // XEP-0199 XMPP Ping
 import './plugins/pubsub/index.js'; // XEP-0060 Pubsub
 import './plugins/reactions/index.js'; // XEP-0444 Message Reactions
+import './plugins/version/index.js'; // XEP-0092 Software Version
 
 // RFC-6121 Contacts Roster
 export { RosterContact, RosterContacts, RosterFilter, Presence, Presences } from './plugins/roster/index.js';

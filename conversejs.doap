@@ -89,6 +89,11 @@
     </implements>
     <implements>
       <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0092.html"/>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0115.html"/>
         <xmpp:status>partial</xmpp:status>
         <xmpp:note>advertises caps but no caching</xmpp:note>

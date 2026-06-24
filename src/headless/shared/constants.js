@@ -145,6 +145,7 @@ export const CORE_PLUGINS = [
     'converse-smacks',
     'converse-status',
     'converse-vcard',
+    'converse-version',
     'converse-omemo',
 ];
 

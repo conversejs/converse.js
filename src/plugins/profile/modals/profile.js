@@ -20,6 +20,7 @@ export default class ProfileModal extends BaseModal {
     static properties = {
         _submitting: { state: true },
         _show_clear_button: { type: Boolean, state: true },
+        _server_version: { state: true },
         model: { type: Model },
         tab: { type: String },
     };
@@ -31,10 +32,18 @@ export default class ProfileModal extends BaseModal {
         super(options);
         this.tab = 'status';
         this._show_clear_button = false;
+
+        /**
+         * The software version of the user's server, as advertised via
+         * XEP-0092, or `null` if it hasn't been determined.
+         * @type {import('@converse/headless/types/plugins/version/types').SoftwareVersion|null}
+         */
+        this._server_version = null;
     }
 
     initialize() {
         super.initialize();
+        this.requestServerVersion();
         this.listenTo(this.model, 'change', this.render);
         this.addEventListener(
             'shown.bs.modal',
@@ -64,6 +73,14 @@ export default class ProfileModal extends BaseModal {
 
     getModalTitle() {
         return __('Your Profile');
+    }
+
+    /**
+     * Queries the user's server for its software version (XEP-0092) and stores
+     * the result, which causes the modal to re-render and show the details.
+     */
+    async requestServerVersion() {
+        this._server_version = await api.version.get();
     }
 
     /**

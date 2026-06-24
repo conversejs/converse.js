@@ -27,6 +27,7 @@ export default (el) => {
     const i18n_email = __('Email');
     const i18n_fullname = __('Full Name');
     const i18n_jid = __('XMPP Address');
+    const i18n_server = __('Server');
     const i18n_nickname = __('Nickname');
     const i18n_role = __('Role');
     const i18n_save = __('Save and close');
@@ -38,6 +39,11 @@ export default (el) => {
     const i18n_omemo = __('OMEMO');
     const i18n_profile = __('Profile');
     const ii18n_reset_password = __('Reset Password');
+
+    const sv = el._server_version;
+    const server_version = sv
+        ? [sv.name, sv.version].filter(Boolean).join(' ') + (sv.os ? ` (${sv.os})` : '')
+        : '';
 
     // Initialize navigation_tabs as a Map
     const navigation_tabs = new Map();
@@ -143,10 +149,16 @@ export default (el) => {
                             <converse-image-picker .model=${el.model} width="128" height="128"></converse-image-picker>
                         </div>
                         <div class="col">
-                            <div class="px-3">
+                            <div class="px-3 profile-property">
                                 <label class="col-form-label">${i18n_jid}:</label>
-                                <div>${o.jid}</div>
+                                <div class="profile-property__value">${o.jid}</div>
                             </div>
+                            ${server_version
+                                ? html`<div class="px-3 profile-property">
+                                      <label class="col-form-label">${i18n_server}:</label>
+                                      <div class="profile-property__value server-version">${server_version}</div>
+                                  </div>`
+                                : ''}
                         </div>
                     </div>
                     <div>

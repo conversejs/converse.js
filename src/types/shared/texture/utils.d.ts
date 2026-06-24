@@ -90,7 +90,7 @@ declare const _default: {
     isString(s: any): boolean;
     getDefaultStorageType(): import("headless/types/utils/types.js").StorageType;
     isPersistentStorageAvailable(): boolean;
-    createStore(id: string, type: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").PersistentStorage;
+    createStore(id: string, type?: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").PersistentStorage;
     initStorage(model: import("headless/types/utils/types.js").StorageModel, id: string, type?: import("headless/types/utils/types.js").StorageType): void;
     isErrorStanza(stanza: Element): boolean;
     isForbiddenError(stanza: Element): boolean;
@@ -122,17 +122,10 @@ declare const _default: {
     isSameBareJID(jid1: string, jid2: string): boolean;
     isSameDomain(jid1: string, jid2: string): boolean;
     getJIDFromURI(jid: string): string;
+    getNodeFromURI(uri?: string): string | undefined;
     isOwnJID(jid: string, include_resource?: boolean): boolean;
     maybeAppendDomain(jid: string): string;
-    initPlugins(_converse: 
-    /**
-     * Given a specific index "i" of "text", return the directive it matches or null otherwise.
-     * @param {import('./texture').Texture} text - The text in which  the directive appears
-     * @param {Number} i - The directive index
-     * @param {Boolean} opening - Whether we're looking for an opening or closing directive
-     * @returns {string|null}
-     */
-    ConversePrivateGlobal): void;
+    initPlugins(_converse: ConversePrivateGlobal): void;
     initClientConfig(_converse: ConversePrivateGlobal): Promise<void>;
     initSessionStorage(_converse: ConversePrivateGlobal): Promise<void>;
     initPersistentStorage(_converse: ConversePrivateGlobal, store_name: string, key?: string): void;

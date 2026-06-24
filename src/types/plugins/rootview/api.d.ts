@@ -6,6 +6,12 @@ declare namespace apps_api {
          */
         export function add(app: import("./types").App): void;
         /**
+         * Returns all registered apps, or a single app by name.
+         * @param {string} [name]
+         * @returns {import('./types').App[]|import('./types').App|null}
+         */
+        export function get(name?: string): import("./types").App[] | import("./types").App | null;
+        /**
          * @returns {import('./types').App}
          */
         export function getActive(): import("./types").App;

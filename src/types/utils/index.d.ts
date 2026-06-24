@@ -28,7 +28,7 @@ declare const _default: {
     isString(s: any): boolean;
     getDefaultStorageType(): import("headless/types/utils/types.js").StorageType;
     isPersistentStorageAvailable(): boolean;
-    createStore(id: string, type: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").PersistentStorage;
+    createStore(id: string, type?: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").PersistentStorage;
     initStorage(model: import("headless/types/utils/types.js").StorageModel, id: string, type?: import("headless/types/utils/types.js").StorageType): void;
     isErrorStanza(stanza: Element): boolean;
     isForbiddenError(stanza: Element): boolean;
@@ -60,6 +60,7 @@ declare const _default: {
     isSameBareJID(jid1: string, jid2: string): boolean;
     isSameDomain(jid1: string, jid2: string): boolean;
     getJIDFromURI(jid: string): string;
+    getNodeFromURI(uri?: string): string | undefined;
     isOwnJID(jid: string, include_resource?: boolean): boolean;
     maybeAppendDomain(jid: string): string;
     initPlugins(_converse: ConversePrivateGlobal): void;
@@ -142,7 +143,7 @@ declare const _default: {
         isString(s: any): boolean;
         getDefaultStorageType(): import("headless/types/utils/types.js").StorageType;
         isPersistentStorageAvailable(): boolean;
-        createStore(id: string, type: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").PersistentStorage;
+        createStore(id: string, type?: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").PersistentStorage;
         initStorage(model: import("headless/types/utils/types.js").StorageModel, id: string, type?: import("headless/types/utils/types.js").StorageType): void;
         isErrorStanza(stanza: Element): boolean;
         isForbiddenError(stanza: Element): boolean;
@@ -174,6 +175,7 @@ declare const _default: {
         isSameBareJID(jid1: string, jid2: string): boolean;
         isSameDomain(jid1: string, jid2: string): boolean;
         getJIDFromURI(jid: string): string;
+        getNodeFromURI(uri?: string): string | undefined;
         isOwnJID(jid: string, include_resource?: boolean): boolean;
         maybeAppendDomain(jid: string): string;
         initPlugins(_converse: ConversePrivateGlobal): void;

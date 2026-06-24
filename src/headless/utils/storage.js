@@ -50,7 +50,7 @@ export function isPersistentStorageAvailable() {
 
 /**
  * @param {string} id
- * @param {import('./types').StorageType} type
+ * @param {import('./types').StorageType} [type]
  * @returns {PersistentStorage}
  */
 export function createStore(id, type) {

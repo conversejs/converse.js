@@ -6,7 +6,8 @@ const { stx, Strophe, Stanza, u } = converse.env;
 describe('XEP-0198 Stream Management', function () {
     it(
         'gets enabled with an <enable> stanza and resumed with a <resume> stanza',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             {
                 auto_login: false,
@@ -149,7 +150,8 @@ describe('XEP-0198 Stream Management', function () {
 
     it(
         'does not send a duplicate presence when a session is successfully resumed',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             {
                 auto_login: false,
@@ -162,7 +164,7 @@ describe('XEP-0198 Stream Management', function () {
                 await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
 
                 const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-                let stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'enable').pop(), 1000);
+                const stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'enable').pop(), 1000);
                 expect(stanza).toEqualStanza(stx`<enable resume="true" xmlns="urn:xmpp:sm:3"/>`);
 
                 let result = stx`<enabled xmlns="urn:xmpp:sm:3" id="some-long-sm-id" resume="true"/>`;
@@ -174,7 +176,7 @@ describe('XEP-0198 Stream Management', function () {
 
                 // Reconnect and successfully resume the SMACKS session
                 await _converse.api.connection.reconnect();
-                stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'resume').pop(), 1000);
+                await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'resume').pop(), 1000);
 
                 const conn = _converse.api.connection.get();
                 result = stx`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`;
@@ -191,7 +193,8 @@ describe('XEP-0198 Stream Management', function () {
 
     it(
         'does not send a duplicate presence when a session is successfully resumed',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             {
                 auto_login: false,
@@ -204,7 +207,7 @@ describe('XEP-0198 Stream Management', function () {
                 await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
 
                 const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-                let stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'enable').pop(), 1000);
+                const stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'enable').pop(), 1000);
                 expect(stanza).toEqualStanza(stx`<enable resume="true" xmlns="urn:xmpp:sm:3"/>`);
 
                 let result = stx`<enabled xmlns="urn:xmpp:sm:3" id="some-long-sm-id" resume="true"/>`;
@@ -216,7 +219,7 @@ describe('XEP-0198 Stream Management', function () {
 
                 // Reconnect and successfully resume the SMACKS session
                 await _converse.api.connection.reconnect();
-                stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'resume').pop(), 1000);
+                await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'resume').pop(), 1000);
 
                 const conn = _converse.api.connection.get();
                 result = stx`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`;
@@ -233,7 +236,8 @@ describe('XEP-0198 Stream Management', function () {
 
     it(
         'might not resume and the session will then be reset',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             {
                 'auto_login': false,
@@ -287,7 +291,8 @@ describe('XEP-0198 Stream Management', function () {
 
     it(
         'can cause MUC messages to be received before chatboxes are initialized',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             {
                 'auto_login': false,

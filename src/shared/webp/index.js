@@ -34,7 +34,7 @@ export default class ConverseWebP extends ConverseGif {
      * @param {ArrayBuffer} fileBuffer 
      */
     async loadWebPFrames(fileBuffer) {
-        const decoder = new ImageDecoder({ 
+        const decoder = new globalThis.ImageDecoder({ 
             data: fileBuffer, 
             type: 'image/webp' 
         });

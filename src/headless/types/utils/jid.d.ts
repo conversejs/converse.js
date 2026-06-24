@@ -25,6 +25,13 @@ export function isSameDomain(jid1: string, jid2: string): boolean;
  */
 export function getJIDFromURI(jid: string): string;
 /**
+ * Extract the `node` query parameter from an XMPP URI (RFC 5122),
+ * e.g. `xmpp:romeo@montague.lit?;node=urn:xmpp:microblog:0;item=1` → `urn:xmpp:microblog:0`.
+ * @param {string} [uri]
+ * @returns {string|undefined}
+ */
+export function getNodeFromURI(uri?: string): string | undefined;
+/**
  * @param {string} jid
  * @param {boolean} [include_resource=false]
  * @returns {boolean}

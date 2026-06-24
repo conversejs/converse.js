@@ -61,7 +61,7 @@ describe('A sent presence stanza', function () {
                     <x xmlns="vcard-temp:x:update"/>
                     <c hash="sha-1"
                         node="https://conversejs.org"
-                        ver="xqrvXUjvW3ZKAuQ9ZRYZqosP7wE="
+                        ver="Bi0cs6XUKEM6bBmbOPziwvszINQ="
                         xmlns="http://jabber.org/protocol/caps"/>
                 </presence>`);
 
@@ -73,7 +73,7 @@ describe('A sent presence stanza', function () {
                 <status>Going jogging</status>
                 <priority>2</priority>
                 <x xmlns="vcard-temp:x:update"/>
-                <c hash="sha-1" node="https://conversejs.org" ver="xqrvXUjvW3ZKAuQ9ZRYZqosP7wE=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="Bi0cs6XUKEM6bBmbOPziwvszINQ=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`);
 
             api.settings.set('priority', undefined);
@@ -84,7 +84,7 @@ describe('A sent presence stanza', function () {
                 <status>Doing taxes</status>
                 <priority>0</priority>
                 <x xmlns="vcard-temp:x:update"/>
-                <c hash="sha-1" node="https://conversejs.org" ver="xqrvXUjvW3ZKAuQ9ZRYZqosP7wE=" xmlns="http://jabber.org/protocol/caps"/>
+                <c hash="sha-1" node="https://conversejs.org" ver="Bi0cs6XUKEM6bBmbOPziwvszINQ=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`);
         }),
     );
@@ -381,10 +381,13 @@ describe('XEP-0115 disco integration', function () {
 
             // 1. Receive presence advertising caps we haven't seen before.
             connection._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${full_jid}">
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
-                </presence>`),
+                </presence>`,
+                ),
             );
             await waitForCaps(_converse, full_jid);
 
@@ -398,7 +401,9 @@ describe('XEP-0115 disco integration', function () {
             // 4. Respond with the matching disco#info (XEP-0115 § 5.2 example).
             const id = connection.IQ_ids[connection.IQ_stanzas.indexOf(iq)];
             connection._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <iq xmlns="jabber:client" type="result" from="${full_jid}" to="romeo@montague.lit/orchard" id="${id}">
                     <query xmlns="http://jabber.org/protocol/disco#info" node="${node}#${ver}">
                         <identity category="client" type="pc" name="Exodus 0.9.1"/>
@@ -407,7 +412,8 @@ describe('XEP-0115 disco integration', function () {
                         <feature var="http://jabber.org/protocol/disco#items"/>
                         <feature var="http://jabber.org/protocol/muc"/>
                     </query>
-                </iq>`),
+                </iq>`,
+                ),
             );
 
             // 5. The verified result is cached.
@@ -432,10 +438,13 @@ describe('XEP-0115 disco integration', function () {
             const ver = 'q07IKJEyjvHSyhy//CH0CxmKi8w=';
 
             connection._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${full_jid}">
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
-                </presence>`),
+                </presence>`,
+                ),
             );
             await waitForCaps(_converse, full_jid);
 
@@ -445,7 +454,9 @@ describe('XEP-0115 disco integration', function () {
 
             // XEP-0115 § 5.3 complex example (multiple identities + a data form).
             connection._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <iq xmlns="jabber:client" type="result" from="${full_jid}" to="romeo@montague.lit/orchard" id="${id}">
                     <query xmlns="http://jabber.org/protocol/disco#info" node="${node}#${ver}">
                         <identity xml:lang="en" category="client" name="Psi 0.11" type="pc"/>
@@ -463,7 +474,8 @@ describe('XEP-0115 disco integration', function () {
                             <field var="software_version"><value>0.11</value></field>
                         </x>
                     </query>
-                </iq>`),
+                </iq>`,
+                ),
             );
 
             await u.waitUntil(() => _converse.state.caps_cache.getCachedInfo('sha-1', ver));
@@ -495,10 +507,13 @@ describe('XEP-0115 disco integration', function () {
             const contact_jid = mock.cur_names[7].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             const full_jid = `${contact_jid}/exodus`;
             connection._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${full_jid}">
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
-                </presence>`),
+                </presence>`,
+                ),
             );
             await waitForCaps(_converse, full_jid);
 
@@ -541,10 +556,13 @@ describe('XEP-0115 disco integration', function () {
             const contact_jid = mock.cur_names[6].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             const full_jid = `${contact_jid}/psi`;
             connection._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${full_jid}">
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
-                </presence>`),
+                </presence>`,
+                ),
             );
             await waitForCaps(_converse, full_jid);
 
@@ -578,10 +596,13 @@ describe('XEP-0115 disco integration', function () {
             const ver = 'AAAAAAAAAAAAAAAAAAAAAAAAAAA='; // does not match the response
 
             connection._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${full_jid}">
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
-                </presence>`),
+                </presence>`,
+                ),
             );
             await waitForCaps(_converse, full_jid);
 
@@ -589,13 +610,16 @@ describe('XEP-0115 disco integration', function () {
             const iq = await waitForDiscoInfoQuery(_converse, full_jid);
             const id = connection.IQ_ids[connection.IQ_stanzas.indexOf(iq)];
             connection._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <iq xmlns="jabber:client" type="result" from="${full_jid}" to="romeo@montague.lit/orchard" id="${id}">
                     <query xmlns="http://jabber.org/protocol/disco#info" node="${node}#${ver}">
                         <identity category="client" type="pc" name="Exodus 0.9.1"/>
                         <feature var="http://jabber.org/protocol/muc"/>
                     </query>
-                </iq>`),
+                </iq>`,
+                ),
             );
 
             // The live result is still usable for this JID...

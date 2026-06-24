@@ -1,11 +1,4 @@
-export default class ConverseWebPElement extends CustomElement {
-    static get properties(): {
-        src: {
-            type: StringConstructor;
-        };
-    };
-    src: any;
-    render(): import("lit-html").TemplateResult<1>;
+export default class ConverseWebPElement extends ConverseGIFElement {
 }
-import { CustomElement } from 'shared/components/element.js';
+import ConverseGIFElement from 'shared/gif/component.js';
 //# sourceMappingURL=component.d.ts.map

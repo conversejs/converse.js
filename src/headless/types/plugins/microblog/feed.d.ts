@@ -56,6 +56,12 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
      */
     retractPost(id: string): Promise<void>;
     /**
+     * Tear the feed down (when unfollowing): clear its cached posts and remove
+     * the feed itself from the feeds collection / offline cache.
+     * @returns {Promise<void>}
+     */
+    close(): Promise<void>;
+    /**
      * Publish a new plain-text post to this feed's node.
      * @param {string} body
      * @returns {Promise<void>}

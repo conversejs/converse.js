@@ -137,6 +137,7 @@ export const CORE_PLUGINS = [
     'converse-emoji',
     'converse-headlines',
     'converse-mam',
+    'converse-microblog',
     'converse-muc',
     'converse-ping',
     'converse-pubsub',

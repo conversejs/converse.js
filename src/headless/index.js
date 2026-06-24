@@ -35,6 +35,12 @@ export { MUCMessage, MUCMessages, MUC, MUCOccupant, MUCOccupants } from './plugi
 
 import './plugins/ping/index.js'; // XEP-0199 XMPP Ping
 import './plugins/pubsub/index.js'; // XEP-0060 Pubsub
+export {
+    PubSubFeed,
+    PubSubFeeds,
+    PubSubMessage,
+    PubSubMessages,
+} from './plugins/microblog/index.js'; // XEP-0277 Microblogging
 import './plugins/reactions/index.js'; // XEP-0444 Message Reactions
 import './plugins/version/index.js'; // XEP-0092 Software Version
 

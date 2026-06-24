@@ -67,6 +67,18 @@ export function getJIDFromURI(jid) {
 }
 
 /**
+ * Extract the `node` query parameter from an XMPP URI (RFC 5122),
+ * e.g. `xmpp:romeo@montague.lit?;node=urn:xmpp:microblog:0;item=1` → `urn:xmpp:microblog:0`.
+ * @param {string} [uri]
+ * @returns {string|undefined}
+ */
+export function getNodeFromURI(uri) {
+    if (!uri) return undefined;
+    const m = uri.match(/[?;&]node=([^;&]+)/);
+    return m ? decodeURIComponent(m[1]) : undefined;
+}
+
+/**
  * @param {string} jid
  * @param {boolean} [include_resource=false]
  * @returns {boolean}

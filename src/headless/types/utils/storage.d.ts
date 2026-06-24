@@ -8,10 +8,10 @@ export function getDefaultStorageType(): import("./types").StorageType;
 export function isPersistentStorageAvailable(): boolean;
 /**
  * @param {string} id
- * @param {import('./types').StorageType} type
+ * @param {import('./types').StorageType} [type]
  * @returns {PersistentStorage}
  */
-export function createStore(id: string, type: import("./types").StorageType): PersistentStorage;
+export function createStore(id: string, type?: import("./types").StorageType): PersistentStorage;
 /**
  * @param {import('./types').StorageModel} model
  * @param {string} id

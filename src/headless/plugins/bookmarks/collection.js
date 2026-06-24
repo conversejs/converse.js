@@ -35,7 +35,7 @@ class Bookmarks extends Collection {
         this.on('add', (bm) =>
             this.openBookmarkedRoom(bm)
                 .then((bm) => this.markRoomAsBookmarked(bm))
-                .catch((e) => log.fatal(e))
+                .catch((e) => log.fatal(e)),
         );
         this.on('change:autojoin', this.onAutoJoinChanged, this);
         this.on(
@@ -43,7 +43,7 @@ class Bookmarks extends Collection {
             /** @param { Bookmark } bookmark }*/ (bookmark) => {
                 this.sendRemoveBookmarkStanza(bookmark);
                 this.leaveRoom(bookmark);
-            }
+            },
         );
 
         const { storage_key, fetched_flag_key } = getStorageKeys();
@@ -142,21 +142,10 @@ class Bookmarks extends Collection {
             : Strophe.NS.BOOKMARKS;
 
         if (node === Strophe.NS.BOOKMARKS2) {
-            const stanza = stx`
-                <iq from="${bare_jid}"
-                    to="${bare_jid}"
-                    type="set"
-                    xmlns="jabber:client">
-                <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                    <retract node="${node}" notify="true">
-                        <item id="${bookmark.get('jid')}"/>
-                    </retract>
-                </pubsub>
-                </iq>`;
-            return api.sendIQ(stanza);
+            return api.pubsub.retract(bare_jid, node, bookmark.get('jid'), { notify: true });
+        } else {
+            return this.sendBookmarkStanza().catch((iq) => this.onBookmarkError(iq));
         }
-
-        return this.sendBookmarkStanza().catch((iq) => this.onBookmarkError(iq));
     }
 
     /**
@@ -191,7 +180,7 @@ class Bookmarks extends Collection {
                         jid="${model.get('jid')}">
                         ${model.get('nick') ? stx`<nick>${model.get('nick')}</nick>` : ''}
                         ${model.get('password') ? stx`<password>${model.get('password')}</password>` : ''}
-                    </conference>`
+                    </conference>`,
                 )}
                 </storage>
             </item>`;
@@ -282,7 +271,7 @@ class Bookmarks extends Collection {
             (attrs) => {
                 const bookmark = this.get(attrs.jid);
                 bookmark ? bookmark.save(attrs) : this.create(attrs);
-            }
+            },
         );
     }
 
@@ -309,7 +298,7 @@ class Bookmarks extends Collection {
             api.alert('error', __('Timeout Error'), [
                 __(
                     'The server did not return your bookmarks within the allowed time. ' +
-                        'You can reload the page to request them again.'
+                        'You can reload the page to request them again.',
                 ),
             ]);
             deferred?.reject(new Error('Could not fetch bookmarks'));

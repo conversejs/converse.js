@@ -35,6 +35,21 @@ declare namespace _default {
          */
         function publish(jid: string, node: string, item: import("strophe.js").Builder | import("strophe.js").Stanza | (import("strophe.js").Builder | import("strophe.js").Stanza)[], options: import("./types").PubSubConfigOptions, strict_options?: boolean): Promise<void | Element>;
         /**
+         * Retracts (deletes) an item from a PubSub node (XEP-0060 § 7.2).
+         * @method _converse.api.pubsub.retract
+         * @param {string} jid - The JID of the pubsub service where the node
+         *      resides. Pass a falsy value to retract from your own PEP service.
+         * @param {string} node - The node to retract the item from
+         * @param {string} id - The id of the item to retract
+         * @param {object} [options]
+         * @param {boolean} [options.notify=true] - Whether to ask the server to
+         *      notify subscribers of the retraction.
+         * @returns {Promise<void>}
+         */
+        function retract(jid: string, node: string, id: string, options?: {
+            notify?: boolean;
+        }): Promise<void>;
+        /**
          * Creates a PubSub node at a given service
          * @param {string} jid - The PubSub service JID
          * @param {string} node - The node to create

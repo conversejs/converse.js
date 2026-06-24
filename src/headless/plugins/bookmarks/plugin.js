@@ -18,7 +18,7 @@ Strophe.addNamespace('BOOKMARKS', 'storage:bookmarks');
 Strophe.addNamespace('BOOKMARKS2', 'urn:xmpp:bookmarks:1');
 
 converse.plugins.add('converse-bookmarks', {
-    dependencies: ['converse-chatboxes', 'converse-muc'],
+    dependencies: ['converse-chatboxes', 'converse-muc', 'converse-pubsub'],
 
     initialize() {
         // Configuration values for this plugin
@@ -48,7 +48,7 @@ converse.plugins.add('converse-bookmarks', {
              */
             (muc, nick) => {
                 return nick || getNicknameFromBookmark(muc.get('jid'));
-            }
+            },
         );
 
         api.listen.on(
@@ -72,11 +72,11 @@ converse.plugins.add('converse-bookmarks', {
                                 name: bookmark?.get('name') ?? '',
                                 extensions: bookmark?.get('extensions') ?? [],
                             });
-                        }
+                        },
                     );
                 }
                 return attrs;
-            }
+            },
         );
 
         api.listen.on(
@@ -91,7 +91,7 @@ converse.plugins.add('converse-bookmarks', {
                     ...(password ? { password } : {}),
                     ...(name ? { name } : {}),
                 });
-            }
+            },
         );
 
         api.listen.on(
@@ -112,9 +112,9 @@ converse.plugins.add('converse-bookmarks', {
                     // on the MUC.
                     {
                         silent: true,
-                    }
+                    },
                 );
-            }
+            },
         );
 
         api.listen.on('addClientFeatures', () => {

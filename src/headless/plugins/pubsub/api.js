@@ -206,6 +206,42 @@ export default {
         },
 
         /**
+         * Retracts (deletes) an item from a PubSub node (XEP-0060 § 7.2).
+         * @method _converse.api.pubsub.retract
+         * @param {string} jid - The JID of the pubsub service where the node
+         *      resides. Pass a falsy value to retract from your own PEP service.
+         * @param {string} node - The node to retract the item from
+         * @param {string} id - The id of the item to retract
+         * @param {object} [options]
+         * @param {boolean} [options.notify=true] - Whether to ask the server to
+         *      notify subscribers of the retraction.
+         * @returns {Promise<void>}
+         */
+        async retract(jid, node, id, options = {}) {
+            if (!node) throw new Error('api.pubsub.retract: node value required');
+            if (!id) throw new Error('api.pubsub.retract: id value required');
+
+            const { notify = true } = options;
+            const bare_jid = _converse.session.get('bare_jid');
+            const entity_jid = jid || bare_jid;
+
+            const stanza = stx`
+                <iq xmlns="jabber:client" from="${bare_jid}" type="set" to="${entity_jid}">
+                    <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                        <retract node="${node}" notify="${notify ? 'true' : 'false'}">
+                            <item id="${id}"/>
+                        </retract>
+                    </pubsub>
+                </iq>`;
+
+            try {
+                await api.sendIQ(stanza);
+            } catch (error) {
+                throw await parseErrorStanza(error);
+            }
+        },
+
+        /**
          * Creates a PubSub node at a given service
          * @param {string} jid - The PubSub service JID
          * @param {string} node - The node to create
@@ -213,6 +249,8 @@ export default {
          * @returns {Promise<void>}
          */
         async create(jid, node, config) {
+            if (!node) throw new Error('api.pubsub.create: node value required');
+
             const own_jid = _converse.state.session.get('jid');
             const iq = stx`
                 <iq xmlns="jabber:client"
@@ -233,7 +271,12 @@ export default {
                         </configure>
                     </pubsub>
                 </iq>`;
-            return await api.sendIQ(iq);
+
+            try {
+                await api.sendIQ(iq);
+            } catch (error) {
+                throw await parseErrorStanza(error);
+            }
         },
 
         /**
@@ -244,6 +287,8 @@ export default {
          * @returns {Promise<void>}
          */
         async subscribe(jid, node) {
+            if (!node) throw new Error('api.pubsub.subscribe: node value required');
+
             const service = jid || (await api.disco.entities.find('http://jabber.org/protocol/pubsub'));
             const own_jid = _converse.session.get('jid');
             const iq = stx`
@@ -252,7 +297,12 @@ export default {
                     <subscribe node="${node}" jid="${own_jid}"/>
                   </pubsub>
                 </iq>`;
-            return await api.sendIQ(iq);
+
+            try {
+                await api.sendIQ(iq);
+            } catch (error) {
+                throw await parseErrorStanza(error);
+            }
         },
 
         /**
@@ -263,6 +313,8 @@ export default {
          * @returns {Promise<void>}
          */
         async unsubscribe(jid, node) {
+            if (!node) throw new Error('api.pubsub.unsubscribe: node value required');
+
             const own_jid = _converse.session.get('jid');
             const iq = stx`
                 <iq type="set" from="${own_jid}" to="${jid}" xmlns="jabber:client">
@@ -270,7 +322,12 @@ export default {
                     <unsubscribe node="${node}" jid="${own_jid}"/>
                   </pubsub>
                 </iq>`;
-            await api.sendIQ(iq);
+
+            try {
+                await api.sendIQ(iq);
+            } catch (error) {
+                throw await parseErrorStanza(error);
+            }
         },
 
         /**

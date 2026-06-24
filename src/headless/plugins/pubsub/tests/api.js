@@ -176,6 +176,46 @@ describe('pubsub subscribe/unsubscribe API', function () {
             ]);
         })
     );
+
+    it(
+        'sends correct IQ for retract',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api, state } = _converse;
+            const bare_jid = state.session.get('bare_jid');
+            const sent = api.connection.get().sent_stanzas;
+            const service = 'pubsub.example.org';
+            const node = 'urn:xmpp:microblog:0';
+            const retractPromise = api.pubsub.retract(service, node, 'item-1');
+
+            const stanza = sent.filter((iq) => iq.querySelector('pubsub retract')).pop();
+            expect(stanza).toEqualStanza(stx`
+                <iq xmlns="jabber:client"
+                    from="${bare_jid}"
+                    type="set"
+                    to="${service}"
+                    id="${stanza.getAttribute('id')}">
+                  <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <retract node="${node}" notify="true">
+                      <item id="item-1"/>
+                    </retract>
+                  </pubsub>
+                </iq>`);
+
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`
+                <iq type="result"
+                    xmlns="jabber:client"
+                    from="${service}"
+                    to="${bare_jid}"
+                    id="${stanza.getAttribute('id')}"/>`,
+                ),
+            );
+            await retractPromise;
+        })
+    );
 });
 
 describe('pubsub items API', function () {

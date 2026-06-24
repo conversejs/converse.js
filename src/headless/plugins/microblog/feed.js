@@ -113,6 +113,16 @@ class PubSubFeed extends Model {
     }
 
     /**
+     * Tear the feed down (when unfollowing): clear its cached posts and remove
+     * the feed itself from the feeds collection / offline cache.
+     * @returns {Promise<void>}
+     */
+    async close() {
+        this.messages.clearStore?.({ silent: true });
+        await this.destroy();
+    }
+
+    /**
      * Publish a new plain-text post to this feed's node.
      * @param {string} body
      * @returns {Promise<void>}

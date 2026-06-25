@@ -126,4 +126,44 @@ describe('A received presence stanza', function () {
             expect(parsed.caps).toBeUndefined();
         }),
     );
+
+    it(
+        'is recorded in the in-memory caps map keyed by full JID',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current');
+
+            const contact_jid = mock.cur_names[7].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            const full_jid = `${contact_jid}/resource`;
+
+            let stanza = stx`
+                <presence xmlns="jabber:client"
+                        to="romeo@montague.lit/converse.js-21770972"
+                        from="${full_jid}">
+                    <priority>1</priority>
+                    <c xmlns="http://jabber.org/protocol/caps"
+                        hash="sha-1"
+                        node="http://conversations.im"
+                        ver="QgayPKawpkPSDYmwT/WM94uAlu0="/>
+                </presence>`;
+            api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+
+            await u.waitUntil(() => _converse.state.caps_map.has(full_jid));
+            expect(_converse.state.caps_map.get(full_jid)).toEqual({
+                hash: 'sha-1',
+                node: 'http://conversations.im',
+                ver: 'QgayPKawpkPSDYmwT/WM94uAlu0=',
+            });
+
+            // An unavailable presence removes the entry again
+            stanza = stx`
+                <presence xmlns="jabber:client" type="unavailable"
+                        to="romeo@montague.lit/converse.js-21770972"
+                        from="${full_jid}"/>`;
+            api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+
+            await u.waitUntil(() => !_converse.state.caps_map.has(full_jid));
+            expect(_converse.state.caps_map.has(full_jid)).toBe(false);
+        }),
+    );
 });

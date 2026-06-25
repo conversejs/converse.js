@@ -48,15 +48,40 @@ export function getCapsAttrs(stanza) {
 }
 
 /**
+ * Returns the caps (hash, node, ver) most recently advertised by the given
+ * full JID in its presence, or `undefined` if none is known.
+ * @param {string} jid - The full JID of the entity
+ * @returns {import('./types').CapsAttributes|undefined}
+ */
+export function getEntityCaps(jid) {
+    return /** @type {Map<string, import('./types').CapsAttributes>} */ (_converse.state.caps_map)?.get(jid);
+}
+
+/**
  * Handler for the `parsePresence` hook which enriches the parsed presence
- * attributes with the sender's advertised XEP-0115 entity capabilities.
+ * attributes with the sender's advertised XEP-0115 entity capabilities, and
+ * keeps an in-memory map of full JID -> caps so that we can later look up the
+ * advertised `ver` when disco information for that JID is needed.
  * @param {Element} stanza
  * @param {import('../roster/types').PresenceAttributes} attrs
  * @returns {import('../roster/types').PresenceAttributes}
  */
 export function onParsePresence(stanza, attrs) {
+    const caps_map = /** @type {Map<string, import('./types').CapsAttributes>} */ (_converse.state.caps_map);
+    const { from, type } = attrs;
+
+    if (type === 'unavailable') {
+        // The resource has gone offline, so forget its advertised caps.
+        caps_map?.delete(from);
+        return attrs;
+    }
+
     const caps = getCapsAttrs(stanza);
-    return caps ? { ...attrs, caps } : attrs;
+    if (caps) {
+        caps_map?.set(from, caps);
+        return { ...attrs, caps };
+    }
+    return attrs;
 }
 
 /**

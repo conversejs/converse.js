@@ -5,7 +5,7 @@ import _converse from '../../shared/_converse.js';
 import converse from '../../shared/api/public.js';
 import { arrayBufferToBase64, stringToArrayBuffer } from '../../utils/arraybuffer.js';
 
-const { Strophe, stx } = converse.env;
+const { Strophe, sizzle, stx } = converse.env;
 
 function propertySort(array, property) {
     return array.sort((a, b) => {
@@ -29,6 +29,34 @@ async function generateVerificationString() {
 
     const ab = await crypto.subtle.digest('SHA-1', stringToArrayBuffer(S));
     return arrayBufferToBase64(ab);
+}
+
+/**
+ * Parses the XEP-0115 entity capabilities (`<c/>`) element from a presence
+ * stanza, if present.
+ * @param {Element} stanza
+ * @returns {import('./types').CapsAttributes|null}
+ */
+export function getCapsAttrs(stanza) {
+    const c = sizzle(`c[xmlns="${Strophe.NS.CAPS}"]`, stanza).pop();
+    if (!c) return null;
+    return {
+        hash: c.getAttribute('hash'),
+        node: c.getAttribute('node'),
+        ver: c.getAttribute('ver'),
+    };
+}
+
+/**
+ * Handler for the `parsePresence` hook which enriches the parsed presence
+ * attributes with the sender's advertised XEP-0115 entity capabilities.
+ * @param {Element} stanza
+ * @param {import('../roster/types').PresenceAttributes} attrs
+ * @returns {import('../roster/types').PresenceAttributes}
+ */
+export function onParsePresence(stanza, attrs) {
+    const caps = getCapsAttrs(stanza);
+    return caps ? { ...attrs, caps } : attrs;
 }
 
 /**

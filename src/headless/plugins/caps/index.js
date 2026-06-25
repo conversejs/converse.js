@@ -4,7 +4,7 @@
  */
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import { addCapsNode } from './utils.js';
+import { addCapsNode, onParsePresence } from './utils.js';
 
 const { Strophe } = converse.env;
 
@@ -16,5 +16,6 @@ converse.plugins.add('converse-caps', {
     initialize() {
         api.listen.on('constructedPresence', (_, p) => addCapsNode(p));
         api.listen.on('constructedMUCPresence', (_, p) => addCapsNode(p));
+        api.listen.on('parsePresence', onParsePresence);
     },
 });

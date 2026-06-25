@@ -1,7 +1,7 @@
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 
-const { stx } = converse.env;
+const { stx, u } = converse.env;
 
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
@@ -75,6 +75,55 @@ describe('A sent presence stanza', function () {
                 <x xmlns="vcard-temp:x:update"/>
                 <c hash="sha-1" node="https://conversejs.org" ver="VQN2NgsmAtNozeP6nd9JHH3MIuE=" xmlns="http://jabber.org/protocol/caps"/>
             </presence>`);
+        }),
+    );
+});
+
+describe('A received presence stanza', function () {
+    it(
+        "has the sender's entity capabilities added to the parsed attributes",
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current');
+
+            const contact_jid = mock.cur_names[5].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+
+            let parsed;
+            api.listen.on('parsePresence', (_stanza, attrs) => {
+                parsed = attrs;
+                return attrs;
+            });
+
+            let stanza = stx`
+                <presence xmlns="jabber:client"
+                        to="romeo@montague.lit/converse.js-21770972"
+                        from="${contact_jid}/resource">
+                    <priority>1</priority>
+                    <c xmlns="http://jabber.org/protocol/caps"
+                        hash="sha-1"
+                        node="http://conversations.im"
+                        ver="QgayPKawpkPSDYmwT/WM94uAlu0="/>
+                </presence>`;
+            api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+
+            await u.waitUntil(() => parsed !== undefined);
+            expect(parsed.caps).toEqual({
+                hash: 'sha-1',
+                node: 'http://conversations.im',
+                ver: 'QgayPKawpkPSDYmwT/WM94uAlu0=',
+            });
+
+            // without entity capabilities leaves the parsed attributes unchanged
+            stanza = stx`
+                <presence xmlns="jabber:client"
+                        to="romeo@montague.lit/converse.js-21770972"
+                        from="${contact_jid}/resource">
+                    <priority>1</priority>
+                </presence>`;
+            api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+
+            await u.waitUntil(() => parsed.caps === undefined);
+            expect(parsed.caps).toBeUndefined();
         }),
     );
 });

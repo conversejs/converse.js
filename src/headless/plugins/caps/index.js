@@ -18,6 +18,9 @@ converse.plugins.add('converse-caps', {
     initialize() {
         api.promises.add('capsInitialized');
 
+        // Advertise XEP-0115 support in our own disco#info (XEP-0115 § 7).
+        api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.CAPS));
+
         api.listen.on('constructedPresence', (_, p) => addCapsNode(p));
         api.listen.on('constructedMUCPresence', (_, p) => addCapsNode(p));
 

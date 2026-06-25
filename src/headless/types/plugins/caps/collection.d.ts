@@ -21,7 +21,9 @@ declare class CapsInfoCache extends Collection<CapsInfo> {
     };
     /**
      * Returns the cached disco#info for a given verification hash, or
-     * `undefined` if it hasn't been verified and cached yet.
+     * `undefined` if it hasn't been verified and cached yet. On a hit, the
+     * entry's `last_used` timestamp is refreshed so that LRU eviction keeps
+     * frequently-consulted capabilities.
      * @param {string} hash - The hashing algorithm (e.g. "sha-1")
      * @param {string} ver - The verification string
      * @returns {CapsInfo|undefined}
@@ -37,6 +39,12 @@ declare class CapsInfoCache extends Collection<CapsInfo> {
      * @returns {CapsInfo}
      */
     store({ hash, node, ver }: import("./types").CapsAttributes, { identities, features, dataforms }: import("./types").CapsInfoData): CapsInfo;
+    /**
+     * Evicts the least-recently-used entries until the cache is back within the
+     * `caps_cache_size` limit. Verified caps are content-addressed and cheap to
+     * re-fetch, so dropping the coldest entries is safe.
+     */
+    evictLeastRecentlyUsed(): void;
 }
 import CapsInfo from './model.js';
 import { Collection } from '@converse/skeletor';

@@ -437,6 +437,17 @@ Please refer to your XMPP server's documentation on how to enable BOSH. For more
 
 A more modern alternative to BOSH is to use [websockets](https://developer.mozilla.org/en/docs/WebSockets). Please see the `websocket-url` configuration setting.
 
+### caps_cache_size
+
+- Default: `3000`
+- Type: Integer
+
+The maximum number of verified [XEP-0115](https://xmpp.org/extensions/xep-0115.html) entity capabilities (caps) entries kept in the persistent cache.
+
+Converse caches the disco#info it has verified for a given capabilities hash, so that any other entity advertising the same hash can be recognized without sending a new disco#info query. The cache is content-addressed by the verification hash and shared across all JIDs and resources.
+
+Once the cache grows past this size, the least-recently-used entries are evicted (they're cheap to re-fetch). Set to `0` to disable pruning and keep an unbounded cache.
+
 ### clear_cache_on_logout
 
 - Default: `false`

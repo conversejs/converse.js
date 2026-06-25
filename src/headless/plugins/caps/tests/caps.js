@@ -275,6 +275,44 @@ describe('The entity capabilities cache', function () {
             expect(cache.getCachedInfo('sha-1', 'abc=').get('features')).toEqual(['urn:xmpp:ping', 'urn:xmpp:time']);
         }),
     );
+
+    it(
+        'evicts least-recently-used entries when over the size limit',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            await api.waitUntil('capsInitialized');
+
+            const cache = _converse.state.caps_cache;
+            api.settings.set('caps_cache_size', 3);
+
+            const put = (ver) =>
+                cache.store(
+                    { hash: 'sha-1', node: 'https://conversejs.org', ver },
+                    { identities: [], features: [], dataforms: [] },
+                );
+
+            put('a');
+            put('b');
+            put('c');
+            // Give the three entries an explicit recency ordering: a < b < c.
+            cache.get('sha-1/a').set('last_used', 10);
+            cache.get('sha-1/b').set('last_used', 20);
+            cache.get('sha-1/c').set('last_used', 30);
+
+            // A fourth entry pushes us over the limit, evicting the coldest ('a').
+            put('d');
+            expect(cache.length).toBe(3);
+            expect(cache.get('sha-1/a')).toBeUndefined();
+            ['b', 'c', 'd'].forEach((v) => expect(cache.get(`sha-1/${v}`)).toBeDefined());
+
+            // Reading 'b' refreshes its recency, so the next overflow evicts 'c'.
+            cache.getCachedInfo('sha-1', 'b');
+            put('e');
+            expect(cache.length).toBe(3);
+            expect(cache.get('sha-1/c')).toBeUndefined();
+            ['b', 'd', 'e'].forEach((v) => expect(cache.get(`sha-1/${v}`)).toBeDefined());
+        }),
+    );
 });
 
 describe('XEP-0115 disco integration', function () {

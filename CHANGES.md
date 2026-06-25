@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.0.0 (Unreleased)
+
+- #194: Full support for XEP-0115: Entity capabilities
+
 ## 14.0.0 (2026-06-26)
 
 - feat(version): Add XEP-0092 Software Version support and show the server's software version in the profile modal

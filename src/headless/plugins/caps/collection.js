@@ -50,13 +50,17 @@ class CapsInfoCache extends Collection {
 
     /**
      * Returns the cached disco#info for a given verification hash, or
-     * `undefined` if it hasn't been verified and cached yet.
+     * `undefined` if it hasn't been verified and cached yet. On a hit, the
+     * entry's `last_used` timestamp is refreshed so that LRU eviction keeps
+     * frequently-consulted capabilities.
      * @param {string} hash - The hashing algorithm (e.g. "sha-1")
      * @param {string} ver - The verification string
      * @returns {CapsInfo|undefined}
      */
     getCachedInfo(hash, ver) {
-        return this.get(`${hash}/${ver}`);
+        const model = this.get(`${hash}/${ver}`);
+        model?.save({ last_used: Date.now() });
+        return model;
     }
 
     /**
@@ -76,7 +80,23 @@ class CapsInfoCache extends Collection {
             existing.save(attrs);
             return existing;
         }
-        return /** @type {CapsInfo} */ (this.create(attrs));
+        const model = /** @type {CapsInfo} */ (this.create(attrs));
+        this.evictLeastRecentlyUsed();
+        return model;
+    }
+
+    /**
+     * Evicts the least-recently-used entries until the cache is back within the
+     * `caps_cache_size` limit. Verified caps are content-addressed and cheap to
+     * re-fetch, so dropping the coldest entries is safe.
+     */
+    evictLeastRecentlyUsed() {
+        const max = api.settings.get('caps_cache_size');
+        if (!(max > 0) || this.length <= max) return;
+
+        const by_last_used = [...this.models].sort((a, b) => (a.get('last_used') ?? 0) - (b.get('last_used') ?? 0));
+        let overflow = this.length - max;
+        while (overflow-- > 0) by_last_used.shift()?.destroy();
     }
 }
 

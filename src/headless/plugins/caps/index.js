@@ -23,6 +23,14 @@ converse.plugins.add('converse-caps', {
     dependencies: ['converse-disco', 'converse-status'],
 
     initialize() {
+        api.settings.extend({
+            // Maximum number of verified capability entries kept in the
+            // persistent cache. Past this, the least-recently-used entries are
+            // evicted (they're cheap to re-fetch). Set to 0 to disable pruning
+            // (unbounded cache).
+            caps_cache_size: 3000,
+        });
+
         api.promises.add('capsInitialized');
 
         // Advertise XEP-0115 support in our own disco#info (XEP-0115 § 7).

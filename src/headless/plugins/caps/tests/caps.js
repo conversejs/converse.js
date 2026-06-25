@@ -1,7 +1,7 @@
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 
-const { stx, u } = converse.env;
+const { stx, u, sizzle } = converse.env;
 
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
@@ -210,6 +210,259 @@ describe('The entity capabilities cache', function () {
 
             expect(cache.length).toBe(1);
             expect(cache.getCachedInfo('sha-1', 'abc=').get('features')).toEqual(['urn:xmpp:ping', 'urn:xmpp:time']);
+        }),
+    );
+});
+
+describe('XEP-0115 disco integration', function () {
+    /**
+     * Waits for a disco#info query to the given JID and returns the sent <iq>.
+     * @param {object} _converse
+     * @param {string} jid
+     */
+    async function waitForDiscoInfoQuery(_converse, jid) {
+        const { IQ_stanzas } = _converse.api.connection.get();
+        const sel = `iq[to="${jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
+        await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).length);
+        return IQ_stanzas.find((iq) => sizzle(sel, iq).length);
+    }
+
+    it(
+        'queries with the caps node, verifies and caches the result on a cache miss',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            const connection = api.connection.get();
+            await mock.waitForRoster(_converse, 'current');
+            await api.waitUntil('capsInitialized');
+
+            const contact_jid = mock.cur_names[5].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            const full_jid = `${contact_jid}/exodus`;
+            const node = 'http://code.google.com/p/exodus';
+            const ver = 'QgayPKawpkPSDYmwT/WM94uAlu0=';
+
+            // 1. Receive presence advertising caps we haven't seen before.
+            connection._dataRecv(
+                mock.createRequest(_converse, stx`
+                <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${full_jid}">
+                    <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
+                </presence>`),
+            );
+            await u.waitUntil(() => _converse.state.caps_map.has(full_jid));
+
+            // 2. Asking disco about the JID triggers a disco#info query (cache miss).
+            api.disco.entities.get(full_jid, true);
+            const iq = await waitForDiscoInfoQuery(_converse, full_jid);
+
+            // 3. The query carries the caps node (XEP-0115 § 6.2).
+            expect(sizzle(`iq[to="${full_jid}"] query`, iq).pop().getAttribute('node')).toBe(`${node}#${ver}`);
+
+            // 4. Respond with the matching disco#info (XEP-0115 § 5.2 example).
+            const id = connection.IQ_ids[connection.IQ_stanzas.indexOf(iq)];
+            connection._dataRecv(
+                mock.createRequest(_converse, stx`
+                <iq xmlns="jabber:client" type="result" from="${full_jid}" to="romeo@montague.lit/orchard" id="${id}">
+                    <query xmlns="http://jabber.org/protocol/disco#info" node="${node}#${ver}">
+                        <identity category="client" type="pc" name="Exodus 0.9.1"/>
+                        <feature var="http://jabber.org/protocol/caps"/>
+                        <feature var="http://jabber.org/protocol/disco#info"/>
+                        <feature var="http://jabber.org/protocol/disco#items"/>
+                        <feature var="http://jabber.org/protocol/muc"/>
+                    </query>
+                </iq>`),
+            );
+
+            // 5. The verified result is cached.
+            await u.waitUntil(() => _converse.state.caps_cache.getCachedInfo('sha-1', ver));
+            const cached = _converse.state.caps_cache.getCachedInfo('sha-1', ver);
+            expect(cached.get('node')).toBe(node);
+            expect(cached.get('features')).toContain('http://jabber.org/protocol/muc');
+        }),
+    );
+
+    it(
+        'verifies and caches caps that include a XEP-0128 data form',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            const connection = api.connection.get();
+            await mock.waitForRoster(_converse, 'current');
+            await api.waitUntil('capsInitialized');
+
+            const contact_jid = mock.cur_names[6].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            const full_jid = `${contact_jid}/psi`;
+            const node = 'http://psi-im.org';
+            const ver = 'q07IKJEyjvHSyhy//CH0CxmKi8w=';
+
+            connection._dataRecv(
+                mock.createRequest(_converse, stx`
+                <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${full_jid}">
+                    <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
+                </presence>`),
+            );
+            await u.waitUntil(() => _converse.state.caps_map.has(full_jid));
+
+            api.disco.entities.get(full_jid, true);
+            const iq = await waitForDiscoInfoQuery(_converse, full_jid);
+            const id = connection.IQ_ids[connection.IQ_stanzas.indexOf(iq)];
+
+            // XEP-0115 § 5.3 complex example (multiple identities + a data form).
+            connection._dataRecv(
+                mock.createRequest(_converse, stx`
+                <iq xmlns="jabber:client" type="result" from="${full_jid}" to="romeo@montague.lit/orchard" id="${id}">
+                    <query xmlns="http://jabber.org/protocol/disco#info" node="${node}#${ver}">
+                        <identity xml:lang="en" category="client" name="Psi 0.11" type="pc"/>
+                        <identity xml:lang="el" category="client" name="Ψ 0.11" type="pc"/>
+                        <feature var="http://jabber.org/protocol/caps"/>
+                        <feature var="http://jabber.org/protocol/disco#info"/>
+                        <feature var="http://jabber.org/protocol/disco#items"/>
+                        <feature var="http://jabber.org/protocol/muc"/>
+                        <x xmlns="jabber:x:data" type="result">
+                            <field var="FORM_TYPE" type="hidden"><value>urn:xmpp:dataforms:softwareinfo</value></field>
+                            <field var="ip_version" type="text-multi"><value>ipv4</value><value>ipv6</value></field>
+                            <field var="os"><value>Mac</value></field>
+                            <field var="os_version"><value>10.5.1</value></field>
+                            <field var="software"><value>Psi</value></field>
+                            <field var="software_version"><value>0.11</value></field>
+                        </x>
+                    </query>
+                </iq>`),
+            );
+
+            await u.waitUntil(() => _converse.state.caps_cache.getCachedInfo('sha-1', ver));
+            const cached = _converse.state.caps_cache.getCachedInfo('sha-1', ver);
+            expect(cached.get('features')).toContain('http://jabber.org/protocol/muc');
+            expect(cached.get('dataforms').length).toBe(1);
+        }),
+    );
+
+    it(
+        'populates a disco entity from the cache without querying on a cache hit',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            const connection = api.connection.get();
+            await mock.waitForRoster(_converse, 'current');
+            await api.waitUntil('capsInitialized');
+
+            const node = 'http://code.google.com/p/exodus';
+            const ver = 'QgayPKawpkPSDYmwT/WM94uAlu0=';
+            _converse.state.caps_cache.store(
+                { hash: 'sha-1', node, ver },
+                {
+                    identities: [{ category: 'client', type: 'pc', name: 'Exodus 0.9.1' }],
+                    features: ['http://jabber.org/protocol/muc'],
+                    dataforms: [],
+                },
+            );
+
+            const contact_jid = mock.cur_names[7].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            const full_jid = `${contact_jid}/exodus`;
+            connection._dataRecv(
+                mock.createRequest(_converse, stx`
+                <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${full_jid}">
+                    <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
+                </presence>`),
+            );
+            await u.waitUntil(() => _converse.state.caps_map.has(full_jid));
+
+            const supported = await api.disco.supports('http://jabber.org/protocol/muc', full_jid);
+            expect(supported).toBe(true);
+
+            // No disco#info query was sent for this JID.
+            const sel = `iq[to="${full_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
+            expect(connection.IQ_stanzas.filter((iq) => sizzle(sel, iq).length).length).toBe(0);
+        }),
+    );
+
+    it(
+        'restores XEP-0128 field values from the cache but not the typed dataforms collection',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            const connection = api.connection.get();
+            await mock.waitForRoster(_converse, 'current');
+            await api.waitUntil('capsInitialized');
+
+            const node = 'http://psi-im.org';
+            const ver = 'cached-with-form=';
+            // The cached dataforms carry field values but no field `type`,
+            // because `type` is not part of the XEP-0115 verification hash.
+            _converse.state.caps_cache.store(
+                { hash: 'sha-1', node, ver },
+                {
+                    identities: [{ category: 'client', type: 'pc', name: 'Psi' }],
+                    features: ['http://jabber.org/protocol/muc'],
+                    dataforms: [
+                        {
+                            FORM_TYPE: ['urn:xmpp:dataforms:softwareinfo'],
+                            os: ['Mac'],
+                            software: ['Psi'],
+                        },
+                    ],
+                },
+            );
+
+            const contact_jid = mock.cur_names[6].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            const full_jid = `${contact_jid}/psi`;
+            connection._dataRecv(
+                mock.createRequest(_converse, stx`
+                <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${full_jid}">
+                    <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
+                </presence>`),
+            );
+            await u.waitUntil(() => _converse.state.caps_map.has(full_jid));
+
+            // The flattened XEP-0128 field values are restored and exposed via getFields.
+            const fields = await api.disco.getFields(full_jid);
+            expect(fields.findWhere({ var: 'software' })?.get('value')).toBe('Psi');
+            expect(fields.findWhere({ var: 'os' })?.get('value')).toBe('Mac');
+
+            // ...but the typed per-form `dataforms` collection is left empty,
+            // since the cache can't vouch for field types (not hashed into ver).
+            const entity = await api.disco.entities.get(full_jid);
+            expect(entity.dataforms.length).toBe(0);
+
+            // ...and still no disco#info query was needed.
+            const sel = `iq[to="${full_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
+            expect(connection.IQ_stanzas.filter((iq) => sizzle(sel, iq).length).length).toBe(0);
+        }),
+    );
+
+    it(
+        'does not cache a response whose hash does not match the advertised ver',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            const connection = api.connection.get();
+            await mock.waitForRoster(_converse, 'current');
+            await api.waitUntil('capsInitialized');
+
+            const contact_jid = mock.cur_names[8].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            const full_jid = `${contact_jid}/spoofed`;
+            const node = 'http://spoofed.example';
+            const ver = 'AAAAAAAAAAAAAAAAAAAAAAAAAAA='; // does not match the response
+
+            connection._dataRecv(
+                mock.createRequest(_converse, stx`
+                <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${full_jid}">
+                    <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
+                </presence>`),
+            );
+            await u.waitUntil(() => _converse.state.caps_map.has(full_jid));
+
+            api.disco.entities.get(full_jid, true);
+            const iq = await waitForDiscoInfoQuery(_converse, full_jid);
+            const id = connection.IQ_ids[connection.IQ_stanzas.indexOf(iq)];
+            connection._dataRecv(
+                mock.createRequest(_converse, stx`
+                <iq xmlns="jabber:client" type="result" from="${full_jid}" to="romeo@montague.lit/orchard" id="${id}">
+                    <query xmlns="http://jabber.org/protocol/disco#info" node="${node}#${ver}">
+                        <identity category="client" type="pc" name="Exodus 0.9.1"/>
+                        <feature var="http://jabber.org/protocol/muc"/>
+                    </query>
+                </iq>`),
+            );
+
+            // The live result is still usable for this JID...
+            expect(await api.disco.supports('http://jabber.org/protocol/muc', full_jid)).toBe(true);
+            // ...but the unverified ver is never cached.
+            expect(_converse.state.caps_cache.getCachedInfo('sha-1', ver)).toBeUndefined();
         }),
     );
 });

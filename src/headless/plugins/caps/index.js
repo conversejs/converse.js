@@ -6,14 +6,14 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import CapsInfoCache from './collection.js';
-import { addCapsNode, onParsePresence } from './utils.js';
+import { addCapsNode, onDiscoEntityInfoReceived, onDiscoEntityInfoRequested, onParsePresence } from './utils.js';
 
 const { Strophe } = converse.env;
 
 Strophe.addNamespace('CAPS', 'http://jabber.org/protocol/caps');
 
 converse.plugins.add('converse-caps', {
-    dependencies: ['converse-status'],
+    dependencies: ['converse-disco', 'converse-status'],
 
     initialize() {
         api.promises.add('capsInitialized');
@@ -37,5 +37,11 @@ converse.plugins.add('converse-caps', {
         // A fresh collection is created on each login so it binds to the current
         // session's storage backend; the persisted entries are then re-read.
         api.listen.on('connected', () => Object.assign(_converse.state, { caps_cache: new CapsInfoCache() }));
+
+        // Disco integration (XEP-0115 §§ 5-6). disco fires these generic hooks;
+        // we answer with cached caps to avoid a query, and verify+cache real
+        // responses.
+        api.listen.on('discoEntityInfoRequested', onDiscoEntityInfoRequested);
+        api.listen.on('discoEntityInfoReceived', onDiscoEntityInfoReceived);
     },
 });

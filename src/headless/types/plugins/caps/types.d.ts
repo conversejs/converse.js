@@ -1,17 +1,8 @@
+import type { DiscoInfoData } from '../disco/types';
 export type CapsAttributes = {
     hash: string;
     node: string;
     ver: string;
 };
-export type CapsIdentity = {
-    category: string;
-    type: string;
-    name?: string;
-    lang?: string;
-};
-export type CapsInfoData = {
-    identities: CapsIdentity[];
-    features: string[];
-    dataforms: Record<string, unknown>[];
-};
+export type CapsInfoData = DiscoInfoData;
 //# sourceMappingURL=types.d.ts.map

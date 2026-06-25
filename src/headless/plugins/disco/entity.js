@@ -108,43 +108,93 @@ class DiscoEntity extends Model {
     async fetchFeatures(options) {
         if (options.ignore_cache) {
             await this.queryInfo(options);
-        } else {
-            const store_id = this.features.storage.name;
-
-            // Checking only whether features have been cached, even though
-            // there are other things that should be cached as well. We assume
-            // that if features have been cached, everything else has been also.
-            const result = await this.features.storage.store.getItem(store_id);
-            if ((result && result.length === 0) || result === null) {
-                await this.queryInfo();
-            } else {
-                await new Promise((resolve) => this.fetch({ success: resolve, error: resolve }));
-
-                await new Promise((resolve) =>
-                    this.features.fetch({
-                        add: true,
-                        success: () => {
-                            this.waitUntilFeaturesDiscovered.resolve(this);
-                            this.trigger('featuresDiscovered');
-                            resolve();
-                        },
-                        error: resolve,
-                    })
-                );
-
-                await new Promise((resolve) => this.identities.fetch({ add: true, success: resolve, error: resolve }));
-
-                const items = this.get('items');
-                if (Array.isArray(items)) {
-                    await Promise.all(
-                        items.map(/** @param {string} jid */ async (jid) => await api.disco.entities.get(jid, true))
-                    );
-                } else {
-                    await this.queryForItems();
-                }
-                this.waitUntilItemsFetched.resolve();
-            }
+            return;
         }
+
+        // If a listener has cached disco#info for this entity (e.g. the caps
+        // plugin, via a verified XEP-0115 capability hash), populate from that
+        // instead of querying disco#info. The `discoEntityInfoRequested` hook
+        // returns null when no listener is registered or none has cached info.
+        const cached = await api.hook('discoEntityInfoRequested', this, null);
+        if (cached?.info) {
+            this.populateFromCache(cached.info);
+            return;
+        }
+
+        const store_id = this.features.storage.name;
+
+        // Checking only whether features have been cached, even though
+        // there are other things that should be cached as well. We assume
+        // that if features have been cached, everything else has been also.
+        const result = await this.features.storage.store.getItem(store_id);
+        if ((result && result.length === 0) || result === null) {
+            // A listener may ask us to scope the query to a particular node
+            // (e.g. the caps plugin's "node#ver", XEP-0115 § 6.2).
+            await this.queryInfo(cached?.node ? { ...options, node: cached.node } : undefined);
+        } else {
+            await new Promise((resolve) => this.fetch({ success: resolve, error: resolve }));
+
+            await new Promise((resolve) =>
+                this.features.fetch({
+                    add: true,
+                    success: () => {
+                        this.waitUntilFeaturesDiscovered.resolve(this);
+                        this.trigger('featuresDiscovered');
+                        resolve();
+                    },
+                    error: resolve,
+                }),
+            );
+
+            await new Promise((resolve) => this.identities.fetch({ add: true, success: resolve, error: resolve }));
+
+            const items = this.get('items');
+            if (Array.isArray(items)) {
+                await Promise.all(
+                    items.map(/** @param {string} jid */ async (jid) => await api.disco.entities.get(jid, true)),
+                );
+            } else {
+                await this.queryForItems();
+            }
+            this.waitUntilItemsFetched.resolve();
+        }
+    }
+
+    /**
+     * Populates this entity's identities, features and fields from cached
+     * disco#info data (supplied by a `discoEntityInfoRequested` listener),
+     * instead of querying disco#info over the network.
+     * @param {import('./types').DiscoInfoData} info
+     */
+    populateFromCache(info) {
+        (info.identities ?? []).forEach((identity) =>
+            this.identities.create({
+                category: identity.category,
+                type: identity.type,
+                name: identity.name,
+            }),
+        );
+        (info.features ?? []).forEach((feature) => this.features.create({ 'var': feature, 'from': this.get('jid') }));
+        // Restore the flattened XEP-0128 `fields` collection (first value per
+        // field, as onInfo does). The per-form `dataforms` collection is
+        // deliberately NOT reconstructed: a field's `type` is not part of the
+        // XEP-0115 verification string (§ 5.1), so it isn't covered by the
+        // content-addressing `ver`. Two entities can share a `ver` yet report
+        // different field types, so replaying a cached `type` would assert one
+        // we never verified for this entity. Typed consumers (e.g. XEP-0363's
+        // `{ FORM_TYPE: { value, type: 'hidden' } }` lookup) must therefore
+        // query such entities directly — and they do: service components are
+        // reached via disco#items, not the presence-caps path.
+        (info.dataforms ?? []).forEach((fields) =>
+            Object.entries(fields).forEach(([name, values]) =>
+                this.fields.create({ 'var': name, 'value': values[0], 'from': this.get('jid') }),
+            ),
+        );
+        // Cached disco#info covers identities/features/fields only (no
+        // disco#items), so there are no items to wait for.
+        this.waitUntilItemsFetched.resolve();
+        this.waitUntilFeaturesDiscovered.resolve(this);
+        this.trigger('featuresDiscovered');
     }
 
     /**
@@ -153,7 +203,7 @@ class DiscoEntity extends Model {
     async queryInfo(options) {
         let stanza;
         try {
-            stanza = await api.disco.info(this.get('jid'), null, options);
+            stanza = await api.disco.info(this.get('jid'), options?.node ?? null, options);
         } catch (iq) {
             if (u.isElement(iq)) {
                 const e = await parseErrorStanza(iq);
@@ -262,6 +312,12 @@ class DiscoEntity extends Model {
 
         this.waitUntilFeaturesDiscovered.resolve(this);
         this.trigger('featuresDiscovered');
+
+        // Let listeners observe the parsed disco#info response (e.g. the caps
+        // plugin verifies it against the JID's advertised XEP-0115 `ver` and
+        // caches it). Fired last so it never blocks consumers of
+        // `featuresDiscovered`. No-op when no listener is registered.
+        await api.hook('discoEntityInfoReceived', this, stanza);
     }
 }
 

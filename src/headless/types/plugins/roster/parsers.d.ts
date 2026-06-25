@@ -1,6 +1,6 @@
 /**
  * @param {Element} stanza
- * @returns {import('./types').Presence}
+ * @returns {Promise<import('./types').PresenceAttributes>}
  */
-export function parsePresence(stanza: Element): import("./types").Presence;
+export function parsePresence(stanza: Element): Promise<import("./types").PresenceAttributes>;
 //# sourceMappingURL=parsers.d.ts.map

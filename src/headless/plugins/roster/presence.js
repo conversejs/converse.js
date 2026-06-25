@@ -1,10 +1,9 @@
 import Resources from './resources.js';
 import { Model } from '@converse/skeletor';
 import { initStorage } from '../../utils/storage.js';
-import {parsePresence} from './parsers.js';
 
 /**
- * @extends {Model<import('./types').PresenceAttrs>}
+ * @extends {Model<import('./types').PresenceModelAttrs>}
  */
 class Presence extends Model {
     get idAttribute() {
@@ -13,7 +12,7 @@ class Presence extends Model {
 
     defaults() {
         return {
-            presence: /** @type {import('./types').PresenceTypes | 'offline'} */('offline'),
+            presence: /** @type {import('./types').PresenceTypes | 'offline'} */ ('offline'),
         };
     }
 
@@ -53,10 +52,9 @@ class Presence extends Model {
      * Adds a new resource and it's associated attributes as taken
      * from the passed in presence stanza.
      * Also updates the presence if the resource has higher priority (and is newer).
-     * @param {Element} presence: The presence stanza
+     * @param {import('./types').PresenceAttributes} attrs
      */
-    addResource(presence) {
-        const attrs = parsePresence(presence);
+    addResource(attrs) {
         const settings = {
             name: attrs.resource,
             presence: attrs.type === 'unavailable' ? 'offline' : 'online',
@@ -76,9 +74,9 @@ class Presence extends Model {
      * Remove the passed in resource from the resources map.
      * Also redetermines the presence given that there's one less
      * resource.
-     * @param {string} name: The resource name
+     * @param {import('./types').PresenceAttributes} attrs
      */
-    removeResource(name) {
+    removeResource({ resource: name }) {
         const resource = this.resources.get(name);
         resource?.destroy();
     }

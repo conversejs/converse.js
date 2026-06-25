@@ -254,7 +254,7 @@ describe('Requesting Contacts', function () {
                           xmlns="jabber:client"/>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, pres));
 
-            expect(_converse.roster.pluck('jid').length).toBe(1);
+            await u.waitUntil(() => _converse.roster.pluck('jid').includes('data@enterprise'));
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle('a:contains("Contact requests")', rosterview).length, 700);
             expect(_converse.roster.pluck('jid').includes('data@enterprise')).toBeTruthy();

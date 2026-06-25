@@ -66,6 +66,12 @@ export function isInfoVisible(code: import("./types").MUCStatusCode): boolean;
 export function autoJoinRooms(): Promise<void>;
 export function onAddClientFeatures(): void;
 export function onBeforeTearDown(): void;
+/**
+ * @param {Element} stanza
+ * @param {import('../roster/types').PresenceAttributes} attrs
+ * @returns {import('../roster/types').PresenceAttributes}
+ */
+export function onParsePresence(stanza: Element, attrs: import("../roster/types").PresenceAttributes): import("../roster/types").PresenceAttributes;
 export function onStatusInitialized(): void;
 export function onBeforeResourceBinding(): void;
 //# sourceMappingURL=utils.d.ts.map

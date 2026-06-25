@@ -1,4 +1,4 @@
-import { ModelAttributes } from "@converse/skeletor";
+import { ModelAttributes } from '@converse/skeletor';
 
 export type PresenceTypes =
     | null
@@ -12,19 +12,25 @@ export type PresenceTypes =
     | 'unsubscribed';
 export type PresenceShowValues = 'chat' | 'away' | 'dnd' | 'xa';
 
-export type Presence = {
+// Parsed attributes from an incoming presence
+export type PresenceAttributes = Record<string | number, unknown> & {
+    bare_jid: string; // The bare JID of the sender
+    from: string; // The full JID of the sender (`from` attribute of the stanza)
+    nickname?: string;
+    status?: string;
     resource: string;
     type: PresenceTypes;
-    priority: Number;
+    priority: number;
     show?: PresenceShowValues;
     timestamp: string;
 };
 
-export type PresenceAttrs = ModelAttributes & {
+// Attributes for constructing an outgoing presence
+export type PresenceModelAttrs = ModelAttributes & {
     jid?: string;
     presence: PresenceTypes | 'offline';
     show?: string;
-}
+};
 
 export type RosterContactUpdateAttrs = {
     nickname?: string; // The name of that user
@@ -66,4 +72,4 @@ export type ContactDisplayNameOptions = {
 
 export type ContactsStateAttrs = ModelAttributes & {
     collapsed_groups: string[];
-}
+};

@@ -1,10 +1,14 @@
-import { ModelAttributes } from "@converse/skeletor";
+import { ModelAttributes } from '@converse/skeletor';
 export type PresenceTypes = null | 'available' | 'unavailable' | 'error' | 'probe' | 'subscribe' | 'subscribed' | 'unsubscribe' | 'unsubscribed';
 export type PresenceShowValues = 'chat' | 'away' | 'dnd' | 'xa';
-export type Presence = {
+export type PresenceAttributes = Record<string | number, unknown> & {
+    bare_jid: string;
+    from: string;
+    nickname?: string;
+    status?: string;
     resource: string;
     type: PresenceTypes;
-    priority: Number;
+    priority: number;
     show?: PresenceShowValues;
     timestamp: string;
 };

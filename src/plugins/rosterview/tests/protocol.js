@@ -91,12 +91,12 @@ describe('Presence subscriptions', function () {
 
                     expect(roster_set_stanza).toEqualStanza(
                         stx`<iq id="${roster_set_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
-                    <query xmlns="jabber:iq:roster">
-                        <item jid="contact@example.org" name="Chris Contact">
-                            <group>My Buddies</group>
-                        </item>
-                    </query>
-                </iq>`,
+                            <query xmlns="jabber:iq:roster">
+                                <item jid="contact@example.org" name="Chris Contact">
+                                    <group>My Buddies</group>
+                                </item>
+                            </query>
+                        </iq>`,
                     );
 
                     const sent_stanzas = [];
@@ -117,12 +117,12 @@ describe('Presence subscriptions', function () {
                         mock.createRequest(
                             _converse,
                             stx`<iq type="set" xmlns="jabber:client">
-                    <query xmlns="jabber:iq:roster">
-                        <item jid="contact@example.org" subscription="none" name="Chris Contact">
-                            <group>My Buddies</group>
-                        </item>
-                    </query>
-                </iq>`,
+                                <query xmlns="jabber:iq:roster">
+                                    <item jid="contact@example.org" subscription="none" name="Chris Contact">
+                                        <group>My Buddies</group>
+                                    </item>
+                                </query>
+                            </iq>`,
                         ),
                     );
 
@@ -155,13 +155,16 @@ describe('Presence subscriptions', function () {
                         sent_stanzas.filter((s) => s.matches('presence')).pop(),
                     );
                     expect(sent_presence).toEqualStanza(stx`
-                <presence to="contact@example.org" type="subscribe" xmlns="jabber:client">
-                    <nick xmlns="http://jabber.org/protocol/nick">Romeo</nick>
-                    <priority>0</priority>
-                    <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
-                    <c hash="sha-1" node="https://conversejs.org" ver="aU8gtptxi4fPJB8IPibd7tJbTLE=" xmlns="http://jabber.org/protocol/caps"/>
-                </presence>
-            `);
+                        <presence to="contact@example.org" type="subscribe" xmlns="jabber:client">
+                            <nick xmlns="http://jabber.org/protocol/nick">Romeo</nick>
+                            <priority>0</priority>
+                            <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
+                            <c hash="sha-1"
+                                node="https://conversejs.org"
+                                ver="aU8gtptxi4fPJB8IPibd7tJbTLE="
+                                xmlns="http://jabber.org/protocol/caps"/>
+                        </presence>
+                    `);
 
                     /* As a result, the user's server MUST initiate a second roster
                      * push to all of the user's available resources that have
@@ -174,12 +177,15 @@ describe('Presence subscriptions', function () {
                         mock.createRequest(
                             _converse,
                             stx`<iq type="set" from="${_converse.bare_jid}" xmlns="jabber:client">
-                    <query xmlns="jabber:iq:roster">
-                        <item jid="contact@example.org" subscription="none" ask="subscribe" name="Chris Contact">
-                            <group>My Buddies</group>
-                        </item>
-                    </query>
-                </iq>`,
+                                <query xmlns="jabber:iq:roster">
+                                    <item jid="contact@example.org"
+                                            subscription="none"
+                                            ask="subscribe"
+                                            name="Chris Contact">
+                                        <group>My Buddies</group>
+                                    </item>
+                                </query>
+                            </iq>`,
                         ),
                     );
 
@@ -205,21 +211,22 @@ describe('Presence subscriptions', function () {
                     /* Here we assume the "happy path" that the contact
                      * approves the subscription request
                      */
-                    _converse.api.connection
-                        .get()
-                        ._dataRecv(
-                            mock.createRequest(
-                                _converse,
-                                (stanza = stx`<presence to="${_converse.bare_jid}" from="contact@example.org" type="subscribed" xmlns="jabber:client"/>`),
-                            ),
-                        );
+                    _converse.api.connection.get()._dataRecv(
+                        mock.createRequest(
+                            _converse,
+                            stx`<presence to="${_converse.bare_jid}"
+                                    from="contact@example.org"
+                                    type="subscribed"
+                                    xmlns="jabber:client"/>`,
+                        ),
+                    );
 
                     /* Upon receiving the presence stanza of type "subscribed",
                      * the user SHOULD acknowledge receipt of that
                      * subscription state notification by sending a presence
                      * stanza of type "subscribe".
                      */
-                    expect(contact.ackSubscribe).toHaveBeenCalled();
+                    await u.waitUntil(() => contact.ackSubscribe.calls.count());
                     expect(sent_stanza).toEqualStanza(
                         stx`<presence to="contact@example.org" type="subscribe" xmlns="jabber:client"/>`,
                     );
@@ -231,10 +238,10 @@ describe('Presence subscriptions', function () {
                      */
                     const IQ_id = _converse.api.connection.get().getUniqueId('roster');
                     stanza = stx`<iq type="set" id="${IQ_id}" xmlns="jabber:client">
-                <query xmlns="jabber:iq:roster">
-                    <item jid="contact@example.org" subscription="to" name="Nicky"/>
-                </query>
-            </iq>`;
+                            <query xmlns="jabber:iq:roster">
+                                <item jid="contact@example.org" subscription="to" name="Nicky"/>
+                            </query>
+                        </iq>`;
 
                     _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                     // Check that the IQ set was acknowledged.
@@ -259,7 +266,7 @@ describe('Presence subscriptions', function () {
 
                     await u.waitUntil(() => contacts[0].querySelector('.contact-name')?.textContent.trim() === 'Nicky');
 
-                    expect(contact.presence.getStatus()).toBe('offline');
+                    await u.waitUntil(() => contact.presence.getStatus() === 'offline');
 
                     /*  <presence
                      *      from='contact@example.org/resource'
@@ -271,7 +278,7 @@ describe('Presence subscriptions', function () {
                               xmlns="jabber:client"/>`;
                     _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                     // Now the contact should also be online.
-                    expect(contact.presence.getStatus()).toBe('online');
+                    await u.waitUntil(() => contact.presence.getStatus() === 'online');
 
                     /* Section 8.3.  Creating a Mutual Subscription
                      *
@@ -284,12 +291,13 @@ describe('Presence subscriptions', function () {
                     spyOn(contact, 'authorize').and.callThrough();
                     spyOn(_converse.roster, 'handleIncomingSubscription').and.callThrough();
                     stanza = stx`
-                    <presence to="${_converse.bare_jid}"
-                              from="contact@example.org/resource"
-                              type="subscribe"
-                              xmlns="jabber:client"/>`;
+                        <presence to="${_converse.bare_jid}"
+                                from="contact@example.org/resource"
+                                type="subscribe"
+                                xmlns="jabber:client"/>`;
                     _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
-                    expect(_converse.roster.handleIncomingSubscription).toHaveBeenCalled();
+
+                    await u.waitUntil(() => _converse.roster.handleIncomingSubscription.calls.count());
 
                     /* The user's client MUST send a presence stanza of type
                      * "subscribed" to the contact in order to approve the
@@ -297,9 +305,12 @@ describe('Presence subscriptions', function () {
                      *
                      *  <presence to='contact@example.org' type='subscribed'/>
                      */
-                    expect(contact.authorize).toHaveBeenCalled();
-                    expect(sent_stanza).toEqualStanza(
-                        stx`<presence to="contact@example.org" type="subscribed" xmlns="jabber:client"/>`,
+                    await u.waitUntil(() => contact.authorize.calls.count());
+                    await u.waitUntil(() =>
+                        u.isEqualNode(
+                            sent_stanza,
+                            stx`<presence to="contact@example.org" type="subscribed" xmlns="jabber:client"/>`,
+                        ),
                     );
 
                     /* As a result, the user's server MUST initiate a
@@ -311,16 +322,16 @@ describe('Presence subscriptions', function () {
                         mock.createRequest(
                             _converse,
                             stx`<iq type="set" xmlns="jabber:client">
-                    <query xmlns="jabber:iq:roster">
-                        <item jid="contact@example.org" subscription="both" name="contact@example.org"/>
-                    </query>
-                </iq>`,
+                                <query xmlns="jabber:iq:roster">
+                                    <item jid="contact@example.org" subscription="both" name="contact@example.org"/>
+                                </query>
+                            </iq>`,
                         ),
                     );
 
                     // The class on the contact will now have switched.
                     await u.waitUntil(() => !u.hasClass('to', contacts[0]));
-                    expect(u.hasClass('both', contacts[0])).toBe(true);
+                    expect(u.hasClass('both', contacts[0])).toBeTruthy();
                 },
             ),
         );
@@ -333,6 +344,7 @@ describe('Presence subscriptions', function () {
                  * the interaction between roster items and subscription states.
                  */
                 var contact, stanza, sent_stanza, sent_IQ;
+                const sent_stanzas = [];
                 await mock.waitForRoster(_converse, 'current', 0);
                 mock.openControlBox(_converse);
                 // Add a new roster contact via roster push
@@ -353,6 +365,7 @@ describe('Presence subscriptions', function () {
 
                 spyOn(_converse.api.connection.get(), 'send').and.callFake((stanza) => {
                     sent_stanza = stanza;
+                    sent_stanzas.push(stanza);
                 });
                 spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake((iq) => {
                     sent_IQ = iq;
@@ -397,8 +410,11 @@ describe('Presence subscriptions', function () {
                  * state notification through either "affirming" it by
                  * sending a presence stanza of type "unsubscribe
                  */
-                expect(contact.ackUnsubscribe).toHaveBeenCalled();
-                expect(sent_stanza).toEqualStanza(
+                await u.waitUntil(() => contact.ackUnsubscribe.calls.count());
+                const unsubscribe = await u.waitUntil(() =>
+                    sent_stanzas.find((s) => s.matches('presence[type="unsubscribe"]')),
+                );
+                expect(unsubscribe).toEqualStanza(
                     stx`<presence to="contact@example.org" type="unsubscribe" xmlns="jabber:client"/>`,
                 );
 

@@ -261,6 +261,18 @@ export function onBeforeTearDown() {
         .forEach((muc) => safeSave(muc.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED }));
 }
 
+/**
+ * @param {Element} stanza
+ * @param {import('../roster/types').PresenceAttributes} attrs
+ * @returns {import('../roster/types').PresenceAttributes}
+ */
+export function onParsePresence(stanza, attrs) {
+    return {
+        ...attrs,
+        is_muc: !!sizzle(`x[xmlns="${Strophe.NS.MUC}"]`, stanza).length,
+    };
+}
+
 export function onStatusInitialized() {
     window.addEventListener(getUnloadEvent(), () => {
         const using_websocket = api.connection.isType('websocket');

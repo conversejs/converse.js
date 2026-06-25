@@ -27,6 +27,7 @@ import {
     onBeforeResourceBinding,
     onBeforeTearDown,
     onDirectMUCInvitation,
+    onParsePresence,
     onStatusInitialized,
     onWindowStateChanged,
     registerDirectInvitationHandler,
@@ -200,6 +201,7 @@ converse.plugins.add('converse-muc', {
         api.listen.on('chatBoxesFetched', autoJoinRooms);
         api.listen.on('disconnected', disconnectChatRooms);
         api.listen.on('statusInitialized', onStatusInitialized);
+        api.listen.on('parsePresence', onParsePresence);
 
         document.addEventListener('visibilitychange', onWindowStateChanged);
     },

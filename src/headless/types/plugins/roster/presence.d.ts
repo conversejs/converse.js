@@ -20,9 +20,9 @@ declare class Presence extends Model<import("./types").PresenceModelAttrs> {
      * Adds a new resource and it's associated attributes as taken
      * from the passed in presence stanza.
      * Also updates the presence if the resource has higher priority (and is newer).
-     * @param {Element} presence: The presence stanza
+     * @param {import('./types').PresenceAttributes} attrs
      */
-    addResource(presence: Element): void;
+    addResource(attrs: import("./types").PresenceAttributes): void;
     /**
      * Remove the passed in resource from the resources map.
      * Also redetermines the presence given that there's one less

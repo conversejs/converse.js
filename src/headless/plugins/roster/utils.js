@@ -9,6 +9,7 @@ import { Model } from '@converse/skeletor';
 import { RosterFilter } from '../../plugins/roster/filter.js';
 import { initStorage } from '../../utils/storage.js';
 import { shouldClearCache } from '../../utils/session.js';
+import { parsePresence } from './parsers.js';
 
 const { stx } = converse.env;
 
@@ -81,9 +82,11 @@ function registerPresenceHandler() {
     const connection = api.connection.get();
     presence_ref = connection.addHandler(
         /** @param {Element} presence */
-        (presence) => {
+        async (presence) => {
+            const attrs = await parsePresence(presence);
+
             const roster = /** @type {RosterContacts} */ (_converse.state.roster);
-            roster.presenceHandler(presence);
+            roster.presenceHandler(attrs);
             return true;
         },
         null,

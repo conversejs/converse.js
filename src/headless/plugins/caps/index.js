@@ -8,15 +8,13 @@ import { addCapsNode } from './utils.js';
 
 const { Strophe } = converse.env;
 
-Strophe.addNamespace('CAPS', "http://jabber.org/protocol/caps");
-
+Strophe.addNamespace('CAPS', 'http://jabber.org/protocol/caps');
 
 converse.plugins.add('converse-caps', {
-
     dependencies: ['converse-status'],
 
-    initialize () {
+    initialize() {
         api.listen.on('constructedPresence', (_, p) => addCapsNode(p));
         api.listen.on('constructedMUCPresence', (_, p) => addCapsNode(p));
-    }
+    },
 });

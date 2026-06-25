@@ -27,7 +27,7 @@ export type MUCStatusCode =
 
 export type MUCConfigAttributes = ModelAttributes & {
     changesubject?: boolean;
-}
+};
 
 export type DefaultMUCAttributes = {
     bookmarked: boolean;
@@ -50,7 +50,7 @@ export type MUCMessageEventData = {
     stanza: Element;
     attrs: MUCMessageAttributes;
     chatbox: MUC;
-}
+};
 
 export type MUCAttributes = DefaultMUCAttributes & {
     jid: string;
@@ -72,8 +72,8 @@ type ExtraMUCAttributes = {
 
 export type MUCMessageAttributes = MessageAttributes & ExtraMUCAttributes;
 
-export type MUCAffiliation = 'owner'|'admin'|'member'|'outcast'|'none';
-export type MUCRole = 'moderator'|'participant'|'visitor'|'none';
+export type MUCAffiliation = 'owner' | 'admin' | 'member' | 'outcast' | 'none';
+export type MUCRole = 'moderator' | 'participant' | 'visitor' | 'none';
 
 export type NonOutcastAffiliation = 'admin' | 'owner' | 'member';
 
@@ -105,7 +105,7 @@ export type MUCPresenceItemAttributes = {
     nick: string;
     reason?: string;
     role?: MUCRole;
-}
+};
 
 export type MUCPresenceAttributes = MUCPresenceItemAttributes & {
     codes: MUCStatusCode[];
@@ -121,7 +121,6 @@ export type MUCPresenceAttributes = MUCPresenceItemAttributes & {
     status?: string;
     type: string; // The type of presence
 };
-
 
 export type OccupantData = {
     jid?: string;

@@ -5,6 +5,7 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
+import CapsInfoCache from './collection.js';
 import { addCapsNode, onParsePresence } from './utils.js';
 
 const { Strophe } = converse.env;
@@ -15,6 +16,8 @@ converse.plugins.add('converse-caps', {
     dependencies: ['converse-status'],
 
     initialize() {
+        api.promises.add('capsInitialized');
+
         api.listen.on('constructedPresence', (_, p) => addCapsNode(p));
         api.listen.on('constructedMUCPresence', (_, p) => addCapsNode(p));
 
@@ -27,5 +30,12 @@ converse.plugins.add('converse-caps', {
         const clearCapsMap = () => /** @type {Map<string, unknown>} */ (_converse.state.caps_map)?.clear();
         api.listen.on('will-reconnect', clearCapsMap);
         api.listen.on('clearSession', clearCapsMap);
+
+        // Persistent cache of verified capabilities (ver -> disco#info). Unlike
+        // the map above, the cached data survives reconnects, the session ending
+        // and page reloads (its store is content-addressed by verification hash).
+        // A fresh collection is created on each login so it binds to the current
+        // session's storage backend; the persisted entries are then re-read.
+        api.listen.on('connected', () => Object.assign(_converse.state, { caps_cache: new CapsInfoCache() }));
     },
 });

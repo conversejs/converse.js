@@ -167,3 +167,49 @@ describe('A received presence stanza', function () {
         }),
     );
 });
+
+describe('The entity capabilities cache', function () {
+    it(
+        'stores and retrieves verified disco info keyed by hash and ver',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            await api.waitUntil('capsInitialized');
+
+            const cache = _converse.state.caps_cache;
+            expect(cache.getCachedInfo('sha-1', 'QgayPKawpkPSDYmwT/WM94uAlu0=')).toBeUndefined();
+
+            const caps = { hash: 'sha-1', node: 'http://conversations.im', ver: 'QgayPKawpkPSDYmwT/WM94uAlu0=' };
+            const info = {
+                identities: [{ category: 'client', type: 'pc', name: 'Conversations' }],
+                features: ['http://jabber.org/protocol/muc', 'urn:xmpp:ping'],
+                dataforms: [],
+            };
+            cache.store(caps, info);
+
+            const cached = cache.getCachedInfo('sha-1', 'QgayPKawpkPSDYmwT/WM94uAlu0=');
+            expect(cached).toBeDefined();
+            // It's keyed by `${hash}/${ver}`, independently of the node.
+            expect(cached).toBe(cache.get('sha-1/QgayPKawpkPSDYmwT/WM94uAlu0='));
+            expect(cached.get('node')).toBe('http://conversations.im');
+            expect(cached.get('features')).toEqual(['http://jabber.org/protocol/muc', 'urn:xmpp:ping']);
+            expect(cached.get('identities')).toEqual([{ category: 'client', type: 'pc', name: 'Conversations' }]);
+        }),
+    );
+
+    it(
+        'updates an existing entry instead of duplicating it',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            await api.waitUntil('capsInitialized');
+
+            const cache = _converse.state.caps_cache;
+            const caps = { hash: 'sha-1', node: 'http://conversations.im', ver: 'abc=' };
+
+            cache.store(caps, { identities: [], features: ['urn:xmpp:ping'], dataforms: [] });
+            cache.store(caps, { identities: [], features: ['urn:xmpp:ping', 'urn:xmpp:time'], dataforms: [] });
+
+            expect(cache.length).toBe(1);
+            expect(cache.getCachedInfo('sha-1', 'abc=').get('features')).toEqual(['urn:xmpp:ping', 'urn:xmpp:time']);
+        }),
+    );
+});

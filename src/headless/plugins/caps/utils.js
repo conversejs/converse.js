@@ -32,6 +32,17 @@ async function generateVerificationString() {
 }
 
 /**
+ * The storage key for the XEP-0115 capabilities cache. It isn't suffixed with
+ * the user's JID like most stores: the persistent storage backend is already
+ * scoped to the logged-in account, and a verification hash is a content
+ * address, so a single cache per account suffices.
+ * @returns {string}
+ */
+export function getCapsCacheStorageKey() {
+    return 'converse.caps';
+}
+
+/**
  * Parses the XEP-0115 entity capabilities (`<c/>`) element from a presence
  * stanza, if present.
  * @param {Element} stanza

@@ -209,7 +209,7 @@ export type MessageErrorAttributes = {
     error_type: string; // The type of error received from the server
 };
 
-export type MessageStanzaTypes = 'chat' | 'headline' | 'groupchat' | 'error';
+export type MessageStanzaTypes = 'chat' | 'normal' | 'headline' | 'groupchat' | 'error';
 
 export type MessageAttributes = EncryptionAttrs &
     MessageErrorAttributes & {
@@ -245,7 +245,7 @@ export type MessageAttributes = EncryptionAttrs &
         plaintext: string; // The decrypted text of this message, in case it was encrypted.
         receipt_id: string; // The `id` attribute of a XEP-0184 <receipt> element
         received: string; // An ISO8601 string recording the time that the message was received
-        references: Array<Reference>; // A list of objects representing XEP-0372 references
+        references: Array<XEP372Reference>; // A list of objects representing XEP-0372 references
         replace_id: string; // The `id` attribute of a XEP-0308 <replace> element
         reply_to_id: string; // The `id` attribute of a XEP-0461 <reply> element (message being replied to)
         reply_to: string; // The `to` attribute of a XEP-0461 <reply> element (JID of the original message sender)
@@ -279,3 +279,8 @@ export type StorageKeys = {
 
 // Common chatbox types
 export type ChatBoxOrMUC = import('../plugins/chat/model.js').default | import('../plugins/muc/muc.js').default;
+
+export type BaseMessageAttributes = ModelAttributes &
+    Omit<MessageAttributes, 'type'> & {
+        type: MessageStanzaTypes | 'info';
+    };

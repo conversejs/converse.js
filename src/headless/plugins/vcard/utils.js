@@ -1,4 +1,5 @@
 /**
+ * @typedef {import('../../plugins/chat/message').default} Message
  * @typedef {import('../../plugins/muc/message').default} MUCMessage
  * @typedef {import('../../plugins/status/profile').default} Profile
  * @typedef {import('../../plugins/vcard/vcards').default} VCards
@@ -67,12 +68,13 @@ export async function getVCardForModel(model, lazy_load = false) {
     } else {
         let jid;
         if (model instanceof _converse.exports.Message) {
-            if (['error', 'info'].includes(model.get('type'))) {
+            const message = /** @type {Message} */ (model);
+            if (['error', 'info'].includes(message.get('type'))) {
                 return;
             }
-            jid = Strophe.getBareJidFromJid(model.get('from'));
+            jid = Strophe.getBareJidFromJid(message.get('from'));
         } else {
-            jid = model.get('jid');
+            jid = /** @type {Model} */ (model).get('jid');
         }
 
         if (!jid) {

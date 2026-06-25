@@ -14,7 +14,7 @@ import converse from './api/public.js';
 const { dayjs, stx } = converse.env;
 
 /**
- * @extends {Model}
+ * @extends {Model<import('./types').BaseMessageAttributes>}
  */
 class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     defaults() {
@@ -104,7 +104,7 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
     /**
      * Returns a boolean indicating whether this message is ephemeral,
      * meaning it will get automatically removed after ten seconds.
-     * @returns {boolean}
+     * @returns {boolean | number}
      */
     isEphemeral() {
         return this.get('is_ephemeral');
@@ -126,7 +126,7 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
      * @returns {boolean}
      */
     isRetracted() {
-        return this.get('retracted') || this.get('moderated') === 'retracted';
+        return !!(this.get('retracted') || this.get('moderated') === 'retracted');
     }
 
     /**

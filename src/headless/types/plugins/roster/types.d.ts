@@ -8,7 +8,7 @@ export type Presence = {
     show?: PresenceShowValues;
     timestamp: string;
 };
-export type PresenceAttrs = ModelAttributes & {
+export type PresenceModelAttrs = ModelAttributes & {
     jid?: string;
     presence: PresenceTypes | 'offline';
     show?: string;

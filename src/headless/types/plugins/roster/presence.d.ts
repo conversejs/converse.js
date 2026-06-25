@@ -1,9 +1,9 @@
 export default Presence;
 /**
- * @extends {Model<import('./types').PresenceAttrs>}
+ * @extends {Model<import('./types').PresenceModelAttrs>}
  */
-declare class Presence extends Model<import("./types").PresenceAttrs> {
-    constructor(attributes?: Partial<import("./types").PresenceAttrs>, options?: import("@converse/skeletor").ModelOptions);
+declare class Presence extends Model<import("./types").PresenceModelAttrs> {
+    constructor(attributes?: Partial<import("./types").PresenceModelAttrs>, options?: import("@converse/skeletor").ModelOptions);
     defaults(): {
         presence: import("./types").PresenceTypes | "offline";
     };

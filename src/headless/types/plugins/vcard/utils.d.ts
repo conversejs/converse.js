@@ -36,6 +36,7 @@ export function registerPresenceHandler(): void;
  * @param {import('strophe.js').Builder} stanza
  */
 export function updatePresence(stanza: import("strophe.js").Builder): import("strophe.js").Builder;
+export type Message = import("../../plugins/chat/message").default;
 export type MUCMessage = import("../../plugins/muc/message").default;
 export type Profile = import("../../plugins/status/profile").default;
 export type VCards = import("../../plugins/vcard/vcards").default;

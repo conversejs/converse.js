@@ -140,7 +140,7 @@ export type MessageErrorAttributes = {
     error_text: string;
     error_type: string;
 };
-export type MessageStanzaTypes = 'chat' | 'headline' | 'groupchat' | 'error';
+export type MessageStanzaTypes = 'chat' | 'normal' | 'headline' | 'groupchat' | 'error';
 export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     body: string;
     chat_state: string;
@@ -174,7 +174,7 @@ export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     plaintext: string;
     receipt_id: string;
     received: string;
-    references: Array<Reference>;
+    references: Array<XEP372Reference>;
     replace_id: string;
     reply_to_id: string;
     reply_to: string;
@@ -206,5 +206,8 @@ export type StorageKeys = {
     fetched_flag_key: string;
 };
 export type ChatBoxOrMUC = import('../plugins/chat/model.js').default | import('../plugins/muc/muc.js').default;
+export type BaseMessageAttributes = ModelAttributes & Omit<MessageAttributes, 'type'> & {
+    type: MessageStanzaTypes | 'info';
+};
 export {};
 //# sourceMappingURL=types.d.ts.map

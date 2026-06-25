@@ -978,7 +978,7 @@ declare class MUC extends MUC_base {
      * was mentioned in a message.
      * @param {BaseMessage} message - The text message
      */
-    isUserMentioned(message: import("../../shared/message.js").default): any;
+    isUserMentioned(message: import("../../shared/message.js").default): boolean;
     /**
      * @param {BaseMessage} message - The text message
      */

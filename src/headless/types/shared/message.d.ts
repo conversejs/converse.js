@@ -1,8 +1,8 @@
 export default BaseMessage;
 /**
- * @extends {Model}
+ * @extends {Model<import('./types').BaseMessageAttributes>}
  */
-declare class BaseMessage extends Model<import("@converse/skeletor").ModelAttributes> {
+declare class BaseMessage extends Model<import("./types").BaseMessageAttributes> {
     /**
      * @param {import('./types').MessageAttributes} attrs
      * @param {import('@converse/skeletor').ModelOptions} options
@@ -32,9 +32,9 @@ declare class BaseMessage extends Model<import("@converse/skeletor").ModelAttrib
     /**
      * Returns a boolean indicating whether this message is ephemeral,
      * meaning it will get automatically removed after ten seconds.
-     * @returns {boolean}
+     * @returns {boolean | number}
      */
-    isEphemeral(): boolean;
+    isEphemeral(): boolean | number;
     /**
      * Returns a boolean indicating whether this message is a XEP-0245 /me command.
      * @returns {boolean}

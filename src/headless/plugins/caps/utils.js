@@ -258,15 +258,54 @@ export async function onDiscoEntityInfoReceived(entity, stanza) {
 }
 
 /**
- * Given a stanza, adds a XEP-0115 CAPS element
- * @param {Strophe.Builder} stanza
+ * Detects, once per connection, whether our own server supports XEP-0115 Caps
+ * Optimization (§ 8.4) and records the result so that broadcast presence can omit
+ * redundant `<c/>` elements.
+ * @returns {Promise<void>}
  */
-export async function addCapsNode(stanza) {
+export async function detectCapsOptimizationSupport() {
+    const domain = _converse.session?.get('domain');
+    try {
+        _converse.state.caps_optimize = !!(
+            domain && (await _converse.api.disco.supports(Strophe.NS.CAPS_OPTIMIZE, domain))
+        );
+    } catch (e) {
+        log.error(e);
+        _converse.state.caps_optimize = false;
+    }
+}
+
+/**
+ * Adds a XEP-0115 capabilities (`<c/>`) element to the given presence stanza.
+ *
+ * Optimization (XEP-0115 § 8.4) only applies to broadcast presence (presence
+ * with no `to`). When `optimize` is true, our server supports Caps Optimization
+ * and this is a broadcast presence, the `<c/>` is omitted on presences whose
+ * verification string we've already advertised this session: the server re-adds
+ * the annotation for new subscribers and forwards any `ver` change, so
+ * re-sending an unchanged `<c/>` on every presence is wasteful. The first
+ * presence (and any subsequent `ver` change) is always annotated. Directed
+ * presence (e.g. a MUC join or a presence probe) is never optimized, as
+ * server-side broadcast stripping doesn't apply to it.
+ * @param {Strophe.Builder} stanza
+ * @param {boolean} [optimize=false]
+ * @returns {Promise<Strophe.Builder>}
+ */
+export async function addCapsNode(stanza, optimize = false) {
+    const ver = await getOwnVerificationString();
+    // Only broadcast presence (no `to`) is subject to § 8.4 optimization;
+    // directed presence is always annotated and never updates the send-side
+    // state, since the server only caches and re-adds caps for broadcasts.
+    const may_optimize = optimize && !stanza.tree().getAttribute('to');
+    if (may_optimize && _converse.state.caps_optimize && _converse.state.caps_last_sent_ver === ver) {
+        return stanza;
+    }
     const node = stx`<c
         xmlns="${Strophe.NS.CAPS}"
         hash="sha-1"
         node="https://conversejs.org"
-        ver="${await getOwnVerificationString()}"></c>`;
+        ver="${ver}"></c>`;
     stanza.root().cnode(node).up();
+    if (may_optimize) _converse.state.caps_last_sent_ver = ver;
     return stanza;
 }

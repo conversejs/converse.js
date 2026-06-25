@@ -77,10 +77,28 @@ export function onDiscoEntityInfoRequested(entity: import("../disco/entity").def
  */
 export function onDiscoEntityInfoReceived(entity: import("../disco/entity").default, stanza: Element): Promise<Element>;
 /**
- * Given a stanza, adds a XEP-0115 CAPS element
- * @param {Strophe.Builder} stanza
+ * Detects, once per connection, whether our own server supports XEP-0115 Caps
+ * Optimization (§ 8.4) and records the result so that broadcast presence can omit
+ * redundant `<c/>` elements.
+ * @returns {Promise<void>}
  */
-export function addCapsNode(stanza: Strophe.Builder): Promise<import("strophe.js").Builder>;
+export function detectCapsOptimizationSupport(): Promise<void>;
+/**
+ * Adds a XEP-0115 capabilities (`<c/>`) element to the given presence stanza.
+ *
+ * When `optimize` is true (broadcast presence) and our server supports Caps
+ * Optimization (XEP-0115 § 8.4), the `<c/>` is omitted on presences whose
+ * verification string we've already advertised this session: the server re-adds
+ * the annotation for new subscribers and forwards any `ver` change, so
+ * re-sending an unchanged `<c/>` on every presence is wasteful. The first
+ * presence (and any subsequent `ver` change) is always annotated. Directed
+ * presence (e.g. MUC) is never optimized, as server-side broadcast stripping
+ * doesn't apply to it.
+ * @param {Strophe.Builder} stanza
+ * @param {boolean} [optimize=false]
+ * @returns {Promise<Strophe.Builder>}
+ */
+export function addCapsNode(stanza: Strophe.Builder, optimize?: boolean): Promise<Strophe.Builder>;
 export namespace Strophe {
     type Builder = import("strophe.js").Builder;
 }

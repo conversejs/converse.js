@@ -77,6 +77,69 @@ describe('A sent presence stanza', function () {
             </presence>`);
         }),
     );
+
+    it(
+        'omits a redundant capabilities node when the server supports Caps Optimization',
+        mock.initConverse(converse, ['statusInitialized'], {}, async (_converse) => {
+            const { api } = _converse;
+            const { profile } = _converse.state;
+            const ns = 'http://jabber.org/protocol/caps';
+
+            // Simulate a server that supports Caps Optimization (§ 8.4). The
+            // connection-time detection never overwrites this here: the mock
+            // server doesn't answer disco#info for the domain, so its support
+            // check stays pending and leaves caps_optimize untouched.
+            _converse.state.caps_optimize = true;
+            _converse.state.caps_last_sent_ver = null;
+
+            // The first broadcast presence must carry the annotation so the
+            // server learns our caps.
+            let pres = await profile.constructPresence({ status: 'online' });
+            expect(sizzle(`c[xmlns="${ns}"]`, pres.node).length).toBe(1);
+
+            // A subsequent presence with an unchanged `ver` omits the redundant <c/>.
+            pres = await profile.constructPresence({ status: 'still online' });
+            expect(sizzle(`c[xmlns="${ns}"]`, pres.node).length).toBe(0);
+
+            // When our capabilities change (new `ver`), it is advertised again...
+            api.disco.own.features.add('urn:example:caps-optimization-test');
+            pres = await profile.constructPresence({ status: 'online again' });
+            expect(sizzle(`c[xmlns="${ns}"]`, pres.node).length).toBe(1);
+
+            // ...and omitted again on the next unchanged presence.
+            pres = await profile.constructPresence({ status: 'yet again' });
+            expect(sizzle(`c[xmlns="${ns}"]`, pres.node).length).toBe(0);
+        }),
+    );
+
+    it(
+        'always annotates directed presence even when optimization is active',
+        mock.initConverse(converse, ['statusInitialized'], {}, async (_converse) => {
+            const { profile } = _converse.state;
+            const ns = 'http://jabber.org/protocol/caps';
+
+            _converse.state.caps_optimize = true;
+            _converse.state.caps_last_sent_ver = null;
+
+            // A broadcast presence records the ver and is then optimized away
+            // on the next unchanged broadcast.
+            let pres = await profile.constructPresence({ status: 'online' });
+            expect(sizzle(`c[xmlns="${ns}"]`, pres.node).length).toBe(1);
+            pres = await profile.constructPresence({ status: 'still online' });
+            expect(sizzle(`c[xmlns="${ns}"]`, pres.node).length).toBe(0);
+
+            // Directed presence (with a `to`) is never optimized: § 8.4
+            // broadcast stripping doesn't apply to it, so the recipient — who
+            // may not be a presence subscriber — must still receive our caps.
+            pres = await profile.constructPresence({ to: 'mercutio@montague.lit', status: 'still online' });
+            expect(sizzle(`c[xmlns="${ns}"]`, pres.node).length).toBe(1);
+
+            // It also leaves the broadcast send-side state untouched, so the
+            // next unchanged broadcast is still optimized away.
+            pres = await profile.constructPresence({ status: 'still online' });
+            expect(sizzle(`c[xmlns="${ns}"]`, pres.node).length).toBe(0);
+        }),
+    );
 });
 
 describe('A received presence stanza', function () {

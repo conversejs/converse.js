@@ -59,6 +59,12 @@ declare namespace _default {
         function create(jid: string, node: string, config: import("./types").PubSubConfigOptions): Promise<void>;
         /**
          * Subscribes the local user to a PubSub node.
+         *
+         * Subscribes with the *bare* JID, so the subscription is durable and
+         * resource-independent: notifications are delivered to whichever
+         * resource is online, and the subscription survives reconnects (a
+         * full-JID subscription is bound to a resource that changes on every
+         * reconnect, silently stranding delivery on the old resource).
          * @method _converse.api.pubsub.subscribe
          * @param {string} jid - PubSub service JID.
          * @param {string} node - The node to subscribe to
@@ -66,7 +72,8 @@ declare namespace _default {
          */
         function subscribe(jid: string, node: string): Promise<void>;
         /**
-         * Unsubscribes the local user from a PubSub node.
+         * Unsubscribes the local user from a PubSub node. Unsubscribes the bare
+         * JID, matching the durable subscription created by {@link subscribe}.
          * @method _converse.api.pubsub.unsubscribe
          * @param {string} jid - The PubSub service JID
          * @param {string} node - The node to unsubscribe from

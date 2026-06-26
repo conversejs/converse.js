@@ -10,11 +10,14 @@ describe('pubsub subscribe/unsubscribe API', function () {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api, state } = _converse;
             const own_jid = state.session.get('jid');
+            const bare_jid = state.session.get('bare_jid');
             const sent = api.connection.get().sent_stanzas;
             const service = 'pubsub.example.org';
             const node = 'testnode';
             const subscribePromise = api.pubsub.subscribe(service, node);
 
+            // The subscriber is the *bare* JID (durable, resource-independent),
+            // while the IQ is sent from the full JID.
             const stanza = sent.filter((iq) => iq.querySelector('pubsub subscribe')).pop();
             expect(stanza).toEqualStanza(stx`
                 <iq type="set"
@@ -23,7 +26,7 @@ describe('pubsub subscribe/unsubscribe API', function () {
                     xmlns="jabber:client"
                     id="${stanza.getAttribute('id')}">
                   <pubsub xmlns="${Strophe.NS.PUBSUB}">
-                    <subscribe node="${node}" jid="${own_jid}"/>
+                    <subscribe node="${node}" jid="${bare_jid}"/>
                   </pubsub>
                 </iq>`);
 
@@ -49,6 +52,7 @@ describe('pubsub subscribe/unsubscribe API', function () {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api, state } = _converse;
             const own_jid = state.session.get('jid');
+            const bare_jid = state.session.get('bare_jid');
             const sent = api.connection.get().sent_stanzas;
             const service = 'pubsub.example.org';
             const node = 'testnode';
@@ -74,7 +78,7 @@ describe('pubsub subscribe/unsubscribe API', function () {
                     xmlns="jabber:client"
                     id="${stanza.getAttribute('id')}">
                   <pubsub xmlns="${Strophe.NS.PUBSUB}">
-                    <unsubscribe node="${node}" jid="${own_jid}"/>
+                    <unsubscribe node="${node}" jid="${bare_jid}"/>
                   </pubsub>
                 </iq>`);
         }),

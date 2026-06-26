@@ -7,7 +7,7 @@ import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import { publishFollow, readFollowing, retractFollow } from './following.js';
-import { MICROBLOG_NODE } from './constants.js';
+import { MICROBLOG_NODE, SOCIAL_FEED_FEATURE } from './constants.js';
 
 export default {
     /**
@@ -40,13 +40,45 @@ export default {
              * @returns {Promise<import('./feed').default>}
              */
             async own() {
-                return api.microblog.feeds.get();
+                return await api.microblog.feeds.get();
             },
         },
 
         /**
-         * Follow a contact's microblog: record it in the durable XEP-0330 list,
-         * best-effort subscribe for live delivery, and create + backfill the feed.
+         * Whether a JID can be followed, i.e. it advertises a XEP-0472 social
+         * feed (`urn:xmpp:pubsub-social-feed:1`). Backed by cached entity
+         * caps/disco, so it's cheap for the UI to call per roster contact.
+         *
+         * Entity-caps features are advertised per *resource*, so a contact's
+         * bare-JID disco entity carries no features; resolving the feature
+         * against the bare JID always returns false. We therefore also check the
+         * contact's available resources (full JIDs) and return true if any of
+         * them advertises the feature.
+         * @method _converse.api.microblog.canFollow
+         * @param {string} jid
+         * @returns {Promise<boolean>}
+         */
+        async canFollow(jid) {
+            const bare_jid = _converse.session.get('bare_jid');
+            const contact_jid = Strophe.getBareJidFromJid(jid);
+            if (contact_jid === bare_jid) return false;
+
+            // Handles the case where `jid` is already a full JID (or the bare
+            // entity happens to carry the feature).
+            if (await api.disco.supports(SOCIAL_FEED_FEATURE, jid)) return true;
+
+            const presence = _converse.state.presences?.get(contact_jid);
+            const full_jids = presence?.resources?.map((r) => `${contact_jid}/${r.get('name')}`) ?? [];
+            for (const full_jid of full_jids) {
+                if (await api.disco.supports(SOCIAL_FEED_FEATURE, full_jid)) return true;
+            }
+            return false;
+        },
+
+        /**
+         * Follow a contact's social feed: record it in the durable XEP-0330 list,
+         * subscribe for live delivery (XEP-0472: explicit subscription is the
+         * delivery path), and create + backfill the feed.
          * @method _converse.api.microblog.follow
          * @param {string} jid - The followed entity's JID (a contact's bare JID).
          * @param {object} [options]
@@ -59,8 +91,12 @@ export default {
             try {
                 await api.pubsub.subscribe(jid, node);
             } catch (e) {
-                // Many servers don't honour cross-account PEP subscriptions; the
-                // XEP-0330 list is the durable record and +notify / pull cover delivery.
+                // Explicit subscription is the live-delivery path. If a server
+                // doesn't honour cross-account PEP subscriptions this is
+                // non-fatal: the XEP-0330 list is the durable record of the
+                // follow, and the items.get backfill below still populates the
+                // feed (and is the source of history regardless, since the node
+                // config is send_last_published_item=never).
                 log.debug(`api.microblog.follow: explicit subscribe to ${jid} failed (non-fatal): ${e}`);
             }
             const feed = await api.microblog.feeds.get(jid, node, true);
@@ -69,8 +105,8 @@ export default {
         },
 
         /**
-         * Unfollow a contact's microblog: retract the XEP-0330 item, best-effort
-         * unsubscribe, and drop the local feed and its cached posts.
+         * Unfollow a contact's social feed: retract the XEP-0330 item, unsubscribe
+         * to stop live delivery and drop the local feed and its cached posts.
          * @method _converse.api.microblog.unfollow
          * @param {string} jid
          * @param {object} [options]
@@ -96,14 +132,12 @@ export default {
          * @returns {Promise<Array<{ server: string, node: string, title?: string }>>}
          */
         async following() {
-            return readFollowing();
+            return await readFollowing();
         },
 
         /**
-         * Materialise the feeds the user reads and backfill them — the own feed
-         * plus a feed for every entry in the durable XEP-0330 follow list (which
-         * also picks up follows made on other devices). Idempotent, so the Social
-         * UI can call it whenever it opens.
+         * Materialise the feeds the user reads and backfill them.
+         * Idempotent, so the Social UI can call it whenever it opens.
          *
          * Deliberately *not* run on connect: the headless plugin stays passive so
          * it doesn't issue PEP queries for users who never open the Social app

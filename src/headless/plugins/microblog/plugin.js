@@ -16,7 +16,7 @@ import PubSubMessage from './message.js';
 import PubSubMessages from './messages.js';
 import microblog_api from './api.js';
 import { registerMicroblogHandler } from './utils.js';
-import { MICROBLOG_NODE, NS_ATOM, NS_THREAD } from './constants.js';
+import { MICROBLOG_NODE, NS_ATOM, NS_THREAD, SOCIAL_FEED_FEATURE } from './constants.js';
 import '../pubsub/index.js';
 
 const { Strophe } = converse.env;
@@ -35,12 +35,10 @@ converse.plugins.add('converse-microblog', {
         Object.assign(api, microblog_api);
 
         api.listen.on('addClientFeatures', () => {
-            // Advertise interest so the server delivers microblog items via PEP.
-            // This is a *delivery* mechanism only; the durable follow-list lives
-            // in the XEP-0330 node (added in M3), not in these caps. The
-            // `urn:xmpp:pubsub-social-feed:1` (XEP-0472) capability claim is
-            // deferred until those semantics are actually implemented.
-            api.disco.own.features.add(MICROBLOG_NODE + '+notify');
+            // Advertise that we understand the PubSub Social Feed (XEP-0472)
+            // and the microblog node.
+            api.disco.own.features.add(SOCIAL_FEED_FEATURE);
+            api.disco.own.features.add(MICROBLOG_NODE);
         });
 
         api.listen.on('clearSession', () => {

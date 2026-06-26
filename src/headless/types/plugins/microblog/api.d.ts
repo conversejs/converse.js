@@ -19,8 +19,24 @@ declare namespace _default {
             function own(): Promise<import("./feed").default>;
         }
         /**
-         * Follow a contact's microblog: record it in the durable XEP-0330 list,
-         * best-effort subscribe for live delivery, and create + backfill the feed.
+         * Whether a JID can be followed, i.e. it advertises a XEP-0472 social
+         * feed (`urn:xmpp:pubsub-social-feed:1`). Backed by cached entity
+         * caps/disco, so it's cheap for the UI to call per roster contact.
+         *
+         * Entity-caps features are advertised per *resource*, so a contact's
+         * bare-JID disco entity carries no features; resolving the feature
+         * against the bare JID always returns false. We therefore also check the
+         * contact's available resources (full JIDs) and return true if any of
+         * them advertises the feature.
+         * @method _converse.api.microblog.canFollow
+         * @param {string} jid
+         * @returns {Promise<boolean>}
+         */
+        function canFollow(jid: string): Promise<boolean>;
+        /**
+         * Follow a contact's social feed: record it in the durable XEP-0330 list,
+         * subscribe for live delivery (XEP-0472: explicit subscription is the
+         * delivery path), and create + backfill the feed.
          * @method _converse.api.microblog.follow
          * @param {string} jid - The followed entity's JID (a contact's bare JID).
          * @param {object} [options]
@@ -33,8 +49,8 @@ declare namespace _default {
             node?: string;
         }): Promise<import("./feed").default | undefined>;
         /**
-         * Unfollow a contact's microblog: retract the XEP-0330 item, best-effort
-         * unsubscribe, and drop the local feed and its cached posts.
+         * Unfollow a contact's social feed: retract the XEP-0330 item, unsubscribe
+         * to stop live delivery and drop the local feed and its cached posts.
          * @method _converse.api.microblog.unfollow
          * @param {string} jid
          * @param {object} [options]
@@ -56,10 +72,8 @@ declare namespace _default {
             title?: string;
         }>>;
         /**
-         * Materialise the feeds the user reads and backfill them — the own feed
-         * plus a feed for every entry in the durable XEP-0330 follow list (which
-         * also picks up follows made on other devices). Idempotent, so the Social
-         * UI can call it whenever it opens.
+         * Materialise the feeds the user reads and backfill them.
+         * Idempotent, so the Social UI can call it whenever it opens.
          *
          * Deliberately *not* run on connect: the headless plugin stays passive so
          * it doesn't issue PEP queries for users who never open the Social app

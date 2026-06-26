@@ -161,7 +161,7 @@ describe('Presence subscriptions', function () {
                             <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
                             <c hash="sha-1"
                                 node="https://conversejs.org"
-                                ver="LtdUA9LYgaH8dsa9k2gMJKk4fY0="
+                                ver="vLJbOCGqqjP24VHL6kYiv2RbtZQ="
                                 xmlns="http://jabber.org/protocol/caps"/>
                         </presence>
                     `);
@@ -234,7 +234,7 @@ describe('Presence subscriptions', function () {
                             <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
                             <c hash="sha-1"
                                 node="https://conversejs.org"
-                                ver="LtdUA9LYgaH8dsa9k2gMJKk4fY0="
+                                ver="vLJbOCGqqjP24VHL6kYiv2RbtZQ="
                                 xmlns="http://jabber.org/protocol/caps"/>
                         </presence>
                     `);

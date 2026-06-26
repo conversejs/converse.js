@@ -34,7 +34,7 @@ describe('Groupchats', function () {
                         <x xmlns="vcard-temp:x:update"/>
                         <c hash="sha-1"
                             node="https://conversejs.org"
-                            ver="LtdUA9LYgaH8dsa9k2gMJKk4fY0="
+                            ver="vLJbOCGqqjP24VHL6kYiv2RbtZQ="
                             xmlns="http://jabber.org/protocol/caps"/>
                     </presence>`,
                 );
@@ -72,7 +72,7 @@ describe('Groupchats', function () {
                     stx`<presence to="${muc_jid}/gonePhising" type="probe" xmlns="jabber:client">
                         <priority>0</priority>
                         <x xmlns="vcard-temp:x:update"/>
-                        <c hash="sha-1" node="https://conversejs.org" ver="LtdUA9LYgaH8dsa9k2gMJKk4fY0=" xmlns="http://jabber.org/protocol/caps"/>
+                        <c hash="sha-1" node="https://conversejs.org" ver="vLJbOCGqqjP24VHL6kYiv2RbtZQ=" xmlns="http://jabber.org/protocol/caps"/>
                     </presence>`,
                 );
 

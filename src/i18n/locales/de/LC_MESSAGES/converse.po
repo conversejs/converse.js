@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-26 10:16+0200\n"
-"PO-Revision-Date: 2026-05-01 08:47+0000\n"
+"PO-Revision-Date: 2026-06-27 21:01+0000\n"
 "Last-Translator: Andreas Kleinert <Andy.Kleinert@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.17.1\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -508,6 +508,9 @@ msgid ""
 "Received an OMEMO encrypted message which could not be decrypted, because it "
 "was not encrypted for this device."
 msgstr ""
+"Es wurde eine verschlüsselte OMEMO-Nachricht empfangen, die nicht "
+"entschlüsselt werden konnte, da sie nicht für dieses Gerät verschlüsselt "
+"wurde."
 
 #: dist/converse-no-dependencies.js:56819
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -577,6 +580,8 @@ msgid ""
 "Cannot use OMEMO in this groupchat — it must be non-anonymous and members-"
 "only."
 msgstr ""
+"OMEMO kann in diesem Gruppenchat nicht verwendet werden – er darf nur für "
+"Mitglieder zugänglich und nicht anonym sein."
 
 #: dist/converse-no-dependencies.js:60858
 msgid ""
@@ -888,7 +893,7 @@ msgstr "Funktion"
 
 #: dist/converse-no-dependencies.js:95235
 msgid "Occupant Id"
-msgstr "Benutzer-ID"
+msgstr "Benutzer-Kennung"
 
 #: dist/converse-no-dependencies.js:95349
 #: dist/converse-no-dependencies.js:96080
@@ -2661,9 +2666,8 @@ msgid "Clear status message"
 msgstr "Statusnachricht löschen"
 
 #: dist/converse-no-dependencies.js:135837
-#, fuzzy
 msgid "Server"
-msgstr "Service"
+msgstr "Server"
 
 #: dist/converse-no-dependencies.js:135840
 msgid "Save and close"
@@ -2836,7 +2840,7 @@ msgstr "Inaktive Geräte anzeigen"
 
 #: dist/converse-no-dependencies.js:141209
 msgid "Copy fingerprint to clipboard"
-msgstr ""
+msgstr "Fingerabdruck in die Zwischenablage kopieren"
 
 #: dist/converse-no-dependencies.js:141213
 msgid "Checkbox for selecting the following fingerprint"
@@ -2872,14 +2876,12 @@ msgid "This device"
 msgstr "Dieses Gerät"
 
 #: dist/converse-no-dependencies.js:141241
-#, fuzzy
 msgid "OMEMO fingerprint (legacy)"
-msgstr "OMEMO Fingerabdrücke"
+msgstr "OMEMO-Fingerabdruck (veraltet)"
 
 #: dist/converse-no-dependencies.js:141242
-#, fuzzy
 msgid "OMEMO 2 fingerprint"
-msgstr "OMEMO Fingerabdrücke"
+msgstr "OMEMO 2-Fingerabdruck"
 
 #: dist/converse-no-dependencies.js:141243
 msgid "Generate new keys and fingerprint"
@@ -3028,17 +3030,16 @@ msgid "Browse all providers"
 msgstr "Alle Anbieter durchsuchen"
 
 #: dist/converse-no-dependencies.js:142985
-#, fuzzy
 msgid "Don't see your provider?"
-msgstr "Ihr Profil aktualisieren"
+msgstr "Ihr Anbieter ist nicht aufgeführt?"
 
 #: dist/converse-no-dependencies.js:142986
 msgid "Hide manual entry"
-msgstr ""
+msgstr "Manuelle Eingabe ausblenden"
 
 #: dist/converse-no-dependencies.js:142986
 msgid "Enter a provider manually"
-msgstr ""
+msgstr "Anbieter manuell eingeben"
 
 #: dist/converse-no-dependencies.js:143428
 msgid "Sorry, we're unable to connect to your chosen provider."
@@ -3151,7 +3152,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:145118
 msgid "Groupchat id is invalid."
-msgstr "Gruppenchat-ID ist ungültig."
+msgstr "Gruppenchat-Kennung ist ungültig."
 
 #. export default
 #: dist/converse-no-dependencies.js:145288
@@ -3196,7 +3197,7 @@ msgstr "Gruppenchats"
 
 #: dist/converse-no-dependencies.js:145388
 msgid "Server address"
-msgstr "Server"
+msgstr "Serveradresse"
 
 #: dist/converse-no-dependencies.js:145612
 msgid "conference.example.org"

@@ -293,6 +293,12 @@ export default {
 
         /**
          * Subscribes the local user to a PubSub node.
+         *
+         * Subscribes with the *bare* JID, so the subscription is durable and
+         * resource-independent: notifications are delivered to whichever
+         * resource is online, and the subscription survives reconnects (a
+         * full-JID subscription is bound to a resource that changes on every
+         * reconnect, silently stranding delivery on the old resource).
          * @method _converse.api.pubsub.subscribe
          * @param {string} jid - PubSub service JID.
          * @param {string} node - The node to subscribe to
@@ -302,11 +308,12 @@ export default {
             if (!node) throw new Error('api.pubsub.subscribe: node value required');
 
             const service = jid || (await api.disco.entities.find('http://jabber.org/protocol/pubsub'));
-            const own_jid = _converse.session.get('jid');
+            const from = _converse.session.get('jid');
+            const bare_jid = _converse.session.get('bare_jid');
             const iq = stx`
-                <iq type="set" from="${own_jid}" to="${service}" xmlns="jabber:client">
+                <iq type="set" from="${from}" to="${service}" xmlns="jabber:client">
                   <pubsub xmlns="${Strophe.NS.PUBSUB}">
-                    <subscribe node="${node}" jid="${own_jid}"/>
+                    <subscribe node="${node}" jid="${bare_jid}"/>
                   </pubsub>
                 </iq>`;
 
@@ -318,7 +325,8 @@ export default {
         },
 
         /**
-         * Unsubscribes the local user from a PubSub node.
+         * Unsubscribes the local user from a PubSub node. Unsubscribes the bare
+         * JID, matching the durable subscription created by {@link subscribe}.
          * @method _converse.api.pubsub.unsubscribe
          * @param {string} jid - The PubSub service JID
          * @param {string} node - The node to unsubscribe from
@@ -327,11 +335,12 @@ export default {
         async unsubscribe(jid, node) {
             if (!node) throw new Error('api.pubsub.unsubscribe: node value required');
 
-            const own_jid = _converse.session.get('jid');
+            const from = _converse.session.get('jid');
+            const bare_jid = _converse.session.get('bare_jid');
             const iq = stx`
-                <iq type="set" from="${own_jid}" to="${jid}" xmlns="jabber:client">
+                <iq type="set" from="${from}" to="${jid}" xmlns="jabber:client">
                   <pubsub xmlns="${Strophe.NS.PUBSUB}">
-                    <unsubscribe node="${node}" jid="${own_jid}"/>
+                    <unsubscribe node="${node}" jid="${bare_jid}"/>
                   </pubsub>
                 </iq>`;
 

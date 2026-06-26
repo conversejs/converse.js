@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-26 10:16+0200\n"
-"PO-Revision-Date: 2026-04-30 09:45+0000\n"
+"PO-Revision-Date: 2026-06-26 10:37+0000\n"
 "Last-Translator: Sketch6580 <sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.17.1-dev\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 
 #: dist/converse-no-dependencies.js:39545
 msgid "A timeout occurred"
@@ -65,7 +65,7 @@ msgstr "常用"
 
 #: dist/converse-no-dependencies.js:46256
 msgid "Smileys and emotions"
-msgstr "微笑和表情"
+msgstr "笑脸和表情"
 
 #: dist/converse-no-dependencies.js:46257
 msgid "People"
@@ -479,7 +479,7 @@ msgstr "由于技术问题，您已退出此群聊"
 msgid ""
 "Received an OMEMO encrypted message which could not be decrypted, because it "
 "was not encrypted for this device."
-msgstr ""
+msgstr "收到无法解密的 OMEMO 加密消息，因为该消息未针对此设备进行加密。"
 
 #: dist/converse-no-dependencies.js:56819
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -536,7 +536,7 @@ msgstr "抱歉，未找到可以向其发送 OMEMO 加密消息的设备。"
 msgid ""
 "Cannot use OMEMO in this groupchat — it must be non-anonymous and members-"
 "only."
-msgstr ""
+msgstr "无法在此群聊中使用 OMEMO — 群聊必须为非匿名且仅成员。"
 
 #: dist/converse-no-dependencies.js:60858
 msgid ""
@@ -2521,9 +2521,8 @@ msgid "Clear status message"
 msgstr "清除状态消息"
 
 #: dist/converse-no-dependencies.js:135837
-#, fuzzy
 msgid "Server"
-msgstr "服务"
+msgstr "服务器"
 
 #: dist/converse-no-dependencies.js:135840
 msgid "Save and close"
@@ -2683,7 +2682,7 @@ msgstr "显示非活动设备"
 
 #: dist/converse-no-dependencies.js:141209
 msgid "Copy fingerprint to clipboard"
-msgstr ""
+msgstr "将指纹复制到剪贴板"
 
 #: dist/converse-no-dependencies.js:141213
 msgid "Checkbox for selecting the following fingerprint"
@@ -2718,14 +2717,12 @@ msgid "This device"
 msgstr "此设备"
 
 #: dist/converse-no-dependencies.js:141241
-#, fuzzy
 msgid "OMEMO fingerprint (legacy)"
-msgstr "OMEMO 指纹"
+msgstr "OMEMO 指纹（旧版）"
 
 #: dist/converse-no-dependencies.js:141242
-#, fuzzy
 msgid "OMEMO 2 fingerprint"
-msgstr "OMEMO 指纹"
+msgstr "OMEMO 2 指纹"
 
 #: dist/converse-no-dependencies.js:141243
 msgid "Generate new keys and fingerprint"
@@ -2868,17 +2865,16 @@ msgid "Browse all providers"
 msgstr "浏览所有提供者"
 
 #: dist/converse-no-dependencies.js:142985
-#, fuzzy
 msgid "Don't see your provider?"
-msgstr "更新您的个人资料"
+msgstr "未看到您的提供者？"
 
 #: dist/converse-no-dependencies.js:142986
 msgid "Hide manual entry"
-msgstr ""
+msgstr "隐藏手动输入"
 
 #: dist/converse-no-dependencies.js:142986
 msgid "Enter a provider manually"
-msgstr ""
+msgstr "手动输入提供者"
 
 #: dist/converse-no-dependencies.js:143428
 msgid "Sorry, we're unable to connect to your chosen provider."

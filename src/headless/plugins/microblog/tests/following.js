@@ -9,6 +9,7 @@ const PUBSUB_EVENT = `${Strophe.NS.PUBSUB}#event`;
 const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
 const FOLLOWING_NODE = 'urn:xmpp:pubsub:subscription';
 const NS_SUBSCRIPTION = 'urn:xmpp:pubsub:subscription:0';
+const SOCIAL_FEED_FEATURE = 'urn:xmpp:pubsub-social-feed:1';
 
 // XEP-0330 item id = lowercase-hex SHA-1 of `server<node<own-bare-jid`. With the
 // default test account (romeo@montague.lit) following pubsub.shakespeare.lit's
@@ -190,6 +191,45 @@ describe('Microblog following (XEP-0330)', function () {
             expect(post.get('body')).toBe('O Romeo, Romeo');
             // A followed contact's post is not ours.
             expect(post.get('is_mine')).toBe(false);
+        }),
+    );
+
+    it(
+        'canFollow resolves the social-feed feature against a contact resource, not the bare JID',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const jid = 'juliet@capulet.lit';
+            const full_jid = `${jid}/phone`;
+
+            // A roster contact with one online resource. Entity caps are
+            // advertised per-resource, so the feature lives on the full JID.
+            _converse.roster.create({ jid, subscription: 'both' });
+            const presences = _converse.state.presences;
+            (presences.get(jid) || presences.create({ jid })).resources.create({ name: 'phone' });
+
+            vi.spyOn(api.disco, 'supports').mockImplementation(
+                async (feature, j) => feature === SOCIAL_FEED_FEATURE && j === full_jid,
+            );
+
+            // The bare JID carries no caps features, but the resource does.
+            expect(await api.disco.supports(SOCIAL_FEED_FEATURE, jid)).toBe(false);
+            expect(await api.microblog.canFollow(jid)).toBe(true);
+        }),
+    );
+
+    it(
+        'canFollow returns false when no resource advertises a social feed',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const jid = 'mercutio@capulet.lit';
+            _converse.roster.create({ jid, subscription: 'both' });
+            const presences = _converse.state.presences;
+            (presences.get(jid) || presences.create({ jid })).resources.create({ name: 'desktop' });
+
+            vi.spyOn(api.disco, 'supports').mockResolvedValue(false);
+            expect(await api.microblog.canFollow(jid)).toBe(false);
         }),
     );
 });

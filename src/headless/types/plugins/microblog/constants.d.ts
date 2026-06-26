@@ -16,6 +16,13 @@ export const COMMENTS_NODE_PREFIX: "urn:xmpp:microblog:0:comments/";
  * Feed (XEP-0472).
  */
 export const SOCIAL_FEED_FEATURE: "urn:xmpp:pubsub-social-feed:1";
+export namespace MICROBLOG_PUBLISH_OPTIONS {
+    let persist_items: string;
+    let max_items: string;
+    let send_last_published_item: string;
+    let notify_retract: string;
+    let deliver_payloads: string;
+}
 /**
  * XEP-0330 (Pubsub Subscription): the PEP node holding the user's portable
  * follow-list (the durable source of truth for who they follow), and the
@@ -24,11 +31,15 @@ export const SOCIAL_FEED_FEATURE: "urn:xmpp:pubsub-social-feed:1";
 export const FOLLOWING_NODE: "urn:xmpp:pubsub:subscription";
 export const NS_SUBSCRIPTION: "urn:xmpp:pubsub:subscription:0";
 export namespace FOLLOWING_PUBLISH_OPTIONS {
-    let persist_items: string;
-    let access_model: string;
-    let send_last_published_item: string;
-    let max_items: string;
-    let notify_retract: string;
+    let persist_items_1: string;
+    export { persist_items_1 as persist_items };
+    export let access_model: string;
+    let send_last_published_item_1: string;
+    export { send_last_published_item_1 as send_last_published_item };
+    let max_items_1: string;
+    export { max_items_1 as max_items };
+    let notify_retract_1: string;
+    export { notify_retract_1 as notify_retract };
 }
 export const NS_ATOM: "http://www.w3.org/2005/Atom";
 export const NS_THREAD: "http://purl.org/syndication/thread/1.0";

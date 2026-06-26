@@ -8,6 +8,33 @@ const ATOM = 'http://www.w3.org/2005/Atom';
 const PUBSUB_EVENT = `${Strophe.NS.PUBSUB}#event`;
 const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
 
+/**
+ * Build a headline PEP event carrying a single plain-text microblog post, as the
+ * server would push it: addressed to the logged-in user, from the publisher.
+ * @param {string} to - The recipient's bare JID (the logged-in user).
+ * @param {string} from - The publisher's bare JID (also the feed JID).
+ * @param {string} id - The PubSub item id.
+ * @param {string} body - The post body.
+ * @param {string} published - ISO-8601 publication time (drives ordering).
+ */
+function makePost(to, from, id, body, published) {
+    return stx`
+        <message xmlns="jabber:client" from="${from}" to="${to}" type="headline">
+          <event xmlns="${PUBSUB_EVENT}">
+            <items node="${MICROBLOG_NODE}">
+              <item id="${id}" publisher="${from}">
+                <entry xmlns="${ATOM}">
+                  <title type="text">${body}</title>
+                  <id>tag:montague.lit,2024-01-01:posts-${id}</id>
+                  <published>${published}</published>
+                  <updated>${published}</updated>
+                </entry>
+              </item>
+            </items>
+          </event>
+        </message>`;
+}
+
 describe('The social feed', function () {
     it(
         'renders incoming posts and publishes via the compose box',
@@ -110,6 +137,48 @@ describe('The social feed', function () {
             await u.waitUntil(() => retract.mock.calls.length === 1);
             expect(retract).toHaveBeenCalledWith(bare_jid, MICROBLOG_NODE, 'post-1');
             await u.waitUntil(() => el.querySelector('.social-post') === null);
+        }),
+    );
+
+    it(
+        'merges a followed contact\'s posts into the timeline, newest-first',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            const contact_jid = 'juliet@capulet.lit';
+
+            // Stub the PEP network so the follow flow resolves without a server.
+            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = document.createElement('converse-social-feed');
+            document.querySelector('#conversejs').appendChild(el);
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            // Follow a contact: this creates their feed in the aggregated timeline.
+            await api.microblog.follow(contact_jid);
+
+            // An older own post and a newer post from the followed contact. These
+            // arrive immediately after follow — before the followed feed's empty
+            // cache has hydrated — exercising the hydration-race guard in addItems.
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(_converse, makePost(bare_jid, bare_jid, 'mine-1', 'My own post', '2024-01-01T09:00:00Z')),
+            );
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(_converse, makePost(bare_jid, contact_jid, 'theirs-1', 'Juliet says hi', '2024-01-02T09:00:00Z')),
+            );
+
+            // Both posts show in one timeline, the newer (contact's) first.
+            await u.waitUntil(() => el.querySelectorAll('.social-post').length === 2);
+            const articles = Array.from(el.querySelectorAll('.social-post'));
+            const bodies = articles.map((a) => a.querySelector('.social-post__body').textContent.trim());
+            expect(bodies).toEqual(['Juliet says hi', 'My own post']);
+
+            // The followed contact's post is not ours → no delete button; ours has one.
+            expect(articles[0].querySelector('.social-post__action')).toBe(null);
+            expect(articles[1].querySelector('.social-post__action')).not.toBe(null);
         }),
     );
 });

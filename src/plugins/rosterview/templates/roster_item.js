@@ -23,6 +23,28 @@ export function tplRemoveButton(el) {
 }
 
 /**
+ * A Follow / Unfollow toggle for a contact that advertises a social feed
+ * (XEP-0472). Shown only when `el.can_follow` is true.
+ * @param {import('../contactview').default} el
+ */
+export function tplFollowButton(el) {
+    const display_name = el.model.getDisplayName();
+    const following = api.microblog.isFollowing(el.model.get('jid'));
+    const i18n_title = following
+        ? __('Click to unfollow %1$s', display_name)
+        : __('Click to follow %1$s', display_name);
+    return html`<a
+        class="dropdown-item follow-xmpp-contact"
+        role="button"
+        @click="${(ev) => el.toggleFollow(ev)}"
+        title="${i18n_title}"
+    >
+        <converse-icon class="fa ${following ? 'fa-user-minus' : 'fa-user-plus'}" size="1em"></converse-icon>
+        ${following ? __('Unfollow') : __('Follow')}
+    </a>`;
+}
+
+/**
  * @param {import('../contactview').default} el
  */
 export function tplDetailsButton(el) {
@@ -68,6 +90,7 @@ export default (el) => {
 
     const btns = [
         tplDetailsButton(el),
+        ...(el.can_follow && !is_self ? [tplFollowButton(el)] : []),
         ...(api.settings.get('allow_contact_removal') && !is_self ? [tplRemoveButton(el)] : []),
     ];
 

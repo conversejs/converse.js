@@ -161,7 +161,7 @@ describe('Presence subscriptions', function () {
                             <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
                             <c hash="sha-1"
                                 node="https://conversejs.org"
-                                ver="0cez5x5tbZP5NuLq2WClRoMmeKw="
+                                ver="5z2OIcCdO05c11Ex0Ov4zZCCL+c="
                                 xmlns="http://jabber.org/protocol/caps"/>
                         </presence>
                     `);

@@ -21,6 +21,18 @@ export const COMMENTS_NODE_PREFIX = 'urn:xmpp:microblog:0:comments/';
 export const SOCIAL_FEED_FEATURE = 'urn:xmpp:pubsub-social-feed:1';
 
 /**
+ * Node configuration for our own social feed node, sent as XEP-0060
+ * publish-options. This is the XEP-0472 "Base profile" config.
+ */
+export const MICROBLOG_PUBLISH_OPTIONS = {
+    persist_items: 'true',
+    max_items: 'max',
+    send_last_published_item: 'never',
+    notify_retract: 'true',
+    deliver_payloads: 'true',
+};
+
+/**
  * XEP-0330 (Pubsub Subscription): the PEP node holding the user's portable
  * follow-list (the durable source of truth for who they follow), and the
  * namespace of each list item's `<subscription>` payload.

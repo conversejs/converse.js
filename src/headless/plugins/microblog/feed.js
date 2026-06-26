@@ -9,7 +9,7 @@ import api from '../../shared/api/index.js';
 import log from '@converse/log';
 import PubSubMessages from './messages.js';
 import { buildItem, parseAtomEntry } from './parsers.js';
-import { MICROBLOG_NODE } from './constants.js';
+import { MICROBLOG_NODE, MICROBLOG_PUBLISH_OPTIONS } from './constants.js';
 
 /**
  * One PubSub feed: a single node at a single JID (your own
@@ -132,7 +132,11 @@ class PubSubFeed extends Model {
         if (!text) return;
 
         const item = buildItem({ body: text, from: this.get('jid') });
-        await api.pubsub.publish(this.get('jid'), this.get('node'), item, undefined, false);
+        // Publish with the XEP-0472 Base-profile node config so our node stays a
+        // well-formed social feed that contacts can subscribe to. Non-strict:
+        // if the server can't honour the publish-options precondition we still
+        // publish the post.
+        await api.pubsub.publish(this.get('jid'), this.get('node'), item, MICROBLOG_PUBLISH_OPTIONS, false);
 
         // Optimistically render our own post; the PEP echo (if any) will merge
         // by id rather than duplicate.

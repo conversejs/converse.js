@@ -57,23 +57,40 @@ class PubSubFeed extends Model {
     }
 
     /**
-     * Parse incoming PubSub `<item>` elements into posts and add/merge them into
-     * the feed. Used both for retrieve-items backfill and live PEP events.
+     * Parse incoming PubSub `<item>` elements into posts, add/merge them into the
+     * feed, and persist them to the offline cache. Used both for retrieve-items
+     * backfill and live PEP events.
      * @param {Element[]} items
-     * @returns {import('./message').default[]}
+     * @returns {Promise<import('./message').default[]>}
      */
-    addItems(items) {
-        return items
+    async addItems(items) {
+        await this.messages.hydrated;
+
+        const from = this.get('jid');
+        const node = this.get('node');
+
+        const saves = [];
+        const added = items
             .map((item) => {
                 try {
-                    const attrs = parseAtomEntry(item, { from: this.get('jid'), node: this.get('node') });
-                    return /** @type {import('./message').default} */ (this.messages.add(attrs, { merge: true }));
+                    const attrs = parseAtomEntry(item, { from, node });
+                    const existing = this.messages.get(attrs.id);
+                    const message = /** @type {import('./message').default} */ (
+                        this.messages.add(attrs, { merge: true })
+                    );
+                    // Persist new posts and real updates; skip unchanged re-fetches.
+                    if (message && (!existing || message.hasChanged())) {
+                        saves.push(message.save(null, { promise: true }));
+                    }
+                    return message;
                 } catch (e) {
                     log.error(e);
                     return null;
                 }
             })
             .filter(Boolean);
+        await Promise.all(saves);
+        return added;
     }
 
     /**
@@ -90,7 +107,7 @@ class PubSubFeed extends Model {
             log.error(e);
             return;
         }
-        this.addItems(result.items);
+        await this.addItems(result.items);
     }
 
     /**
@@ -140,7 +157,7 @@ class PubSubFeed extends Model {
 
         // Optimistically render our own post; the PEP echo (if any) will merge
         // by id rather than duplicate.
-        this.addItems([item.tree()]);
+        await this.addItems([item.tree()]);
     }
 }
 

@@ -28,12 +28,13 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
      */
     isOwnFeed(): boolean;
     /**
-     * Parse incoming PubSub `<item>` elements into posts and add/merge them into
-     * the feed. Used both for retrieve-items backfill and live PEP events.
+     * Parse incoming PubSub `<item>` elements into posts, add/merge them into the
+     * feed, and persist them to the offline cache. Used both for retrieve-items
+     * backfill and live PEP events.
      * @param {Element[]} items
-     * @returns {import('./message').default[]}
+     * @returns {Promise<import('./message').default[]>}
      */
-    addItems(items: Element[]): import("./message").default[];
+    addItems(items: Element[]): Promise<import("./message").default[]>;
     /**
      * Backfill the feed's history from the node (XEP-0060 § 6.5 Retrieve Items).
      * @param {object} [options]

@@ -29,8 +29,8 @@ Add these lines to your HTML `<head>`:
 You can also pin to a specific version:
 
 ```html
-<link rel="stylesheet" href="https://cdn.conversejs.org/14.0.0-beta.4/dist/converse.min.css">
-<script type="module" src="https://cdn.conversejs.org/14.0.0-beta.4/dist/converse.min.js"></script>
+<link rel="stylesheet" href="https://cdn.conversejs.org/14.0.0/dist/converse.min.css">
+<script type="module" src="https://cdn.conversejs.org/14.0.0/dist/converse.min.js"></script>
 ```
 
 ### Alternative: Self-host
@@ -74,8 +74,8 @@ Add this before your closing `</body>` tag:
 <html>
 <head>
     <title>My Chat</title>
-    <link rel="stylesheet" href="https://cdn.conversejs.org/14.0.0-beta.4/dist/converse.min.css">
-    <script type="module" src="https://cdn.conversejs.org/14.0.0-beta.4/dist/converse.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.conversejs.org/14.0.0/dist/converse.min.css">
+    <script type="module" src="https://cdn.conversejs.org/14.0.0/dist/converse.min.js"></script>
 </head>
 <body>
     <script type="module">

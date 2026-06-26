@@ -10,6 +10,20 @@ export default class RosterContactView extends ObservableElement {
             type: NumberConstructor;
         };
     };
+    /** Whether this contact advertises a XEP-0472 social feed (resolved async). */
+    can_follow: boolean;
+    /**
+     * Resolve (asynchronously, via cached disco/caps) whether this contact has a
+     * social feed that can be followed, then re-render so the Follow toggle
+     * appears once known.
+     */
+    updateFollowable(): Promise<void>;
+    /**
+     * Follow or unfollow this contact's social feed (XEP-0277/0472 over
+     * XEP-0330), toggling on the current follow state.
+     * @param {MouseEvent} ev
+     */
+    toggleFollow(ev: MouseEvent): Promise<void>;
     render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {MouseEvent} ev

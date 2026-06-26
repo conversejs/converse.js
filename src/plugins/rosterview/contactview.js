@@ -1,4 +1,4 @@
-import { _converse, api } from '@converse/headless';
+import { _converse, api, log } from '@converse/headless';
 import { ObservableElement } from 'shared/components/observable.js';
 import tplRequestingContact from './templates/requesting_contact.js';
 import tplRosterItem from './templates/roster_item.js';
@@ -14,6 +14,8 @@ export default class RosterContactView extends ObservableElement {
     constructor() {
         super();
         this.model = null;
+        /** Whether this contact advertises a XEP-0472 social feed (resolved async). */
+        this.can_follow = false;
         this.observable = /** @type {ObservableProperty} */ ('once');
     }
 
@@ -30,6 +32,42 @@ export default class RosterContactView extends ObservableElement {
         this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
         this.listenTo(this.model, 'presence:change', () => this.requestUpdate());
+        this.updateFollowable();
+    }
+
+    /**
+     * Resolve (asynchronously, via cached disco/caps) whether this contact has a
+     * social feed that can be followed, then re-render so the Follow toggle
+     * appears once known.
+     */
+    async updateFollowable() {
+        const jid = this.model?.get('jid');
+        if (!jid || !api.microblog) return;
+        try {
+            const can_follow = await api.microblog.canFollow(jid);
+            if (can_follow !== this.can_follow) {
+                this.can_follow = can_follow;
+                this.requestUpdate();
+            }
+        } catch (e) {
+            log.error(e);
+        }
+    }
+
+    /**
+     * Follow or unfollow this contact's social feed (XEP-0277/0472 over
+     * XEP-0330), toggling on the current follow state.
+     * @param {MouseEvent} ev
+     */
+    async toggleFollow(ev) {
+        ev?.preventDefault?.();
+        const jid = this.model.get('jid');
+        if (api.microblog.isFollowing(jid)) {
+            await api.microblog.unfollow(jid);
+        } else {
+            await api.microblog.follow(jid);
+        }
+        this.requestUpdate();
     }
 
     render() {

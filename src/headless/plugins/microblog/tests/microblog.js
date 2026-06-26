@@ -287,6 +287,39 @@ describe('The microblog plugin', function () {
     );
 
     it(
+        'persists posts so a dateless post survives a reload (fresh hydration)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const jid = 'ivan@vucica.net';
+            const feed = await api.microblog.feeds.get(jid, MICROBLOG_NODE, true);
+
+            const item = stx`
+                <item id="dateless-persist">
+                    <entry xmlns="${ATOM}">
+                        <title>Hi again</title>
+                        <summary>This is my post 2nd</summary>
+                        <id>tag:community-name,2018:entry-2</id>
+                    </entry>
+                </item>`;
+
+            // addItems persists; awaiting it guarantees the write has flushed.
+            await feed.addItems([item.tree()]);
+            const t1 = feed.messages.get('dateless-persist')?.get('time');
+            expect(t1).toBeTruthy();
+
+            // Simulate a reload: hydrate a *fresh* messages collection from the
+            // same offline store. The post must come back — with the same stamp,
+            // not re-derived to "now".
+            const Messages = /** @type {any} */ (feed.messages.constructor);
+            const reloaded = new Messages(null, { id: feed.getMessagesCacheKey() });
+            await reloaded.hydrated;
+            expect(reloaded.length).toBe(1);
+            expect(reloaded.get('dateless-persist')?.get('time')).toBe(t1);
+        }),
+    );
+
+    it(
         'builds and publishes a post to the own microblog node',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

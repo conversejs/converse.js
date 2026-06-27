@@ -123,7 +123,8 @@ describe('Microblog following (XEP-0330)', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
                 items: [
                     stx`<item id="i1"><subscription xmlns="${NS_SUBSCRIPTION}"
-                            server="juliet@capulet.lit" node="${MICROBLOG_NODE}"><title>Juliet</title></subscription></item>`.tree(),
+                            server="juliet@capulet.lit" node="${MICROBLOG_NODE}"
+                            ><title>Juliet</title></subscription></item>`.tree(),
                     stx`<item id="i2"><subscription xmlns="${NS_SUBSCRIPTION}"
                             server="mercutio@montague.lit" node="${MICROBLOG_NODE}"/></item>`.tree(),
                 ],
@@ -145,7 +146,7 @@ describe('Microblog following (XEP-0330)', function () {
             const { api } = _converse;
             const bare_jid = _converse.session.get('bare_jid');
 
-            vi.spyOn(api.pubsub.items, 'get').mockImplementation((jid, node) => {
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, node) => {
                 if (node === FOLLOWING_NODE) {
                     return Promise.resolve({
                         items: [
@@ -208,8 +209,8 @@ describe('Microblog following (XEP-0330)', function () {
             const presences = _converse.state.presences;
             (presences.get(jid) || presences.create({ jid })).resources.create({ name: 'phone' });
 
-            vi.spyOn(api.disco, 'supports').mockImplementation(
-                async (feature, j) => feature === SOCIAL_FEED_FEATURE && j === full_jid,
+            vi.spyOn(api.disco, 'supports').mockImplementation((feature, j) =>
+                Promise.resolve(feature === SOCIAL_FEED_FEATURE && j === full_jid),
             );
 
             // The bare JID carries no caps features, but the resource does.
@@ -230,6 +231,64 @@ describe('Microblog following (XEP-0330)', function () {
 
             vi.spyOn(api.disco, 'supports').mockResolvedValue(false);
             expect(await api.microblog.canFollow(jid)).toBe(false);
+        }),
+    );
+
+    it(
+        'discoverFollowable returns saved roster contacts with a feed that are not already followed',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            // juliet has a feed and is not followed → suggested.
+            // mercutio has a feed but is already followed → excluded.
+            // tybalt has no feed → excluded.
+            // benvolio is an unsaved/pending contact → excluded.
+            _converse.roster.create({ jid: 'juliet@capulet.lit', subscription: 'both', nickname: 'Juliet' });
+            _converse.roster.create({ jid: 'mercutio@montague.lit', subscription: 'both', nickname: 'Mercutio' });
+            _converse.roster.create({ jid: 'tybalt@capulet.lit', subscription: 'both', nickname: 'Tybalt' });
+            _converse.roster.create({ jid: 'benvolio@montague.lit', requesting: true });
+
+            vi.spyOn(api.microblog, 'canFollow').mockImplementation((jid) =>
+                Promise.resolve(jid === 'juliet@capulet.lit' || jid === 'mercutio@montague.lit'),
+            );
+            vi.spyOn(api.microblog, 'isFollowing').mockImplementation((jid) => jid === 'mercutio@montague.lit');
+
+            const followable = await api.microblog.discoverFollowable();
+            expect(followable).toEqual([{ jid: 'juliet@capulet.lit', name: 'Juliet' }]);
+        }),
+    );
+
+    it(
+        'followMany follows each jid sequentially and reports per-jid outcomes',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const order = [];
+            const follow = vi.spyOn(api.microblog, 'follow').mockImplementation((jid) => {
+                order.push(jid);
+                return jid === 'mercutio@montague.lit'
+                    ? Promise.reject(new Error('boom'))
+                    : Promise.resolve(/** @type {any} */ ({}));
+            });
+
+            const results = await api.microblog.followMany([
+                'juliet@capulet.lit',
+                'mercutio@montague.lit',
+                'tybalt@capulet.lit',
+            ]);
+
+            // Each jid was followed, in order.
+            expect(follow).toHaveBeenCalledTimes(3);
+            expect(order).toEqual(['juliet@capulet.lit', 'mercutio@montague.lit', 'tybalt@capulet.lit']);
+
+            // A single failure doesn't abort the rest, and is reported.
+            expect(results).toEqual([
+                { jid: 'juliet@capulet.lit', ok: true },
+                { jid: 'mercutio@montague.lit', ok: false, error: expect.any(Error) },
+                { jid: 'tybalt@capulet.lit', ok: true },
+            ]);
         }),
     );
 });

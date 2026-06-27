@@ -76,9 +76,36 @@ export default {
         },
 
         /**
-         * Follow a contact's social feed: record it in the durable XEP-0330 list,
-         * subscribe for live delivery (XEP-0472: explicit subscription is the
-         * delivery path), and create + backfill the feed.
+         * Discover roster contacts that can be followed but aren't yet: saved
+         * contacts that advertise a XEP-0472 social feed ({@link canFollow}) and
+         * that the user doesn't already follow. Backs the onboarding "who to
+         * follow" suggestions.
+         *
+         * `canFollow` reads cached entity caps, which depend on having received
+         * the contact's presence — so a contact whose caps haven't arrived yet is
+         * (correctly) omitted until they do. Callers that render this should
+         * recompute on presence changes.
+         * @method _converse.api.microblog.discoverFollowable
+         * @returns {Promise<Array<{ jid: string, name: string }>>}
+         */
+        async discoverFollowable() {
+            const roster = _converse.state.roster;
+            if (!roster) return [];
+            const candidates = roster.filter((c) => !c.isUnsaved() && !c.get('requesting'));
+            const followable = await Promise.all(
+                candidates.map(async (contact) => {
+                    const jid = contact.get('jid');
+                    if (api.microblog.isFollowing(jid)) return null;
+                    return (await api.microblog.canFollow(jid)) ? { jid, name: contact.getDisplayName() } : null;
+                }),
+            );
+            return followable.filter(Boolean);
+        },
+
+        /**
+         * Follow a a social feed and record it in the durable XEP-0330 list.
+         * Subscribe for live delivery (XEP-0472) and create + backfill the feed.
+         *
          * @method _converse.api.microblog.follow
          * @param {string} jid - The followed entity's JID (a contact's bare JID).
          * @param {object} [options]
@@ -102,6 +129,30 @@ export default {
             const feed = await api.microblog.feeds.get(jid, node, true);
             feed?.fetchPosts();
             return feed;
+        },
+
+        /**
+         * Follow several feeds in sequence (see {@link follow}). Sequential
+         * rather than parallel so we don't fire N publish+subscribe+backfill
+         * bursts at the server at once. Never rejects: each entry's outcome is
+         * reported in the returned array, so one failure doesn't abort the rest.
+         *
+         * @method _converse.api.microblog.followMany
+         * @param {string[]} jids - The bare JIDs to follow.
+         * @returns {Promise<Array<{ jid: string, ok: boolean, error?: Error }>>}
+         */
+        async followMany(jids) {
+            const results = [];
+            for (const jid of jids ?? []) {
+                try {
+                    await api.microblog.follow(jid);
+                    results.push({ jid, ok: true });
+                } catch (error) {
+                    log.error(error);
+                    results.push({ jid, ok: false, error });
+                }
+            }
+            return results;
         },
 
         /**

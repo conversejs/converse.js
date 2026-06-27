@@ -4,6 +4,7 @@ import tplSocial from './templates/social.js';
 
 import './compose.js';
 import './message.js';
+import './onboarding.js';
 import './feed.js';
 import './styles/social.scss';
 

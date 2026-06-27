@@ -34,9 +34,26 @@ declare namespace _default {
          */
         function canFollow(jid: string): Promise<boolean>;
         /**
-         * Follow a contact's social feed: record it in the durable XEP-0330 list,
-         * subscribe for live delivery (XEP-0472: explicit subscription is the
-         * delivery path), and create + backfill the feed.
+         * Discover roster contacts that can be followed but aren't yet: saved
+         * contacts that advertise a XEP-0472 social feed ({@link canFollow}) and
+         * that the user doesn't already follow. Backs the onboarding "who to
+         * follow" suggestions.
+         *
+         * `canFollow` reads cached entity caps, which depend on having received
+         * the contact's presence — so a contact whose caps haven't arrived yet is
+         * (correctly) omitted until they do. Callers that render this should
+         * recompute on presence changes.
+         * @method _converse.api.microblog.discoverFollowable
+         * @returns {Promise<Array<{ jid: string, name: string }>>}
+         */
+        function discoverFollowable(): Promise<Array<{
+            jid: string;
+            name: string;
+        }>>;
+        /**
+         * Follow a a social feed and record it in the durable XEP-0330 list.
+         * Subscribe for live delivery (XEP-0472) and create + backfill the feed.
+         *
          * @method _converse.api.microblog.follow
          * @param {string} jid - The followed entity's JID (a contact's bare JID).
          * @param {object} [options]
@@ -48,6 +65,21 @@ declare namespace _default {
             title?: string;
             node?: string;
         }): Promise<import("./feed").default | undefined>;
+        /**
+         * Follow several feeds in sequence (see {@link follow}). Sequential
+         * rather than parallel so we don't fire N publish+subscribe+backfill
+         * bursts at the server at once. Never rejects: each entry's outcome is
+         * reported in the returned array, so one failure doesn't abort the rest.
+         *
+         * @method _converse.api.microblog.followMany
+         * @param {string[]} jids - The bare JIDs to follow.
+         * @returns {Promise<Array<{ jid: string, ok: boolean, error?: Error }>>}
+         */
+        function followMany(jids: string[]): Promise<Array<{
+            jid: string;
+            ok: boolean;
+            error?: Error;
+        }>>;
         /**
          * Unfollow a contact's social feed: retract the XEP-0330 item, unsubscribe
          * to stop live delivery and drop the local feed and its cached posts.

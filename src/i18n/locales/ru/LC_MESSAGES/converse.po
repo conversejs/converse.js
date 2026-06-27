@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-26 10:16+0200\n"
-"PO-Revision-Date: 2026-05-01 08:47+0000\n"
+"PO-Revision-Date: 2026-06-27 21:01+0000\n"
 "Last-Translator: solokot <solokot@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.17.1\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 
 #: dist/converse-no-dependencies.js:39545
 msgid "A timeout occurred"
@@ -501,6 +501,8 @@ msgid ""
 "Received an OMEMO encrypted message which could not be decrypted, because it "
 "was not encrypted for this device."
 msgstr ""
+"Получено зашифрованное сообщение OMEMO, которое невозможно расшифровать, "
+"потому что оно зашифровано не для этого устройства."
 
 #: dist/converse-no-dependencies.js:56819
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -566,6 +568,8 @@ msgid ""
 "Cannot use OMEMO in this groupchat — it must be non-anonymous and members-"
 "only."
 msgstr ""
+"Невозможно использовать OMEMO в этом групповом чате — он должен быть "
+"неанонимным и доступным только для участников."
 
 #: dist/converse-no-dependencies.js:60858
 msgid ""
@@ -2601,7 +2605,6 @@ msgid "Clear status message"
 msgstr "Очистить сообщение статуса"
 
 #: dist/converse-no-dependencies.js:135837
-#, fuzzy
 msgid "Server"
 msgstr "Служба"
 
@@ -2774,7 +2777,7 @@ msgstr "Показать неактивные устройства"
 
 #: dist/converse-no-dependencies.js:141209
 msgid "Copy fingerprint to clipboard"
-msgstr ""
+msgstr "Копировать отпечаток в буфер обмена"
 
 #: dist/converse-no-dependencies.js:141213
 msgid "Checkbox for selecting the following fingerprint"
@@ -2809,14 +2812,12 @@ msgid "This device"
 msgstr "Это устройство"
 
 #: dist/converse-no-dependencies.js:141241
-#, fuzzy
 msgid "OMEMO fingerprint (legacy)"
-msgstr "Отпечаток OMEMO"
+msgstr "Отпечаток OMEMO (устаревший)"
 
 #: dist/converse-no-dependencies.js:141242
-#, fuzzy
 msgid "OMEMO 2 fingerprint"
-msgstr "Отпечаток OMEMO"
+msgstr "Отпечаток OMEMO 2"
 
 #: dist/converse-no-dependencies.js:141243
 msgid "Generate new keys and fingerprint"
@@ -2961,17 +2962,16 @@ msgid "Browse all providers"
 msgstr "Просмотр всех провайдеров"
 
 #: dist/converse-no-dependencies.js:142985
-#, fuzzy
 msgid "Don't see your provider?"
-msgstr "Обновить свой профиль"
+msgstr "Не видите своего провайдера?"
 
 #: dist/converse-no-dependencies.js:142986
 msgid "Hide manual entry"
-msgstr ""
+msgstr "Скрыть введённое вручную"
 
 #: dist/converse-no-dependencies.js:142986
 msgid "Enter a provider manually"
-msgstr ""
+msgstr "Ввод провайдера вручную"
 
 #: dist/converse-no-dependencies.js:143428
 msgid "Sorry, we're unable to connect to your chosen provider."

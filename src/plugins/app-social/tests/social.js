@@ -182,3 +182,105 @@ describe('The social feed', function () {
         }),
     );
 });
+
+const ONBOARDING_DISMISSED = 'social_onboarding_dismissed';
+
+describe('The social onboarding card', function () {
+    it(
+        'suggests followable contacts and bulk-follows the selected ones',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            vi.spyOn(api.microblog, 'discoverFollowable').mockResolvedValue([
+                { jid: 'juliet@capulet.lit', name: 'Juliet' },
+            ]);
+            const follow = vi.spyOn(api.microblog, 'follow').mockResolvedValue(/** @type {any} */ ({}));
+
+            const el = document.createElement('converse-social-feed');
+            document.querySelector('#conversejs').appendChild(el);
+
+            // The card appears with the candidate, pre-checked.
+            const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
+            expect(card.textContent).toContain('Juliet');
+            const checkbox = /** @type {HTMLInputElement} */ (card.querySelector('input[type="checkbox"]'));
+            expect(checkbox.checked).toBe(true);
+
+            // "Follow selected" follows every checked candidate via followMany.
+            /** @type {HTMLButtonElement} */ (card.querySelector('.social-onboarding__actions button')).click();
+            await u.waitUntil(() => follow.mock.calls.length === 1);
+            expect(follow).toHaveBeenCalledWith('juliet@capulet.lit');
+
+            // The card hides itself once onboarding is done.
+            await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding') === null);
+        }),
+    );
+
+    it(
+        'can be dismissed, and the dismissal is persisted',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            vi.spyOn(api.microblog, 'discoverFollowable').mockResolvedValue([
+                { jid: 'juliet@capulet.lit', name: 'Juliet' },
+            ]);
+
+            const el = document.createElement('converse-social-feed');
+            document.querySelector('#conversejs').appendChild(el);
+
+            const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
+            /** @type {HTMLButtonElement} */ (card.querySelector('.social-onboarding__dismiss')).click();
+
+            await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding') === null);
+            expect(await api.user.settings.get(ONBOARDING_DISMISSED)).toBe(true);
+        }),
+    );
+
+    it(
+        'stays hidden when onboarding was previously dismissed',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            await api.user.settings.set(ONBOARDING_DISMISSED, true);
+            const discover = vi.spyOn(api.microblog, 'discoverFollowable').mockResolvedValue([
+                { jid: 'juliet@capulet.lit', name: 'Juliet' },
+            ]);
+
+            const el = document.createElement('converse-social-feed');
+            document.querySelector('#conversejs').appendChild(el);
+
+            const onboarding = await u.waitUntil(() => el.querySelector('converse-social-onboarding'));
+            await u.waitUntil(() => discover.mock.calls.length >= 1);
+            await onboarding.updateComplete;
+            // Candidate exists, but the card renders nothing because it was dismissed.
+            expect(onboarding.querySelector('.social-onboarding')).toBe(null);
+        }),
+    );
+
+    it(
+        'stays hidden when the user already follows someone',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            // A followed (non-own) feed already exists — e.g. a follow synced from
+            // another device via the XEP-0330 list — so the nudge shouldn't show.
+            await api.waitUntil('pubsubFeedsInitialized');
+            _converse.state.pubsubfeeds.getFeed('juliet@capulet.lit', MICROBLOG_NODE, true);
+
+            const discover = vi.spyOn(api.microblog, 'discoverFollowable').mockResolvedValue([
+                { jid: 'mercutio@montague.lit', name: 'Mercutio' },
+            ]);
+
+            const el = document.createElement('converse-social-feed');
+            document.querySelector('#conversejs').appendChild(el);
+
+            const onboarding = await u.waitUntil(() => el.querySelector('converse-social-onboarding'));
+            await u.waitUntil(() => discover.mock.calls.length >= 1);
+            await onboarding.updateComplete;
+            expect(onboarding.querySelector('.social-onboarding')).toBe(null);
+        }),
+    );
+});

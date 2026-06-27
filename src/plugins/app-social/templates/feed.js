@@ -11,6 +11,7 @@ export default (el) => {
     const posts = el.posts.get();
     return html`
         <div class="social-feed">
+            <converse-social-onboarding></converse-social-onboarding>
             <converse-social-compose .model=${el.model}></converse-social-compose>
             <div class="social-feed__posts">
                 ${posts.length

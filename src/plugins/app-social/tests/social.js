@@ -112,6 +112,37 @@ describe('The social feed', function () {
             expect(articles[1].querySelector('.social-post__action')).not.toBe(null);
         }),
     );
+
+    it(
+        'links the avatar to a profile only for contacts and own posts',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const bare_jid = _converse.bare_jid;
+            const stranger = 'stranger@shakespeare.lit';
+
+            // Read a non-contact author's feed (e.g. a followed community node).
+            await _converse.api.microblog.feeds.get(stranger, MICROBLOG_NODE, true);
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            receive(_converse, makePost(bare_jid, bare_jid, 'mine-1', 'My own post', '2024-01-01T09:00:00Z'));
+            receive(_converse, makePost(bare_jid, stranger, 'theirs-1', 'A stranger speaks', '2024-01-02T09:00:00Z'));
+
+            await u.waitUntil(() => el.querySelectorAll('.social-post').length === 2);
+
+            const articleFor = (body) =>
+                Array.from(el.querySelectorAll('.social-post')).find((a) =>
+                    a.querySelector('.social-post__body').textContent.includes(body),
+                );
+
+            // Our own post resolves to our profile → its avatar links out.
+            await u.waitUntil(() => articleFor('My own post')?.querySelector('a.social-post__avatar'));
+            // The non-contact author's avatar is a plain, non-linked element.
+            expect(articleFor('A stranger speaks').querySelector('a.social-post__avatar')).toBe(null);
+            expect(articleFor('A stranger speaks').querySelector('.social-post__avatar')).not.toBe(null);
+        }),
+    );
 });
 
 describe('The social onboarding card', function () {

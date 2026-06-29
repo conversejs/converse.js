@@ -25,10 +25,32 @@ export default class SocialMessage extends CustomElement {
         // Re-render this post when its display-affecting attributes change.
         this.listenTo(this.model, 'change:body', () => this.requestUpdate());
         this.listenTo(this.model, 'change:displayName', () => this.requestUpdate());
+        // The author's vCard (avatar) and contact resolve asynchronously; re-render
+        // so the avatar appears once its vCard loads, and the profile link appears
+        // once an existing contact resolves.
+        this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
+        this.listenTo(this.model, 'contact:add', () => this.requestUpdate());
     }
 
     render() {
         return tplMessage(this);
+    }
+
+    /**
+     * Show the author's details (or our own profile for own posts) when their
+     * avatar is clicked. Uses the contact resolved on the post model.
+     * @param {MouseEvent} ev
+     */
+    showUserModal(ev) {
+        ev.preventDefault();
+        const contact = this.model.contact;
+        if (!contact) return;
+        if (this.model.get('is_mine')) {
+            api.modal.show('converse-profile-modal', { model: contact }, ev);
+        } else {
+            api.modal.show('converse-user-details-modal', { model: contact }, ev);
+        }
     }
 
     /**

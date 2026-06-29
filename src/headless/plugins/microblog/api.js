@@ -84,7 +84,7 @@ export default {
          * (correctly) omitted until they do. Callers that render this should
          * recompute on presence changes.
          * @method _converse.api.microblog.discoverFollowable
-         * @returns {Promise<Array<{ jid: string, name: string }>>}
+         * @returns {Promise<string[]>} The bare JIDs of followable contacts.
          */
         async discoverFollowable() {
             const roster = _converse.state.roster;
@@ -94,7 +94,7 @@ export default {
                 candidates.map(async (contact) => {
                     const jid = contact.get('jid');
                     if (api.microblog.isFollowing(jid)) return null;
-                    return (await api.microblog.canFollow(jid)) ? { jid, name: contact.getDisplayName() } : null;
+                    return (await api.microblog.canFollow(jid)) ? jid : null;
                 }),
             );
             return followable.filter(Boolean);

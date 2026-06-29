@@ -1,6 +1,7 @@
 import { html } from 'lit';
 import { __ } from 'i18n';
 import { converse } from '@converse/headless';
+import { getRelativeTime } from 'utils/time.js';
 
 const { dayjs } = converse.env;
 
@@ -10,29 +11,51 @@ const { dayjs } = converse.env;
 export default (el) => {
     const m = el.model;
     const time = m.get('time');
+    const name = m.get('displayName');
+
     return html`
         <article class="social-post ${m.get('is_mine') ? 'social-post--mine' : ''}">
-            <header class="social-post__header">
-                <span class="social-post__author">${m.get('displayName')}</span>
-                ${m.get('is_repost')
-                    ? html`<span class="social-post__badge"><converse-icon size="0.8em" class="fa fa-retweet"></converse-icon> ${__('reposted')}</span>`
-                    : ''}
-                ${time
-                    ? html`<time class="social-post__time" datetime="${time}">${dayjs(time).format('lll')}</time>`
-                    : ''}
-                ${m.get('is_mine')
-                    ? html`<button
-                          type="button"
-                          class="social-post__action"
-                          title="${__('Delete')}"
-                          aria-label="${__('Delete')}"
-                          @click=${() => el.onRetract()}
-                      >
-                          <converse-icon size="1em" class="fa fa-trash-alt"></converse-icon>
-                      </button>`
-                    : ''}
-            </header>
-            <div class="social-post__body">${m.get('body') ?? ''}</div>
+            <a class="show-msg-author-modal social-post__avatar" @click=${(ev) => el.showUserModal(ev)}>
+                <converse-avatar
+                    .model=${m}
+                    class="avatar"
+                    name="${name}"
+                    height="40"
+                    width="40"
+                ></converse-avatar>
+            </a>
+            <div class="social-post__main">
+                <header class="social-post__header">
+                    <span class="social-post__author">${name}</span>
+                    <span class="social-post__jid">${m.get('author_jid')}</span>
+
+                    ${m.get('is_repost')
+                        ? html`<span class="social-post__badge"
+                              ><converse-icon size="0.8em" class="fa fa-retweet"></converse-icon> ${__('reposted')}</span
+                          >`
+                        : ''}
+                    ${time
+                        ? html`<time
+                              class="social-post__time"
+                              datetime="${time}"
+                              title="${dayjs(time).format('llll')}"
+                              >${getRelativeTime(time)}</time
+                          >`
+                        : ''}
+                    ${m.get('is_mine')
+                        ? html`<button
+                              type="button"
+                              class="social-post__action"
+                              title="${__('Delete')}"
+                              aria-label="${__('Delete')}"
+                              @click=${() => el.onRetract()}
+                          >
+                              <converse-icon size="1em" class="fa fa-trash-alt"></converse-icon>
+                          </button>`
+                        : ''}
+                </header>
+                <div class="social-post__body">${m.get('body') ?? ''}</div>
+            </div>
         </article>
     `;
 };

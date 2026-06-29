@@ -58,10 +58,10 @@ export function mountSocialFeed() {
 }
 
 /**
- * Stub `api.microblog.discoverFollowable` to resolve with the given candidates,
- * returning the spy.
+ * Stub `api.microblog.discoverFollowable` to resolve with the given candidate
+ * JIDs, returning the spy.
  * @param {any} api
- * @param {Array<{ jid: string, name: string }>} candidates
+ * @param {string[]} candidates
  */
 export function stubDiscoverFollowable(api, candidates) {
     return vi.spyOn(api.microblog, 'discoverFollowable').mockResolvedValue(candidates);

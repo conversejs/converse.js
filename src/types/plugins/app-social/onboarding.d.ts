@@ -15,11 +15,8 @@ export const ONBOARDING_DISMISSED: "social_onboarding_dismissed";
  * it, or has no followable contacts to suggest.
  */
 export default class SocialOnboarding extends CustomElement {
-    /** @type {Array<{jid: string, name: string}>} */
-    candidates: Array<{
-        jid: string;
-        name: string;
-    }>;
+    /** The bare JIDs of followable contacts. @type {string[]} */
+    candidates: string[];
     /** Checked JIDs (candidates are checked by default). @type {Set<string>} */
     selected: Set<string>;
     /** Candidates we've already defaulted-checked, so an explicit uncheck sticks. */
@@ -30,6 +27,11 @@ export default class SocialOnboarding extends CustomElement {
     initialize(): Promise<void>;
     /** Recompute the followable candidates and default-check any newly found. */
     refresh(): Promise<void>;
+    /**
+     * @param {MouseEvent} ev
+     * @param {import('@converse/headless/types/plugins/roster/contact').default} contact
+     */
+    showUserModal(ev: MouseEvent, contact: import("@converse/headless/types/plugins/roster/contact").default): void;
     /** How many feeds the user follows (excludes their own feed). */
     get followed_count(): any;
     /** The card shows only as a first-run nudge: nobody followed, not dismissed, and something to suggest. */

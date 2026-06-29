@@ -43,17 +43,13 @@ converse.plugins.add('converse-caps', {
         api.listen.on('constructedPresence', (_, p) => addCapsNode(p, true));
         api.listen.on('constructedMUCPresence', (_, p) => addCapsNode(p));
 
-        // In-memory map of full JID -> advertised caps ({ hash, node, ver }),
-        // populated from incoming presence. It's connection state, so it's
-        // recreated on (re)connect and cleared when the session ends.
-        api.listen.on('pluginsInitialized', () => Object.assign(_converse.state, { caps_map: new Map() }));
+        // Enrich incoming presence with the sender's advertised XEP-0115 caps,
+        // so the roster handler stores them on the sender's Resource.
         api.listen.on('parsePresence', onParsePresence);
 
-        // On session end, forget the per-resource caps and the send-side
-        // optimization state, so the first presence of the next session
-        // re-advertises our `<c/>` (XEP-0115 § 8.4).
+        // On session end, reset the send-side optimization state, so the first
+        // presence of the next session re-advertises our `<c/>` (XEP-0115 § 8.4).
         const onSessionEnd = () => {
-            /** @type {Map<string, unknown>} */ (_converse.state.caps_map)?.clear();
             Object.assign(_converse.state, { caps_last_sent_ver: null, caps_optimize: false });
         };
         api.listen.on('will-reconnect', onSessionEnd);

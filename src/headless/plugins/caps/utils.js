@@ -144,40 +144,36 @@ export function getCapsAttrs(stanza) {
 }
 
 /**
- * Returns the caps (hash, node, ver) most recently advertised by the given
- * full JID in its presence, or `undefined` if none is known.
+ * Returns the caps (hash, node, ver) the given full JID advertised in its
+ * presence, or `undefined` if none is known.
+ *
+ * XEP-0115 caps ride on presence, and we only receive presence from contacts
+ * we're subscribed to (i.e. in our roster). The caps a resource advertised are
+ * therefore stored on that contact's roster Resource (see roster `addResource`),
+ * which both survives a reload and is the single source of truth.
  * @param {string} jid - The full JID of the entity
  * @returns {import('./types').CapsAttributes|undefined}
  */
 export function getEntityCaps(jid) {
-    return /** @type {Map<string, import('./types').CapsAttributes>} */ (_converse.state.caps_map)?.get(jid);
+    const resource = Strophe.getResourceFromJid(jid);
+    if (!resource) return undefined;
+    const presence = _converse.state.presences?.get(Strophe.getBareJidFromJid(jid));
+    return /** @type {import('./types').CapsAttributes|undefined} */ (presence?.resources?.get(resource)?.get('caps'));
 }
 
 /**
  * Handler for the `parsePresence` hook which enriches the parsed presence
- * attributes with the sender's advertised XEP-0115 entity capabilities, and
- * keeps an in-memory map of full JID -> caps so that we can later look up the
- * advertised `ver` when disco information for that JID is needed.
+ * attributes with the sender's advertised XEP-0115 entity capabilities, so the
+ * roster handler can persist them on the sender's Resource (see roster
+ * `addResource`), where disco later looks them up. An unavailable presence
+ * carries no caps and drops the resource (and its caps) on the roster side.
  * @param {Element} stanza
  * @param {import('../roster/types').PresenceAttributes} attrs
  * @returns {import('../roster/types').PresenceAttributes}
  */
 export function onParsePresence(stanza, attrs) {
-    const caps_map = /** @type {Map<string, import('./types').CapsAttributes>} */ (_converse.state.caps_map);
-    const { from, type } = attrs;
-
-    if (type === 'unavailable') {
-        // The resource has gone offline, so forget its advertised caps.
-        caps_map?.delete(from);
-        return attrs;
-    }
-
     const caps = getCapsAttrs(stanza);
-    if (caps) {
-        caps_map?.set(from, caps);
-        return { ...attrs, caps };
-    }
-    return attrs;
+    return caps ? { ...attrs, caps } : attrs;
 }
 
 /**

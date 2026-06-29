@@ -1,9 +1,20 @@
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 
-const { stx, u, sizzle } = converse.env;
+const { Strophe, stx, u, sizzle } = converse.env;
 
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+
+/**
+ * Wait until the caps advertised by `full_jid` have been stored on its resource.
+ * @param {any} _converse
+ * @param {string} full_jid
+ */
+function waitForCaps(_converse, full_jid) {
+    const bare = Strophe.getBareJidFromJid(full_jid);
+    const resource = Strophe.getResourceFromJid(full_jid);
+    return u.waitUntil(() => _converse.state.presences.get(bare)?.resources.get(resource)?.get('caps'));
+}
 
 describe('A sent presence stanza', function () {
     beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
@@ -191,42 +202,69 @@ describe('A received presence stanza', function () {
     );
 
     it(
-        'is recorded in the in-memory caps map keyed by full JID',
+        'is forgotten when the advertising resource goes offline',
         mock.initConverse(converse, [], {}, async (_converse) => {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current');
 
             const contact_jid = mock.cur_names[7].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-            const full_jid = `${contact_jid}/resource`;
+            const contact = await api.contacts.get(contact_jid);
 
-            let stanza = stx`
-                <presence xmlns="jabber:client"
-                        to="romeo@montague.lit/converse.js-21770972"
-                        from="${full_jid}">
+            api.connection.get()._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`
+                <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${contact_jid}/resource">
                     <priority>1</priority>
                     <c xmlns="http://jabber.org/protocol/caps"
-                        hash="sha-1"
-                        node="http://conversations.im"
-                        ver="QgayPKawpkPSDYmwT/WM94uAlu0="/>
-                </presence>`;
-            api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+                        hash="sha-1" node="http://conversations.im" ver="QgayPKawpkPSDYmwT/WM94uAlu0="/>
+                </presence>`,
+                ),
+            );
 
-            await u.waitUntil(() => _converse.state.caps_map.has(full_jid));
-            expect(_converse.state.caps_map.get(full_jid)).toEqual({
-                hash: 'sha-1',
-                node: 'http://conversations.im',
-                ver: 'QgayPKawpkPSDYmwT/WM94uAlu0=',
-            });
+            await u.waitUntil(() => contact.presence.resources.get('resource')?.get('caps'));
 
-            // An unavailable presence removes the entry again
-            stanza = stx`
-                <presence xmlns="jabber:client" type="unavailable"
-                        to="romeo@montague.lit/converse.js-21770972"
-                        from="${full_jid}"/>`;
-            api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+            // An unavailable presence drops the resource, so its caps are forgotten.
+            api.connection.get()._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`<presence xmlns="jabber:client" type="unavailable"
+                        to="romeo@montague.lit/orchard" from="${contact_jid}/resource"/>`,
+                ),
+            );
 
-            await u.waitUntil(() => !_converse.state.caps_map.has(full_jid));
-            expect(_converse.state.caps_map.has(full_jid)).toBe(false);
+            await u.waitUntil(() => !contact.presence.resources.get('resource'));
+        }),
+    );
+
+    it(
+        'is persisted on the presence resource so it survives a reload',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current');
+
+            const contact_jid = mock.cur_names[4].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            const contact = await api.contacts.get(contact_jid);
+            const caps = { hash: 'sha-1', node: 'http://conversations.im', ver: 'QgayPKawpkPSDYmwT/WM94uAlu0=' };
+
+            api.connection.get()._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`
+                <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${contact_jid}/phone">
+                    <priority>1</priority>
+                    <c xmlns="http://jabber.org/protocol/caps" hash="${caps.hash}" node="${caps.node}" ver="${caps.ver}"/>
+                </presence>`,
+                ),
+            );
+
+            const resource = await u.waitUntil(() => contact.presence.resources.get('phone'));
+            // The advertised caps are stored on the resource (session storage),
+            // so a reload can rehydrate them...
+            expect(resource.get('caps')).toEqual(caps);
+            // ...from a store distinct from the disco entity's identities store,
+            // which would otherwise collide on the contact's bare JID.
+            expect(contact.presence.resources.storage.name).toBe(`converse.resources-${contact_jid}`);
         }),
     );
 });
@@ -348,7 +386,7 @@ describe('XEP-0115 disco integration', function () {
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
                 </presence>`),
             );
-            await u.waitUntil(() => _converse.state.caps_map.has(full_jid));
+            await waitForCaps(_converse, full_jid);
 
             // 2. Asking disco about the JID triggers a disco#info query (cache miss).
             api.disco.entities.get(full_jid, true);
@@ -399,7 +437,7 @@ describe('XEP-0115 disco integration', function () {
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
                 </presence>`),
             );
-            await u.waitUntil(() => _converse.state.caps_map.has(full_jid));
+            await waitForCaps(_converse, full_jid);
 
             api.disco.entities.get(full_jid, true);
             const iq = await waitForDiscoInfoQuery(_converse, full_jid);
@@ -462,7 +500,7 @@ describe('XEP-0115 disco integration', function () {
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
                 </presence>`),
             );
-            await u.waitUntil(() => _converse.state.caps_map.has(full_jid));
+            await waitForCaps(_converse, full_jid);
 
             const supported = await api.disco.supports('http://jabber.org/protocol/muc', full_jid);
             expect(supported).toBe(true);
@@ -508,7 +546,7 @@ describe('XEP-0115 disco integration', function () {
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
                 </presence>`),
             );
-            await u.waitUntil(() => _converse.state.caps_map.has(full_jid));
+            await waitForCaps(_converse, full_jid);
 
             // The flattened XEP-0128 field values are restored and exposed via getFields.
             const fields = await api.disco.getFields(full_jid);
@@ -545,7 +583,7 @@ describe('XEP-0115 disco integration', function () {
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="${node}" ver="${ver}"/>
                 </presence>`),
             );
-            await u.waitUntil(() => _converse.state.caps_map.has(full_jid));
+            await waitForCaps(_converse, full_jid);
 
             api.disco.entities.get(full_jid, true);
             const iq = await waitForDiscoInfoQuery(_converse, full_jid);

@@ -1,6 +1,5 @@
 import Resources from './resources.js';
 import { Model } from '@converse/skeletor';
-import { initStorage } from '../../utils/storage.js';
 
 /**
  * @extends {Model<import('./types').PresenceModelAttrs>}
@@ -18,9 +17,7 @@ class Presence extends Model {
 
     initialize() {
         super.initialize();
-        this.resources = new Resources();
-        const id = `converse.identities-${this.get('jid')}`;
-        initStorage(this.resources, id, 'session');
+        this.resources = new Resources(null, { jid: this.get('jid') });
 
         this.listenTo(this.resources, 'update', this.onResourcesChanged);
         this.listenTo(this.resources, 'change', this.onResourcesChanged);
@@ -56,11 +53,9 @@ class Presence extends Model {
      */
     addResource(attrs) {
         const settings = {
+            ...attrs,
             name: attrs.resource,
             presence: attrs.type === 'unavailable' ? 'offline' : 'online',
-            priority: attrs.priority,
-            show: attrs.show,
-            timestamp: attrs.timestamp,
         };
         const resource = this.resources.get(settings.name);
         if (resource) {

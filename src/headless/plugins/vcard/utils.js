@@ -73,6 +73,9 @@ export async function getVCardForModel(model, lazy_load = false) {
                 return;
             }
             jid = Strophe.getBareJidFromJid(message.get('from'));
+        } else if (typeof (/** @type {Model} */ (model).getVCardJID) === 'function') {
+            // A model can name the JID whose vCard represents it.
+            jid = /** @type {Model} */ (model).getVCardJID();
         } else {
             jid = /** @type {Model} */ (model).get('jid');
         }

@@ -26,8 +26,14 @@ export default function ModelWithContact<T extends import("./types").ModelExtend
         updateContactUnreadCounter(): void;
         /**
          * @param {string} jid
+         * @param {object} [options]
+         * @param {boolean} [options.create=true] - Whether to add a (non-persistent)
+         *     roster contact when none exists. Pass `false` to resolve only an
+         *     existing contact (or our own profile) without touching the roster.
          */
-        setModelContact(jid: string): Promise<void>;
+        setModelContact(jid: string, { create }?: {
+            create?: boolean;
+        }): Promise<void>;
         "__#4@#private": any;
         _storage?: import("@converse/skeletor").PersistentStorage;
         _changing: boolean;

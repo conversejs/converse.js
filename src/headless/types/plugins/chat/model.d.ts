@@ -242,7 +242,9 @@ declare const ChatBox_base: {
         onClosedChanged: () => Promise<void>;
         contact: import("../roster/contact.js").default | import("../status/profile.js").default;
         updateContactUnreadCounter(): void;
-        setModelContact(jid: string): Promise<void>;
+        setModelContact(jid: string, { create }?: {
+            create?: boolean;
+        }): Promise<void>;
         "__#4@#private": any;
         _storage?: import("@converse/skeletor").PersistentStorage;
         _changing: boolean;

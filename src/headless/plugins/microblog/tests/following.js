@@ -1,12 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
+import { MICROBLOG_NODE, makePostStanza, receive, stubPubsubNetwork } from './utils.js';
 
-const { Strophe, stx, u } = converse.env;
+const { stx, u } = converse.env;
 
-const ATOM = 'http://www.w3.org/2005/Atom';
-const PUBSUB_EVENT = `${Strophe.NS.PUBSUB}#event`;
-const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
 const FOLLOWING_NODE = 'urn:xmpp:pubsub:subscription';
 const NS_SUBSCRIPTION = 'urn:xmpp:pubsub:subscription:0';
 const SOCIAL_FEED_FEATURE = 'urn:xmpp:pubsub-social-feed:1';
@@ -17,39 +15,6 @@ const SOCIAL_FEED_FEATURE = 'urn:xmpp:pubsub-social-feed:1';
 // proving our id generation interoperates with the spec / Movim.
 const PARTY_ID = '0bc0e76cb803b3b107aa369169d8c0d45086f844';
 
-/**
- * Inject an incoming PEP/PubSub event stanza, as if pushed by the server.
- * @param {any} _converse
- * @param {Element} stanza
- */
-function receive(_converse, stanza) {
-    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
-}
-
-/**
- * Build a headline PEP event carrying a single plain-text microblog post.
- * @param {string} from - The publisher's bare JID.
- * @param {string} id - The PubSub item id.
- * @param {string} body - The post body.
- */
-function makePostStanza(from, id, body) {
-    return stx`
-        <message xmlns="jabber:client" from="${from}" to="${from}" type="headline">
-          <event xmlns="${PUBSUB_EVENT}">
-            <items node="${MICROBLOG_NODE}">
-              <item id="${id}" publisher="${from}">
-                <entry xmlns="${ATOM}">
-                  <title type="text">${body}</title>
-                  <id>tag:capulet.lit,2024-01-01:posts-${id}</id>
-                  <published>2024-01-01T18:30:02Z</published>
-                  <updated>2024-01-01T18:30:02Z</updated>
-                </entry>
-              </item>
-            </items>
-          </event>
-        </message>`;
-}
-
 describe('Microblog following (XEP-0330)', function () {
     it(
         'publishes a follow item with the interop-compatible id and node config',
@@ -57,9 +22,7 @@ describe('Microblog following (XEP-0330)', function () {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
 
-            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
-            vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
-            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            const { publish } = stubPubsubNetwork(api);
 
             await api.microblog.follow('pubsub.shakespeare.lit', {
                 node: 'party',
@@ -97,10 +60,7 @@ describe('Microblog following (XEP-0330)', function () {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
 
-            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
-            vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
-            vi.spyOn(api.pubsub, 'unsubscribe').mockResolvedValue(undefined);
-            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            stubPubsubNetwork(api);
 
             await api.microblog.follow('pubsub.shakespeare.lit', { node: 'party' });
             expect(api.microblog.isFollowing('pubsub.shakespeare.lit', 'party')).toBe(true);
@@ -177,9 +137,7 @@ describe('Microblog following (XEP-0330)', function () {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
 
-            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
-            vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
-            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            stubPubsubNetwork(api);
 
             const feed = await api.microblog.follow('juliet@capulet.lit');
             expect(feed).toBeDefined();

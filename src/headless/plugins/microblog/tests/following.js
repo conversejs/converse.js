@@ -236,7 +236,7 @@ describe('Microblog following (XEP-0330)', function () {
             vi.spyOn(api.microblog, 'isFollowing').mockImplementation((jid) => jid === 'mercutio@montague.lit');
 
             const followable = await api.microblog.discoverFollowable();
-            expect(followable).toEqual([{ jid: 'juliet@capulet.lit', name: 'Juliet' }]);
+            expect(followable).toEqual(['juliet@capulet.lit']);
         }),
     );
 

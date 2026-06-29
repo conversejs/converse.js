@@ -1,6 +1,35 @@
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
+import { api } from '@converse/headless';
 import { __ } from 'i18n';
+import { until } from 'lit/directives/until.js';
+
+/**
+ * Render a followable contact's clickable avatar and display name. The contact
+ * is resolved asynchronously from its bare JID; candidates are roster contacts,
+ * so this normally resolves right away.
+ * @param {import('../onboarding.js').default} el
+ * @param {string} jid
+ */
+const tplContact = async (el, jid) => {
+    const contact = await api.contacts.get(jid);
+    if (!contact) return '';
+
+    const name = contact.getDisplayName();
+    return html`
+        <a class="show-msg-author-modal" @click=${(ev) => el.showUserModal(ev, contact)}>
+            <converse-avatar
+                .model=${contact}
+                class="avatar align-self-center"
+                name="${name}"
+                nonce=${contact.vcard?.get('vcard_updated')}
+                height="40"
+                width="40"
+            ></converse-avatar>
+            <span class="social-onboarding__name">${name}</span>
+        </a>
+    `;
+};
 
 /**
  * @param {import('../onboarding.js').default} el
@@ -21,16 +50,16 @@ export default (el) => html`
         <ul class="social-onboarding__list">
             ${repeat(
                 el.candidates,
-                (c) => c.jid,
-                (c) => html`
+                (jid) => jid,
+                (jid) => html`
                     <li class="social-onboarding__item">
                         <label class="social-onboarding__label">
                             <input
                                 type="checkbox"
-                                .checked=${el.selected.has(c.jid)}
-                                @change=${() => el.toggleSelect(c.jid)}
+                                .checked=${el.selected.has(jid)}
+                                @change=${() => el.toggleSelect(jid)}
                             />
-                            <span class="social-onboarding__name">${c.name}</span>
+                            ${until(tplContact(el, jid), '')}
                         </label>
                     </li>
                 `,

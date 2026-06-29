@@ -195,7 +195,7 @@ export default class Message extends ObservableElement {
                 extra_classes.push('mentioned');
             }
         }
-        this.model.get('correcting') && extra_classes.push('correcting');
+        if (this.model.get('correcting')) extra_classes.push('correcting');
         return extra_classes.filter((c) => c).join(' ');
     }
 

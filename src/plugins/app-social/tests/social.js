@@ -118,24 +118,27 @@ describe('The social onboarding card', function () {
     it(
         'suggests followable contacts and bulk-follows the selected ones',
         mock.initConverse(converse, [], {}, async function (_converse) {
-            await mock.waitForRoster(_converse, 'current', 0);
+            // Load the roster so the candidate resolves to a real contact whose
+            // avatar and name the card renders via api.contacts.get().
+            await mock.waitForRoster(_converse, 'current');
             const { api } = _converse;
 
-            stubDiscoverFollowable(api, [{ jid: 'juliet@capulet.lit', name: 'Juliet' }]);
+            stubDiscoverFollowable(api, ['juliet.capulet@montague.lit']);
             const follow = vi.spyOn(api.microblog, 'follow').mockResolvedValue(/** @type {any} */ ({}));
 
             const el = mountSocialFeed();
 
-            // The card appears with the candidate, pre-checked.
+            // The card appears with the candidate, pre-checked. The contact name
+            // is rendered asynchronously, so wait for it to appear.
             const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
-            expect(card.textContent).toContain('Juliet');
+            await u.waitUntil(() => card.textContent.includes('Juliet'));
             const checkbox = /** @type {HTMLInputElement} */ (card.querySelector('input[type="checkbox"]'));
             expect(checkbox.checked).toBe(true);
 
             // "Follow selected" follows every checked candidate via followMany.
             /** @type {HTMLButtonElement} */ (card.querySelector('.social-onboarding__actions button')).click();
             await u.waitUntil(() => follow.mock.calls.length === 1);
-            expect(follow).toHaveBeenCalledWith('juliet@capulet.lit');
+            expect(follow).toHaveBeenCalledWith('juliet.capulet@montague.lit');
 
             // The card hides itself once onboarding is done.
             await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding') === null);
@@ -148,7 +151,7 @@ describe('The social onboarding card', function () {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
 
-            stubDiscoverFollowable(api, [{ jid: 'juliet@capulet.lit', name: 'Juliet' }]);
+            stubDiscoverFollowable(api, ['juliet@capulet.lit']);
 
             const el = mountSocialFeed();
 
@@ -167,7 +170,7 @@ describe('The social onboarding card', function () {
             const { api } = _converse;
 
             await api.user.settings.set(ONBOARDING_DISMISSED, true);
-            const discover = stubDiscoverFollowable(api, [{ jid: 'juliet@capulet.lit', name: 'Juliet' }]);
+            const discover = stubDiscoverFollowable(api, ['juliet@capulet.lit']);
 
             const el = mountSocialFeed();
 
@@ -190,7 +193,7 @@ describe('The social onboarding card', function () {
             await api.waitUntil('pubsubFeedsInitialized');
             _converse.state.pubsubfeeds.getFeed('juliet@capulet.lit', MICROBLOG_NODE, true);
 
-            const discover = stubDiscoverFollowable(api, [{ jid: 'mercutio@montague.lit', name: 'Mercutio' }]);
+            const discover = stubDiscoverFollowable(api, ['mercutio@montague.lit']);
 
             const el = mountSocialFeed();
 
@@ -204,9 +207,11 @@ describe('The social onboarding card', function () {
     it(
         'rescans when a feed-bearing resource comes online on an already-online contact',
         mock.initConverse(converse, [], {}, async function (_converse) {
-            await mock.waitForRoster(_converse, 'current', 0);
+            // Load the roster so the candidate resolves to a real contact whose
+            // name the card renders via api.contacts.get().
+            await mock.waitForRoster(_converse, 'current');
             const { api } = _converse;
-            const jid = 'juliet@capulet.lit';
+            const jid = 'juliet.capulet@montague.lit';
 
             // A known contact, already online via a feed-less resource. A second
             // resource appearing won't change the contact's aggregate presence,
@@ -219,7 +224,7 @@ describe('The social onboarding card', function () {
             let has_feed = false;
             const discover = vi
                 .spyOn(api.microblog, 'discoverFollowable')
-                .mockImplementation(() => Promise.resolve(has_feed ? [{ jid, name: 'Juliet' }] : []));
+                .mockImplementation(() => Promise.resolve(has_feed ? [jid] : []));
 
             const el = mountSocialFeed();
 
@@ -236,7 +241,7 @@ describe('The social onboarding card', function () {
             presence.resources.create({ name: 'phone', presence: 'online' });
 
             const card = await u.waitUntil(() => onboarding.querySelector('.social-onboarding'));
-            expect(card.textContent).toContain('Juliet');
+            await u.waitUntil(() => card.textContent.includes('Juliet'));
         }),
     );
 });

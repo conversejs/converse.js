@@ -42,12 +42,9 @@ declare namespace _default {
          * (correctly) omitted until they do. Callers that render this should
          * recompute on presence changes.
          * @method _converse.api.microblog.discoverFollowable
-         * @returns {Promise<Array<{ jid: string, name: string }>>}
+         * @returns {Promise<string[]>} The bare JIDs of followable contacts.
          */
-        function discoverFollowable(): Promise<Array<{
-            jid: string;
-            name: string;
-        }>>;
+        function discoverFollowable(): Promise<string[]>;
         /**
          * Follow a a social feed and record it in the durable XEP-0330 list.
          * Subscribe for live delivery (XEP-0472) and create + backfill the feed.

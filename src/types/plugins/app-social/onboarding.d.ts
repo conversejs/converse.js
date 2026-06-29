@@ -26,6 +26,7 @@ export default class SocialOnboarding extends CustomElement {
     seen: Set<any>;
     dismissed: boolean;
     busy: boolean;
+    debouncedRefresh: import("lodash").DebouncedFunc<() => Promise<void>>;
     initialize(): Promise<void>;
     /** Recompute the followable candidates and default-check any newly found. */
     refresh(): Promise<void>;

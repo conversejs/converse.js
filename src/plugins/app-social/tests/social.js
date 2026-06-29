@@ -283,4 +283,44 @@ describe('The social onboarding card', function () {
             expect(onboarding.querySelector('.social-onboarding')).toBe(null);
         }),
     );
+
+    it(
+        'rescans when a feed-bearing resource comes online on an already-online contact',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const jid = 'juliet@capulet.lit';
+
+            // A known contact, already online via a feed-less resource. A second
+            // resource appearing won't change the contact's aggregate presence,
+            // so only a resource-level event fires — never a `presences` change.
+            await api.waitUntil('pubsubFeedsInitialized');
+            const presences = _converse.state.presences;
+            const presence = presences.get(jid) ?? presences.create({ jid });
+            presence.resources.create({ name: 'desktop', presence: 'online' });
+
+            let has_feed = false;
+            const discover = vi
+                .spyOn(api.microblog, 'discoverFollowable')
+                .mockImplementation(() => Promise.resolve(has_feed ? [{ jid, name: 'Juliet' }] : []));
+
+            const el = document.createElement('converse-social-feed');
+            document.querySelector('#conversejs').appendChild(el);
+
+            // Initially nothing to suggest → no card.
+            const onboarding = await u.waitUntil(() => el.querySelector('converse-social-onboarding'));
+            await u.waitUntil(() => discover.mock.calls.length >= 1);
+            await onboarding.updateComplete;
+            expect(onboarding.querySelector('.social-onboarding')).toBe(null);
+
+            // A second, feed-bearing resource comes online. The card watches each
+            // contact's resources, so this resource add triggers a (debounced)
+            // rescan even though the aggregate presence is unchanged.
+            has_feed = true;
+            presence.resources.create({ name: 'phone', presence: 'online' });
+
+            const card = await u.waitUntil(() => onboarding.querySelector('.social-onboarding'));
+            expect(card.textContent).toContain('Juliet');
+        }),
+    );
 });

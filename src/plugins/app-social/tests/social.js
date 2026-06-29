@@ -1,39 +1,16 @@
 import { describe, it, expect, vi } from 'vitest';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
+import {
+    MICROBLOG_NODE,
+    ONBOARDING_DISMISSED,
+    makePost,
+    mountSocialFeed,
+    receive,
+    stubDiscoverFollowable,
+} from './utils.js';
 
-const { Strophe, stx, u } = converse.env;
-
-const ATOM = 'http://www.w3.org/2005/Atom';
-const PUBSUB_EVENT = `${Strophe.NS.PUBSUB}#event`;
-const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
-
-/**
- * Build a headline PEP event carrying a single plain-text microblog post, as the
- * server would push it: addressed to the logged-in user, from the publisher.
- * @param {string} to - The recipient's bare JID (the logged-in user).
- * @param {string} from - The publisher's bare JID (also the feed JID).
- * @param {string} id - The PubSub item id.
- * @param {string} body - The post body.
- * @param {string} published - ISO-8601 publication time (drives ordering).
- */
-function makePost(to, from, id, body, published) {
-    return stx`
-        <message xmlns="jabber:client" from="${from}" to="${to}" type="headline">
-          <event xmlns="${PUBSUB_EVENT}">
-            <items node="${MICROBLOG_NODE}">
-              <item id="${id}" publisher="${from}">
-                <entry xmlns="${ATOM}">
-                  <title type="text">${body}</title>
-                  <id>tag:montague.lit,2024-01-01:posts-${id}</id>
-                  <published>${published}</published>
-                  <updated>${published}</updated>
-                </entry>
-              </item>
-            </items>
-          </event>
-        </message>`;
-}
+const { u } = converse.env;
 
 describe('The social feed', function () {
     it(
@@ -43,35 +20,14 @@ describe('The social feed', function () {
             const { api } = _converse;
             const bare_jid = _converse.bare_jid;
 
-            // Mount the feed component directly.
-            const el = document.createElement('converse-social-feed');
-            document.querySelector('#conversejs').appendChild(el);
+            const el = mountSocialFeed();
 
             // It resolves the own feed and renders the compose box.
             const textarea = await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
             expect(el.querySelector('.social-feed__empty')).not.toBe(null);
 
             // A post arrives via PEP and is rendered (SignalWatcher + collectionSignal).
-            _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
-                    _converse,
-                    stx`
-                <message xmlns="jabber:client" from="${bare_jid}" to="${bare_jid}" type="headline">
-                  <event xmlns="${PUBSUB_EVENT}">
-                    <items node="${MICROBLOG_NODE}">
-                      <item id="post-1" publisher="${bare_jid}">
-                        <entry xmlns="${ATOM}">
-                          <title type="text">Hello social world</title>
-                          <id>tag:montague.lit,2024-01-01:posts-post-1</id>
-                          <published>2024-01-01T18:30:02Z</published>
-                          <updated>2024-01-01T18:30:02Z</updated>
-                        </entry>
-                      </item>
-                    </items>
-                  </event>
-                </message>`,
-                ),
-            );
+            receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello social world'));
 
             const body = await u.waitUntil(() => el.querySelector('.social-post__body'));
             expect(body.textContent.trim()).toBe('Hello social world');
@@ -103,30 +59,10 @@ describe('The social feed', function () {
             const { api } = _converse;
             const bare_jid = _converse.bare_jid;
 
-            const el = document.createElement('converse-social-feed');
-            document.querySelector('#conversejs').appendChild(el);
+            const el = mountSocialFeed();
             await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
 
-            _converse.api.connection.get()._dataRecv(
-                mock.createRequest(
-                    _converse,
-                    stx`
-                <message xmlns="jabber:client" from="${bare_jid}" to="${bare_jid}" type="headline">
-                  <event xmlns="${PUBSUB_EVENT}">
-                    <items node="${MICROBLOG_NODE}">
-                      <item id="post-1" publisher="${bare_jid}">
-                        <entry xmlns="${ATOM}">
-                          <title type="text">a doomed post</title>
-                          <id>tag:montague.lit,2024-01-01:posts-post-1</id>
-                          <published>2024-01-01T18:30:02Z</published>
-                          <updated>2024-01-01T18:30:02Z</updated>
-                        </entry>
-                      </item>
-                    </items>
-                  </event>
-                </message>`,
-                ),
-            );
+            receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'a doomed post'));
 
             const delete_button = await u.waitUntil(() => el.querySelector('.social-post__action'));
             vi.spyOn(api, 'confirm').mockResolvedValue(true);
@@ -153,8 +89,7 @@ describe('The social feed', function () {
             vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
-            const el = document.createElement('converse-social-feed');
-            document.querySelector('#conversejs').appendChild(el);
+            const el = mountSocialFeed();
             await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
 
             // Follow a contact: this creates their feed in the aggregated timeline.
@@ -163,12 +98,8 @@ describe('The social feed', function () {
             // An older own post and a newer post from the followed contact. These
             // arrive immediately after follow — before the followed feed's empty
             // cache has hydrated — exercising the hydration-race guard in addItems.
-            _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, makePost(bare_jid, bare_jid, 'mine-1', 'My own post', '2024-01-01T09:00:00Z')),
-            );
-            _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, makePost(bare_jid, contact_jid, 'theirs-1', 'Juliet says hi', '2024-01-02T09:00:00Z')),
-            );
+            receive(_converse, makePost(bare_jid, bare_jid, 'mine-1', 'My own post', '2024-01-01T09:00:00Z'));
+            receive(_converse, makePost(bare_jid, contact_jid, 'theirs-1', 'Juliet says hi', '2024-01-02T09:00:00Z'));
 
             // Both posts show in one timeline, the newer (contact's) first.
             await u.waitUntil(() => el.querySelectorAll('.social-post').length === 2);
@@ -183,8 +114,6 @@ describe('The social feed', function () {
     );
 });
 
-const ONBOARDING_DISMISSED = 'social_onboarding_dismissed';
-
 describe('The social onboarding card', function () {
     it(
         'suggests followable contacts and bulk-follows the selected ones',
@@ -192,13 +121,10 @@ describe('The social onboarding card', function () {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
 
-            vi.spyOn(api.microblog, 'discoverFollowable').mockResolvedValue([
-                { jid: 'juliet@capulet.lit', name: 'Juliet' },
-            ]);
+            stubDiscoverFollowable(api, [{ jid: 'juliet@capulet.lit', name: 'Juliet' }]);
             const follow = vi.spyOn(api.microblog, 'follow').mockResolvedValue(/** @type {any} */ ({}));
 
-            const el = document.createElement('converse-social-feed');
-            document.querySelector('#conversejs').appendChild(el);
+            const el = mountSocialFeed();
 
             // The card appears with the candidate, pre-checked.
             const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
@@ -222,12 +148,9 @@ describe('The social onboarding card', function () {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
 
-            vi.spyOn(api.microblog, 'discoverFollowable').mockResolvedValue([
-                { jid: 'juliet@capulet.lit', name: 'Juliet' },
-            ]);
+            stubDiscoverFollowable(api, [{ jid: 'juliet@capulet.lit', name: 'Juliet' }]);
 
-            const el = document.createElement('converse-social-feed');
-            document.querySelector('#conversejs').appendChild(el);
+            const el = mountSocialFeed();
 
             const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
             /** @type {HTMLButtonElement} */ (card.querySelector('.social-onboarding__dismiss')).click();
@@ -244,12 +167,9 @@ describe('The social onboarding card', function () {
             const { api } = _converse;
 
             await api.user.settings.set(ONBOARDING_DISMISSED, true);
-            const discover = vi.spyOn(api.microblog, 'discoverFollowable').mockResolvedValue([
-                { jid: 'juliet@capulet.lit', name: 'Juliet' },
-            ]);
+            const discover = stubDiscoverFollowable(api, [{ jid: 'juliet@capulet.lit', name: 'Juliet' }]);
 
-            const el = document.createElement('converse-social-feed');
-            document.querySelector('#conversejs').appendChild(el);
+            const el = mountSocialFeed();
 
             const onboarding = await u.waitUntil(() => el.querySelector('converse-social-onboarding'));
             await u.waitUntil(() => discover.mock.calls.length >= 1);
@@ -270,12 +190,9 @@ describe('The social onboarding card', function () {
             await api.waitUntil('pubsubFeedsInitialized');
             _converse.state.pubsubfeeds.getFeed('juliet@capulet.lit', MICROBLOG_NODE, true);
 
-            const discover = vi.spyOn(api.microblog, 'discoverFollowable').mockResolvedValue([
-                { jid: 'mercutio@montague.lit', name: 'Mercutio' },
-            ]);
+            const discover = stubDiscoverFollowable(api, [{ jid: 'mercutio@montague.lit', name: 'Mercutio' }]);
 
-            const el = document.createElement('converse-social-feed');
-            document.querySelector('#conversejs').appendChild(el);
+            const el = mountSocialFeed();
 
             const onboarding = await u.waitUntil(() => el.querySelector('converse-social-onboarding'));
             await u.waitUntil(() => discover.mock.calls.length >= 1);
@@ -304,8 +221,7 @@ describe('The social onboarding card', function () {
                 .spyOn(api.microblog, 'discoverFollowable')
                 .mockImplementation(() => Promise.resolve(has_feed ? [{ jid, name: 'Juliet' }] : []));
 
-            const el = document.createElement('converse-social-feed');
-            document.querySelector('#conversejs').appendChild(el);
+            const el = mountSocialFeed();
 
             // Initially nothing to suggest → no card.
             const onboarding = await u.waitUntil(() => el.querySelector('converse-social-onboarding'));

@@ -5,3 +5,26 @@ converse-muc-chat-content {
     justify-content: space-between;
     overflow: auto;
 }
+
+converse-muc-empty {
+    // Grows to fill the chat area when there are no messages, centring its copy.
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .muc-empty {
+        margin: auto;
+        padding: 2em 1.5em;
+        max-width: 30em;
+        text-align: center;
+    }
+    .muc-empty__heading {
+        font-size: 1.1em;
+        font-weight: bold;
+        margin-bottom: 0.5em;
+    }
+    .muc-empty__body {
+        opacity: 0.8;
+    }
+}

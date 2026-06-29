@@ -86,14 +86,15 @@ export function detectCapsOptimizationSupport(): Promise<void>;
 /**
  * Adds a XEP-0115 capabilities (`<c/>`) element to the given presence stanza.
  *
- * When `optimize` is true (broadcast presence) and our server supports Caps
- * Optimization (XEP-0115 § 8.4), the `<c/>` is omitted on presences whose
+ * Optimization (XEP-0115 § 8.4) only applies to broadcast presence (presence
+ * with no `to`). When `optimize` is true, our server supports Caps Optimization
+ * and this is a broadcast presence, the `<c/>` is omitted on presences whose
  * verification string we've already advertised this session: the server re-adds
  * the annotation for new subscribers and forwards any `ver` change, so
  * re-sending an unchanged `<c/>` on every presence is wasteful. The first
  * presence (and any subsequent `ver` change) is always annotated. Directed
- * presence (e.g. MUC) is never optimized, as server-side broadcast stripping
- * doesn't apply to it.
+ * presence (e.g. a MUC join or a presence probe) is never optimized, as
+ * server-side broadcast stripping doesn't apply to it.
  * @param {Strophe.Builder} stanza
  * @param {boolean} [optimize=false]
  * @returns {Promise<Strophe.Builder>}

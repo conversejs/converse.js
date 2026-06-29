@@ -96,6 +96,7 @@ declare const _default: {
     isMediaURLDomainAllowed(o: import("headless/types/utils/types.js").MediaURLMetadata): boolean;
     shouldRenderMediaFromURL(url_text: string, type: "audio" | "image" | "video"): any;
     filterQueryParamsFromURL(url: string): string;
+    getRelativeTime(time: string | number | Date): string;
     getNameAndValue(field: HTMLInputElement | HTMLSelectElement): {
         [key: string]: string | number | string[];
     } | null;

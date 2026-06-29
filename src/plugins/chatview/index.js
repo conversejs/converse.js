@@ -46,7 +46,6 @@ converse.plugins.add('converse-chatview', {
             'show_retraction_warning': true,
             'show_send_button': true,
             'show_toolbar': true,
-            'time_format': 'HH:mm',
             'use_system_emojis': true,
             'visible_toolbar_buttons': {
                 'call': false,

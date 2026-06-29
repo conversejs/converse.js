@@ -1687,14 +1687,6 @@ Lets you set a color theme for Converse.
 
 Whether nicknames should be colorized, in compliance with [XEP-0392: Consistent Color Generation](https://xmpp.org/extensions/xep-0392.html).
 
-### time_format
-
-- Default: `HH:mm`
-
-Examples: `HH:mm`, `hh:mm`, `hh:mm a`.
-
-This option makes the time format for the time shown, for each message, configurable. Converse uses [DayJS](https://github.com/iamkun/dayjs) for showing time. This option allows the configuration of the format in which `DayJS` will display the time for the messages. For detailed description of time-format options available for `DayJS` you can check the [default formatting options](https://github.com/iamkun/dayjs/blob/dev/docs/en/API-reference.md#displaying) and the [advanced options](https://github.com/iamkun/dayjs/blob/master/docs/en/Plugin.md#advancedformat).
-
 ### use_system_emojis
 
 - Default: `true`

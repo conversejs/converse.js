@@ -4,6 +4,11 @@
 
 - #194: Full support for XEP-0115: Entity capabilities
 
+### Breaking changes:
+
+The time_format setting has been removed. Message times are now shown relative to the present
+instead of as a configurable clock.
+
 ## 14.0.0 (2026-06-26)
 
 - feat(version): Add XEP-0092 Software Version support and show the server's software version in the profile modal

@@ -1,7 +1,8 @@
 import { html, nothing } from 'lit';
-import { api, converse } from '@converse/headless';
+import { converse } from '@converse/headless';
 import { shouldRenderMediaFromURL } from '../../../utils/url.js';
 import { getAuthorStyle } from '../../../utils/color.js';
+import { getRelativeTime } from '../../../utils/time.js';
 import { getHats } from '../utils.js';
 import { __ } from 'i18n';
 import 'shared/avatar/avatar.js';
@@ -26,10 +27,9 @@ export default (el) => {
 
     const contact = el.model.occupant || el.model.contact;
     const author_style = getAuthorStyle(contact);
-    const format = api.settings.get('time_format');
 
     const dayjs_time = dayjs(edited || time);
-    const pretty_time = dayjs_time.format(format);
+    const pretty_time = getRelativeTime(edited || time);
     const pretty_date = dayjs_time.format('llll');
 
     const hats = getHats(el.model);
@@ -74,7 +74,7 @@ export default (el) => {
 
             <div class="chat-msg__content chat-msg__content--${sender} ${is_action ? 'chat-msg__content--action' : ''}">
                 ${should_show_header
-                    ? html` <span class="chat-msg__heading">
+                    ? html`<span class="chat-msg__heading">
                           <span class="chat-msg__author">
                               <a class="show-msg-author-modal" @click=${el.showUserModal} style="${author_style}"
                                   >${username}</a

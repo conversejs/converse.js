@@ -3,6 +3,7 @@ import * as color from './color.js';
 import * as file from './file.js';
 import * as form from './form.js';
 import * as html from './html.js';
+import * as time from './time.js';
 import * as url from './url.js';
 
 export default Object.assign(u, {
@@ -10,5 +11,6 @@ export default Object.assign(u, {
     ...file,
     ...form,
     ...html,
+    ...time,
     ...url,
 });

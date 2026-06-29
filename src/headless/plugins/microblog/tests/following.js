@@ -196,26 +196,49 @@ describe('Microblog following (XEP-0330)', function () {
     );
 
     it(
-        'canFollow resolves the social-feed feature against a contact resource, not the bare JID',
+        'canFollow resolves the social-feed feature against a contact resource, never the bare JID',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
             const jid = 'juliet@capulet.lit';
             const full_jid = `${jid}/phone`;
 
-            // A roster contact with one online resource. Entity caps are
-            // advertised per-resource, so the feature lives on the full JID.
+            // A roster contact with one online resource. A social feed is
+            // advertised in per-resource entity caps, so the feature lives on
+            // the full JID.
             _converse.roster.create({ jid, subscription: 'both' });
             const presences = _converse.state.presences;
             (presences.get(jid) || presences.create({ jid })).resources.create({ name: 'phone' });
 
-            vi.spyOn(api.disco, 'supports').mockImplementation((feature, j) =>
+            const supports = vi.spyOn(api.disco, 'supports').mockImplementation((feature, j) =>
                 Promise.resolve(feature === SOCIAL_FEED_FEATURE && j === full_jid),
             );
 
-            // The bare JID carries no caps features, but the resource does.
-            expect(await api.disco.supports(SOCIAL_FEED_FEATURE, jid)).toBe(false);
             expect(await api.microblog.canFollow(jid)).toBe(true);
+            // It resolves against the resource (full JID) and never queries the
+            // bare JID, which would be a wasted disco#info round-trip per contact.
+            expect(supports).toHaveBeenCalledWith(SOCIAL_FEED_FEATURE, full_jid);
+            expect(supports).not.toHaveBeenCalledWith(SOCIAL_FEED_FEATURE, jid);
+        }),
+    );
+
+    it(
+        'canFollow returns false without querying when the contact has no known resources',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const jid = 'offline-contact@capulet.lit';
+
+            // A roster contact with no online/known resources (e.g. offline, or
+            // not yet seen this session).
+            _converse.roster.create({ jid, subscription: 'both' });
+
+            const supports = vi.spyOn(api.disco, 'supports').mockResolvedValue(true);
+
+            // Nothing to resolve against → false, and crucially no disco#info
+            // round-trip is issued.
+            expect(await api.microblog.canFollow(jid)).toBe(false);
+            expect(supports).not.toHaveBeenCalled();
         }),
     );
 

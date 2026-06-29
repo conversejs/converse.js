@@ -20,14 +20,12 @@ declare namespace _default {
         }
         /**
          * Whether a JID can be followed, i.e. it advertises a XEP-0472 social
-         * feed (`urn:xmpp:pubsub-social-feed:1`). Backed by cached entity
-         * caps/disco, so it's cheap for the UI to call per roster contact.
+         * feed (`urn:xmpp:pubsub-social-feed:1`).
          *
-         * Entity-caps features are advertised per *resource*, so a contact's
-         * bare-JID disco entity carries no features; resolving the feature
-         * against the bare JID always returns false. We therefore also check the
-         * contact's available resources (full JIDs) and return true if any of
-         * them advertises the feature.
+         * A social feed is advertised in a client's per-resource XEP-0115 entity
+         * caps, not on the bare-JID account disco#info, so we resolve the feature
+         * against the contact's resources (full JIDs).
+         *
          * @method _converse.api.microblog.canFollow
          * @param {string} jid
          * @returns {Promise<boolean>}

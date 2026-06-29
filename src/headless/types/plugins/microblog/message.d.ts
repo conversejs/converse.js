@@ -1,16 +1,7 @@
 export default PubSubMessage;
 /**
  * Represents a single microblog post (a parsed Atom entry).
- *
- * Extends {@link BaseMessage} to inherit vCard/contact/colour awareness (useful
- * for rendering a post's author) without the chat-specific `<message>` plumbing
- * of `ModelWithMessages`. Posts are PubSub items, published via
- * `api.pubsub.publish`, not sent as message stanzas.
- *
- * This is part of the reference adoption of the new @converse/skeletor APIs: it
- * uses `computed` for derived display values and `autoSync` to persist itself as
- * an offline cache.
- *
+ * Extends {@link BaseMessage} to inherit vCard/contact/colour awareness.
  * @extends {BaseMessage}
  */
 declare class PubSubMessage extends BaseMessage {
@@ -21,6 +12,23 @@ declare class PubSubMessage extends BaseMessage {
     } & {
         type: string;
     };
+    /**
+     * Resolve the post's author to an *existing* roster contact (or our own
+     * profile for own posts) and expose it as `this.contact`. Unlike chat
+     * messages we pass `create: false` since a social feed may have many authors
+     * who aren't contacts, and we don't want to inject them into the roster.
+     * The author avatar is rendered from the vCard cache regardless
+     * (see {@link getVCardJID}).
+     * @returns {Promise<void>}
+     */
+    setContact(): Promise<void>;
+    /**
+     * The bare JID whose vCard represents this post's author. Consulted by
+     * {@link getVCardForModel} so a post resolves its avatar from the vCard cache
+     * (never the roster) — authors who aren't contacts still show an avatar.
+     * @returns {string|undefined}
+     */
+    getVCardJID(): string | undefined;
     /**
      * Derived display values, recomputed automatically when their deps change.
      * @returns {import('@converse/skeletor').ComputedProperties<this>}

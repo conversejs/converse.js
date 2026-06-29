@@ -13,17 +13,22 @@ export default (el) => {
     const time = m.get('time');
     const name = m.get('displayName');
 
+    const avatar = html`<converse-avatar
+        .model=${m}
+        class="avatar"
+        name="${name}"
+        nonce=${m.vcard?.get('vcard_updated')}
+        height="40"
+        width="40"
+    ></converse-avatar>`;
+
     return html`
         <article class="social-post ${m.get('is_mine') ? 'social-post--mine' : ''}">
-            <a class="show-msg-author-modal social-post__avatar" @click=${(ev) => el.showUserModal(ev)}>
-                <converse-avatar
-                    .model=${m}
-                    class="avatar"
-                    name="${name}"
-                    height="40"
-                    width="40"
-                ></converse-avatar>
-            </a>
+            ${m.contact
+                ? html`<a class="show-msg-author-modal social-post__avatar" @click=${(ev) => el.showUserModal(ev)}
+                      >${avatar}</a
+                  >`
+                : html`<span class="social-post__avatar">${avatar}</span>`}
             <div class="social-post__main">
                 <header class="social-post__header">
                     <span class="social-post__author">${name}</span>
@@ -31,14 +36,13 @@ export default (el) => {
 
                     ${m.get('is_repost')
                         ? html`<span class="social-post__badge"
-                              ><converse-icon size="0.8em" class="fa fa-retweet"></converse-icon> ${__('reposted')}</span
+                              ><converse-icon size="0.8em" class="fa fa-retweet"></converse-icon> ${__(
+                                  'reposted',
+                              )}</span
                           >`
                         : ''}
                     ${time
-                        ? html`<time
-                              class="social-post__time"
-                              datetime="${time}"
-                              title="${dayjs(time).format('llll')}"
+                        ? html`<time class="social-post__time" datetime="${time}" title="${dayjs(time).format('llll')}"
                               >${getRelativeTime(time)}</time
                           >`
                         : ''}

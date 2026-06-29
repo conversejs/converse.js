@@ -12,6 +12,12 @@ export default class SocialMessage extends CustomElement {
     };
     render(): import("lit-html").TemplateResult<1>;
     /**
+     * Show the author's details (or our own profile for own posts) when their
+     * avatar is clicked. Uses the contact resolved on the post model.
+     * @param {MouseEvent} ev
+     */
+    showUserModal(ev: MouseEvent): void;
+    /**
      * Delete one of our own posts, after confirmation. Retracts the item from
      * the node and removes the local copy.
      */

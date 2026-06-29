@@ -4,6 +4,7 @@
  */
 import { _converse, api, log } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
+import debounce from 'lodash-es/debounce.js';
 import tplOnboarding from './templates/onboarding.js';
 
 /**
@@ -34,6 +35,9 @@ export default class SocialOnboarding extends CustomElement {
         this.seen = new Set();
         this.dismissed = false;
         this.busy = false;
+        // Roster/presence/resource changes arrive in bursts (notably the login
+        // presence storm); coalesce them into a single rescan.
+        this.debouncedRefresh = debounce(() => this.refresh(), 250);
     }
 
     async initialize() {
@@ -47,19 +51,29 @@ export default class SocialOnboarding extends CustomElement {
         await api.waitUntil('pubsubFeedsInitialized');
         // A follow (here or on another device) materialises a feed → recompute
         // visibility + candidates so the card hides once the user follows anyone.
-        this.listenTo(_converse.state.pubsubfeeds, 'add', () => this.refresh());
-        this.listenTo(_converse.state.pubsubfeeds, 'remove', () => this.refresh());
+        this.listenTo(_converse.state.pubsubfeeds, 'add', () => this.debouncedRefresh());
+        this.listenTo(_converse.state.pubsubfeeds, 'remove', () => this.debouncedRefresh());
 
-        // Roster / presence changes can reveal a contact's social-feed caps
-        // (entity caps are per-resource and may arrive after the card mounts).
+        // Roster / presence / resource changes can reveal (or retract) a
+        // contact's social-feed caps. Caps are advertised per-resource, so we
+        // watch each contact's resources too: a feed-bearing resource coming
+        // online on an already-online contact (or a caps change) doesn't alter
+        // the contact's aggregate presence, so it never surfaces as a
+        // `presences` change.
         const { roster, presences } = _converse.state;
         if (roster) {
-            this.listenTo(roster, 'add', () => this.refresh());
-            this.listenTo(roster, 'change', () => this.refresh());
+            this.listenTo(roster, 'add', () => this.debouncedRefresh());
+            this.listenTo(roster, 'change', () => this.debouncedRefresh());
         }
         if (presences) {
-            this.listenTo(presences, 'add', () => this.refresh());
-            this.listenTo(presences, 'change', () => this.refresh());
+            const watchResources = /** @param {import('@converse/headless').Presence} p */ (p) =>
+                this.listenTo(p.resources, 'add change remove', () => this.debouncedRefresh());
+            presences.forEach(watchResources);
+            this.listenTo(presences, 'add', /** @param {import('@converse/headless').Presence} p */ (p) => {
+                watchResources(p);
+                this.debouncedRefresh();
+            });
+            this.listenTo(presences, 'change', () => this.debouncedRefresh());
         }
 
         await this.refresh();

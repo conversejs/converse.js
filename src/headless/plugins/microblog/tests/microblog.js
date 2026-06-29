@@ -372,4 +372,49 @@ describe('The microblog plugin', function () {
             await u.waitUntil(() => feed.messages.length === 0);
         }),
     );
+
+    it(
+        "does not add a post's author to the roster, but still resolves their avatar vCard",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const jid = 'stranger@shakespeare.lit';
+
+            // We read this author's feed (e.g. a followed community node), but
+            // they're not — and must not become — a roster contact.
+            const feed = await api.microblog.feeds.get(jid, MICROBLOG_NODE, true);
+            receive(_converse, makePostStanza(jid, 'p1', 'Hello from a stranger'));
+            await u.waitUntil(() => feed.messages.length === 1);
+            const post = feed.messages.at(0);
+
+            // The author is NOT pulled into the roster, and no contact resolves
+            // (so the view renders a plain, non-linked avatar).
+            expect(_converse.roster.get(jid)).toBeUndefined();
+            expect(post.contact).toBe(null);
+            // Yet the avatar can still resolve: the post names its author's bare
+            // JID for the (roster-independent) vCard cache lookup.
+            expect(post.getVCardJID()).toBe(jid);
+        }),
+    );
+
+    it(
+        "resolves an existing roster contact for an author's post, without adding anyone",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const jid = 'juliet@capulet.lit';
+            _converse.roster.create({ jid, subscription: 'both', nickname: 'Juliet' });
+
+            const feed = await api.microblog.feeds.get(jid, MICROBLOG_NODE, true);
+            receive(_converse, makePostStanza(jid, 'p1', 'O Romeo, Romeo'));
+            await u.waitUntil(() => feed.messages.length === 1);
+            const post = feed.messages.at(0);
+
+            // The pre-existing contact is reused (so the avatar links to it) and
+            // nothing new was added to the roster.
+            await u.waitUntil(() => !!post.contact);
+            expect(post.contact.get('jid')).toBe(jid);
+            expect(_converse.roster.length).toBe(1);
+        }),
+    );
 });

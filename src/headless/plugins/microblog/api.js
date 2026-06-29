@@ -46,14 +46,12 @@ export default {
 
         /**
          * Whether a JID can be followed, i.e. it advertises a XEP-0472 social
-         * feed (`urn:xmpp:pubsub-social-feed:1`). Backed by cached entity
-         * caps/disco, so it's cheap for the UI to call per roster contact.
+         * feed (`urn:xmpp:pubsub-social-feed:1`).
          *
-         * Entity-caps features are advertised per *resource*, so a contact's
-         * bare-JID disco entity carries no features; resolving the feature
-         * against the bare JID always returns false. We therefore also check the
-         * contact's available resources (full JIDs) and return true if any of
-         * them advertises the feature.
+         * A social feed is advertised in a client's per-resource XEP-0115 entity
+         * caps, not on the bare-JID account disco#info, so we resolve the feature
+         * against the contact's resources (full JIDs).
+         *
          * @method _converse.api.microblog.canFollow
          * @param {string} jid
          * @returns {Promise<boolean>}
@@ -63,12 +61,12 @@ export default {
             const contact_jid = Strophe.getBareJidFromJid(jid);
             if (contact_jid === bare_jid) return false;
 
-            // Handles the case where `jid` is already a full JID (or the bare
-            // entity happens to carry the feature).
-            if (await api.disco.supports(SOCIAL_FEED_FEATURE, jid)) return true;
+            const full_jids = Strophe.getResourceFromJid(jid)
+                ? [jid]
+                : (_converse.state.presences
+                      ?.get(contact_jid)
+                      ?.resources?.map((r) => `${contact_jid}/${r.get('name')}`) ?? []);
 
-            const presence = _converse.state.presences?.get(contact_jid);
-            const full_jids = presence?.resources?.map((r) => `${contact_jid}/${r.get('name')}`) ?? [];
             for (const full_jid of full_jids) {
                 if (await api.disco.supports(SOCIAL_FEED_FEATURE, full_jid)) return true;
             }

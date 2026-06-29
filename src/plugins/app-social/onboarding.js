@@ -27,7 +27,7 @@ export const ONBOARDING_DISMISSED = 'social_onboarding_dismissed';
 export default class SocialOnboarding extends CustomElement {
     constructor() {
         super();
-        /** @type {Array<{jid: string, name: string}>} */
+        /** The bare JIDs of followable contacts. @type {string[]} */
         this.candidates = [];
         /** Checked JIDs (candidates are checked by default). @type {Set<string>} */
         this.selected = new Set();
@@ -69,10 +69,14 @@ export default class SocialOnboarding extends CustomElement {
             const watchResources = /** @param {import('@converse/headless').Presence} p */ (p) =>
                 this.listenTo(p.resources, 'add change remove', () => this.debouncedRefresh());
             presences.forEach(watchResources);
-            this.listenTo(presences, 'add', /** @param {import('@converse/headless').Presence} p */ (p) => {
-                watchResources(p);
-                this.debouncedRefresh();
-            });
+            this.listenTo(
+                presences,
+                'add',
+                /** @param {import('@converse/headless').Presence} p */ (p) => {
+                    watchResources(p);
+                    this.debouncedRefresh();
+                },
+            );
             this.listenTo(presences, 'change', () => this.debouncedRefresh());
         }
 
@@ -87,8 +91,7 @@ export default class SocialOnboarding extends CustomElement {
         } catch (e) {
             log.error(e);
         }
-        const jids = candidates.map((c) => c.jid);
-        jids.forEach(
+        candidates.forEach(
             /** @param {string} jid */ (jid) => {
                 if (!this.seen.has(jid)) {
                     this.selected.add(jid);
@@ -98,10 +101,19 @@ export default class SocialOnboarding extends CustomElement {
         );
         // Drop selections that are no longer candidates (e.g. just followed).
         [...this.selected].forEach((jid) => {
-            if (!jids.includes(jid)) this.selected.delete(jid);
+            if (!candidates.includes(jid)) this.selected.delete(jid);
         });
         this.candidates = candidates;
         this.requestUpdate();
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     * @param {import('@converse/headless/types/plugins/roster/contact').default} contact
+     */
+    showUserModal(ev, contact) {
+        ev.preventDefault();
+        api.modal.show('converse-user-details-modal', { model: contact }, ev);
     }
 
     /** How many feeds the user follows (excludes their own feed). */
@@ -131,7 +143,7 @@ export default class SocialOnboarding extends CustomElement {
 
     /** Follow every checked candidate, then remember the card is done. */
     async followSelected() {
-        const jids = this.candidates.map((c) => c.jid).filter((jid) => this.selected.has(jid));
+        const jids = this.candidates.filter((jid) => this.selected.has(jid));
         if (!jids.length) return;
         this.busy = true;
         this.requestUpdate();

@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 import {
+    ATOM,
     MICROBLOG_NODE,
-    ONBOARDING_DISMISSED,
     makePost,
     makeRepost,
     mountSocialFeed,
@@ -11,7 +11,7 @@ import {
     stubDiscoverFollowable,
 } from './utils.js';
 
-const { u } = converse.env;
+const { stx, u } = converse.env;
 
 describe('The social feed', function () {
     it(
@@ -36,7 +36,7 @@ describe('The social feed', function () {
             // Publishing via the compose box builds + publishes, then optimistically renders.
             const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
             textarea.value = 'My first microblog post';
-            el.querySelector('.social-compose__toolbar button').click();
+            el.querySelector('.social-compose__toolbar button[type="submit"]').click();
 
             await u.waitUntil(() => publish.mock.calls.length === 1);
             const [jid, node] = publish.mock.calls[0];
@@ -253,7 +253,7 @@ describe('The social feed', function () {
 
 describe('The social onboarding card', function () {
     it(
-        'suggests followable contacts and bulk-follows the selected ones',
+        'suggests followable contacts and lets you bulk-follow them',
         mock.initConverse(converse, [], {}, async function (_converse) {
             // Load the roster so the candidate resolves to a real contact whose
             // avatar and name the card renders via api.contacts.get().
@@ -261,7 +261,7 @@ describe('The social onboarding card', function () {
             const { api } = _converse;
 
             stubDiscoverFollowable(api, ['juliet.capulet@montague.lit']);
-            const follow = vi.spyOn(api.microblog, 'follow').mockResolvedValue(/** @type {any} */ ({}));
+            const followMany = vi.spyOn(api.microblog, 'followMany').mockResolvedValue([]);
 
             const el = mountSocialFeed();
 
@@ -272,72 +272,150 @@ describe('The social onboarding card', function () {
             const checkbox = /** @type {HTMLInputElement} */ (card.querySelector('input[type="checkbox"]'));
             expect(checkbox.checked).toBe(true);
 
-            // "Follow selected" follows every checked candidate via followMany.
-            /** @type {HTMLButtonElement} */ (card.querySelector('.social-onboarding__actions button')).click();
-            await u.waitUntil(() => follow.mock.calls.length === 1);
-            expect(follow).toHaveBeenCalledWith('juliet.capulet@montague.lit');
-
-            // The card hides itself once onboarding is done.
-            await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding') === null);
+            // "Follow selected" bulk-follows every checked candidate.
+            /** @type {HTMLButtonElement} */ (card.querySelector('.btn-primary')).click();
+            await u.waitUntil(() => followMany.mock.calls.length === 1);
+            expect(followMany).toHaveBeenCalledWith(['juliet.capulet@montague.lit']);
         }),
     );
 
     it(
-        'can be dismissed, and the dismissal is persisted',
+        'snoozes the current suggestions when dismissed, leaving a re-entry point',
         mock.initConverse(converse, [], {}, async function (_converse) {
-            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitForRoster(_converse, 'current');
             const { api } = _converse;
-
-            stubDiscoverFollowable(api, ['juliet@capulet.lit']);
-
-            const el = mountSocialFeed();
-
-            const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
-            /** @type {HTMLButtonElement} */ (card.querySelector('.social-onboarding__dismiss')).click();
-
-            await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding') === null);
-            expect(await api.user.settings.get(ONBOARDING_DISMISSED)).toBe(true);
-        }),
-    );
-
-    it(
-        'stays hidden when onboarding was previously dismissed',
-        mock.initConverse(converse, [], {}, async function (_converse) {
-            await mock.waitForRoster(_converse, 'current', 0);
-            const { api } = _converse;
-
-            await api.user.settings.set(ONBOARDING_DISMISSED, true);
-            const discover = stubDiscoverFollowable(api, ['juliet@capulet.lit']);
-
-            const el = mountSocialFeed();
-
-            const onboarding = await u.waitUntil(() => el.querySelector('converse-social-onboarding'));
-            await u.waitUntil(() => discover.mock.calls.length >= 1);
-            await onboarding.updateComplete;
-            // Candidate exists, but the card renders nothing because it was dismissed.
-            expect(onboarding.querySelector('.social-onboarding')).toBe(null);
-        }),
-    );
-
-    it(
-        'stays hidden when the user already follows someone',
-        mock.initConverse(converse, [], {}, async function (_converse) {
-            await mock.waitForRoster(_converse, 'current', 0);
-            const { api } = _converse;
-
-            // A followed (non-own) feed already exists — e.g. a follow synced from
-            // another device via the XEP-0330 list — so the nudge shouldn't show.
             await api.waitUntil('pubsubFeedsInitialized');
-            _converse.state.pubsubfeeds.getFeed('juliet@capulet.lit', MICROBLOG_NODE, true);
+            const cache = _converse.state.followablecache;
+            const jid = 'juliet.capulet@montague.lit';
 
-            const discover = stubDiscoverFollowable(api, ['mercutio@montague.lit']);
+            // A contact known followable from a prior sweep (no online caps needed).
+            cache.record(jid, { followable: true });
 
             const el = mountSocialFeed();
+            const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
+            await u.waitUntil(() => card.textContent.includes('Juliet'));
 
-            const onboarding = await u.waitUntil(() => el.querySelector('converse-social-onboarding'));
-            await u.waitUntil(() => discover.mock.calls.length >= 1);
-            await onboarding.updateComplete;
-            expect(onboarding.querySelector('.social-onboarding')).toBe(null);
+            // Dismiss snoozes the shown candidate: the suggestions card empties and
+            // the snooze is persisted on the cache (not a permanent global flag).
+            /** @type {HTMLButtonElement} */ (card.querySelector('.social-onboarding__dismiss')).click();
+            await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding') === null);
+            expect(cache.get(jid).get('snoozed')).toBe(true);
+            // The "Find people to follow" control (in the compose toolbar) remains
+            // as the re-entry point to discovery.
+            expect(el.querySelector('.social-scan__btn')).not.toBe(null);
+        }),
+    );
+
+    it(
+        'does not suggest contacts that were snoozed',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+            const cache = _converse.state.followablecache;
+            const jid = 'juliet.capulet@montague.lit';
+
+            cache.record(jid, { followable: true });
+            cache.snooze([jid]);
+
+            const el = mountSocialFeed();
+            // The scan control appears (compose toolbar), but no suggestions card —
+            // the one known followable contact has been snoozed.
+            await u.waitUntil(() => el.querySelector('.social-scan__btn'));
+            expect(el.querySelector('converse-social-onboarding .social-onboarding')).toBe(null);
+        }),
+    );
+
+    it(
+        'keeps suggesting accounts after the user already follows someone',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+            const cache = _converse.state.followablecache;
+
+            // The user already follows one contact (a feed exists) — the card must
+            // still recur (this used to permanently hide it).
+            _converse.state.pubsubfeeds.getFeed('romeo@montague.lit', MICROBLOG_NODE, true);
+            const jid = 'juliet.capulet@montague.lit';
+            cache.record(jid, { followable: true });
+
+            const el = mountSocialFeed();
+            const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
+            await u.waitUntil(() => card.textContent.includes('Juliet'));
+        }),
+    );
+
+    it(
+        'finds and renders people to follow when the scan button is clicked',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+            const jid = 'juliet.capulet@montague.lit';
+
+            // The sweep probes each subscribed contact's microblog node; only
+            // Juliet's resolves with a post → only she is followable.
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation((j) =>
+                j === jid
+                    ? Promise.resolve({
+                          items: [
+                              stx`<item id="p1" publisher="${jid}"><entry xmlns="${ATOM}">
+                                      <title type="text">hi</title>
+                                      <id>tag:montague.lit,2024-01-01:p1</id>
+                                      <published>2024-01-01T00:00:00Z</published>
+                                  </entry></item>`.tree(),
+                          ],
+                      })
+                    : Promise.reject(new Error('item-not-found')),
+            );
+
+            const el = mountSocialFeed();
+            // The scan control lives in the compose toolbar.
+            const scan = await u.waitUntil(() => el.querySelector('.social-scan__btn'));
+            /** @type {HTMLButtonElement} */ (scan).click();
+
+            // The sweep finds Juliet and the suggestions card renders her.
+            const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
+            await u.waitUntil(() => card.textContent.includes('Juliet'));
+        }),
+    );
+
+    it(
+        'cancelling a sweep frees the widget immediately and lets you scan again',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            // Probes that never settle, so the sweep stays in-flight until aborted
+            // — mimicking unresponsive servers (which otherwise hold it ~10s).
+            let probes = 0;
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation(() => {
+                probes++;
+                return new Promise(() => {});
+            });
+
+            const el = mountSocialFeed();
+            const scanBtn = await u.waitUntil(() => el.querySelector('.social-scan__btn'));
+            /** @type {HTMLButtonElement} */ (scanBtn).click();
+
+            // It enters the scanning state and starts probing.
+            const cancel = await u.waitUntil(() => el.querySelector('.social-scan--scanning button'));
+            const probes_before_cancel = probes;
+            expect(probes_before_cancel).toBeGreaterThan(0);
+
+            /** @type {HTMLButtonElement} */ (cancel).click();
+
+            // The control leaves the scanning state immediately, without waiting for
+            // the in-flight probes to settle.
+            await u.waitUntil(() => el.querySelector('.social-scan--scanning') === null);
+
+            // Scanning again starts a fresh sweep (more probes are issued).
+            const scanAgain = await u.waitUntil(() => el.querySelector('.social-scan__btn'));
+            /** @type {HTMLButtonElement} */ (scanAgain).click();
+            await u.waitUntil(() => el.querySelector('.social-scan--scanning'));
+            await u.waitUntil(() => probes > probes_before_cancel);
         }),
     );
 

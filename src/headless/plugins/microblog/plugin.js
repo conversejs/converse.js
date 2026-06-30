@@ -14,6 +14,7 @@ import PubSubFeed from './feed.js';
 import PubSubFeeds from './feeds.js';
 import PubSubMessage from './message.js';
 import PubSubMessages from './messages.js';
+import FollowableCache from './followable.js';
 import microblog_api from './api.js';
 import { registerMicroblogHandler } from './utils.js';
 import { MICROBLOG_NODE, NS_ATOM, NS_THREAD, SOCIAL_FEED_FEATURE } from './constants.js';
@@ -30,7 +31,7 @@ converse.plugins.add('converse-microblog', {
     initialize() {
         api.promises.add('pubsubFeedsInitialized');
 
-        const exports = { PubSubFeed, PubSubFeeds, PubSubMessage, PubSubMessages };
+        const exports = { PubSubFeed, PubSubFeeds, PubSubMessage, PubSubMessages, FollowableCache };
         Object.assign(_converse.exports, exports);
         Object.assign(api, microblog_api);
 
@@ -47,6 +48,10 @@ converse.plugins.add('converse-microblog', {
                 state.pubsubfeeds.clearStore?.({ silent: true });
                 delete state.pubsubfeeds;
             }
+            if (state.followablecache) {
+                state.followablecache.clearStore?.({ silent: true });
+                delete state.followablecache;
+            }
         });
 
         api.listen.on('connected', onConnected);
@@ -59,7 +64,9 @@ async function onConnected() {
         registerMicroblogHandler();
         const feeds = new _converse.exports.PubSubFeeds();
         _converse.state.pubsubfeeds = feeds;
-        await feeds.hydrated;
+        const followablecache = new _converse.exports.FollowableCache();
+        _converse.state.followablecache = followablecache;
+        await Promise.all([feeds.hydrated, followablecache.hydrated]);
     } catch (e) {
         log.error(e);
     }

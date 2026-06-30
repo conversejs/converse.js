@@ -57,6 +57,9 @@ export type PubSubItemsOptions = {
     item_ids?: string[];
     // Page through large result sets via XEP-0059 Result Set Management.
     rsm?: RSMQueryOptions;
+    // Override the IQ timeout (ms). Defaults to the `stanza_timeout` setting.
+    // Useful for cheap reachability probes that shouldn't wait the full 60s.
+    timeout?: number;
 };
 
 export type PubSubItemsResult = {

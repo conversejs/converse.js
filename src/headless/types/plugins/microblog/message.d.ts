@@ -57,6 +57,11 @@ declare class PubSubMessage extends BaseMessage {
      */
     getReposterName(): string | undefined;
     /**
+     * Give the author a human name even when the post carries no Atom `<author><name>`.
+     * @returns {Promise<void>}
+     */
+    setAuthorName(): Promise<void>;
+    /**
      * Derived display values, recomputed automatically when their deps change.
      * @returns {import('@converse/skeletor').ComputedProperties<this>}
      */

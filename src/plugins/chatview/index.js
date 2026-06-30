@@ -51,6 +51,7 @@ converse.plugins.add('converse-chatview', {
                 'call': false,
                 'clear': true,
                 'emoji': true,
+                'fileupload': true,
                 'location': true,
                 'spoiler': false
             }

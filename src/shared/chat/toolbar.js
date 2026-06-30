@@ -21,6 +21,7 @@ export class ChatToolbar extends CustomElement {
             model: { type: Object },
             show_call_button: { type: Boolean },
             show_emoji_button: { type: Boolean },
+            show_fileupload_button: { type: Boolean },
             show_location_button: { type: Boolean },
             show_send_button: { type: Boolean },
             show_spoiler_button: { type: Boolean },
@@ -36,6 +37,7 @@ export class ChatToolbar extends CustomElement {
         this.show_spoiler_button = false;
         this.show_call_button = false;
         this.show_emoji_button = false;
+        this.show_fileupload_button = false;
         this.show_location_button = false;
     }
 
@@ -91,16 +93,19 @@ export class ChatToolbar extends CustomElement {
             );
         }
 
-        const domain = _converse.session.get('domain');
-        const http_upload_promise = api.disco.supports(Strophe.NS.HTTPUPLOAD, domain);
-        buttons.push(
-            html`${until(
-                http_upload_promise.then(
-                    /** @param {boolean} is_supported */ (is_supported) => this.getHTTPUploadButton(!!is_supported),
-                ),
-                '',
-            )}`,
-        );
+        if (this.show_fileupload_button) {
+            const domain = _converse.session.get('domain');
+            const http_upload_promise = api.disco.supports(Strophe.NS.HTTPUPLOAD, domain);
+            buttons.push(
+                html`${until(
+                    http_upload_promise.then(
+                        /** @param {boolean} is_supported */ (is_supported) =>
+                            this.getHTTPUploadButton(!!is_supported),
+                    ),
+                    '',
+                )}`,
+            );
+        }
 
         /**
          * *Hook* which allows plugins to add more buttons to a chat's toolbar

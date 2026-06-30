@@ -2,7 +2,6 @@
  * @typedef {import('shared/chat/emoji-dropdown.js').default} EmojiDropdown
  */
 import { _converse, api, converse, constants, u } from '@converse/headless';
-import log from '@converse/log';
 import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import tplMessageForm from './templates/message-form.js';
@@ -68,7 +67,7 @@ export default class MessageForm extends CustomElement {
         if (replace) {
             if (position && typeof replace == 'string') {
                 textarea.value = textarea.value.replace(new RegExp(replace, 'g'), (match, offset) =>
-                    offset == position - replace.length ? value + separator : match
+                    offset == position - replace.length ? value + separator : match,
                 );
             } else {
                 textarea.value = value;

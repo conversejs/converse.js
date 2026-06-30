@@ -7,7 +7,43 @@ import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import { publishFollow, readFollowing, retractFollow } from './following.js';
-import { MICROBLOG_NODE, SOCIAL_FEED_FEATURE } from './constants.js';
+import { parseAtomEntry } from './parsers.js';
+import {
+    FOLLOWABLE_PROBE_TIMEOUT,
+    FOLLOWABLE_SCAN_CONCURRENCY,
+    MICROBLOG_NODE,
+    SOCIAL_FEED_FEATURE,
+} from './constants.js';
+
+/**
+ * Probe one contact's microblog node to learn whether they have a followable
+ * feed. Resolves to a verdict for the followable cache. A node that returns at
+ * least one item is followable (and yields a preview timestamp); an empty node,
+ * a missing node, or an access error is not.
+ * @param {string} jid - The contact's bare JID.
+ * @returns {Promise<{ followable: boolean, latest?: string|null }>}
+ */
+async function probeMicroblogFeed(jid) {
+    try {
+        const result = await api.pubsub.items.get(jid, MICROBLOG_NODE, {
+            max_items: 1,
+            timeout: FOLLOWABLE_PROBE_TIMEOUT,
+        });
+        const item = result?.items?.[0];
+        if (!item) return { followable: false };
+        let latest = null;
+        try {
+            latest = parseAtomEntry(item, { from: jid, node: MICROBLOG_NODE })?.time ?? null;
+        } catch (e) {
+            // The preview timestamp is best-effort; ignore a parse failure.
+            log.debug(`scanFollowable: could not parse latest item for ${jid}: ${e}`);
+        }
+        return { followable: true, latest };
+    } catch (e) {
+        log.debug(`scanFollowable: ${jid} has no readable microblog feed: ${e}`);
+        return { followable: false };
+    }
+}
 
 export default {
     /**
@@ -74,30 +110,90 @@ export default {
         },
 
         /**
-         * Discover roster contacts that can be followed but aren't yet: saved
-         * contacts that advertise a XEP-0472 social feed ({@link canFollow}) and
-         * that the user doesn't already follow. Backs the onboarding "who to
-         * follow" suggestions.
+         * Discover roster contacts that can be followed but aren't yet — the
+         * union of two sources, minus contacts already followed or snoozed:
+         *  1. the cheap online path: contacts whose live resources advertise a
+         *     XEP-0472 social feed ({@link canFollow}); and
+         *  2. verdicts learned by the manual {@link scanFollowable} sweep, read
+         *     from the persistent followable cache (covers offline contacts).
          *
-         * `canFollow` reads cached entity caps, which depend on having received
-         * the contact's presence — so a contact whose caps haven't arrived yet is
-         * (correctly) omitted until they do. Callers that render this should
-         * recompute on presence changes.
+         * No network is used here — (1) reads cached entity caps and (2) reads
+         * the local cache — so it's safe to recompute on roster/presence/cache
+         * changes. The explicit sweep is what issues the probes.
          * @method _converse.api.microblog.discoverFollowable
          * @returns {Promise<string[]>} The bare JIDs of followable contacts.
          */
         async discoverFollowable() {
             const roster = _converse.state.roster;
             if (!roster) return [];
+            const cache = _converse.state.followablecache;
+
             const candidates = roster.filter((c) => !c.isUnsaved() && !c.get('requesting'));
-            const followable = await Promise.all(
+            const online = await Promise.all(
                 candidates.map(async (contact) => {
                     const jid = contact.get('jid');
                     if (api.microblog.isFollowing(jid)) return null;
                     return (await api.microblog.canFollow(jid)) ? jid : null;
                 }),
             );
-            return followable.filter(Boolean);
+
+            const cached = cache?.candidates() ?? [];
+            const jids = [...new Set([...online.filter(Boolean), ...cached])];
+            return jids.filter((jid) => !api.microblog.isFollowing(jid) && !cache?.isSnoozed(jid));
+        },
+
+        /**
+         * Probe roster contacts' microblog nodes to discover followable feeds,
+         * including OFFLINE contacts that {@link discoverFollowable}'s cheap path
+         * can't see (it only reads online resources' caps). An explicit,
+         * user-initiated sweep: it targets every saved, not-yet-followed contact
+         * without a fresh cached verdict, probes each `urn:xmpp:microblog:0` node
+         * with bounded concurrency, and caches each verdict so re-scans are cheap.
+         * (A contact whose node isn't readable simply caches as not-followable.)
+         *
+         * @method _converse.api.microblog.scanFollowable
+         * @param {object} [opts]
+         * @param {(p: {scanned: number, total: number, found: number}) => void} [opts.onProgress]
+         * @param {AbortSignal} [opts.signal] - Abort to stop launching further probes.
+         * @returns {Promise<string[]>} The bare JIDs found followable in this sweep.
+         */
+        async scanFollowable({ onProgress, signal } = {}) {
+            const roster = _converse.state.roster;
+            const cache = _converse.state.followablecache;
+            if (!roster) return [];
+
+            // Re-probe every saved contact we don't already follow. The sweep is
+            // an explicit user action, so it deliberately re-checks contacts seen
+            // before — a previously-empty node may now have posts, and the user
+            // expects the button to actually do something each time.
+            const targets = roster
+                .filter((c) => !c.isUnsaved() && !c.get('requesting'))
+                .map((c) => c.get('jid'))
+                .filter((jid) => !api.microblog.isFollowing(jid));
+
+            const found = [];
+            const total = targets.length;
+            let scanned = 0;
+            onProgress?.({ scanned, total, found: 0 });
+
+            // A streaming worker pool (rather than fixed batches): each worker pulls
+            // the next contact as soon as its probe settles, so one slow/timing-out
+            // probe never holds up the others. Probes carry a short timeout, so a
+            // dead server frees its worker in seconds, not the default 60s.
+            const queue = [...targets];
+            const worker = async () => {
+                while (queue.length && !signal?.aborted) {
+                    const jid = queue.shift();
+                    const verdict = await probeMicroblogFeed(jid);
+                    cache?.record(jid, verdict);
+                    if (verdict.followable) found.push(jid);
+                    scanned++;
+                    onProgress?.({ scanned, total, found: found.length });
+                }
+            };
+            const pool = Array.from({ length: Math.min(FOLLOWABLE_SCAN_CONCURRENCY, total) }, () => worker());
+            await Promise.all(pool);
+            return found;
         },
 
         /**

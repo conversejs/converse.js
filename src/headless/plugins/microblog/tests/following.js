@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
-import { MICROBLOG_NODE, makePostStanza, receive, stubPubsubNetwork } from './utils.js';
+import { ATOM, MICROBLOG_NODE, makePostStanza, receive, stubPubsubNetwork } from './utils.js';
 
 const { stx, u } = converse.env;
 
@@ -237,6 +237,114 @@ describe('Microblog following (XEP-0330)', function () {
 
             const followable = await api.microblog.discoverFollowable();
             expect(followable).toEqual(['juliet@capulet.lit']);
+        }),
+    );
+
+    it(
+        'scanFollowable probes every saved contact, caches verdicts, and re-probes on an explicit re-scan',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+            const cache = _converse.state.followablecache;
+
+            _converse.roster.create({ jid: 'juliet@capulet.lit', subscription: 'both' }); // has a post → followable
+            _converse.roster.create({ jid: 'romeo@montague.lit', subscription: 'to' }); // empty node → not
+            _converse.roster.create({ jid: 'tybalt@capulet.lit', subscription: 'both' }); // error → not
+            _converse.roster.create({ jid: 'paris@verona.lit', subscription: 'none' }); // not subscribed, but still probed
+
+            const itemsGet = vi.spyOn(api.pubsub.items, 'get').mockImplementation((jid) => {
+                if (jid === 'juliet@capulet.lit') {
+                    return Promise.resolve({
+                        items: [
+                            stx`<item id="p1" publisher="${jid}"><entry xmlns="${ATOM}">
+                                    <title type="text">O Romeo</title>
+                                    <id>tag:capulet.lit,2024-01-01:p1</id>
+                                    <published>2024-01-01T18:30:02Z</published>
+                                </entry></item>`.tree(),
+                        ],
+                    });
+                }
+                if (jid === 'romeo@montague.lit') return Promise.resolve({ items: [] });
+                return Promise.reject(new Error('item-not-found'));
+            });
+
+            const found = await api.microblog.scanFollowable();
+
+            expect(found).toEqual(['juliet@capulet.lit']);
+            // Subscription is not a precondition — every saved contact is probed.
+            expect(itemsGet.mock.calls.map((c) => c[0])).toContain('paris@verona.lit');
+            expect(cache.get('paris@verona.lit').get('followable')).toBe(false);
+            // Verdicts (and the preview timestamp) are cached.
+            expect(cache.get('juliet@capulet.lit').get('followable')).toBe(true);
+            expect(cache.get('juliet@capulet.lit').get('latest')).toBe('2024-01-01T18:30:02Z');
+            expect(cache.get('romeo@montague.lit').get('followable')).toBe(false);
+            expect(cache.get('tybalt@capulet.lit').get('followable')).toBe(false);
+
+            // An explicit re-scan re-probes (it doesn't skip already-checked
+            // contacts) — a manual sweep should always do real work.
+            itemsGet.mockClear();
+            await api.microblog.scanFollowable();
+            expect(itemsGet).toHaveBeenCalled();
+        }),
+    );
+
+    it(
+        'scanFollowable reports progress and stops when its signal aborts',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            // Several concurrency windows' worth of contacts, so aborting early
+            // must leave most of them unscanned.
+            const jids = Array.from({ length: 30 }, (_, i) => `c${i}@capulet.lit`);
+            jids.forEach((jid) => _converse.roster.create({ jid, subscription: 'both' }));
+
+            // A small delay so the abort lands before the pool drains the queue.
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation(
+                () => new Promise((resolve) => setTimeout(() => resolve({ items: [] }), 10)),
+            );
+
+            const controller = new AbortController();
+            const progress = [];
+            await api.microblog.scanFollowable({
+                signal: controller.signal,
+                onProgress: (p) => {
+                    progress.push(p);
+                    if (p.scanned >= 1) controller.abort(); // stop as soon as work begins
+                },
+            });
+
+            // It stopped early: no further contacts were pulled once aborted.
+            const last = progress[progress.length - 1];
+            expect(last.total).toBe(30);
+            expect(last.scanned).toBeGreaterThan(0);
+            expect(last.scanned).toBeLessThan(30);
+        }),
+    );
+
+    it(
+        'discoverFollowable includes cached followable contacts and excludes snoozed ones',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+            const cache = _converse.state.followablecache;
+
+            _converse.roster.create({ jid: 'juliet@capulet.lit', subscription: 'both' });
+            _converse.roster.create({ jid: 'romeo@montague.lit', subscription: 'both' });
+
+            // No online-caps hits in this test — only cached sweep verdicts.
+            vi.spyOn(api.microblog, 'canFollow').mockResolvedValue(false);
+
+            cache.record('juliet@capulet.lit', { followable: true });
+            cache.record('romeo@montague.lit', { followable: true });
+            cache.snooze(['romeo@montague.lit']);
+
+            const list = await api.microblog.discoverFollowable();
+            expect(list).toContain('juliet@capulet.lit');
+            expect(list).not.toContain('romeo@montague.lit');
         }),
     );
 

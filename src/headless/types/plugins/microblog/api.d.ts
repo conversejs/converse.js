@@ -32,19 +32,43 @@ declare namespace _default {
          */
         function canFollow(jid: string): Promise<boolean>;
         /**
-         * Discover roster contacts that can be followed but aren't yet: saved
-         * contacts that advertise a XEP-0472 social feed ({@link canFollow}) and
-         * that the user doesn't already follow. Backs the onboarding "who to
-         * follow" suggestions.
+         * Discover roster contacts that can be followed but aren't yet — the
+         * union of two sources, minus contacts already followed or snoozed:
+         *  1. the cheap online path: contacts whose live resources advertise a
+         *     XEP-0472 social feed ({@link canFollow}); and
+         *  2. verdicts learned by the manual {@link scanFollowable} sweep, read
+         *     from the persistent followable cache (covers offline contacts).
          *
-         * `canFollow` reads cached entity caps, which depend on having received
-         * the contact's presence — so a contact whose caps haven't arrived yet is
-         * (correctly) omitted until they do. Callers that render this should
-         * recompute on presence changes.
+         * No network is used here — (1) reads cached entity caps and (2) reads
+         * the local cache — so it's safe to recompute on roster/presence/cache
+         * changes. The explicit sweep is what issues the probes.
          * @method _converse.api.microblog.discoverFollowable
          * @returns {Promise<string[]>} The bare JIDs of followable contacts.
          */
         function discoverFollowable(): Promise<string[]>;
+        /**
+         * Probe roster contacts' microblog nodes to discover followable feeds,
+         * including OFFLINE contacts that {@link discoverFollowable}'s cheap path
+         * can't see (it only reads online resources' caps). An explicit,
+         * user-initiated sweep: it targets every saved, not-yet-followed contact
+         * without a fresh cached verdict, probes each `urn:xmpp:microblog:0` node
+         * with bounded concurrency, and caches each verdict so re-scans are cheap.
+         * (A contact whose node isn't readable simply caches as not-followable.)
+         *
+         * @method _converse.api.microblog.scanFollowable
+         * @param {object} [opts]
+         * @param {(p: {scanned: number, total: number, found: number}) => void} [opts.onProgress]
+         * @param {AbortSignal} [opts.signal] - Abort to stop launching further probes.
+         * @returns {Promise<string[]>} The bare JIDs found followable in this sweep.
+         */
+        function scanFollowable({ onProgress, signal }?: {
+            onProgress?: (p: {
+                scanned: number;
+                total: number;
+                found: number;
+            }) => void;
+            signal?: AbortSignal;
+        }): Promise<string[]>;
         /**
          * Follow a a social feed and record it in the durable XEP-0330 list.
          * Subscribe for live delivery (XEP-0472) and create + backfill the feed.

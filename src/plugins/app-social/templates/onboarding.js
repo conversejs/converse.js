@@ -45,8 +45,7 @@ export default (el) => html`
         >
             <converse-icon class="fa fa-times" size="1em"></converse-icon>
         </button>
-        <h3 class="social-onboarding__title">${__('Follow people to fill your feed')}</h3>
-        <p class="social-onboarding__subtitle">${__('These contacts share a social feed you can follow.')}</p>
+        <h3 class="social-onboarding__title">${__('Accounts you might like to follow')}</h3>
         <ul class="social-onboarding__list">
             ${repeat(
                 el.candidates,

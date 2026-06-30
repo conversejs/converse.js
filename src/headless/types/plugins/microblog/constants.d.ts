@@ -16,6 +16,18 @@ export const COMMENTS_NODE_PREFIX: "urn:xmpp:microblog:0:comments/";
  * Feed (XEP-0472).
  */
 export const SOCIAL_FEED_FEATURE: "urn:xmpp:pubsub-social-feed:1";
+/**
+ * How many contacts the manual "find people to follow" sweep probes at once. The
+ * sweep is network-bound (waiting on IQ replies), so a modest pool keeps it quick
+ * without flooding the connection.
+ */
+export const FOLLOWABLE_SCAN_CONCURRENCY: 10;
+/**
+ * Per-probe IQ timeout (ms) for the sweep. Much shorter than the default 60s
+ * `stanza_timeout`, so a contact whose server never replies fails fast and frees
+ * a worker instead of stalling the whole sweep.
+ */
+export const FOLLOWABLE_PROBE_TIMEOUT: 10000;
 export namespace MICROBLOG_PUBLISH_OPTIONS {
     let persist_items: string;
     let max_items: string;

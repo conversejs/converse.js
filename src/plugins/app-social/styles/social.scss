@@ -122,6 +122,61 @@
         }
     }
 
+    .social-onboarding__name {
+        margin-left: 1em;
+    }
+
+    // The compact "Find people to follow" control + its in-progress state, sitting
+    // on the left of the compose toolbar (opposite the Post button). Quiet by
+    // design — it's an occasional action.
+    .social-scan {
+        &__btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4em;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--subdued-color);
+
+            // The default converse-icon fill is --secondary-color; match the text
+            // colour instead so the glyph follows the (muted/hover) state.
+            converse-icon svg {
+                fill: currentColor;
+            }
+
+            &:hover {
+                color: var(--link-color);
+            }
+        }
+
+        &--scanning {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4em;
+            color: var(--subdued-color);
+        }
+
+        &__cancel {
+            display: inline-flex;
+            align-items: center;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--subdued-color);
+
+            converse-icon svg {
+                fill: currentColor;
+            }
+
+            &:hover {
+                color: var(--danger-color);
+            }
+        }
+    }
+
     .social-compose {
         display: flex;
         flex-direction: column;
@@ -145,7 +200,9 @@
 
         .social-compose__toolbar {
             display: flex;
-            justify-content: flex-end;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5em;
         }
     }
 

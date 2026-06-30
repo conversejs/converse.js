@@ -6,6 +6,7 @@ import { api, PubSubMessage } from '@converse/headless';
 import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import { attrSignal } from 'shared/signals.js';
+import 'shared/modals/image.js';
 import tplMessage from './templates/message.js';
 
 /**
@@ -51,6 +52,24 @@ export default class SocialMessage extends CustomElement {
         } else {
             api.modal.show('converse-user-details-modal', { model: contact }, ev);
         }
+    }
+
+    /**
+     * Open an inline post image in the lightbox modal when clicked.
+     * @param {MouseEvent} ev
+     */
+    onImgClick(ev) {
+        ev.preventDefault();
+        const img = /** @type {HTMLImageElement} */ (ev.target);
+        api.modal.show('converse-image-modal', { src: img.src, filename: img.dataset.filename }, ev);
+    }
+
+    /**
+     * Notify the feed that an inline image finished loading, so it can keep the
+     * scroll position stable as posts grow taller.
+     */
+    onImgLoad() {
+        this.dispatchEvent(new CustomEvent('imageLoaded', { detail: this, bubbles: true }));
     }
 
     /**

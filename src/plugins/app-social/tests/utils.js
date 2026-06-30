@@ -48,6 +48,42 @@ export function makePost(to, from, id, body, published = '2024-01-01T18:30:02Z')
 }
 
 /**
+ * Build a headline PEP event carrying a *repost*: the publisher (`from`) repeats
+ * another account's entry. Carries an `<author>` (the original poster) and a
+ * `rel="via"` link, the two signals the parser reads as a repost.
+ * @param {string} to - The recipient's bare JID (the logged-in user).
+ * @param {string} from - The reposter's bare JID (publisher + feed JID).
+ * @param {string} id - The PubSub item id.
+ * @param {string} body - The post body.
+ * @param {string} author_jid - The original author's bare JID.
+ * @param {string} author_name - The original author's display name.
+ * @param {string} [published='2024-01-02T09:00:00Z'] - ISO-8601 publication time.
+ */
+export function makeRepost(to, from, id, body, author_jid, author_name, published = '2024-01-02T09:00:00Z') {
+    const domain = Strophe.getDomainFromJid(author_jid);
+    return stx`
+        <message xmlns="jabber:client" from="${from}" to="${to}" type="headline">
+          <event xmlns="${PUBSUB_EVENT}">
+            <items node="${MICROBLOG_NODE}">
+              <item id="${id}" publisher="${from}">
+                <entry xmlns="${ATOM}">
+                  <author>
+                    <name>${author_name}</name>
+                    <uri>xmpp:${author_jid}</uri>
+                  </author>
+                  <title type="text">${body}</title>
+                  <id>tag:${domain},2024-01-02:posts-${id}</id>
+                  <link rel="via" href="xmpp:${author_jid}?;node=urn%3Axmpp%3Amicroblog%3A0;item=orig"/>
+                  <published>${published}</published>
+                  <updated>${published}</updated>
+                </entry>
+              </item>
+            </items>
+          </event>
+        </message>`;
+}
+
+/**
  * Mount a `<converse-social-feed>` into the test root and return it.
  * @returns {Element}
  */

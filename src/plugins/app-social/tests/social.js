@@ -5,6 +5,7 @@ import {
     MICROBLOG_NODE,
     ONBOARDING_DISMISSED,
     makePost,
+    makeRepost,
     mountSocialFeed,
     receive,
     stubDiscoverFollowable,
@@ -141,6 +142,47 @@ describe('The social feed', function () {
             // The non-contact author's avatar is a plain, non-linked element.
             expect(articleFor('A stranger speaks').querySelector('a.social-post__avatar')).toBe(null);
             expect(articleFor('A stranger speaks').querySelector('.social-post__avatar')).not.toBe(null);
+        }),
+    );
+
+    it(
+        'attributes a repost to the reposter, distinct from the original author',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const bare_jid = _converse.bare_jid;
+            const reposter = 'alice@wonderland.lit';
+            const author = 'bob@builder.lit';
+
+            // Follow Alice's feed (a community node), and seed her name so the
+            // attribution resolves deterministically from the vCard cache.
+            await _converse.api.microblog.feeds.get(reposter, MICROBLOG_NODE, true);
+            _converse.state.vcards.create({ jid: reposter, nickname: 'Alice' });
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            // A plain own post and a repost: Alice repeats Bob's original post.
+            receive(_converse, makePost(bare_jid, bare_jid, 'mine-1', 'A plain post', '2024-01-01T09:00:00Z'));
+            receive(_converse, makeRepost(bare_jid, reposter, 'rp-1', 'Can we fix it?', author, 'Bob the Builder'));
+
+            await u.waitUntil(() => el.querySelectorAll('.social-post').length === 2);
+
+            const articleFor = (body) =>
+                Array.from(el.querySelectorAll('.social-post')).find((a) =>
+                    a.querySelector('.social-post__body').textContent.includes(body),
+                );
+
+            const repost = articleFor('Can we fix it?');
+
+            // The repost shows an attribution eyebrow naming the reposter (Alice),
+            // while the main author shown is the *original* poster (Bob).
+            await u.waitUntil(() => repost.querySelector('.social-post__repost')?.textContent.includes('Alice'));
+            const eyebrow = repost.querySelector('.social-post__repost');
+            expect(eyebrow.textContent.toLowerCase()).toContain('reposted');
+            expect(repost.querySelector('.social-post__author').textContent.trim()).toBe('Bob the Builder');
+
+            // A plain (non-repost) post carries no attribution eyebrow.
+            expect(articleFor('A plain post').querySelector('.social-post__repost')).toBe(null);
         }),
     );
 });

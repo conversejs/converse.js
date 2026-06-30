@@ -92,6 +92,65 @@ describe('The microblog plugin', function () {
             expect(post.get('displayName')).toBe('Romeo Montague');
             // We republished it, so it's still ours.
             expect(post.get('is_mine')).toBe(true);
+            // The reposter (publisher) is surfaced distinctly from the original
+            // author — here that's us, so the view labels the repost "You".
+            expect(post.getReposterJID()).toBe(bare_jid);
+        }),
+    );
+
+    it(
+        "names the reposter separately from the original author for a followed feed's repost",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const reposter = 'alice@wonderland.lit';
+            const author = 'bob@builder.lit';
+
+            // We follow Alice's feed; she reposts Bob, who isn't in our roster.
+            const feed = await api.microblog.feeds.get(reposter, MICROBLOG_NODE, true);
+            // Seed Alice's vCard so the "… reposted" line can resolve a name
+            // without entering the roster (mirrors how avatars resolve).
+            _converse.state.vcards.create({ jid: reposter, nickname: 'Alice' });
+
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${reposter}" to="${reposter}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${MICROBLOG_NODE}">
+                      <item id="repost-2" publisher="${reposter}">
+                        <entry xmlns="${ATOM}">
+                          <author>
+                            <name>Bob the Builder</name>
+                            <uri>xmpp:${author}</uri>
+                          </author>
+                          <title type="text">Can we fix it?</title>
+                          <id>tag:builder.lit,2024-01-02:posts-repost-2</id>
+                          <link rel="via" href="xmpp:${author}?;node=urn%3Axmpp%3Amicroblog%3A0;item=orig"/>
+                          <published>2024-01-02T09:00:00Z</published>
+                          <updated>2024-01-02T09:00:00Z</updated>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            await u.waitUntil(() => feed.messages.length === 1);
+            const post = feed.messages.at(0);
+
+            // The main author is the *original* poster (Bob), not the reposter.
+            expect(post.get('is_repost')).toBe(true);
+            expect(post.get('is_mine')).toBe(false);
+            expect(post.getAuthorJID()).toBe(author);
+            expect(post.get('displayName')).toBe('Bob the Builder');
+
+            // The reposter (Alice, whose feed we follow) is surfaced distinctly,
+            // and her name resolves from the vCard cache — not the roster.
+            expect(post.getReposterJID()).toBe(reposter);
+            await u.waitUntil(() => post.getReposterName() === 'Alice');
+            expect(_converse.roster.get(reposter)).toBeUndefined();
+            expect(_converse.roster.get(author)).toBeUndefined();
         }),
     );
 

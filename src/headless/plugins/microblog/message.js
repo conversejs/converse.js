@@ -4,6 +4,7 @@
  */
 import { Strophe } from 'strophe.js';
 import _converse from '../../shared/_converse.js';
+import api from '../../shared/api/index.js';
 import BaseMessage from '../../shared/message.js';
 import { MICROBLOG_TYPE } from './constants.js';
 
@@ -22,6 +23,7 @@ class PubSubMessage extends BaseMessage {
     initialize() {
         super.initialize();
         this.setContact();
+        this.setReposter();
     }
 
     /**
@@ -47,6 +49,56 @@ class PubSubMessage extends BaseMessage {
     getVCardJID() {
         const jid = this.getAuthorJID();
         return jid ? Strophe.getBareJidFromJid(jid) : undefined;
+    }
+
+    /**
+     * The bare JID of the account that *reposted* this post into the feed (the
+     * server-stamped publisher). This is distinct from {@link getAuthorJID},
+     * which — for a repost — names the *original* author. Returns undefined when
+     * the post isn't a repost.
+     * @returns {string|undefined}
+     */
+    getReposterJID() {
+        if (!this.get('is_repost')) return undefined;
+        const jid = this.get('publisher') || this.get('from');
+        return jid ? Strophe.getBareJidFromJid(jid) : undefined;
+    }
+
+    /**
+     * The reposter's cached vCard (or null), resolved lazily by
+     * {@link setReposter}. Used only to put a name on the "… reposted" line.
+     * @returns {import('../vcard/vcard').default|null}
+     */
+    get reposterVCard() {
+        return this._reposter_vcard ?? null;
+    }
+
+    /**
+     * Resolve the reposter's vCard from the cache
+     * No-op for non-reposts and for our own reposts (which are labeled "you").
+     * @returns {Promise<void>}
+     */
+    async setReposter() {
+        if (this.get('is_mine')) return;
+        const jid = this.getReposterJID();
+        if (!jid) return;
+        await api.waitUntil('VCardsInitialized');
+        const { vcards } = _converse.state;
+        const vcard = vcards.get(jid) || vcards.create({ jid }, { lazy_load: true });
+        this._reposter_vcard = vcard;
+        vcard?.on('change', () => this.trigger('vcard:change'));
+        this.trigger('vcard:change');
+    }
+
+    /**
+     * The reposter's display name from their vCard, falling back to their bare
+     * JID. Only meaningful for a repost that isn't our own.
+     * @returns {string|undefined}
+     */
+    getReposterName() {
+        const jid = this.getReposterJID();
+        if (!jid) return undefined;
+        return this._reposter_vcard?.getDisplayName() || jid;
     }
 
     /**

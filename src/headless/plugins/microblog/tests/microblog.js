@@ -155,6 +155,92 @@ describe('The microblog plugin', function () {
     );
 
     it(
+        'shows the author nickname, not the bare JID, when a post embeds no author name',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const jid = 'roughnecks@woodpeckersnest.space';
+            // The author is a roster contact (so a nickname is known) whose feed
+            // we also follow.
+            _converse.roster.create({ jid, subscription: 'both', nickname: 'Roughnecks' });
+            const feed = await api.microblog.feeds.get(jid, MICROBLOG_NODE, true);
+
+            // A post that carries an <author><uri> but *no* <name> — the shape
+            // that previously fell through to displaying the bare JID.
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${jid}" to="${jid}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${MICROBLOG_NODE}">
+                      <item id="p1" publisher="${jid}">
+                        <entry xmlns="${ATOM}">
+                          <author><uri>xmpp:${jid}</uri></author>
+                          <title type="text">commutiny out now!</title>
+                          <id>tag:woodpeckersnest.space,2025-01-11:p1</id>
+                          <published>2025-01-11T06:35:44Z</published>
+                          <updated>2025-01-11T06:35:44Z</updated>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            await u.waitUntil(() => feed.messages.length === 1);
+            const post = feed.messages.at(0);
+            expect(post.get('author_name')).toBeUndefined();
+            expect(post.get('author_jid')).toBe(jid);
+            // Resolves to the contact's nickname, never the raw JID.
+            await u.waitUntil(() => post.get('displayName') === 'Roughnecks');
+        }),
+    );
+
+    it(
+        "falls back to a non-contact author's vCard name when a post embeds no author name",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            // A JID the mock vCard fetcher resolves to "Guest Author"; not a
+            // roster contact, so only the vCard cache can name them.
+            const jid = 'guest.author@example.org';
+            const feed = await api.microblog.feeds.get(jid, MICROBLOG_NODE, true);
+
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${jid}" to="${jid}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${MICROBLOG_NODE}">
+                      <item id="p1" publisher="${jid}">
+                        <entry xmlns="${ATOM}">
+                          <author><uri>xmpp:${jid}</uri></author>
+                          <title type="text">a nameless post</title>
+                          <id>tag:example.org,2025-01-11:p1</id>
+                          <published>2025-01-11T06:35:44Z</published>
+                          <updated>2025-01-11T06:35:44Z</updated>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            await u.waitUntil(() => feed.messages.length === 1);
+            const post = feed.messages.at(0);
+            expect(_converse.roster.get(jid)).toBeUndefined();
+
+            // Simulate the author's vCard arriving (in production a post fetches it
+            // eagerly for the avatar). The display name must then resolve to the
+            // vCard name — reactively, and never the bare JID — without the author
+            // ever entering the roster.
+            await api.vcard.update(_converse.state.vcards.get(jid), true);
+            await u.waitUntil(() => post.get('displayName') === 'Guest Author');
+            expect(_converse.roster.get(jid)).toBeUndefined();
+        }),
+    );
+
+    it(
         'parses a post with rich (XHTML) content',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

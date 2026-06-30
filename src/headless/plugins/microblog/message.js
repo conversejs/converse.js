@@ -24,6 +24,7 @@ class PubSubMessage extends BaseMessage {
         super.initialize();
         this.setContact();
         this.setReposter();
+        this.setAuthorName();
     }
 
     /**
@@ -102,6 +103,22 @@ class PubSubMessage extends BaseMessage {
     }
 
     /**
+     * Give the author a human name even when the post carries no Atom `<author><name>`.
+     * @returns {Promise<void>}
+     */
+    async setAuthorName() {
+        const vcard = await this.getVCard();
+        if (!vcard) return;
+        const sync = () => {
+            if (this.contact) return; // a roster contact's nickname wins
+            const name = vcard.get('nickname') || vcard.get('fullname');
+            if (name) this.set('nickname', name);
+        };
+        sync();
+        this.listenTo(vcard, 'change', sync);
+    }
+
+    /**
      * Persist each post to the collection's store as an offline cache. The
      * PubSub node stays the source of truth; this just avoids an empty feed on
      * reload before the server responds.
@@ -117,8 +134,17 @@ class PubSubMessage extends BaseMessage {
     get computed() {
         return {
             displayName: {
-                deps: ['author_name', 'author_jid', 'publisher', 'from'],
-                fn: (m) => m.get('author_name') || m.get('author_jid') || m.get('publisher') || m.get('from') || '',
+                deps: ['author_name', 'nickname', 'author_jid', 'publisher', 'from'],
+                // Prefer the post's self-declared author name, then the resolved
+                // contact/vCard nickname, and only fall back to the bare JID when
+                // no human name is known (see setAuthorName / setModelContact).
+                fn: (m) =>
+                    m.get('author_name') ||
+                    m.get('nickname') ||
+                    m.get('author_jid') ||
+                    m.get('publisher') ||
+                    m.get('from') ||
+                    '',
             },
             // Whether the logged-in user published this post (replaces the legacy
             // `sender: 'me'|'them'` flag). Authorship is the publisher's, not the

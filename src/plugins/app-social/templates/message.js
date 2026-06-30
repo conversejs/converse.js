@@ -1,6 +1,7 @@
 import { html } from 'lit';
 import { __ } from 'i18n';
-import { converse } from '@converse/headless';
+import { api, converse } from '@converse/headless';
+import renderTexture from 'shared/texture/directives/texture.js';
 import { getRelativeTime } from 'utils/time.js';
 
 const { dayjs } = converse.env;
@@ -17,6 +18,19 @@ export default (el) => {
     // poster; this eyebrow names who repeated it into the feed, so the two are
     // never conflated (X.com-style "<reposter> reposted").
     const reposter = m.get('is_mine') ? __('You') : (m.getReposterName() ?? '');
+
+    // Render the body as rich text via the shared texture pipeline: URLs, media,
+    // emojis and XEP-0393 styling, plus social-only hashtags (render_hashtags).
+    const render_media = api.settings.get('render_media');
+    const body = renderTexture(m.get('body') ?? '', 0, {
+        render_styling: true,
+        render_hashtags: true,
+        show_images: render_media,
+        embed_audio: render_media,
+        embed_videos: render_media,
+        onImgClick: /** @param {MouseEvent} ev */ (ev) => el.onImgClick(ev),
+        onImgLoad: () => el.onImgLoad(),
+    });
 
     const avatar = html`<converse-avatar
         .model=${m}
@@ -66,7 +80,7 @@ export default (el) => {
                               </button>`
                             : ''}
                     </header>
-                    <div class="social-post__body">${m.get('body') ?? ''}</div>
+                    <div class="social-post__body">${body}</div>
                 </div>
             </div>
         </article>

@@ -4,6 +4,7 @@
  */
 import { html } from 'lit';
 import { api, converse } from '@converse/headless';
+import { addHashtagAnnotations } from './texture.js';
 import './view.js';
 import '../rootview/index.js';
 
@@ -11,6 +12,8 @@ converse.plugins.add('converse-app-social', {
     dependencies: ['converse-rootview', 'converse-microblog'],
 
     initialize() {
+        api.listen.on('afterMessageBodyTransformed', addHashtagAnnotations);
+
         // Registers a second top-level app (alongside "chat") in the app
         // switcher: the XEP-0277 (Microblogging over XMPP) "Social" feed.
         api.apps.add({

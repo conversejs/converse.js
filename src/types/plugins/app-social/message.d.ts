@@ -18,6 +18,16 @@ export default class SocialMessage extends CustomElement {
      */
     showUserModal(ev: MouseEvent): void;
     /**
+     * Open an inline post image in the lightbox modal when clicked.
+     * @param {MouseEvent} ev
+     */
+    onImgClick(ev: MouseEvent): void;
+    /**
+     * Notify the feed that an inline image finished loading, so it can keep the
+     * scroll position stable as posts grow taller.
+     */
+    onImgLoad(): void;
+    /**
      * Delete one of our own posts, after confirmation. Retracts the item from
      * the node and removes the local copy.
      */

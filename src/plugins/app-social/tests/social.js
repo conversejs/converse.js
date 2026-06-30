@@ -146,6 +146,70 @@ describe('The social feed', function () {
     );
 
     it(
+        'renders URLs and hashtags in a post body as rich elements',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const bare_jid = _converse.bare_jid;
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            receive(
+                _converse,
+                makePost(bare_jid, bare_jid, 'p1', 'reading https://conversejs.org about #xmpp today'),
+            );
+
+            const body = await u.waitUntil(() => el.querySelector('.social-post__body'));
+
+            // The URL becomes a hyperlink (texture pipeline), not plain text.
+            const link = await u.waitUntil(() =>
+                Array.from(body.querySelectorAll('a:not(.social-post__hashtag)')).find((a) =>
+                    a.href.includes('conversejs.org'),
+                ),
+            );
+            expect(link).toBeTruthy();
+
+            // The hashtag becomes a social-only rich element labelled "#xmpp".
+            const tag = await u.waitUntil(() => body.querySelector('.social-post__hashtag'));
+            expect(tag.textContent).toBe('#xmpp');
+        }),
+    );
+
+    it(
+        'filters the timeline to a hashtag when one is clicked, and clears it',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const bare_jid = _converse.bare_jid;
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            receive(_converse, makePost(bare_jid, bare_jid, 'p1', 'learning #xmpp today', '2024-01-02T09:00:00Z'));
+            receive(_converse, makePost(bare_jid, bare_jid, 'p2', 'just #coffee', '2024-01-01T09:00:00Z'));
+
+            await u.waitUntil(() => el.querySelectorAll('.social-post').length === 2);
+
+            // Click the "#xmpp" hashtag in the first post.
+            const tag = await u.waitUntil(() =>
+                Array.from(el.querySelectorAll('.social-post__hashtag')).find((a) => a.textContent === '#xmpp'),
+            );
+            tag.click();
+
+            // The timeline filters to the single #xmpp post; a filter bar appears
+            // and the compose box is hidden.
+            await u.waitUntil(() => el.querySelector('.social-feed__filter'));
+            await u.waitUntil(() => el.querySelectorAll('.social-post').length === 1);
+            expect(el.querySelector('.social-post__body').textContent).toContain('#xmpp');
+            expect(el.querySelector('.social-compose__textarea')).toBe(null);
+
+            // Clearing restores the full timeline and the compose box.
+            el.querySelector('.social-feed__filter-clear').click();
+            await u.waitUntil(() => el.querySelectorAll('.social-post').length === 2);
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+        }),
+    );
+
+    it(
         'attributes a repost to the reposter, distinct from the original author',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

@@ -30,6 +30,33 @@ declare class PubSubMessage extends BaseMessage {
      */
     getVCardJID(): string | undefined;
     /**
+     * The bare JID of the account that *reposted* this post into the feed (the
+     * server-stamped publisher). This is distinct from {@link getAuthorJID},
+     * which — for a repost — names the *original* author. Returns undefined when
+     * the post isn't a repost.
+     * @returns {string|undefined}
+     */
+    getReposterJID(): string | undefined;
+    /**
+     * The reposter's cached vCard (or null), resolved lazily by
+     * {@link setReposter}. Used only to put a name on the "… reposted" line.
+     * @returns {import('../vcard/vcard').default|null}
+     */
+    get reposterVCard(): import("../vcard/vcard").default;
+    /**
+     * Resolve the reposter's vCard from the cache
+     * No-op for non-reposts and for our own reposts (which are labeled "you").
+     * @returns {Promise<void>}
+     */
+    setReposter(): Promise<void>;
+    _reposter_vcard: any;
+    /**
+     * The reposter's display name from their vCard, falling back to their bare
+     * JID. Only meaningful for a repost that isn't our own.
+     * @returns {string|undefined}
+     */
+    getReposterName(): string | undefined;
+    /**
      * Derived display values, recomputed automatically when their deps change.
      * @returns {import('@converse/skeletor').ComputedProperties<this>}
      */

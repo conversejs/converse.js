@@ -3,6 +3,7 @@ declare class MUCSession extends Model<import("@converse/skeletor").ModelAttribu
     constructor(attributes?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
     defaults(): {
         connection_status: number;
+        mam_initialized: boolean;
     };
 }
 import { Model } from '@converse/skeletor';

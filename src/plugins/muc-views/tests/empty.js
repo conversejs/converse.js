@@ -1,7 +1,7 @@
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 
-const { u, stx } = converse.env;
+const { u, stx, sizzle, Strophe } = converse.env;
 
 describe('The MUC empty state', function () {
     it(
@@ -11,6 +11,22 @@ describe('The MUC empty state', function () {
             const nick = 'romeo';
             const model = await mock.openAndEnterMUC(_converse, muc_jid, nick);
             const view = _converse.chatboxviews.get(muc_jid);
+
+            // The room (whose disco features include MAM) fires off a history query
+            // on entry. The empty state stays hidden until that query settles, so
+            // answer it with an empty archive (no messages, complete) here.
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+            const mam_iq = await u.waitUntil(() =>
+                sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop()
+            );
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`<iq type="result" id="${mam_iq.getAttribute('id')}" xmlns="jabber:client">
+                        <fin xmlns="urn:xmpp:mam:2" complete="true"/>
+                    </iq>`
+                )
+            );
 
             // A room we've entered with no conversation yet shows the empty state.
             await u.waitUntil(() => view.querySelector('converse-muc-empty'));

@@ -14,11 +14,19 @@ export default class MUCChatContent extends ChatContent {
         this.listenTo(this.model, 'change:hidden_occupants', () => this.requestUpdate());
         this.listenTo(this.model.occupants, 'change', () => this.requestUpdate());
         this.listenTo(this.model.session, 'change:connection_status', () => this.requestUpdate());
+        this.listenTo(this.model.session, 'change:mam_initialized', () => this.requestUpdate());
     }
 
     render() {
         const content = super.render();
-        if (this.model?.session?.get('connection_status') === ROOMSTATUS.ENTERED && this.#hasNoConversation()) {
+        const session = this.model?.session;
+        // Only show the empty state once we've entered *and* the initial MAM
+        // history fetch has settled — otherwise it flashes while history loads.
+        if (
+            session?.get('connection_status') === ROOMSTATUS.ENTERED &&
+            session.get('mam_initialized') &&
+            this.#hasNoConversation()
+        ) {
             return html`${content}<converse-muc-empty .model=${this.model}></converse-muc-empty>`;
         }
         return content;

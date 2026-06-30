@@ -13,6 +13,7 @@ export default (el) => html`
             @keydown=${(ev) => el.onKeyDown(ev)}
         ></textarea>
         <div class="social-compose__toolbar">
+            <converse-social-scan></converse-social-scan>
             <button type="submit" class="btn btn-primary">${__('Post')}</button>
         </div>
     </form>

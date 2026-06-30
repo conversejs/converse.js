@@ -40,8 +40,8 @@ export default (el) => {
             ${filtering
                 ? tplFilterBar(el)
                 : html`
-                      <converse-social-onboarding></converse-social-onboarding>
                       <converse-social-compose .model=${el.model}></converse-social-compose>
+                      <converse-social-onboarding></converse-social-onboarding>
                   `}
             <div class="social-feed__posts">
                 ${posts.length

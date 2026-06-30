@@ -4,6 +4,7 @@
  */
 import { api, PubSubFeed } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
+import './scan.js';
 import tplCompose from './templates/compose.js';
 
 /**

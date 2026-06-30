@@ -393,7 +393,7 @@ export default {
                 const full_jid = _converse.session.get('jid');
                 const entity_jid = jid || bare_jid;
 
-                const { max_items, item_ids, rsm: rsm_options } = options;
+                const { max_items, item_ids, rsm: rsm_options, timeout } = options;
                 const rsm = rsm_options ? new RSM(rsm_options) : null;
 
                 const stanza = stx`
@@ -411,7 +411,7 @@ export default {
 
                 let response;
                 try {
-                    response = await api.sendIQ(stanza);
+                    response = await api.sendIQ(stanza, timeout);
                 } catch (error) {
                     throw await parseErrorStanza(error);
                 }

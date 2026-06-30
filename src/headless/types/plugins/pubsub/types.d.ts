@@ -32,6 +32,7 @@ export type PubSubItemsOptions = {
     max_items?: number;
     item_ids?: string[];
     rsm?: RSMQueryOptions;
+    timeout?: number;
 };
 export type PubSubItemsResult = {
     items: Element[];

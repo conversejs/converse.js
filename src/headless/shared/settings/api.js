@@ -29,6 +29,11 @@ export const settings_api = {
      *
      * @method api.settings.extend
      * @param {object} settings The configuration settings
+     * @param {object} [options]
+     * @param {string[]} [options.deep_merge] Keys of object-valued settings whose
+     *  user-provided value should be *deep-merged* onto the default (so unspecified
+     *  sub-keys keep their default), instead of replacing the default object
+     *  wholesale. Only valid for plain-object settings.
      * @example
      * api.settings.extend({
      *    'enable_foo': true
@@ -39,9 +44,17 @@ export const settings_api = {
      * converse.initialize({
      *     'enable_foo': false
      * });
+     * @example
+     * // Deep-merge an object setting: a partial override fills in rather than
+     * // replaces, so `converse.initialize({ visible_toolbar_buttons: { call: true } })`
+     * // keeps every other default button.
+     * api.settings.extend(
+     *     { 'visible_toolbar_buttons': { call: false, emoji: true, fileupload: true } },
+     *     { deep_merge: ['visible_toolbar_buttons'] }
+     * );
      */
-    extend (settings) {
-        return extendAppSettings(settings);
+    extend (settings, options) {
+        return extendAppSettings(settings, options);
     },
 
     /**

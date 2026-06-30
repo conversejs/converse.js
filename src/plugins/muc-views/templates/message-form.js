@@ -16,11 +16,7 @@ export default (el) => {
     const {
         call: show_call_button,
         emoji: show_emoji_button,
-        // `fileupload` defaults to `true` when the key is absent: the upload button
-        // was never gated by this setting before, so an existing config that passes a
-        // partial `visible_toolbar_buttons` map keeps its upload button unless it opts
-        // out explicitly with `fileupload: false`.
-        fileupload: show_fileupload_button = true,
+        fileupload: show_fileupload_button,
         location: show_location_button,
         spoiler: show_spoiler_button,
     } = toolbar_buttons;

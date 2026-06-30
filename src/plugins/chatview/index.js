@@ -55,7 +55,7 @@ converse.plugins.add('converse-chatview', {
                 'location': true,
                 'spoiler': false
             }
-        });
+        }, { deep_merge: ['visible_toolbar_buttons'] });
 
         const exports = {
             ChatBoxView: ChatView,

@@ -3,6 +3,9 @@
 ## 15.0.0 (Unreleased)
 
 - #194: Full support for XEP-0115: Entity capabilities
+- feat(toolbar): Allow hiding the file upload button via the `fileupload` key of `visible_toolbar_buttons`
+- feat(settings): `api.settings.extend` accepts a `deep_merge` option so an object setting fills in
+  defaults instead of being replaced wholesale.
 
 ### Breaking changes:
 

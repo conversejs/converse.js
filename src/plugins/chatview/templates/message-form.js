@@ -13,14 +13,10 @@ export default (el) => {
     const label_spoiler_hint = __('Optional hint');
     const message_limit = api.settings.get('message_limit');
     const toolbar_buttons = api.settings.get('visible_toolbar_buttons');
-    // `fileupload` defaults to `true` when the key is absent: the upload button
-    // was never gated by this setting before, so an existing config that passes a
-    // partial `visible_toolbar_buttons` map keeps its upload button unless it opts
-    // out explicitly with `fileupload: false`.
     const {
         call: show_call_button,
         emoji: show_emoji_button,
-        fileupload: show_fileupload_button = true,
+        fileupload: show_fileupload_button,
         location: show_location_button,
         spoiler: show_spoiler_button,
     } = toolbar_buttons;

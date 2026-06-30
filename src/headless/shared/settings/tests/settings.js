@@ -53,6 +53,47 @@ describe("The \"settings\" API", function () {
             }
         )
     );
+
+    it("deep-merges a partial site override onto the default when the key opts in",
+            initConverse(converse, [], { 'deep_buttons': { 'call': false } }, (_converse) => {
+
+        const { api } = _converse;
+        // Register a new object setting, opting it into deep-merge. The site value
+        // passed via converse.initialize only specifies `call`.
+        api.settings.extend(
+            { 'deep_buttons': { 'call': true, 'emoji': true, 'fileupload': true } },
+            { deep_merge: ['deep_buttons'] }
+        );
+
+        const buttons = api.settings.get('deep_buttons');
+        expect(buttons.call).toBe(false);      // the site override wins
+        expect(buttons.emoji).toBe(true);      // default preserved, not dropped
+        expect(buttons.fileupload).toBe(true); // default preserved, not dropped
+    }));
+
+    it("still replaces an object setting wholesale when the key did not opt in",
+            initConverse(converse, [], { 'replace_buttons': { 'call': false } }, (_converse) => {
+
+        const { api } = _converse;
+        api.settings.extend({ 'replace_buttons': { 'call': true, 'emoji': true } });
+
+        const buttons = api.settings.get('replace_buttons');
+        expect(buttons.call).toBe(false);     // the site override wins
+        expect(buttons.emoji).toBe(undefined); // default dropped (replace semantics)
+    }));
+
+    it("patches the current value on set() for a deep-merge key instead of clobbering it",
+            initConverse(converse, [], {}, (_converse) => {
+
+        const { api } = _converse;
+        api.settings.extend(
+            { 'patch_buttons': { 'call': true, 'emoji': true } },
+            { deep_merge: ['patch_buttons'] }
+        );
+
+        api.settings.set('patch_buttons', { 'call': false });
+        expect(api.settings.get('patch_buttons')).toEqual({ 'call': false, 'emoji': true });
+    }));
 });
 
 

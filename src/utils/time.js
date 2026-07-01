@@ -17,3 +17,12 @@ export function getRelativeTime(time) {
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
     return dayjs(time).format('ll');
 }
+
+/**
+ * Sorts items newest-first by their ISO-8601 `time` (published/updated).
+ * @param {import('@converse/skeletor').Model} a
+ * @param {import('@converse/skeletor').Model} b
+ */
+export function byTimeDesc(a, b) {
+    return (b.get('time') ?? '').localeCompare(a.get('time') ?? '');
+}

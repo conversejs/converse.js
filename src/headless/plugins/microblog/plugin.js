@@ -19,6 +19,7 @@ import microblog_api from './api.js';
 import { registerMicroblogHandler } from './utils.js';
 import { MICROBLOG_NODE, NS_ATOM, NS_THREAD, SOCIAL_FEED_FEATURE } from './constants.js';
 import '../pubsub/index.js';
+import PubsubPlaceholderMessage from './placeholder.js';
 
 const { Strophe } = converse.env;
 
@@ -31,7 +32,14 @@ converse.plugins.add('converse-microblog', {
     initialize() {
         api.promises.add('pubsubFeedsInitialized');
 
-        const exports = { PubSubFeed, PubSubFeeds, PubSubMessage, PubSubMessages, FollowableCache };
+        const exports = {
+            FollowableCache,
+            PubSubFeed,
+            PubSubFeeds,
+            PubSubMessage,
+            PubSubMessages,
+            PubsubPlaceholderMessage,
+        };
         Object.assign(_converse.exports, exports);
         Object.assign(api, microblog_api);
 

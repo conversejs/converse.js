@@ -1,6 +1,7 @@
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { __ } from 'i18n';
+import { _converse } from '@converse/headless';
 
 /**
  * @param {import('../feed.js').default} el
@@ -48,7 +49,15 @@ export default (el) => {
                     ? repeat(
                           posts,
                           /** @param {import('@converse/headless').PubSubMessage} p */ (p) => p.get('id'),
-                          (p) => html`<converse-social-message .model=${p}></converse-social-message>`,
+                          (p) => {
+                              if (p instanceof _converse.exports.PubsubPlaceholderMessage) {
+                                  return html`<converse-history-placeholder
+                                      .model=${p}
+                                  ></converse-history-placeholder>`;
+                              } else {
+                                  return html`<converse-social-message .model=${p}></converse-social-message>`;
+                              }
+                          },
                       )
                     : empty}
             </div>

@@ -31,6 +31,54 @@
             padding: 1em;
         }
 
+        // History placeholder: a per-feed marker rendered between posts (in a
+        // newer-than-cache gap, or at a feed's oldest-loaded post) that auto-loads
+        // the missing posts when it scrolls into view (via its IntersectionObserver).
+        // It must have a real height, otherwise it's invisible AND can never reach
+        // the observer's intersection ratio.
+        converse-history-placeholder {
+            display: block;
+
+            // While fetching, show a small centred spinner instead of the skeleton.
+            .spinner-grow {
+                display: block;
+                width: 1em;
+                height: 1em;
+                margin: 1em auto;
+            }
+
+            .social-feed__placeholder {
+                display: block;
+                min-height: 3em;
+                margin-bottom: 1em;
+                padding: 1em;
+                border: 1px solid var(--foreground-color);
+                border-radius: 0.5em;
+                background-color: var(--background-color);
+                cursor: pointer;
+            }
+
+            .social-feed__placeholder-line {
+                display: block;
+                height: 0.7em;
+                margin: 0.5em 0;
+                border-radius: 0.35em;
+                background: linear-gradient(
+                    90deg,
+                    rgba(128, 128, 128, 0.12) 25%,
+                    rgba(128, 128, 128, 0.28) 37%,
+                    rgba(128, 128, 128, 0.12) 63%
+                );
+                background-size: 400% 100%;
+                animation: social-placeholder-shimmer 1.4s ease infinite;
+
+                &:last-child {
+                    width: 55%;
+                    margin-bottom: 0;
+                }
+            }
+        }
+
         // Banner shown while the timeline is filtered to a single hashtag. Sticks
         // to the top so the active filter (and its clear button) stay in view.
         .social-feed__filter {
@@ -310,5 +358,14 @@
                 }
             }
         }
+    }
+}
+
+@keyframes social-placeholder-shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+    100% {
+        background-position: 0 0;
     }
 }

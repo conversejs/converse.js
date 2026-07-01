@@ -12,6 +12,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { VIEW_PLUGINS } from './shared/constants.js';
 import { _converse, converse } from '@converse/headless';
 import './utils/index.js';
+import { routeToQueryAction } from './plugins/chatview/utils.js';
 
 _converse.__ = i18n.__; // DEPRECATED
 Object.assign(converse.env, { i18n });
@@ -47,6 +48,16 @@ import './plugins/reactions-views/index.js'; // XEP-0444 Reactions
 
 _converse.exports.CustomElement = CustomElement;
 
+// Register XMPP protocol handler for xmpp: URIs
+if ('registerProtocolHandler' in navigator) {
+    try {
+        const handlerUrl = `${window.location.origin}${window.location.pathname}#converse/action?uri=%s`;
+        navigator.registerProtocolHandler('xmpp', handlerUrl);
+    } catch (error) {
+        console.warn('Failed to register protocol handler:', error);
+    }
+}
+
 const initialize = converse.initialize;
 
 converse.initialize = function (settings, callback) {
@@ -55,7 +66,13 @@ converse.initialize = function (settings, callback) {
     } else {
         settings.whitelisted_plugins = VIEW_PLUGINS;
     }
-    return initialize(settings, callback);
+    // Handle XEP-0147 query actions after initialization
+    // This must happen after plugins are loaded and _converse.env is ready
+    const result = initialize(settings, callback);
+    if (result && result.then) {
+        result.then(() => routeToQueryAction());
+    }
+    return result;
 };
 
 window['converse'] = converse;

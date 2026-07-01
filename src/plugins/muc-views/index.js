@@ -3,7 +3,8 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
-import {api, converse, constants} from '@converse/headless';
+import { api, converse, constants } from '@converse/headless';
+import { __ } from 'i18n';
 import '../chatboxviews/index.js';
 import './affiliation-form.js';
 import './role-form.js';
@@ -85,5 +86,22 @@ converse.plugins.add('converse-muc-views', {
 
         api.listen.on('parseMessageForCommands', parseMessageForMUCCommands);
         api.listen.on('confirmDirectMUCInvitation', confirmDirectMUCInvitation);
+
+        api.listen.on('xmppURIAction', async ({ jid, query_params, action }) => {
+            if (action === 'join') {
+                const attrs = {};
+                // As per XEP-0147, the 'password' parameter maps to 'password'
+                if (query_params.has('password')) {
+                    attrs.password = query_params.get('password');
+                }
+                
+                try {
+                    await api.waitUntil('chatBoxesFetched');
+                    await api.rooms.open(jid, attrs, true);
+                } catch (err) {
+                    api.alert('error', __('Error'), [__('Failed to join the room %1$s', jid)]);
+                }
+            }
+        });
     }
 });

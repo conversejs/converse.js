@@ -1,5 +1,7 @@
 import { __ } from 'i18n';
-import { _converse, api } from '@converse/headless';
+import { _converse, api,u } from '@converse/headless';
+import log from "@converse/log";
+
 
 export function clearHistory (jid) {
     if (location.hash === `converse/chat?jid=${jid}`) {
@@ -71,3 +73,85 @@ export function resetElementHeight (ev) {
         ev.target.style = '';
     }
 }
+
+
+/**
+ * Handle XEP-0147 "query actions" invoked via xmpp: URIs.
+ * Extracts URI from window location, parses it, and triggers xmppURIAction event
+ * for plugin-specific handling via api.listen.
+ *
+ * @param {Event} [event] - Optional event object (used when called as protocol handler)
+ * @returns {Promise<void>}
+ * @example
+ * // Automatically called on initialization in src/index.js
+ * // Can be called manually after location.hash changes:
+ * window.location.hash = '#converse/action?uri=xmpp%3Auser%40example.com';
+ * await routeToQueryAction();
+ */
+export async function routeToQueryAction(event) {
+    const { u } = _converse.env;
+
+    const uri = extractXMPPURI(event);
+    if (!uri) return;
+
+    const { jid, action, query_params } = parseXMPPURI(uri);
+    if (!u.isValidJID(jid)) {
+        return log.warn(`routeToQueryAction: Invalid JID: "${jid}"`);
+    }
+    
+    // Trigger event to let specific plugins handle plugin-specific actions
+    api.trigger('xmppURIAction', { jid, query_params, action });
+}
+
+/**
+ * Extracts and decodes the xmpp: URI from the window location or hash.
+ */
+export function extractXMPPURI(event) {
+    let uri = null;
+    // hash-based (#converse/action?uri=...)
+    if (location.hash.startsWith('#converse/action?uri=')) {
+        event?.preventDefault();
+        uri = location.hash.split('#converse/action?uri=').pop();
+    }
+
+    if (!uri) return null;
+
+    // Decode URI and remove xmpp: prefix
+    uri = decodeURIComponent(uri);
+    if (uri.startsWith('xmpp:')) uri = uri.slice(5);
+
+    // Clean up URL (remove ?uri=... for a clean view)
+    const clean_url = `${window.location.origin}${window.location.pathname}`;
+    window.history.replaceState({}, document.title, clean_url);
+
+    return uri;
+}
+
+/**
+ * Splits an xmpp: URI into a JID, an action (querytype), and query parameters.
+ * XEP-0147 query parameters are separated by ';' instead of '&'.
+ */
+export function parseXMPPURI(uri) {
+    const [jid, query] = uri.split('?');
+    let action = null;
+    const query_params = new URLSearchParams();
+
+    if (query) {
+        const parts = query.split(';');
+        if (parts.length > 0) {
+            action = parts[0]; // The first part is the action (e.g., 'roster')
+            for (let i = 1; i < parts.length; i++) {
+                const [key, value] = parts[i].split('=');
+                if (key) {
+                    query_params.set(key, value ? decodeURIComponent(value) : '');
+                }
+            }
+        }
+    }
+    
+    return { jid, action, query_params };
+}
+
+Object.assign(u,{
+    routeToQueryAction,
+})

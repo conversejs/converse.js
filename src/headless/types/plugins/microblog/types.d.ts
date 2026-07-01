@@ -9,6 +9,7 @@ export type PubSubMessageAttrs = {
     id: string;
     node?: string;
     from?: string;
+    rsm_cursor?: string;
     body?: string;
     body_xhtml?: string;
     summary?: string;
@@ -42,5 +43,7 @@ export type PubSubFeedAttrs = {
     jid: string;
     node: string;
     title?: string;
+    supports_rsm?: boolean;
+    history_complete?: boolean;
 };
 //# sourceMappingURL=types.d.ts.map

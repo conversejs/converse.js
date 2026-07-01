@@ -251,12 +251,6 @@ It allows you to specify the maximum amount of archived messages to be returned 
 
 You will be able to query for even older messages by scrolling upwards in the chatbox or room (the so-called infinite scrolling pattern).
 
-### auto_fill_history_gaps
-
-- Default: `true`
-
-Determines whether Converse automatically fills gaps in the chat history. If set to false, a placeholder appears which can be clicked to fetch the missing messages.
-
 ### auto_focus
 
 - Default: `true`

@@ -310,7 +310,7 @@ export default {
             for (const { server, node } of following) {
                 feeds.getFeed(server, node, true);
             }
-            feeds.forEach((feed) => feed.fetchPosts());
+            feeds.forEach(/** @param {import('./feed').default} f */ (f) => f.fetchPosts());
         },
 
         /**

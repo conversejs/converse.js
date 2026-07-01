@@ -14,6 +14,9 @@ export type PubSubMessageAttrs = {
     id: string; // The PubSub item id
     node?: string; // The node the item was published to
     from?: string; // JID of the feed (node owner / publishing service)
+    // Opaque XEP-0059 RSM cursor of the page whose oldest item this post was, captured
+    // from the server's `<first>` and persisted so we can page older than it later.
+    rsm_cursor?: string;
 
     // Atom payload
     body?: string; // Plain-text body: <content>, else <title>, else <summary>
@@ -53,4 +56,6 @@ export type PubSubFeedAttrs = {
     jid: string; // The service/owner JID (bare JID for own PEP)
     node: string; // The PubSub node
     title?: string;
+    supports_rsm?: boolean; // Whether the server echoed an RSM `<set>` (else max_items paging)
+    history_complete?: boolean; // Whether the oldest post in the node has been loaded
 };

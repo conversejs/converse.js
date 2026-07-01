@@ -6,4 +6,10 @@
  * @returns {string}
  */
 export function getRelativeTime(time: string | number | Date): string;
+/**
+ * Sorts items newest-first by their ISO-8601 `time` (published/updated).
+ * @param {import('@converse/skeletor').Model} a
+ * @param {import('@converse/skeletor').Model} b
+ */
+export function byTimeDesc(a: import("@converse/skeletor").Model, b: import("@converse/skeletor").Model): any;
 //# sourceMappingURL=time.d.ts.map

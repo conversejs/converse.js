@@ -98,6 +98,7 @@ declare const _default: {
     shouldRenderMediaFromURL(url_text: string, type: "audio" | "image" | "video"): any;
     filterQueryParamsFromURL(url: string): string;
     getRelativeTime(time: string | number | Date): string;
+    byTimeDesc(a: import("@converse/skeletor").Model, b: import("@converse/skeletor").Model): any;
     getNameAndValue(field: HTMLInputElement | HTMLSelectElement): {
         [key: string]: string | number | string[];
     } | null;

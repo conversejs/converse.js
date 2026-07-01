@@ -8,9 +8,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { aggregatedCollectionSignal } from 'shared/signals.js';
 import { postMatchesHashtag } from './texture.js';
 import tplFeed from './templates/feed.js';
-
-/** Sort posts newest-first by their ISO-8601 `time` (published/updated). */
-const byTimeDesc = (a, b) => (b.get('time') ?? '').localeCompare(a.get('time') ?? '');
+import { byTimeDesc } from 'utils/time.js';
 
 /**
  * Renders the social timeline: a compose box plus the merged list of posts from

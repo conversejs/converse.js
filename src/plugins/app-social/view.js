@@ -6,6 +6,7 @@ import './compose.js';
 import './message.js';
 import './onboarding.js';
 import './feed.js';
+import './placeholder.js';
 import './styles/social.scss';
 
 class SocialApp extends CustomElement {

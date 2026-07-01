@@ -428,6 +428,187 @@ describe('The microblog plugin', function () {
         }),
     );
 
+    // Build `n` PubSub <item> elements p<start>..p<start+n-1>, oldest→newest (the
+    // order a server returns), one minute apart.
+    const buildItems = (n, start) =>
+        Array.from({ length: n }, (_, i) => {
+            const k = start + i;
+            const id = `p${k}`;
+            const t = new Date(Date.parse('2026-06-01T00:00:00Z') + k * 60000).toISOString();
+            return stx`<item id="${id}">
+                    <entry xmlns="${ATOM}">
+                        <title>Post ${id}</title>
+                        <id>tag:x,2026:${id}</id>
+                        <published>${t}</published>
+                        <updated>${t}</updated>
+                    </entry>
+                </item>`.tree();
+        });
+
+    it(
+        'fetches the newest page with max_items and records the opaque RSM cursor',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const feed = await api.microblog.feeds.get('ivan@vucica.net', MICROBLOG_NODE, true);
+
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: buildItems(20, 1),
+                rsm: { result: { first: 'cursor-oldest', last: 'cursor-newest' } },
+            });
+
+            await feed.fetchPosts();
+
+            // Portable newest-N primitive, not an RSM cursor query.
+            expect(api.pubsub.items.get).toHaveBeenCalledWith('ivan@vucica.net', MICROBLOG_NODE, { max_items: 20 });
+            expect(feed.get('supports_rsm')).toBe(true);
+            // The opaque cursor of the page's oldest item is persisted onto it.
+            expect(feed.getOldestPost().get('rsm_cursor')).toBe('cursor-oldest');
+            // A full page ⇒ more history ⇒ a "load older" placeholder is seeded.
+            expect(feed.hasScrolldownPlaceholder()).toBe(true);
+        }),
+    );
+
+    it(
+        'records the older-frontier cursor from the correct end when the server returns items newest-first',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const { PubsubPlaceholderMessage } = _converse.exports;
+            const feed = await api.microblog.feeds.get('ivan@vucica.net', MICROBLOG_NODE, true);
+
+            // Some servers return the page newest→oldest. Then RSM `<first>` is the
+            // *newest* item and `<last>` is the oldest, so the cursor to page further
+            // back is `<last>`, not `<first>`.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: buildItems(20, 1).reverse(),
+                rsm: { result: { first: 'c-newest', last: 'c-oldest' } },
+            });
+
+            await feed.fetchPosts();
+
+            // The oldest post carries the older-frontier cursor from the `<last>` end,
+            // and the "load older" placeholder pages from there.
+            expect(feed.getOldestPost().get('rsm_cursor')).toBe('c-oldest');
+            const ph = feed.messages.models.find((m) => m instanceof PubsubPlaceholderMessage);
+            expect(ph.get('before_cursor')).toBe('c-oldest');
+        }),
+    );
+
+    it(
+        'loads older posts via the opaque RSM before-cursor',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const { PubsubPlaceholderMessage } = _converse.exports;
+            const feed = await api.microblog.feeds.get('ivan@vucica.net', MICROBLOG_NODE, true);
+
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, _node, opts) => {
+                if (opts.max_items) {
+                    return Promise.resolve({ items: buildItems(20, 21), rsm: { result: { first: 'c-21' } } });
+                }
+                if (opts.rsm?.before === 'c-21') {
+                    return Promise.resolve({ items: buildItems(20, 1), rsm: { result: { first: 'c-1' } } });
+                }
+                return Promise.resolve({ items: [], rsm: { result: {} } });
+            });
+
+            await feed.fetchPosts();
+            expect(feed.getPosts().length).toBe(20);
+
+            const ph = feed.messages.models.find((m) => m instanceof PubsubPlaceholderMessage);
+            await feed.fetchOlder(ph);
+
+            // Paged via the opaque cursor, not item-id or post time.
+            expect(api.pubsub.items.get).toHaveBeenCalledWith('ivan@vucica.net', MICROBLOG_NODE, {
+                rsm: { before: 'c-21', max: 20 },
+            });
+            expect(feed.getPosts().length).toBe(40);
+        }),
+    );
+
+    it(
+        'loads one larger window and disables paging when the server has no RSM',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const feed = await api.microblog.feeds.get('ivan@vucica.net', MICROBLOG_NODE, true);
+
+            // No `rsm` in the response ⇒ server ignores RSM (Prosody-like). The first
+            // page is full, so a single larger window is fetched — not incremental
+            // (and increasingly wasteful) `max_items` growth.
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, _node, opts) => {
+                if (opts.max_items === 20) return Promise.resolve({ items: buildItems(20, 41) }); // newest page, no rsm
+                if (opts.max_items > 20) return Promise.resolve({ items: buildItems(60, 1) }); // the larger window
+                return Promise.resolve({ items: [] });
+            });
+
+            await feed.fetchPosts();
+
+            expect(feed.get('supports_rsm')).toBe(false);
+            const windows = api.pubsub.items.get.mock.calls.map((call) => call[2].max_items);
+            expect(windows).toContain(20); // detection page
+            expect(windows.some((n) => n > 20)).toBe(true); // the one larger window
+            expect(feed.getPosts().length).toBe(60);
+            // Paging is disabled: history is complete and no "load older" placeholder.
+            expect(feed.get('history_complete')).toBe(true);
+            expect(feed.hasScrolldownPlaceholder()).toBe(false);
+        }),
+    );
+
+    it(
+        'marks a newer-than-cache gap with a positioned placeholder',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const { PubsubPlaceholderMessage } = _converse.exports;
+            const feed = await api.microblog.feeds.get('ivan@vucica.net', MICROBLOG_NODE, true);
+
+            // Pre-seed an older cached set (p1..p5).
+            await feed.addItems(buildItems(5, 1));
+            const cached_newest_time = feed.getNewestPost().get('time');
+
+            // The newest page (p21..p40) is a full page that doesn't reach the cache.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: buildItems(20, 21),
+                rsm: { result: { first: 'c-21' } },
+            });
+            await feed.fetchPosts();
+
+            const gap = feed.messages.models.find(
+                (m) => m instanceof PubsubPlaceholderMessage && m.get('stop_at_time')
+            );
+            expect(gap).toBeDefined();
+            expect(gap.get('before_cursor')).toBe('c-21');
+            expect(gap.get('stop_at_time')).toBe(cached_newest_time);
+            // It sorts into the gap: below the newest page, above the cached posts.
+            expect(gap.get('time') < feed.messages.get('p21').get('time')).toBe(true);
+            expect(gap.get('time') > cached_newest_time).toBe(true);
+        }),
+    );
+
+    it(
+        're-derives history_complete on each refresh (does not latch true)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const feed = await api.microblog.feeds.get('ivan@vucica.net', MICROBLOG_NODE, true);
+
+            // First refresh: the whole (small) node fits in one page ⇒ complete.
+            const getSpy = vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: buildItems(5, 1) });
+            await feed.fetchPosts();
+            expect(feed.get('history_complete')).toBe(true);
+
+            // The node grew while we were away; a later refresh returns a *full* page,
+            // so there is older history again — completeness must flip back to false
+            // (and re-offer "load older"), not stay latched at true.
+            getSpy.mockResolvedValue({ items: buildItems(20, 6), rsm: { result: { first: 'c-6' } } });
+            await feed.fetchPosts();
+            expect(feed.get('history_complete')).toBe(false);
+            expect(feed.hasScrolldownPlaceholder()).toBe(true);
+        }),
+    );
+
     it(
         'builds and publishes a post to the own microblog node',
         mock.initConverse(converse, [], {}, async function (_converse) {

@@ -36,14 +36,71 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
      */
     addItems(items: Element[]): Promise<import("./message").default[]>;
     /**
-     * Backfill the feed's history from the node (XEP-0060 § 6.5 Retrieve Items).
-     * @param {object} [options]
-     * @param {number} [options.max_items=20]
+     * The feed's cached posts (excluding placeholders), newest-first.
+     * @returns {import('./message').default[]}
+     */
+    getPosts(): import("./message").default[];
+    /**
+     * The newest cached post (or undefined if the feed is empty). The collection is
+     * sorted newest-first, so scan from the front for the first non-placeholder.
+     * @returns {import('./message').default|undefined}
+     */
+    getNewestPost(): import("./message").default | undefined;
+    /**
+     * The oldest cached post (or undefined if the feed is empty). Scan from the back
+     * of the newest-first collection for the first non-placeholder.
+     * @returns {import('./message').default|undefined}
+     */
+    getOldestPost(): import("./message").default | undefined;
+    /**
+     * Whether an older-frontier ("load older") placeholder is already present.
+     * @returns {boolean}
+     */
+    hasScrolldownPlaceholder(): boolean;
+    /**
+     * Persist the opaque RSM cursor of a fetched page's oldest item onto that post,
+     * so we can page *older* than it later (and after a reload). No-op without RSM.
+     *
+     * The server returns items oldest→newest and reports the page's `<first>` as the
+     * cursor of the oldest item (verified: Prosody has no RSM; ejabberd uses opaque
+     * creation-timestamp cursors). We treat the cursor as opaque and echo it back.
+     *
+     * @param {import('./message').default[]} added
+     * @param {import('../pubsub/types.ts').PubSubItemsResult} result
+     * @returns {import('./message').default|undefined} The oldest post of the page.
+     */
+    storePageCursor(added: import("./message").default[], result: import("../pubsub/types.ts").PubSubItemsResult): import("./message").default | undefined;
+    /**
+     * Fetch the newest page of the feed's history and merge it in (XEP-0060 § 6.5).
+     * Uses native `max_items` since not all servers support RSM pubsub (e.g. Prosody).
      * @returns {Promise<void>}
      */
-    fetchPosts({ max_items }?: {
-        max_items?: number;
-    }): Promise<void>;
+    fetchPosts(): Promise<void>;
+    /**
+     * Load one page of posts *older* than `placeholder`'s cursor and merge them in.
+     * Shared by the older-frontier and gap placeholders.
+     *
+     * Pages via the opaque RSM `before` cursor. Placeholders only exist on
+     * RSM-capable servers (see {@link fetchPosts}), so no `max_items` fallback is
+     * needed here. Re-seeds a follow-on placeholder of the same kind when more
+     * history remains.
+     * @param {PubsubPlaceholderMessage} placeholder
+     * @returns {Promise<void>}
+     */
+    fetchOlder(placeholder: PubsubPlaceholderMessage): Promise<void>;
+    /**
+     * Seed the per-feed "load older" placeholder at the feed's oldest-loaded post.
+     * Positioned in the aggregate timeline by the oldest post's time, so it sits at
+     * the point where *this* feed's loaded history ends and interleaves correctly.
+     */
+    createScrolldownPlaceholder(): void;
+    /**
+     * Mark a newer-than-cache gap: a placeholder positioned just below the newest
+     * page that pages the missing range until it reaches the cached posts.
+     * @param {import('./message').default} page_oldest - Oldest post of the newest page.
+     * @param {string} stop_at_time - Time of the newest cached post (the gap's floor).
+     */
+    createGapPlaceholder(page_oldest: import("./message").default, stop_at_time: string): void;
     /**
      * Remove posts from the feed by id, e.g. in response to a retraction event.
      * @param {string[]} ids
@@ -71,4 +128,5 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
 }
 import { Model } from '@converse/skeletor';
 import PubSubMessages from './messages.js';
+import PubsubPlaceholderMessage from './placeholder.js';
 //# sourceMappingURL=feed.d.ts.map

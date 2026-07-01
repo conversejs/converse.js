@@ -9,7 +9,8 @@ import api from '../../shared/api/index.js';
 import log from '@converse/log';
 import PubSubMessages from './messages.js';
 import { buildItem, parseAtomEntry } from './parsers.js';
-import { MICROBLOG_NODE, MICROBLOG_PUBLISH_OPTIONS } from './constants.js';
+import { MICROBLOG_NODE, MICROBLOG_PUBLISH_OPTIONS, POSTS_MAX_WITHOUT_RSM, POSTS_PAGE_SIZE } from './constants.js';
+import PubsubPlaceholderMessage from './placeholder.js';
 
 /**
  * One PubSub feed: a single node at a single JID (your own
@@ -94,20 +95,215 @@ class PubSubFeed extends Model {
     }
 
     /**
-     * Backfill the feed's history from the node (XEP-0060 § 6.5 Retrieve Items).
-     * @param {object} [options]
-     * @param {number} [options.max_items=20]
+     * The feed's cached posts (excluding placeholders), newest-first.
+     * @returns {import('./message').default[]}
+     */
+    getPosts() {
+        return this.messages.models.filter((m) => !(m instanceof PubsubPlaceholderMessage));
+    }
+
+    /**
+     * The newest cached post (or undefined if the feed is empty). The collection is
+     * sorted newest-first, so scan from the front for the first non-placeholder.
+     * @returns {import('./message').default|undefined}
+     */
+    getNewestPost() {
+        return this.messages.models.find((m) => !(m instanceof PubsubPlaceholderMessage));
+    }
+
+    /**
+     * The oldest cached post (or undefined if the feed is empty). Scan from the back
+     * of the newest-first collection for the first non-placeholder.
+     * @returns {import('./message').default|undefined}
+     */
+    getOldestPost() {
+        const models = this.messages.models;
+        for (let i = models.length - 1; i >= 0; i--) {
+            if (!(models[i] instanceof PubsubPlaceholderMessage)) return models[i];
+        }
+        return undefined;
+    }
+
+    /**
+     * Whether an older-frontier ("load older") placeholder is already present.
+     * @returns {boolean}
+     */
+    hasScrolldownPlaceholder() {
+        return this.messages.models.some((m) => m instanceof PubsubPlaceholderMessage && !m.get('stop_at_time'));
+    }
+
+    /**
+     * Persist the opaque RSM cursor of a fetched page's oldest item onto that post,
+     * so we can page *older* than it later. No-op without RSM.
+     * @param {import('./message').default[]} added
+     * @param {import('../pubsub/types.ts').PubSubItemsResult} result
+     * @returns {import('./message').default|undefined} The oldest post of the page.
+     */
+    storePageCursor(added, result) {
+        if (!added.length) return undefined;
+        // Determine on which end is the oldest message
+        const first = added[0];
+        const last = added[added.length - 1];
+        const ascending = (first.get('time') ?? '') <= (last.get('time') ?? '');
+        const oldest = ascending ? first : last;
+        const cursor = ascending ? result.rsm?.result?.first : result.rsm?.result?.last;
+        if (cursor && oldest.get('rsm_cursor') !== cursor) {
+            oldest.save({ rsm_cursor: cursor });
+        }
+        return oldest;
+    }
+
+    /**
+     * Fetch the newest page of the feed's history and merge it in (XEP-0060 § 6.5).
+     * Uses native `max_items` since not all servers support RSM pubsub (e.g. Prosody).
      * @returns {Promise<void>}
      */
-    async fetchPosts({ max_items = 20 } = {}) {
+    async fetchPosts() {
+        const { jid, node } = this.attrs;
+        // Kick off the network fetch immediately so it runs in parallel with
+        // hydration (and so callers can observe the request without awaiting).
+        const promise = api.pubsub.items.get(jid, node, { max_items: POSTS_PAGE_SIZE });
+
+        await this.messages.hydrated;
+        // Newest post we already have, to detect a gap the newest page won't reach.
+        const cached_newest_time = this.getNewestPost()?.get('time');
+
         let result;
         try {
-            result = await api.pubsub.items.get(this.get('jid'), this.get('node'), { max_items });
+            result = await promise;
         } catch (e) {
             log.error(e);
             return;
         }
-        await this.addItems(result.items);
+
+        this.set('supports_rsm', !!result.rsm);
+        const added = await this.addItems(result.items);
+        const page_oldest = this.storePageCursor(added, result);
+
+        if (!this.get('supports_rsm')) {
+            // Without RSM we can't page efficiently (native `max_items` only ever
+            // returns the newest N, so paging backwards re-fetches everything). When
+            // the newest page is full there may be more history, so load a single
+            // larger window up front, then disable paging.
+            if (result.items.length >= POSTS_PAGE_SIZE) {
+                try {
+                    const full = await api.pubsub.items.get(jid, node, { max_items: POSTS_MAX_WITHOUT_RSM });
+                    await this.addItems(full.items);
+                } catch (e) {
+                    log.error(e);
+                }
+            }
+            this.set('history_complete', true);
+            return;
+        }
+
+        const complete = result.items.length < POSTS_PAGE_SIZE;
+        this.set('history_complete', complete);
+        if (complete) return;
+
+        // A gap exists when the newest page's oldest post is still newer than the
+        // posts we already had cached (i.e. it didn't reach them).
+        if (
+            cached_newest_time &&
+            page_oldest &&
+            new Date(page_oldest.get('time')).getTime() > new Date(cached_newest_time).getTime()
+        ) {
+            this.createGapPlaceholder(page_oldest, cached_newest_time);
+        }
+        this.createScrolldownPlaceholder();
+    }
+
+    /**
+     * Load one page of posts *older* than `placeholder`'s cursor and merge them in.
+     * Shared by the older-frontier and gap placeholders.
+     *
+     * Pages via the opaque RSM `before` cursor. Placeholders only exist on
+     * RSM-capable servers (see {@link fetchPosts}), so no `max_items` fallback is
+     * needed here. Re-seeds a follow-on placeholder of the same kind when more
+     * history remains.
+     * @param {PubsubPlaceholderMessage} placeholder
+     * @returns {Promise<void>}
+     */
+    async fetchOlder(placeholder) {
+        await this.messages.hydrated;
+        const { jid, node } = this.attrs;
+        const before_cursor = placeholder.get('before_cursor');
+        const stop_at_time = placeholder.get('stop_at_time');
+        // No cursor ⇒ nothing to page against (shouldn't happen: placeholders are
+        // only created when RSM is supported and a cursor was captured).
+        if (!before_cursor) return;
+
+        let result;
+        try {
+            result = await api.pubsub.items.get(jid, node, { rsm: { before: before_cursor, max: POSTS_PAGE_SIZE } });
+        } catch (e) {
+            log.error(e);
+            return;
+        }
+
+        const added = await this.addItems(result.items);
+        const page_oldest = this.storePageCursor(added, result);
+
+        const more = result.items.length >= POSTS_PAGE_SIZE;
+        const reached_cache = !!(
+            stop_at_time &&
+            page_oldest &&
+            new Date(page_oldest.get('time')).getTime() <= new Date(stop_at_time).getTime()
+        );
+
+        if (more && !reached_cache && page_oldest) {
+            // Re-seed a follow-on placeholder of the same kind at the new oldest post.
+            // `storePageCursor` has already stored this page's older-frontier cursor
+            // onto `page_oldest`, so read it back rather than re-deriving it.
+            this.messages.add(
+                new PubsubPlaceholderMessage({
+                    before_cursor: page_oldest.get('rsm_cursor'),
+                    ...(stop_at_time ? { stop_at_time } : {}),
+                    time: new Date(new Date(page_oldest.get('time')).getTime() - 1).toISOString(),
+                }),
+            );
+        } else if (!stop_at_time) {
+            // The older frontier is exhausted (start of the node reached).
+            this.set('history_complete', true);
+        }
+    }
+
+    /**
+     * Seed the per-feed "load older" placeholder at the feed's oldest-loaded post.
+     * Positioned in the aggregate timeline by the oldest post's time, so it sits at
+     * the point where *this* feed's loaded history ends and interleaves correctly.
+     */
+    createScrolldownPlaceholder() {
+        if (this.get('history_complete') || this.hasScrolldownPlaceholder()) return;
+        const oldest = this.getOldestPost();
+        if (!oldest) return;
+        this.messages.add(
+            new PubsubPlaceholderMessage({
+                before_cursor: oldest.get('rsm_cursor'),
+                time: new Date(new Date(oldest.get('time')).getTime() - 1).toISOString(),
+            }),
+        );
+    }
+
+    /**
+     * Mark a newer-than-cache gap: a placeholder positioned just below the newest
+     * page that pages the missing range until it reaches the cached posts.
+     * @param {import('./message').default} page_oldest - Oldest post of the newest page.
+     * @param {string} stop_at_time - Time of the newest cached post (the gap's floor).
+     */
+    createGapPlaceholder(page_oldest, stop_at_time) {
+        // `storePageCursor` already stored the page's older-frontier cursor onto
+        // `page_oldest`; the gap pages older from there until it reaches the cache.
+        const before_cursor = page_oldest.get('rsm_cursor');
+        const time = new Date(new Date(page_oldest.get('time')).getTime() - 1).toISOString();
+        const exists = this.messages.models.some(
+            (m) =>
+                m instanceof PubsubPlaceholderMessage &&
+                m.get('time') === time &&
+                m.get('stop_at_time') === stop_at_time,
+        );
+        if (exists) return;
+        this.messages.add(new PubsubPlaceholderMessage({ before_cursor, stop_at_time, time }));
     }
 
     /**

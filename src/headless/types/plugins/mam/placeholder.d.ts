@@ -6,5 +6,5 @@ export default class MAMPlaceholderMessage extends Model<import("@converse/skele
     };
     fetchMissingMessages(): Promise<void>;
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=placeholder.d.ts.map

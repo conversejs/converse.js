@@ -17,6 +17,19 @@ export const COMMENTS_NODE_PREFIX: "urn:xmpp:microblog:0:comments/";
  */
 export const SOCIAL_FEED_FEATURE: "urn:xmpp:pubsub-social-feed:1";
 /**
+ * How many posts to fetch per page when backfilling a feed's history
+ * (XEP-0060 § 6.5 Retrieve Items, `max_items` / RSM `max`).
+ */
+export const POSTS_PAGE_SIZE: 20;
+/**
+ * Ceiling for feeds on servers *without* RSM support. Without RSM we can't page
+ * efficiently — native `max_items` only ever returns the newest N, so paging
+ * backwards would re-fetch the whole set each time — so we load up to this many of
+ * the newest posts in one query and don't offer "load older". A deliberate cap to
+ * avoid an unbounded fetch on a busy feed.
+ */
+export const POSTS_MAX_WITHOUT_RSM: 200;
+/**
  * How many contacts the manual "find people to follow" sweep probes at once. The
  * sweep is network-bound (waiting on IQ replies), so a modest pool keeps it quick
  * without flooding the connection.

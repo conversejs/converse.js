@@ -3,26 +3,31 @@
  * an offline cache; the PubSub node remains the source of truth.
  */
 export type PubSubMessageAttrs = {
-    // Skeletor/BaseMessage bookkeeping
     type: string;
     msgid: string;
-    // Omitted when the Atom entry carries no <published>/<updated>; the
-    // PubSubMessage then stamps the current time once, at creation.
     time?: string;
 
-    // PubSub identity
     id: string; // The PubSub item id
     node?: string; // The node the item was published to
     from?: string; // JID of the feed (node owner / publishing service)
+
     // Opaque XEP-0059 RSM cursor of the page whose oldest item this post was, captured
-    // from the server's `<first>` and persisted so we can page older than it later.
+    // from the server's RSM `<first>` value and persisted so we can page older than it later.
     rsm_cursor?: string;
 
-    // Atom payload
-    body?: string; // Plain-text body: <content>, else <title>, else <summary>
-    body_xhtml?: string; // XEP-0071 rich body (inner XHTML), if present
-    summary?: string; // Atom <summary> excerpt, if present
     atom_id?: string; // The `tag:` URI from <atom:id>
+
+    // An Atom entry can carry up to three text constructs:
+    //  - <title> XEP-0277 short posts put the whole post here
+    //  - <summary> An excerpt
+    //  - <content> Full body. Atom-native feeds use this, often with an empty <title>.
+    title?: string;
+    content?: string;
+    summary?: string;
+
+    title_xhtml?: string;
+    content_xhtml?: string;
+
     author_name?: string;
     author_jid?: string; // Derived from <atom:author><uri>
     publisher?: string; // Server-stamped item @publisher (authoritative)

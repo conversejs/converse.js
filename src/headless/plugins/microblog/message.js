@@ -175,6 +175,17 @@ class PubSubMessage extends BaseMessage {
     getAuthorJID() {
         return this.get('via_jid') || this.get('author_jid') || this.get('publisher') || this.get('from');
     }
+
+    /**
+     * Colour the post by its *displayed* author, so every post from the same
+     * author shares a colour and the name colour matches the avatar. Overrides
+     * {@link ColorAwareModel}'s default, which would key on `from` — the
+     * *reposter* for a repost, not the original author shown in the header.
+     * @returns {string}
+     */
+    getIdentifier() {
+        return this.getAuthorJID() || super.getIdentifier();
+    }
 }
 
 export default PubSubMessage;

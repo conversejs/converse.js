@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import { until } from 'lit/directives/until.js';
 import { __ } from 'i18n';
 import { api, converse } from '@converse/headless';
 import renderTexture from 'shared/texture/directives/texture.js';
@@ -19,18 +20,39 @@ export default (el) => {
     // never conflated (X.com-style "<reposter> reposted").
     const reposter = m.get('is_mine') ? __('You') : (m.getReposterName() ?? '');
 
-    // Render the body as rich text via the shared texture pipeline: URLs, media,
-    // emojis and XEP-0393 styling, plus social-only hashtags (render_hashtags).
+    // Render one Atom text construct as rich text via the shared texture pipeline:
+    // URLs, media, emojis and XEP-0393 styling, plus social-only hashtags.
     const render_media = api.settings.get('render_media');
-    const body = renderTexture(m.get('body') ?? '', 0, {
-        render_styling: true,
-        render_hashtags: true,
-        show_images: render_media,
-        embed_audio: render_media,
-        embed_videos: render_media,
-        onImgClick: /** @param {MouseEvent} ev */ (ev) => el.onImgClick(ev),
-        onImgLoad: () => el.onImgLoad(),
-    });
+    const renderConstruct = (/** @type {string} */ text) =>
+        renderTexture(text, 0, {
+            render_styling: true,
+            render_hashtags: true,
+            show_images: render_media,
+            embed_audio: render_media,
+            embed_videos: render_media,
+            onImgClick: /** @param {MouseEvent} ev */ (ev) => el.onImgClick(ev),
+            onImgLoad: () => el.onImgLoad(),
+        });
+
+    // An Atom entry can carry up to three text constructs:
+    // <title>, <summary> and <content>
+    //
+    // A lone construct renders as plain text; a <title> sitting above other constructs
+    // becomes a bold heading; a <summary> shown above <content> is italicised,
+    // with <content> in normal weight below it.
+    const title = m.get('title');
+    const summary = m.get('summary');
+    const content = m.get('content');
+    const title_is_heading = !!title && (!!summary || !!content);
+
+    // Colour the author name per-author
+    const color = m.get('color');
+    const author_style = color
+        ? `color: ${color}`
+        : until(
+              m.getColor().then((c) => `color: ${c}`),
+              '',
+          );
 
     const avatar = html`<converse-avatar
         .model=${m}
@@ -57,7 +79,14 @@ export default (el) => {
                     : html`<span class="social-post__avatar">${avatar}</span>`}
                 <div class="social-post__main">
                     <header class="social-post__header">
-                        <span class="social-post__author">${name}</span>
+                        ${m.contact
+                            ? html`<a
+                                  class="show-msg-author-modal social-post__author"
+                                  style="${author_style}"
+                                  @click=${(ev) => el.showUserModal(ev)}
+                                  >${name}</a
+                              >`
+                            : html`<span class="social-post__author" style="${author_style}">${name}</span>`}
                         <span class="social-post__jid">${m.get('author_jid')}</span>
 
                         ${time
@@ -80,7 +109,21 @@ export default (el) => {
                               </button>`
                             : ''}
                     </header>
-                    <div class="social-post__body">${body}</div>
+                    <div class="social-post__body">
+                        ${title
+                            ? html`<div
+                                  class="social-post__title ${title_is_heading ? 'social-post__title--heading' : ''}"
+                              >
+                                  ${renderConstruct(title)}
+                              </div>`
+                            : ''}
+                        ${summary
+                            ? html`<div class="social-post__summary ${content ? 'social-post__summary--excerpt' : ''}">
+                                  ${renderConstruct(summary)}
+                              </div>`
+                            : ''}
+                        ${content ? html`<div class="social-post__content">${renderConstruct(content)}</div>` : ''}
+                    </div>
                 </div>
             </div>
         </article>

@@ -23,7 +23,9 @@ const HASHTAG_REGEX = /(?<![\p{L}\p{N}_])#(\p{L}[\p{L}\p{N}_]*)/gu;
  */
 export function getPostHashtags(post) {
     const tags = new Set();
-    for (const m of (post.get('body') ?? '').matchAll(HASHTAG_REGEX)) {
+    // Scan all three Atom text constructs (<title>/<summary>/<content>).
+    const text = [post.get('title'), post.get('summary'), post.get('content')].filter(Boolean).join('\n');
+    for (const m of text.matchAll(HASHTAG_REGEX)) {
         tags.add(m[1].toLowerCase());
     }
     for (const category of post.get('categories') ?? []) {

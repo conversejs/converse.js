@@ -10,10 +10,12 @@ export type PubSubMessageAttrs = {
     node?: string;
     from?: string;
     rsm_cursor?: string;
-    body?: string;
-    body_xhtml?: string;
-    summary?: string;
     atom_id?: string;
+    title?: string;
+    content?: string;
+    summary?: string;
+    title_xhtml?: string;
+    content_xhtml?: string;
     author_name?: string;
     author_jid?: string;
     publisher?: string;

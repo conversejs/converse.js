@@ -306,8 +306,26 @@
                 margin-bottom: 0.25em;
             }
 
+            // Avatar and author name are click targets (open the author's
+            // profile / details) when the author resolves to a contact.
+            .show-msg-author-modal {
+                cursor: pointer;
+            }
+
             &__author {
                 font-weight: bold;
+
+                // The clickable variant links to the author's profile; keep it
+                // looking like a name — the per-author colour is set inline, so
+                // inherit here to avoid a hyperlink-blue flash before it loads.
+                &.show-msg-author-modal {
+                    color: inherit;
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
             }
 
             &__jid {
@@ -336,7 +354,6 @@
             }
 
             &__body {
-                white-space: pre-wrap;
                 word-wrap: break-word;
 
                 // Inline media rendered by the texture pipeline shouldn't
@@ -346,6 +363,35 @@
                     max-width: 100%;
                     height: auto;
                 }
+            }
+
+            // The Atom text constructs (<title>/<summary>/<content>), each its own
+            // block. `pre-wrap` preserves newlines *within* a construct's text.
+            &__title,
+            &__summary,
+            &__content {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+
+            // A blank line ("two line-breaks") between stacked constructs. The
+            // first construct (title, or summary/content when there's no title)
+            // has no element sibling before it, so it gets no leading gap.
+            &__summary,
+            &__content {
+                &:not(:first-child) {
+                    margin-top: 1em;
+                }
+            }
+
+            // A <title> above other constructs reads as a heading; a <summary>
+            // shown above <content> is an excerpt/standfirst.
+            &__title--heading {
+                font-weight: bold;
+            }
+
+            &__summary--excerpt {
+                font-style: italic;
             }
 
             &__hashtag {

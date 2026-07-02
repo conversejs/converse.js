@@ -76,6 +76,14 @@ declare class PubSubMessage extends BaseMessage {
      * @returns {string|undefined}
      */
     getAuthorJID(): string | undefined;
+    /**
+     * Colour the post by its *displayed* author, so every post from the same
+     * author shares a colour and the name colour matches the avatar. Overrides
+     * {@link ColorAwareModel}'s default, which would key on `from` — the
+     * *reposter* for a repost, not the original author shown in the header.
+     * @returns {string}
+     */
+    getIdentifier(): string;
 }
 import BaseMessage from '../../shared/message.js';
 //# sourceMappingURL=message.d.ts.map

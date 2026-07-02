@@ -147,7 +147,7 @@ describe('Microblog following (XEP-0330)', function () {
 
             await u.waitUntil(() => feed.messages.length === 1);
             const post = feed.messages.at(0);
-            expect(post.get('body')).toBe('O Romeo, Romeo');
+            expect(post.get('title')).toBe('O Romeo, Romeo');
             // A followed contact's post is not ours.
             expect(post.get('is_mine')).toBe(false);
         }),

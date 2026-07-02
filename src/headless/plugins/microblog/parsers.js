@@ -84,28 +84,16 @@ export function parseAtomEntry(item, { from, node } = {}) {
         }
     }
 
-    // An Atom entry can carry up to three text constructs: a <title> (XEP-0277
-    // short posts put the whole post here), a <summary> (excerpt), and a <content>
-    // (full body — Atom-native feeds use this, often with an empty <title>). Keep
-    // the feed flat but lossless: render whichever are present as one block, in
-    // document order, newline-separated. `.social-post__body` is `pre-wrap`, so the
-    // newlines show as line breaks.
+    // An Atom entry can carry up to three text constructs:
+    // - <title> XEP-0277 short posts put the whole post here
+    // - <summary> Excerpt.
+    // - <content> Full body Atom-native feeds use this, often with an empty <title>.
     const title = parseTextConstruct(sizzle('> title', entry).pop());
     const summary = parseTextConstruct(sizzle('> summary', entry).pop());
     const content = parseTextConstruct(sizzle('> content', entry).pop());
-    const body = [title.text, summary.text, content.text].filter(Boolean).join('\n') || undefined;
-    const body_xhtml = content.xhtml ?? title.xhtml;
 
     const published = sizzle('> published', entry).pop()?.textContent?.trim();
     const updated = sizzle('> updated', entry).pop()?.textContent?.trim();
-
-    // The post's timestamp is its publication date (else its last-updated date).
-    // When the entry carries neither, leave `time` unset rather than stamping
-    // "now" here: we re-fetch and merge every node on each reload, so a parse-time
-    // fallback would clobber the stored value with a fresh "now" each time and the
-    // post would forever read as just-posted. Instead the PubSubMessage stamps the
-    // current time once at creation (BaseMessage's `time` default), exactly as chat
-    // messages do, and omitting the key here keeps that original stamp on merge.
     const time = published ?? updated;
 
     return {
@@ -114,9 +102,11 @@ export function parseAtomEntry(item, { from, node } = {}) {
         id,
         node,
         from,
-        body,
-        body_xhtml,
+        title: title.text,
+        content: content.text,
         summary: summary.text,
+        title_xhtml: title.xhtml,
+        content_xhtml: content.xhtml,
         atom_id: sizzle('> id', entry).pop()?.textContent?.trim(),
         author_name,
         author_jid,

@@ -5,15 +5,13 @@
 import { api, PubSubMessage } from '@converse/headless';
 import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
-import { attrSignal } from 'shared/signals.js';
 import 'shared/modals/image.js';
 import tplMessage from './templates/message.js';
 
 /**
- * Renders a single microblog post.
- *
- * Uses `attrSignal` so an edit to the post's body re-renders just this
- * component (the `SignalWatcher`-driven feed list passes each post down).
+ * Renders a single microblog post. The `SignalWatcher`-driven feed list passes
+ * each post down; this component re-renders when a post's display-affecting
+ * attributes (its Atom text constructs, author name, avatar) change.
  */
 export default class SocialMessage extends CustomElement {
     static get properties() {
@@ -23,8 +21,11 @@ export default class SocialMessage extends CustomElement {
     }
 
     initialize() {
-        // Re-render this post when its display-affecting attributes change.
-        this.listenTo(this.model, 'change:body', () => this.requestUpdate());
+        // Re-render this post when its display-affecting attributes change. The
+        // post body is the three Atom text constructs, kept distinct.
+        this.listenTo(this.model, 'change:title', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:summary', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:content', () => this.requestUpdate());
         this.listenTo(this.model, 'change:displayName', () => this.requestUpdate());
         // The author's vCard (avatar) and contact resolve asynchronously; re-render
         // so the avatar appears once its vCard loads, and the profile link appears
@@ -81,15 +82,6 @@ export default class SocialMessage extends CustomElement {
         if (!result) return;
         const feed = this.model.collection?.feed;
         await feed?.retractPost(this.model.get('id'));
-    }
-
-    /**
-     * Expose the post's body as a signal for fine-grained binding in the
-     * template (part of the signals reference adoption).
-     * @returns {import('@lit-labs/signals').Signal.State<string>}
-     */
-    get bodySignal() {
-        return attrSignal(this.model, 'body');
     }
 }
 

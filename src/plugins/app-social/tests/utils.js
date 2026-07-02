@@ -48,6 +48,37 @@ export function makePost(to, from, id, body, published = '2024-01-01T18:30:02Z')
 }
 
 /**
+ * Build a headline PEP event carrying a post with any combination of the three
+ * Atom text constructs (`<title>`, `<summary>`, `<content>`), so the template's
+ * per-construct rendering (bold heading, italic excerpt, spacing) can be tested.
+ * @param {string} to - The recipient's bare JID (the logged-in user).
+ * @param {string} from - The publisher's bare JID (also the feed JID).
+ * @param {string} id - The PubSub item id.
+ * @param {{ title?: string, summary?: string, content?: string }} constructs
+ * @param {string} [published='2024-01-01T18:30:02Z'] - ISO-8601 publication time.
+ */
+export function makeRichPost(to, from, id, { title, summary, content }, published = '2024-01-01T18:30:02Z') {
+    const domain = Strophe.getDomainFromJid(from);
+    return stx`
+        <message xmlns="jabber:client" from="${from}" to="${to}" type="headline">
+          <event xmlns="${PUBSUB_EVENT}">
+            <items node="${MICROBLOG_NODE}">
+              <item id="${id}" publisher="${from}">
+                <entry xmlns="${ATOM}">
+                  ${title === undefined ? '' : stx`<title type="text">${title}</title>`}
+                  ${summary === undefined ? '' : stx`<summary type="text">${summary}</summary>`}
+                  ${content === undefined ? '' : stx`<content type="text">${content}</content>`}
+                  <id>tag:${domain},2024-01-01:posts-${id}</id>
+                  <published>${published}</published>
+                  <updated>${published}</updated>
+                </entry>
+              </item>
+            </items>
+          </event>
+        </message>`;
+}
+
+/**
  * Build a headline PEP event carrying a *repost*: the publisher (`from`) repeats
  * another account's entry. Carries an `<author>` (the original poster) and a
  * `rel="via"` link, the two signals the parser reads as a repost.

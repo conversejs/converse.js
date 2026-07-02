@@ -40,7 +40,7 @@ describe('The microblog plugin', function () {
             await u.waitUntil(() => feed.messages.length === 1);
             const post = feed.messages.at(0);
             expect(post.get('type')).toBe('microblog');
-            expect(post.get('body')).toBe('hanging out at the Café Napolitano');
+            expect(post.get('title')).toBe('hanging out at the Café Napolitano');
             expect(post.get('id')).toBe('post-1');
             expect(post.get('atom_id')).toBe('tag:montague.lit,2024-01-01:posts-post-1');
             expect(post.get('published')).toBe('2024-01-01T18:30:02Z');
@@ -273,20 +273,20 @@ describe('The microblog plugin', function () {
 
             await u.waitUntil(() => feed.messages.length === 1);
             const post = feed.messages.at(0);
-            expect(post.get('body_xhtml')).toContain('<strong>Café</strong>');
+            expect(post.get('title_xhtml')).toContain('<strong>Café</strong>');
         }),
     );
 
     it(
-        'renders the Atom title, summary and content together (newline-separated)',
+        'parses the Atom title, summary and content as distinct constructs',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
             const jid = 'ivan@vucica.net';
             const feed = await api.microblog.feeds.get(jid, MICROBLOG_NODE, true);
 
-            // An entry carrying all three Atom text constructs. Keep the feed flat
-            // but lossless: show them as one block, newline-separated.
+            // An entry carrying all three Atom text constructs. Each is kept
+            // distinct (the template styles them differently) rather than flattened.
             receive(
                 _converse,
                 stx`
@@ -309,13 +309,14 @@ describe('The microblog plugin', function () {
 
             await u.waitUntil(() => feed.messages.length === 1);
             const post = feed.messages.at(0);
-            expect(post.get('body')).toBe('Hi again\nThis is my post 2nd\nSharing a post.');
+            expect(post.get('title')).toBe('Hi again');
             expect(post.get('summary')).toBe('This is my post 2nd');
+            expect(post.get('content')).toBe('Sharing a post.');
         }),
     );
 
     it(
-        'reads the body from <content> when the Atom <title> is empty',
+        'parses <content> when the Atom <title> is empty',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
@@ -345,7 +346,9 @@ describe('The microblog plugin', function () {
             );
 
             await u.waitUntil(() => feed.messages.length === 1);
-            expect(feed.messages.at(0).get('body')).toBe('yo');
+            const post = feed.messages.at(0);
+            expect(post.get('title')).toBeUndefined();
+            expect(post.get('content')).toBe('yo');
         }),
     );
 
@@ -633,7 +636,7 @@ describe('The microblog plugin', function () {
 
             // The post is optimistically added to the feed.
             await u.waitUntil(() => feed.messages.length === 1);
-            expect(feed.messages.at(0).get('body')).toBe('hanging out at the Café');
+            expect(feed.messages.at(0).get('title')).toBe('hanging out at the Café');
             expect(feed.messages.at(0).get('is_mine')).toBe(true);
         }),
     );

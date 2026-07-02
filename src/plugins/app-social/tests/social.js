@@ -6,6 +6,7 @@ import {
     MICROBLOG_NODE,
     makePost,
     makeRepost,
+    makeRichPost,
     mountSocialFeed,
     receive,
     stubDiscoverFollowable,
@@ -54,6 +55,57 @@ describe('The social feed', function () {
     );
 
     it(
+        'renders the Atom title, summary and content as distinct styled blocks',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const bare_jid = _converse.bare_jid;
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            // All three constructs: a bold-heading title, an italic-excerpt
+            // summary, and normal-weight content — three distinct blocks.
+            receive(
+                _converse,
+                makeRichPost(bare_jid, bare_jid, 'rich-1', {
+                    title: 'The headline',
+                    summary: 'A short excerpt',
+                    content: 'The full body of the post.',
+                }),
+            );
+
+            const post = await u.waitUntil(() =>
+                Array.from(el.querySelectorAll('.social-post')).find((a) =>
+                    a.textContent.includes('The full body of the post.'),
+                ),
+            );
+            const title = post.querySelector('.social-post__title');
+            const summary = post.querySelector('.social-post__summary');
+            const content = post.querySelector('.social-post__content');
+            expect(title.textContent.trim()).toBe('The headline');
+            expect(title.classList.contains('social-post__title--heading')).toBe(true);
+            expect(summary.textContent.trim()).toBe('A short excerpt');
+            expect(summary.classList.contains('social-post__summary--excerpt')).toBe(true);
+            expect(content.textContent.trim()).toBe('The full body of the post.');
+
+            // A lone construct is plain: a title-only post has no heading style,
+            // and no summary/content blocks.
+            receive(
+                _converse,
+                makeRichPost(bare_jid, bare_jid, 'plain-1', { title: 'Just a note' }, '2024-01-02T09:00:00Z'),
+            );
+            const plain = await u.waitUntil(() =>
+                Array.from(el.querySelectorAll('.social-post')).find((a) => a.textContent.includes('Just a note')),
+            );
+            expect(plain.querySelector('.social-post__title').classList.contains('social-post__title--heading')).toBe(
+                false,
+            );
+            expect(plain.querySelector('.social-post__summary')).toBe(null);
+            expect(plain.querySelector('.social-post__content')).toBe(null);
+        }),
+    );
+
+    it(
         'deletes an own post via the delete button',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
@@ -80,10 +132,11 @@ describe('The social feed', function () {
     it(
         'merges a followed contact\'s posts into the timeline, newest-first',
         mock.initConverse(converse, [], {}, async function (_converse) {
-            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitForRoster(_converse, 'current');
             const { api } = _converse;
             const bare_jid = _converse.bare_jid;
-            const contact_jid = 'juliet@capulet.lit';
+            // A roster contact, so the post's author resolves to a contact.
+            const contact_jid = 'mercutio@montague.lit';
 
             // Stub the PEP network so the follow flow resolves without a server.
             vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
@@ -100,17 +153,30 @@ describe('The social feed', function () {
             // arrive immediately after follow — before the followed feed's empty
             // cache has hydrated — exercising the hydration-race guard in addItems.
             receive(_converse, makePost(bare_jid, bare_jid, 'mine-1', 'My own post', '2024-01-01T09:00:00Z'));
-            receive(_converse, makePost(bare_jid, contact_jid, 'theirs-1', 'Juliet says hi', '2024-01-02T09:00:00Z'));
+            receive(_converse, makePost(bare_jid, contact_jid, 'theirs-1', 'Mercutio says hi', '2024-01-02T09:00:00Z'));
 
             // Both posts show in one timeline, the newer (contact's) first.
             await u.waitUntil(() => el.querySelectorAll('.social-post').length === 2);
             const articles = Array.from(el.querySelectorAll('.social-post'));
             const bodies = articles.map((a) => a.querySelector('.social-post__body').textContent.trim());
-            expect(bodies).toEqual(['Juliet says hi', 'My own post']);
+            expect(bodies).toEqual(['Mercutio says hi', 'My own post']);
 
             // The followed contact's post is not ours → no delete button; ours has one.
             expect(articles[0].querySelector('.social-post__action')).toBe(null);
             expect(articles[1].querySelector('.social-post__action')).not.toBe(null);
+
+            // The contact resolves to a roster entry, so their post's author name is
+            // a per-author-coloured, clickable link to their profile (like the
+            // avatar); it opens the user-details modal. (Our own name isn't a
+            // contact, so it stays a plain span — this is the only such link.)
+            const author = await u.waitUntil(() => {
+                const a = el.querySelector('a.social-post__author.show-msg-author-modal');
+                return a && (/color:/).test(a.getAttribute('style') || '') ? a : null;
+            });
+            const show = vi.spyOn(api.modal, 'show').mockResolvedValue(undefined);
+            author.click();
+            await u.waitUntil(() => show.mock.calls.length === 1);
+            expect(show.mock.calls[0][0]).toBe('converse-user-details-modal');
         }),
     );
 

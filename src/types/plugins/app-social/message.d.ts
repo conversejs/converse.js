@@ -8,6 +8,10 @@ export default class SocialMessage extends CustomElement {
         model: {
             type: typeof PubSubMessage;
         };
+        _reposting: {
+            type: BooleanConstructor;
+            state: boolean;
+        };
     };
     render(): import("lit-html").TemplateResult<1>;
     /**
@@ -31,6 +35,13 @@ export default class SocialMessage extends CustomElement {
      * the node and removes the local copy.
      */
     onRetract(): Promise<void>;
+    /**
+     * Repost (repeat) this post into our own feed (XEP-0277 § Repeating a Post).
+     * The button is disabled while the repost is in flight, so a double-click
+     * can't publish a duplicate item.
+     */
+    onRepost(): Promise<void>;
+    _reposting: boolean;
 }
 import { CustomElement } from 'shared/components/element.js';
 import { PubSubMessage } from '@converse/headless';

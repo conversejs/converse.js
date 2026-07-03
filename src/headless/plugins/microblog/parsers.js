@@ -2,17 +2,16 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  *
- * Parse and build XEP-0277 (Microblogging over XMPP) Atom payloads.
+ * Parse XEP-0277 (Microblogging over XMPP) Atom payloads. Stanza *construction*
+ * lives on the feed model ({@link PubSubFeed.createPostStanza} /
+ * `createRepostStanza`), following the codebase convention of building stanzas
+ * on the model that owns the resulting objects.
  */
 import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js';
-import converse from '../../shared/api/public.js';
-import _converse from '../../shared/_converse.js';
 import { getJIDFromURI, getNodeFromURI } from '../../utils/jid.js';
 import { getUniqueId } from '../../utils/index.js';
 import { MICROBLOG_TYPE, NS_ATOM } from './constants.js';
-
-const { stx } = converse.env;
 
 /**
  * Resolve the `<atom:entry>` for a PubSub item (or accept a bare entry).
@@ -71,14 +70,19 @@ export function parseAtomEntry(item, { from, node } = {}) {
     const author_jid = author_uri ? getJIDFromURI(author_uri) : undefined;
 
     // Links carry repost provenance (`rel="via"`) and the comments node
-    // (`rel="replies"`); both are un-prefixed Atom elements.
+    // (`rel="replies"`); both are un-prefixed Atom elements. The via href/ref
+    // are kept verbatim so reposting a repost can propagate them (the via link
+    // must keep pointing at the *original* post, per XEP-0277).
     let via_jid;
+    let via_href;
+    let via_ref;
     let comments_node;
     for (const link of sizzle('> link', entry)) {
         const rel = link.getAttribute('rel');
         if (rel === 'via') {
-            const href = link.getAttribute('href');
-            via_jid = href ? getJIDFromURI(href) : undefined;
+            via_href = link.getAttribute('href') || undefined;
+            via_ref = link.getAttribute('ref') || undefined;
+            via_jid = via_href ? getJIDFromURI(via_href) : undefined;
         } else if (rel === 'replies' && link.getAttribute('title') === 'comments') {
             comments_node = getNodeFromURI(link.getAttribute('href'));
         }
@@ -114,6 +118,8 @@ export function parseAtomEntry(item, { from, node } = {}) {
         // An author JID that differs from the publisher marks a repeated post
         // (XEP-0277 § Repeating a Post); a `rel="via"` link is the explicit signal.
         via_jid,
+        via_href,
+        via_ref,
         is_repost: !!via_jid || !!(author_jid && publisher && Strophe.getBareJidFromJid(author_jid) !== publisher),
         comments_node,
         categories: sizzle('> category', entry)
@@ -123,45 +129,4 @@ export function parseAtomEntry(item, { from, node } = {}) {
         updated,
         ...(time ? { time } : {}),
     };
-}
-
-/**
- * Build the `tag:` URI used as the Atom `<id>` of a new entry (RFC 4151).
- * @param {string} jid
- * @param {string} id
- * @returns {string}
- */
-function buildTagId(jid, id) {
-    const domain = Strophe.getDomainFromJid(jid) || jid;
-    const date = new Date().toISOString().split('T')[0];
-    return `tag:${domain},${date}:posts-${id}`;
-}
-
-/**
- * Build a PubSub `<item>` containing an Atom `<entry>` for publishing.
- *
- * For the MVP this produces a minimal plain-text post; `author` is intentionally
- * omitted for own-feed posts (the node owner is implied per XEP-0277). Replies,
- * reposts and rich content are layered on in later milestones.
- *
- * @param {import('./types').PubSubPublishAttrs} attrs
- * @returns {import('strophe.js').Stanza}
- */
-export function buildItem(attrs) {
-    const { body, from } = attrs;
-    const id = attrs.id || getUniqueId();
-    const now = new Date().toISOString();
-    const published = attrs.published || now;
-    const updated = attrs.updated || now;
-    const tag_id = attrs.atom_id || buildTagId(from || _converse.session?.get('bare_jid') || 'localhost', id);
-
-    return stx`
-        <item id="${id}">
-            <entry xmlns="${NS_ATOM}">
-                <title type="text">${body}</title>
-                <id>${tag_id}</id>
-                <published>${published}</published>
-                <updated>${updated}</updated>
-            </entry>
-        </item>`;
 }

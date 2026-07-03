@@ -72,7 +72,9 @@ declare class PubSubMessage extends BaseMessage {
     getDisplayName(): string;
     /**
      * The author whose feed/JID this post is attributed to (the original author
-     * for a repost, otherwise the publisher).
+     * for a repost, otherwise the publisher). The entry's own `<author>` wins
+     * over the via link: the via href is a *location* — for a post reposted off
+     * a community node that's the node's service JID, not a person.
      * @returns {string|undefined}
      */
     getAuthorJID(): string | undefined;

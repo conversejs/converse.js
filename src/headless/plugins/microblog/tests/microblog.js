@@ -628,9 +628,13 @@ describe('The microblog plugin', function () {
             await feed.publishPost('  hanging out at the Café  ');
 
             expect(publish).toHaveBeenCalledTimes(1);
-            const [jid, node, item] = publish.mock.calls[0];
+            const [jid, node, item, options] = publish.mock.calls[0];
             expect(jid).toBe(bare_jid);
             expect(node).toBe(MICROBLOG_NODE);
+            // The node config must make the feed publicly followable: servers
+            // default a fresh PEP node to presence-based access, which returns
+            // `forbidden` to followers without a presence subscription.
+            expect(options.access_model).toBe('open');
             // The built item must carry the trimmed plain-text title.
             expect(item.tree().querySelector('title').textContent).toBe('hanging out at the Café');
 

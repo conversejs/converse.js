@@ -51,9 +51,11 @@ export const FOLLOWABLE_PROBE_TIMEOUT = 10000;
 
 /**
  * Node configuration for our own social feed node, sent as XEP-0060
- * publish-options. This is the XEP-0472 "Base profile" config.
+ * publish-options. This is the XEP-0472 "Base profile" config, plus an open
+ * access model.
  */
 export const MICROBLOG_PUBLISH_OPTIONS = {
+    access_model: 'open',
     persist_items: 'true',
     max_items: 'max',
     send_last_published_item: 'never',

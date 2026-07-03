@@ -37,17 +37,18 @@ export type PubSubMessageAttrs = {
 
     // Interaction metadata
     via_jid?: string; // Original author for a repost (<link rel="via">)
+    via_href?: string; // The via link's href — the original post's XMPP URI
+    via_ref?: string; // The via link's ref — the original post's atom id
     is_repost?: boolean;
     comments_node?: string; // Node referenced by <link rel="replies" title="comments">
 };
 
 /**
- * Attributes accepted by {@link buildItem} when composing a new post.
+ * Attributes accepted by {@link PubSubFeed.createPostStanza} when composing a new post.
  */
 export type PubSubPublishAttrs = {
     body: string;
     id?: string;
-    from?: string;
     atom_id?: string;
     published?: string;
     updated?: string;

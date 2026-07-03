@@ -117,7 +117,7 @@ describe('The social feed', function () {
 
             receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'a doomed post'));
 
-            const delete_button = await u.waitUntil(() => el.querySelector('.social-post__action'));
+            const delete_button = await u.waitUntil(() => el.querySelector('.social-post__action--delete'));
             vi.spyOn(api, 'confirm').mockResolvedValue(true);
             const retract = vi.spyOn(api.pubsub, 'retract').mockResolvedValue(undefined);
 
@@ -161,9 +161,12 @@ describe('The social feed', function () {
             const bodies = articles.map((a) => a.querySelector('.social-post__body').textContent.trim());
             expect(bodies).toEqual(['Mercutio says hi', 'My own post']);
 
-            // The followed contact's post is not ours → no delete button; ours has one.
-            expect(articles[0].querySelector('.social-post__action')).toBe(null);
-            expect(articles[1].querySelector('.social-post__action')).not.toBe(null);
+            // The contact's post isn't ours → a repost button, no delete; ours is
+            // the reverse.
+            expect(articles[0].querySelector('.social-post__action--delete')).toBe(null);
+            expect(articles[0].querySelector('.social-post__action--repost')).not.toBe(null);
+            expect(articles[1].querySelector('.social-post__action--delete')).not.toBe(null);
+            expect(articles[1].querySelector('.social-post__action--repost')).toBe(null);
 
             // The contact resolves to a roster entry, so their post's author name is
             // a per-author-coloured, clickable link to their profile (like the
@@ -313,6 +316,68 @@ describe('The social feed', function () {
 
             // A plain (non-repost) post carries no attribution eyebrow.
             expect(articleFor('A plain post').querySelector('.social-post__repost')).toBe(null);
+        }),
+    );
+
+    it(
+        'reposts a post into your own feed via the repost button, guarding while in flight and alerting on failure',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            const contact_jid = 'juliet@capulet.lit';
+
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            const toast = vi.spyOn(api.toast, 'show');
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            // Follow a contact and receive one of their posts. Clear the follow's
+            // own publish (the XEP-0330 list item) so we assert only reposts.
+            await api.microblog.follow(contact_jid);
+            receive(_converse, makePost(bare_jid, contact_jid, 'theirs-1', 'Repeat me'));
+            const repost_btn = await u.waitUntil(() => el.querySelector('.social-post__action--repost'));
+
+            // First attempt: keep the repost's publish pending, then fail it.
+            let reject_publish;
+            publish.mockImplementation(() => new Promise((_, reject) => (reject_publish = reject)));
+            publish.mockClear();
+
+            repost_btn.click();
+            await u.waitUntil(() => publish.mock.calls.length === 1);
+
+            // While the repost is in flight the button is disabled, so a second
+            // click can't publish a duplicate.
+            await u.waitUntil(() => repost_btn.disabled);
+            repost_btn.click();
+            expect(publish.mock.calls.length).toBe(1);
+
+            // The publish fails: the user gets a toast and no phantom repost is
+            // rendered.
+            reject_publish(new Error('not-acceptable'));
+            await u.waitUntil(() => toast.mock.calls.length === 1);
+            expect(toast.mock.calls[0][1].type).toBe('danger');
+            expect(el.querySelector('.social-post__repost')).toBe(null);
+
+            // Retrying proves the button re-enabled after the failure. This time
+            // the publish succeeds: the post goes to our own node (the stanza's
+            // shape — <author> + the rel="via" link — is covered by the headless
+            // microblog tests) and renders with the "reposted by you" eyebrow.
+            publish.mockResolvedValue(undefined);
+            await u.waitUntil(() => !repost_btn.disabled);
+            repost_btn.click();
+            await u.waitUntil(() => publish.mock.calls.length === 2);
+            const [jid, node] = publish.mock.calls[1];
+            expect(jid).toBe(bare_jid);
+            expect(node).toBe(MICROBLOG_NODE);
+
+            const reposted = await u.waitUntil(() =>
+                Array.from(el.querySelectorAll('.social-post')).find((a) => a.querySelector('.social-post__repost')),
+            );
+            expect(reposted.querySelector('.social-post__repost').textContent).toContain('You');
         }),
     );
 });

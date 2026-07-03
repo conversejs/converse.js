@@ -112,6 +112,15 @@ declare namespace _default {
             node?: string;
         }): Promise<void>;
         /**
+         * Repeat (repost) a post into the user's own microblog feed (XEP-0277 §
+         * Repeating a Post). Published to the user's own node and attributed to
+         * the original author, so it renders with a "reposted by you" eyebrow.
+         * @method _converse.api.microblog.repost
+         * @param {import('./message').default} post - The post to repost.
+         * @returns {Promise<void>}
+         */
+        function repost(post: import("./message").default): Promise<void>;
+        /**
          * Read the durable XEP-0330 follow list (the server-side source of truth
          * for who the user follows), e.g. for a Following list/count.
          * @method _converse.api.microblog.following

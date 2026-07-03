@@ -59,12 +59,7 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
     hasScrolldownPlaceholder(): boolean;
     /**
      * Persist the opaque RSM cursor of a fetched page's oldest item onto that post,
-     * so we can page *older* than it later (and after a reload). No-op without RSM.
-     *
-     * The server returns items oldest→newest and reports the page's `<first>` as the
-     * cursor of the oldest item (verified: Prosody has no RSM; ejabberd uses opaque
-     * creation-timestamp cursors). We treat the cursor as opaque and echo it back.
-     *
+     * so we can page *older* than it later. No-op without RSM.
      * @param {import('./message').default[]} added
      * @param {import('../pubsub/types.ts').PubSubItemsResult} result
      * @returns {import('./message').default|undefined} The oldest post of the page.
@@ -125,6 +120,34 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
      * @returns {Promise<void>}
      */
     publishPost(body: string): Promise<void>;
+    /**
+     * Construct the PubSub `<item>` for a new plain-text post on this feed's
+     * node. `author` is intentionally omitted for own-feed posts (the node owner
+     * is implied per XEP-0277).
+     * @param {import('./types').PubSubPublishAttrs} attrs
+     * @returns {import('strophe.js').Stanza}
+     */
+    createPostStanza(attrs: import("./types").PubSubPublishAttrs): import("strophe.js").Stanza;
+    /**
+     * Repeat (repost) an existing post into this feed's node (XEP-0277 §
+     * Repeating a Post). Publishes a new item attributed to the original author
+     * with a `rel="via"` link, then optimistically renders it.
+     * @param {import('./message').default} post - The post to repost.
+     * @returns {Promise<void>}
+     */
+    repostPost(post: import("./message").default): Promise<void>;
+    /**
+     * Construct the PubSub `<item>` that repeats (reposts) an existing post onto
+     * this feed's node (XEP-0277 § Repeating a Post): a new item carrying the
+     * **original** author (`<author>`) and a `rel="via"` link back to the
+     * original post, with its text constructs copied. The server stamps the reposter
+     * as `publisher`, so it renders attributed to the original author with a
+     * "reposted by …" eyebrow
+     * (see {@link parseAtomEntry} and PubSubMessage.getReposterJID).
+     * @param {import('./message').default} post - The post being reposted.
+     * @returns {import('strophe.js').Stanza}
+     */
+    createRepostStanza(post: import("./message").default): import("strophe.js").Stanza;
 }
 import { Model } from '@converse/skeletor';
 import PubSubMessages from './messages.js';

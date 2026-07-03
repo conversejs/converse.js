@@ -13,15 +13,4 @@ export function parseAtomEntry(item: Element, { from, node }?: {
     from?: string;
     node?: string;
 }): import("./types").PubSubMessageAttrs;
-/**
- * Build a PubSub `<item>` containing an Atom `<entry>` for publishing.
- *
- * For the MVP this produces a minimal plain-text post; `author` is intentionally
- * omitted for own-feed posts (the node owner is implied per XEP-0277). Replies,
- * reposts and rich content are layered on in later milestones.
- *
- * @param {import('./types').PubSubPublishAttrs} attrs
- * @returns {import('strophe.js').Stanza}
- */
-export function buildItem(attrs: import("./types").PubSubPublishAttrs): import("strophe.js").Stanza;
 //# sourceMappingURL=parsers.d.ts.map

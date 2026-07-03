@@ -538,6 +538,9 @@ function parseXFormField(field, readonly, stanza) {
         return {
             type,
             options,
+            // The field's current value(s), not just the selectable options —
+            // needed to echo a form back without wiping list fields.
+            ...(type === 'list-single' ? { value: values[0] } : { values }),
             label: field.getAttribute('label'),
             var: v,
             required: !!field.querySelector('required'),

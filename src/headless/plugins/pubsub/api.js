@@ -73,6 +73,8 @@ export default {
                     ...config,
                 };
 
+                // Fields without a value are omitted so that they're left as-is by the server.
+                // Multi-value fields are submitted as one <value> per entry.
                 const stanza = stx`
                     <iq xmlns="jabber:client"
                         from="${bare_jid}"
@@ -84,9 +86,14 @@ export default {
                                 <field var="FORM_TYPE" type="hidden">
                                     <value>${Strophe.NS.PUBSUB}#node_config</value>
                                 </field>
-                                ${Object.entries(new_config).map(
-                                    ([k, v]) => stx`<field var="pubsub#${k}"><value>${v}</value></field>`,
-                                )}
+                                ${Object.entries(new_config)
+                                    .filter(([, v]) => v != null)
+                                    .map(
+                                        ([k, v]) =>
+                                            stx`<field var="pubsub#${k}">${(Array.isArray(v) ? v : [v]).map(
+                                                (v) => stx`<value>${v}</value>`,
+                                            )}</field>`,
+                                    )}
                             </x>
                         </configure>
                     </pubsub>
@@ -184,11 +191,14 @@ export default {
                     /** @type {import('shared/errors').StanzaError} */ (e).extra[Strophe.NS.PUBSUB_ERROR] ===
                         'precondition-not-met'
                 ) {
-                    // Manually configure the node if we can't set it via publish-options
-                    await api.pubsub.config.set(entity_jid, node, options);
                     try {
+                        // Manually configure the node if we can't set it via publish-options
+                        await api.pubsub.config.set(entity_jid, node, options);
                         await api.sendIQ(stanza);
                     } catch (e) {
+                        // The reconfigure path can fail at any step: fetching the
+                        // config (e.g. `forbidden` on a node we don't own), setting
+                        // it, or the retried publish itself.
                         log.error(e);
                         if (!strict_options) {
                             // The publish-options precondition couldn't be met.
@@ -197,6 +207,8 @@ export default {
                             el.querySelector('publish-options').outerHTML = '';
                             log.warn(`api.pubsub.publish: #publish-options precondition-not-met, publishing anyway.`);
                             await api.sendIQ(el);
+                        } else {
+                            throw e;
                         }
                     }
                 } else {

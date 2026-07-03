@@ -89,6 +89,8 @@ describe('The pubsub API', function () {
                             <option><value>courtiers</value></option>
                             <option><value>servants</value></option>
                             <option><value>enemies</value></option>
+                            <value>friends</value>
+                            <value>servants</value>
                             </field>
                             <field var='pubsub#publish_model' type='list-single'
                                 label='Specify the publisher model'>
@@ -138,24 +140,24 @@ describe('The pubsub API', function () {
 
                 const result = await promise;
                 expect(result).toEqual({
-                    access_model: null,
+                    access_model: 'open',
                     dataform_xslt: null,
                     deliver_notifications: true,
                     deliver_payloads: true,
                     item_expire: '604800',
                     max_items: '10',
                     max_payload_size: '1028',
-                    notification_type: null,
+                    notification_type: 'headline',
                     notify_config: false,
                     notify_delete: false,
                     notify_retract: false,
                     notify_sub: false,
                     persist_items: true,
                     presence_based_delivery: false,
-                    publish_model: null,
+                    publish_model: 'publishers',
                     purge_offline: false,
-                    roster_groups_allowed: null,
-                    send_last_published_item: null,
+                    roster_groups_allowed: ['friends', 'servants'],
+                    send_last_published_item: 'never',
                     subscribe: true,
                     title: null,
                     type: 'urn:example:e2ee:bundle',
@@ -327,6 +329,14 @@ describe('The pubsub API', function () {
                             <option><value>open</value></option>
                             <value>publishers</value>
                             </field>
+                            <field var='pubsub#roster_groups_allowed' type='list-multi'
+                                label='Roster groups allowed to subscribe'>
+                            <option><value>friends</value></option>
+                            <option><value>courtiers</value></option>
+                            <option><value>servants</value></option>
+                            <value>friends</value>
+                            <value>servants</value>
+                            </field>
                             <field var='pubsub#purge_offline' type='boolean'
                                 label='Purge all items when the relevant publisher goes offline?'>
                             <value>0</value>
@@ -342,6 +352,11 @@ describe('The pubsub API', function () {
                         .filter((iq) => iq.getAttribute('type') === 'set' && sizzle('pubsub configure', iq))
                         .pop(),
                 );
+                // Fields the server reported without a value (title) are OMITTED from
+                // the submit — an empty <value/> is not a valid enum/text value and
+                // e.g. Prosody rejects the whole form with `not-acceptable`. Fields
+                // with values are echoed back verbatim (incl. multi-value fields,
+                // one <value> per entry), with our overrides applied on top.
                 expect(sent_stanza).toEqualStanza(stx`<iq xmlns="jabber:client"
                     from="${_converse.bare_jid}"
                     to="${pubsub_jid}"
@@ -351,7 +366,6 @@ describe('The pubsub API', function () {
                             <configure node="princely_musings">
                             <x xmlns="jabber:x:data" type="submit">
                                 <field var="FORM_TYPE" type="hidden"><value>http://jabber.org/protocol/pubsub#node_config</value></field>
-                                <field var="pubsub#title"><value/></field>
                                 <field var="pubsub#deliver_notifications"><value>true</value></field>
                                 <field var="pubsub#deliver_payloads"><value>true</value></field>
                                 <field var="pubsub#notify_config"><value>false</value></field>
@@ -362,7 +376,8 @@ describe('The pubsub API', function () {
                                 <field var="pubsub#max_items"><value>10</value></field>
                                 <field var="pubsub#item_expire"><value>604800</value></field>
                                 <field var="pubsub#subscribe"><value>true</value></field>
-                                <field var="pubsub#publish_model"><value/></field>
+                                <field var="pubsub#publish_model"><value>publishers</value></field>
+                                <field var="pubsub#roster_groups_allowed"><value>friends</value><value>servants</value></field>
                                 <field var="pubsub#purge_offline"><value>false</value></field>
                                 <field var="pubsub#access_model"><value>whitelist</value></field>
                             </x>
@@ -391,8 +406,9 @@ describe('The pubsub API', function () {
                     notify_retract: false,
                     notify_sub: false,
                     persist_items: true,
-                    publish_model: null,
+                    publish_model: 'publishers',
                     purge_offline: false,
+                    roster_groups_allowed: ['friends', 'servants'],
                     subscribe: true,
                     title: null,
                 });
@@ -605,6 +621,89 @@ describe('The pubsub API', function () {
                             </publish-options>
                         </pubsub>
                     </iq>`);
+
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(_converse, stx`
+                    <iq type='result'
+                        xmlns="jabber:client"
+                        from='${pubsub_jid}'
+                        to='${own_jid}'
+                        id="${sent_stanza.getAttribute('id')}"></iq>`),
+                );
+
+                await promise;
+            }),
+        );
+
+        it(
+            'falls back to publishing without options (non-strict) when the node cannot be reconfigured',
+            mock.initConverse(converse, [], {}, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 0);
+
+                const pubsub_jid = 'pubsub.shakespeare.lit';
+
+                const { api } = _converse;
+                const sent_stanzas = api.connection.get().sent_stanzas;
+                const own_jid = _converse.session.get('jid');
+
+                const node = 'princely_musings';
+                // Non-strict: the publish-options are a preference, not a requirement.
+                const promise = api.pubsub.publish(
+                    pubsub_jid,
+                    node,
+                    stx`<item></item>`,
+                    { access_model: 'whitelist' },
+                    false,
+                );
+
+                await mock.waitUntilDiscoConfirmed(
+                    _converse,
+                    pubsub_jid,
+                    [{ 'category': 'pubsub', 'type': 'pep' }],
+                    ['http://jabber.org/protocol/pubsub#publish-options'],
+                );
+
+                let sent_stanza = await u.waitUntil(() =>
+                    sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop(),
+                );
+                expect(sent_stanza.querySelector('publish-options')).not.toBe(null);
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(_converse, stx`<iq type='error'
+                        xmlns="jabber:client"
+                        from='${pubsub_jid}'
+                        to='${own_jid}'
+                        id="${sent_stanza.getAttribute('id')}">
+                    <error type='modify'>
+                        <conflict xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+                        <precondition-not-met xmlns='http://jabber.org/protocol/pubsub#errors'/>
+                    </error>
+                </iq>`),
+                );
+
+                // The manual reconfigure fallback fails at the config fetch: we
+                // don't own this node.
+                sent_stanza = await u.waitUntil(() =>
+                    sent_stanzas.filter((iq) => iq.querySelector('pubsub configure')).pop(),
+                );
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(_converse, stx`<iq type='error'
+                        xmlns="jabber:client"
+                        from='${pubsub_jid}'
+                        to='${own_jid}'
+                        id="${sent_stanza.getAttribute('id')}">
+                    <error type='auth'><forbidden xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error>
+                </iq>`),
+                );
+
+                // Clear old stanzas so we catch the republish.
+                while (sent_stanzas.length) sent_stanzas.pop();
+
+                // Non-strict publishing must survive: re-publish without publish-options.
+                sent_stanza = await u.waitUntil(() =>
+                    sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop(),
+                );
+                expect(sent_stanza.querySelector('publish-options')).toBe(null);
+                expect(sent_stanza.querySelector('publish').getAttribute('node')).toBe(node);
 
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(_converse, stx`

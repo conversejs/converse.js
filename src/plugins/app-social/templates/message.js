@@ -100,14 +100,23 @@ export default (el) => {
                         ${m.get('is_mine')
                             ? html`<button
                                   type="button"
-                                  class="social-post__action"
+                                  class="social-post__action social-post__action--delete"
                                   title="${__('Delete')}"
                                   aria-label="${__('Delete')}"
                                   @click=${() => el.onRetract()}
                               >
                                   <converse-icon size="1em" class="fa fa-trash-alt"></converse-icon>
                               </button>`
-                            : ''}
+                            : html`<button
+                                  type="button"
+                                  class="social-post__action social-post__action--repost"
+                                  title="${__('Repost')}"
+                                  aria-label="${__('Repost')}"
+                                  ?disabled=${el._reposting}
+                                  @click=${() => el.onRepost()}
+                              >
+                                  <converse-icon size="1em" class="fa fa-retweet"></converse-icon>
+                              </button>`}
                     </header>
                     <div class="social-post__body">
                         ${title

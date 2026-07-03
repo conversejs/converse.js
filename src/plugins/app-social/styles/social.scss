@@ -349,7 +349,14 @@
 
                 &:hover {
                     opacity: 1;
+                }
+
+                &--delete:hover {
                     color: var(--danger-color);
+                }
+
+                &--repost:hover {
+                    color: var(--link-color);
                 }
             }
 

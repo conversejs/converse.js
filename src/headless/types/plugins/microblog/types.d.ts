@@ -23,16 +23,17 @@ export type PubSubMessageAttrs = {
     updated?: string;
     categories?: string[];
     via_jid?: string;
+    via_href?: string;
+    via_ref?: string;
     is_repost?: boolean;
     comments_node?: string;
 };
 /**
- * Attributes accepted by {@link buildItem} when composing a new post.
+ * Attributes accepted by {@link PubSubFeed.createPostStanza} when composing a new post.
  */
 export type PubSubPublishAttrs = {
     body: string;
     id?: string;
-    from?: string;
     atom_id?: string;
     published?: string;
     updated?: string;

@@ -5,12 +5,34 @@
 import { Model } from '@converse/skeletor';
 import { Strophe } from 'strophe.js';
 import _converse from '../../shared/_converse.js';
+import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';
 import log from '@converse/log';
+import { getUniqueId } from '../../utils/index.js';
 import PubSubMessages from './messages.js';
-import { buildItem, parseAtomEntry } from './parsers.js';
-import { MICROBLOG_NODE, MICROBLOG_PUBLISH_OPTIONS, POSTS_MAX_WITHOUT_RSM, POSTS_PAGE_SIZE } from './constants.js';
+import { parseAtomEntry } from './parsers.js';
+import {
+    MICROBLOG_NODE,
+    MICROBLOG_PUBLISH_OPTIONS,
+    NS_ATOM,
+    POSTS_MAX_WITHOUT_RSM,
+    POSTS_PAGE_SIZE,
+} from './constants.js';
 import PubsubPlaceholderMessage from './placeholder.js';
+
+const { stx } = converse.env;
+
+/**
+ * Build the `tag:` URI used as the Atom `<id>` of a new entry (RFC 4151).
+ * @param {string} jid
+ * @param {string} id
+ * @returns {string}
+ */
+function buildTagId(jid, id) {
+    const domain = Strophe.getDomainFromJid(jid) || jid;
+    const date = new Date().toISOString().split('T')[0];
+    return `tag:${domain},${date}:posts-${id}`;
+}
 
 /**
  * One PubSub feed: a single node at a single JID (your own
@@ -344,7 +366,7 @@ class PubSubFeed extends Model {
         const text = body?.trim();
         if (!text) return;
 
-        const item = buildItem({ body: text, from: this.get('jid') });
+        const item = this.createPostStanza({ body: text });
         // Publish with the XEP-0472 Base-profile node config so our node stays a
         // well-formed social feed that contacts can subscribe to. Non-strict:
         // if the server can't honour the publish-options precondition we still
@@ -354,6 +376,99 @@ class PubSubFeed extends Model {
         // Optimistically render our own post; the PEP echo (if any) will merge
         // by id rather than duplicate.
         await this.addItems([item.tree()]);
+    }
+
+    /**
+     * Construct the PubSub `<item>` for a new plain-text post on this feed's
+     * node. `author` is intentionally omitted for own-feed posts (the node owner
+     * is implied per XEP-0277).
+     * @param {import('./types').PubSubPublishAttrs} attrs
+     * @returns {import('strophe.js').Stanza}
+     */
+    createPostStanza(attrs) {
+        const id = attrs.id || getUniqueId();
+        const now = new Date().toISOString();
+        const published = attrs.published || now;
+        const updated = attrs.updated || now;
+        const tag_id = attrs.atom_id || buildTagId(this.get('jid'), id);
+
+        return stx`
+            <item id="${id}">
+                <entry xmlns="${NS_ATOM}">
+                    <title type="text">${attrs.body}</title>
+                    <id>${tag_id}</id>
+                    <published>${published}</published>
+                    <updated>${updated}</updated>
+                </entry>
+            </item>`;
+    }
+
+    /**
+     * Repeat (repost) an existing post into this feed's node (XEP-0277 §
+     * Repeating a Post). Publishes a new item attributed to the original author
+     * with a `rel="via"` link, then optimistically renders it.
+     * @param {import('./message').default} post - The post to repost.
+     * @returns {Promise<void>}
+     */
+    async repostPost(post) {
+        const item = this.createRepostStanza(post);
+        await api.pubsub.publish(this.get('jid'), this.get('node'), item, MICROBLOG_PUBLISH_OPTIONS, false);
+        await this.addItems([item.tree()]);
+    }
+
+    /**
+     * Construct the PubSub `<item>` that repeats (reposts) an existing post onto
+     * this feed's node (XEP-0277 § Repeating a Post): a new item carrying the
+     * **original** author (`<author>`) and a `rel="via"` link back to the
+     * original post, with its text constructs copied. The server stamps the reposter
+     * as `publisher`, so it renders attributed to the original author with a
+     * "reposted by …" eyebrow
+     * (see {@link parseAtomEntry} and PubSubMessage.getReposterJID).
+     * @param {import('./message').default} post - The post being reposted.
+     * @returns {import('strophe.js').Stanza}
+     */
+    createRepostStanza(post) {
+        const id = getUniqueId();
+        const now = new Date().toISOString();
+
+        const author_jid = post.getAuthorJID();
+        const author_name = post.getDisplayName() || author_jid;
+        const node = post.get('node') || MICROBLOG_NODE;
+        const item_id = post.get('id') ?? '';
+
+        // The via link must point at the *original* post (per XEP-0277).
+        // When the post is itself a repost, propagate its via href/ref
+        // verbatim so the whole chain resolves to the same original.
+        const via_href =
+            post.get('via_href') ||
+            `xmpp:${post.get('from')}?;node=${encodeURIComponent(node)};item=${encodeURIComponent(item_id)}`;
+        const via_ref = post.get('via_href') ? post.get('via_ref') : post.get('atom_id');
+
+        // <title> is emitted even when empty — RFC 4287 requires exactly one per
+        // entry, and Atom-native posts carry an empty title with the body in <content>.
+        // Only the plain-text constructs are copied: the XHTML variants (XEP-0071)
+        // are deliberately dropped, since that XEP is deprecated.
+        const title = post.get('title');
+        const summary = post.get('summary');
+        const content = post.get('content');
+
+        return stx`
+            <item id="${id}">
+                <entry xmlns="${NS_ATOM}">
+                    ${author_jid ? stx`<author><name>${author_name}</name><uri>xmpp:${author_jid}</uri></author>` : ''}
+                    <title type="text">${title ?? ''}</title>
+                    ${summary !== undefined ? stx`<summary type="text">${summary}</summary>` : ''}
+                    ${content !== undefined ? stx`<content type="text">${content}</content>` : ''}
+                    ${
+                        via_ref
+                            ? stx`<link rel="via" href="${via_href}" ref="${via_ref}"/>`
+                            : stx`<link rel="via" href="${via_href}"/>`
+                    }
+                    <id>${buildTagId(this.get('jid'), id)}</id>
+                    <published>${now}</published>
+                    <updated>${now}</updated>
+                </entry>
+            </item>`;
     }
 }
 

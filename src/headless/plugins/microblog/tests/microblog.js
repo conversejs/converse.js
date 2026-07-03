@@ -642,6 +642,159 @@ describe('The microblog plugin', function () {
     );
 
     it(
+        'reposts a post to the own node, attributed to the original author, with via pointing at the original',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+
+            const feed = await api.microblog.feeds.own();
+
+            // Seed an original post from a contact into their feed.
+            const orig_feed = await api.microblog.feeds.get('juliet@capulet.lit', MICROBLOG_NODE, true);
+            await orig_feed.addItems([
+                stx`
+                <item id="orig-1" publisher="juliet@capulet.lit">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">O Romeo, Romeo</title>
+                    <id>tag:capulet.lit,2024-01-01:posts-orig-1</id>
+                    <published>2024-01-01T18:30:02Z</published>
+                    <updated>2024-01-01T18:30:02Z</updated>
+                  </entry>
+                </item>`.tree(),
+            ]);
+            const original = orig_feed.messages.get('orig-1');
+            expect(original.get('is_mine')).toBe(false);
+
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            await api.microblog.repost(original);
+
+            // Published to our OWN node, carrying the original author + a rel="via"
+            // link back to the original item, with the text copied.
+            expect(publish).toHaveBeenCalledTimes(1);
+            const [jid, node, item] = publish.mock.calls[0];
+            expect(jid).toBe(bare_jid);
+            expect(node).toBe(MICROBLOG_NODE);
+            let tree = item.tree();
+            expect(tree.querySelector('author uri').textContent).toBe('xmpp:juliet@capulet.lit');
+            expect(tree.querySelector('title').textContent).toBe('O Romeo, Romeo');
+            let via = tree.querySelector('link[rel="via"]');
+            expect(via.getAttribute('href')).toBe('xmpp:juliet@capulet.lit?;node=urn%3Axmpp%3Amicroblog%3A0;item=orig-1');
+            expect(via.getAttribute('ref')).toBe('tag:capulet.lit,2024-01-01:posts-orig-1');
+
+            // Optimistically rendered in our own feed as a repost we made.
+            await u.waitUntil(() => feed.messages.length === 1);
+            const repost = feed.messages.at(0);
+            expect(repost.get('is_repost')).toBe(true);
+            expect(repost.get('is_mine')).toBe(true);
+            expect(repost.getAuthorJID()).toBe('juliet@capulet.lit');
+            expect(repost.get('title')).toBe('O Romeo, Romeo');
+
+            // Reposting a *repost* propagates its via link verbatim, so the chain
+            // keeps pointing at the original post (XEP-0277: "point it to the
+            // original post") — not at the intermediate copy, and not at a dangling
+            // original-author-JID-with-the-copy's-item-id mix. Seed Benvolio's feed
+            // with his repost of one of Romeo's posts: the <author> names Romeo and
+            // the via link points at Romeo's original, but the item itself lives on
+            // Benvolio's node.
+            const orig_href = 'xmpp:romeo@montague.lit?;node=urn%3Axmpp%3Amicroblog%3A0;item=romeo-orig-1';
+            const orig_ref = 'tag:montague.lit,2024-01-01:posts-romeo-orig-1';
+            const benvolios_feed = await api.microblog.feeds.get('benvolio@montague.lit', MICROBLOG_NODE, true);
+            await benvolios_feed.addItems([
+                stx`
+                <item id="benvolio-repost-1" publisher="benvolio@montague.lit">
+                  <entry xmlns="${ATOM}">
+                    <author>
+                      <name>Romeo Montague</name>
+                      <uri>xmpp:romeo@montague.lit</uri>
+                    </author>
+                    <title type="text">hanging out at the Café Napolitano</title>
+                    <link rel="via" href="${orig_href}" ref="${orig_ref}"/>
+                    <id>tag:montague.lit,2024-01-02:posts-benvolio-repost-1</id>
+                    <published>2024-01-02T10:00:00Z</published>
+                    <updated>2024-01-02T10:00:00Z</updated>
+                  </entry>
+                </item>`.tree(),
+            ]);
+            const theirs = benvolios_feed.messages.get('benvolio-repost-1');
+            expect(theirs.get('is_repost')).toBe(true);
+            expect(theirs.getAuthorJID()).toBe('romeo@montague.lit');
+
+            await api.microblog.repost(theirs);
+
+            // Authorship still names the original author, and the via href/ref are
+            // Benvolio's verbatim — i.e. Romeo's original.
+            expect(publish).toHaveBeenCalledTimes(2);
+            tree = publish.mock.calls[1][2].tree();
+            expect(tree.querySelector('author uri').textContent).toBe('xmpp:romeo@montague.lit');
+            via = tree.querySelector('link[rel="via"]');
+            expect(via.getAttribute('href')).toBe(orig_href);
+            expect(via.getAttribute('ref')).toBe(orig_ref);
+
+            // Round-trip: our own optimistically-added copy still attributes the
+            // post to Romeo (via_jid derives from the via href).
+            await u.waitUntil(() => feed.messages.length === 2);
+            const mine = feed.messages.find((m) => m.getAuthorJID() === 'romeo@montague.lit');
+            expect(mine.get('is_repost')).toBe(true);
+            expect(mine.get('is_mine')).toBe(true);
+
+            // Reposting an Atom-native post (empty <title>, body in <content>) must
+            // still emit exactly one <title> — RFC 4287 requires it per entry.
+            await orig_feed.addItems([
+                stx`
+                <item id="orig-2" publisher="juliet@capulet.lit">
+                  <entry xmlns="${ATOM}">
+                    <title type="text"></title>
+                    <content type="text">Wherefore art thou Romeo?</content>
+                    <id>tag:capulet.lit,2024-01-03:posts-orig-2</id>
+                    <published>2024-01-03T18:30:02Z</published>
+                    <updated>2024-01-03T18:30:02Z</updated>
+                  </entry>
+                </item>`.tree(),
+            ]);
+            await api.microblog.repost(orig_feed.messages.get('orig-2'));
+            expect(publish).toHaveBeenCalledTimes(3);
+            tree = publish.mock.calls[2][2].tree();
+            expect(tree.querySelectorAll('title').length).toBe(1);
+            expect(tree.querySelector('content').textContent).toBe('Wherefore art thou Romeo?');
+
+            // Reposting a post that lives on a *community* node: the via link
+            // points at the node (where the original lives), but attribution must
+            // follow the entry's <author> — not the via href's service JID.
+            const community_feed = await api.microblog.feeds.get('pubsub.montague.lit', 'verona-news', true);
+            await community_feed.addItems([
+                stx`
+                <item id="news-1" publisher="romeo@montague.lit">
+                  <entry xmlns="${ATOM}">
+                    <author>
+                      <name>Romeo Montague</name>
+                      <uri>xmpp:romeo@montague.lit</uri>
+                    </author>
+                    <title type="text">News from Verona</title>
+                    <id>tag:montague.lit,2024-01-04:posts-news-1</id>
+                    <published>2024-01-04T12:00:00Z</published>
+                    <updated>2024-01-04T12:00:00Z</updated>
+                  </entry>
+                </item>`.tree(),
+            ]);
+            await api.microblog.repost(community_feed.messages.get('news-1'));
+            expect(publish).toHaveBeenCalledTimes(4);
+            tree = publish.mock.calls[3][2].tree();
+            expect(tree.querySelector('link[rel="via"]').getAttribute('href')).toBe(
+                'xmpp:pubsub.montague.lit?;node=verona-news;item=news-1',
+            );
+            expect(tree.querySelector('author uri').textContent).toBe('xmpp:romeo@montague.lit');
+
+            // Round-trip: our optimistic copy is attributed to Romeo, not to
+            // pubsub.montague.lit.
+            await u.waitUntil(() => feed.messages.length === 4);
+            const community_repost = feed.messages.get(tree.getAttribute('id'));
+            expect(community_repost.get('is_repost')).toBe(true);
+            expect(community_repost.getAuthorJID()).toBe('romeo@montague.lit');
+        }),
+    );
+
+    it(
         'ignores empty posts',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

@@ -3,6 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { api, PubSubMessage } from '@converse/headless';
+import log from '@converse/log';
 import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import 'shared/modals/image.js';
@@ -17,6 +18,7 @@ export default class SocialMessage extends CustomElement {
     static get properties() {
         return {
             model: { type: PubSubMessage },
+            _reposting: { type: Boolean, state: true },
         };
     }
 
@@ -82,6 +84,23 @@ export default class SocialMessage extends CustomElement {
         if (!result) return;
         const feed = this.model.collection?.feed;
         await feed?.retractPost(this.model.get('id'));
+    }
+
+    /**
+     * Repost (repeat) this post into our own feed (XEP-0277 § Repeating a Post).
+     * The button is disabled while the repost is in flight, so a double-click
+     * can't publish a duplicate item.
+     */
+    async onRepost() {
+        this._reposting = true;
+        try {
+            await api.microblog.repost(this.model);
+        } catch (e) {
+            log.error(e);
+            api.toast.show('repost-failed', { type: 'danger', body: __('Sorry, could not repeat this post') });
+        } finally {
+            this._reposting = false;
+        }
     }
 }
 

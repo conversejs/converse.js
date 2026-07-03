@@ -42,6 +42,7 @@ export const FOLLOWABLE_SCAN_CONCURRENCY: 10;
  */
 export const FOLLOWABLE_PROBE_TIMEOUT: 10000;
 export namespace MICROBLOG_PUBLISH_OPTIONS {
+    let access_model: string;
     let persist_items: string;
     let max_items: string;
     let send_last_published_item: string;
@@ -58,7 +59,8 @@ export const NS_SUBSCRIPTION: "urn:xmpp:pubsub:subscription:0";
 export namespace FOLLOWING_PUBLISH_OPTIONS {
     let persist_items_1: string;
     export { persist_items_1 as persist_items };
-    export let access_model: string;
+    let access_model_1: string;
+    export { access_model_1 as access_model };
     let send_last_published_item_1: string;
     export { send_last_published_item_1 as send_last_published_item };
     let max_items_1: string;

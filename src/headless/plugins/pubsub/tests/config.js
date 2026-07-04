@@ -4,23 +4,75 @@ import converse from '../../../dist/converse-headless.js';
 const { sizzle, stx, u, errors } = converse.env;
 
 describe('The pubsub API', function () {
+    const node = 'princely_musings';
+    const pubsub_jid = 'pubsub.shakespeare.lit';
+
     describe('fetching a nodes config settings', function () {
         it(
-            "can be used to fetch a nodes's configuration settings",
+            'handles error cases',
             mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 0);
                 const { api } = _converse;
                 const sent_stanzas = api.connection.get().sent_stanzas;
                 const own_jid = _converse.session.get('jid');
 
-                const node = 'princely_musings';
-                const pubsub_jid = 'pubsub.shakespeare.lit';
-                const promise = api.pubsub.config.get(pubsub_jid, node);
-                const sent_stanza = await u.waitUntil(() =>
+                const error_cases = [
+                    [
+                        errors.FeatureNotImplementedError,
+                        stx`<error type='cancel'>
+                            <feature-not-implemented xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+                            <unsupported xmlns='http://jabber.org/protocol/pubsub#errors' feature='config-node'/>
+                        </error>`,
+                    ],
+                    [
+                        errors.ForbiddenError,
+                        stx`<error type='auth'><forbidden xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error>`,
+                    ],
+                    [
+                        errors.ItemNotFoundError,
+                        stx`<error type='cancel'><item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error>`,
+                    ],
+                ];
+
+                for (const [ErrorClass, error_el] of error_cases) {
+                    // Clear the previous iteration's stanzas so the waitUntil
+                    // below can't match a stale IQ.
+                    while (sent_stanzas.length) sent_stanzas.pop();
+
+                    const promise = api.pubsub.config.get(pubsub_jid, node);
+                    const sent_stanza = await u.waitUntil(() =>
+                        sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
+                    );
+                    _converse.api.connection.get()._dataRecv(
+                        mock.createRequest(_converse, stx`<iq type='error'
+                                xmlns="jabber:client"
+                                from='${pubsub_jid}'
+                                to='${own_jid}'
+                                id="${sent_stanza.getAttribute('id')}">${error_el}</iq>`),
+                    );
+                    const e = await promise.catch((e) => e);
+                    expect(e instanceof ErrorClass).toBe(true);
+                }
+            }),
+        );
+    });
+
+    describe('setting a nodes config settings', function () {
+        it(
+            'fetches and parses the current config, then submits it with the changed values applied',
+            mock.initConverse(converse, [], {}, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 0);
+                const { api } = _converse;
+                const sent_stanzas = api.connection.get().sent_stanzas;
+                const own_jid = _converse.session.get('jid');
+
+                const promise = api.pubsub.config.set(pubsub_jid, node, { access_model: 'whitelist' });
+
+                let sent_stanza = await u.waitUntil(() =>
                     sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
                 );
-
-                const response = stx`
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(_converse, stx`
                     <iq type='result'
                         xmlns="jabber:client"
                         from='${pubsub_jid}'
@@ -134,13 +186,67 @@ describe('The pubsub API', function () {
                         </x>
                         </configure>
                     </pubsub>
-                </iq>`;
+                </iq>`),
+                );
 
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
+                sent_stanza = await u.waitUntil(() =>
+                    sent_stanzas
+                        .filter((iq) => iq.getAttribute('type') === 'set' && sizzle('pubsub configure', iq))
+                        .pop(),
+                );
+                // Fields the server reported without a value (title,
+                // dataform_xslt) are OMITTED from the submit — an empty
+                // <value/> is not a valid enum/text value and e.g. Prosody
+                // rejects the whole form with `not-acceptable`. Fields with
+                // values are echoed back verbatim (incl. multi-value fields,
+                // one <value> per entry), with our overrides applied on top.
+                expect(sent_stanza).toEqualStanza(stx`<iq xmlns="jabber:client"
+                    from="${_converse.bare_jid}"
+                    to="${pubsub_jid}"
+                    type="set"
+                    id="${sent_stanza.getAttribute('id')}">
+                        <pubsub xmlns="http://jabber.org/protocol/pubsub#owner">
+                            <configure node="${node}">
+                            <x xmlns="jabber:x:data" type="submit">
+                                <field var="FORM_TYPE" type="hidden"><value>http://jabber.org/protocol/pubsub#node_config</value></field>
+                                <field var="pubsub#deliver_notifications"><value>true</value></field>
+                                <field var="pubsub#deliver_payloads"><value>true</value></field>
+                                <field var="pubsub#notify_config"><value>false</value></field>
+                                <field var="pubsub#notify_delete"><value>false</value></field>
+                                <field var="pubsub#notify_retract"><value>false</value></field>
+                                <field var="pubsub#notify_sub"><value>false</value></field>
+                                <field var="pubsub#persist_items"><value>true</value></field>
+                                <field var="pubsub#max_items"><value>10</value></field>
+                                <field var="pubsub#item_expire"><value>604800</value></field>
+                                <field var="pubsub#subscribe"><value>true</value></field>
+                                <field var="pubsub#access_model"><value>whitelist</value></field>
+                                <field var="pubsub#roster_groups_allowed"><value>friends</value><value>servants</value></field>
+                                <field var="pubsub#publish_model"><value>publishers</value></field>
+                                <field var="pubsub#purge_offline"><value>false</value></field>
+                                <field var="pubsub#max_payload_size"><value>1028</value></field>
+                                <field var="pubsub#send_last_published_item"><value>never</value></field>
+                                <field var="pubsub#presence_based_delivery"><value>false</value></field>
+                                <field var="pubsub#notification_type"><value>headline</value></field>
+                                <field var="pubsub#type"><value>urn:example:e2ee:bundle</value></field>
+                            </x>
+                            </configure>
+                        </pubsub>
+                    </iq>`);
 
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(_converse, stx`
+                    <iq type='result'
+                        xmlns="jabber:client"
+                        from='${pubsub_jid}'
+                        to='${own_jid}'
+                        id="${sent_stanza.getAttribute('id')}"></iq>`),
+                );
+
+                // The resolved value is the parsed server config with our
+                // changes applied on top.
                 const result = await promise;
                 expect(result).toEqual({
-                    access_model: 'open',
+                    access_model: 'whitelist',
                     dataform_xslt: null,
                     deliver_notifications: true,
                     deliver_payloads: true,
@@ -173,259 +279,6 @@ describe('The pubsub API', function () {
                 const sent_stanzas = api.connection.get().sent_stanzas;
                 const own_jid = _converse.session.get('jid');
 
-                const node = 'princely_musings';
-                const pubsub_jid = 'pubsub.shakespeare.lit';
-
-                let promise = api.pubsub.config.get(pubsub_jid, node);
-                let sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
-                );
-                let response = stx`<iq type='error'
-                        xmlns="jabber:client"
-                        from='${pubsub_jid}'
-                        to='${own_jid}'
-                        id="${sent_stanza.getAttribute('id')}">
-                    <error type='cancel'>
-                        <feature-not-implemented xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
-                        <unsupported xmlns='http://jabber.org/protocol/pubsub#errors' feature='config-node'/>
-                    </error>
-                </iq>`;
-
-                let first_error_thrown = false;
-                promise
-                    .catch((e) => {
-                        expect(e instanceof errors.FeatureNotImplementedError).toBe(true);
-                        first_error_thrown = true;
-                    })
-                    .finally(() => {
-                        expect(first_error_thrown).toBe(true);
-                    });
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
-
-                promise = api.pubsub.config.get(pubsub_jid, node);
-                sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
-                );
-                response = stx`<iq type='error'
-                        xmlns="jabber:client"
-                        from='${pubsub_jid}'
-                        to='${own_jid}'
-                        id="${sent_stanza.getAttribute('id')}">
-                    <error type='auth'><forbidden xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error>
-                </iq>`;
-
-                let second_error_thrown = false;
-                promise
-                    .catch((e) => {
-                        expect(e instanceof errors.ForbiddenError).toBe(true);
-                        second_error_thrown = true;
-                    })
-                    .finally(() => {
-                        expect(second_error_thrown).toBe(true);
-                    });
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
-
-                promise = api.pubsub.config.get(pubsub_jid, node);
-                sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
-                );
-                response = stx`<iq type='error'
-                        xmlns="jabber:client"
-                        from='${pubsub_jid}'
-                        to='${own_jid}'
-                        id="${sent_stanza.getAttribute('id')}">
-                    <error type='cancel'><item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error>
-                </iq>`;
-
-                let third_error_thrown = false;
-                promise
-                    .catch((e) => {
-                        expect(e instanceof errors.ItemNotFoundError).toBe(true);
-                        third_error_thrown = true;
-                    })
-                    .finally(() => {
-                        expect(third_error_thrown).toBe(true);
-                    });
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
-            }),
-        );
-    });
-
-    describe('setting a nodes config settings', function () {
-        it(
-            'first fetches the config, and then changes the specified values',
-            mock.initConverse(converse, [], {}, async function (_converse) {
-                await mock.waitForRoster(_converse, 'current', 0);
-                const { api } = _converse;
-                const sent_stanzas = api.connection.get().sent_stanzas;
-                const own_jid = _converse.session.get('jid');
-
-                const node = 'princely_musings';
-                const pubsub_jid = 'pubsub.shakespeare.lit';
-                const promise = api.pubsub.config.set(pubsub_jid, node, { access_model: 'whitelist' });
-
-                let sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
-                );
-                _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, stx`
-                    <iq type='result'
-                        xmlns="jabber:client"
-                        from='${pubsub_jid}'
-                        to='${own_jid}'
-                        id="${sent_stanza.getAttribute('id')}">
-                    <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
-                        <configure node='${node}'>
-                        <x xmlns='jabber:x:data' type='form'>
-                            <field var='FORM_TYPE' type='hidden'>
-                            <value>http://jabber.org/protocol/pubsub#node_config</value>
-                            </field>
-                            <field var='pubsub#title' type='text-single'
-                                label='A friendly name for the node'/>
-                            <field var='pubsub#deliver_notifications' type='boolean'
-                                label='Whether to deliver event notifications'>
-                            <value>true</value>
-                            </field>
-                            <field var='pubsub#deliver_payloads' type='boolean'
-                                label='Whether to deliver payloads with event notifications'>
-                            <value>true</value>
-                            </field>
-                            <field var='pubsub#notify_config' type='boolean'
-                                label='Notify subscribers when the node configuration changes'>
-                            <value>0</value>
-                            </field>
-                            <field var='pubsub#notify_delete' type='boolean'
-                                label='Notify subscribers when the node is deleted'>
-                            <value>false</value>
-                            </field>
-                            <field var='pubsub#notify_retract' type='boolean'
-                                label='Notify subscribers when items are removed from the node'>
-                            <value>false</value>
-                            </field>
-                            <field var='pubsub#notify_sub' type='boolean'
-                                label='Notify owners about new subscribers and unsubscribes'>
-                            <value>0</value>
-                            </field>
-                            <field var='pubsub#persist_items' type='boolean'
-                                label='Persist items to storage'>
-                            <value>1</value>
-                            </field>
-                            <field var='pubsub#max_items' type='text-single'
-                                label='Max # of items to persist. \`max\` for no specific limit other than a server imposed maximum.'>
-                            <value>10</value>
-                            </field>
-                            <field var='pubsub#item_expire' type='text-single'
-                                label='Time after which to automatically purge items. \`max\` for no specific limit other than a server imposed maximum.'>
-                            <value>604800</value>
-                            </field>
-                            <field var='pubsub#subscribe' type='boolean'
-                                label='Whether to allow subscriptions'>
-                            <value>1</value>
-                            </field>
-                            <field var='pubsub#publish_model' type='list-single'
-                                label='Specify the publisher model'>
-                            <option><value>publishers</value></option>
-                            <option><value>subscribers</value></option>
-                            <option><value>open</value></option>
-                            <value>publishers</value>
-                            </field>
-                            <field var='pubsub#roster_groups_allowed' type='list-multi'
-                                label='Roster groups allowed to subscribe'>
-                            <option><value>friends</value></option>
-                            <option><value>courtiers</value></option>
-                            <option><value>servants</value></option>
-                            <value>friends</value>
-                            <value>servants</value>
-                            </field>
-                            <field var='pubsub#purge_offline' type='boolean'
-                                label='Purge all items when the relevant publisher goes offline?'>
-                            <value>0</value>
-                            </field>
-                        </x>
-                        </configure>
-                    </pubsub>
-                </iq>`),
-                );
-
-                sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas
-                        .filter((iq) => iq.getAttribute('type') === 'set' && sizzle('pubsub configure', iq))
-                        .pop(),
-                );
-                // Fields the server reported without a value (title) are OMITTED from
-                // the submit — an empty <value/> is not a valid enum/text value and
-                // e.g. Prosody rejects the whole form with `not-acceptable`. Fields
-                // with values are echoed back verbatim (incl. multi-value fields,
-                // one <value> per entry), with our overrides applied on top.
-                expect(sent_stanza).toEqualStanza(stx`<iq xmlns="jabber:client"
-                    from="${_converse.bare_jid}"
-                    to="${pubsub_jid}"
-                    type="set"
-                    id="${sent_stanza.getAttribute('id')}">
-                        <pubsub xmlns="http://jabber.org/protocol/pubsub#owner">
-                            <configure node="princely_musings">
-                            <x xmlns="jabber:x:data" type="submit">
-                                <field var="FORM_TYPE" type="hidden"><value>http://jabber.org/protocol/pubsub#node_config</value></field>
-                                <field var="pubsub#deliver_notifications"><value>true</value></field>
-                                <field var="pubsub#deliver_payloads"><value>true</value></field>
-                                <field var="pubsub#notify_config"><value>false</value></field>
-                                <field var="pubsub#notify_delete"><value>false</value></field>
-                                <field var="pubsub#notify_retract"><value>false</value></field>
-                                <field var="pubsub#notify_sub"><value>false</value></field>
-                                <field var="pubsub#persist_items"><value>true</value></field>
-                                <field var="pubsub#max_items"><value>10</value></field>
-                                <field var="pubsub#item_expire"><value>604800</value></field>
-                                <field var="pubsub#subscribe"><value>true</value></field>
-                                <field var="pubsub#publish_model"><value>publishers</value></field>
-                                <field var="pubsub#roster_groups_allowed"><value>friends</value><value>servants</value></field>
-                                <field var="pubsub#purge_offline"><value>false</value></field>
-                                <field var="pubsub#access_model"><value>whitelist</value></field>
-                            </x>
-                            </configure>
-                        </pubsub>
-                    </iq>`);
-
-                _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, stx`
-                    <iq type='result'
-                        xmlns="jabber:client"
-                        from='${pubsub_jid}'
-                        to='${own_jid}'
-                        id="${sent_stanza.getAttribute('id')}"></iq>`),
-                );
-
-                const result = await promise;
-                expect(result).toEqual({
-                    access_model: 'whitelist',
-                    deliver_notifications: true,
-                    deliver_payloads: true,
-                    item_expire: '604800',
-                    max_items: '10',
-                    notify_config: false,
-                    notify_delete: false,
-                    notify_retract: false,
-                    notify_sub: false,
-                    persist_items: true,
-                    publish_model: 'publishers',
-                    purge_offline: false,
-                    roster_groups_allowed: ['friends', 'servants'],
-                    subscribe: true,
-                    title: null,
-                });
-            }),
-        );
-
-        it(
-            'handles error cases',
-            mock.initConverse(converse, [], {}, async function (_converse) {
-                await mock.waitForRoster(_converse, 'current', 0);
-                const { api } = _converse;
-                const sent_stanzas = api.connection.get().sent_stanzas;
-                const own_jid = _converse.session.get('jid');
-
-                const node = 'princely_musings';
-                const pubsub_jid = 'pubsub.shakespeare.lit';
-
                 const promise = api.pubsub.config.set(pubsub_jid, node, { access_model: 'whitelist' });
                 let sent_stanza = await u.waitUntil(() =>
                     sent_stanzas.filter((iq) => sizzle('pubsub configure', iq)).pop(),
@@ -460,75 +313,85 @@ describe('The pubsub API', function () {
                         .filter((iq) => iq.getAttribute('type') === 'set' && sizzle('pubsub configure', iq))
                         .pop(),
                 );
-
-                const response = stx`
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(_converse, stx`
                     <iq type='error'
                             xmlns="jabber:client"
                             from='${pubsub_jid}'
                             to='${own_jid}'
                             id="${sent_stanza.getAttribute('id')}">
                         <error type='modify'><not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error>
-                    </iq>`;
+                    </iq>`),
+                );
 
-                let first_error_thrown = false;
-                promise
-                    .catch((e) => {
-                        expect(e instanceof errors.NotAcceptableError).toBe(true);
-                        first_error_thrown = true;
-                    })
-                    .finally(() => {
-                        expect(first_error_thrown).toBe(true);
-                    });
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
+                const e = await promise.catch((e) => e);
+                expect(e instanceof errors.NotAcceptableError).toBe(true);
             }),
         );
     });
 
     describe('publishing to a node', function () {
-        it(
-            "will try to manually configure the node if publish-options aren't supported",
-            mock.initConverse(converse, [], {}, async function (_converse) {
-                await mock.waitForRoster(_converse, 'current', 0);
+        /**
+         * Asserts that `sent_stanza` is a publish IQ for our test node, with
+         * the `whitelist` access_model passed via publish-options.
+         */
+        function expectPublishWithOptions(_converse, sent_stanza) {
+            expect(sent_stanza).toEqualStanza(stx`
+                <iq type="set"
+                        from="${_converse.bare_jid}"
+                        to="${pubsub_jid}"
+                        xmlns="jabber:client"
+                        id="${sent_stanza.getAttribute('id')}">
+                    <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                        <publish node="${node}"><item/></publish>
+                        <publish-options>
+                            <x xmlns="jabber:x:data" type="submit">
+                                <field var="FORM_TYPE" type="hidden">
+                                    <value>http://jabber.org/protocol/pubsub#publish-options</value>
+                                </field>
+                                <field var="pubsub#access_model"><value>whitelist</value></field>
+                            </x>
+                        </publish-options>
+                    </pubsub>
+                </iq>`);
+        }
 
-                const pubsub_jid = 'pubsub.shakespeare.lit';
+        /**
+         * Publishes an item with publish-options, asserts the outgoing
+         * publish IQ, has the server reject it with `precondition-not-met`,
+         * and waits for the manual config fetch that follows.
+         * @param {boolean} strict_options
+         * @returns {Promise<{promise: Promise, configure_stanza: Element}>}
+         */
+        async function publishUntilPreconditionNotMet(_converse, strict_options) {
+            await mock.waitForRoster(_converse, 'current', 0);
 
-                const { api } = _converse;
-                const sent_stanzas = api.connection.get().sent_stanzas;
-                const own_jid = _converse.session.get('jid');
+            const { api } = _converse;
+            const sent_stanzas = api.connection.get().sent_stanzas;
+            const own_jid = _converse.session.get('jid');
 
-                const node = 'princely_musings';
-                const promise = api.pubsub.publish(pubsub_jid, node, stx`<item></item>`, { access_model: 'whitelist' });
+            const promise = api.pubsub.publish(
+                pubsub_jid,
+                node,
+                stx`<item></item>`,
+                { access_model: 'whitelist' },
+                strict_options,
+            );
 
-                await mock.waitUntilDiscoConfirmed(
-                    _converse,
-                    pubsub_jid,
-                    [{ 'category': 'pubsub', 'type': 'pep' }],
-                    ['http://jabber.org/protocol/pubsub#publish-options'],
-                );
+            await mock.waitUntilDiscoConfirmed(
+                _converse,
+                pubsub_jid,
+                [{ 'category': 'pubsub', 'type': 'pep' }],
+                ['http://jabber.org/protocol/pubsub#publish-options'],
+            );
 
-                let sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop(),
-                );
-                expect(sent_stanza).toEqualStanza(stx`
-                    <iq type="set"
-                            from="${_converse.bare_jid}"
-                            to="${pubsub_jid}"
-                            xmlns="jabber:client"
-                            id="${sent_stanza.getAttribute('id')}">
-                        <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                            <publish node="princely_musings"><item/></publish>
-                            <publish-options>
-                                <x xmlns="jabber:x:data" type="submit">
-                                    <field var="FORM_TYPE" type="hidden">
-                                        <value>http://jabber.org/protocol/pubsub#publish-options</value>
-                                    </field>
-                                    <field var="pubsub#access_model"><value>whitelist</value></field>
-                                </x>
-                            </publish-options>
-                        </pubsub>
-                    </iq>`);
+            const sent_stanza = await u.waitUntil(() =>
+                sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop(),
+            );
+            expectPublishWithOptions(_converse, sent_stanza);
 
-                let response = stx`<iq type='error'
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(_converse, stx`<iq type='error'
                         xmlns="jabber:client"
                         from='${pubsub_jid}'
                         to='${own_jid}'
@@ -537,19 +400,31 @@ describe('The pubsub API', function () {
                         <conflict xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                         <precondition-not-met xmlns='http://jabber.org/protocol/pubsub#errors'/>
                     </error>
-                </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
+                </iq>`),
+            );
 
-                sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => iq.querySelector('pubsub configure')).pop(),
-                );
+            const configure_stanza = await u.waitUntil(() =>
+                sent_stanzas.filter((iq) => iq.querySelector('pubsub configure')).pop(),
+            );
+            return { promise, configure_stanza };
+        }
+
+        it(
+            "will try to manually configure the node if publish-options aren't supported",
+            mock.initConverse(converse, [], {}, async function (_converse) {
+                const { api } = _converse;
+                const sent_stanzas = api.connection.get().sent_stanzas;
+                const own_jid = _converse.session.get('jid');
+
+                const { promise, configure_stanza } = await publishUntilPreconditionNotMet(_converse, true);
+
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(_converse, stx`
                     <iq type='result'
                         xmlns="jabber:client"
                         from='${pubsub_jid}'
                         to='${own_jid}'
-                        id="${sent_stanza.getAttribute('id')}">
+                        id="${configure_stanza.getAttribute('id')}">
                     <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
                         <configure node='${node}'>
                         <x xmlns='jabber:x:data' type='form'>
@@ -567,27 +442,13 @@ describe('The pubsub API', function () {
                 </iq>`),
                 );
 
-                sent_stanza = await u.waitUntil(() =>
+                // The shape of the reconfigure submit is covered by the
+                // config.set tests. Here we only need to accept it.
+                let sent_stanza = await u.waitUntil(() =>
                     sent_stanzas
                         .filter((iq) => iq.getAttribute('type') === 'set' && iq.querySelector('pubsub configure'))
                         .pop(),
                 );
-
-                expect(sent_stanza).toEqualStanza(stx`<iq xmlns="jabber:client"
-                    from="${_converse.bare_jid}"
-                    to="${pubsub_jid}"
-                    type="set"
-                    id="${sent_stanza.getAttribute('id')}">
-                        <pubsub xmlns="http://jabber.org/protocol/pubsub#owner">
-                            <configure node="princely_musings">
-                            <x xmlns="jabber:x:data" type="submit">
-                                <field var="FORM_TYPE" type="hidden"><value>http://jabber.org/protocol/pubsub#node_config</value></field>
-                                <field var="pubsub#access_model"><value>whitelist</value></field>
-                            </x>
-                            </configure>
-                        </pubsub>
-                    </iq>`);
-
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(_converse, stx`
                     <iq type='result'
@@ -597,30 +458,15 @@ describe('The pubsub API', function () {
                         id="${sent_stanza.getAttribute('id')}"></iq>`),
                 );
 
-                // Clear old stanzas
+                // Clear old stanzas so we catch the republish.
                 while (sent_stanzas.length) sent_stanzas.pop();
 
+                // After reconfiguring, the item is published again, still with
+                // publish-options.
                 sent_stanza = await u.waitUntil(() =>
                     sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop(),
                 );
-                expect(sent_stanza).toEqualStanza(stx`
-                    <iq type="set"
-                            from="${_converse.bare_jid}"
-                            to="${pubsub_jid}"
-                            xmlns="jabber:client"
-                            id="${sent_stanza.getAttribute('id')}">
-                        <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                            <publish node="princely_musings"><item/></publish>
-                            <publish-options>
-                                <x xmlns="jabber:x:data" type="submit">
-                                    <field var="FORM_TYPE" type="hidden">
-                                        <value>http://jabber.org/protocol/pubsub#publish-options</value>
-                                    </field>
-                                    <field var="pubsub#access_model"><value>whitelist</value></field>
-                                </x>
-                            </publish-options>
-                        </pubsub>
-                    </iq>`);
+                expectPublishWithOptions(_converse, sent_stanza);
 
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(_converse, stx`
@@ -638,59 +484,21 @@ describe('The pubsub API', function () {
         it(
             'falls back to publishing without options (non-strict) when the node cannot be reconfigured',
             mock.initConverse(converse, [], {}, async function (_converse) {
-                await mock.waitForRoster(_converse, 'current', 0);
-
-                const pubsub_jid = 'pubsub.shakespeare.lit';
-
                 const { api } = _converse;
                 const sent_stanzas = api.connection.get().sent_stanzas;
                 const own_jid = _converse.session.get('jid');
 
-                const node = 'princely_musings';
                 // Non-strict: the publish-options are a preference, not a requirement.
-                const promise = api.pubsub.publish(
-                    pubsub_jid,
-                    node,
-                    stx`<item></item>`,
-                    { access_model: 'whitelist' },
-                    false,
-                );
-
-                await mock.waitUntilDiscoConfirmed(
-                    _converse,
-                    pubsub_jid,
-                    [{ 'category': 'pubsub', 'type': 'pep' }],
-                    ['http://jabber.org/protocol/pubsub#publish-options'],
-                );
-
-                let sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop(),
-                );
-                expect(sent_stanza.querySelector('publish-options')).not.toBe(null);
-                _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, stx`<iq type='error'
-                        xmlns="jabber:client"
-                        from='${pubsub_jid}'
-                        to='${own_jid}'
-                        id="${sent_stanza.getAttribute('id')}">
-                    <error type='modify'>
-                        <conflict xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
-                        <precondition-not-met xmlns='http://jabber.org/protocol/pubsub#errors'/>
-                    </error>
-                </iq>`),
-                );
+                const { promise, configure_stanza } = await publishUntilPreconditionNotMet(_converse, false);
 
                 // The manual reconfigure fallback fails at the config fetch: we
                 // don't own this node.
-                sent_stanza = await u.waitUntil(() =>
-                    sent_stanzas.filter((iq) => iq.querySelector('pubsub configure')).pop(),
-                );
                 _converse.api.connection.get()._dataRecv(
                     mock.createRequest(_converse, stx`<iq type='error'
                         xmlns="jabber:client"
                         from='${pubsub_jid}'
                         to='${own_jid}'
-                        id="${sent_stanza.getAttribute('id')}">
+                        id="${configure_stanza.getAttribute('id')}">
                     <error type='auth'><forbidden xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error>
                 </iq>`),
                 );
@@ -699,7 +507,7 @@ describe('The pubsub API', function () {
                 while (sent_stanzas.length) sent_stanzas.pop();
 
                 // Non-strict publishing must survive: re-publish without publish-options.
-                sent_stanza = await u.waitUntil(() =>
+                const sent_stanza = await u.waitUntil(() =>
                     sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop(),
                 );
                 expect(sent_stanza.querySelector('publish-options')).toBe(null);

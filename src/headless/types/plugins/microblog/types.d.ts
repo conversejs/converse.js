@@ -28,6 +28,10 @@ export type PubSubMessageAttrs = {
     is_repost?: boolean;
     comments_jid?: string;
     comments_node?: string;
+    comment_count?: number;
+    like_count?: number;
+    liked_by_me?: boolean;
+    my_like_id?: string;
 };
 /**
  * Attributes accepted by {@link PubSubFeed.createPostStanza} when composing a new post.

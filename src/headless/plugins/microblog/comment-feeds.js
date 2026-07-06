@@ -48,14 +48,16 @@ class CommentFeeds extends PubSubFeeds {
      * destroying each evicted thread and its store. Empty threads (they cache no
      * comments, so re-fetching is cheap) are evicted before non-empty ones, which
      * hold real content; within each group the least-recently-viewed goes first.
-     * Pinned threads (own posts, kept live) are never evicted.
+     * Pinned threads (own posts, kept live) and threads with a fetch in flight
+     * are never evicted.
      */
     pruneThreads() {
         const cap = api.settings.get('social_max_comment_threads');
         if (!cap || typeof cap !== 'number' || this.length <= cap) return;
         // A just-created thread pending its first fetch looks empty but is the
-        // newest, so it sorts last within the empty group and survives.
-        const evictable = this.filter((f) => !f.get('pinned')).sort((a, b) => {
+        // newest, so it sorts last within the empty group and survives; one whose
+        // fetch has actually started is exempt outright (isFetching).
+        const evictable = this.filter((f) => !f.get('pinned') && !f.isFetching()).sort((a, b) => {
             const a_empty = a.messages.length === 0;
             const b_empty = b.messages.length === 0;
             if (a_empty !== b_empty) return a_empty ? -1 : 1; // empties first

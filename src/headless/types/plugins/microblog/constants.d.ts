@@ -91,4 +91,17 @@ export const NS_XHTML: "http://www.w3.org/1999/xhtml";
  * chat/groupchat/headline messages.
  */
 export const MICROBLOG_TYPE: "microblog";
+/**
+ * The text marker of a "like": a comment whose entry text is exactly this heart
+ * (U+2665). Likes ride the per-post comments node as ♥-comments (XEP-0277
+ * convention), so a single fetch of the node yields both comments and likes.
+ */
+export const LIKE_MARKER: "♥";
+/**
+ * How many per-post comment-summary fetches run concurrently (the greedy
+ * on-visible fetch). Bounded so scrolling a long timeline doesn't flood the
+ * connection; smaller than the followable sweep since these fire continuously as
+ * posts scroll into view rather than as a one-shot burst.
+ */
+export const COMMENT_SUMMARY_CONCURRENCY: 4;
 //# sourceMappingURL=constants.d.ts.map

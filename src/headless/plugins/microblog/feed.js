@@ -47,10 +47,22 @@ class PubSubFeed extends Model {
         };
     }
 
+    /**
+     * The collection class backing {@link messages}. {@link CommentFeed} overrides
+     * this so a thread's items are {@link PostComment}s (which carry comment-only
+     * behaviour like `isLike`), while a timeline feed's items are plain
+     * {@link PubSubMessage}s.
+     * @returns {typeof PubSubMessages}
+     */
+    get messagesCollectionClass() {
+        return PubSubMessages;
+    }
+
     initialize() {
         super.initialize();
+        const MessagesCollection = this.messagesCollectionClass;
         /** @type {PubSubMessages} */
-        this.messages = new PubSubMessages(null, { id: this.getMessagesCacheKey() });
+        this.messages = new MessagesCollection(null, { id: this.getMessagesCacheKey() });
         this.messages.feed = this;
     }
 

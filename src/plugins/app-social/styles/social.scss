@@ -112,6 +112,91 @@
         }
     }
 
+    // A post's detail view (its comment thread), which takes over the app area.
+    // Mirrors the feed container: scrollable, centred, same max width.
+    converse-social-post {
+        display: block;
+        background-color: var(--background-color);
+        height: 100%;
+        overflow-y: auto;
+
+        .social-post-detail {
+            max-width: 42em;
+            margin: 0 auto;
+            padding: 1em;
+        }
+
+        // Sticky back bar so leaving the thread is always one click away.
+        .social-post-detail__bar {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            margin-bottom: 0.5em;
+            padding-bottom: 0.5em;
+            background-color: var(--background-color);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .social-post-detail__back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4em;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--subdued-color);
+
+            converse-icon svg {
+                fill: currentColor;
+            }
+
+            &:hover {
+                color: var(--link-color);
+            }
+        }
+
+        .social-comments {
+            margin-top: 1em;
+        }
+
+        .social-comments__heading {
+            margin: 0 0 0.5em;
+            font-size: 0.95em;
+            color: var(--subdued-color);
+        }
+
+        // Comments read as a quieter, tighter list beneath the parent post.
+        .social-comment .social-post {
+            padding: 0.5em 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .social-comment-compose {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5em;
+            margin-top: 1em;
+
+            &__textarea {
+                width: 100%;
+                resize: vertical;
+                padding: 0.5em;
+                border: 1px solid var(--foreground-color);
+                border-radius: 0.25em;
+                // Match the chat/compose textarea so text stays legible in every theme.
+                color: var(--foreground-color);
+                background-color: var(--background-color);
+                font-family: inherit;
+            }
+
+            &__toolbar {
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
+    }
+
     .social-onboarding {
         position: relative;
         margin-bottom: 1em;
@@ -355,7 +440,8 @@
                     color: var(--danger-color);
                 }
 
-                &--repost:hover {
+                &--repost:hover,
+                &--comment:hover {
                     color: var(--link-color);
                 }
             }

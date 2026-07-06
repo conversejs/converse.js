@@ -8,11 +8,15 @@ export default class SocialMessage extends CustomElement {
         model: {
             type: typeof PubSubMessage;
         };
+        compact: {
+            type: BooleanConstructor;
+        };
         _reposting: {
             type: BooleanConstructor;
             state: boolean;
         };
     };
+    compact: boolean;
     render(): import("lit-html").TemplateResult<1>;
     /**
      * Show the author's details (or our own profile for own posts) when their
@@ -35,6 +39,12 @@ export default class SocialMessage extends CustomElement {
      * the node and removes the local copy.
      */
     onRetract(): Promise<void>;
+    /**
+     * Open this post's detail view (its comment thread). Bubbles a
+     * `postselected` event up to the Social app, which swaps the timeline for
+     * the detail view.
+     */
+    onComments(): void;
     /**
      * Repost (repeat) this post into our own feed (XEP-0277 § Repeating a Post).
      * The button is disabled while the repost is in flight, so a double-click

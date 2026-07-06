@@ -19,7 +19,8 @@ declare class CommentFeeds extends PubSubFeeds {
      * destroying each evicted thread and its store. Empty threads (they cache no
      * comments, so re-fetching is cheap) are evicted before non-empty ones, which
      * hold real content; within each group the least-recently-viewed goes first.
-     * Pinned threads (own posts, kept live) are never evicted.
+     * Pinned threads (own posts, kept live) and threads with a fetch in flight
+     * are never evicted.
      */
     pruneThreads(): void;
 }

@@ -16,8 +16,11 @@ import CommentFeed from './comment-feed.js';
 import CommentFeeds from './comment-feeds.js';
 import PubSubMessage from './message.js';
 import PubSubMessages from './messages.js';
+import PostComment from './post-comment.js';
+import PostComments from './post-comments.js';
 import FollowableCache from './followable.js';
 import microblog_api from './api.js';
+import { comment_summary_queue } from './comment-summary.js';
 import { registerMicroblogHandler } from './utils.js';
 import { MICROBLOG_NODE, NS_ATOM, NS_THREAD, SOCIAL_FEED_FEATURE } from './constants.js';
 import '../pubsub/index.js';
@@ -46,6 +49,8 @@ converse.plugins.add('converse-microblog', {
             CommentFeed,
             CommentFeeds,
             FollowableCache,
+            PostComment,
+            PostComments,
             PubSubFeed,
             PubSubFeeds,
             PubSubMessage,
@@ -63,6 +68,9 @@ converse.plugins.add('converse-microblog', {
         });
 
         api.listen.on('clearSession', () => {
+            // Drop the in-memory summary-fetch dedupe state so a fresh login
+            // re-fetches counts (the persisted post attrs still show meanwhile).
+            comment_summary_queue.reset();
             const { state } = _converse;
             if (state.pubsubfeeds) {
                 state.pubsubfeeds.clearStore?.({ silent: true });

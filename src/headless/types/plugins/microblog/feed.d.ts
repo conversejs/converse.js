@@ -15,6 +15,14 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
     defaults(): {
         node: string;
     };
+    /**
+     * The collection class backing {@link messages}. {@link CommentFeed} overrides
+     * this so a thread's items are {@link PostComment}s (which carry comment-only
+     * behaviour like `isLike`), while a timeline feed's items are plain
+     * {@link PubSubMessage}s.
+     * @returns {typeof PubSubMessages}
+     */
+    get messagesCollectionClass(): typeof PubSubMessages;
     initialize(): void;
     /** @type {PubSubMessages} */
     messages: PubSubMessages;

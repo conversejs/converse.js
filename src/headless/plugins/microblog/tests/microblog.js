@@ -1,7 +1,16 @@
 import { describe, it, expect, vi } from 'vitest';
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
-import { ATOM, MICROBLOG_NODE, PUBSUB_EVENT, makeCommentEvent, makePostStanza, receive } from './utils.js';
+import {
+    ATOM,
+    MICROBLOG_NODE,
+    PUBSUB_EVENT,
+    commentItem,
+    makeCommentEvent,
+    makePostStanza,
+    receive,
+    seedPost,
+} from './utils.js';
 
 const { stx, u } = converse.env;
 
@@ -93,7 +102,7 @@ describe('The microblog plugin', function () {
             // We republished it, so it's still ours.
             expect(post.get('is_mine')).toBe(true);
             // The reposter (publisher) is surfaced distinctly from the original
-            // author — here that's us, so the view labels the repost "You".
+            // author, here that's us, so the view labels the repost "You".
             expect(post.getReposterJID()).toBe(bare_jid);
         }),
     );
@@ -146,7 +155,7 @@ describe('The microblog plugin', function () {
             expect(post.get('displayName')).toBe('Bob the Builder');
 
             // The reposter (Alice, whose feed we follow) is surfaced distinctly,
-            // and her name resolves from the vCard cache — not the roster.
+            // and her name resolves from the vCard cache.
             expect(post.getReposterJID()).toBe(reposter);
             await u.waitUntil(() => post.getReposterName() === 'Alice');
             expect(_converse.roster.get(reposter)).toBeUndefined();
@@ -232,8 +241,7 @@ describe('The microblog plugin', function () {
 
             // Simulate the author's vCard arriving (in production a post fetches it
             // eagerly for the avatar). The display name must then resolve to the
-            // vCard name — reactively, and never the bare JID — without the author
-            // ever entering the roster.
+            // vCard name, without the author ever entering the roster.
             await api.vcard.update(_converse.state.vcards.get(jid), true);
             await u.waitUntil(() => post.get('displayName') === 'Guest Author');
             expect(_converse.roster.get(jid)).toBeUndefined();
@@ -324,8 +332,7 @@ describe('The microblog plugin', function () {
             const feed = await api.microblog.feeds.get(jid, MICROBLOG_NODE, true);
 
             // Atom-native entry: empty <title/>, body in <content>. Our own posts
-            // use <title>, but other servers (e.g. vucica.net) don't — these used
-            // to render blank.
+            // use <title>, but other servers might not.
             receive(
                 _converse,
                 stx`
@@ -579,7 +586,7 @@ describe('The microblog plugin', function () {
             await feed.fetchPosts();
 
             const gap = feed.messages.models.find(
-                (m) => m instanceof PubsubPlaceholderMessage && m.get('stop_at_time')
+                (m) => m instanceof PubsubPlaceholderMessage && m.get('stop_at_time'),
             );
             expect(gap).toBeDefined();
             expect(gap.get('before_cursor')).toBe('c-21');
@@ -701,7 +708,9 @@ describe('The microblog plugin', function () {
             expect(tree.querySelector('author uri').textContent).toBe('xmpp:juliet@capulet.lit');
             expect(tree.querySelector('title').textContent).toBe('O Romeo, Romeo');
             let via = tree.querySelector('link[rel="via"]');
-            expect(via.getAttribute('href')).toBe('xmpp:juliet@capulet.lit?;node=urn%3Axmpp%3Amicroblog%3A0;item=orig-1');
+            expect(via.getAttribute('href')).toBe(
+                'xmpp:juliet@capulet.lit?;node=urn%3Axmpp%3Amicroblog%3A0;item=orig-1',
+            );
             expect(via.getAttribute('ref')).toBe('tag:capulet.lit,2024-01-01:posts-orig-1');
 
             // Optimistically rendered in our own feed as a repost we made.
@@ -1271,6 +1280,217 @@ describe('The microblog plugin', function () {
             // two; the non-empty thread survives despite being least-recently-viewed.
             await u.waitUntil(() => cf.get(f2.get('id')) === undefined);
             expect(cf.get(f1.get('id'))).toBeDefined();
+        }),
+    );
+
+    it(
+        'denormalises comment and like counts onto a post, fetching once',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api);
+
+            // The comments node holds two real comments and one ♥ like.
+            const getSpy = vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: [
+                    commentItem('c-1', 'She is so pretty!'),
+                    commentItem('c-2', 'Indeed', 'mercutio@montague.lit'),
+                    commentItem('l-1', '♥'),
+                ],
+            });
+
+            await api.microblog.comments.fetchSummary(post);
+
+            // The ♥ is counted as a like, not a comment.
+            expect(post.get('comment_count')).toBe(2);
+            expect(post.get('like_count')).toBe(1);
+            expect(post.get('liked_by_me')).toBe(false);
+
+            // A second visibility of the same post doesn't re-fetch (deduped).
+            await api.microblog.comments.fetchSummary(post);
+            expect(getSpy).toHaveBeenCalledTimes(1);
+        }),
+    );
+
+    it(
+        'keys the summary dedupe on the comments feed, not the bare post id',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            // Two authors, each with a post whose local item id is the same
+            // ("post-1"). Item ids are only unique within a node, so on an
+            // aggregated timeline these collide — the dedupe must key on the
+            // comments feed (service + node), which differs by author, or the
+            // second post's counts never get fetched.
+            const { post: juliet_post } = await seedPost(api, { author: 'juliet@capulet.lit' });
+            const { post: romeo_post } = await seedPost(api, { author: 'romeo@montague.lit' });
+
+            // Each author's comments node returns a different number of comments.
+            const getSpy = vi.spyOn(api.pubsub.items, 'get').mockImplementation((jid) =>
+                Promise.resolve({
+                    items:
+                        jid === 'juliet@capulet.lit'
+                            ? [commentItem('c-1', 'She is so pretty!'), commentItem('c-2', 'Indeed')]
+                            : [commentItem('c-3', 'Away!')],
+                })
+            );
+
+            await api.microblog.comments.fetchSummary(juliet_post);
+            await api.microblog.comments.fetchSummary(romeo_post);
+
+            // Both were fetched (no collision) and each carries its own count.
+            expect(getSpy).toHaveBeenCalledTimes(2);
+            expect(juliet_post.get('comment_count')).toBe(2);
+            expect(romeo_post.get('comment_count')).toBe(1);
+        }),
+    );
+
+    it(
+        'retries a summary fetch that failed rather than caching the failure',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api, { author: 'mercutio@montague.lit' });
+
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: [commentItem('c-1', 'Hark', 'nurse@capulet.lit')],
+            });
+
+            // First visibility: resolving the thread throws (a transient error).
+            // It's logged, not cached — the count stays unset.
+            const resolveFeed = api.microblog.comments.feed.bind(api.microblog.comments);
+            const feedSpy = vi
+                .spyOn(api.microblog.comments, 'feed')
+                .mockRejectedValueOnce(new Error('transient'))
+                .mockImplementation((p) => resolveFeed(p));
+
+            await api.microblog.comments.fetchSummary(post);
+            expect(post.get('comment_count')).toBeUndefined();
+
+            // A later visibility retries (the failed key wasn't marked done) and
+            // the count now lands. Under the old always-mark-done behaviour the
+            // second fetch was skipped and the count never appeared.
+            await api.microblog.comments.fetchSummary(post);
+            expect(feedSpy).toHaveBeenCalledTimes(2);
+            expect(post.get('comment_count')).toBe(1);
+        }),
+    );
+
+    it(
+        'counts a ♥ authored by us as our own like (liked_by_me, my_like_id)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api);
+
+            // One real comment plus two ♥ likes — one ours, one someone else's.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: [
+                    commentItem('c-1', 'Indeed'),
+                    commentItem('l-other', '♥', 'benvolio@montague.lit'),
+                    commentItem('l-mine', '♥', bare_jid),
+                ],
+            });
+
+            await api.microblog.comments.fetchSummary(post);
+
+            // Both ♥ items count as likes; only ours flips liked_by_me, and its id
+            // is retained (needed to retract on un-like).
+            expect(post.get('comment_count')).toBe(1);
+            expect(post.get('like_count')).toBe(2);
+            expect(post.get('liked_by_me')).toBe(true);
+            expect(post.get('my_like_id')).toBe('l-mine');
+        }),
+    );
+
+    it(
+        "reflects our own new comment in the post's denormalised count",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api);
+
+            // Establish a baseline of one existing comment via a summary fetch.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [commentItem('c-1', 'Indeed')] });
+            await api.microblog.comments.fetchSummary(post);
+            expect(post.get('comment_count')).toBe(1);
+
+            // Posting our own comment updates the denormalised count without a
+            // re-fetch (add() calls syncCommentSummary on the optimistic item).
+            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            await api.microblog.comments.add(post, 'She is so pretty!');
+            expect(post.get('comment_count')).toBe(2);
+        }),
+    );
+
+    it(
+        'clears the summary dedupe on session clear so a reconnect re-fetches',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api);
+
+            const getSpy = vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            // Fetched once, then deduped on a second visibility.
+            await api.microblog.comments.fetchSummary(post);
+            await api.microblog.comments.fetchSummary(post);
+            expect(getSpy).toHaveBeenCalledTimes(1);
+
+            // Session clear resets the dedupe state (and tears down the thread
+            // store); a reconnect re-creates the collection.
+            await api.trigger('clearSession', { synchronous: true });
+            _converse.state.commentfeeds = new _converse.exports.CommentFeeds();
+
+            // The same post is now re-fetched rather than skipped as "done".
+            await api.microblog.comments.fetchSummary(post);
+            expect(getSpy).toHaveBeenCalledTimes(2);
+        }),
+    );
+
+    it(
+        'never evicts a comment thread while its fetch is in flight',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+            const cf = _converse.state.commentfeeds;
+
+            const f1 = cf.getFeed('d@x.com', 'urn:xmpp:microblog:0:comments/1', true);
+            const f2 = cf.getFeed('d@x.com', 'urn:xmpp:microblog:0:comments/2', true);
+
+            // f1's fetch is in flight: items.get stays pending for the assertion window.
+            let resolveFetch;
+            vi.spyOn(api.pubsub.items, 'get').mockReturnValue(new Promise((resolve) => (resolveFetch = resolve)));
+            f1.fetchComments(); // not awaited, f1 is now mid-fetch
+            expect(f1.isFetching()).toBe(true);
+
+            // Tighten the cap and open a third thread to force a prune. f1 is an
+            // oldest empty thread, so pure empty-first LRU would evict it first.
+            api.settings.set('social_max_comment_threads', 1);
+            cf.getFeed('d@x.com', 'urn:xmpp:microblog:0:comments/3', true);
+
+            // The idle empties are evicted; f1 survives because it's mid-fetch,
+            // evicting it would destroy the model and lose the fetched comments.
+            await u.waitUntil(() => cf.get(f2.get('id')) === undefined);
+            expect(cf.get(f1.get('id'))).toBeDefined();
+
+            // Once the fetch settles, f1's flag clears and it's eligible again.
+            resolveFetch({ items: [] });
+            await u.waitUntil(() => !f1.isFetching());
         }),
     );
 });

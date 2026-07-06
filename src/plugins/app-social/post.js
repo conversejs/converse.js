@@ -38,7 +38,7 @@ export default class SocialPost extends SignalWatcher(CustomElement) {
 
     async initialize() {
         try {
-            this.feed = await api.microblog.getCommentsFeed(this.model);
+            this.feed = await api.microblog.comments.feed(this.model);
         } catch (e) {
             log.error(e);
             return;
@@ -94,7 +94,7 @@ export default class SocialPost extends SignalWatcher(CustomElement) {
         this._submitting = true;
         textarea.setAttribute('disabled', 'disabled');
         try {
-            await api.microblog.comment(this.model, text);
+            await api.microblog.comments.add(this.model, text);
             textarea.value = '';
         } catch (e) {
             log.error(e);

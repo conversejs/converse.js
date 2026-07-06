@@ -1009,7 +1009,7 @@ describe('The microblog plugin', function () {
                 ],
             });
 
-            const thread = await api.microblog.fetchComments(post);
+            const thread = await api.microblog.comments.fetch(post);
             expect(thread.messages.length).toBe(1);
             const comment = thread.messages.at(0);
             expect(comment.get('title')).toBe('She is so pretty!');
@@ -1054,7 +1054,7 @@ describe('The microblog plugin', function () {
             const post = feed.messages.get('post-1');
 
             const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
-            const comment = await api.microblog.comment(post, '  She is so pretty!  ');
+            const comment = await api.microblog.comments.add(post, '  She is so pretty!  ');
 
             // Published to the post's comments node, carrying our <author>.
             expect(publish).toHaveBeenCalledTimes(1);
@@ -1071,7 +1071,7 @@ describe('The microblog plugin', function () {
             expect(comment.get('is_mine')).toBe(true);
 
             // Empty comments are ignored.
-            expect(await api.microblog.comment(post, '   ')).toBeUndefined();
+            expect(await api.microblog.comments.add(post, '   ')).toBeUndefined();
             expect(publish).toHaveBeenCalledTimes(1);
         }),
     );
@@ -1099,7 +1099,7 @@ describe('The microblog plugin', function () {
             const post = feed.messages.get('post-1');
 
             // Open the thread (registers a comment feed).
-            const thread = await api.microblog.getCommentsFeed(post);
+            const thread = await api.microblog.comments.feed(post);
             const timeline_feeds = _converse.state.pubsubfeeds.length;
 
             // A well-formed comment arrives via PEP from the comments service.

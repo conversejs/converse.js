@@ -59,7 +59,7 @@ export function handleMicroblogEvent(message) {
                 .filter(Boolean);
             if (!items.length && !retracts.length) continue;
 
-            // Comments route to their own in-memory collection, and only when a
+            // Comments route to their own separate collection, and only when a
             // thread is already open (create=false) — so a comment event never
             // creates a timeline feed nor surfaces in the aggregated feed.
             const feed = node.startsWith(COMMENTS_NODE_PREFIX)

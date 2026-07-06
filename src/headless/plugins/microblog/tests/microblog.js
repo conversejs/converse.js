@@ -1020,7 +1020,7 @@ describe('The microblog plugin', function () {
             // Can't verify without a publisher, but don't cry wolf either.
             expect(comment.getAuthorMismatch()).toBe(false);
 
-            // The thread lives in its own in-memory collection; the timeline is
+            // The thread lives in its own separate collection; the timeline is
             // untouched (no comment feed leaked into the aggregate).
             expect(_converse.state.commentfeeds.length).toBe(1);
             expect(_converse.state.pubsubfeeds.length).toBe(timeline_feeds);
@@ -1098,7 +1098,7 @@ describe('The microblog plugin', function () {
             ]);
             const post = feed.messages.get('post-1');
 
-            // Open the thread (registers an in-memory comment feed).
+            // Open the thread (registers a comment feed).
             const thread = await api.microblog.getCommentsFeed(post);
             const timeline_feeds = _converse.state.pubsubfeeds.length;
 
@@ -1147,6 +1147,130 @@ describe('The microblog plugin', function () {
             await u.waitUntil(() => thread.messages.length === 2);
             const spoof = thread.messages.get('c-2');
             expect(spoof.getAuthorMismatch()).toBe(true);
+        }),
+    );
+
+    it(
+        'persists a comment thread across a reload (fresh hydration)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const feed = _converse.state.commentfeeds.getFeed(
+                'juliet@capulet.lit',
+                'urn:xmpp:microblog:0:comments/post-1',
+                true,
+            );
+            await feed.addItems([
+                stx`
+                <item id="c-1">
+                  <entry xmlns="${ATOM}">
+                    <author><name>Benvolio</name><uri>xmpp:benvolio@montague.lit</uri></author>
+                    <title type="text">She is so pretty!</title>
+                    <id>tag:capulet.lit,2024:comments-c-1</id>
+                    <published>2024-01-01T19:00:00Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+            expect(feed.messages.length).toBe(1);
+            // The thread is now persisted (no longer in-memory): it has a store key.
+            const key = feed.getMessagesCacheKey();
+            expect(key).toBeTruthy();
+
+            // Simulate a reload: hydrate a fresh messages collection from the same store.
+            const Messages = /** @type {any} */ (feed.messages.constructor);
+            const reloaded = new Messages(null, { id: key });
+            await reloaded.hydrated;
+            expect(reloaded.length).toBe(1);
+            expect(reloaded.at(0).get('title')).toBe('She is so pretty!');
+        }),
+    );
+
+    it(
+        'evicts the least-recently-viewed comment thread past the cap',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+            const cf = _converse.state.commentfeeds;
+
+            const f1 = cf.getFeed('a@x.com', 'urn:xmpp:microblog:0:comments/1', true);
+            const f2 = cf.getFeed('a@x.com', 'urn:xmpp:microblog:0:comments/2', true);
+            const f3 = cf.getFeed('a@x.com', 'urn:xmpp:microblog:0:comments/3', true);
+            f1.save({ last_viewed: 100 }); // oldest
+            f2.save({ last_viewed: 200 });
+            f3.save({ last_viewed: 300 }); // newest
+
+            api.settings.set('social_max_comment_threads', 2);
+            cf.pruneThreads();
+
+            await u.waitUntil(() => cf.get(f1.get('id')) === undefined);
+            expect(cf.get(f2.get('id'))).toBeDefined();
+            expect(cf.get(f3.get('id'))).toBeDefined();
+        }),
+    );
+
+    it(
+        'never evicts a pinned comment thread',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+            const cf = _converse.state.commentfeeds;
+
+            const f1 = cf.getFeed('b@x.com', 'urn:xmpp:microblog:0:comments/1', true);
+            const f2 = cf.getFeed('b@x.com', 'urn:xmpp:microblog:0:comments/2', true);
+            const f3 = cf.getFeed('b@x.com', 'urn:xmpp:microblog:0:comments/3', true);
+            f1.save({ pinned: true, last_viewed: 100 }); // pinned AND oldest
+            f2.save({ last_viewed: 200 });
+            f3.save({ last_viewed: 300 });
+
+            api.settings.set('social_max_comment_threads', 2);
+            cf.pruneThreads();
+
+            // The oldest *non-pinned* thread goes; the pinned one survives despite
+            // being the least-recently-viewed of all.
+            await u.waitUntil(() => cf.get(f2.get('id')) === undefined);
+            expect(cf.get(f1.get('id'))).toBeDefined();
+            expect(cf.get(f3.get('id'))).toBeDefined();
+        }),
+    );
+
+    it(
+        'evicts empty comment threads before non-empty ones',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+            const cf = _converse.state.commentfeeds;
+
+            // f1: viewed long ago but holds a real comment (valuable cache).
+            const f1 = cf.getFeed('c@x.com', 'urn:xmpp:microblog:0:comments/1', true);
+            f1.save({ last_viewed: 100 }); // oldest
+            await f1.addItems([
+                stx`
+                <item id="c-1">
+                  <entry xmlns="${ATOM}">
+                    <author><name>Bob</name><uri>xmpp:bob@x.com</uri></author>
+                    <title type="text">nice one</title>
+                    <id>tag:x.com,2024:comments-c-1</id>
+                    <published>2024-01-01T10:00:00Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+
+            // f2: viewed recently but empty (worthless cache).
+            const f2 = cf.getFeed('c@x.com', 'urn:xmpp:microblog:0:comments/2', true);
+            f2.save({ last_viewed: 300 }); // newest, but empty
+
+            api.settings.set('social_max_comment_threads', 1);
+            cf.pruneThreads();
+
+            // The empty thread is evicted first even though it is the newer of the
+            // two; the non-empty thread survives despite being least-recently-viewed.
+            await u.waitUntil(() => cf.get(f2.get('id')) === undefined);
+            expect(cf.get(f1.get('id'))).toBeDefined();
         }),
     );
 });

@@ -1619,6 +1619,17 @@ Alternatively you could use it with [view_mode](#view_mode) set to `overlayed` t
 
 This setting relates to [XEP-0198](https://xmpp.org/extensions/xep-0198.html) and determines the number of stanzas to be sent before Converse will ask the server for acknowledgement of those stanzas.
 
+### social_max_comment_threads
+
+- Default: `200`
+- Type: Integer
+
+The maximum number of comment threads the Social app ([XEP-0277](https://xmpp.org/extensions/xep-0277.html) microblogging) keeps cached at once.
+
+When you open a post's comments, that thread is persisted so it reopens instantly and is available offline. Since a thread is materialised for every post whose comments you view, the number of cached threads is what grows over time. Once the cache exceeds this size, threads are evicted (they're cheap to re-fetch) — empty threads, which cache no comments, are evicted before threads that hold comments, and within each the least-recently-viewed goes first. Threads for your own posts are never evicted, since they're subscribed for live updates.
+
+Set to a falsy value (`0`, `null`) to disable eviction and keep an unbounded number of threads.
+
 ### sounds_path
 
 - Default: `${assets_path}/sounds/`

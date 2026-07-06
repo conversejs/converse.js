@@ -5,7 +5,7 @@
 import { api, PubSubMessage } from '@converse/headless';
 import log from '@converse/log';
 import { __ } from 'i18n';
-import { CustomElement } from 'shared/components/element.js';
+import { ObservableElement } from 'shared/components/observable.js';
 import 'shared/modals/image.js';
 import tplMessage from './templates/message.js';
 
@@ -14,9 +14,10 @@ import tplMessage from './templates/message.js';
  * each post down; this component re-renders when a post's display-affecting
  * attributes (its Atom text constructs, author name, avatar) change.
  */
-export default class SocialMessage extends CustomElement {
+export default class SocialMessage extends ObservableElement {
     static get properties() {
         return {
+            ...super.properties,
             model: { type: PubSubMessage },
             // When set, render as a thread item (or the detail header): drop the
             // action buttons (comment / repost / delete), which belong to the
@@ -29,21 +30,21 @@ export default class SocialMessage extends CustomElement {
     constructor() {
         super();
         this.compact = false;
+        // Fetch this post's comment/like counts once it's scrolled into view
+        this.observable = /** @type {import('shared/components/types').ObservableProperty} */ ('once');
+        this.observableRequireFocus = true;
+        this.intersectionRatio = 0.1;
     }
 
     initialize() {
-        // Re-render this post when its display-affecting attributes change. The
-        // post body is the three Atom text constructs, kept distinct.
-        this.listenTo(this.model, 'change:title', () => this.requestUpdate());
-        this.listenTo(this.model, 'change:summary', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:comment_count', () => this.requestUpdate());
         this.listenTo(this.model, 'change:content', () => this.requestUpdate());
         this.listenTo(this.model, 'change:displayName', () => this.requestUpdate());
-        // The author's vCard (avatar) and contact resolve asynchronously; re-render
-        // so the avatar appears once its vCard loads, and the profile link appears
-        // once an existing contact resolves.
+        this.listenTo(this.model, 'change:summary', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:title', () => this.requestUpdate());
+        this.listenTo(this.model, 'contact:add', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
-        this.listenTo(this.model, 'contact:add', () => this.requestUpdate());
     }
 
     render() {
@@ -121,6 +122,15 @@ export default class SocialMessage extends CustomElement {
         } finally {
             this._reposting = false;
         }
+    }
+
+    /**
+     * The post has been scrolled into view, lazily fetch its comment/like counts.
+     * @param {IntersectionObserverEntry} _entry
+     */
+    onVisibilityChanged(_entry) {
+        if (this.compact) return;
+        api.microblog.comments.fetchSummary(this.model).catch((e) => log.error(e));
     }
 }
 

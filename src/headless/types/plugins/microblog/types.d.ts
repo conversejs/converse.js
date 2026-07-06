@@ -26,6 +26,7 @@ export type PubSubMessageAttrs = {
     via_href?: string;
     via_ref?: string;
     is_repost?: boolean;
+    comments_jid?: string;
     comments_node?: string;
 };
 /**
@@ -37,6 +38,17 @@ export type PubSubPublishAttrs = {
     atom_id?: string;
     published?: string;
     updated?: string;
+};
+/**
+ * Attributes accepted by {@link CommentFeed.createCommentStanza} when composing a
+ * new comment (XEP-0277 § Adding a Comment).
+ */
+export type PubSubCommentAttrs = {
+    body: string;
+    author_jid: string;
+    author_name?: string;
+    id?: string;
+    published?: string;
 };
 /**
  * Attributes of a {@link PubSubFeed} — one PubSub node at one JID.

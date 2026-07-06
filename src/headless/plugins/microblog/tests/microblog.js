@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
-import { ATOM, MICROBLOG_NODE, PUBSUB_EVENT, makePostStanza, receive } from './utils.js';
+import { ATOM, MICROBLOG_NODE, PUBSUB_EVENT, makeCommentEvent, makePostStanza, receive } from './utils.js';
 
 const { stx, u } = converse.env;
 
@@ -624,6 +624,9 @@ describe('The microblog plugin', function () {
             // The generic publish IQ flow is covered by the pubsub plugin's own
             // tests; here we only assert the microblog-specific wiring.
             const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            // Publishing also provisions the post's comments node (fired in the
+            // background); stub it so it doesn't hit the network.
+            const create = vi.spyOn(api.pubsub, 'create').mockResolvedValue(undefined);
 
             await feed.publishPost('  hanging out at the Café  ');
 
@@ -637,6 +640,21 @@ describe('The microblog plugin', function () {
             expect(options.access_model).toBe('open');
             // The built item must carry the trimmed plain-text title.
             expect(item.tree().querySelector('title').textContent).toBe('hanging out at the Café');
+            // …and advertise the post's comments node via a rel="replies" link.
+            const replies = item.tree().querySelector('link[rel="replies"]');
+            expect(replies.getAttribute('title')).toBe('comments');
+            const post_id = item.tree().getAttribute('id');
+            expect(replies.getAttribute('href')).toBe(
+                `xmpp:${bare_jid}?;node=${encodeURIComponent('urn:xmpp:microblog:0:comments/' + post_id)}`,
+            );
+            // The comments node is provisioned with an open publish model so
+            // others can reply.
+            await u.waitUntil(() => create.mock.calls.length === 1);
+            const [c_jid, c_node, c_config] = create.mock.calls[0];
+            expect(c_jid).toBe(bare_jid);
+            expect(c_node).toBe(`urn:xmpp:microblog:0:comments/${post_id}`);
+            expect(c_config.access_model).toBe('open');
+            expect(c_config.publish_model).toBe('open');
 
             // The post is optimistically added to the feed.
             await u.waitUntil(() => feed.messages.length === 1);
@@ -901,6 +919,234 @@ describe('The microblog plugin', function () {
             await u.waitUntil(() => !!post.contact);
             expect(post.contact.get('jid')).toBe(jid);
             expect(_converse.roster.length).toBe(1);
+        }),
+    );
+
+    it(
+        "parses a post's comments link, and derives the comments node when absent",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const feed = await api.microblog.feeds.get('juliet@capulet.lit', MICROBLOG_NODE, true);
+            const comments_node = 'urn:xmpp:microblog:0:comments/post-1';
+            const href = `xmpp:juliet@capulet.lit?;node=${encodeURIComponent(comments_node)}`;
+            await feed.addItems([
+                stx`
+                <item id="post-1" publisher="juliet@capulet.lit">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">O Romeo, Romeo</title>
+                    <link rel="replies" title="comments" href="${href}"/>
+                    <id>tag:capulet.lit,2024-01-01:posts-post-1</id>
+                    <published>2024-01-01T18:30:02Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+            const post = feed.messages.get('post-1');
+            expect(post.get('comments_jid')).toBe('juliet@capulet.lit');
+            expect(post.get('comments_node')).toBe(comments_node);
+            expect(post.getCommentsService()).toBe('juliet@capulet.lit');
+            expect(post.getCommentsNode()).toBe(comments_node);
+
+            // A post WITHOUT a replies link falls back to the author's PEP and the
+            // conventional per-post node name.
+            await feed.addItems([
+                stx`
+                <item id="post-2" publisher="juliet@capulet.lit">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">Deny thy father</title>
+                    <id>tag:capulet.lit,2024-01-01:posts-post-2</id>
+                    <published>2024-01-02T18:30:02Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+            const bare = feed.messages.get('post-2');
+            expect(bare.get('comments_node')).toBeUndefined();
+            expect(bare.getCommentsService()).toBe('juliet@capulet.lit');
+            expect(bare.getCommentsNode()).toBe('urn:xmpp:microblog:0:comments/post-2');
+        }),
+    );
+
+    it(
+        "reads a post's comments into a thread kept out of the timeline",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            await api.microblog.feeds.own();
+            const feed = await api.microblog.feeds.get('juliet@capulet.lit', MICROBLOG_NODE, true);
+            const comments_node = 'urn:xmpp:microblog:0:comments/post-1';
+            const href = `xmpp:juliet@capulet.lit?;node=${encodeURIComponent(comments_node)}`;
+            await feed.addItems([
+                stx`
+                <item id="post-1" publisher="juliet@capulet.lit">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">O Romeo</title>
+                    <link rel="replies" title="comments" href="${href}"/>
+                    <id>tag:capulet.lit,2024:posts-post-1</id>
+                    <published>2024-01-01T18:30:02Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+            const post = feed.messages.get('post-1');
+            const timeline_feeds = _converse.state.pubsubfeeds.length;
+
+            // Mirror Prosody's retrieve-items: the item carries NO `publisher`
+            // attribute (only PEP *notifications* stamp it). Authorship must then
+            // come from the entry's <author>, not the node owner (`from`), which
+            // for a comments node is the *post author*, not the commenter.
+            const getSpy = vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: [
+                    stx`
+                    <item id="c-1">
+                      <entry xmlns="${ATOM}">
+                        <author><name>Benvolio</name><uri>xmpp:benvolio@montague.lit</uri></author>
+                        <title type="text">She is so pretty!</title>
+                        <id>tag:capulet.lit,2024:comments-c-1</id>
+                        <published>2024-01-01T19:00:00Z</published>
+                      </entry>
+                    </item>`.tree(),
+                ],
+            });
+
+            const thread = await api.microblog.fetchComments(post);
+            expect(thread.messages.length).toBe(1);
+            const comment = thread.messages.at(0);
+            expect(comment.get('title')).toBe('She is so pretty!');
+            expect(comment.getAuthorJID()).toBe('benvolio@montague.lit');
+            // Not ours — even though `from` is our contact's comments service and
+            // the item has no publisher (would previously read as is_mine=true).
+            expect(comment.get('is_mine')).toBe(false);
+            // Can't verify without a publisher, but don't cry wolf either.
+            expect(comment.getAuthorMismatch()).toBe(false);
+
+            // The thread lives in its own in-memory collection; the timeline is
+            // untouched (no comment feed leaked into the aggregate).
+            expect(_converse.state.commentfeeds.length).toBe(1);
+            expect(_converse.state.pubsubfeeds.length).toBe(timeline_feeds);
+            const [q_jid, q_node] = getSpy.mock.calls[0];
+            expect(q_jid).toBe('juliet@capulet.lit');
+            expect(q_node).toBe(comments_node);
+        }),
+    );
+
+    it(
+        "adds a comment to a post, attributed to us, on the post's comments node",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+
+            const feed = await api.microblog.feeds.get('juliet@capulet.lit', MICROBLOG_NODE, true);
+            const comments_node = 'urn:xmpp:microblog:0:comments/post-1';
+            const href = `xmpp:juliet@capulet.lit?;node=${encodeURIComponent(comments_node)}`;
+            await feed.addItems([
+                stx`
+                <item id="post-1" publisher="juliet@capulet.lit">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">O Romeo</title>
+                    <link rel="replies" title="comments" href="${href}"/>
+                    <id>tag:capulet.lit,2024:posts-post-1</id>
+                    <published>2024-01-01T18:30:02Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+            const post = feed.messages.get('post-1');
+
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            const comment = await api.microblog.comment(post, '  She is so pretty!  ');
+
+            // Published to the post's comments node, carrying our <author>.
+            expect(publish).toHaveBeenCalledTimes(1);
+            const [jid, node, item] = publish.mock.calls[0];
+            expect(jid).toBe('juliet@capulet.lit');
+            expect(node).toBe(comments_node);
+            const tree = item.tree();
+            expect(tree.querySelector('author uri').textContent).toBe(`xmpp:${bare_jid}`);
+            expect(tree.querySelector('title').textContent).toBe('She is so pretty!');
+
+            // Optimistically rendered in the thread as our own comment.
+            expect(comment.get('title')).toBe('She is so pretty!');
+            expect(comment.getAuthorJID()).toBe(bare_jid);
+            expect(comment.get('is_mine')).toBe(true);
+
+            // Empty comments are ignored.
+            expect(await api.microblog.comment(post, '   ')).toBeUndefined();
+            expect(publish).toHaveBeenCalledTimes(1);
+        }),
+    );
+
+    it(
+        'routes an incoming comment event to the open thread, not the timeline',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const feed = await api.microblog.feeds.get('juliet@capulet.lit', MICROBLOG_NODE, true);
+            const comments_node = 'urn:xmpp:microblog:0:comments/post-1';
+            const href = `xmpp:juliet@capulet.lit?;node=${encodeURIComponent(comments_node)}`;
+            await feed.addItems([
+                stx`
+                <item id="post-1" publisher="juliet@capulet.lit">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">O Romeo</title>
+                    <link rel="replies" title="comments" href="${href}"/>
+                    <id>tag:capulet.lit,2024:posts-post-1</id>
+                    <published>2024-01-01T18:30:02Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+            const post = feed.messages.get('post-1');
+
+            // Open the thread (registers an in-memory comment feed).
+            const thread = await api.microblog.getCommentsFeed(post);
+            const timeline_feeds = _converse.state.pubsubfeeds.length;
+
+            // A well-formed comment arrives via PEP from the comments service.
+            receive(
+                _converse,
+                makeCommentEvent(
+                    'juliet@capulet.lit',
+                    comments_node,
+                    'c-1',
+                    'She is so pretty!',
+                    'benvolio@montague.lit',
+                    'Benvolio',
+                ),
+            );
+            await u.waitUntil(() => thread.messages.length === 1);
+            const legit = thread.messages.at(0);
+            expect(legit.get('title')).toBe('She is so pretty!');
+            // publisher matches the claimed <author><uri> — verified author.
+            expect(legit.getAuthorMismatch()).toBe(false);
+
+            // The comment created no timeline feed for the comments node.
+            expect(_converse.state.pubsubfeeds.length).toBe(timeline_feeds);
+            expect(_converse.state.pubsubfeeds.get(`juliet@capulet.lit/${comments_node}`)).toBeUndefined();
+
+            // A spoofed comment (publisher ≠ claimed author) is flagged for the UI
+            // (XEP-0277 § Comment Author).
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="juliet@capulet.lit" to="juliet@capulet.lit" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${comments_node}">
+                      <item id="c-2" publisher="mallory@montague.lit">
+                        <entry xmlns="${ATOM}">
+                          <author><name>Benvolio</name><uri>xmpp:benvolio@montague.lit</uri></author>
+                          <title type="text">I said that</title>
+                          <id>tag:capulet.lit,2024:comments-c-2</id>
+                          <published>2024-01-01T19:05:00Z</published>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+            await u.waitUntil(() => thread.messages.length === 2);
+            const spoof = thread.messages.get('c-2');
+            expect(spoof.getAuthorMismatch()).toBe(true);
         }),
     );
 });

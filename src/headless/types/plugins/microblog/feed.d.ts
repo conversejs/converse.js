@@ -121,9 +121,19 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
      */
     publishPost(body: string): Promise<void>;
     /**
+     * Create this post's open comments node so others can add comments.
+     * Best-effort and swallows errors (the node may already exist,
+     * or the server may refuse). Returns the in-flight promise for callers that
+     * want to await it (e.g. tests), but {@link publishPost} deliberately does not.
+     * @param {string} id - The post's PubSub item id.
+     * @returns {Promise<void>}
+     */
+    ensureCommentsNode(id: string): Promise<void>;
+    /**
      * Construct the PubSub `<item>` for a new plain-text post on this feed's
      * node. `author` is intentionally omitted for own-feed posts (the node owner
-     * is implied per XEP-0277).
+     * is implied per XEP-0277). Carries a `rel="replies"` link advertising the
+     * post's comments node, so readers know where to add comments.
      * @param {import('./types').PubSubPublishAttrs} attrs
      * @returns {import('strophe.js').Stanza}
      */

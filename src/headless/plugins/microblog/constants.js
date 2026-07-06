@@ -15,6 +15,23 @@ export const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
 export const COMMENTS_NODE_PREFIX = 'urn:xmpp:microblog:0:comments/';
 
 /**
+ * Node configuration for a post's comments node (XEP-0277 § Comments node
+ * configuration), sent as XEP-0060 publish-options / node config. `access_model`
+ * and `publish_model` are `open` so *anyone* can read and add a comment — the
+ * author pre-creates the node when publishing the post, since a foreign
+ * commenter can't create nodes on the author's PEP service.
+ */
+export const COMMENTS_PUBLISH_OPTIONS = {
+    access_model: 'open',
+    publish_model: 'open',
+    persist_items: 'true',
+    max_items: 'max',
+    send_last_published_item: 'never',
+    notify_retract: 'true',
+    deliver_payloads: 'true',
+};
+
+/**
  * Disco feature advertised by clients that understand the modern PubSub Social
  * Feed (XEP-0472).
  */

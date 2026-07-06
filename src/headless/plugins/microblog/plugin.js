@@ -12,6 +12,8 @@ import converse from '../../shared/api/public.js';
 import log from '@converse/log';
 import PubSubFeed from './feed.js';
 import PubSubFeeds from './feeds.js';
+import CommentFeed from './comment-feed.js';
+import CommentFeeds from './comment-feeds';
 import PubSubMessage from './message.js';
 import PubSubMessages from './messages.js';
 import FollowableCache from './followable.js';
@@ -33,6 +35,8 @@ converse.plugins.add('converse-microblog', {
         api.promises.add('pubsubFeedsInitialized');
 
         const exports = {
+            CommentFeed,
+            CommentFeeds,
             FollowableCache,
             PubSubFeed,
             PubSubFeeds,
@@ -56,6 +60,10 @@ converse.plugins.add('converse-microblog', {
                 state.pubsubfeeds.clearStore?.({ silent: true });
                 delete state.pubsubfeeds;
             }
+            if (state.commentfeeds) {
+                // In-memory only (no store); just drop the reference.
+                delete state.commentfeeds;
+            }
             if (state.followablecache) {
                 state.followablecache.clearStore?.({ silent: true });
                 delete state.followablecache;
@@ -72,6 +80,9 @@ async function onConnected() {
         registerMicroblogHandler();
         const feeds = new _converse.exports.PubSubFeeds();
         _converse.state.pubsubfeeds = feeds;
+        // Open comment threads live in their own in-memory collection so they
+        // never enter the aggregated timeline.
+        _converse.state.commentfeeds = new _converse.exports.CommentFeeds();
         const followablecache = new _converse.exports.FollowableCache();
         _converse.state.followablecache = followablecache;
         await Promise.all([feeds.hydrated, followablecache.hydrated]);

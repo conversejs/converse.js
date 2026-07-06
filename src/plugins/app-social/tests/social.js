@@ -15,6 +15,65 @@ import {
 
 const { stx, u } = converse.env;
 
+/**
+ * Override the read-only `document.visibilityState` and fire a
+ * `visibilitychange` event, so focus-dependent behaviour (a post's
+ * `observableRequireFocus` summary fetch) can be driven deterministically.
+ * @param {DocumentVisibilityState} state
+ */
+function setVisibilityState(state) {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => state });
+    document.dispatchEvent(new Event('visibilitychange'));
+}
+
+function restoreVisibilityState() {
+    delete (/** @type {any} */ (document)).visibilityState;
+}
+
+/**
+ * Replace the real IntersectionObserver with an inert stub so a post's
+ * visibility is driven manually (via `handleIntersectionCallback`) rather than
+ * firing on real browser layout. Returns a restore function to call when done
+ * (a plain global swap, since `vi.spyOn` can't mock a `new`-invoked constructor).
+ * @returns {() => void}
+ */
+function stubIntersectionObserver() {
+    const Real = window.IntersectionObserver;
+    window.IntersectionObserver = /** @type {any} */ (
+        class {
+            observe() {}
+            unobserve() {}
+            disconnect() {}
+        }
+    );
+    return () => {
+        window.IntersectionObserver = Real;
+    };
+}
+
+// Build the comment items a mocked comments-node fetch returns: `comments`
+// plain comments plus `likes` ♥-comments (XEP-0277 likes ride the same node).
+function makeCommentItems({ comments = 0, likes = 0 } = {}) {
+    const items = [];
+    for (let i = 0; i < comments; i++) {
+        items.push(stx`<item id="c-${i}" publisher="benvolio@montague.lit"><entry xmlns="${ATOM}">
+                <author><name>Benvolio</name><uri>xmpp:benvolio@montague.lit</uri></author>
+                <title type="text">Comment ${i}</title>
+                <id>tag:montague.lit,2024:comments-c-${i}</id>
+                <published>2024-01-01T19:0${i}:00Z</published>
+            </entry></item>`.tree());
+    }
+    for (let i = 0; i < likes; i++) {
+        items.push(stx`<item id="like-${i}" publisher="romeo@montague.lit"><entry xmlns="${ATOM}">
+                <author><name>Romeo</name><uri>xmpp:romeo@montague.lit</uri></author>
+                <title type="text">♥</title>
+                <id>tag:montague.lit,2024:comments-like-${i}</id>
+                <published>2024-01-01T19:1${i}:00Z</published>
+            </entry></item>`.tree());
+    }
+    return items;
+}
+
 describe('The social feed', function () {
     it(
         'renders incoming posts and publishes via the compose box',
@@ -664,6 +723,105 @@ describe('The social post detail view', function () {
             await u.waitUntil(
                 () => el.querySelector('converse-social-feed') && !el.querySelector('converse-social-post'),
             );
+        }),
+    );
+});
+
+describe('The social timeline comment counts', function () {
+    it(
+        'fetches a post\'s comment count once when it scrolls into view, and renders it',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+
+            // Drive visibility deterministically: stub the IntersectionObserver so
+            // it doesn't auto-fire on real layout, and control document focus.
+            const restoreIO = stubIntersectionObserver();
+            setVisibilityState('visible');
+
+            // The comments node has 2 comments and 1 ♥ like; every other node
+            // (the timeline feeds) stays empty so comments don't leak in.
+            const getSpy = vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, node) =>
+                String(node).startsWith('urn:xmpp:microblog:0:comments/')
+                    ? Promise.resolve({ items: makeCommentItems({ comments: 2, likes: 1 }) })
+                    : Promise.resolve({ items: [] }),
+            );
+            const commentFetches = () =>
+                getSpy.mock.calls.filter((c) => String(c[1]).startsWith('urn:xmpp:microblog:0:comments/')).length;
+
+            try {
+                const el = mountSocialFeed();
+                await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+                receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Count my comments'));
+                const msg = /** @type {any} */ (await u.waitUntil(() => el.querySelector('converse-social-message')));
+                await msg.updateComplete;
+
+                // Nothing is fetched until the post is actually seen.
+                expect(commentFetches()).toBe(0);
+
+                // Scrolls into view → exactly one summary fetch for its comments node.
+                msg.handleIntersectionCallback([{ intersectionRatio: 1 }]);
+                await u.waitUntil(() => commentFetches() === 1);
+
+                // The comment count renders next to the Comments button. It counts
+                // the 2 comments; the ♥ like is partitioned out (likes UI is a later
+                // slice), so the badge shows 2, not 3.
+                const count = await u.waitUntil(() => el.querySelector('.social-post__count'));
+                expect(count.textContent.trim()).toBe('2');
+
+                // Re-entering the viewport doesn't refetch (observable: 'once').
+                msg.handleIntersectionCallback([{ intersectionRatio: 0 }]);
+                msg.handleIntersectionCallback([{ intersectionRatio: 1 }]);
+                expect(commentFetches()).toBe(1);
+            } finally {
+                restoreVisibilityState();
+                restoreIO();
+            }
+        }),
+    );
+
+    it(
+        'defers a post\'s summary fetch while the tab is backgrounded',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+
+            const restoreIO = stubIntersectionObserver();
+            // Start on a backgrounded tab.
+            setVisibilityState('hidden');
+
+            const getSpy = vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, node) =>
+                String(node).startsWith('urn:xmpp:microblog:0:comments/')
+                    ? Promise.resolve({ items: makeCommentItems({ comments: 1 }) })
+                    : Promise.resolve({ items: [] }),
+            );
+            const commentFetches = () =>
+                getSpy.mock.calls.filter((c) => String(c[1]).startsWith('urn:xmpp:microblog:0:comments/')).length;
+
+            try {
+                const el = mountSocialFeed();
+                await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+                receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Later'));
+                const msg = /** @type {any} */ (await u.waitUntil(() => el.querySelector('converse-social-message')));
+                await msg.updateComplete;
+
+                // In view, but the tab is in the background: the fetch is deferred.
+                msg.handleIntersectionCallback([{ intersectionRatio: 1 }]);
+                expect(commentFetches()).toBe(0);
+
+                // Returning to the tab fires the deferred fetch and the count shows.
+                setVisibilityState('visible');
+                await u.waitUntil(() => commentFetches() === 1);
+                const count = await u.waitUntil(() => el.querySelector('.social-post__count'));
+                expect(count.textContent.trim()).toBe('1');
+            } finally {
+                restoreVisibilityState();
+                restoreIO();
+            }
         }),
     );
 });

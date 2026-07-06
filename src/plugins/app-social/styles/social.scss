@@ -446,6 +446,13 @@
                 }
             }
 
+            // The comment count sits inside the Comments button, right of the icon.
+            &__count {
+                margin-inline-start: 0.35em;
+                font-size: 0.85em;
+                font-variant-numeric: tabular-nums;
+            }
+
             &__body {
                 word-wrap: break-word;
 

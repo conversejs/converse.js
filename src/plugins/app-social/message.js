@@ -18,8 +18,17 @@ export default class SocialMessage extends CustomElement {
     static get properties() {
         return {
             model: { type: PubSubMessage },
+            // When set, render as a thread item (or the detail header): drop the
+            // action buttons (comment / repost / delete), which belong to the
+            // timeline.
+            compact: { type: Boolean },
             _reposting: { type: Boolean, state: true },
         };
+    }
+
+    constructor() {
+        super();
+        this.compact = false;
     }
 
     initialize() {
@@ -84,6 +93,17 @@ export default class SocialMessage extends CustomElement {
         if (!result) return;
         const feed = this.model.collection?.feed;
         await feed?.retractPost(this.model.get('id'));
+    }
+
+    /**
+     * Open this post's detail view (its comment thread). Bubbles a
+     * `postselected` event up to the Social app, which swaps the timeline for
+     * the detail view.
+     */
+    onComments() {
+        this.dispatchEvent(
+            new CustomEvent('postselected', { bubbles: true, composed: true, detail: { post: this.model } }),
+        );
     }
 
     /**

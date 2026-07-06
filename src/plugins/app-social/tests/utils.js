@@ -125,6 +125,17 @@ export function mountSocialFeed() {
 }
 
 /**
+ * Mount the whole `<converse-app-social>` app (needed to exercise the timeline
+ * ⇄ post-detail routing, which the app element owns).
+ * @returns {Element}
+ */
+export function mountSocialApp() {
+    const el = document.createElement('converse-app-social');
+    document.querySelector('#conversejs').appendChild(el);
+    return el;
+}
+
+/**
  * Stub `api.microblog.discoverFollowable` to resolve with the given candidate
  * JIDs, returning the spy.
  * @param {any} api

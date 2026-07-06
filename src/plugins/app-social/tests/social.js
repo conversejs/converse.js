@@ -7,6 +7,7 @@ import {
     makePost,
     makeRepost,
     makeRichPost,
+    mountSocialApp,
     mountSocialFeed,
     receive,
     stubDiscoverFollowable,
@@ -588,6 +589,81 @@ describe('The social onboarding card', function () {
 
             const card = await u.waitUntil(() => onboarding.querySelector('.social-onboarding'));
             await u.waitUntil(() => card.textContent.includes('Juliet'));
+        }),
+    );
+});
+
+describe('The social post detail view', function () {
+    it(
+        "opens a post's comment thread, renders comments, posts one, and returns to the timeline",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+
+            // Only a comments-node fetch returns items; the timeline feeds' own
+            // fetchPosts (same api) must stay empty so comments don't leak in.
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, node) => {
+                if (node.startsWith('urn:xmpp:microblog:0:comments/')) {
+                    return Promise.resolve({
+                        items: [
+                            stx`
+                            <item id="c-1" publisher="benvolio@montague.lit">
+                              <entry xmlns="${ATOM}">
+                                <author><name>Benvolio</name><uri>xmpp:benvolio@montague.lit</uri></author>
+                                <title type="text">Nice one!</title>
+                                <id>tag:montague.lit,2024:comments-c-1</id>
+                                <published>2024-01-01T19:00:00Z</published>
+                              </entry>
+                            </item>`.tree(),
+                        ],
+                    });
+                }
+                return Promise.resolve({ items: [] });
+            });
+
+            const el = mountSocialApp();
+            // The app mounts the feed once connected.
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // An own post arrives; open its thread via the Comments button.
+            receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello world'));
+            const comment_btn = await u.waitUntil(() => el.querySelector('.social-post__action--comment'));
+            comment_btn.click();
+
+            // The detail view takes over, showing the post + the fetched comment.
+            const detail = await u.waitUntil(() => el.querySelector('converse-social-post'));
+            expect(el.querySelector('converse-social-feed')).toBe(null);
+            await u.waitUntil(() =>
+                Array.from(detail.querySelectorAll('.social-comment .social-post__body')).some((n) =>
+                    n.textContent.includes('Nice one!'),
+                ),
+            );
+
+            // Posting a comment publishes to the post's comments node + renders.
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            const textarea = detail.querySelector('.social-comment-compose__textarea');
+            textarea.value = 'Thanks!';
+            detail.querySelector('.social-comment-compose button[type="submit"]').click();
+
+            await u.waitUntil(() => publish.mock.calls.length === 1);
+            const [jid, node, item] = publish.mock.calls[0];
+            expect(jid).toBe(bare_jid);
+            expect(node).toBe('urn:xmpp:microblog:0:comments/post-1');
+            expect(item.tree().querySelector('title').textContent).toBe('Thanks!');
+            expect(item.tree().querySelector('author uri').textContent).toBe(`xmpp:${bare_jid}`);
+
+            await u.waitUntil(() =>
+                Array.from(detail.querySelectorAll('.social-comment .social-post__body')).some((n) =>
+                    n.textContent.includes('Thanks!'),
+                ),
+            );
+
+            // The back button returns to the timeline.
+            detail.querySelector('.social-post-detail__back').click();
+            await u.waitUntil(
+                () => el.querySelector('converse-social-feed') && !el.querySelector('converse-social-post'),
+            );
         }),
     );
 });

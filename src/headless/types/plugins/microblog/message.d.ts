@@ -86,6 +86,32 @@ declare class PubSubMessage extends BaseMessage {
      * @returns {string}
      */
     getIdentifier(): string;
+    /**
+     * The PubSub node holding this post's comments. Uses the node advertised
+     * by the post's `rel="replies"` link, else derives the conventional per-post
+     * node `urn:xmpp:microblog:0:comments/<post-id>`.
+     * @returns {string}
+     */
+    getCommentsNode(): string;
+    /**
+     * The JID of the PubSub service hosting this post's comments node. The
+     * comments link MAY point at a dedicated pubsub component; absent that, the
+     * node lives on the post author's PEP service (their bare JID).
+     * @returns {string|undefined}
+     */
+    getCommentsService(): string | undefined;
+    /**
+     * XEP-0277 § Comment Author security check: the (spoofable) `<author><uri>`
+     * should match the server-stamped `publisher`. Returns true only when both
+     * are known *and* disagree — a genuine impersonation signal for the UI.
+     *
+     * The XEP suggests also flagging when `publisher` is absent, but many
+     * servers (e.g. Prosody) simply omit it from retrieve-items responses, so
+     * flagging every backfilled comment would cry wolf. We treat "can't verify"
+     * as unflagged rather than suspicious.
+     * @returns {boolean}
+     */
+    getAuthorMismatch(): boolean;
 }
 import BaseMessage from '../../shared/message.js';
 //# sourceMappingURL=message.d.ts.map

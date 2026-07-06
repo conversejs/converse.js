@@ -40,6 +40,7 @@ export type PubSubMessageAttrs = {
     via_href?: string; // The via link's href — the original post's XMPP URI
     via_ref?: string; // The via link's ref — the original post's atom id
     is_repost?: boolean;
+    comments_jid?: string; // Service JID of the comments node's <link rel="replies"> href
     comments_node?: string; // Node referenced by <link rel="replies" title="comments">
 };
 
@@ -52,6 +53,18 @@ export type PubSubPublishAttrs = {
     atom_id?: string;
     published?: string;
     updated?: string;
+};
+
+/**
+ * Attributes accepted by {@link CommentFeed.createCommentStanza} when composing a
+ * new comment (XEP-0277 § Adding a Comment).
+ */
+export type PubSubCommentAttrs = {
+    body: string;
+    author_jid: string; // The commenter's bare JID (goes in <author><uri>)
+    author_name?: string; // The commenter's display name (<author><name>)
+    id?: string;
+    published?: string;
 };
 
 /**

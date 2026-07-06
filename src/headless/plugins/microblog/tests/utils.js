@@ -45,6 +45,40 @@ export function makePostStanza(from, id, body) {
 }
 
 /**
+ * Build a headline PEP event carrying a single comment, as a comments node
+ * (XEP-0277 § Comments) would push it: from the comments service, for the
+ * comments node, carrying the commenter's `<author>`.
+ * @param {string} service - The comments service JID (the post author's PEP, or a component).
+ * @param {string} node - The comments node.
+ * @param {string} id - The comment's item id.
+ * @param {string} body - The comment text.
+ * @param {string} author_jid - The commenter's bare JID.
+ * @param {string} author_name - The commenter's display name.
+ * @param {string} [published='2024-01-01T19:00:00Z'] - ISO-8601 publication time.
+ */
+export function makeCommentEvent(service, node, id, body, author_jid, author_name, published = '2024-01-01T19:00:00Z') {
+    const domain = Strophe.getDomainFromJid(author_jid);
+    return stx`
+        <message xmlns="jabber:client" from="${service}" to="${service}" type="headline">
+          <event xmlns="${PUBSUB_EVENT}">
+            <items node="${node}">
+              <item id="${id}" publisher="${author_jid}">
+                <entry xmlns="${ATOM}">
+                  <author>
+                    <name>${author_name}</name>
+                    <uri>xmpp:${author_jid}</uri>
+                  </author>
+                  <title type="text">${body}</title>
+                  <id>tag:${domain},2024-01-01:comments-${id}</id>
+                  <published>${published}</published>
+                </entry>
+              </item>
+            </items>
+          </event>
+        </message>`;
+}
+
+/**
  * Stub the PEP network surface used by the follow/unfollow flow (publish the
  * XEP-0330 item, subscribe/unsubscribe, and the items.get backfill) so it
  * resolves without a server. Returns the spies for assertions.

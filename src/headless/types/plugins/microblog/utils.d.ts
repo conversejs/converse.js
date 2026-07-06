@@ -1,4 +1,11 @@
 /**
+ * Build the `tag:` URI used as the Atom `<id>` of a new entry (RFC 4151).
+ * @param {string} jid
+ * @param {string} id
+ * @returns {string}
+ */
+export function buildTagId(jid: string, id: string): string;
+/**
  * @param {string} [node]
  * @returns {boolean}
  */

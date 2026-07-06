@@ -60,5 +60,7 @@ export type PubSubFeedAttrs = {
     title?: string;
     supports_rsm?: boolean;
     history_complete?: boolean;
+    last_viewed?: number;
+    pinned?: boolean;
 };
 //# sourceMappingURL=types.d.ts.map

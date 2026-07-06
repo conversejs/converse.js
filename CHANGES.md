@@ -3,6 +3,7 @@
 ## 15.0.0 (Unreleased)
 
 - #194: Full support for XEP-0115: Entity capabilities
+- Add support for Social Feeds (XEP-0472 and XEP-0277).
 - Full XEP-0172 User Nickname support. Converse now publishes its own nickname to PEP and
   consumes a contact's nickname from a PEP event, a presence hint, or by retrieving their nick node, so
   a contact's display name updates live without an avatar change to trigger a vcard refetch. It also

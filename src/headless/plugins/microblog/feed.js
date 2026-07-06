@@ -92,9 +92,10 @@ class PubSubFeed extends Model {
                     const message = /** @type {import('./message').default} */ (
                         this.messages.add(attrs, { merge: true })
                     );
-                    // Persist new posts and real updates; skip unchanged re-fetches.
-                    // Comment threads keep their messages in memory (no store), so
-                    // there's nothing to persist to — skip the save there.
+                    // Persist new posts and real updates to the offline cache; skip
+                    // unchanged re-fetches (and, defensively, any feed whose messages
+                    // aren't backed by a store — every feed, comment threads included,
+                    // has one today).
                     if (this.messages.storage && message && (!existing || message.hasChanged())) {
                         saves.push(message.save(null, { promise: true }));
                     }

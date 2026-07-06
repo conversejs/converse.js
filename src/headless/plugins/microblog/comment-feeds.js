@@ -1,13 +1,14 @@
+/**
+ * @copyright The Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ */
+import _converse from '../../shared/_converse.js';
+import api from '../../shared/api/index.js';
+import { createStore } from '../../utils/storage.js';
 import CommentFeed from './comment-feed.js';
 import PubSubFeeds from './feeds.js';
 
 /**
- * The set of open comment threads (one per post whose comments are being
- * viewed), registered as `_converse.state.commentfeeds`. Held separately from
- * {@link PubSubFeeds} so comments never enter the aggregated timeline, and in
- * memory only (no store) so browsing many threads doesn't grow the offline
- * cache — each thread is refetched when reopened.
- *
  * @extends {PubSubFeeds}
  */
 class CommentFeeds extends PubSubFeeds {
@@ -15,16 +16,15 @@ class CommentFeeds extends PubSubFeeds {
         return CommentFeed;
     }
 
-    get autoSync() {
-        return false;
+    initialize() {
+        const bare_jid = _converse.session.get('bare_jid');
+        this.storage = createStore(`converse.pubsub-comment-feeds-${bare_jid}`);
     }
 
-    // In-memory only: no backing store (overrides PubSubFeeds' store setup).
-    initialize() {}
-
     /**
-     * Get an existing comment thread, or (when `create`) add one in memory.
-     * Uses `add` rather than `create` since there's no store to persist to.
+     * Get an existing comment thread (touching its recency on explicit access),
+     * or create + persist one. A `create=false` lookup (e.g. PEP routing) neither
+     * creates a thread nor bumps recency.
      * @param {string} jid - The comments service JID.
      * @param {string} node - The comments node.
      * @param {boolean} [create=true]
@@ -32,9 +32,36 @@ class CommentFeeds extends PubSubFeeds {
      */
     getFeed(jid, node, create = true) {
         const id = PubSubFeeds.getFeedId(jid, node);
-        const existing = this.get(id);
-        if (existing || !create) return /** @type {CommentFeed|undefined} */ (existing);
-        return /** @type {CommentFeed} */ (this.add({ id, jid, node }));
+        const existing = /** @type {CommentFeed|undefined} */ (this.get(id));
+        if (existing) {
+            if (create) existing.save({ last_viewed: Date.now() });
+            return existing;
+        }
+        if (!create) return undefined;
+        const feed = /** @type {CommentFeed} */ (this.create({ id, jid, node, last_viewed: Date.now() }));
+        this.pruneThreads();
+        return feed;
+    }
+
+    /**
+     * Evict threads once the collection exceeds `social_max_comment_threads`,
+     * destroying each evicted thread and its store. Empty threads (they cache no
+     * comments, so re-fetching is cheap) are evicted before non-empty ones, which
+     * hold real content; within each group the least-recently-viewed goes first.
+     * Pinned threads (own posts, kept live) are never evicted.
+     */
+    pruneThreads() {
+        const cap = api.settings.get('social_max_comment_threads');
+        if (!cap || typeof cap !== 'number' || this.length <= cap) return;
+        // A just-created thread pending its first fetch looks empty but is the
+        // newest, so it sorts last within the empty group and survives.
+        const evictable = this.filter((f) => !f.get('pinned')).sort((a, b) => {
+            const a_empty = a.messages.length === 0;
+            const b_empty = b.messages.length === 0;
+            if (a_empty !== b_empty) return a_empty ? -1 : 1; // empties first
+            return (a.get('last_viewed') || 0) - (b.get('last_viewed') || 0); // then oldest
+        });
+        evictable.slice(0, this.length - cap).forEach((f) => f.close());
     }
 }
 

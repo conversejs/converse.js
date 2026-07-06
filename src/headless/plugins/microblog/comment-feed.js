@@ -11,27 +11,15 @@ const { stx, Strophe } = converse.env;
 /**
  * A single post's comments thread (XEP-0277 § Comments): a {@link PubSubFeed}
  * over that post's comments node. Kept in a collection separate from the
- * timeline feeds so comments never surface in the aggregated feed, and held
- * fully in memory (no offline store) — a thread is cheap to refetch when
- * reopened, avoiding unbounded storage growth from browsing many posts.
+ * timeline feeds ({@link CommentFeeds}) so comments never surface in the
+ * aggregated feed.
  *
  * @extends {PubSubFeed}
  */
 class CommentFeed extends PubSubFeed {
     /**
-     * In-memory only: returning no cache key means the messages collection
-     * creates no backing store (see {@link PubSubMessages}).
-     * @returns {undefined}
-     */
-    getMessagesCacheKey() {
-        return undefined;
-    }
-
-    /**
      * Fetch this thread's comments (one shot, newest first). The node may not
-     * exist yet — nobody has commented, or a non-Converse author never
-     * provisioned it — which surfaces as an error here, treated as an empty
-     * thread.
+     * exist yet which surfaces as an error here, treated as an empty thread.
      * @returns {Promise<void>}
      */
     async fetchComments() {

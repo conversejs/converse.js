@@ -6,7 +6,7 @@ import { Strophe } from 'strophe.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import BaseMessage from '../../shared/message.js';
-import { MICROBLOG_TYPE } from './constants.js';
+import { COMMENTS_NODE_PREFIX, MICROBLOG_TYPE } from './constants.js';
 
 /**
  * Represents a single microblog post (a parsed Atom entry).
@@ -150,9 +150,19 @@ class PubSubMessage extends BaseMessage {
             // `sender: 'me'|'them'` flag). Authorship is the publisher's, not the
             // atom:author's, which for a repost is the *original* author.
             is_mine: {
-                deps: ['publisher', 'from'],
+                deps: ['publisher', 'from', 'author_jid', 'is_repost'],
                 fn: (m) => {
-                    const jid = m.get('publisher') || m.get('from');
+                    // Authorship is the server-stamped `publisher` when present.
+                    // Otherwise: for a repost it's the reposter (the node owner,
+                    // `from` — never the via-author); for anything else (incl.
+                    // comments, which always carry an <author>) it's the claimed
+                    // author, falling back to the node owner for own posts with
+                    // no <author>. This matters for comments fetched via
+                    // retrieve-items, where Prosody omits `publisher` and `from`
+                    // is the *post author's* comments service, not the commenter.
+                    const jid =
+                        m.get('publisher') ||
+                        (m.get('is_repost') ? m.get('from') : m.get('author_jid') || m.get('from'));
                     const bare_jid = _converse.session?.get('bare_jid');
                     return !!jid && !!bare_jid && Strophe.getBareJidFromJid(jid) === bare_jid;
                 },
@@ -187,6 +197,46 @@ class PubSubMessage extends BaseMessage {
      */
     getIdentifier() {
         return this.getAuthorJID() || super.getIdentifier();
+    }
+
+    /**
+     * The PubSub node holding this post's comments. Uses the node advertised
+     * by the post's `rel="replies"` link, else derives the conventional per-post
+     * node `urn:xmpp:microblog:0:comments/<post-id>`.
+     * @returns {string}
+     */
+    getCommentsNode() {
+        return this.get('comments_node') || COMMENTS_NODE_PREFIX + this.get('id');
+    }
+
+    /**
+     * The JID of the PubSub service hosting this post's comments node. The
+     * comments link MAY point at a dedicated pubsub component; absent that, the
+     * node lives on the post author's PEP service (their bare JID).
+     * @returns {string|undefined}
+     */
+    getCommentsService() {
+        if (this.get('comments_jid')) return this.get('comments_jid');
+        const jid = this.getAuthorJID();
+        return jid ? Strophe.getBareJidFromJid(jid) : undefined;
+    }
+
+    /**
+     * XEP-0277 § Comment Author security check: the (spoofable) `<author><uri>`
+     * should match the server-stamped `publisher`. Returns true only when both
+     * are known *and* disagree — a genuine impersonation signal for the UI.
+     *
+     * The XEP suggests also flagging when `publisher` is absent, but many
+     * servers (e.g. Prosody) simply omit it from retrieve-items responses, so
+     * flagging every backfilled comment would cry wolf. We treat "can't verify"
+     * as unflagged rather than suspicious.
+     * @returns {boolean}
+     */
+    getAuthorMismatch() {
+        const publisher = this.get('publisher');
+        const author_jid = this.get('author_jid');
+        if (!author_jid || !publisher) return false; // Nothing to verify against.
+        return Strophe.getBareJidFromJid(author_jid) !== Strophe.getBareJidFromJid(publisher);
     }
 }
 

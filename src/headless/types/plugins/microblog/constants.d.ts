@@ -11,6 +11,15 @@ export const MICROBLOG_NODE: "urn:xmpp:microblog:0";
  * `urn:xmpp:microblog:0:comments/<post-id>` (XEP-0277 § Comments).
  */
 export const COMMENTS_NODE_PREFIX: "urn:xmpp:microblog:0:comments/";
+export namespace COMMENTS_PUBLISH_OPTIONS {
+    let access_model: string;
+    let publish_model: string;
+    let persist_items: string;
+    let max_items: string;
+    let send_last_published_item: string;
+    let notify_retract: string;
+    let deliver_payloads: string;
+}
 /**
  * Disco feature advertised by clients that understand the modern PubSub Social
  * Feed (XEP-0472).
@@ -42,12 +51,18 @@ export const FOLLOWABLE_SCAN_CONCURRENCY: 10;
  */
 export const FOLLOWABLE_PROBE_TIMEOUT: 10000;
 export namespace MICROBLOG_PUBLISH_OPTIONS {
-    let access_model: string;
-    let persist_items: string;
-    let max_items: string;
-    let send_last_published_item: string;
-    let notify_retract: string;
-    let deliver_payloads: string;
+    let access_model_1: string;
+    export { access_model_1 as access_model };
+    let persist_items_1: string;
+    export { persist_items_1 as persist_items };
+    let max_items_1: string;
+    export { max_items_1 as max_items };
+    let send_last_published_item_1: string;
+    export { send_last_published_item_1 as send_last_published_item };
+    let notify_retract_1: string;
+    export { notify_retract_1 as notify_retract };
+    let deliver_payloads_1: string;
+    export { deliver_payloads_1 as deliver_payloads };
 }
 /**
  * XEP-0330 (Pubsub Subscription): the PEP node holding the user's portable
@@ -57,16 +72,16 @@ export namespace MICROBLOG_PUBLISH_OPTIONS {
 export const FOLLOWING_NODE: "urn:xmpp:pubsub:subscription";
 export const NS_SUBSCRIPTION: "urn:xmpp:pubsub:subscription:0";
 export namespace FOLLOWING_PUBLISH_OPTIONS {
-    let persist_items_1: string;
-    export { persist_items_1 as persist_items };
-    let access_model_1: string;
-    export { access_model_1 as access_model };
-    let send_last_published_item_1: string;
-    export { send_last_published_item_1 as send_last_published_item };
-    let max_items_1: string;
-    export { max_items_1 as max_items };
-    let notify_retract_1: string;
-    export { notify_retract_1 as notify_retract };
+    let persist_items_2: string;
+    export { persist_items_2 as persist_items };
+    let access_model_2: string;
+    export { access_model_2 as access_model };
+    let send_last_published_item_2: string;
+    export { send_last_published_item_2 as send_last_published_item };
+    let max_items_2: string;
+    export { max_items_2 as max_items };
+    let notify_retract_2: string;
+    export { notify_retract_2 as notify_retract };
 }
 export const NS_ATOM: "http://www.w3.org/2005/Atom";
 export const NS_THREAD: "http://purl.org/syndication/thread/1.0";

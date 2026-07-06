@@ -12,6 +12,8 @@ import { getUniqueId } from '../../utils/index.js';
 import PubSubMessages from './messages.js';
 import { parseAtomEntry } from './parsers.js';
 import {
+    COMMENTS_NODE_PREFIX,
+    COMMENTS_PUBLISH_OPTIONS,
     MICROBLOG_NODE,
     MICROBLOG_PUBLISH_OPTIONS,
     NS_ATOM,
@@ -19,20 +21,9 @@ import {
     POSTS_PAGE_SIZE,
 } from './constants.js';
 import PubsubPlaceholderMessage from './placeholder.js';
+import { buildTagId } from './utils.js';
 
 const { stx } = converse.env;
-
-/**
- * Build the `tag:` URI used as the Atom `<id>` of a new entry (RFC 4151).
- * @param {string} jid
- * @param {string} id
- * @returns {string}
- */
-function buildTagId(jid, id) {
-    const domain = Strophe.getDomainFromJid(jid) || jid;
-    const date = new Date().toISOString().split('T')[0];
-    return `tag:${domain},${date}:posts-${id}`;
-}
 
 /**
  * One PubSub feed: a single node at a single JID (your own
@@ -102,7 +93,9 @@ class PubSubFeed extends Model {
                         this.messages.add(attrs, { merge: true })
                     );
                     // Persist new posts and real updates; skip unchanged re-fetches.
-                    if (message && (!existing || message.hasChanged())) {
+                    // Comment threads keep their messages in memory (no store), so
+                    // there's nothing to persist to — skip the save there.
+                    if (this.messages.storage && message && (!existing || message.hasChanged())) {
                         saves.push(message.save(null, { promise: true }));
                     }
                     return message;
@@ -366,7 +359,16 @@ class PubSubFeed extends Model {
         const text = body?.trim();
         if (!text) return;
 
-        const item = this.createPostStanza({ body: text });
+        const id = getUniqueId();
+        // Provision the post's open comments node so *others* can reply: a
+        // foreign commenter can't create a node on our PEP service, so the
+        // author provisions it up front (XEP-0277 § Comments). Fired alongside
+        // the publish (not before it) so it doesn't add a round-trip of latency,
+        // and non-fatal — the post still publishes if it fails; only foreign
+        // commenting would then be unavailable.
+        this.ensureCommentsNode(id);
+
+        const item = this.createPostStanza({ body: text, id });
         // Publish with the XEP-0472 Base-profile node config so our node stays a
         // well-formed social feed that contacts can subscribe to. Non-strict:
         // if the server can't honour the publish-options precondition we still
@@ -379,9 +381,24 @@ class PubSubFeed extends Model {
     }
 
     /**
+     * Create this post's open comments node so others can add comments.
+     * Best-effort and swallows errors (the node may already exist,
+     * or the server may refuse). Returns the in-flight promise for callers that
+     * want to await it (e.g. tests), but {@link publishPost} deliberately does not.
+     * @param {string} id - The post's PubSub item id.
+     * @returns {Promise<void>}
+     */
+    ensureCommentsNode(id) {
+        return api.pubsub
+            .create(this.get('jid'), COMMENTS_NODE_PREFIX + id, COMMENTS_PUBLISH_OPTIONS)
+            .catch((e) => log.debug(`ensureCommentsNode: could not create the comments node for ${id}: ${e}`));
+    }
+
+    /**
      * Construct the PubSub `<item>` for a new plain-text post on this feed's
      * node. `author` is intentionally omitted for own-feed posts (the node owner
-     * is implied per XEP-0277).
+     * is implied per XEP-0277). Carries a `rel="replies"` link advertising the
+     * post's comments node, so readers know where to add comments.
      * @param {import('./types').PubSubPublishAttrs} attrs
      * @returns {import('strophe.js').Stanza}
      */
@@ -391,11 +408,14 @@ class PubSubFeed extends Model {
         const published = attrs.published || now;
         const updated = attrs.updated || now;
         const tag_id = attrs.atom_id || buildTagId(this.get('jid'), id);
+        const comments_node = COMMENTS_NODE_PREFIX + id;
+        const comments_href = `xmpp:${this.get('jid')}?;node=${encodeURIComponent(comments_node)}`;
 
         return stx`
             <item id="${id}">
                 <entry xmlns="${NS_ATOM}">
                     <title type="text">${attrs.body}</title>
+                    <link rel="replies" title="comments" href="${comments_href}"/>
                     <id>${tag_id}</id>
                     <published>${published}</published>
                     <updated>${updated}</updated>

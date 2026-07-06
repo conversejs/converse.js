@@ -76,6 +76,7 @@ export function parseAtomEntry(item, { from, node } = {}) {
     let via_jid;
     let via_href;
     let via_ref;
+    let comments_jid;
     let comments_node;
     for (const link of sizzle('> link', entry)) {
         const rel = link.getAttribute('rel');
@@ -84,7 +85,11 @@ export function parseAtomEntry(item, { from, node } = {}) {
             via_ref = link.getAttribute('ref') || undefined;
             via_jid = via_href ? getJIDFromURI(via_href) : undefined;
         } else if (rel === 'replies' && link.getAttribute('title') === 'comments') {
-            comments_node = getNodeFromURI(link.getAttribute('href'));
+            // The comments node may live on the author's PEP service or on a
+            // dedicated pubsub component, so keep the href's service JID too.
+            const href = link.getAttribute('href');
+            comments_jid = href ? getJIDFromURI(href) : undefined;
+            comments_node = getNodeFromURI(href);
         }
     }
 
@@ -121,6 +126,7 @@ export function parseAtomEntry(item, { from, node } = {}) {
         via_href,
         via_ref,
         is_repost: !!via_jid || !!(author_jid && publisher && Strophe.getBareJidFromJid(author_jid) !== publisher),
+        comments_jid,
         comments_node,
         categories: sizzle('> category', entry)
             .map((el) => el.getAttribute('term'))

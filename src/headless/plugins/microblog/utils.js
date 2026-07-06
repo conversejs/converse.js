@@ -10,6 +10,18 @@ import log from '@converse/log';
 import { COMMENTS_NODE_PREFIX, MICROBLOG_NODE } from './constants.js';
 
 /**
+ * Build the `tag:` URI used as the Atom `<id>` of a new entry (RFC 4151).
+ * @param {string} jid
+ * @param {string} id
+ * @returns {string}
+ */
+export function buildTagId(jid, id) {
+    const domain = Strophe.getDomainFromJid(jid) || jid;
+    const date = new Date().toISOString().split('T')[0];
+    return `tag:${domain},${date}:posts-${id}`;
+}
+
+/**
  * @param {string} [node]
  * @returns {boolean}
  */
@@ -47,7 +59,12 @@ export function handleMicroblogEvent(message) {
                 .filter(Boolean);
             if (!items.length && !retracts.length) continue;
 
-            const feed = feeds.getFeed(from, node, from === bare_jid);
+            // Comments route to their own in-memory collection, and only when a
+            // thread is already open (create=false) — so a comment event never
+            // creates a timeline feed nor surfaces in the aggregated feed.
+            const feed = node.startsWith(COMMENTS_NODE_PREFIX)
+                ? _converse.state.commentfeeds?.getFeed(from, node, false)
+                : feeds.getFeed(from, node, from === bare_jid);
             if (items.length) feed?.addItems(items);
             if (retracts.length) feed?.removeItems(retracts);
         }

@@ -284,6 +284,52 @@ export default {
         },
 
         /**
+         * Get (creating in memory if necessary) the comments thread for a post.
+         * The thread is a {@link CommentFeed} over the post's comments node,
+         * kept out of the timeline aggregate.
+         * @method _converse.api.microblog.getCommentsFeed
+         * @param {import('./message').default} post
+         * @returns {Promise<import('./comment-feed').default|undefined>}
+         */
+        async getCommentsFeed(post) {
+            await api.waitUntil('pubsubFeedsInitialized');
+            const service = post.getCommentsService();
+            const node = post.getCommentsNode();
+            if (!service || !node) return undefined;
+            return _converse.state.commentfeeds?.getFeed(service, node, true);
+        },
+
+        /**
+         * Fetch a post's comments into its thread and return the thread.
+         * @method _converse.api.microblog.fetchComments
+         * @param {import('./message').default} post
+         * @returns {Promise<import('./comment-feed').default|undefined>}
+         */
+        async fetchComments(post) {
+            const feed = await api.microblog.getCommentsFeed(post);
+            await feed?.fetchComments();
+            return feed;
+        },
+
+        /**
+         * Add a comment to a post (XEP-0277 § Adding a Comment): publish an Atom
+         * entry, attributed to us, to the post's comments node.
+         * @method _converse.api.microblog.comment
+         * @param {import('./message').default} post - The post being commented on.
+         * @param {string} body - The comment text.
+         * @returns {Promise<import('./message').default|undefined>}
+         */
+        async comment(post, body) {
+            const text = body?.trim();
+            if (!text) return undefined;
+            const feed = await api.microblog.getCommentsFeed(post);
+            if (!feed) return undefined;
+            const author_jid = _converse.session.get('bare_jid');
+            const author_name = _converse.state.profile?.getDisplayName?.() || author_jid;
+            return feed.publishComment({ body: text, author_jid, author_name });
+        },
+
+        /**
          * Read the durable XEP-0330 follow list (the server-side source of truth
          * for who the user follows), e.g. for a Following list/count.
          * @method _converse.api.microblog.following

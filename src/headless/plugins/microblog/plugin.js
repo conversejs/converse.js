@@ -38,11 +38,11 @@ converse.plugins.add('converse-microblog', {
         api.promises.add('pubsubFeedsInitialized');
 
         api.settings.extend({
-            // Cap on the *number* of retained comment threads; least-recently-
-            // viewed non-pinned threads are evicted past it (see CommentFeeds).
-            // A thread's own size is bounded by the one-shot fetch window, so
-            // we prune whole cold threads rather than comments within a thread.
+            // Cap on the *number* of retained comment threads stored on posts.
             'social_max_comment_threads': 200,
+            // Cap on subscriptions to pinned (e.g. our own) comment threads.
+            // Past the cap the least-recently-pinned are unsubscribed + evicted
+            'social_max_pinned_threads': 50,
         });
 
         const exports = {

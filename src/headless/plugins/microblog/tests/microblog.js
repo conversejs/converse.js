@@ -1493,4 +1493,126 @@ describe('The microblog plugin', function () {
             await u.waitUntil(() => !f1.isFetching());
         }),
     );
+
+    it(
+        "keeps an own post's comment count live via its pinned, subscribed thread",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            // An own post carrying a comments node.
+            const { post } = await seedPost(api, { author: bare_jid });
+            const node = post.getCommentsNode();
+
+            // Pinning materialises the thread and takes a bare-JID subscription —
+            // the PEP owner isn't notified of comments for free (XEP-0472).
+            const subscribe = vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+            const feed = await api.microblog.comments.pin(post);
+            expect(feed.get('pinned')).toBe(true);
+            expect(subscribe).toHaveBeenCalledWith(bare_jid, node);
+
+            // A comment pushed live on the pinned thread bumps the post's count
+            // without the thread ever being opened.
+            receive(_converse, makeCommentEvent(bare_jid, node, 'c-1', 'Nice one!', 'benvolio@montague.lit', 'Benvolio'));
+            await u.waitUntil(() => post.get('comment_count') === 1);
+            expect(post.get('like_count') || 0).toBe(0);
+        }),
+    );
+
+    it(
+        'bumps the like count when a ♥ lands live on a pinned thread',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api, { author: bare_jid });
+            const node = post.getCommentsNode();
+
+            vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+            await api.microblog.comments.pin(post);
+
+            // A ♥ comment is a like: it bumps like_count, not comment_count.
+            receive(_converse, makeCommentEvent(bare_jid, node, 'l-1', '♥', 'romeo@montague.lit', 'Romeo'));
+            await u.waitUntil(() => post.get('like_count') === 1);
+            expect(post.get('comment_count') || 0).toBe(0);
+        }),
+    );
+
+    it(
+        "ignores a comment event for a post whose thread isn't pinned",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api, { author: bare_jid });
+            const node = post.getCommentsNode();
+
+            // No pin → no materialised thread. A comment event routes with
+            // create=false, finds nothing, and is dropped: no thread is created
+            // and the post's count stays unset (it's fetched lazily on visibility).
+            receive(_converse, makeCommentEvent(bare_jid, node, 'c-1', 'Nice', 'benvolio@montague.lit', 'Benvolio'));
+            expect(_converse.state.commentfeeds.getFeed(bare_jid, node, false)).toBeUndefined();
+            expect(post.get('comment_count')).toBeUndefined();
+        }),
+    );
+
+    it(
+        'pins and subscribes an own post\'s comment thread when it is published',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const feed = await api.microblog.feeds.own();
+            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub, 'create').mockResolvedValue(undefined); // ensureCommentsNode
+            const subscribe = vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+
+            await feed.publishPost('Hello world');
+            const post = feed.getNewestPost();
+            const node = post.getCommentsNode();
+
+            // The fire-and-forget pin subscribes the new post's thread and marks
+            // it pinned, so incoming comments will route in and bump its count.
+            await u.waitUntil(() => subscribe.mock.calls.some((c) => c[1] === node));
+            const thread = _converse.state.commentfeeds.getFeed(bare_jid, node, false);
+            expect(thread?.get('pinned')).toBe(true);
+        }),
+    );
+
+    it(
+        'bounds pinned threads, unsubscribing the least-recently-pinned past the cap',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            api.settings.set('social_max_pinned_threads', 2);
+            const subscribe = vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+            const unsubscribe = vi.spyOn(api.pubsub, 'unsubscribe').mockResolvedValue(undefined);
+
+            // Pin three own posts' threads in order (p1 oldest, p3 newest).
+            for (const id of ['p1', 'p2', 'p3']) {
+                const { post } = await seedPost(api, { author: bare_jid, id });
+                await api.microblog.comments.pin(post);
+            }
+            expect(subscribe).toHaveBeenCalledTimes(3);
+
+            // Cap is 2, so the least-recently-pinned (p1) is unsubscribed + evicted;
+            // the two most recent survive.
+            const cf = _converse.state.commentfeeds;
+            expect(unsubscribe).toHaveBeenCalledWith(bare_jid, 'urn:xmpp:microblog:0:comments/p1');
+            expect(cf.getFeed(bare_jid, 'urn:xmpp:microblog:0:comments/p1', false)).toBeUndefined();
+            expect(cf.getFeed(bare_jid, 'urn:xmpp:microblog:0:comments/p2', false)).toBeDefined();
+            expect(cf.getFeed(bare_jid, 'urn:xmpp:microblog:0:comments/p3', false)).toBeDefined();
+        }),
+    );
 });

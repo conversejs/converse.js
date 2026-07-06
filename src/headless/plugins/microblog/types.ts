@@ -42,6 +42,14 @@ export type PubSubMessageAttrs = {
     is_repost?: boolean;
     comments_jid?: string; // Service JID of the comments node's <link rel="replies"> href
     comments_node?: string; // Node referenced by <link rel="replies" title="comments">
+
+    // Denormalised comment-thread summary (XEP-0277 § Comments), synced from the
+    // post's CommentFeed by syncCommentSummary so the timeline can show counts
+    // without opening the thread. A cache; the comments node stays the source.
+    comment_count?: number; // Number of non-♥ comment items
+    like_count?: number; // Number of ♥ (like) items
+    liked_by_me?: boolean; // Whether one of the ♥ items is ours
+    my_like_id?: string; // That ♥ item's id, needed to retract on un-like
 };
 
 /**

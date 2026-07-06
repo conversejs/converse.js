@@ -11,9 +11,44 @@ declare class CommentFeed extends PubSubFeed {
     /**
      * Fetch this thread's comments (one shot, newest first). The node may not
      * exist yet which surfaces as an error here, treated as an empty thread.
+     *
+     * Marks the thread as fetching for the duration so a concurrent
+     * {@link CommentFeeds.pruneThreads} can't evict it mid-fetch.
      * @returns {Promise<void>}
      */
     fetchComments(): Promise<void>;
+    _fetching: boolean;
+    /**
+     * Whether a {@link fetchComments} is currently in flight. Consulted by
+     * {@link CommentFeeds.pruneThreads} to exempt an actively-fetching thread
+     * from eviction.
+     * @returns {boolean}
+     */
+    isFetching(): boolean;
+    /**
+     * This thread's items as {@link PostComment}s (the collection's element
+     * type; the base `messages` is typed as the timeline {@link PubSubMessage}).
+     * @returns {import('./post-comment').default[]}
+     */
+    get comments(): import("./post-comment").default[];
+    /**
+     * This thread's real comments (every item except ♥ likes).
+     * @returns {import('./post-comment').default[]}
+     */
+    getComments(): import("./post-comment").default[];
+    /**
+     * Denormalised comment/like counts for this thread, partitioning its items
+     * into real comments and ♥ likes. Written onto the post by
+     * {@link syncCommentSummary} so the timeline can show counts without opening
+     * the thread.
+     * @returns {{ comment_count: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }}
+     */
+    summarize(): {
+        comment_count: number;
+        like_count: number;
+        liked_by_me: boolean;
+        my_like_id: (string | undefined);
+    };
     /**
      * Publish a comment to this thread's node and optimistically render it.
      * @param {import('./types').PubSubCommentAttrs} attrs

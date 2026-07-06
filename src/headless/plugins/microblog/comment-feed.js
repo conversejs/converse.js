@@ -4,6 +4,7 @@ import converse from '../../shared/api/public.js';
 import { getUniqueId } from '../../utils/index.js';
 import { COMMENTS_PUBLISH_OPTIONS, POSTS_MAX_WITHOUT_RSM } from './constants.js';
 import PubSubFeed from './feed.js';
+import PostComments from './post-comments.js';
 import { buildTagId } from './utils.js';
 
 const { stx, Strophe } = converse.env;
@@ -18,18 +19,86 @@ const { stx, Strophe } = converse.env;
  */
 class CommentFeed extends PubSubFeed {
     /**
+     * A thread's items are {@link PostComment}s (they carry `isLike`), not the
+     * plain {@link PubSubMessage}s a timeline feed holds.
+     * @returns {typeof import('./messages').default}
+     */
+    get messagesCollectionClass() {
+        return PostComments;
+    }
+
+    /**
      * Fetch this thread's comments (one shot, newest first). The node may not
      * exist yet which surfaces as an error here, treated as an empty thread.
+     *
+     * Marks the thread as fetching for the duration so a concurrent
+     * {@link CommentFeeds.pruneThreads} can't evict it mid-fetch.
      * @returns {Promise<void>}
      */
     async fetchComments() {
         const { jid, node } = this.attrs;
+        this._fetching = true;
         try {
             const result = await api.pubsub.items.get(jid, node, { max_items: POSTS_MAX_WITHOUT_RSM });
             await this.addItems(result.items);
         } catch (e) {
             log.debug(`CommentFeed.fetchComments: no readable comments node ${node} at ${jid}: ${e}`);
+        } finally {
+            this._fetching = false;
         }
+    }
+
+    /**
+     * Whether a {@link fetchComments} is currently in flight. Consulted by
+     * {@link CommentFeeds.pruneThreads} to exempt an actively-fetching thread
+     * from eviction.
+     * @returns {boolean}
+     */
+    isFetching() {
+        return !!this._fetching;
+    }
+
+    /**
+     * This thread's items as {@link PostComment}s (the collection's element
+     * type; the base `messages` is typed as the timeline {@link PubSubMessage}).
+     * @returns {import('./post-comment').default[]}
+     */
+    get comments() {
+        return /** @type {import('./post-comment').default[]} */ (this.messages.models);
+    }
+
+    /**
+     * This thread's real comments (every item except ♥ likes).
+     * @returns {import('./post-comment').default[]}
+     */
+    getComments() {
+        return this.comments.filter((m) => !m.isLike());
+    }
+
+    /**
+     * Denormalised comment/like counts for this thread, partitioning its items
+     * into real comments and ♥ likes. Written onto the post by
+     * {@link syncCommentSummary} so the timeline can show counts without opening
+     * the thread.
+     * @returns {{ comment_count: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }}
+     */
+    summarize() {
+        let comment_count = 0;
+        let like_count = 0;
+        let liked_by_me = false;
+        let my_like_id;
+        this.comments.forEach((m) => {
+            if (m.isLike()) {
+                like_count++;
+                if (m.get('is_mine')) {
+                    liked_by_me = true;
+                    my_like_id = m.get('id');
+                }
+            } else {
+                comment_count++;
+            }
+        });
+        return { comment_count, like_count, liked_by_me, my_like_id };
     }
 
     /**

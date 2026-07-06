@@ -138,8 +138,17 @@ declare namespace _default {
              */
             function fetch(post: import("./message").default): Promise<import("./comment-feed").default | undefined>;
             /**
-             * Add a comment to a post (XEP-0277 § Adding a Comment): publish an Atom
-             * entry, attributed to us, to the post's comments node.
+             * Fetch a post's comments and denormalise the resulting counts onto
+             * the post (see {@link syncCommentSummary}). This is the source for
+             * the timeline's comment/like counts.
+             * @method _converse.api.microblog.comments.fetchSummary
+             * @param {import('./message').default} post
+             * @returns {Promise<void>}
+             */
+            function fetchSummary(post: import("./message").default): Promise<void>;
+            /**
+             * Add a comment to a post: publish an Atom entry, attributed to us,
+             * to the post's comments node.
              * @method _converse.api.microblog.comments.add
              * @param {import('./message').default} post - The post being commented on.
              * @param {string} body - The comment text.

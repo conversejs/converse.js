@@ -7,6 +7,8 @@ import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import { publishFollow, readFollowing, retractFollow } from './following.js';
+import { comment_summary_queue, syncCommentSummary } from './comment-summary.js';
+import PubSubFeeds from './feeds.js';
 import { parseAtomEntry } from './parsers.js';
 import {
     FOLLOWABLE_PROBE_TIMEOUT,
@@ -284,49 +286,85 @@ export default {
         },
 
         /**
-         * Get (creating it locally if necessary) the comments thread for a post.
-         * The thread is a {@link CommentFeed} over the post's comments node,
-         * kept out of the timeline aggregate.
-         * @method _converse.api.microblog.getCommentsFeed
-         * @param {import('./message').default} post
-         * @returns {Promise<import('./comment-feed').default|undefined>}
+         * The "comments" namespace groups XEP-0277 § Comments methods, which
+         * operate on a post's per-post comments node.
+         * @namespace _converse.api.microblog.comments
+         * @memberOf _converse.api.microblog
          */
-        async getCommentsFeed(post) {
-            await api.waitUntil('pubsubFeedsInitialized');
-            const service = post.getCommentsService();
-            const node = post.getCommentsNode();
-            if (!service || !node) return undefined;
-            return _converse.state.commentfeeds?.getFeed(service, node, true);
-        },
+        comments: {
+            /**
+             * Get (creating it locally if necessary) the comments thread for a post.
+             * The thread is a {@link CommentFeed} over the post's comments node,
+             * kept out of the timeline aggregate.
+             * @method _converse.api.microblog.comments.feed
+             * @param {import('./message').default} post
+             * @returns {Promise<import('./comment-feed').default|undefined>}
+             */
+            async feed(post) {
+                await api.waitUntil('pubsubFeedsInitialized');
+                const service = post.getCommentsService();
+                const node = post.getCommentsNode();
+                if (!service || !node) return undefined;
+                return _converse.state.commentfeeds?.getFeed(service, node, true);
+            },
 
-        /**
-         * Fetch a post's comments into its thread and return the thread.
-         * @method _converse.api.microblog.fetchComments
-         * @param {import('./message').default} post
-         * @returns {Promise<import('./comment-feed').default|undefined>}
-         */
-        async fetchComments(post) {
-            const feed = await api.microblog.getCommentsFeed(post);
-            await feed?.fetchComments();
-            return feed;
-        },
+            /**
+             * Fetch a post's comments into its thread and return the thread.
+             * @method _converse.api.microblog.comments.fetch
+             * @param {import('./message').default} post
+             * @returns {Promise<import('./comment-feed').default|undefined>}
+             */
+            async fetch(post) {
+                const feed = await api.microblog.comments.feed(post);
+                await feed?.fetchComments();
+                return feed;
+            },
 
-        /**
-         * Add a comment to a post (XEP-0277 § Adding a Comment): publish an Atom
-         * entry, attributed to us, to the post's comments node.
-         * @method _converse.api.microblog.comment
-         * @param {import('./message').default} post - The post being commented on.
-         * @param {string} body - The comment text.
-         * @returns {Promise<import('./message').default|undefined>}
-         */
-        async comment(post, body) {
-            const text = body?.trim();
-            if (!text) return undefined;
-            const feed = await api.microblog.getCommentsFeed(post);
-            if (!feed) return undefined;
-            const author_jid = _converse.session.get('bare_jid');
-            const author_name = _converse.state.profile?.getDisplayName?.() || author_jid;
-            return feed.publishComment({ body: text, author_jid, author_name });
+            /**
+             * Fetch a post's comments and denormalise the resulting counts onto
+             * the post (see {@link syncCommentSummary}). This is the source for
+             * the timeline's comment/like counts.
+             * @method _converse.api.microblog.comments.fetchSummary
+             * @param {import('./message').default} post
+             * @returns {Promise<void>}
+             */
+            fetchSummary(post) {
+                const service = post?.getCommentsService();
+                const node = post?.getCommentsNode();
+                if (!service || !node) return Promise.resolve();
+                // Key the dedupe on the comments-feed identity (service + node),
+                // not the post's bare item id — item ids are only unique within a
+                // node, so on an aggregated timeline two authors' posts can share
+                // one (e.g. `post-1`) and would otherwise collide into a single fetch.
+                const key = PubSubFeeds.getFeedId(service, node);
+                return comment_summary_queue.add(key, async () => {
+                    const feed = await api.microblog.comments.feed(post);
+                    if (!feed) return;
+                    await feed.fetchComments();
+                    syncCommentSummary(post, feed);
+                });
+            },
+
+            /**
+             * Add a comment to a post: publish an Atom entry, attributed to us,
+             * to the post's comments node.
+             * @method _converse.api.microblog.comments.add
+             * @param {import('./message').default} post - The post being commented on.
+             * @param {string} body - The comment text.
+             * @returns {Promise<import('./message').default|undefined>}
+             */
+            async add(post, body) {
+                const text = body?.trim();
+                if (!text) return undefined;
+                const feed = await api.microblog.comments.feed(post);
+                if (!feed) return undefined;
+                const author_jid = _converse.session.get('bare_jid');
+                const author_name = _converse.state.profile?.getDisplayName?.() || author_jid;
+                const comment = await feed.publishComment({ body: text, author_jid, author_name });
+                // Reflect our own new comment in the post's denormalised count.
+                syncCommentSummary(post, feed);
+                return comment;
+            },
         },
 
         /**

@@ -108,6 +108,9 @@ export default (el) => {
                                       @click=${() => el.onComments()}
                                   >
                                       <converse-icon size="1em" class="fa fa-comments"></converse-icon>
+                                      ${m.get('comment_count')
+                                          ? html`<span class="social-post__count">${m.get('comment_count')}</span>`
+                                          : ''}
                                   </button>
                                   ${m.get('is_mine')
                                       ? html`<button

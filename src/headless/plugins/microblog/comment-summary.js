@@ -4,7 +4,7 @@
  */
 import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
-import { COMMENT_SUMMARY_CONCURRENCY } from './constants.js';
+import { COMMENT_SUMMARY_CONCURRENCY, COMMENTS_NODE_PREFIX } from './constants.js';
 
 /**
  * A bounded, deduped work queue. Runs at most `concurrency` tasks at once, and
@@ -110,4 +110,40 @@ export function syncCommentSummary(post, feed) {
     const summary = feed.summarize();
     const changed = Object.keys(summary).some((k) => post.get(k) !== summary[k]);
     if (changed) post.save(summary);
+}
+
+/**
+ * Find the loaded post a comments node belongs to, by scanning the timeline
+ * feeds for a post whose comments node + service match. Returns undefined when
+ * the post isn't loaded (its counts then simply aren't synced live).
+ * @param {string} service - The comments service JID.
+ * @param {string} node - The comments node.
+ * @returns {import('./message').default|undefined}
+ */
+export function findPostForThread(service, node) {
+    const feeds = _converse.state.pubsubfeeds;
+    if (!feeds || !node?.startsWith(COMMENTS_NODE_PREFIX)) return undefined;
+    const post_id = node.slice(COMMENTS_NODE_PREFIX.length);
+    for (const feed of feeds.models) {
+        const post = feed.messages?.get(post_id);
+        // Item ids are only unique within a node, so confirm the post actually
+        // points at this comments node/service before syncing it.
+        if (post && post.getCommentsNode() === node && post.getCommentsService() === service) {
+            return post;
+        }
+    }
+    return undefined;
+}
+
+/**
+ * Sync a comment thread's counts onto its post after a live event routed into
+ * the thread (see `handleMicroblogEvent`). A no-op when the owning post isn't
+ * loaded in any timeline feed.
+ * @param {string} service - The comments service JID.
+ * @param {string} node - The comments node.
+ * @param {import('./comment-feed').default} [feed] - The thread, if already resolved.
+ */
+export function syncCommentThread(service, node, feed) {
+    const post = findPostForThread(service, node);
+    if (post) syncCommentSummary(post, feed);
 }

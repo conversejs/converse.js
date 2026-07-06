@@ -147,6 +147,26 @@ declare namespace _default {
              */
             function fetchSummary(post: import("./message").default): Promise<void>;
             /**
+             * Pin and subscribe to a post's comment thread so live comments/likes
+             * route in and bump the post's denormalised counts. Used for our own
+             * posts, so we take an explicit bare-JID subscription and
+             * materialise (pin) the thread feed since `handleMicroblogEvent` routes a
+             * comment event only into an already existing thread (create=false).
+             * Idempotent; bounded by `social_max_pinned_threads`.
+             * @method _converse.api.microblog.comments.pin
+             * @param {import('./message').default} post
+             * @returns {Promise<import('./comment-feed').default|undefined>}
+             */
+            function pin(post: import("./message").default): Promise<import("./comment-feed").default | undefined>;
+            /**
+             * Pin+subscribe the comment threads of our recent own posts (bounded
+             * by `social_max_pinned_threads`) so live comments/likes on them keep
+             * the counts current. Called on load; safe to call repeatedly.
+             * @method _converse.api.microblog.comments.pinRecentOwn
+             * @returns {Promise<void>}
+             */
+            function pinRecentOwn(): Promise<void>;
+            /**
              * Add a comment to a post: publish an Atom entry, attributed to us,
              * to the post's comments node.
              * @method _converse.api.microblog.comments.add

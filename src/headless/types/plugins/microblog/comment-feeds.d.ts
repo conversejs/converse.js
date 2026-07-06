@@ -23,6 +23,15 @@ declare class CommentFeeds extends PubSubFeeds {
      * are never evicted.
      */
     pruneThreads(): void;
+    /**
+     * Bound the number of *pinned* threads (our own posts', subscribed for live
+     * comment/like counts) to `social_max_pinned_threads`: past the cap, the
+     * least-recently-pinned are unsubscribed and evicted so server-side
+     * subscriptions don't accumulate without limit. A thread mid-fetch is
+     * exempt; the most-recently-pinned always survive.
+     * @returns {Promise<void>}
+     */
+    enforcePinnedCap(): Promise<void>;
 }
 import PubSubFeeds from './feeds.js';
 import CommentFeed from './comment-feed.js';

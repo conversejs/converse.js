@@ -14,7 +14,7 @@ import {
     initStreamFeatures,
     initializeDisco,
     notifyStreamFeaturesAdded,
-    populateStreamFeatures
+    populateStreamFeatures,
 } from './utils.js';
 
 const { Strophe } = converse.env;
@@ -26,7 +26,7 @@ const { Strophe } = converse.env;
  */
 
 converse.plugins.add('converse-disco', {
-    initialize () {
+    initialize() {
         Object.assign(api, disco_api);
 
         api.promises.add('discoInitialized');
@@ -39,7 +39,7 @@ converse.plugins.add('converse-disco', {
 
         const disco = {
             _identities: [],
-            _features: []
+            _features: [],
         };
         Object.assign(_converse, { disco }); // XXX: DEPRECATED
         Object.assign(_converse.state, { disco });
@@ -53,6 +53,9 @@ converse.plugins.add('converse-disco', {
             }
         });
         api.listen.on('beforeResourceBinding', populateStreamFeatures);
+        // A resumed XEP-0198 stream skips resource binding
+        api.listen.on('streamResumed', populateStreamFeatures);
+
         api.listen.on('reconnected', initializeDisco);
         api.listen.on('connected', initializeDisco);
 
@@ -73,5 +76,5 @@ converse.plugins.add('converse-disco', {
         // avoid the cache from filling up, we remove them.
         api.listen.on('will-reconnect', clearSession);
         api.listen.on('clearSession', clearSession);
-    }
+    },
 });

@@ -1,4 +1,4 @@
-declare const Connection_base: typeof import("strophe.js/src/types/connection").default;
+declare const Connection_base: typeof import("strophe.js/dist/types/connection.js").default;
 /**
  * The Connection class manages the connection to the XMPP server. It's
  * agnostic concerning the underlying protocol (i.e. websocket, long-polling
@@ -26,9 +26,9 @@ export class Connection extends Connection_base {
      * password.
      * @param {String} jid
      * @param {String} password
-     * @param {Function} callback
+     * @param {import('strophe.js').ConnectCallback} [callback]
      */
-    connect(jid: string, password: string, callback: Function): Promise<void>;
+    connect(jid: string, password: string, callback?: import("strophe.js").ConnectCallback): Promise<void>;
     /**
      * @param {string} reason
      */
@@ -91,7 +91,6 @@ export class Connection extends Connection_base {
      * @param {string} type
      */
     isType(type: string): boolean;
-    hasResumed(): boolean;
     restoreWorkerSession(): Promise<any> & {
         isResolved: boolean;
         isPending: boolean;
@@ -113,14 +112,14 @@ export class Connection extends Connection_base {
 export class MockConnection extends Connection {
     /**
      * @param {string} service - The BOSH or WebSocket service URL.
-     * @param {import('strophe.js/src/types/connection').ConnectionOptions} options - The configuration options
+     * @param {import('strophe.js').ConnectionOptions} options - The configuration options
      */
-    constructor(service: string, options: import("strophe.js/src/types/connection").ConnectionOptions);
+    constructor(service: string, options: import("strophe.js").ConnectionOptions);
     sent_stanzas: any[];
     IQ_stanzas: any[];
     IQ_ids: any[];
     mock: boolean;
-    get _sasl_mechanism(): import("strophe.js/src/types/sasl-sha256.js").default;
+    get _sasl_mechanism(): import("strophe.js/dist/types/sasl-sha256.js").default;
     _processRequest(): void;
     sendIQ(iq: any, callback: any, errback: any): string;
     send(stanza: any): void;

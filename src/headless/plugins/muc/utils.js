@@ -276,7 +276,7 @@ export function onParsePresence(stanza, attrs) {
 export function onStatusInitialized() {
     window.addEventListener(getUnloadEvent(), () => {
         const using_websocket = api.connection.isType('websocket');
-        if (using_websocket && (!api.settings.get('enable_smacks') || !_converse.session.get('smacks_stream_id'))) {
+        if (using_websocket && !api.connection.get()?.sm?.state.id) {
             // For non-SMACKS websocket connections, or non-resumeable
             // connections, we disconnect all chatrooms when the page unloads.
             // See issue #1111

@@ -4,13 +4,10 @@ import sizzle from 'sizzle';
 import _converse from '../_converse.js';
 import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
 import { CONNECTION_STATUS } from '../constants.js';
-import { Strophe } from 'strophe.js';
+import { MemoryStorageBackend, Strophe } from 'strophe.js';
 import { clearSession, tearDown } from '../../utils/session.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID } from '../../utils/init.js';
-
-const i = Object.keys(Strophe.Status).reduce((max, k) => Math.max(max, Strophe.Status[k]), 0);
-Strophe.Status.RECONNECTING = i + 1;
 
 /**
  * The Connection class manages the connection to the XMPP server. It's
@@ -108,7 +105,7 @@ export class Connection extends Strophe.Connection {
      * password.
      * @param {String} jid
      * @param {String} password
-     * @param {Function} callback
+     * @param {import('strophe.js').ConnectCallback} [callback]
      */
     async connect(jid, password, callback) {
         const { __, api } = _converse;
@@ -435,10 +432,9 @@ export class Connection extends Strophe.Connection {
         const { api } = _converse;
         if (api.settings.get('connection_options')?.worker || this.isType('bosh')) {
             return _converse.state.connfeedback.get('connection_status') === Strophe.Status.ATTACHED;
-        } else {
-            // Not binding means that the session was resumed.
-            return !this.do_bind;
         }
+        // Strophe knows whether its XEP-0198 engine resumed the session.
+        return super.hasResumed();
     }
 
     restoreWorkerSession() {
@@ -454,10 +450,17 @@ export class Connection extends Strophe.Connection {
 export class MockConnection extends Connection {
     /**
      * @param {string} service - The BOSH or WebSocket service URL.
-     * @param {import('strophe.js/src/types/connection').ConnectionOptions} options - The configuration options
+     * @param {import('strophe.js').ConnectionOptions} options - The configuration options
      */
     constructor(service, options) {
-        super(service, options);
+        super(service, {
+            ...options,
+            // Tests must not leak resumable XEP-0198 state into each other
+            // via sessionStorage, so default to in-memory storage. A test
+            // can still supply its own (pre-seeded) backend via
+            // connection_options.streamManagement.storage.
+            streamManagement: { storage: new MemoryStorageBackend(), ...options.streamManagement },
+        });
 
         this.sent_stanzas = [];
         this.IQ_stanzas = [];
@@ -480,14 +483,36 @@ export class MockConnection extends Connection {
 
         // @ts-ignore
         this._proto._processRequest = () => {};
+
+        // _dataRecv unwraps injected stanzas via _reqToData, which only the
+        // BOSH transport implements. Provide it for the websocket transport
+        // too, so tests inject stanzas the same way on either transport.
+        const proto = /** @type {any} */ (this._proto);
+        proto._reqToData = proto._reqToData ?? ((/** @type {any} */ req) => req.getResponse?.() ?? req);
         this._proto._disconnect = () => this._onDisconnectTimeout();
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         this._proto._onDisconnectTimeout = () => {};
+
+        // Drain the send queue synchronously into sent_stanzas: this
+        // captures everything Strophe queues in wire order (stanzas as
+        // well as the XEP-0198 nonzas that the SM engine pushes directly
+        // onto _data).
+        this._proto._send = () => {
+            while (this._data.length) {
+                const el = this._data.shift();
+                if (typeof el !== 'string') this.sent_stanzas.push(el);
+            }
+        };
         this._proto._connect = () => {
             this.connected = true;
             this.mock = true;
             this.jid = 'romeo@montague.lit/orchard';
-            this._changeConnectStatus(Strophe.Status.BINDREQUIRED);
+            // Feed the mock stream features through the same post-SASL
+            // decision point the real connect flow uses. With Stream
+            // Management enabled this is where Strophe chooses between
+            // <resume/> and resource binding; without it, it proceeds
+            // straight to binding (BINDREQUIRED, since Converse uses
+            // explicitResourceBinding).
+            this._onStreamFeaturesAfterSASL(this.features);
         };
     }
 
@@ -512,7 +537,8 @@ export class MockConnection extends Connection {
 
     send(stanza) {
         stanza = stanza.tree?.() ?? stanza;
-        this.sent_stanzas.push(stanza);
+        // No sent_stanzas.push here: the stanza lands there via the
+        // _proto._send drain (see constructor), like all outbound traffic.
         return super.send(stanza);
     }
 
@@ -520,6 +546,9 @@ export class MockConnection extends Connection {
         const { api } = _converse;
         await api.trigger('beforeResourceBinding', { 'synchronous': true });
         this.authenticated = true;
+        // The real bind-result handler calls this before emitting
+        // CONNECTED; with SM enabled it sends the native <enable/>.
+        this._onSessionReady();
         this._changeConnectStatus(Strophe.Status.CONNECTED);
     }
 }

@@ -196,12 +196,15 @@ converse.plugins.add('converse-muc', {
 
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(`${Strophe.NS.CONFINFO}+notify`));
         api.listen.on('addClientFeatures', onAddClientFeatures);
-        api.listen.on('beforeResourceBinding', onBeforeResourceBinding);
         api.listen.on('beforeTearDown', onBeforeTearDown);
         api.listen.on('chatBoxesFetched', autoJoinRooms);
         api.listen.on('disconnected', disconnectChatRooms);
         api.listen.on('statusInitialized', onStatusInitialized);
         api.listen.on('parsePresence', onParsePresence);
+
+        // A resumed XEP-0198 stream skips resource binding
+        api.listen.on('streamResumed', onBeforeResourceBinding);
+        api.listen.on('beforeResourceBinding', onBeforeResourceBinding);
 
         document.addEventListener('visibilitychange', onWindowStateChanged);
     },

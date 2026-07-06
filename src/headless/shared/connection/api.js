@@ -11,7 +11,6 @@ let connection;
 
 const default_connection_options = { 'explicitResourceBinding': true };
 
-
 /**
  * This grouping collects API functions related to the XMPP connection.
  *
@@ -25,7 +24,7 @@ export default {
      * @param {string} [jid]
      * @return {Connection|MockConnection}
      */
-    init (jid) {
+    init(jid) {
         if (jid && connection?.jid && isSameDomain(connection.jid, jid)) return connection;
 
         if (!settings_api.get('bosh_service_url') && settings_api.get('authentication') === PREBIND) {
@@ -33,11 +32,19 @@ export default {
         }
 
         const XMPPConnection = isTestEnv() ? MockConnection : Connection;
+        const user_options = settings_api.get('connection_options') ?? {};
         connection = new XMPPConnection(
             getConnectionServiceURL(),
-            Object.assign(default_connection_options, settings_api.get('connection_options'), {
+            Object.assign(default_connection_options, user_options, {
                 'keepalive': settings_api.get('keepalive'),
-            })
+                // XEP-0198 Stream Management is handled natively by Strophe
+                'enableStreamManagement': !!settings_api.get('enable_smacks'),
+                'streamManagement': {
+                    'maxUnacked': settings_api.get('smacks_max_unacked_stanzas') ?? 5,
+                    // Let embedders (and tests) override e.g. the storage backend.
+                    ...(user_options.streamManagement ?? {}),
+                },
+            }),
         );
 
         setStropheLogLevel();
@@ -52,11 +59,11 @@ export default {
         return connection;
     },
 
-    get () {
+    get() {
         return connection;
     },
 
-    destroy () {
+    destroy() {
         this.disconnect();
         connection?.disconnect();
         connection = undefined;
@@ -67,7 +74,7 @@ export default {
      * @memberOf api.connection
      * @returns {boolean} Whether we're authenticated to the XMPP server or not
      */
-    authenticated () {
+    authenticated() {
         return connection?.authenticated && true;
     },
 
@@ -76,7 +83,7 @@ export default {
      * @memberOf api.connection
      * @returns {boolean} Whether there is an established connection or not.
      */
-    connected () {
+    connected() {
         return connection?.connected && true;
     },
 
@@ -86,7 +93,7 @@ export default {
      * @method api.connection.disconnect
      * @memberOf api.connection
      */
-    disconnect () {
+    disconnect() {
         connection?.disconnect();
     },
 
@@ -99,10 +106,10 @@ export default {
      * @method reconnect
      * @memberOf api.connection
      */
-    reconnect () {
+    reconnect() {
         connection.setConnectionStatus(
             Strophe.Status.RECONNECTING,
-            'The connection has dropped, attempting to reconnect.'
+            'The connection has dropped, attempting to reconnect.',
         );
         if (connection?.reconnecting) {
             return connection.debouncedReconnect();
@@ -117,7 +124,7 @@ export default {
      * @memberOf api.connection
      * @returns {boolean}
      */
-    isType (type) {
+    isType(type) {
         return connection.isType(type);
     },
 };

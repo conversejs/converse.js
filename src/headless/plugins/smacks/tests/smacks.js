@@ -3,34 +3,45 @@ import converse from '../../../dist/converse-headless.js';
 
 const { stx, Strophe, Stanza, u } = converse.env;
 
+// XEP-0198 Stream Management is implemented natively by Strophe and is
+// websocket-only, so these tests run the mock connection over the websocket
+// transport instead of the default (mock-)BOSH one.
+const SETTINGS = {
+    auto_login: false,
+    enable_smacks: true,
+    show_controlbox_by_default: true,
+    smacks_max_unacked_stanzas: 2,
+    websocket_url: 'ws://montague.lit/ws',
+};
+
 describe('XEP-0198 Stream Management', function () {
     it(
         'gets enabled with an <enable> stanza and resumed with a <resume> stanza',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             {
-                auto_login: false,
-                enable_smacks: true,
-                show_controlbox_by_default: true,
-                smacks_max_unacked_stanzas: 2,
+                ...SETTINGS,
                 blacklisted_plugins: ['converse-blocklist', 'converse-omemo'],
             },
             async function (_converse) {
                 await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
+                const conn = _converse.api.connection.get();
 
-                const sent_stanzas = _converse.api.connection.get().sent_stanzas;
+                const { sent_stanzas } = conn;
                 let stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'enable', 1000).pop());
 
-                expect(_converse.session.get('smacks_enabled')).toBe(false);
+                expect(conn.isStreamManagementEnabled()).toBe(false);
                 expect(stanza).toEqualStanza(stx`<enable resume="true" xmlns="urn:xmpp:sm:3"/>`);
 
                 let result = stx`<enabled xmlns="urn:xmpp:sm:3" id="some-long-sm-id" resume="true"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
-                expect(_converse.session.get('smacks_enabled')).toBe(true);
+                conn._dataRecv(mock.createRequest(_converse, result));
+                expect(conn.isStreamManagementEnabled()).toBe(true);
+                expect(conn.sm.state.id).toBe('some-long-sm-id');
 
                 await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], [Strophe.NS.CARBONS]);
 
-                let IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+                let IQ_stanzas = conn.IQ_stanzas;
                 await u.waitUntil(() => IQ_stanzas.length === 5);
 
                 const disco_iq = IQ_stanzas[0];
@@ -61,18 +72,17 @@ describe('XEP-0198 Stream Management', function () {
                 await u.waitUntil(() => sent_stanzas.filter((s) => s.nodeName === 'presence').length);
 
                 expect(sent_stanzas.filter((s) => s.nodeName === 'r').length).toBe(3);
-                expect(_converse.session.get('unacked_stanzas').length).toBe(6);
+                expect(conn.sm.state.unacked.length).toBe(6);
 
                 // test handling of acks
                 let ack = stx`<a xmlns="urn:xmpp:sm:3" h="2"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, ack));
-                expect(_converse.session.get('unacked_stanzas').length).toBe(4);
+                conn._dataRecv(mock.createRequest(_converse, ack));
+                expect(conn.sm.state.unacked.length).toBe(4);
 
                 // test handling of ack requests
                 let r = stx`<r xmlns="urn:xmpp:sm:3"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, r));
+                conn._dataRecv(mock.createRequest(_converse, r));
 
-                // "h" is 3 because we received two IQ responses, for disco and the roster
                 ack = await u.waitUntil(() => sent_stanzas.filter((s) => s.nodeName === 'a').pop());
                 expect(ack).toEqualStanza(stx`<a h="2" xmlns="urn:xmpp:sm:3"/>`);
 
@@ -84,13 +94,13 @@ describe('XEP-0198 Stream Management', function () {
                             <feature var="http://jabber.org/protocol/disco#items"/>
                         </query>
                     </iq>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, disco_result));
+                conn._dataRecv(mock.createRequest(_converse, disco_result));
 
                 ack = stx`<a xmlns="urn:xmpp:sm:3" h="2"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, ack));
-                expect(_converse.session.get('unacked_stanzas').length).toBe(4);
+                conn._dataRecv(mock.createRequest(_converse, ack));
+                expect(conn.sm.state.unacked.length).toBe(4);
 
-                const unacked_stanzas = _converse.session.get('unacked_stanzas').map(Stanza.fromString);
+                const unacked_stanzas = conn.sm.state.unacked.map((entry) => Stanza.fromString(entry.stanza));
                 expect(unacked_stanzas[0]).toEqualStanza(IQ_stanzas[2]);
                 expect(unacked_stanzas[1]).toEqualStanza(IQ_stanzas[3]);
                 expect(unacked_stanzas[2]).toEqualStanza(IQ_stanzas[4]);
@@ -101,7 +111,7 @@ describe('XEP-0198 Stream Management', function () {
                 );
 
                 r = stx`<r xmlns="urn:xmpp:sm:3"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, r));
+                conn._dataRecv(mock.createRequest(_converse, r));
 
                 ack = await u.waitUntil(() =>
                     sent_stanzas.filter((s) => s.nodeName === 'a' && s.getAttribute('h') === '3').pop(),
@@ -111,62 +121,60 @@ describe('XEP-0198 Stream Management', function () {
                 await _converse.api.waitUntil('rosterInitialized');
 
                 // test session resumption
-                _converse.api.connection.get().IQ_stanzas = [];
-                IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+                conn.IQ_stanzas = [];
+                IQ_stanzas = conn.IQ_stanzas;
                 await _converse.api.connection.reconnect();
                 stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'resume').pop(), 1000);
                 expect(stanza).toEqualStanza(stx`<resume h="3" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>`);
 
+                const num_sent = sent_stanzas.length;
                 result = stx`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
+                conn._dataRecv(mock.createRequest(_converse, result));
 
                 // Another <enable> stanza doesn't get sent out
                 expect(sent_stanzas.filter((s) => s.tagName === 'enable').length).toBe(1);
-                expect(_converse.session.get('smacks_enabled')).toBe(true);
+                expect(conn.isStreamManagementEnabled()).toBe(true);
+                expect(conn.hasResumed()).toBe(true);
+
+                // The unacked stanzas were re-sent out, in order (from Strophe's
+                // SM queue, so unlike before they don't pass through sendIQ and
+                // don't show up in IQ_stanzas). The resend strips each stanza's
+                // root `from` (Strophe does this so a resumed stream can't be
+                // rejected as invalid-from), so compare against the from-less form.
+                const resent_stanzas = sent_stanzas.slice(num_sent);
+                expect(resent_stanzas.length).toBe(5);
+                unacked_stanzas.forEach((s, i) => {
+                    const expected = s.tree().cloneNode(true);
+                    expected.removeAttribute('from');
+                    expect(resent_stanzas[i]).toEqualStanza(expected);
+                });
+                // ...followed by an ack request covering them
+                expect(resent_stanzas[4].nodeName).toBe('r');
 
                 await new Promise((resolve) => _converse.api.listen.once('reconnected', resolve));
-                await u.waitUntil(() => IQ_stanzas.length === 3);
-
-                // Test that unacked stanzas get resent out
-                let iq = IQ_stanzas.pop();
-                expect(iq).toEqualStanza(stx`
-                    <iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" type="set" xmlns="jabber:client">
-                        <enable xmlns="urn:xmpp:carbons:2"/>
-                    </iq>`);
-
-                iq = IQ_stanzas.pop();
-                expect(iq).toEqualStanza(stx`
-                    <iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">
-                        <query xmlns="http://jabber.org/protocol/disco#info"/>
-                    </iq>`);
-
-                iq = IQ_stanzas.pop();
-                expect(iq).toEqualStanza(stx`
-                    <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="get"><query xmlns="jabber:iq:roster"/></iq>`);
             },
         ),
     );
 
     it(
         'does not send a duplicate presence when a session is successfully resumed',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             {
-                auto_login: false,
-                enable_smacks: true,
-                show_controlbox_by_default: true,
-                smacks_max_unacked_stanzas: 2,
+                ...SETTINGS,
                 blacklisted_plugins: ['converse-blocklist', 'converse-reactions'],
             },
             async function (_converse) {
                 await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
+                const conn = _converse.api.connection.get();
 
-                const sent_stanzas = _converse.api.connection.get().sent_stanzas;
+                const { sent_stanzas } = conn;
                 let stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'enable').pop(), 1000);
                 expect(stanza).toEqualStanza(stx`<enable resume="true" xmlns="urn:xmpp:sm:3"/>`);
 
                 let result = stx`<enabled xmlns="urn:xmpp:sm:3" id="some-long-sm-id" resume="true"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
+                conn._dataRecv(mock.createRequest(_converse, result));
 
                 await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], [Strophe.NS.CARBONS]);
                 await mock.waitForRoster(_converse, 'current', 1);
@@ -176,56 +184,13 @@ describe('XEP-0198 Stream Management', function () {
                 await _converse.api.connection.reconnect();
                 stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'resume').pop(), 1000);
 
-                const conn = _converse.api.connection.get();
                 result = stx`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
+                conn._dataRecv(mock.createRequest(_converse, result));
 
-                // onResumedStanza sets connection.restored = true then synchronously
-                // calls _changeConnectStatus(CONNECTED). Our fix clears
-                // send_initial_presence at that point, before onConnected() fires.
-                // This is fully synchronous so we can assert immediately.
-                expect(conn.send_initial_presence).toBe(false);
-            },
-        ),
-    );
-
-    it(
-        'does not send a duplicate presence when a session is successfully resumed',
-        mock.initConverse(converse, 
-            ['chatBoxesInitialized'],
-            {
-                auto_login: false,
-                enable_smacks: true,
-                show_controlbox_by_default: true,
-                smacks_max_unacked_stanzas: 2,
-                blacklisted_plugins: ['converse-blocklist', 'converse-reactions'],
-            },
-            async function (_converse) {
-                await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
-
-                const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-                let stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'enable').pop(), 1000);
-                expect(stanza).toEqualStanza(stx`<enable resume="true" xmlns="urn:xmpp:sm:3"/>`);
-
-                let result = stx`<enabled xmlns="urn:xmpp:sm:3" id="some-long-sm-id" resume="true"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
-
-                await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], [Strophe.NS.CARBONS]);
-                await mock.waitForRoster(_converse, 'current', 1);
-                await u.waitUntil(() => sent_stanzas.filter((s) => s.nodeName === 'presence').length);
-
-                // Reconnect and successfully resume the SMACKS session
-                await _converse.api.connection.reconnect();
-                stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'resume').pop(), 1000);
-
-                const conn = _converse.api.connection.get();
-                result = stx`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
-
-                // onResumedStanza sets connection.restored = true then synchronously
-                // calls _changeConnectStatus(CONNECTED). Our fix clears
-                // send_initial_presence at that point, before onConnected() fires.
-                // This is fully synchronous so we can assert immediately.
+                // Strophe's <resumed/> handler sets connection.restored = true
+                // then synchronously calls _changeConnectStatus(CONNECTED),
+                // which clears send_initial_presence before onConnected()
+                // fires. This is fully synchronous so we can assert immediately.
                 expect(conn.send_initial_presence).toBe(false);
             },
         ),
@@ -233,69 +198,89 @@ describe('XEP-0198 Stream Management', function () {
 
     it(
         'might not resume and the session will then be reset',
-        mock.initConverse(converse, 
-            ['chatBoxesInitialized'],
-            {
-                'auto_login': false,
-                'enable_smacks': true,
-                'show_controlbox_by_default': true,
-                'smacks_max_unacked_stanzas': 2,
-            },
-            async function (_converse) {
-                await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
-                const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-                let stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'enable').pop());
-                expect(stanza).toEqualStanza(stx`<enable resume="true" xmlns="urn:xmpp:sm:3"/>`);
-                let result = stx`<enabled xmlns="urn:xmpp:sm:3" id="some-long-sm-id" resume="true"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
+        mock.initConverse(converse, ['chatBoxesInitialized'], { ...SETTINGS }, async function (_converse) {
+            await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
+            const conn = _converse.api.connection.get();
 
-                await mock.waitForRoster(_converse, 'current', 1);
+            const { sent_stanzas } = conn;
+            let stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'enable').pop());
+            expect(stanza).toEqualStanza(stx`<enable resume="true" xmlns="urn:xmpp:sm:3"/>`);
+            let result = stx`<enabled xmlns="urn:xmpp:sm:3" id="some-long-sm-id" resume="true"/>`;
+            conn._dataRecv(mock.createRequest(_converse, result));
 
-                // test session resumption
-                await _converse.api.connection.reconnect();
-                stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'resume').pop());
-                expect(stanza).toEqualStanza(stx`<resume h="1" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>`);
+            await mock.waitForRoster(_converse, 'current', 1);
 
-                result = stx`
+            // test session resumption
+            await _converse.api.connection.reconnect();
+            stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'resume').pop());
+            expect(stanza).toEqualStanza(stx`<resume h="1" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>`);
+
+            // Subscribe before injecting <failed/>: unlike the old
+            // plugin, Strophe does not block the connected flow on the
+            // <enabled/> round-trip, so 'reconnected' fires as soon as
+            // the fallback resource binding completes.
+            const reconnected = new Promise((resolve) => _converse.api.listen.once('reconnected', resolve));
+
+            result = stx`
             <failed xmlns="urn:xmpp:sm:3" h="another-sequence-number">
                 <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
             </failed>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
+            conn._dataRecv(mock.createRequest(_converse, result));
 
-                // Session data gets reset
-                expect(_converse.session.get('smacks_enabled')).toBe(false);
-                expect(_converse.session.get('num_stanzas_handled')).toBe(0);
-                expect(_converse.session.get('num_stanzas_handled_by_server')).toBe(0);
-                expect(_converse.session.get('num_stanzas_since_last_ack')).toBe(0);
-                expect(_converse.session.get('unacked_stanzas').length).toBe(0);
-                expect(_converse.session.get('roster_cached')).toBeFalsy();
+            // The SM state gets reset
+            expect(conn.isStreamManagementEnabled()).toBe(false);
+            expect(conn.hasResumed()).toBe(false);
+            expect(conn.sm.state.id).toBe(null);
+            expect(conn.sm.state.hIn).toBe(0);
+            expect(conn.sm.state.hOutAcked).toBe(0);
+            expect(conn.sm.state.unacked.length).toBe(0);
+            // The roster cache was invalidated (via streamResumptionFailed)
+            expect(_converse.session.get('roster_cached')).toBeFalsy();
 
-                await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'enable').length === 2);
-                stanza = sent_stanzas.filter((s) => s.tagName === 'enable').pop();
-                expect(stanza).toEqualStanza(stx`<enable resume="true" xmlns="urn:xmpp:sm:3"/>`);
+            await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'enable').length === 2);
+            stanza = sent_stanzas.filter((s) => s.tagName === 'enable').pop();
+            expect(stanza).toEqualStanza(stx`<enable resume="true" xmlns="urn:xmpp:sm:3"/>`);
 
-                result = stx`<enabled xmlns="urn:xmpp:sm:3" id="another-long-sm-id" resume="true"/>`;
-                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result));
-                expect(_converse.session.get('smacks_enabled')).toBe(true);
+            result = stx`<enabled xmlns="urn:xmpp:sm:3" id="another-long-sm-id" resume="true"/>`;
+            conn._dataRecv(mock.createRequest(_converse, result));
+            expect(conn.isStreamManagementEnabled()).toBe(true);
+            expect(conn.sm.state.id).toBe('another-long-sm-id');
 
-                // Check that the roster gets fetched
-                await mock.waitForRoster(_converse, 'current', 1);
-                await new Promise((resolve) => _converse.api.listen.once('reconnected', resolve));
-            },
-        ),
+            // Check that the roster gets fetched
+            await mock.waitForRoster(_converse, 'current', 1);
+            await reconnected;
+        }),
     );
 
     it(
         'can cause MUC messages to be received before chatboxes are initialized',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesInitialized'],
             {
-                'auto_login': false,
+                ...SETTINGS,
                 'blacklisted_plugins': 'converse-mam',
-                'enable_smacks': true,
                 'muc_fetch_members': false,
-                'show_controlbox_by_default': true,
-                'smacks_max_unacked_stanzas': 2,
+                // Seed resumable XEP-0198 state, as persisted by Strophe's SM
+                // engine before the (simulated) page reload.
+                'connection_options': {
+                    'streamManagement': {
+                        'storage': (() => {
+                            const storage = new Strophe.MemoryStorageBackend();
+                            storage.save('strophe-sm:romeo@montague.lit', {
+                                'id': 'some-long-sm-id',
+                                'resumeSupported': true,
+                                'boundJid': 'romeo@montague.lit/converse.js-100020907',
+                                'enableSent': true,
+                                'enabled': true,
+                                'hIn': 580,
+                                'hOutAcked': 525,
+                                'unacked': [],
+                            });
+                            return storage;
+                        })(),
+                    },
+                },
             },
             async function (_converse) {
                 const { api } = _converse;
@@ -311,12 +296,6 @@ describe('XEP-0198 Stream Management', function () {
                         'resource': 'converse.js-100020907',
                         'domain': 'montague.lit',
                         'active': false,
-                        'smacks_enabled': true,
-                        'num_stanzas_handled': 580,
-                        'num_stanzas_handled_by_server': 525,
-                        'num_stanzas_since_last_ack': 0,
-                        'unacked_stanzas': [],
-                        'smacks_stream_id': 'some-long-sm-id',
                         'push_enabled': ['romeo@montague.lit'],
                         'roster_cached': true,
                     }),
@@ -353,14 +332,19 @@ describe('XEP-0198 Stream Management', function () {
                 });
 
                 await api.user.login('romeo@montague.lit', 'secret');
+                const conn = api.connection.get();
 
-                const sent_stanzas = api.connection.get().sent_stanzas;
+                const { sent_stanzas } = conn;
                 const stanza = await u.waitUntil(() => sent_stanzas.filter((s) => s.tagName === 'resume').pop());
                 expect(stanza).toEqualStanza(stx`<resume h="580" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>`);
 
-                const result = stx`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`;
-                api.connection.get()._dataRecv(mock.createRequest(_converse, result));
-                expect(_converse.session.get('smacks_enabled')).toBe(true);
+                const result = stx`<resumed
+                    xmlns="urn:xmpp:sm:3"
+                    h="another-sequence-number"
+                    previd="some-long-sm-id"/>`;
+                conn._dataRecv(mock.createRequest(_converse, result));
+                expect(conn.isStreamManagementEnabled()).toBe(true);
+                expect(conn.jid).toBe('romeo@montague.lit/converse.js-100020907');
 
                 const nick = 'romeo';
                 const func = _converse.chatboxes.onChatBoxesFetched;
@@ -383,7 +367,14 @@ describe('XEP-0198 Stream Management', function () {
                         <body>First message</body>
                     </message>`;
 
-                api.connection.get()._dataRecv(mock.createRequest(_converse, msg));
+                conn._dataRecv(mock.createRequest(_converse, msg));
+
+                // Release the held-back CONNECTED. With native SM there is
+                // exactly one CONNECTED emission (on <resumed/>) (the old
+                // plugin's blocked bind produced a second one) so the spy
+                // suppressed it above to let the MUC message arrive first,
+                // and we re-emit it here.
+                conn._changeConnectStatus(Strophe.Status.CONNECTED, null);
 
                 await api.waitUntil('chatBoxesFetched');
                 const muc = _converse.chatboxes.get(muc_jid);

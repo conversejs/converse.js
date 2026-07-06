@@ -3,6 +3,10 @@
 ## 15.0.0 (Unreleased)
 
 - #194: Full support for XEP-0115: Entity capabilities
+- refactor(smacks): XEP-0198 Stream Management is now implemented natively by Strophe.js (see its
+  `enableStreamManagement` connection option). The `converse-smacks` plugin is reduced to mapping
+  the existing `enable_smacks` and `smacks_max_unacked_stanzas` settings onto that option, and two
+  events: the existing `streamResumptionFailed` and the new `streamResumed`.
 - feat(toolbar): Allow hiding the file upload button via the `fileupload` key of `visible_toolbar_buttons`
 - feat(settings): `api.settings.extend` accepts a `deep_merge` option so an object setting fills in
   defaults instead of being replaced wholesale.
@@ -11,6 +15,14 @@
 
 The time_format setting has been removed. Message times are now shown relative to the present
 instead of as a configurable clock.
+
+Stream Management state is no longer kept in `_converse.session`. Query the connection instead
+(e.g. `api.connection.get().isStreamManagementEnabled()`, `.hasResumed()`, `.sm.state`).
+
+Resource binding (and the `beforeResourceBinding` event) is now skipped when a stream
+is resumed via XEP-0198. Plugins that use `beforeResourceBinding` to register stanza handlers
+must also listen to the new `streamResumed` event, which fires while `<resumed/>` is processed,
+before the server's replay of queued stanzas is handled.
 
 ## 14.0.0 (2026-06-26)
 

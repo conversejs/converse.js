@@ -118,7 +118,7 @@ const buildConfig = (_env, argv) => {
             new rspack.CopyRspackPlugin({
                 patterns: [
                     {
-                        from: 'node_modules/strophe.js/src/shared-connection-worker.js',
+                        from: 'node_modules/strophe.js/dist/shared-connection-worker.js',
                         to: 'shared-connection-worker.js',
                     },
                     { from: 'node_modules/libomemo.js/dist/curve25519_compiled.wasm', to: 'curve25519_compiled.wasm' },

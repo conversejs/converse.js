@@ -284,7 +284,7 @@ export default {
         },
 
         /**
-         * Get (creating in memory if necessary) the comments thread for a post.
+         * Get (creating it locally if necessary) the comments thread for a post.
          * The thread is a {@link CommentFeed} over the post's comments node,
          * kept out of the timeline aggregate.
          * @method _converse.api.microblog.getCommentsFeed

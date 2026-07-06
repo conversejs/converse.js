@@ -13,7 +13,7 @@ import log from '@converse/log';
 import PubSubFeed from './feed.js';
 import PubSubFeeds from './feeds.js';
 import CommentFeed from './comment-feed.js';
-import CommentFeeds from './comment-feeds';
+import CommentFeeds from './comment-feeds.js';
 import PubSubMessage from './message.js';
 import PubSubMessages from './messages.js';
 import FollowableCache from './followable.js';
@@ -33,6 +33,14 @@ converse.plugins.add('converse-microblog', {
 
     initialize() {
         api.promises.add('pubsubFeedsInitialized');
+
+        api.settings.extend({
+            // Cap on the *number* of retained comment threads; least-recently-
+            // viewed non-pinned threads are evicted past it (see CommentFeeds).
+            // A thread's own size is bounded by the one-shot fetch window, so
+            // we prune whole cold threads rather than comments within a thread.
+            'social_max_comment_threads': 200,
+        });
 
         const exports = {
             CommentFeed,
@@ -61,7 +69,7 @@ converse.plugins.add('converse-microblog', {
                 delete state.pubsubfeeds;
             }
             if (state.commentfeeds) {
-                // In-memory only (no store); just drop the reference.
+                state.commentfeeds.clearStore?.({ silent: true });
                 delete state.commentfeeds;
             }
             if (state.followablecache) {
@@ -80,12 +88,15 @@ async function onConnected() {
         registerMicroblogHandler();
         const feeds = new _converse.exports.PubSubFeeds();
         _converse.state.pubsubfeeds = feeds;
-        // Open comment threads live in their own in-memory collection so they
-        // never enter the aggregated timeline.
-        _converse.state.commentfeeds = new _converse.exports.CommentFeeds();
+        // Comment threads live in their own persisted collection so they never
+        // enter the aggregated timeline; growth is bounded by a thread LRU.
+        const commentfeeds = new _converse.exports.CommentFeeds();
+        _converse.state.commentfeeds = commentfeeds;
         const followablecache = new _converse.exports.FollowableCache();
         _converse.state.followablecache = followablecache;
-        await Promise.all([feeds.hydrated, followablecache.hydrated]);
+        await Promise.all([feeds.hydrated, commentfeeds.hydrated, followablecache.hydrated]);
+        // A prior session may have hydrated more threads than the current cap.
+        commentfeeds.pruneThreads();
     } catch (e) {
         log.error(e);
     }

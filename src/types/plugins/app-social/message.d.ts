@@ -3,7 +3,7 @@
  * each post down; this component re-renders when a post's display-affecting
  * attributes (its Atom text constructs, author name, avatar) change.
  */
-export default class SocialMessage extends CustomElement {
+export default class SocialMessage extends ObservableElement {
     static get properties(): {
         model: {
             type: typeof PubSubMessage;
@@ -14,6 +14,12 @@ export default class SocialMessage extends CustomElement {
         _reposting: {
             type: BooleanConstructor;
             state: boolean;
+        };
+        observable: {
+            type: StringConstructor;
+        };
+        intersectionRatio: {
+            type: NumberConstructor;
         };
     };
     compact: boolean;
@@ -53,6 +59,6 @@ export default class SocialMessage extends CustomElement {
     onRepost(): Promise<void>;
     _reposting: boolean;
 }
-import { CustomElement } from 'shared/components/element.js';
+import { ObservableElement } from 'shared/components/observable.js';
 import { PubSubMessage } from '@converse/headless';
 //# sourceMappingURL=message.d.ts.map

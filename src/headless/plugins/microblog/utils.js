@@ -7,6 +7,7 @@ import { Strophe } from 'strophe.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import log from '@converse/log';
+import { syncCommentThread } from './comment-summary.js';
 import { COMMENTS_NODE_PREFIX, MICROBLOG_NODE } from './constants.js';
 
 /**
@@ -62,11 +63,24 @@ export function handleMicroblogEvent(message) {
             // Comments route to their own separate collection, and only when a
             // thread is already open (create=false) — so a comment event never
             // creates a timeline feed nor surfaces in the aggregated feed.
-            const feed = node.startsWith(COMMENTS_NODE_PREFIX)
+            const is_comments = node.startsWith(COMMENTS_NODE_PREFIX);
+            const feed = is_comments
                 ? _converse.state.commentfeeds?.getFeed(from, node, false)
                 : feeds.getFeed(from, node, from === bare_jid);
-            if (items.length) feed?.addItems(items);
-            if (retracts.length) feed?.removeItems(retracts);
+            if (!feed) continue;
+
+            if (items.length) {
+                const added = feed.addItems(items);
+                // A live comment/like landing on a materialised (pinned/open)
+                // thread updates the owning post's denormalised counts, so the
+                // timeline reflects it without reopening the thread. addItems is
+                // async, so guard the follow-up against an escaping rejection.
+                if (is_comments) added.then(() => syncCommentThread(from, node, feed)).catch((e) => log.error(e));
+            }
+            if (retracts.length) {
+                feed.removeItems(retracts);
+                if (is_comments) syncCommentThread(from, node, feed);
+            }
         }
     } catch (e) {
         log.error(e);

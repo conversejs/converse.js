@@ -12,6 +12,24 @@
  */
 export function syncCommentSummary(post: import("./message").default, feed?: import("./comment-feed").default): void;
 /**
+ * Find the loaded post a comments node belongs to, by scanning the timeline
+ * feeds for a post whose comments node + service match. Returns undefined when
+ * the post isn't loaded (its counts then simply aren't synced live).
+ * @param {string} service - The comments service JID.
+ * @param {string} node - The comments node.
+ * @returns {import('./message').default|undefined}
+ */
+export function findPostForThread(service: string, node: string): import("./message").default | undefined;
+/**
+ * Sync a comment thread's counts onto its post after a live event routed into
+ * the thread (see `handleMicroblogEvent`). A no-op when the owning post isn't
+ * loaded in any timeline feed.
+ * @param {string} service - The comments service JID.
+ * @param {string} node - The comments node.
+ * @param {import('./comment-feed').default} [feed] - The thread, if already resolved.
+ */
+export function syncCommentThread(service: string, node: string, feed?: import("./comment-feed").default): void;
+/**
  * A bounded, deduped work queue. Runs at most `concurrency` tasks at once, and
  * each distinct `key` at most once *successfully* (until {@link DedupeQueue#reset}),
  * so the same post's comments aren't re-fetched every time it scrolls back into

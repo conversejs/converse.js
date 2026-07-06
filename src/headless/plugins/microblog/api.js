@@ -346,6 +346,56 @@ export default {
             },
 
             /**
+             * Pin and subscribe to a post's comment thread so live comments/likes
+             * route in and bump the post's denormalised counts. Used for our own
+             * posts, so we take an explicit bare-JID subscription and
+             * materialise (pin) the thread feed since `handleMicroblogEvent` routes a
+             * comment event only into an already existing thread (create=false).
+             * Idempotent; bounded by `social_max_pinned_threads`.
+             * @method _converse.api.microblog.comments.pin
+             * @param {import('./message').default} post
+             * @returns {Promise<import('./comment-feed').default|undefined>}
+             */
+            async pin(post) {
+                const service = post?.getCommentsService();
+                const node = post?.getCommentsNode();
+                if (!service || !node) return undefined;
+                await api.waitUntil('pubsubFeedsInitialized');
+                const feeds = _converse.state.commentfeeds;
+                const feed = feeds?.getFeed(service, node, true);
+                if (!feed) return undefined;
+                if (!feed.get('pinned')) feed.save({ pinned: true });
+                try {
+                    await api.pubsub.subscribe(service, node);
+                } catch (e) {
+                    // Non-fatal: without the subscription live comments won't push,
+                    // but the thread is still fetched on open / next summary refresh.
+                    log.debug(`api.microblog.comments.pin: subscribe to ${node} failed (non-fatal): ${e}`);
+                }
+                await feeds.enforcePinnedCap();
+                return feed;
+            },
+
+            /**
+             * Pin+subscribe the comment threads of our recent own posts (bounded
+             * by `social_max_pinned_threads`) so live comments/likes on them keep
+             * the counts current. Called on load; safe to call repeatedly.
+             * @method _converse.api.microblog.comments.pinRecentOwn
+             * @returns {Promise<void>}
+             */
+            async pinRecentOwn() {
+                await api.waitUntil('pubsubFeedsInitialized');
+                const bare_jid = _converse.session.get('bare_jid');
+                const own = _converse.state.pubsubfeeds?.getFeed(bare_jid, MICROBLOG_NODE, false);
+                if (!own) return;
+                const cap = api.settings.get('social_max_pinned_threads') || 0;
+                // getPosts() is newest-first, so the newest `cap` posts are pinned.
+                for (const post of own.getPosts().slice(0, cap)) {
+                    await api.microblog.comments.pin(post);
+                }
+            },
+
+            /**
              * Add a comment to a post: publish an Atom entry, attributed to us,
              * to the post's comments node.
              * @method _converse.api.microblog.comments.add
@@ -408,6 +458,11 @@ export default {
                 feeds.getFeed(server, node, true);
             }
             feeds.forEach(/** @param {import('./feed').default} f */ (f) => f.fetchPosts());
+
+            // Re-establish live comment/like delivery for our recent own posts so
+            // their counts keep ticking across reconnects (fire-and-forget; reads
+            // the already-hydrated own feed).
+            api.microblog.comments.pinRecentOwn().catch((e) => log.error(e));
         },
 
         /**

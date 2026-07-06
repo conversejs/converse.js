@@ -373,12 +373,7 @@ class PubSubFeed extends Model {
         if (!text) return;
 
         const id = getUniqueId();
-        // Provision the post's open comments node so *others* can reply: a
-        // foreign commenter can't create a node on our PEP service, so the
-        // author provisions it up front (XEP-0277 § Comments). Fired alongside
-        // the publish (not before it) so it doesn't add a round-trip of latency,
-        // and non-fatal — the post still publishes if it fails; only foreign
-        // commenting would then be unavailable.
+        // Provision the post's open comments node so *others* can reply.
         this.ensureCommentsNode(id);
 
         const item = this.createPostStanza({ body: text, id });
@@ -390,7 +385,10 @@ class PubSubFeed extends Model {
 
         // Optimistically render our own post; the PEP echo (if any) will merge
         // by id rather than duplicate.
-        await this.addItems([item.tree()]);
+        const [added] = await this.addItems([item.tree()]);
+
+        // Pin + subscribe to our own post's comments thread
+        if (added && this.isOwnFeed()) api.microblog.comments.pin(added).catch((e) => log.error(e));
     }
 
     /**
@@ -477,10 +475,6 @@ class PubSubFeed extends Model {
             `xmpp:${post.get('from')}?;node=${encodeURIComponent(node)};item=${encodeURIComponent(item_id)}`;
         const via_ref = post.get('via_href') ? post.get('via_ref') : post.get('atom_id');
 
-        // <title> is emitted even when empty — RFC 4287 requires exactly one per
-        // entry, and Atom-native posts carry an empty title with the body in <content>.
-        // Only the plain-text constructs are copied: the XHTML variants (XEP-0071)
-        // are deliberately dropped, since that XEP is deprecated.
         const title = post.get('title');
         const summary = post.get('summary');
         const content = post.get('content');

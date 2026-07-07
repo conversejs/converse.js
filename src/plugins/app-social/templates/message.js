@@ -72,21 +72,20 @@ export default (el) => {
                   </div>`
                 : ''}
             <div class="social-post__row">
-                ${m.contact
-                    ? html`<a class="show-msg-author-modal social-post__avatar" @click=${(ev) => el.showUserModal(ev)}
-                          >${avatar}</a
-                      >`
-                    : html`<span class="social-post__avatar">${avatar}</span>`}
+                <a
+                    class="show-msg-author-modal social-post__avatar"
+                    @click=${(ev) => el.showProfile(ev)}
+                    title="${__('View profile')}"
+                    >${avatar}</a
+                >
                 <div class="social-post__main">
                     <header class="social-post__header">
-                        ${m.contact
-                            ? html`<a
-                                  class="show-msg-author-modal social-post__author"
-                                  style="${author_style}"
-                                  @click=${(ev) => el.showUserModal(ev)}
-                                  >${name}</a
-                              >`
-                            : html`<span class="social-post__author" style="${author_style}">${name}</span>`}
+                        <a
+                            class="show-msg-author-modal social-post__author"
+                            style="${author_style}"
+                            @click=${(ev) => el.showProfile(ev)}
+                            >${name}</a
+                        >
                         <span class="social-post__jid">${m.get('author_jid')}</span>
 
                         ${time

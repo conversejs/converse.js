@@ -27,7 +27,7 @@ function setVisibilityState(state) {
 }
 
 function restoreVisibilityState() {
-    delete (/** @type {any} */ (document)).visibilityState;
+    delete (/** @type {any} */ (document).visibilityState);
 }
 
 /**
@@ -56,20 +56,24 @@ function stubIntersectionObserver() {
 function makeCommentItems({ comments = 0, likes = 0 } = {}) {
     const items = [];
     for (let i = 0; i < comments; i++) {
-        items.push(stx`<item id="c-${i}" publisher="benvolio@montague.lit"><entry xmlns="${ATOM}">
+        items.push(
+            stx`<item id="c-${i}" publisher="benvolio@montague.lit"><entry xmlns="${ATOM}">
                 <author><name>Benvolio</name><uri>xmpp:benvolio@montague.lit</uri></author>
                 <title type="text">Comment ${i}</title>
                 <id>tag:montague.lit,2024:comments-c-${i}</id>
                 <published>2024-01-01T19:0${i}:00Z</published>
-            </entry></item>`.tree());
+            </entry></item>`.tree(),
+        );
     }
     for (let i = 0; i < likes; i++) {
-        items.push(stx`<item id="like-${i}" publisher="romeo@montague.lit"><entry xmlns="${ATOM}">
+        items.push(
+            stx`<item id="like-${i}" publisher="romeo@montague.lit"><entry xmlns="${ATOM}">
                 <author><name>Romeo</name><uri>xmpp:romeo@montague.lit</uri></author>
                 <title type="text">♥</title>
                 <id>tag:montague.lit,2024:comments-like-${i}</id>
                 <published>2024-01-01T19:1${i}:00Z</published>
-            </entry></item>`.tree());
+            </entry></item>`.tree(),
+        );
     }
     return items;
 }
@@ -190,7 +194,7 @@ describe('The social feed', function () {
     );
 
     it(
-        'merges a followed contact\'s posts into the timeline, newest-first',
+        "merges a followed contact's posts into the timeline, newest-first",
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             const { api } = _converse;
@@ -228,23 +232,23 @@ describe('The social feed', function () {
             expect(articles[1].querySelector('.social-post__action--delete')).not.toBe(null);
             expect(articles[1].querySelector('.social-post__action--repost')).toBe(null);
 
-            // The contact resolves to a roster entry, so their post's author name is
-            // a per-author-coloured, clickable link to their profile (like the
-            // avatar); it opens the user-details modal. (Our own name isn't a
-            // contact, so it stays a plain span — this is the only such link.)
+            // Each post's author name is a per-author-coloured, clickable link that
+            // opens that author's profile (a `profileselected` event bubbles up to
+            // the Social app). Click the contact's post (the newest, first).
             const author = await u.waitUntil(() => {
-                const a = el.querySelector('a.social-post__author.show-msg-author-modal');
-                return a && (/color:/).test(a.getAttribute('style') || '') ? a : null;
+                const a = articles[0].querySelector('a.social-post__author.show-msg-author-modal');
+                return a && /color:/.test(a.getAttribute('style') || '') ? a : null;
             });
-            const show = vi.spyOn(api.modal, 'show').mockResolvedValue(undefined);
+            let selected = null;
+            el.addEventListener('profileselected', (ev) => (selected = ev.detail.jid));
             author.click();
-            await u.waitUntil(() => show.mock.calls.length === 1);
-            expect(show.mock.calls[0][0]).toBe('converse-user-details-modal');
+            await u.waitUntil(() => selected !== null);
+            expect(selected).toBe(contact_jid);
         }),
     );
 
     it(
-        'links the avatar to a profile only for contacts and own posts',
+        "links every post author's avatar and name to their profile",
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const bare_jid = _converse.bare_jid;
@@ -266,11 +270,19 @@ describe('The social feed', function () {
                     a.querySelector('.social-post__body').textContent.includes(body),
                 );
 
-            // Our own post resolves to our profile → its avatar links out.
-            await u.waitUntil(() => articleFor('My own post')?.querySelector('a.social-post__avatar'));
-            // The non-contact author's avatar is a plain, non-linked element.
-            expect(articleFor('A stranger speaks').querySelector('a.social-post__avatar')).toBe(null);
-            expect(articleFor('A stranger speaks').querySelector('.social-post__avatar')).not.toBe(null);
+            // Both avatar and name are clickable profile links
+            for (const body of ['My own post', 'A stranger speaks']) {
+                const article = await u.waitUntil(() => articleFor(body));
+                expect(article.querySelector('a.social-post__avatar')).not.toBe(null);
+                expect(article.querySelector('a.social-post__author')).not.toBe(null);
+            }
+
+            // Clicking a non-contact author's avatar opens *their* profile.
+            let selected = null;
+            el.addEventListener('profileselected', (ev) => (selected = ev.detail.jid));
+            articleFor('A stranger speaks').querySelector('a.social-post__avatar').click();
+            await u.waitUntil(() => selected !== null);
+            expect(selected).toBe(stranger);
         }),
     );
 
@@ -283,10 +295,7 @@ describe('The social feed', function () {
             const el = mountSocialFeed();
             await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
 
-            receive(
-                _converse,
-                makePost(bare_jid, bare_jid, 'p1', 'reading https://conversejs.org about #xmpp today'),
-            );
+            receive(_converse, makePost(bare_jid, bare_jid, 'p1', 'reading https://conversejs.org about #xmpp today'));
 
             const body = await u.waitUntil(() => el.querySelector('.social-post__body'));
 
@@ -525,8 +534,6 @@ describe('The social onboarding card', function () {
             await api.waitUntil('pubsubFeedsInitialized');
             const cache = _converse.state.followablecache;
 
-            // The user already follows one contact (a feed exists) — the card must
-            // still recur (this used to permanently hide it).
             _converse.state.pubsubfeeds.getFeed('romeo@montague.lit', MICROBLOG_NODE, true);
             const jid = 'juliet.capulet@montague.lit';
             cache.record(jid, { followable: true });
@@ -729,7 +736,7 @@ describe('The social post detail view', function () {
 
 describe('The social timeline comment counts', function () {
     it(
-        'fetches a post\'s comment count once when it scrolls into view, and renders it',
+        "fetches a post's comment count once when it scrolls into view, and renders it",
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
@@ -742,11 +749,13 @@ describe('The social timeline comment counts', function () {
 
             // The comments node has 2 comments and 1 ♥ like; every other node
             // (the timeline feeds) stays empty so comments don't leak in.
-            const getSpy = vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, node) =>
-                String(node).startsWith('urn:xmpp:microblog:0:comments/')
-                    ? Promise.resolve({ items: makeCommentItems({ comments: 2, likes: 1 }) })
-                    : Promise.resolve({ items: [] }),
-            );
+            const getSpy = vi
+                .spyOn(api.pubsub.items, 'get')
+                .mockImplementation((_jid, node) =>
+                    String(node).startsWith('urn:xmpp:microblog:0:comments/')
+                        ? Promise.resolve({ items: makeCommentItems({ comments: 2, likes: 1 }) })
+                        : Promise.resolve({ items: [] }),
+                );
             const commentFetches = () =>
                 getSpy.mock.calls.filter((c) => String(c[1]).startsWith('urn:xmpp:microblog:0:comments/')).length;
 
@@ -783,7 +792,7 @@ describe('The social timeline comment counts', function () {
     );
 
     it(
-        'defers a post\'s summary fetch while the tab is backgrounded',
+        "defers a post's summary fetch while the tab is backgrounded",
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
@@ -793,11 +802,13 @@ describe('The social timeline comment counts', function () {
             // Start on a backgrounded tab.
             setVisibilityState('hidden');
 
-            const getSpy = vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, node) =>
-                String(node).startsWith('urn:xmpp:microblog:0:comments/')
-                    ? Promise.resolve({ items: makeCommentItems({ comments: 1 }) })
-                    : Promise.resolve({ items: [] }),
-            );
+            const getSpy = vi
+                .spyOn(api.pubsub.items, 'get')
+                .mockImplementation((_jid, node) =>
+                    String(node).startsWith('urn:xmpp:microblog:0:comments/')
+                        ? Promise.resolve({ items: makeCommentItems({ comments: 1 }) })
+                        : Promise.resolve({ items: [] }),
+                );
             const commentFetches = () =>
                 getSpy.mock.calls.filter((c) => String(c[1]).startsWith('urn:xmpp:microblog:0:comments/')).length;
 
@@ -937,6 +948,138 @@ describe('Liking a post', function () {
             const likes = await u.waitUntil(() => detail.querySelector('.social-post-detail__likes'));
             expect(likes.textContent).toContain('1 like');
             expect(detail.querySelector('.social-comments__heading').textContent).toContain('1 comment');
+        }),
+    );
+});
+
+describe('The social profile view', function () {
+    it(
+        "opens an author's profile from a post and returns to the timeline",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            // Keep the network quiet (nothing backfilled).
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // An own post; clicking our name opens our own profile.
+            receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello world'));
+            const author = await u.waitUntil(() => el.querySelector('.social-post__author.show-msg-author-modal'));
+            author.click();
+
+            // The profile view takes over; the timeline is gone.
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+            expect(el.querySelector('converse-social-feed')).toBe(null);
+
+            // The header shows our JID; our own profile has no follow toggle.
+            await u.waitUntil(() => profile.querySelector('.social-profile__jid')?.textContent.includes(bare_jid));
+            expect(profile.querySelector('.social-profile__follow')).toBe(null);
+
+            // Our own post is listed (from the shared own feed).
+            await u.waitUntil(() =>
+                Array.from(profile.querySelectorAll('.social-profile__posts .social-post__body')).some((n) =>
+                    n.textContent.includes('Hello world'),
+                ),
+            );
+
+            // Back returns to the timeline.
+            profile.querySelector('.social-post-detail__back').click();
+            await u.waitUntil(
+                () => el.querySelector('converse-social-feed') && !el.querySelector('converse-social-profile'),
+            );
+        }),
+    );
+
+    it(
+        'shows an Unfollow toggle on a followed author profile and unfollows',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            const contact_jid = 'mercutio@montague.lit';
+
+            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub, 'unsubscribe').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub, 'retract').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // Follow the contact, then a post from them arrives in the timeline.
+            await api.microblog.follow(contact_jid);
+            receive(_converse, makePost(bare_jid, contact_jid, 'p-1', 'Mercutio speaks'));
+            await u.waitUntil(() => el.querySelector('.social-post'));
+
+            // Open their profile from the post.
+            el.querySelector('.social-post__author.show-msg-author-modal').click();
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+
+            // A followed author shows an Unfollow button and their post is listed.
+            const follow_btn = await u.waitUntil(() => {
+                const b = profile.querySelector('.social-profile__follow');
+                return b && b.textContent.trim() === 'Unfollow' ? b : null;
+            });
+            await u.waitUntil(() =>
+                Array.from(profile.querySelectorAll('.social-profile__posts .social-post__body')).some((n) =>
+                    n.textContent.includes('Mercutio speaks'),
+                ),
+            );
+
+            // Clicking it unfollows; the button flips to Follow.
+            follow_btn.click();
+            await u.waitUntil(() => {
+                const b = profile.querySelector('.social-profile__follow');
+                return b && b.textContent.trim() === 'Follow';
+            });
+            expect(api.microblog.isFollowing(contact_jid)).toBe(false);
+        }),
+    );
+
+    it(
+        'browses a non-followed author without polluting the timeline, then follows',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            const stranger = 'yorick@denmark.lit';
+
+            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // We repost a stranger's post into our own feed; the author header is
+            // the *original* author (the stranger), so clicking it opens theirs.
+            receive(_converse, makeRepost(bare_jid, bare_jid, 'r-1', 'Alas', stranger, 'Yorick'));
+            const author = await u.waitUntil(() => el.querySelector('.social-post__author.show-msg-author-modal'));
+            expect(api.microblog.isFollowing(stranger)).toBe(false);
+            author.click();
+
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+
+            // Browsing a non-followed author must NOT add their feed to the
+            // aggregated collection (else their posts would enter the timeline).
+            expect(_converse.state.pubsubfeeds.getFeed(stranger, MICROBLOG_NODE, false)).toBeUndefined();
+
+            // A Follow button is shown; clicking it follows (creating their feed),
+            // and the toggle flips to Unfollow.
+            const follow_btn = await u.waitUntil(() => {
+                const b = profile.querySelector('.social-profile__follow');
+                return b && b.textContent.trim() === 'Follow' ? b : null;
+            });
+            follow_btn.click();
+            await u.waitUntil(() => {
+                const b = profile.querySelector('.social-profile__follow');
+                return b && b.textContent.trim() === 'Unfollow';
+            });
+            expect(api.microblog.isFollowing(stranger)).toBe(true);
         }),
     );
 });

@@ -55,19 +55,17 @@ export default class SocialMessage extends ObservableElement {
     }
 
     /**
-     * Show the author's details (or our own profile for own posts) when their
-     * avatar is clicked. Uses the contact resolved on the post model.
-     * @param {MouseEvent} ev
+     * Open the author's profile view when their avatar or name is clicked.
+     * Bubbles a `profileselected` event up to the Social app, which swaps the
+     * timeline for the profile view.
+     * @param {MouseEvent} [ev]
      */
-    showUserModal(ev) {
-        ev.preventDefault();
-        const contact = this.model.contact;
-        if (!contact) return;
-        if (this.model.get('is_mine')) {
-            api.modal.show('converse-profile-modal', { model: contact }, ev);
-        } else {
-            api.modal.show('converse-user-details-modal', { model: contact }, ev);
-        }
+    showProfile(ev) {
+        ev?.preventDefault?.();
+        const jid = this.model.getAuthorJID();
+        if (!jid) return;
+
+        this.dispatchEvent(new CustomEvent('profileselected', { bubbles: true, composed: true, detail: { jid } }));
     }
 
     /**

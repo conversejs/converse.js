@@ -24,6 +24,7 @@ export default class SocialMessage extends ObservableElement {
             // timeline.
             compact: { type: Boolean },
             _reposting: { type: Boolean, state: true },
+            _liking: { type: Boolean, state: true },
         };
     }
 
@@ -40,6 +41,8 @@ export default class SocialMessage extends ObservableElement {
         this.listenTo(this.model, 'change:comment_count', () => this.requestUpdate());
         this.listenTo(this.model, 'change:content', () => this.requestUpdate());
         this.listenTo(this.model, 'change:displayName', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:like_count', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:liked_by_me', () => this.requestUpdate());
         this.listenTo(this.model, 'change:summary', () => this.requestUpdate());
         this.listenTo(this.model, 'change:title', () => this.requestUpdate());
         this.listenTo(this.model, 'contact:add', () => this.requestUpdate());
@@ -121,6 +124,25 @@ export default class SocialMessage extends ObservableElement {
             api.toast.show('repost-failed', { type: 'danger', body: __('Sorry, could not repeat this post') });
         } finally {
             this._reposting = false;
+        }
+    }
+
+    async onToggleLike() {
+        if (this._liking) return;
+        this._liking = true;
+        const was_liked = this.model.get('liked_by_me');
+        try {
+            await (was_liked ? api.microblog.unlike(this.model) : api.microblog.like(this.model));
+        } catch (e) {
+            log.error(e);
+            api.toast.show('like-failed', {
+                type: 'danger',
+                body: was_liked
+                    ? __('Sorry, could not remove your like — your server may not allow it')
+                    : __('Sorry, could not like this post'),
+            });
+        } finally {
+            this._liking = false;
         }
     }
 

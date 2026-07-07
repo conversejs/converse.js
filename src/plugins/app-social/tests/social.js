@@ -825,3 +825,118 @@ describe('The social timeline comment counts', function () {
         }),
     );
 });
+
+describe('Liking a post', function () {
+    it(
+        'toggles a ♥ on a timeline post, publishing then retracting',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+
+            // The on-visibility summary fetch (real IntersectionObserver) finds an
+            // empty thread; the ♥ publish is what we assert on.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Like me'));
+
+            const like = await u.waitUntil(() => el.querySelector('.social-post__action--like'));
+            expect(like.classList.contains('social-post__action--liked')).toBe(false);
+
+            // Click likes it: the ♥ fills optimistically and a ♥ comment is published.
+            like.click();
+            await u.waitUntil(() => el.querySelector('.social-post__action--liked'));
+            const call = await u.waitUntil(() =>
+                publish.mock.calls.find((c) => String(c[1]).startsWith('urn:xmpp:microblog:0:comments/')),
+            );
+            expect(call[2].tree().querySelector('title').textContent).toBe('♥');
+            await u.waitUntil(
+                () => el.querySelector('.social-post__action--like .social-post__count')?.textContent.trim() === '1',
+            );
+
+            // Click again un-likes it: the ♥ is retracted and the button un-fills.
+            const retract = vi.spyOn(api.pubsub, 'retract').mockResolvedValue(undefined);
+            el.querySelector('.social-post__action--like').click();
+            await u.waitUntil(() => retract.mock.calls.length === 1);
+            await u.waitUntil(() => !el.querySelector('.social-post__action--liked'));
+        }),
+    );
+
+    it(
+        'rolls back and toasts when the server refuses an un-like',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Like me'));
+
+            // Like it first.
+            const like = await u.waitUntil(() => el.querySelector('.social-post__action--like'));
+            like.click();
+            await u.waitUntil(() => el.querySelector('.social-post__action--liked'));
+
+            // The retract is refused (as Prosody does on a foreign post).
+            vi.spyOn(api.pubsub, 'retract').mockRejectedValue(new Error('forbidden'));
+            const toast = vi.spyOn(api.toast, 'show');
+
+            el.querySelector('.social-post__action--like').click();
+
+            // A danger toast explains it, and the optimistic un-like rolls back so
+            // the ♥ stays filled.
+            await u.waitUntil(() => toast.mock.calls.some((c) => c[0] === 'like-failed'));
+            expect(toast.mock.calls.find((c) => c[0] === 'like-failed')[1].type).toBe('danger');
+            await u.waitUntil(() => el.querySelector('.social-post__action--liked'));
+        }),
+    );
+
+    it(
+        'excludes ♥ likes from the detail thread and shows a like count',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+
+            // The comments node holds one real comment and one ♥ like.
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, node) =>
+                String(node).startsWith('urn:xmpp:microblog:0:comments/')
+                    ? Promise.resolve({ items: makeCommentItems({ comments: 1, likes: 1 }) })
+                    : Promise.resolve({ items: [] }),
+            );
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello'));
+
+            const comment_btn = await u.waitUntil(() => el.querySelector('.social-post__action--comment'));
+            comment_btn.click();
+            const detail = await u.waitUntil(() => el.querySelector('converse-social-post'));
+
+            // The real comment renders in the thread...
+            await u.waitUntil(() =>
+                Array.from(detail.querySelectorAll('.social-comment .social-post__body')).some((n) =>
+                    n.textContent.includes('Comment 0'),
+                ),
+            );
+            // ...but the ♥ like never appears as a comment.
+            const bodies = Array.from(detail.querySelectorAll('.social-comment .social-post__body')).map(
+                (n) => n.textContent,
+            );
+            expect(bodies.some((b) => b.includes('♥'))).toBe(false);
+
+            // A like count is shown, and the comments heading counts only the
+            // real comment (the ♥ is partitioned out of both).
+            const likes = await u.waitUntil(() => detail.querySelector('.social-post-detail__likes'));
+            expect(likes.textContent).toContain('1 like');
+            expect(detail.querySelector('.social-comments__heading').textContent).toContain('1 comment');
+        }),
+    );
+});

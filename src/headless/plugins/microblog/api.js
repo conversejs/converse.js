@@ -303,6 +303,14 @@ export default {
             const feed = await api.microblog.comments.feed(post);
             if (!feed) return undefined;
 
+            // The cached flag can be stale (another device already liked). If the
+            // thread we've loaded already holds a ♥ of ours, don't publish a
+            // duplicate, just reconcile the denormalised state and bail.
+            if (feed.getMyLikes().length) {
+                syncCommentSummary(post, feed);
+                return undefined;
+            }
+
             const author_jid = _converse.session.get('bare_jid');
             const author_name = _converse.state.profile?.getDisplayName?.() || author_jid;
             const id = getUniqueId();
@@ -327,21 +335,28 @@ export default {
         },
 
         /**
-         * Un-like a post: retract our ♥ item from the post's comments node.
+         * Un-like a post: retract *every* ♥ of ours from the post's comments node
+         * (duplicates can accrue across devices / cache resets, so one tap clears
+         * the post regardless of how many accumulated).
          *
-         * Optimistic: the ♥ is removed and the count reverts immediately, then the
-         * retract is sent; if it's refused the ♥ is restored and the error
-         * re-thrown for the caller to surface. A no-op if we don't currently like it.
+         * Optimistic: the like is removed and the count reverts immediately, then
+         * the retracts are sent; if any is refused the like is restored and the
+         * error re-thrown for the caller to surface. A no-op if we don't like it.
          * @method _converse.api.microblog.unlike
          * @param {import('./message').default} post
          * @returns {Promise<void>}
          */
         async unlike(post) {
-            const id = post.get('my_like_id');
-            if (!id) return;
+            if (!post.get('liked_by_me') && !post.get('my_like_id')) return;
 
             const feed = await api.microblog.comments.feed(post);
             if (!feed) return;
+
+            // Every ♥ of ours in the loaded thread, plus the cached id in case the
+            // thread isn't loaded (deduped into a set).
+            const ids = new Set(feed.getMyLikes().map((m) => m.get('id')));
+            if (post.get('my_like_id')) ids.add(post.get('my_like_id'));
+            if (!ids.size) return;
 
             // Optimistically remove the like, keeping a snapshot to revert to.
             const snapshot = {
@@ -356,13 +371,15 @@ export default {
             });
 
             try {
-                await api.pubsub.retract(feed.get('jid'), feed.get('node'), id);
+                for (const id of ids) {
+                    await api.pubsub.retract(feed.get('jid'), feed.get('node'), id);
+                }
             } catch (e) {
                 post.save(snapshot);
                 throw e;
             }
-            // Confirmed: drop our local ♥ and reconcile counts from the thread.
-            feed.messages.get(id)?.destroy();
+            // Confirmed: drop our local ♥s and reconcile counts from the thread.
+            ids.forEach((id) => feed.messages.get(id)?.destroy());
             syncCommentSummary(post, feed);
         },
 

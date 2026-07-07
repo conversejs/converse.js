@@ -1767,4 +1767,93 @@ describe('The microblog plugin', function () {
             expect(post.get('my_like_id')).toBeFalsy();
         }),
     );
+
+    it(
+        'counts likes by distinct liker, not raw ♥ items',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api);
+
+            // Three ♥ from one person + one ♥ from another + a real comment. The
+            // three from the same liker are one like, so like_count is 2, not 4.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: [
+                    commentItem('l-1', '♥', 'benvolio@montague.lit'),
+                    commentItem('l-2', '♥', 'benvolio@montague.lit'),
+                    commentItem('l-3', '♥', 'benvolio@montague.lit'),
+                    commentItem('l-4', '♥', 'mercutio@montague.lit'),
+                    commentItem('c-1', 'Well said', 'nurse@capulet.lit'),
+                ],
+            });
+
+            await api.microblog.comments.fetchSummary(post);
+
+            expect(post.get('like_count')).toBe(2);
+            expect(post.get('comment_count')).toBe(1);
+        }),
+    );
+
+    it(
+        'un-likes by retracting every ♥ of ours (duplicates cleared in one go)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api);
+
+            // Two ♥ of ours accrued on the post (e.g. liked from two devices).
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: [commentItem('l-mine-1', '♥', bare_jid), commentItem('l-mine-2', '♥', bare_jid)],
+            });
+            await api.microblog.comments.fetchSummary(post);
+            // Deduped: two ♥ from us count as one like.
+            expect(post.get('like_count')).toBe(1);
+            expect(post.get('liked_by_me')).toBe(true);
+
+            const retract = vi.spyOn(api.pubsub, 'retract').mockResolvedValue(undefined);
+            await api.microblog.unlike(post);
+
+            // Both of our ♥ are retracted, not just the tracked one.
+            expect(retract).toHaveBeenCalledTimes(2);
+            const retracted = retract.mock.calls.map((c) => c[2]);
+            expect(retracted).toContain('l-mine-1');
+            expect(retracted).toContain('l-mine-2');
+            expect(post.get('like_count') || 0).toBe(0);
+            expect(post.get('liked_by_me')).toBe(false);
+        }),
+    );
+
+    it(
+        "doesn't publish a duplicate ♥ when the thread already holds ours",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api);
+
+            // The thread already has a ♥ of ours (fetched into it).
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [commentItem('l-mine', '♥', bare_jid)] });
+            await api.microblog.comments.fetchSummary(post);
+            expect(post.get('liked_by_me')).toBe(true);
+
+            // Simulate a stale cache: the flag says "not liked" even though the
+            // thread holds our ♥ (e.g. another device liked and the flag lags).
+            post.set('liked_by_me', false);
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+
+            await api.microblog.like(post);
+
+            // No second ♥ is published; the state is reconciled back to liked.
+            expect(publish).not.toHaveBeenCalled();
+            expect(post.get('liked_by_me')).toBe(true);
+            expect(post.get('like_count')).toBe(1);
+        }),
+    );
 });

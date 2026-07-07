@@ -37,10 +37,21 @@ declare class CommentFeed extends PubSubFeed {
      */
     getComments(): import("./post-comment").default[];
     /**
+     * The ♥ likes in this thread authored by me. There should be at most one,
+     * but duplicates can accrue (e.g. liking from a second device).
+     * {@link _converse.api.microblog.unlike} retracts all of them.
+     * @returns {import('./post-comment').default[]}
+     */
+    getMyLikes(): import("./post-comment").default[];
+    /**
      * Denormalised comment/like counts for this thread, partitioning its items
      * into real comments and ♥ likes. Written onto the post by
      * {@link syncCommentSummary} so the timeline can show counts without opening
      * the thread.
+     *
+     * Likes are counted by **distinct liker**, not raw ♥ items: a post can carry
+     * several ♥ from the same person (e.g. liked from multiple devices, or a
+     * client that doesn't guard against it), and that's one like, not several.
      * @returns {{ comment_count: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }}
      */
     summarize(): {

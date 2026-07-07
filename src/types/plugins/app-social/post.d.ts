@@ -26,12 +26,19 @@ export default class SocialPost extends SocialPost_base {
     _submitting: boolean;
     initialize(): Promise<void>;
     /**
-     * The thread's comments, oldest-first (chronological, like a chat). The
-     * underlying collection is newest-first, so reverse a snapshot. Reading the
-     * signal here keeps it auto-tracked by `SignalWatcher`.
+     * The thread's comments, oldest-first, excluding ♥ likes.
+     * The underlying collection is newest-first, so reverse a snapshot.
+     * Reading the signal here keeps it auto-tracked by `SignalWatcher`.
      * @returns {import('@converse/headless').PubSubMessage[]}
      */
     get threadComments(): import("@converse/headless").PubSubMessage[];
+    /**
+     * The number of ♥ likes in the thread, counted straight from the live thread
+     * signal (its source of truth), so the detail view's like count stays current
+     * as likes arrive.
+     * @returns {number}
+     */
+    get threadLikeCount(): number;
     render(): import("lit-html").TemplateResult<1> | "";
     /** Return to the timeline. */
     goBack(): void;

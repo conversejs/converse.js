@@ -156,6 +156,16 @@
             }
         }
 
+        .social-post-detail__likes {
+            display: flex;
+            align-items: center;
+            gap: 0.4em;
+            margin: 0.5em 0 0;
+            padding-inline-start: 0.25em;
+            font-size: 0.9em;
+            color: var(--danger-color);
+        }
+
         .social-comments {
             margin-top: 1em;
         }
@@ -444,9 +454,23 @@
                 &--comment:hover {
                     color: var(--link-color);
                 }
+
+                &--like:hover {
+                    color: var(--danger-color);
+                }
+
+                // A liked post shows a solid, full-opacity ♥ in the like colour.
+                &--liked {
+                    color: var(--danger-color);
+                    opacity: 1;
+                }
+
+                &[disabled] {
+                    cursor: default;
+                }
             }
 
-            // The comment count sits inside the Comments button, right of the icon.
+            // The comment / like count sits inside its button, right of the icon.
             &__count {
                 margin-inline-start: 0.35em;
                 font-size: 0.85em;

@@ -15,6 +15,10 @@ export default class SocialMessage extends ObservableElement {
             type: BooleanConstructor;
             state: boolean;
         };
+        _liking: {
+            type: BooleanConstructor;
+            state: boolean;
+        };
         observable: {
             type: StringConstructor;
         };
@@ -58,6 +62,8 @@ export default class SocialMessage extends ObservableElement {
      */
     onRepost(): Promise<void>;
     _reposting: boolean;
+    onToggleLike(): Promise<void>;
+    _liking: boolean;
 }
 import { ObservableElement } from 'shared/components/observable.js';
 import { PubSubMessage } from '@converse/headless';

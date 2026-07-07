@@ -8,6 +8,7 @@ import { __ } from 'i18n';
 export default (el) => {
     const post = el.model;
     const comments = el.threadComments;
+    const like_count = el.threadLikeCount;
 
     return html`
         <div class="social-post-detail">
@@ -25,6 +26,13 @@ export default (el) => {
             </header>
 
             <converse-social-message .model=${post} ?compact=${true}></converse-social-message>
+
+            ${like_count
+                ? html`<div class="social-post-detail__likes">
+                      <converse-icon size="0.9em" class="fa fa-heart"></converse-icon>
+                      <span>${like_count === 1 ? __('1 like') : __('%1$s likes', like_count)}</span>
+                  </div>`
+                : ''}
 
             <section class="social-comments">
                 <h4 class="social-comments__heading">

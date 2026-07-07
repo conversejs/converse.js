@@ -52,14 +52,25 @@ export default class SocialPost extends SignalWatcher(CustomElement) {
     }
 
     /**
-     * The thread's comments, oldest-first (chronological, like a chat). The
-     * underlying collection is newest-first, so reverse a snapshot. Reading the
-     * signal here keeps it auto-tracked by `SignalWatcher`.
+     * The thread's comments, oldest-first, excluding ♥ likes.
+     * The underlying collection is newest-first, so reverse a snapshot.
+     * Reading the signal here keeps it auto-tracked by `SignalWatcher`.
      * @returns {import('@converse/headless').PubSubMessage[]}
      */
     get threadComments() {
         const msgs = /** @type {import('@converse/headless').PubSubMessage[]} */ (this.comments?.get() ?? []);
-        return [...msgs].reverse();
+        return [...msgs].filter((m) => !(/** @type {any} */ (m).isLike?.())).reverse();
+    }
+
+    /**
+     * The number of ♥ likes in the thread, counted straight from the live thread
+     * signal (its source of truth), so the detail view's like count stays current
+     * as likes arrive.
+     * @returns {number}
+     */
+    get threadLikeCount() {
+        const msgs = /** @type {import('@converse/headless').PubSubMessage[]} */ (this.comments?.get() ?? []);
+        return msgs.filter((m) => /** @type {any} */ (m).isLike?.()).length;
     }
 
     render() {

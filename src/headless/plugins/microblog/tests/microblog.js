@@ -1336,7 +1336,7 @@ describe('The microblog plugin', function () {
                         jid === 'juliet@capulet.lit'
                             ? [commentItem('c-1', 'She is so pretty!'), commentItem('c-2', 'Indeed')]
                             : [commentItem('c-3', 'Away!')],
-                })
+                }),
             );
 
             await api.microblog.comments.fetchSummary(juliet_post);
@@ -1515,7 +1515,10 @@ describe('The microblog plugin', function () {
 
             // A comment pushed live on the pinned thread bumps the post's count
             // without the thread ever being opened.
-            receive(_converse, makeCommentEvent(bare_jid, node, 'c-1', 'Nice one!', 'benvolio@montague.lit', 'Benvolio'));
+            receive(
+                _converse,
+                makeCommentEvent(bare_jid, node, 'c-1', 'Nice one!', 'benvolio@montague.lit', 'Benvolio'),
+            );
             await u.waitUntil(() => post.get('comment_count') === 1);
             expect(post.get('like_count') || 0).toBe(0);
         }),
@@ -1563,7 +1566,7 @@ describe('The microblog plugin', function () {
     );
 
     it(
-        'pins and subscribes an own post\'s comment thread when it is published',
+        "pins and subscribes an own post's comment thread when it is published",
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
@@ -1613,6 +1616,155 @@ describe('The microblog plugin', function () {
             expect(cf.getFeed(bare_jid, 'urn:xmpp:microblog:0:comments/p1', false)).toBeUndefined();
             expect(cf.getFeed(bare_jid, 'urn:xmpp:microblog:0:comments/p2', false)).toBeDefined();
             expect(cf.getFeed(bare_jid, 'urn:xmpp:microblog:0:comments/p3', false)).toBeDefined();
+        }),
+    );
+
+    it(
+        'likes a post by publishing a ♥ comment and flipping the like state',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api);
+
+            // Baseline: the thread is fetched and has no likes yet.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            await api.microblog.comments.fetchSummary(post);
+            expect(post.get('like_count') || 0).toBe(0);
+
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            await api.microblog.like(post);
+
+            // A ♥ was published to the post's comments node...
+            const [, node, item] = publish.mock.calls[0];
+            expect(node).toBe(post.getCommentsNode());
+            expect(item.tree().querySelector('title').textContent).toBe('♥');
+
+            // ...and the optimistic ♥ (ours) flips the denormalised like state.
+            expect(post.get('like_count')).toBe(1);
+            expect(post.get('liked_by_me')).toBe(true);
+            expect(post.get('my_like_id')).toBeTruthy();
+        }),
+    );
+
+    it(
+        'un-likes a post by retracting our ♥ and reverting the count',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api);
+
+            // The thread holds one ♥ authored by us, so we currently like it.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [commentItem('l-mine', '♥', bare_jid)] });
+            await api.microblog.comments.fetchSummary(post);
+            expect(post.get('liked_by_me')).toBe(true);
+            expect(post.get('my_like_id')).toBe('l-mine');
+
+            const retract = vi.spyOn(api.pubsub, 'retract').mockResolvedValue(undefined);
+            await api.microblog.unlike(post);
+
+            // Our ♥ is retracted from the post author's comments node (a foreign
+            // retract) and the like state reverts.
+            expect(retract).toHaveBeenCalledWith(post.getCommentsService(), post.getCommentsNode(), 'l-mine');
+            expect(post.get('like_count') || 0).toBe(0);
+            expect(post.get('liked_by_me')).toBe(false);
+            expect(post.get('my_like_id')).toBeFalsy();
+        }),
+    );
+
+    it(
+        'makes like/unlike idempotent against the current like state',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api);
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            const retract = vi.spyOn(api.pubsub, 'retract').mockResolvedValue(undefined);
+
+            // Un-liking a post we don't like is a no-op. No retract is sent.
+            await api.microblog.unlike(post);
+            expect(retract).not.toHaveBeenCalled();
+
+            // Like it, then like again: the second call is a no-op (already liked),
+            // so only one ♥ is ever published.
+            await api.microblog.like(post);
+            expect(post.get('liked_by_me')).toBe(true);
+            await api.microblog.like(post);
+            expect(publish).toHaveBeenCalledTimes(1);
+        }),
+    );
+
+    it(
+        'rolls back an un-like the server refuses (foreign retract forbidden)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api);
+
+            // We currently like the post (one ♥ of ours in the thread).
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [commentItem('l-mine', '♥', bare_jid)] });
+            await api.microblog.comments.fetchSummary(post);
+            expect(post.get('like_count')).toBe(1);
+            expect(post.get('liked_by_me')).toBe(true);
+
+            // Prosody refuses a foreign retract; the optimistic removal must revert.
+            vi.spyOn(api.pubsub, 'retract').mockRejectedValue(new Error('forbidden'));
+
+            let error = null;
+            try {
+                await api.microblog.unlike(post);
+            } catch (e) {
+                error = e;
+            }
+
+            // It threw, and the ♥ + count are restored (no phantom un-like).
+            expect(error).toBeTruthy();
+            expect(post.get('like_count')).toBe(1);
+            expect(post.get('liked_by_me')).toBe(true);
+            expect(post.get('my_like_id')).toBe('l-mine');
+            // The ♥ item is still in the thread (never destroyed).
+            const feed = await api.microblog.comments.feed(post);
+            expect(feed.messages.get('l-mine')).toBeTruthy();
+        }),
+    );
+
+    it(
+        'rolls back a like the server refuses',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api);
+
+            // Baseline: no likes yet.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            await api.microblog.comments.fetchSummary(post);
+            expect(post.get('like_count')).toBe(0);
+
+            // The ♥ publish is refused; the optimistic like must revert.
+            vi.spyOn(api.pubsub, 'publish').mockRejectedValue(new Error('not-allowed'));
+
+            let error = null;
+            try {
+                await api.microblog.like(post);
+            } catch (e) {
+                error = e;
+            }
+
+            expect(error).toBeTruthy();
+            expect(post.get('like_count') || 0).toBe(0);
+            expect(post.get('liked_by_me')).toBeFalsy();
+            expect(post.get('my_like_id')).toBeFalsy();
         }),
     );
 });

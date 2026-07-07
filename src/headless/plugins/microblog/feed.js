@@ -28,12 +28,6 @@ const { stx } = converse.env;
 /**
  * One PubSub feed: a single node at a single JID (your own
  * `urn:xmpp:microblog:0`, a contact's microblog, or a community node).
- *
- * Rather than the chat-oriented `ModelWithMessages` mixin (which is coupled to
- * `<message>` stanzas, chat states, receipts and HTTP file uploads), the feed
- * owns its `.messages` collection directly — posts are PubSub items, published
- * via `api.pubsub.publish`.
- *
  * @extends {Model}
  */
 class PubSubFeed extends Model {
@@ -61,8 +55,11 @@ class PubSubFeed extends Model {
     initialize() {
         super.initialize();
         const MessagesCollection = this.messagesCollectionClass;
+
+        // Unfollowed feeds are stored in-memory and not persisted
+        const id = this.get('in_memory') ? undefined : this.getMessagesCacheKey();
         /** @type {PubSubMessages} */
-        this.messages = new MessagesCollection(null, { id: this.getMessagesCacheKey() });
+        this.messages = new MessagesCollection(null, { id });
         this.messages.feed = this;
     }
 
@@ -104,10 +101,6 @@ class PubSubFeed extends Model {
                     const message = /** @type {import('./message').default} */ (
                         this.messages.add(attrs, { merge: true })
                     );
-                    // Persist new posts and real updates to the offline cache; skip
-                    // unchanged re-fetches (and, defensively, any feed whose messages
-                    // aren't backed by a store — every feed, comment threads included,
-                    // has one today).
                     if (this.messages.storage && message && (!existing || message.hasChanged())) {
                         saves.push(message.save(null, { promise: true }));
                     }

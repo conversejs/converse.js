@@ -6,6 +6,7 @@ import PubSubFeed from './feed.js';
 import PubSubFeeds from './feeds.js';
 import PubSubMessage from './message.js';
 import PubSubMessages from './messages.js';
+import MicroblogProfile from './profile.js';
 import './plugin.js';
 
-export { PubSubFeed, PubSubFeeds, PubSubMessage, PubSubMessages };
+export { MicroblogProfile, PubSubFeed, PubSubFeeds, PubSubMessage, PubSubMessages };

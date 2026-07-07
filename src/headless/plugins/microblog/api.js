@@ -8,6 +8,8 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import { publishFollow, readFollowing, retractFollow } from './following.js';
 import { comment_summary_queue, syncCommentSummary } from './comment-summary.js';
+import { getProfile } from './profile.js';
+import PubSubFeed from './feed.js';
 import PubSubFeeds from './feeds.js';
 import { parseAtomEntry } from './parsers.js';
 import { getUniqueId } from '../../utils/index.js';
@@ -81,6 +83,41 @@ export default {
              */
             async own() {
                 return await api.microblog.feeds.get();
+            },
+        },
+
+        profile: {
+            /**
+             * Get (creating + caching if necessary) the profile model for an
+             * author's JID. The person behind a feed (avatar, display name,
+             * colour), resolved from the vCard cache like a post's author is.
+             * Backs the Social app's profile view and works for non-contacts too.
+             * @method _converse.api.microblog.profile.get
+             * @param {string} jid - The author's (bare) JID.
+             * @returns {import('./profile').default}
+             */
+            get(jid) {
+                return getProfile(jid);
+            },
+
+            /**
+             * Get a feed suitable for an author's profile view.
+             *
+             * When we follow the author (or it's our own), this is the *shared* feed
+             * from {@link _converse.state.pubsubfeeds}. When we don't follow them,
+             * it's a **detached**, browse-only feed that is deliberately *not* added
+             * to that collection (it stays in-memory only). Either way the caller
+             * should {@link PubSubFeed.fetchPosts} to backfill it.
+             * @method _converse.api.microblog.profile.feed
+             * @param {string} jid - The author's (bare) JID.
+             * @param {string} [node=MICROBLOG_NODE]
+             * @returns {Promise<import('./feed').default>}
+             */
+            async getFeed(jid, node = MICROBLOG_NODE) {
+                await api.waitUntil('pubsubFeedsInitialized');
+                const bare_jid = _converse.session.get('bare_jid');
+                const shared = _converse.state.pubsubfeeds?.getFeed(jid || bare_jid, node, false);
+                return shared || new PubSubFeed({ jid, node, in_memory: true });
             },
         },
 

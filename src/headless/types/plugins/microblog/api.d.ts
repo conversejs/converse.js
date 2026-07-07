@@ -132,11 +132,13 @@ declare namespace _default {
          */
         function like(post: import("./message").default): Promise<import("./message").default | undefined>;
         /**
-         * Un-like a post: retract our ♥ item from the post's comments node.
+         * Un-like a post: retract *every* ♥ of ours from the post's comments node
+         * (duplicates can accrue across devices / cache resets, so one tap clears
+         * the post regardless of how many accumulated).
          *
-         * Optimistic: the ♥ is removed and the count reverts immediately, then the
-         * retract is sent; if it's refused the ♥ is restored and the error
-         * re-thrown for the caller to surface. A no-op if we don't currently like it.
+         * Optimistic: the like is removed and the count reverts immediately, then
+         * the retracts are sent; if any is refused the like is restored and the
+         * error re-thrown for the caller to surface. A no-op if we don't like it.
          * @method _converse.api.microblog.unlike
          * @param {import('./message').default} post
          * @returns {Promise<void>}

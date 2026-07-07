@@ -1856,4 +1856,66 @@ describe('The microblog plugin', function () {
             expect(post.get('like_count')).toBe(1);
         }),
     );
+
+    it(
+        'exposes an author profile model resolved from the vCard cache',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const jid = 'mercutio@montague.lit';
+            const profile = api.microblog.profile.get(jid);
+            expect(profile.get('jid')).toBe(jid);
+            // Names the JID whose vCard represents it (avatar/name resolution),
+            // and colours by the same JID as the avatar.
+            expect(profile.getVCardJID()).toBe(jid);
+            expect(profile.getIdentifier()).toBe(jid);
+            // With no vCard/contact name known yet, it falls back to the bare JID.
+            expect(profile.getDisplayName()).toBe(jid);
+            // Cached: the same author (bare or full JID) yields the same instance.
+            expect(api.microblog.profile.get(jid)).toBe(profile);
+            expect(api.microblog.profile.get(`${jid}/phone`)).toBe(profile);
+        }),
+    );
+
+    it(
+        "gives a followed author's profile the shared timeline feed",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const jid = 'juliet@capulet.lit';
+            // A followed author already has a feed in the aggregated collection.
+            const shared = await api.microblog.feeds.get(jid, MICROBLOG_NODE, true);
+            expect(api.microblog.isFollowing(jid)).toBe(true);
+
+            // The profile view reuses that same feed (so it gets live updates).
+            const feed = await api.microblog.profile.getFeed(jid);
+            expect(feed).toBe(shared);
+        }),
+    );
+
+    it(
+        "gives a non-followed author's profile a detached, off-timeline feed",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const feeds = _converse.state.pubsubfeeds;
+            const before = feeds.length;
+            const jid = 'stranger@shakespeare.lit';
+            expect(api.microblog.isFollowing(jid)).toBe(false);
+
+            const feed = await api.microblog.profile.getFeed(jid);
+            expect(feed.get('jid')).toBe(jid);
+            expect(feed.get('node')).toBe(MICROBLOG_NODE);
+            // Detached: browsing a stranger's profile does NOT add their feed to
+            // the aggregated collection, so their posts never enter the timeline.
+            expect(feeds.length).toBe(before);
+            expect(feeds.getFeed(jid, MICROBLOG_NODE, false)).toBeUndefined();
+        }),
+    );
 });

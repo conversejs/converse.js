@@ -36,6 +36,7 @@ export { MUCMessage, MUCMessages, MUC, MUCOccupant, MUCOccupants } from './plugi
 import './plugins/ping/index.js'; // XEP-0199 XMPP Ping
 import './plugins/pubsub/index.js'; // XEP-0060 Pubsub
 export {
+    MicroblogProfile,
     PubSubFeed,
     PubSubFeeds,
     PubSubMessage,

@@ -29,11 +29,14 @@ export default class SocialMessage extends ObservableElement {
     compact: boolean;
     render(): import("lit-html").TemplateResult<1>;
     /**
-     * Show the author's details (or our own profile for own posts) when their
-     * avatar is clicked. Uses the contact resolved on the post model.
-     * @param {MouseEvent} ev
+     * Open the author's profile view (their microblog + a follow toggle) when
+     * their avatar or name is clicked. For a repost this is the *original*
+     * author (see {@link PubSubMessage.getAuthorJID}), matching the header.
+     * Bubbles a `profileselected` event up to the Social app, which swaps the
+     * timeline for the profile view.
+     * @param {MouseEvent} [ev]
      */
-    showUserModal(ev: MouseEvent): void;
+    showProfile(ev?: MouseEvent): void;
     /**
      * Open an inline post image in the lightbox modal when clicked.
      * @param {MouseEvent} ev

@@ -112,15 +112,18 @@
         }
     }
 
-    // A post's detail view (its comment thread), which takes over the app area.
-    // Mirrors the feed container: scrollable, centred, same max width.
-    converse-social-post {
+    // A post's detail view (its comment thread) and an author's profile view,
+    // which take over the app area. Both mirror the feed container (scrollable,
+    // centred, same max width) and share the sticky back bar.
+    converse-social-post,
+    converse-social-profile {
         display: block;
         background-color: var(--background-color);
         height: 100%;
         overflow-y: auto;
 
-        .social-post-detail {
+        .social-post-detail,
+        .social-profile {
             max-width: 42em;
             margin: 0 auto;
             padding: 1em;
@@ -164,6 +167,44 @@
             padding-inline-start: 0.25em;
             font-size: 0.9em;
             color: var(--danger-color);
+        }
+
+        // The profile header: avatar + name/JID, with the follow toggle pushed
+        // to the trailing edge.
+        .social-profile__header {
+            display: flex;
+            align-items: center;
+            gap: 0.75em;
+            margin-bottom: 1em;
+            padding-bottom: 1em;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .social-profile__identity {
+            display: flex;
+            flex-direction: column;
+            min-width: 0; // let a long name/JID ellipsize rather than overflow
+        }
+
+        .social-profile__name {
+            font-weight: bold;
+            font-size: 1.2em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .social-profile__jid {
+            color: var(--subdued-color);
+            font-size: 0.9em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .social-profile__follow {
+            margin-inline-start: auto;
+            flex-shrink: 0;
         }
 
         .social-comments {

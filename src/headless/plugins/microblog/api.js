@@ -10,9 +10,11 @@ import { publishFollow, readFollowing, retractFollow } from './following.js';
 import { comment_summary_queue, syncCommentSummary } from './comment-summary.js';
 import PubSubFeeds from './feeds.js';
 import { parseAtomEntry } from './parsers.js';
+import { getUniqueId } from '../../utils/index.js';
 import {
     FOLLOWABLE_PROBE_TIMEOUT,
     FOLLOWABLE_SCAN_CONCURRENCY,
+    LIKE_MARKER,
     MICROBLOG_NODE,
     SOCIAL_FEED_FEATURE,
 } from './constants.js';
@@ -283,6 +285,85 @@ export default {
         async repost(post) {
             const feed = await api.microblog.feeds.own();
             await feed.repostPost(post);
+        },
+
+        /**
+         * Like a post: publish a ♥ comment to the post's comments node.
+         *
+         * Optimistic: the like state flips immediately so that UI can update.
+         * If the publish is refused the state is rolled back and the error
+         * re-thrown for the caller to surface. A no-op if we already like it.
+         * @method _converse.api.microblog.like
+         * @param {import('./message').default} post
+         * @returns {Promise<import('./message').default|undefined>} Our ♥ comment.
+         */
+        async like(post) {
+            if (post.get('liked_by_me')) return undefined;
+
+            const feed = await api.microblog.comments.feed(post);
+            if (!feed) return undefined;
+
+            const author_jid = _converse.session.get('bare_jid');
+            const author_name = _converse.state.profile?.getDisplayName?.() || author_jid;
+            const id = getUniqueId();
+
+            // Optimistically reflect the like, keeping a snapshot to revert to.
+            const snapshot = {
+                like_count: post.get('like_count'),
+                liked_by_me: post.get('liked_by_me'),
+                my_like_id: post.get('my_like_id'),
+            };
+            post.save({ liked_by_me: true, my_like_id: id, like_count: (post.get('like_count') || 0) + 1 });
+
+            try {
+                const like = await feed.publishComment({ body: LIKE_MARKER, author_jid, author_name, id });
+                // Reconcile against the thread now the ♥ has actually landed.
+                syncCommentSummary(post, feed);
+                return like;
+            } catch (e) {
+                post.save(snapshot);
+                throw e;
+            }
+        },
+
+        /**
+         * Un-like a post: retract our ♥ item from the post's comments node.
+         *
+         * Optimistic: the ♥ is removed and the count reverts immediately, then the
+         * retract is sent; if it's refused the ♥ is restored and the error
+         * re-thrown for the caller to surface. A no-op if we don't currently like it.
+         * @method _converse.api.microblog.unlike
+         * @param {import('./message').default} post
+         * @returns {Promise<void>}
+         */
+        async unlike(post) {
+            const id = post.get('my_like_id');
+            if (!id) return;
+
+            const feed = await api.microblog.comments.feed(post);
+            if (!feed) return;
+
+            // Optimistically remove the like, keeping a snapshot to revert to.
+            const snapshot = {
+                like_count: post.get('like_count'),
+                liked_by_me: post.get('liked_by_me'),
+                my_like_id: post.get('my_like_id'),
+            };
+            post.save({
+                liked_by_me: false,
+                my_like_id: undefined,
+                like_count: Math.max(0, (post.get('like_count') || 0) - 1),
+            });
+
+            try {
+                await api.pubsub.retract(feed.get('jid'), feed.get('node'), id);
+            } catch (e) {
+                post.save(snapshot);
+                throw e;
+            }
+            // Confirmed: drop our local ♥ and reconcile counts from the thread.
+            feed.messages.get(id)?.destroy();
+            syncCommentSummary(post, feed);
         },
 
         /**

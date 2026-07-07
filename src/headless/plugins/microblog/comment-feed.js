@@ -76,20 +76,38 @@ class CommentFeed extends PubSubFeed {
     }
 
     /**
+     * The ♥ likes in this thread authored by me. There should be at most one,
+     * but duplicates can accrue (e.g. liking from a second device).
+     * {@link _converse.api.microblog.unlike} retracts all of them.
+     * @returns {import('./post-comment').default[]}
+     */
+    getMyLikes() {
+        return this.comments.filter((m) => m.isLike() && m.get('is_mine'));
+    }
+
+    /**
      * Denormalised comment/like counts for this thread, partitioning its items
      * into real comments and ♥ likes. Written onto the post by
      * {@link syncCommentSummary} so the timeline can show counts without opening
      * the thread.
+     *
+     * Likes are counted by **distinct liker**, not raw ♥ items: a post can carry
+     * several ♥ from the same person (e.g. liked from multiple devices, or a
+     * client that doesn't guard against it), and that's one like, not several.
      * @returns {{ comment_count: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }}
      */
     summarize() {
         let comment_count = 0;
-        let like_count = 0;
         let liked_by_me = false;
         let my_like_id;
+        const likers = new Set();
         this.comments.forEach((m) => {
             if (m.isLike()) {
-                like_count++;
+                // Dedupe by the liker's bare JID; fall back to the item id when
+                // the author is unknown, so unattributable likes still count once
+                // each rather than collapsing together.
+                const jid = m.getAuthorJID();
+                likers.add(jid ? Strophe.getBareJidFromJid(jid) : `id:${m.get('id')}`);
                 if (m.get('is_mine')) {
                     liked_by_me = true;
                     my_like_id = m.get('id');
@@ -98,7 +116,7 @@ class CommentFeed extends PubSubFeed {
                 comment_count++;
             }
         });
-        return { comment_count, like_count, liked_by_me, my_like_id };
+        return { comment_count, like_count: likers.size, liked_by_me, my_like_id };
     }
 
     /**

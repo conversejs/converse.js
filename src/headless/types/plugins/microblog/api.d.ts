@@ -120,6 +120,28 @@ declare namespace _default {
          * @returns {Promise<void>}
          */
         function repost(post: import("./message").default): Promise<void>;
+        /**
+         * Like a post: publish a ♥ comment to the post's comments node.
+         *
+         * Optimistic: the like state flips immediately so that UI can update.
+         * If the publish is refused the state is rolled back and the error
+         * re-thrown for the caller to surface. A no-op if we already like it.
+         * @method _converse.api.microblog.like
+         * @param {import('./message').default} post
+         * @returns {Promise<import('./message').default|undefined>} Our ♥ comment.
+         */
+        function like(post: import("./message").default): Promise<import("./message").default | undefined>;
+        /**
+         * Un-like a post: retract our ♥ item from the post's comments node.
+         *
+         * Optimistic: the ♥ is removed and the count reverts immediately, then the
+         * retract is sent; if it's refused the ♥ is restored and the error
+         * re-thrown for the caller to surface. A no-op if we don't currently like it.
+         * @method _converse.api.microblog.unlike
+         * @param {import('./message').default} post
+         * @returns {Promise<void>}
+         */
+        function unlike(post: import("./message").default): Promise<void>;
         namespace comments {
             /**
              * Get (creating it locally if necessary) the comments thread for a post.

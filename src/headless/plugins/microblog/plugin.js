@@ -19,6 +19,7 @@ import PubSubMessages from './messages.js';
 import PostComment from './post-comment.js';
 import PostComments from './post-comments.js';
 import FollowableCache from './followable.js';
+import MicroblogProfile, { clearProfiles } from './profile.js';
 import microblog_api from './api.js';
 import { comment_summary_queue } from './comment-summary.js';
 import { registerMicroblogHandler } from './utils.js';
@@ -49,6 +50,7 @@ converse.plugins.add('converse-microblog', {
             CommentFeed,
             CommentFeeds,
             FollowableCache,
+            MicroblogProfile,
             PostComment,
             PostComments,
             PubSubFeed,
@@ -71,6 +73,8 @@ converse.plugins.add('converse-microblog', {
             // Drop the in-memory summary-fetch dedupe state so a fresh login
             // re-fetches counts (the persisted post attrs still show meanwhile).
             comment_summary_queue.reset();
+            // Drop cached author profiles (and their vCard listeners).
+            clearProfiles();
             const { state } = _converse;
             if (state.pubsubfeeds) {
                 state.pubsubfeeds.clearStore?.({ silent: true });

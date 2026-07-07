@@ -18,6 +18,32 @@ declare namespace _default {
              */
             function own(): Promise<import("./feed").default>;
         }
+        namespace profile {
+            /**
+             * Get (creating + caching if necessary) the profile model for an
+             * author's JID. The person behind a feed (avatar, display name,
+             * colour), resolved from the vCard cache like a post's author is.
+             * Backs the Social app's profile view and works for non-contacts too.
+             * @method _converse.api.microblog.profile.get
+             * @param {string} jid - The author's (bare) JID.
+             * @returns {import('./profile').default}
+             */
+            function get(jid: string): import("./profile").default;
+            /**
+             * Get a feed suitable for an author's profile view.
+             *
+             * When we follow the author (or it's our own), this is the *shared* feed
+             * from {@link _converse.state.pubsubfeeds}. When we don't follow them,
+             * it's a **detached**, browse-only feed that is deliberately *not* added
+             * to that collection (it stays in-memory only). Either way the caller
+             * should {@link PubSubFeed.fetchPosts} to backfill it.
+             * @method _converse.api.microblog.profile.feed
+             * @param {string} jid - The author's (bare) JID.
+             * @param {string} [node=MICROBLOG_NODE]
+             * @returns {Promise<import('./feed').default>}
+             */
+            function getFeed(jid: string, node?: string): Promise<import("./feed").default>;
+        }
         /**
          * Whether a JID can be followed, i.e. it advertises a XEP-0472 social
          * feed (`urn:xmpp:pubsub-social-feed:1`).

@@ -2,12 +2,6 @@ export default PubSubFeed;
 /**
  * One PubSub feed: a single node at a single JID (your own
  * `urn:xmpp:microblog:0`, a contact's microblog, or a community node).
- *
- * Rather than the chat-oriented `ModelWithMessages` mixin (which is coupled to
- * `<message>` stanzas, chat states, receipts and HTTP file uploads), the feed
- * owns its `.messages` collection directly — posts are PubSub items, published
- * via `api.pubsub.publish`.
- *
  * @extends {Model}
  */
 declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttributes> {

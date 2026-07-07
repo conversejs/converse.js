@@ -1649,6 +1649,54 @@ describe('The microblog plugin', function () {
     );
 
     it(
+        'likes and comments on a detached browse-feed post without a store error',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            // A post viewed on a non-followed author's profile lives in a
+            // detached, in-memory feed whose messages collection has no store, so
+            // the optimistic `post.save()` in like/comment used to throw
+            // `A "url" property or function must be specified`. safeSave now
+            // falls back to a reactive `set()` for such store-less posts.
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const author = 'stranger@capulet.lit';
+            const id = 'browse-1';
+            const feed = await api.microblog.profile.getFeed(author, MICROBLOG_NODE);
+            expect(feed.get('in_memory')).toBe(true);
+            expect(feed.messages.storage).toBeUndefined();
+
+            const node = `urn:xmpp:microblog:0:comments/${id}`;
+            const href = `xmpp:${author}?;node=${encodeURIComponent(node)}`;
+            await feed.addItems([
+                stx`
+                <item id="${id}" publisher="${author}">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">A stranger's post</title>
+                    <link rel="replies" title="comments" href="${href}"/>
+                    <id>tag:capulet.lit,2024:posts-${id}</id>
+                    <published>2024-01-01T18:30:02Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+            const post = feed.messages.get(id);
+            expect(post).toBeDefined();
+
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+
+            // Liking optimistically flips the state without persisting/throwing.
+            await api.microblog.like(post);
+            expect(post.get('liked_by_me')).toBe(true);
+            expect(post.get('like_count')).toBe(1);
+
+            // Commenting syncs the denormalised count onto the detached post.
+            await api.microblog.comments.add(post, 'Hello, stranger!');
+            expect(post.get('comment_count')).toBe(1);
+        }),
+    );
+
+    it(
         'un-likes a post by retracting our ♥ and reverting the count',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
@@ -1916,6 +1964,41 @@ describe('The microblog plugin', function () {
             // the aggregated collection, so their posts never enter the timeline.
             expect(feeds.length).toBe(before);
             expect(feeds.getFeed(jid, MICROBLOG_NODE, false)).toBeUndefined();
+            // In-memory: the browse-only feed has no message store, so a
+            // non-followed author's posts are never cached to disk.
+            expect(feed.get('in_memory')).toBe(true);
+            expect(feed.messages.storage).toBeFalsy();
+        }),
+    );
+
+    it(
+        "does not persist a browse-only profile's fetched posts",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const jid = 'stranger@shakespeare.lit';
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: [
+                    stx`
+                    <item id="sp-1">
+                      <entry xmlns="${ATOM}">
+                        <title type="text">A stranger speaks</title>
+                        <id>tag:shakespeare.lit,2024-01-01:posts-sp-1</id>
+                        <published>2024-01-01T18:30:02Z</published>
+                        <updated>2024-01-01T18:30:02Z</updated>
+                      </entry>
+                    </item>`.tree(),
+                ],
+            });
+
+            const feed = await api.microblog.profileFeed(jid);
+            await feed.fetchPosts();
+            // The post renders (in memory) but nothing was written to storage.
+            expect(feed.getPosts().length).toBe(1);
+            expect(feed.messages.storage).toBeFalsy();
+            expect(feed.messages.at(0).collection.storage).toBeFalsy();
         }),
     );
 });

@@ -29,9 +29,7 @@ export default class SocialMessage extends ObservableElement {
     compact: boolean;
     render(): import("lit-html").TemplateResult<1>;
     /**
-     * Open the author's profile view (their microblog + a follow toggle) when
-     * their avatar or name is clicked. For a repost this is the *original*
-     * author (see {@link PubSubMessage.getAuthorJID}), matching the header.
+     * Open the author's profile view when their avatar or name is clicked.
      * Bubbles a `profileselected` event up to the Social app, which swaps the
      * timeline for the profile view.
      * @param {MouseEvent} [ev]

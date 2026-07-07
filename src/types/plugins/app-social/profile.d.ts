@@ -1,10 +1,6 @@
 declare const SocialProfile_base: typeof CustomElement & (new (...args: any[]) => import("@lit-labs/signals").SignalWatcherApi);
 /**
- * An author's profile view: a header (avatar, display name, JID and a
- * follow/unfollow toggle) above that author's microblog posts, newest-first.
- * Opened by clicking a post author's avatar or name; the back button returns to
- * the timeline.
- *
+ * An author's profile view. A header above that author's feed, newest-first.
  * `SignalWatcher` auto-tracks the `collectionSignal` over the profile feed's
  * messages, so the post list re-renders as posts are backfilled or pushed live.
  */
@@ -27,10 +23,8 @@ export default class SocialProfile extends SocialProfile_base {
     _busy: boolean;
     initialize(): Promise<void>;
     /**
-     * Resolve the feed backing the post list — the shared feed when we follow
-     * the author (or it's us), a detached browse-only feed otherwise — and
-     * backfill it. Re-run after a follow/unfollow so the view re-points to
-     * whichever feed now holds the author's posts.
+     * Resolve the feed backing the post list (shared feed when we follow
+     * the author, a detached browse-only feed otherwise) and backfill it.
      * @returns {Promise<void>}
      */
     setupFeed(): Promise<void>;
@@ -45,9 +39,8 @@ export default class SocialProfile extends SocialProfile_base {
      */
     get isFollowing(): boolean;
     /**
-     * The author's posts, newest-first (may include paging placeholders, which
-     * the template renders distinctly). Reading the signal here keeps it
-     * auto-tracked by `SignalWatcher`.
+     * The author's posts, newest-first.
+     * Reading the signal here keeps it auto-tracked by `SignalWatcher`.
      * @returns {import('@converse/headless').PubSubMessage[]}
      */
     get authorPosts(): import("@converse/headless").PubSubMessage[];
@@ -57,8 +50,7 @@ export default class SocialProfile extends SocialProfile_base {
     /**
      * Follow or unfollow this author. The button is disabled while in flight so a
      * double-click can't fire two follows. On success the feed is re-resolved so
-     * the post list re-points to the now-shared (or, after unfollow, detached)
-     * feed.
+     * the post list re-points to the now-shared (or, after unfollow, detached) feed.
      */
     onToggleFollow(): Promise<void>;
 }

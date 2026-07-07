@@ -4,6 +4,7 @@
  */
 import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
+import { safeSave } from '../../utils/init.js';
 import { COMMENT_SUMMARY_CONCURRENCY, COMMENTS_NODE_PREFIX } from './constants.js';
 
 /**
@@ -109,7 +110,9 @@ export function syncCommentSummary(post, feed) {
     if (!feed) return;
     const summary = feed.summarize();
     const changed = Object.keys(summary).some((k) => post.get(k) !== summary[k]);
-    if (changed) post.save(summary);
+    // Detached browse-feed posts (a non-followed author's) are in-memory with no
+    // store, so persist only when the post is store-backed; else set reactively.
+    if (changed) safeSave(post, summary);
 }
 
 /**

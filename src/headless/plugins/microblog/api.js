@@ -13,6 +13,7 @@ import PubSubFeed from './feed.js';
 import PubSubFeeds from './feeds.js';
 import { parseAtomEntry } from './parsers.js';
 import { getUniqueId } from '../../utils/index.js';
+import { safeSave } from '../../utils/init.js';
 import {
     FOLLOWABLE_PROBE_TIMEOUT,
     FOLLOWABLE_SCAN_CONCURRENCY,
@@ -358,7 +359,7 @@ export default {
                 liked_by_me: post.get('liked_by_me'),
                 my_like_id: post.get('my_like_id'),
             };
-            post.save({ liked_by_me: true, my_like_id: id, like_count: (post.get('like_count') || 0) + 1 });
+            safeSave(post, { liked_by_me: true, my_like_id: id, like_count: (post.get('like_count') || 0) + 1 });
 
             try {
                 const like = await feed.publishComment({ body: LIKE_MARKER, author_jid, author_name, id });
@@ -366,7 +367,7 @@ export default {
                 syncCommentSummary(post, feed);
                 return like;
             } catch (e) {
-                post.save(snapshot);
+                safeSave(post, snapshot);
                 throw e;
             }
         },
@@ -401,7 +402,7 @@ export default {
                 liked_by_me: post.get('liked_by_me'),
                 my_like_id: post.get('my_like_id'),
             };
-            post.save({
+            safeSave(post, {
                 liked_by_me: false,
                 my_like_id: undefined,
                 like_count: Math.max(0, (post.get('like_count') || 0) - 1),
@@ -412,7 +413,7 @@ export default {
                     await api.pubsub.retract(feed.get('jid'), feed.get('node'), id);
                 }
             } catch (e) {
-                post.save(snapshot);
+                safeSave(post, snapshot);
                 throw e;
             }
             // Confirmed: drop our local ♥s and reconcile counts from the thread.

@@ -193,11 +193,16 @@ class PubSubFeed extends Model {
         try {
             result = await promise;
         } catch (e) {
+            // Record why the fetch failed so the UI can tell an empty feed apart
+            // from one we're not allowed to read.
+            this.set('fetch_error', /** @type {any} */ (e)?.name || 'error');
             log.error(e);
             return;
         }
-
-        this.set('supports_rsm', !!result.rsm);
+        this.set({
+            supports_rsm: !!result.rsm,
+            fetch_error: null,
+        });
         const added = await this.addItems(result.items);
         const page_oldest = this.storePageCursor(added, result);
 

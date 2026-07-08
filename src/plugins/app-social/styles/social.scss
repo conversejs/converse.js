@@ -207,6 +207,18 @@
             flex-shrink: 0;
         }
 
+        // The "feed isn't public" notice: a lock glyph above/left of the text.
+        .social-profile__restricted {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5em;
+
+            converse-icon svg {
+                fill: var(--subdued-color);
+            }
+        }
+
         .social-comments {
             margin-top: 1em;
         }

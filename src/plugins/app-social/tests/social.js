@@ -237,7 +237,7 @@ describe('The social feed', function () {
             // the Social app). Click the contact's post (the newest, first).
             const author = await u.waitUntil(() => {
                 const a = articles[0].querySelector('a.social-post__author.show-msg-author-modal');
-                return a && /color:/.test(a.getAttribute('style') || '') ? a : null;
+                return a && (/color:/).test(a.getAttribute('style') || '') ? a : null;
             });
             let selected = null;
             el.addEventListener('profileselected', (ev) => (selected = ev.detail.jid));
@@ -1080,6 +1080,37 @@ describe('The social profile view', function () {
                 return b && b.textContent.trim() === 'Unfollow';
             });
             expect(api.microblog.isFollowing(stranger)).toBe(true);
+        }),
+    );
+
+    it(
+        "explains that an access-restricted feed isn't public, rather than 'No posts yet'",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            const stranger = 'yorick@denmark.lit';
+
+            // Their microblog is presence/roster-access: reading it is refused.
+            const forbidden = Object.assign(new Error('forbidden'), { name: 'forbidden' });
+            vi.spyOn(api.pubsub.items, 'get').mockRejectedValue(forbidden);
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // Reach the stranger's profile via a repost of theirs.
+            receive(_converse, makeRepost(bare_jid, bare_jid, 'r-1', 'Alas', stranger, 'Yorick'));
+            const author = await u.waitUntil(() => el.querySelector('.social-post__author.show-msg-author-modal'));
+            author.click();
+
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+
+            // The empty state names the restriction (a lock + "not public"), not
+            // the misleading "No posts yet".
+            const empty = await u.waitUntil(() => profile.querySelector('.social-profile__restricted'));
+            expect(empty.textContent).toContain("aren't public");
+            expect(profile.querySelector('.social-feed__empty').textContent).not.toContain('No posts yet');
+            expect(profile.querySelector('.social-profile__restricted converse-icon')).not.toBe(null);
         }),
     );
 });

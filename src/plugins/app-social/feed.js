@@ -27,7 +27,8 @@ export default class SocialFeed extends SignalWatcher(CustomElement) {
         return {
             jid: { type: String },
             // The active hashtag filter (without the leading `#`), or null for the
-            // full timeline. A reactive property, so setting it re-renders.
+            // full timeline. Set by the parent `SocialApp` (which owns it, so it's
+            // routable); a reactive property, so a change re-renders.
             filter: { type: String },
         };
     }
@@ -42,12 +43,6 @@ export default class SocialFeed extends SignalWatcher(CustomElement) {
     }
 
     async initialize() {
-        // Clicking a hashtag (rendered in a post body) bubbles up to here; filter
-        // the timeline to posts carrying that tag until the user clears it.
-        this.addEventListener('hashtagselected', (ev) => {
-            this.filter = /** @type {CustomEvent} */ (ev).detail.tag;
-        });
-
         try {
             this.model = await api.microblog.feeds.get(this.jid);
         } catch (e) {
@@ -72,11 +67,6 @@ export default class SocialFeed extends SignalWatcher(CustomElement) {
     get visiblePosts() {
         const posts = /** @type {import('@converse/headless').PubSubMessage[]} */ (this.posts?.get() ?? []);
         return this.filter ? posts.filter((p) => postMatchesHashtag(p, this.filter)) : posts;
-    }
-
-    /** Clear the active hashtag filter and return to the full timeline. */
-    clearFilter() {
-        this.filter = null;
     }
 
     render() {

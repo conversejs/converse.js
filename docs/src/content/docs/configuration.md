@@ -678,6 +678,19 @@ Determines whether [XEP-0198 Stream Management](https://xmpp.org/extensions/xep-
 
 Recommended to set to `true` if a websocket connection is used. Please see the `websocket-url` configuration setting.
 
+### enable_url_routing
+
+- Default: `false`
+
+Determines whether Converse reflects in-app navigation in the browser's URL, using hash fragments (for example `#converse/social/tag/xmpp`). When enabled, the browser's back and forward buttons move through the views you have visited, and a link to a particular view (such as an author's profile or an individual post) can be shared and reopened after a reload.
+
+It is turned off by default because it's a new feature and because Converse can be embedded into an existing website, where it shares the browser's URL and history with the host page. Only enable it for deployments that own the browser URL, such as a standalone, full-page Converse.
+
+:::note
+This currently covers the Social app (author profiles, individual posts and hashtag filters) and switching between the Chat and Social apps. Only hash fragments are used, so deep links keep working on any static host without server-side URL rewriting.
+
+:::
+
 ### fetch_url_headers
 
 - Default: `false`

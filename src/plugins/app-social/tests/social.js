@@ -1113,4 +1113,55 @@ describe('The social profile view', function () {
             expect(profile.querySelector('.social-profile__restricted converse-icon')).not.toBe(null);
         }),
     );
+
+    it(
+        'remounts the profile when navigating from one author to another',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            const stranger = 'yorick@denmark.lit';
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // An own plain post and an own repost of a stranger, both in our feed.
+            receive(_converse, makePost(bare_jid, bare_jid, 'p-1', 'My own note', '2024-01-02T09:00:00Z'));
+            receive(_converse, makeRepost(bare_jid, bare_jid, 'r-1', 'Alas', stranger, 'Yorick', '2024-01-01T09:00:00Z'));
+            await u.waitUntil(() => el.querySelectorAll('.social-post').length === 2);
+
+            // Open our own profile via our plain post's author.
+            const mine = Array.from(el.querySelectorAll('.social-post')).find((a) =>
+                a.querySelector('.social-post__body').textContent.includes('My own note'),
+            );
+            mine.querySelector('a.social-post__author').click();
+
+            // Generous timeout: a profile setup on the shared test page can exceed
+            // the 2s default under intra-file load.
+            const T = 5000;
+            const profileA = await u.waitUntil(() => el.querySelector('converse-social-profile'), T);
+            expect(profileA.jid).toBe(bare_jid);
+
+            // Within our profile, the repost shows the stranger as author; click it.
+            const repost = await u.waitUntil(
+                () =>
+                    Array.from(profileA.querySelectorAll('.social-profile__posts .social-post')).find((a) =>
+                        a.querySelector('.social-post__body').textContent.includes('Alas'),
+                    ),
+                T,
+            );
+            repost.querySelector('a.social-post__author').click();
+
+            // The profile is keyed on the JID, so navigating remounts it: a *new*
+            // element for the stranger, not the previous author's element reused
+            // (which would leave `this.profile`/`this.feed` stale on us).
+            const profileB = await u.waitUntil(() => {
+                const p = el.querySelector('converse-social-profile');
+                return p && p !== profileA ? p : null;
+            }, T);
+            expect(profileB).not.toBe(profileA);
+            expect(profileB.jid).toBe(stranger);
+        }),
+    );
 });

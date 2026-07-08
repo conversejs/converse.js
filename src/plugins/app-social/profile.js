@@ -48,9 +48,10 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
         this.listenTo(this.profile, 'contact:add', () => this.requestUpdate());
         this.listenTo(this.profile, 'contact:change', () => this.requestUpdate());
 
-        // Re-render the follow toggle when the followed-feeds set changes.
-        this.listenTo(_converse.state.pubsubfeeds, 'add', () => this.requestUpdate());
-        this.listenTo(_converse.state.pubsubfeeds, 'remove', () => this.requestUpdate());
+        // Re-render the follow toggle when the follow list (isFollowing's source
+        // of truth) changes, e.g. a follow/unfollow from elsewhere.
+        this.listenTo(_converse.state.following, 'add', () => this.requestUpdate());
+        this.listenTo(_converse.state.following, 'remove', () => this.requestUpdate());
 
         await this.setupFeed();
     }

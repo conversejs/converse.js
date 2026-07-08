@@ -6,7 +6,7 @@ import { Strophe } from 'strophe.js';
 import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import { publishFollow, readFollowing, retractFollow } from './following.js';
+import { publishFollow, readFollowing, retractFollow } from './utils/following.js';
 import { comment_summary_queue, syncCommentSummary } from './comment-summary.js';
 import { getProfile } from './profile.js';
 import PubSubFeed from './feed.js';
@@ -251,6 +251,8 @@ export default {
          */
         async follow(jid, { title, node = MICROBLOG_NODE } = {}) {
             await publishFollow(jid, node, title);
+            // Mirror the durable follow locally so isFollowing reflects it at once.
+            _converse.state.following?.track({ server: jid, node, title });
             try {
                 await api.pubsub.subscribe(jid, node);
             } catch (e) {
@@ -302,6 +304,7 @@ export default {
          */
         async unfollow(jid, { node = MICROBLOG_NODE } = {}) {
             await retractFollow(jid, node);
+            _converse.state.following?.untrack(jid, node);
             try {
                 await api.pubsub.unsubscribe(jid, node);
             } catch (e) {
@@ -582,16 +585,23 @@ export default {
             // Ensure the own feed is present so it's part of the aggregate timeline.
             feeds.getFeed(_converse.session.get('bare_jid'), MICROBLOG_NODE, true);
 
-            let following = [];
+            let following = null;
             try {
                 // Read the durable XEP-0330 follow list
                 following = await readFollowing();
             } catch (e) {
-                // No follow-list node yet (or it's empty/inaccessible).
+                // No follow-list node yet (or it's empty/inaccessible). Leave
+                // `following` null so a transient failure never wipes the mirror.
                 log.debug(`api.microblog.initFollowing: could not read the follow list: ${e}`);
             }
-            for (const { server, node } of following) {
-                feeds.getFeed(server, node, true);
+            if (following) {
+                // Reconcile the durable list into the local mirror (the source of
+                // truth for isFollowing), catching follows/unfollows made on
+                // another device, then materialise each followed feed.
+                await _converse.state.following?.reconcile(following);
+                for (const { server, node } of following) {
+                    feeds.getFeed(server, node, true);
+                }
             }
             feeds.forEach(/** @param {import('./feed').default} f */ (f) => f.fetchPosts());
 
@@ -602,7 +612,10 @@ export default {
         },
 
         /**
-         * Whether the user currently follows (has a feed for) a JID + node.
+         * Whether the user currently follows a JID + node, per the durable
+         * XEP-0330 follow list (mirrored in `_converse.state.following`). This is
+         * independent of whether a feed happens to be loaded for the JID — a
+         * browse-only profile feed exists without a follow.
          * @method _converse.api.microblog.isFollowing
          * @param {string} jid
          * @param {string} [node=MICROBLOG_NODE]
@@ -612,7 +625,7 @@ export default {
             const bare_jid = _converse.session.get('bare_jid');
             // The user's own feed isn't a "follow".
             if (Strophe.getBareJidFromJid(jid) === bare_jid) return false;
-            return !!_converse.state.pubsubfeeds?.getFeed(jid, node, false);
+            return !!_converse.state.following?.isFollowing(jid, node);
         },
     },
 };

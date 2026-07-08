@@ -250,7 +250,10 @@ declare namespace _default {
          */
         function initFollowing(): Promise<void>;
         /**
-         * Whether the user currently follows (has a feed for) a JID + node.
+         * Whether the user currently follows a JID + node, per the durable
+         * XEP-0330 follow list (mirrored in `_converse.state.following`). This is
+         * independent of whether a feed happens to be loaded for the JID — a
+         * browse-only profile feed exists without a follow.
          * @method _converse.api.microblog.isFollowing
          * @param {string} jid
          * @param {string} [node=MICROBLOG_NODE]

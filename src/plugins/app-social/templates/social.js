@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import { keyed } from 'lit/directives/keyed.js';
 import { api } from '@converse/headless';
 
 /**
@@ -13,12 +14,16 @@ export default (el) => {
     if (el.open_post) {
         return html`<converse-social-post class="social-feed-container" .model=${el.open_post}></converse-social-post>`;
     }
-    // An author's profile view takes over the timeline when open.
+    // An author's profile view takes over the timeline when open. Keyed on the
+    // JID so navigating from one profile to another remounts the element.
     if (el.open_profile) {
-        return html`<converse-social-profile
-            class="social-feed-container"
-            jid=${el.open_profile}
-        ></converse-social-profile>`;
+        return keyed(
+            el.open_profile,
+            html`<converse-social-profile
+                class="social-feed-container"
+                jid=${el.open_profile}
+            ></converse-social-profile>`,
+        );
     }
     // The user's own microblog feed (omitting `jid` defaults to the own bare JID).
     return html`<converse-social-feed class="social-feed-container"></converse-social-feed>`;

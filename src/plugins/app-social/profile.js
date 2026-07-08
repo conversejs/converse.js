@@ -21,6 +21,9 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
         return {
             jid: { type: String },
             _busy: { type: Boolean, state: true },
+            // Whether the initial post backfill has settled. Until then we hold
+            // off on the "no posts" / "not public" empty states.
+            _loaded: { type: Boolean, state: true },
         };
     }
 
@@ -33,6 +36,7 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
         this.feed = null;
         this.posts = null;
         this._busy = false;
+        this._loaded = false;
     }
 
     async initialize() {
@@ -53,20 +57,36 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
 
     /**
      * Resolve the feed backing the post list (shared feed when we follow
-     * the author, a detached browse-only feed otherwise) and backfill it.
+     * the author, a detached browse-only feed otherwise) and backfill it. The
+     * backfill is awaited so the empty state can distinguish an author with no
+     * posts from one whose feed we're not allowed to read (see {@link accessDenied}).
      * @returns {Promise<void>}
      */
     async setupFeed() {
+        let feed;
         try {
-            this.feed = await api.microblog.profile.getFeed(this.jid);
+            feed = await api.microblog.profile.getFeed(this.jid);
         } catch (e) {
             log.error(e);
+            this._loaded = true;
             return;
         }
+
+        if (this.feed) this.stopListening(this.feed);
+
+        this.feed = feed;
         this.posts = collectionSignal(this.feed.messages);
+        this._loaded = false;
+
+        // Re-render if the fetch outcome changes (e.g. a later refetch is refused).
+        this.listenTo(this.feed, 'change:fetch_error', () => this.requestUpdate());
         this.requestUpdate();
-        // Backfill from the server (the node may not exist yet / be empty).
-        this.feed.fetchPosts();
+
+        try {
+            await this.feed.fetchPosts();
+        } finally {
+            this._loaded = true;
+        }
     }
 
     /**
@@ -92,6 +112,15 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
      */
     get authorPosts() {
         return /** @type {import('@converse/headless').PubSubMessage[]} */ (this.posts?.get() ?? []);
+    }
+
+    /**
+     * Whether the backfill was refused because we're not allowed to read this feed
+     * @returns {boolean}
+     */
+    get accessDenied() {
+        const err = this.feed?.get('fetch_error');
+        return err === 'forbidden' || err === 'not-authorized';
     }
 
     render() {

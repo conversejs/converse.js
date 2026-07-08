@@ -70,7 +70,14 @@ export default (el) => {
                                   ? html`<converse-history-placeholder .model=${p}></converse-history-placeholder>`
                                   : html`<converse-social-message .model=${p}></converse-social-message>`,
                       )
-                    : html`<p class="social-feed__empty">${__('No posts yet.')}</p>`}
+                    : !el._loaded
+                      ? html`<p class="social-feed__empty">${__('Loading…')}</p>`
+                      : el.accessDenied
+                        ? html`<p class="social-feed__empty social-profile__restricted">
+                              <converse-icon size="1.2em" class="fa fa-lock"></converse-icon>
+                              ${__("%1$s's posts aren't public, and are only shared with contacts.", name)}
+                          </p>`
+                        : html`<p class="social-feed__empty">${__('No posts yet.')}</p>`}
             </div>
         </div>
     `;

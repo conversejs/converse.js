@@ -2,6 +2,7 @@
 
 ## 15.0.0 (Unreleased)
 
+- #4110: Fix timing race where the contact unread message counter fails to synchronize on load
 - #194: Full support for XEP-0115: Entity capabilities
 
 ### Breaking changes:

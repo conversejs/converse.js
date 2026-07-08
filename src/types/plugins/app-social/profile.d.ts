@@ -13,6 +13,10 @@ export default class SocialProfile extends SocialProfile_base {
             type: BooleanConstructor;
             state: boolean;
         };
+        _loaded: {
+            type: BooleanConstructor;
+            state: boolean;
+        };
     };
     jid: any;
     /** @type {import('@converse/headless').MicroblogProfile} */
@@ -21,10 +25,13 @@ export default class SocialProfile extends SocialProfile_base {
     feed: import("@converse/headless").PubSubFeed;
     posts: import("@lit-labs/signals").Signal.State<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[]>;
     _busy: boolean;
+    _loaded: boolean;
     initialize(): Promise<void>;
     /**
      * Resolve the feed backing the post list (shared feed when we follow
-     * the author, a detached browse-only feed otherwise) and backfill it.
+     * the author, a detached browse-only feed otherwise) and backfill it. The
+     * backfill is awaited so the empty state can distinguish an author with no
+     * posts from one whose feed we're not allowed to read (see {@link accessDenied}).
      * @returns {Promise<void>}
      */
     setupFeed(): Promise<void>;
@@ -44,6 +51,11 @@ export default class SocialProfile extends SocialProfile_base {
      * @returns {import('@converse/headless').PubSubMessage[]}
      */
     get authorPosts(): import("@converse/headless").PubSubMessage[];
+    /**
+     * Whether the backfill was refused because we're not allowed to read this feed
+     * @returns {boolean}
+     */
+    get accessDenied(): boolean;
     render(): import("lit-html").TemplateResult<1> | "";
     /** Return to the timeline. */
     goBack(): void;

@@ -10,6 +10,7 @@ import {
     makePostStanza,
     receive,
     seedPost,
+    stubPubsubNetwork,
 } from './utils.js';
 
 const { stx, u } = converse.env;
@@ -1934,9 +1935,12 @@ describe('The microblog plugin', function () {
             const { api } = _converse;
             await api.waitUntil('pubsubFeedsInitialized');
 
+            stubPubsubNetwork(api);
+
             const jid = 'juliet@capulet.lit';
-            // A followed author already has a feed in the aggregated collection.
-            const shared = await api.microblog.feeds.get(jid, MICROBLOG_NODE, true);
+            // Following the author records them in the XEP-0330 list and creates
+            // their feed in the aggregated collection.
+            const shared = await api.microblog.follow(jid);
             expect(api.microblog.isFollowing(jid)).toBe(true);
 
             // The profile view reuses that same feed (so it gets live updates).

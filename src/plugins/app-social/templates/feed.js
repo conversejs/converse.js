@@ -14,7 +14,7 @@ function tplFilterBar(el) {
         <button
             type="button"
             class="social-feed__filter-clear"
-            @click=${() => el.clearFilter()}
+            @click=${() => el.dispatchEvent(new CustomEvent('clearfilter', { bubbles: true, composed: true }))}
             title="${__('Clear filter')}"
             aria-label="${__('Clear filter')}"
         >

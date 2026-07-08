@@ -19,6 +19,7 @@ import PubSubMessages from './messages.js';
 import PostComment from './post-comment.js';
 import PostComments from './post-comments.js';
 import FollowableCache from './followable.js';
+import Following from './following.js';
 import MicroblogProfile, { clearProfiles } from './profile.js';
 import microblog_api from './api.js';
 import { comment_summary_queue } from './comment-summary.js';
@@ -50,6 +51,7 @@ converse.plugins.add('converse-microblog', {
             CommentFeed,
             CommentFeeds,
             FollowableCache,
+            Following,
             MicroblogProfile,
             PostComment,
             PostComments,
@@ -88,6 +90,10 @@ converse.plugins.add('converse-microblog', {
                 state.followablecache.clearStore?.({ silent: true });
                 delete state.followablecache;
             }
+            if (state.following) {
+                state.following.clearStore?.({ silent: true });
+                delete state.following;
+            }
         });
 
         api.listen.on('connected', onConnected);
@@ -100,13 +106,21 @@ async function onConnected() {
         registerMicroblogHandler();
         const feeds = new _converse.exports.PubSubFeeds();
         _converse.state.pubsubfeeds = feeds;
+
         // Comment threads live in their own persisted collection so they never
         // enter the aggregated timeline; growth is bounded by a thread LRU.
         const commentfeeds = new _converse.exports.CommentFeeds();
         _converse.state.commentfeeds = commentfeeds;
+
         const followablecache = new _converse.exports.FollowableCache();
         _converse.state.followablecache = followablecache;
-        await Promise.all([feeds.hydrated, commentfeeds.hydrated, followablecache.hydrated]);
+
+        // A local, persisted mirror of the durable XEP-0330 follow list
+        const following = new _converse.exports.Following();
+        _converse.state.following = following;
+
+        await Promise.all([feeds.hydrated, commentfeeds.hydrated, followablecache.hydrated, following.hydrated]);
+
         // A prior session may have hydrated more threads than the current cap.
         commentfeeds.pruneThreads();
     } catch (e) {

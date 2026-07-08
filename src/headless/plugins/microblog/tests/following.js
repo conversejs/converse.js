@@ -3,6 +3,16 @@ import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 import { ATOM, MICROBLOG_NODE, makePostStanza, receive, stubPubsubNetwork } from './utils.js';
 
+/**
+ * Build a XEP-0330 follow-list `<item>` for the given `server`/`node`, as the
+ * follow-list node would return it.
+ * @param {string} id
+ * @param {string} server
+ * @param {string} [node=MICROBLOG_NODE]
+ */
+const followItem = (id, server, node = MICROBLOG_NODE) =>
+    stx`<item id="${id}"><subscription xmlns="${NS_SUBSCRIPTION}" server="${server}" node="${node}"/></item>`.tree();
+
 const { stx, u } = converse.env;
 
 const FOLLOWING_NODE = 'urn:xmpp:pubsub:subscription';
@@ -345,6 +355,59 @@ describe('Microblog following (XEP-0330)', function () {
             const list = await api.microblog.discoverFollowable();
             expect(list).toContain('juliet@capulet.lit');
             expect(list).not.toContain('romeo@montague.lit');
+        }),
+    );
+
+    it(
+        'reconciles the local follow mirror against the durable list (adds and prunes)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+            // The durable list on the server has mercutio (followed elsewhere) but
+            // not juliet (unfollowed elsewhere); other nodes backfill empty.
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, node) =>
+                node === FOLLOWING_NODE
+                    ? Promise.resolve({ items: [followItem('i2', 'mercutio@montague.lit')] })
+                    : Promise.resolve({ items: [] }),
+            );
+
+            // Locally we still follow juliet (e.g. from a previous session).
+            await api.microblog.follow('juliet@capulet.lit');
+            expect(api.microblog.isFollowing('juliet@capulet.lit')).toBe(true);
+
+            await api.microblog.initFollowing();
+
+            // The mirror now matches the server: juliet dropped, mercutio added.
+            expect(api.microblog.isFollowing('juliet@capulet.lit')).toBe(false);
+            expect(api.microblog.isFollowing('mercutio@montague.lit')).toBe(true);
+        }),
+    );
+
+    it(
+        'keeps the follow mirror intact when the durable list read fails',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, node) =>
+                // A transient failure reading the follow list must NOT be treated
+                // as "follows nothing" and wipe the local mirror.
+                node === FOLLOWING_NODE ? Promise.reject(new Error('timeout')) : Promise.resolve({ items: [] }),
+            );
+
+            await api.microblog.follow('juliet@capulet.lit');
+            expect(api.microblog.isFollowing('juliet@capulet.lit')).toBe(true);
+
+            await api.microblog.initFollowing();
+
+            expect(api.microblog.isFollowing('juliet@capulet.lit')).toBe(true);
         }),
     );
 

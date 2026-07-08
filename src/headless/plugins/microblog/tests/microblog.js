@@ -1993,12 +1993,38 @@ describe('The microblog plugin', function () {
                 ],
             });
 
-            const feed = await api.microblog.profileFeed(jid);
+            const feed = await api.microblog.profile.getFeed(jid);
             await feed.fetchPosts();
             // The post renders (in memory) but nothing was written to storage.
             expect(feed.getPosts().length).toBe(1);
             expect(feed.messages.storage).toBeFalsy();
             expect(feed.messages.at(0).collection.storage).toBeFalsy();
+        }),
+    );
+
+    it(
+        'records a fetch access-error on the feed and clears it on success',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const jid = 'stranger@shakespeare.lit';
+            const feed = await api.microblog.profile.getFeed(jid);
+
+            // A presence/roster-access feed we can't read answers `forbidden`
+            // (the error's `name` is the stanza-error condition).
+            const forbidden = Object.assign(new Error('forbidden'), { name: 'forbidden' });
+            const get = vi.spyOn(api.pubsub.items, 'get').mockRejectedValueOnce(forbidden);
+            await feed.fetchPosts();
+            expect(feed.get('fetch_error')).toBe('forbidden');
+            expect(feed.getPosts().length).toBe(0);
+
+            // Once we can read it (e.g. after being added as a contact), a
+            // successful fetch clears the error.
+            get.mockResolvedValueOnce({ items: [] });
+            await feed.fetchPosts();
+            expect(feed.get('fetch_error')).toBe(null);
         }),
     );
 });

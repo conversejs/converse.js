@@ -9,6 +9,10 @@ export default (el) => {
     if (!api.connection.get()?.connected) {
         return html`<div class="social-feed__empty"></div>`;
     }
+    // Resolving a deep-linked post from the URL: show a spinner until it lands.
+    if (el._resolving) {
+        return html`<div class="social-feed__empty"><converse-spinner></converse-spinner></div>`;
+    }
     // A post's detail view (its comment thread) takes over the whole app when
     // open (including over a profile), so back returns to the profile beneath it.
     if (el.open_post) {
@@ -26,5 +30,6 @@ export default (el) => {
         );
     }
     // The user's own microblog feed (omitting `jid` defaults to the own bare JID).
-    return html`<converse-social-feed class="social-feed-container"></converse-social-feed>`;
+    // `filter` is owned by SocialApp so the hashtag view is routable.
+    return html`<converse-social-feed class="social-feed-container" .filter=${el.filter}></converse-social-feed>`;
 };

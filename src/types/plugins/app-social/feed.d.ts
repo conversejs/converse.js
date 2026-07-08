@@ -6,8 +6,7 @@ declare const SocialFeed_base: typeof CustomElement & (new (...args: any[]) => i
  * Also serves as a reference adoption of TC39 Signals in a Converse component:
  * `SignalWatcher` auto-tracks the `aggregatedCollectionSignal` read during
  * render, so the timeline re-renders precisely when a feed is followed/unfollowed
- * or any feed gains/loses a post — no manual `listenTo(... 'add remove')` +
- * `requestUpdate()` wiring.
+ * or any feed gains/loses a post.
  *
  * @param {string} [jid] attribute — the compose feed's JID; defaults to the
  *      user's own. (The timeline itself always aggregates all feeds.)
@@ -34,8 +33,6 @@ export default class SocialFeed extends SocialFeed_base {
      * @returns {import('@converse/headless').PubSubMessage[]}
      */
     get visiblePosts(): import("@converse/headless").PubSubMessage[];
-    /** Clear the active hashtag filter and return to the full timeline. */
-    clearFilter(): void;
     render(): import("lit-html").TemplateResult<1> | "";
 }
 import { CustomElement } from 'shared/components/element.js';

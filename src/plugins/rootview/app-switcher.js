@@ -1,5 +1,6 @@
 import { api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
+import { isURLRoutingEnabled } from './routing.js';
 import tplAppSwitcher from './templates/app-switcher.js';
 
 import './styles/app-switcher.scss';
@@ -20,8 +21,14 @@ export default class AppSwitcher extends CustomElement {
         ev.preventDefault();
         const a = /** @type {HTMLElement} */ (ev.target).closest('.nav-link');
         const name = a.getAttribute('data-app-name');
-        api.apps.switch(name);
-        this.requestUpdate();
+        if (isURLRoutingEnabled()) {
+            // Pure forward navigation: the hashchange handler performs the switch,
+            // and the resulting `appSwitch` event re-renders this switcher.
+            location.hash = `#converse/${name}`;
+        } else {
+            api.apps.switch(name);
+            this.requestUpdate();
+        }
     }
 }
 

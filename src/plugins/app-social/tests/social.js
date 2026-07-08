@@ -12,6 +12,7 @@ import {
     receive,
     stubDiscoverFollowable,
 } from './utils.js';
+import { buildSocialRoute } from '../routing.js';
 
 const { stx, u } = converse.env;
 
@@ -237,7 +238,7 @@ describe('The social feed', function () {
             // the Social app). Click the contact's post (the newest, first).
             const author = await u.waitUntil(() => {
                 const a = articles[0].querySelector('a.social-post__author.show-msg-author-modal');
-                return a && (/color:/).test(a.getAttribute('style') || '') ? a : null;
+                return a && /color:/.test(a.getAttribute('style') || '') ? a : null;
             });
             let selected = null;
             el.addEventListener('profileselected', (ev) => (selected = ev.detail.jid));
@@ -319,7 +320,9 @@ describe('The social feed', function () {
             await mock.waitForRoster(_converse, 'current', 0);
             const bare_jid = _converse.bare_jid;
 
-            const el = mountSocialFeed();
+            // The hashtag filter is owned by the Social app (so it's routable), so
+            // mount the whole app rather than a standalone feed.
+            const el = mountSocialApp();
             await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
 
             receive(_converse, makePost(bare_jid, bare_jid, 'p1', 'learning #xmpp today', '2024-01-02T09:00:00Z'));
@@ -1128,7 +1131,10 @@ describe('The social profile view', function () {
 
             // An own plain post and an own repost of a stranger, both in our feed.
             receive(_converse, makePost(bare_jid, bare_jid, 'p-1', 'My own note', '2024-01-02T09:00:00Z'));
-            receive(_converse, makeRepost(bare_jid, bare_jid, 'r-1', 'Alas', stranger, 'Yorick', '2024-01-01T09:00:00Z'));
+            receive(
+                _converse,
+                makeRepost(bare_jid, bare_jid, 'r-1', 'Alas', stranger, 'Yorick', '2024-01-01T09:00:00Z'),
+            );
             await u.waitUntil(() => el.querySelectorAll('.social-post').length === 2);
 
             // Open our own profile via our plain post's author.
@@ -1163,5 +1169,191 @@ describe('The social profile view', function () {
             expect(profileB).not.toBe(profileA);
             expect(profileB.jid).toBe(stranger);
         }),
+    );
+});
+
+describe('The Social app with URL routing enabled', function () {
+    // Strip any fragment left by a prior test, without firing hashchange.
+    const clearHash = () => history.replaceState(null, '', location.pathname + location.search);
+    const stubNetwork = (api) => {
+        vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+        vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+        vi.spyOn(api.pubsub, 'unsubscribe').mockResolvedValue(undefined);
+    };
+
+    it(
+        'derives the view from the hash and updates it on hashchange',
+        mock.initConverse(converse, [], { enable_url_routing: true }, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            clearHash();
+            stubNetwork(api);
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            // Deep-link: the app mounts with a profile hash already set.
+            location.hash = buildSocialRoute({ view: 'profile', jid: 'juliet@capulet.lit' });
+            const el = mountSocialApp();
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+            expect(profile.getAttribute('jid')).toBe('juliet@capulet.lit');
+
+            // hashchange back to the timeline.
+            location.hash = buildSocialRoute({ view: 'timeline' });
+            await u.waitUntil(() => el.querySelector('converse-social-feed'));
+
+            // hashchange to a hashtag filter.
+            location.hash = buildSocialRoute({ view: 'tag', tag: 'xmpp' });
+            await u.waitUntil(() => el.querySelector('.social-feed__filter'));
+            expect(el.textContent).toContain('xmpp');
+
+            clearHash();
+        }),
+    );
+
+    it(
+        'writes the hash on forward navigation, and the back button returns to the timeline',
+        mock.initConverse(converse, [], { enable_url_routing: true }, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            const stranger = 'yorick@denmark.lit';
+            clearHash();
+            stubNetwork(api);
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            location.hash = buildSocialRoute({ view: 'timeline' });
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            // A reposted post: clicking its author opens the (stranger) author's profile.
+            receive(_converse, makeRepost(bare_jid, bare_jid, 'r1', 'Alas', stranger, 'Yorick'));
+            const author = await u.waitUntil(() => el.querySelector('.social-post__author.show-msg-author-modal'));
+            author.click();
+
+            // The navigation is reflected in the hash and the profile view opens.
+            await u.waitUntil(() => location.hash === buildSocialRoute({ view: 'profile', jid: stranger }));
+            await u.waitUntil(() => el.querySelector('converse-social-profile'));
+
+            // The profile's back button (history.back) returns to the timeline.
+            el.querySelector('converse-social-profile').dispatchEvent(
+                new CustomEvent('closeprofile', { bubbles: true, composed: true }),
+            );
+            await u.waitUntil(() => el.querySelector('converse-social-feed'));
+            await u.waitUntil(() => location.hash === buildSocialRoute({ view: 'timeline' }));
+
+            clearHash();
+        }),
+    );
+
+    it(
+        'resolves a deep-linked post from the URL via a targeted item fetch',
+        mock.initConverse(converse, [], { enable_url_routing: true }, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const feedJid = 'juliet@capulet.lit';
+            const itemId = 'post-42';
+            clearHash();
+            stubNetwork(api);
+
+            const itemsGet = vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, _node, opts) => {
+                if (opts?.item_ids?.includes(itemId)) {
+                    return Promise.resolve({
+                        items: [
+                            stx`<item id="${itemId}" publisher="${feedJid}">
+                                    <entry xmlns="${ATOM}">
+                                        <title type="text">Deep linked post</title>
+                                        <id>tag:capulet.lit,2024:posts-${itemId}</id>
+                                        <published>2024-01-01T18:30:02Z</published>
+                                    </entry>
+                                </item>`.tree(),
+                        ],
+                    });
+                }
+                return Promise.resolve({ items: [] });
+            });
+
+            location.hash = buildSocialRoute({ view: 'post', feedJid, itemId });
+            const el = mountSocialApp();
+
+            const post = await u.waitUntil(() => el.querySelector('converse-social-post'));
+            expect(post.textContent).toContain('Deep linked post');
+            // The exact item was requested (not a newest-page fetch).
+            expect(itemsGet).toHaveBeenCalledWith(feedJid, MICROBLOG_NODE, { item_ids: [itemId] });
+
+            clearHash();
+        }),
+    );
+
+    it(
+        'falls back to the timeline when a deep-linked post cannot be resolved',
+        mock.initConverse(converse, [], { enable_url_routing: true }, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            clearHash();
+            stubNetwork(api);
+            // The item is never returned, so resolution misses.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            location.hash = buildSocialRoute({ view: 'post', feedJid: 'juliet@capulet.lit', itemId: 'ghost' });
+            const el = mountSocialApp();
+
+            await u.waitUntil(() => el.querySelector('converse-social-feed'));
+            // The dead entry is replaced with the timeline route.
+            await u.waitUntil(() => location.hash === buildSocialRoute({ view: 'timeline' }));
+
+            clearHash();
+        }),
+    );
+
+    it(
+        'does not touch the URL when routing is disabled (the default)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            const stranger = 'yorick@denmark.lit';
+            clearHash();
+            stubNetwork(api);
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            receive(_converse, makeRepost(bare_jid, bare_jid, 'r1', 'Alas', stranger, 'Yorick'));
+            const author = await u.waitUntil(() => el.querySelector('.social-post__author.show-msg-author-modal'));
+            author.click();
+
+            // In-memory navigation still works, but the URL stays untouched.
+            await u.waitUntil(() => el.querySelector('converse-social-profile'));
+            expect(location.hash).toBe('');
+        }),
+    );
+
+    it(
+        'routes app switches through the hash in fullscreen mode',
+        mock.initConverse(
+            converse,
+            [],
+            { enable_url_routing: true, view_mode: 'fullscreen' },
+            async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 0);
+                const { api } = _converse;
+                clearHash();
+
+                expect(api.apps.get('chat')).toBeTruthy();
+                expect(api.apps.get('social')).toBeTruthy();
+
+                // Setting the social hash switches the active app to social.
+                location.hash = '#converse/social';
+                await u.waitUntil(() => api.apps.getActive().name === 'social');
+
+                // A programmatic switch reflects back into the hash (replaceState),
+                // and does not bounce back to social.
+                api.apps.switch('chat');
+                await u.waitUntil(() => location.hash === '#converse/chat');
+                expect(api.apps.getActive().name).toBe('chat');
+
+                clearHash();
+            },
+        ),
     );
 });

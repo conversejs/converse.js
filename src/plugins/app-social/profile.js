@@ -7,6 +7,7 @@ import { SignalWatcher } from '@lit-labs/signals';
 import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import { collectionSignal } from 'shared/signals.js';
+import 'shared/components/logo.js';
 import tplProfile from './templates/profile.js';
 
 const { Strophe } = converse.env;
@@ -24,6 +25,9 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
             // Whether the initial post backfill has settled. Until then we hold
             // off on the "no posts" / "not public" empty states.
             _loaded: { type: Boolean, state: true },
+            // Set when the banner image fails to load (e.g. a 404), so we fall
+            // back to the logo watermark instead of a broken-image placeholder.
+            _banner_error: { type: Boolean, state: true },
         };
     }
 
@@ -37,6 +41,7 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
         this.posts = null;
         this._busy = false;
         this._loaded = false;
+        this._banner_error = false;
     }
 
     async initialize() {
@@ -47,6 +52,14 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
         this.listenTo(this.profile, 'vcard:change', () => this.requestUpdate());
         this.listenTo(this.profile, 'contact:add', () => this.requestUpdate());
         this.listenTo(this.profile, 'contact:change', () => this.requestUpdate());
+
+        // Fetch the author's banner (best-effort) and re-render if one resolves.
+        // A new URL gets a fresh shot at loading (clear any prior load error).
+        this.listenTo(this.profile, 'change:banner_url', () => {
+            this._banner_error = false;
+            this.requestUpdate();
+        });
+        this.profile.fetchBanner();
 
         // Re-render the follow toggle when the follow list (isFollowing's source
         // of truth) changes, e.g. a follow/unfollow from elsewhere.
@@ -127,6 +140,14 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
     render() {
         if (!this.jid || !this.profile) return '';
         return tplProfile(this);
+    }
+
+    /**
+     * The banner image failed to load (e.g. a dead link / 404). Fall back to the
+     * logo watermark rather than leave a broken-image placeholder in the header.
+     */
+    onBannerError() {
+        if (!this._banner_error) this._banner_error = true;
     }
 
     /** Return to the timeline. */

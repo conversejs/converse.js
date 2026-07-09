@@ -8,7 +8,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import { publishFollow, readFollowing, retractFollow } from './utils/following.js';
 import { comment_summary_queue, syncCommentSummary } from './comment-summary.js';
-import { getProfile } from './profile.js';
+import MicroblogProfile from './profile.js';
 import PubSubFeed from './feed.js';
 import PubSubFeeds from './feeds.js';
 import { parseAtomEntry } from './parsers.js';
@@ -98,7 +98,7 @@ export default {
              * @returns {import('./profile').default}
              */
             get(jid) {
-                return getProfile(jid);
+                return MicroblogProfile.getProfile(jid);
             },
 
             /**

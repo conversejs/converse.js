@@ -11,6 +11,10 @@ export default (el) => {
     const profile = el.profile;
     const name = profile.getDisplayName();
     const posts = el.authorPosts;
+    // Show the author's banner when they've published one and it loads; otherwise
+    // fall back to a Converse logo watermark so the header never looks broken.
+    const banner_url = profile.get('banner_url');
+    const has_banner = banner_url && !el._banner_error;
 
     // Colour the author's name to match their avatar (per-author colour).
     const author_style = until(
@@ -42,7 +46,18 @@ export default (el) => {
                 </button>
             </header>
 
-            <div class="social-profile__header">
+            <div class="social-profile__banner ${has_banner ? '' : 'social-profile__banner--fallback'}">
+                ${has_banner
+                    ? html`<img
+                          src="${banner_url}"
+                          alt=""
+                          loading="lazy"
+                          @error=${() => el.onBannerError()}
+                      />`
+                    : html`<converse-logo></converse-logo>`}
+            </div>
+
+            <div class="social-profile__header social-profile__header--with-banner">
                 <span class="social-profile__avatar">${avatar}</span>
                 <div class="social-profile__identity">
                     <span class="social-profile__name" style="${author_style}">${name}</span>

@@ -2031,4 +2031,86 @@ describe('The microblog plugin', function () {
             expect(feed.get('fetch_error')).toBe(null);
         }),
     );
+
+    it(
+        "reads an author's profile banner from their Movim banner node",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const jid = 'imogen@shakespeare.lit';
+            const profile = api.microblog.profile.get(jid);
+            expect(profile.get('banner_url')).toBeUndefined();
+
+            // Movim publishes the banner by reference: XEP-0084 avatar-metadata
+            // with an <info url="…"/> pointing at an HTTP-hosted image.
+            const get = vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: [
+                    stx`
+                    <item id="banner-1">
+                      <metadata xmlns="urn:xmpp:avatar:metadata">
+                        <info url="https://uploads.example.org/banner.jpg"
+                              width="1280" height="320" type="image/jpeg" bytes="12345"/>
+                      </metadata>
+                    </item>`.tree(),
+                ],
+            });
+
+            await profile.fetchBanner();
+            expect(get).toHaveBeenCalledWith(jid, 'urn:xmpp:movim-banner:0', { max_items: 1, timeout: 10000 });
+            expect(profile.get('banner_url')).toBe('https://uploads.example.org/banner.jpg');
+
+            // Deduped/cached: a second call doesn't re-fetch.
+            await profile.fetchBanner();
+            expect(get).toHaveBeenCalledTimes(1);
+        }),
+    );
+
+    it(
+        'ignores a banner whose URL is missing or not http(s)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const jid = 'cloten@shakespeare.lit';
+            const profile = api.microblog.profile.get(jid);
+
+            // A non-http(s) scheme is rejected (the URL becomes an <img> src).
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: [
+                    stx`
+                    <item id="banner-2">
+                      <metadata xmlns="urn:xmpp:avatar:metadata">
+                        <info url="javascript:alert(1)" type="image/jpeg"/>
+                      </metadata>
+                    </item>`.tree(),
+                ],
+            });
+
+            await profile.fetchBanner();
+            expect(profile.get('banner_url')).toBeUndefined();
+        }),
+    );
+
+    it(
+        'leaves the header banner-less when the banner node is unreadable',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const jid = 'guiderius@shakespeare.lit';
+            const profile = api.microblog.profile.get(jid);
+
+            // A presence-restricted banner node answers `forbidden`, like the feed
+            // itself; the fetch swallows it and simply sets no banner.
+            const forbidden = Object.assign(new Error('forbidden'), { name: 'forbidden' });
+            vi.spyOn(api.pubsub.items, 'get').mockRejectedValue(forbidden);
+
+            await profile.fetchBanner();
+            expect(profile.get('banner_url')).toBeUndefined();
+        }),
+    );
 });

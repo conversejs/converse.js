@@ -20,11 +20,11 @@ import PostComment from './post-comment.js';
 import PostComments from './post-comments.js';
 import FollowableCache from './followable.js';
 import Following from './following.js';
-import MicroblogProfile, { clearProfiles } from './profile.js';
+import MicroblogProfile from './profile.js';
 import microblog_api from './api.js';
 import { comment_summary_queue } from './comment-summary.js';
 import { registerMicroblogHandler } from './utils.js';
-import { MICROBLOG_NODE, NS_ATOM, NS_THREAD, SOCIAL_FEED_FEATURE } from './constants.js';
+import { MICROBLOG_NODE, NS_ATOM, NS_AVATAR_METADATA, NS_THREAD, SOCIAL_FEED_FEATURE } from './constants.js';
 import '../pubsub/index.js';
 import PubsubPlaceholderMessage from './placeholder.js';
 
@@ -32,6 +32,7 @@ const { Strophe } = converse.env;
 
 Strophe.addNamespace('ATOM', NS_ATOM);
 Strophe.addNamespace('THREAD', NS_THREAD);
+Strophe.addNamespace('AVATAR_METADATA', NS_AVATAR_METADATA);
 
 converse.plugins.add('converse-microblog', {
     dependencies: ['converse-pubsub', 'converse-disco'],
@@ -75,8 +76,10 @@ converse.plugins.add('converse-microblog', {
             // Drop the in-memory summary-fetch dedupe state so a fresh login
             // re-fetches counts (the persisted post attrs still show meanwhile).
             comment_summary_queue.reset();
+
             // Drop cached author profiles (and their vCard listeners).
-            clearProfiles();
+            MicroblogProfile.clearProfiles();
+
             const { state } = _converse;
             if (state.pubsubfeeds) {
                 state.pubsubfeeds.clearStore?.({ silent: true });

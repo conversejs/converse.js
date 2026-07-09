@@ -38,6 +38,22 @@ export const COMMENTS_PUBLISH_OPTIONS = {
 export const SOCIAL_FEED_FEATURE = 'urn:xmpp:pubsub-social-feed:1';
 
 /**
+ * A profile banner is not part of XEP-0277/0472. Movim publishes one to this PEP
+ * node using the XEP-0084 User Avatar *metadata* format, but *by reference*:
+ * an `<info url="…"/>` element (namespace {@link NS_AVATAR_METADATA}) pointing
+ * at an HTTP-hosted image.
+ */
+export const MOVIM_BANNER_NODE = 'urn:xmpp:movim-banner:0';
+export const NS_AVATAR_METADATA = 'urn:xmpp:avatar:metadata';
+
+/**
+ * Per-request IQ timeout (ms) for the best-effort banner fetch. Short (vs. the
+ * 60s default) so a slow or unresponsive PEP service never leaves a banner IQ
+ * hanging; the header just renders without a banner meanwhile.
+ */
+export const BANNER_FETCH_TIMEOUT = 10000;
+
+/**
  * How many posts to fetch per page when backfilling a feed's history
  * (XEP-0060 § 6.5 Retrieve Items, `max_items` / RSM `max`).
  */

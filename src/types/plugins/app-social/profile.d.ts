@@ -17,6 +17,10 @@ export default class SocialProfile extends SocialProfile_base {
             type: BooleanConstructor;
             state: boolean;
         };
+        _banner_error: {
+            type: BooleanConstructor;
+            state: boolean;
+        };
     };
     jid: any;
     /** @type {import('@converse/headless').MicroblogProfile} */
@@ -26,6 +30,7 @@ export default class SocialProfile extends SocialProfile_base {
     posts: import("@lit-labs/signals").Signal.State<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[]>;
     _busy: boolean;
     _loaded: boolean;
+    _banner_error: boolean;
     initialize(): Promise<void>;
     /**
      * Resolve the feed backing the post list (shared feed when we follow
@@ -57,6 +62,11 @@ export default class SocialProfile extends SocialProfile_base {
      */
     get accessDenied(): boolean;
     render(): import("lit-html").TemplateResult<1> | "";
+    /**
+     * The banner image failed to load (e.g. a dead link / 404). Fall back to the
+     * logo watermark rather than leave a broken-image placeholder in the header.
+     */
+    onBannerError(): void;
     /** Return to the timeline. */
     goBack(): void;
     /**

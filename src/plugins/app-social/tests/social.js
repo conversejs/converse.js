@@ -238,7 +238,7 @@ describe('The social feed', function () {
             // the Social app). Click the contact's post (the newest, first).
             const author = await u.waitUntil(() => {
                 const a = articles[0].querySelector('a.social-post__author.show-msg-author-modal');
-                return a && /color:/.test(a.getAttribute('style') || '') ? a : null;
+                return a && (/color:/).test(a.getAttribute('style') || '') ? a : null;
             });
             let selected = null;
             el.addEventListener('profileselected', (ev) => (selected = ev.detail.jid));
@@ -1114,6 +1114,116 @@ describe('The social profile view', function () {
             expect(empty.textContent).toContain("aren't public");
             expect(profile.querySelector('.social-feed__empty').textContent).not.toContain('No posts yet');
             expect(profile.querySelector('.social-profile__restricted converse-icon')).not.toBe(null);
+        }),
+    );
+
+    it(
+        "renders an author's banner image in the profile header",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            const banner_url = 'https://uploads.example.org/banner.jpg';
+
+            // The banner node yields a Movim-style avatar-metadata item; the feed
+            // node stays empty.
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, node) => {
+                if (node === 'urn:xmpp:movim-banner:0') {
+                    return Promise.resolve({
+                        items: [
+                            stx`
+                            <item id="b-1">
+                              <metadata xmlns="urn:xmpp:avatar:metadata">
+                                <info url="${banner_url}" width="1280" height="320" type="image/jpeg"/>
+                              </metadata>
+                            </item>`.tree(),
+                        ],
+                    });
+                }
+                return Promise.resolve({ items: [] });
+            });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // Open our own profile from a post.
+            receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello world'));
+            const author = await u.waitUntil(() => el.querySelector('.social-post__author.show-msg-author-modal'));
+            author.click();
+
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+            const img = await u.waitUntil(() => profile.querySelector('.social-profile__banner img'));
+            expect(img.getAttribute('src')).toBe(banner_url);
+            // The avatar overlaps the banner (the header gets the modifier class).
+            expect(profile.querySelector('.social-profile__header--with-banner')).not.toBe(null);
+        }),
+    );
+
+    it(
+        'shows a logo watermark when the author has no banner',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            // Every node (banner + feed) is empty, so there's no banner image.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello world'));
+            const author = await u.waitUntil(() => el.querySelector('.social-post__author.show-msg-author-modal'));
+            author.click();
+
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+            // The banner still renders, as a Converse logo fallback, not an <img>.
+            const banner = await u.waitUntil(() => profile.querySelector('.social-profile__banner--fallback'));
+            expect(banner.querySelector('converse-logo')).not.toBe(null);
+            expect(profile.querySelector('.social-profile__banner img')).toBe(null);
+        }),
+    );
+
+    it(
+        'falls back to the logo when the banner image fails to load',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+
+            // The banner node advertises a URL that will 404 (dead link).
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, node) => {
+                if (node === 'urn:xmpp:movim-banner:0') {
+                    return Promise.resolve({
+                        items: [
+                            stx`
+                            <item id="b-1">
+                              <metadata xmlns="urn:xmpp:avatar:metadata">
+                                <info url="http://127.0.0.1:1/missing.jpg" type="image/jpeg"/>
+                              </metadata>
+                            </item>`.tree(),
+                        ],
+                    });
+                }
+                return Promise.resolve({ items: [] });
+            });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello world'));
+            const author = await u.waitUntil(() => el.querySelector('.social-post__author.show-msg-author-modal'));
+            author.click();
+
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+            const img = await u.waitUntil(() => profile.querySelector('.social-profile__banner img'));
+
+            // Simulate the browser's load failure; the header swaps to the logo.
+            img.dispatchEvent(new Event('error'));
+            const fallback = await u.waitUntil(
+                () => profile.querySelector('.social-profile__banner--fallback converse-logo'),
+            );
+            expect(fallback).not.toBe(null);
+            expect(profile.querySelector('.social-profile__banner img')).toBe(null);
         }),
     );
 

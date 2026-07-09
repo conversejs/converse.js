@@ -169,6 +169,42 @@
             color: var(--danger-color);
         }
 
+        // The banner: a wide header image (Movim's 1280×320, so 4:1) bled to the
+        // card edges (offsetting the .social-profile padding). Always shown: the
+        // author's published banner (urn:xmpp:movim-banner:0) when it loads, else
+        // a Converse logo watermark (see --fallback).
+        .social-profile__banner {
+            margin: 0 -1em;
+            aspect-ratio: 1280 / 320;
+            overflow: hidden;
+            background-color: var(--controlbox-pane-bgcolor, rgba(0, 0, 0, 0.05));
+
+            img {
+                display: block;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            // No banner (or it failed to load): a centred, faded logo so the
+            // header reads as intentional rather than empty/broken. Sized in `em`
+            // (not %) since the logo sits inside the inline `converse-logo` element,
+            // which has no definite height for a percentage to resolve against. The
+            // banner is itself `em`-wide (max 42em), so an `em` logo stays
+            // proportional to it across font sizes.
+            &.social-profile__banner--fallback {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                .converse-svg-logo {
+                    height: 6em;
+                    width: auto;
+                    opacity: 0.55;
+                }
+            }
+        }
+
         // The profile header: avatar + name/JID, with the follow toggle pushed
         // to the trailing edge.
         .social-profile__header {
@@ -178,6 +214,22 @@
             margin-bottom: 1em;
             padding-bottom: 1em;
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        // With a banner, lift the avatar so it straddles the banner's lower edge
+        // (the familiar social-profile look), on a background ring for contrast.
+        // The lift uses `transform`, not a negative margin: a negative margin
+        // would raise the whole flex line, and `align-items: center` would then
+        // drag the name and follow toggle up into the banner too. A transform
+        // moves only the avatar, so the rest of the row stays clear of the banner.
+        .social-profile__header--with-banner {
+            .social-profile__avatar {
+                transform: translateY(-2.5em);
+                padding: 3px;
+                background-color: var(--background-color);
+                border-radius: var(--avatar-border-radius, 10%);
+                line-height: 0;
+            }
         }
 
         .social-profile__identity {

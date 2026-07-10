@@ -81,6 +81,39 @@
 
         // Banner shown while the timeline is filtered to a single hashtag. Sticks
         // to the top so the active filter (and its clear button) stay in view.
+        // A slim, right-aligned entry point to the "Following" list.
+        .social-feed__following {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 0.5em;
+        }
+
+        .social-feed__following-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4em;
+            padding: 0.25em 0.5em;
+            background: none;
+            border: none;
+            border-radius: 0.4em;
+            cursor: pointer;
+            color: var(--subdued-color);
+
+            &:hover {
+                color: var(--link-color);
+                background-color: var(--highlight-color-hover);
+            }
+
+            converse-icon svg {
+                fill: currentColor;
+            }
+        }
+
+        .social-feed__following-count {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
         .social-feed__filter {
             position: sticky;
             top: 0;
@@ -296,6 +329,110 @@
             converse-icon svg {
                 fill: var(--subdued-color);
             }
+        }
+
+        // The "Following" list: a heading with a count, then a row per author.
+        .social-following__heading {
+            margin: 0 0 0.75em;
+            font-size: 1.2em;
+        }
+
+        .social-following__count {
+            color: var(--subdued-color);
+            font-weight: normal;
+        }
+
+        .social-following__list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .social-following__item {
+            display: flex;
+            align-items: center;
+            gap: 0.75em;
+            padding: 0.5em;
+            border-radius: 0.5em;
+            cursor: pointer;
+
+            &:hover,
+            &:focus {
+                background-color: var(--highlight-color-hover);
+                outline: none;
+            }
+        }
+
+        .social-following__avatar {
+            flex-shrink: 0;
+        }
+
+        .social-following__identity {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .social-following__name {
+            font-weight: bold;
+        }
+
+        .social-following__jid {
+            font-size: 0.85em;
+            color: var(--subdued-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .social-following__unfollow {
+            margin-inline-start: auto;
+            flex-shrink: 0;
+        }
+
+        // The "you can't see who they follow" notice, like the restricted feed.
+        .social-following__unavailable {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5em;
+
+            converse-icon svg {
+                fill: var(--subdued-color);
+            }
+        }
+
+        // Profile tab bar: switch between the author's Posts and Following list.
+        .social-profile__tabs {
+            display: flex;
+            gap: 0.5em;
+            margin: 1em 0 0.5em;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .social-profile__tab {
+            padding: 0.5em 0.75em;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            color: var(--subdued-color);
+
+            &:hover {
+                color: var(--text-color);
+            }
+
+            &.social-profile__tab--active {
+                color: var(--text-color);
+                border-bottom-color: var(--link-color);
+                font-weight: bold;
+            }
+        }
+
+        .social-profile__tab-count {
+            margin-inline-start: 0.35em;
+            color: var(--subdued-color);
+            font-weight: normal;
         }
 
         .social-comments {

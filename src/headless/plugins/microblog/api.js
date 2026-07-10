@@ -557,13 +557,16 @@ export default {
         },
 
         /**
-         * Read the durable XEP-0330 follow list (the server-side source of truth
-         * for who the user follows), e.g. for a Following list/count.
+         * Read a durable XEP-0330 follow list (the server-side source of truth
+         * for who an account follows), e.g. for a Following list/count. Defaults
+         * to our own list; pass a JID to read a contact's (their node is
+         * presence-access, so it succeeds for contacts and is refused otherwise).
          * @method _converse.api.microblog.following
+         * @param {string} [jid=null] - Whose list to read; null/own for our own.
          * @returns {Promise<Array<{ server: string, node: string, title?: string }>>}
          */
-        async following() {
-            return await readFollowing();
+        async following(jid = null) {
+            return await readFollowing(jid);
         },
 
         /**

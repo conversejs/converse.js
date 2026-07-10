@@ -18,14 +18,17 @@ export default (el) => {
     if (el.open_post) {
         return html`<converse-social-post class="social-feed-container" .model=${el.open_post}></converse-social-post>`;
     }
-    // An author's profile view takes over the timeline when open. Keyed on the
-    // JID so navigating from one profile to another remounts the element.
+    // An author's profile (or a followed community feed) takes over the timeline
+    // when open. Keyed on JID+node so navigating to a different profile/feed
+    // remounts; the active tab is passed in so switching it doesn't remount.
     if (el.open_profile) {
         return keyed(
-            el.open_profile,
+            `${el.open_profile}|${el.profile_node}`,
             html`<converse-social-profile
                 class="social-feed-container"
                 jid=${el.open_profile}
+                node=${el.profile_node}
+                tab=${el.profile_tab}
             ></converse-social-profile>`,
         );
     }

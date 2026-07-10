@@ -15,10 +15,13 @@ export function publishFollow(server: string, node: string, title?: string): Pro
  */
 export function retractFollow(server: string, node: string): Promise<void>;
 /**
- * Read the durable XEP-0330 follow list from our own PEP service.
+ * Read a durable XEP-0330 follow list. Defaults to our own PEP service; pass a
+ * JID to read a contact's list instead (their node is `access_model=presence`,
+ * so this succeeds for contacts with presence access and is refused otherwise).
+ * @param {string} [jid=null] - Whose list to read; null/own for our own.
  * @returns {Promise<Array<{ server: string, node: string, title?: string }>>}
  */
-export function readFollowing(): Promise<Array<{
+export function readFollowing(jid?: string): Promise<Array<{
     server: string;
     node: string;
     title?: string;

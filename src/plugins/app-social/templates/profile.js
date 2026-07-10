@@ -9,7 +9,9 @@ import { _converse } from '@converse/headless';
  */
 export default (el) => {
     const profile = el.profile;
-    const name = profile.getDisplayName();
+    // In feed mode the header names the community feed by its node; otherwise it's
+    // a person, named by their display name.
+    const name = el.isFeed ? el.node : profile.getDisplayName();
     const posts = el.authorPosts;
     // Show the author's banner when they've published one and it loads; otherwise
     // fall back to a Converse logo watermark so the header never looks broken.
@@ -80,54 +82,88 @@ export default (el) => {
                           >
                               ${el.isFollowing ? __('Unfollow') : __('Follow')}
                           </button>
-                          <converse-dropdown
-                              class="social-profile__menu btn-group dropstart"
-                              icon_classes="fa fa-ellipsis-vertical"
-                              .items=${[
-                                  html`<a
-                                      class="dropdown-item social-profile__message"
-                                      role="button"
-                                      @click=${(ev) => el.onMessage(ev)}
-                                  >
-                                      <converse-icon class="fa fa-comments" size="1.5em"></converse-icon>
-                                      ${__('Message')}
-                                  </a>`,
-                                  ...(el.isContact
-                                      ? []
-                                      : [
-                                            html`<a
-                                                class="dropdown-item social-profile__add-contact"
-                                                role="button"
-                                                @click=${(ev) => el.onAddContact(ev)}
-                                            >
-                                                <converse-icon class="fa fa-user-plus" size="1.5em"></converse-icon>
-                                                ${__('Add to contacts')}
-                                            </a>`,
-                                        ]),
-                              ]}
-                          ></converse-dropdown>
+                          ${el.isFeed
+                              ? '' // a community feed isn't a person: no message / add-contact
+                              : html`<converse-dropdown
+                                    class="social-profile__menu btn-group dropstart"
+                                    icon_classes="fa fa-ellipsis-vertical"
+                                    .items=${[
+                                        html`<a
+                                            class="dropdown-item social-profile__message"
+                                            role="button"
+                                            @click=${(ev) => el.onMessage(ev)}
+                                        >
+                                            <converse-icon class="fa fa-comments" size="1.5em"></converse-icon>
+                                            ${__('Message')}
+                                        </a>`,
+                                        ...(el.isContact
+                                            ? []
+                                            : [
+                                                  html`<a
+                                                      class="dropdown-item social-profile__add-contact"
+                                                      role="button"
+                                                      @click=${(ev) => el.onAddContact(ev)}
+                                                  >
+                                                      <converse-icon
+                                                          class="fa fa-user-plus"
+                                                          size="1.5em"
+                                                      ></converse-icon>
+                                                      ${__('Add to contacts')}
+                                                  </a>`,
+                                              ]),
+                                    ]}
+                                ></converse-dropdown>`}
                       </span>`}
             </div>
 
-            <div class="social-profile__posts">
-                ${posts.length
-                    ? repeat(
-                          posts,
-                          /** @param {import('@converse/headless').PubSubMessage} p */ (p) => p.get('id'),
-                          (p) =>
-                              p instanceof _converse.exports.PubsubPlaceholderMessage
-                                  ? html`<converse-history-placeholder .model=${p}></converse-history-placeholder>`
-                                  : html`<converse-social-message .model=${p}></converse-social-message>`,
-                      )
-                    : !el._loaded
-                      ? html`<p class="social-feed__empty">${__('Loading…')}</p>`
-                      : el.accessDenied
-                        ? html`<p class="social-feed__empty social-profile__restricted">
-                              <converse-icon size="1.2em" class="fa fa-lock"></converse-icon>
-                              ${__("%1$s's posts aren't public, and are only shared with contacts.", name)}
-                          </p>`
-                        : html`<p class="social-feed__empty">${__('No posts yet.')}</p>`}
-            </div>
+            ${el.isFeed
+                ? '' // a community feed has no "following" list of its own
+                : html`<nav class="social-profile__tabs" role="tablist">
+                      <button
+                          type="button"
+                          role="tab"
+                          class="social-profile__tab ${el.tab === 'following' ? '' : 'social-profile__tab--active'}"
+                          aria-selected=${el.tab !== 'following'}
+                          @click=${() => el.onTab('posts')}
+                      >
+                          ${__('Posts')}
+                      </button>
+                      <button
+                          type="button"
+                          role="tab"
+                          class="social-profile__tab ${el.tab === 'following' ? 'social-profile__tab--active' : ''}"
+                          aria-selected=${el.tab === 'following'}
+                          @click=${() => el.onTab('following')}
+                      >
+                          ${__('Following')}${el.followingCount > 0
+                              ? html`<span class="social-profile__tab-count">${el.followingCount}</span>`
+                              : ''}
+                      </button>
+                  </nav>`}
+
+            ${el.tab === 'following' && !el.isFeed
+                ? html`<converse-social-following jid=${el.jid}></converse-social-following>`
+                : html`<div class="social-profile__posts">
+                      ${posts.length
+                          ? repeat(
+                                posts,
+                                /** @param {import('@converse/headless').PubSubMessage} p */ (p) => p.get('id'),
+                                (p) =>
+                                    p instanceof _converse.exports.PubsubPlaceholderMessage
+                                        ? html`<converse-history-placeholder
+                                              .model=${p}
+                                          ></converse-history-placeholder>`
+                                        : html`<converse-social-message .model=${p}></converse-social-message>`,
+                            )
+                          : !el._loaded
+                            ? html`<p class="social-feed__empty">${__('Loading…')}</p>`
+                            : el.accessDenied
+                              ? html`<p class="social-feed__empty social-profile__restricted">
+                                    <converse-icon size="1.2em" class="fa fa-lock"></converse-icon>
+                                    ${__("%1$s's posts aren't public, and are only shared with contacts.", name)}
+                                </p>`
+                              : html`<p class="social-feed__empty">${__('No posts yet.')}</p>`}
+                  </div>`}
         </div>
     `;
 };

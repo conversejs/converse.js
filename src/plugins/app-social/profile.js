@@ -9,19 +9,31 @@ import { CustomElement } from 'shared/components/element.js';
 import { collectionSignal } from 'shared/signals.js';
 import 'shared/components/logo.js';
 import 'shared/components/dropdown.js';
+import './following.js';
 import tplProfile from './templates/profile.js';
 
 const { Strophe } = converse.env;
 
+// The default microblog node (a person's feed). A profile opened on any other
+// node is a followed community/topic feed.
+const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
+
 /**
- * An author's profile view. A header above that author's feed, newest-first.
- * `SignalWatcher` auto-tracks the `collectionSignal` over the profile feed's
- * messages, so the post list re-renders as posts are backfilled or pushed live.
+ * An author's profile view, or a followed community feed (when {@link node} is
+ * not the microblog node). A header above the feed, newest-first. `SignalWatcher`
+ * auto-tracks the `collectionSignal` over the feed's messages, so the post list
+ * re-renders as posts are backfilled or pushed live.
  */
 export default class SocialProfile extends SignalWatcher(CustomElement) {
     static get properties() {
         return {
             jid: { type: String },
+            // The node to show: the microblog node (a person's feed) or a
+            // community/topic node (a feed we follow), which switches to feed mode.
+            node: { type: String },
+            // Which tab is shown: the author's 'posts' feed or their 'following'
+            // list. Owned by SocialApp (so it's routable) and passed in.
+            tab: { type: String },
             _busy: { type: Boolean, state: true },
             // Whether the initial post backfill has settled. Until then we hold
             // off on the "no posts" / "not public" empty states.
@@ -29,12 +41,17 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
             // Set when the banner image fails to load (e.g. a 404), so we fall
             // back to the logo watermark instead of a broken-image placeholder.
             _banner_error: { type: Boolean, state: true },
+            // How many accounts this author follows (their XEP-0330 list),
+            // fetched best-effort for other authors; null until known/refused.
+            _following_count: { type: Number, state: true },
         };
     }
 
     constructor() {
         super();
         this.jid = null;
+        this.node = MICROBLOG_NODE;
+        this.tab = 'posts';
         /** @type {import('@converse/headless').MicroblogProfile} */
         this.profile = null;
         /** @type {import('@converse/headless').PubSubFeed} */
@@ -43,6 +60,7 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
         this._busy = false;
         this._loaded = false;
         this._banner_error = false;
+        this._following_count = null;
     }
 
     async initialize() {
@@ -70,7 +88,46 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
             this.listenTo(_converse.state.roster, 'remove', () => this.requestUpdate());
         }
 
+        // Best-effort "Following · N" count for another author (our own comes
+        // from the live mirror; see {@link followingCount}). A community feed
+        // isn't a person, so it has no follow list.
+        if (!this.isOwn && !this.isFeed) this.fetchFollowingCount();
+
         await this.setupFeed();
+    }
+
+    /**
+     * Whether this is a followed community/topic feed (a non-microblog node)
+     * rather than a person's profile. Feed mode drops the person-only chrome
+     * (message, add-contact, following tab) and labels the header by the node.
+     * @returns {boolean}
+     */
+    get isFeed() {
+        return !!this.node && this.node !== MICROBLOG_NODE;
+    }
+
+    /**
+     * Read the author's follow-list count once (best-effort). Their XEP-0330 node
+     * is presence-access, so this is refused for strangers; on any failure the
+     * count stays null and the "Following" link is simply hidden.
+     * @returns {Promise<void>}
+     */
+    async fetchFollowingCount() {
+        try {
+            const list = await api.microblog.following(this.jid);
+            this._following_count = list.length;
+        } catch {
+            this._following_count = null;
+        }
+    }
+
+    /**
+     * How many accounts this author follows. Our own is the live mirror (reactive
+     * to follow/unfollow); another author's is the fetched snapshot.
+     * @returns {number}
+     */
+    get followingCount() {
+        return this.isOwn ? (_converse.state.following?.length ?? 0) : (this._following_count ?? 0);
     }
 
     /**
@@ -83,7 +140,7 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
     async setupFeed() {
         let feed;
         try {
-            feed = await api.microblog.profile.getFeed(this.jid);
+            feed = await api.microblog.profile.getFeed(this.jid, this.node);
         } catch (e) {
             log.error(e);
             this._loaded = true;
@@ -116,11 +173,11 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
     }
 
     /**
-     * Whether we currently follow this author.
+     * Whether we currently follow this author (or community feed).
      * @returns {boolean}
      */
     get isFollowing() {
-        return api.microblog.isFollowing(this.jid);
+        return api.microblog.isFollowing(this.jid, this.node);
     }
 
     /**
@@ -168,6 +225,16 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
     }
 
     /**
+     * Switch between this profile's "Posts" and "Following" tabs. SocialApp owns
+     * the tab (so it's routable), so we bubble the choice up rather than set it here.
+     * @param {'posts'|'following'} tab
+     */
+    onTab(tab) {
+        if (tab === this.tab) return;
+        this.dispatchEvent(new CustomEvent('profiletab', { detail: { tab }, bubbles: true, composed: true }));
+    }
+
+    /**
      * Open a 1:1 chat with the author and switch to the Chat app.
      * @param {Event} [ev]
      */
@@ -207,7 +274,9 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
         this._busy = true;
         const following = this.isFollowing;
         try {
-            await (following ? api.microblog.unfollow(this.jid) : api.microblog.follow(this.jid));
+            await (following
+                ? api.microblog.unfollow(this.jid, { node: this.node })
+                : api.microblog.follow(this.jid, { node: this.node }));
             // Re-run after a follow/unfollow so the view re-points to
             // whichever feed now holds the author's posts.
             await this.setupFeed();

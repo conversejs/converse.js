@@ -13,7 +13,7 @@ const { Strophe, stx, u } = converse.env;
  * @extends {Model<import('./types').OMEMOStoreAttributes>}
  */
 class OMEMOStore extends Model {
-    /** @type {Promise<void>} */
+    /** @type {Promise<boolean>} */
     #setup_promise;
 
     get Direction() {
@@ -255,11 +255,16 @@ class OMEMOStore extends Model {
         return Promise.resolve();
     }
 
-    publishBundle() {
+    async publishBundle() {
         // The v2 bundle publish runs in the background: failing it (e.g. on a
         // server that doesn't support omemo:2) must not block legacy OMEMO setup.
         this.#publishV2Bundle().catch((e) => log.error(e));
-        return this.#publishLegacyBundle();
+        await this.#publishLegacyBundle();
+        // Record that our bundle reached the server, so we don't needlessly
+        // republish it on the next connection (see initOMEMO). Any change to the
+        // stored bundle clears this flag again. If the publish above rejected we
+        // never get here, so the flag stays false and we retry next time.
+        this.save({ bundle_published: true });
     }
 
     #publishLegacyBundle() {
@@ -343,6 +348,10 @@ class OMEMOStore extends Model {
 
         const keys = await Promise.all(missing_keys.map((id) => KeyHelper.generatePreKey(parseInt(id, 10))));
         keys.forEach((k) => this.storePreKey(k.keyId, k.keyPair));
+        // These replacement prekeys aren't on the server yet. The caller
+        // republishes right after, but clearing the flag means a failed publish
+        // is retried on the next connection rather than silently skipped.
+        this.save({ bundle_published: false });
 
         const prekeys = this.getPreKeys();
         const marshalled_keys = Object.keys(prekeys).map((id) => ({
@@ -412,6 +421,8 @@ class OMEMOStore extends Model {
                 privKey: u.arrayBufferToBase64(identity_keypair.privKey),
                 pubKey: identity_key,
             },
+            // A freshly generated bundle hasn't reached the server yet.
+            bundle_published: false,
         });
 
         // Generate both legacy and v2 signed prekeys (signatures differ in key encoding).
@@ -444,18 +455,21 @@ class OMEMOStore extends Model {
      * legacy signed prekey, but no `signed_prekey_omemo2`.
      *
      * This generates the missing v2 signed prekey, reusing the existing
-     * identity key so our fingerprint and device_id are unchanged. The v2 bundle
-     * itself is published by the regular {@link OMEMOStore#publishBundle} call in
-     * initOMEMO, which runs right after the session is restored.
+     * identity key so our fingerprint and device_id are unchanged. When we
+     * generate one, initOMEMO publishes the (now changed) bundle right after
+     * the session is restored.
+     *
+     * @returns {Promise<boolean>} Whether a new v2 signed prekey was generated.
      */
     async ensureV2SignedPreKey() {
         if (this.get('signed_prekey_omemo2') || !this.get('identity_keypair')) {
-            return;
+            return false;
         }
         log.info('Migrating OMEMO store: generating the missing omemo:2 signed prekey');
         const { KeyHelper } = await getCrypto();
         const signed_prekey_v2 = await KeyHelper.generateSignedPreKey(this.getIdentityKeyPair(), 0, Strophe.NS.OMEMO2);
         this.storeSignedPreKeyV2(signed_prekey_v2);
+        return true;
     }
 
     /**
@@ -470,39 +484,59 @@ class OMEMOStore extends Model {
      * identity key and device_id so the fingerprint stays unchanged.
      * It also subsumes the omemo:2 migration for stores created before omemo:2
      * support.
+     *
+     * @returns {Promise<boolean>} Whether any key material was (re)generated, in
+     *      which case the bundle changed and must be republished.
      */
     async ensureProvisioned() {
-        await this.ensureV2SignedPreKey();
+        let changed = await this.ensureV2SignedPreKey();
         const { KeyHelper } = await getCrypto();
         if (!this.get('signed_prekey')) {
             log.warn('OMEMO store is missing its legacy signed prekey; regenerating it');
             const spk = await KeyHelper.generateSignedPreKey(this.getIdentityKeyPair(), 0, Strophe.NS.OMEMO);
             this.storeSignedPreKey(spk);
+            changed = true;
         }
         if (Object.keys(this.getPreKeys()).length === 0) {
             log.warn('OMEMO store has no prekeys (interrupted provisioning?); regenerating them');
             await this.generatePreKeys();
+            changed = true;
         }
+        if (changed) {
+            // The regenerated material is no longer what we last published.
+            this.save({ bundle_published: false });
+        }
+        return changed;
     }
 
+    /**
+     * Restores the persisted OMEMO store, provisioning or repairing it as needed.
+     *
+     * @returns {Promise<boolean>} Whether key material was (re)generated, so that
+     *      the caller knows the bundle changed and must be (re)published.
+     */
     fetchSession() {
         if (this.#setup_promise === undefined) {
-            this.#setup_promise = new Promise((resolve, reject) => {
+            this.#setup_promise = new Promise(/** @param {(v: boolean) => void} resolve */ (resolve, reject) => {
                 this.fetch({
                     success: () => {
                         if (!this.get('device_id') || !this.get('identity_keypair')) {
                             // No store yet, or a generateBundle() interrupted before
                             // the identity key was persisted. (Re)generate a complete
                             // bundle; any half-published device_id is left as an orphan.
-                            this.generateBundle().then(resolve).catch(reject);
+                            // A brand-new bundle always needs publishing.
+                            this.generateBundle()
+                                .then(() => resolve(true))
+                                .catch(reject);
                         } else {
-                            // Existing store: backfill any missing key material.
+                            // Existing store: backfill any missing key material and
+                            // report whether that changed the bundle.
                             this.ensureProvisioned()
                                 .then(resolve)
                                 .catch((e) => {
                                     log.error('Could not repair/migrate the OMEMO store');
                                     log.error(e);
-                                    resolve();
+                                    resolve(false);
                                 });
                         }
                     },
@@ -512,7 +546,9 @@ class OMEMOStore extends Model {
                      */
                     error: (_model, resp) => {
                         log.warn(`Could not restore OMEMO session, we'll generate a new one: ${resp}`);
-                        this.generateBundle().then(resolve).catch(reject);
+                        this.generateBundle()
+                            .then(() => resolve(true))
+                            .catch(reject);
                     },
                 });
             });

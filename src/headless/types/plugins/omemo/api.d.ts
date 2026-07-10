@@ -22,7 +22,11 @@ declare namespace _default {
          */
         function send(chat: import("../../shared/chatbox.js").default, plaintext: string, extensions?: import("strophe.js").Builder[]): Promise<void>;
         namespace session {
-            function restore(): Promise<void>;
+            /**
+             * @returns {Promise<boolean>} Whether key material was (re)generated
+             *      while restoring, i.e. whether the bundle needs (re)publishing.
+             */
+            function restore(): Promise<boolean>;
         }
         namespace devicelists {
             /**

@@ -629,6 +629,75 @@ describe('OMEMO 2 store self-healing', function () {
             expect(store.get('signed_prekey')).toBe(spk);
         }),
     );
+
+    it(
+        'reports whether it regenerated key material, so the bundle is only republished when it changed',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            await mock.initializedOMEMO(_converse);
+            const store = _converse.state.omemo_store;
+
+            // A fully provisioned store needs no repair, so nothing changed and
+            // there's nothing new to publish.
+            expect(await store.ensureProvisioned()).toBe(false);
+
+            // Each kind of missing key material is backfilled and reported as a
+            // change, so initOMEMO knows the bundle must be (re)published. First
+            // the omemo:2 signed prekey (i.e. a store from before omemo:2 support).
+            store.unset('signed_prekey_omemo2');
+            expect(await store.ensureProvisioned()).toBe(true);
+            expect(await store.ensureProvisioned()).toBe(false); // now intact again
+
+            store.unset('signed_prekey');
+            expect(await store.ensureProvisioned()).toBe(true);
+
+            store.unset('prekeys');
+            expect(await store.ensureProvisioned()).toBe(true);
+            expect(await store.ensureProvisioned()).toBe(false);
+        }),
+    );
+});
+
+describe('OMEMO bundle publishing', function () {
+    it(
+        'only republishes the bundle when it changed or was never confirmed on the server',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.initializedOMEMO(_converse);
+            const store = _converse.state.omemo_store;
+
+            // The gate initOMEMO applies on connect. Instead of a resumed-session
+            // check we track `bundle_published`, so this holds for any connection
+            // type (full login, XEP-0198 resume, shared-worker attach, BOSH prebind).
+            const wouldPublish = (changed) => changed || !store.get('bundle_published');
+
+            // initializedOMEMO drove a successful publish, so the bundle is flagged
+            // as published and an unchanged (re)connection skips the large republish.
+            expect(store.get('bundle_published')).toBe(true);
+            expect(wouldPublish(await store.ensureProvisioned())).toBe(false);
+
+            // A change (here the omemo:2 migration) clears the flag and forces a
+            // republish, regardless of how we (re)connected.
+            store.unset('signed_prekey_omemo2');
+            const changed = await store.ensureProvisioned();
+            expect(changed).toBe(true);
+            expect(store.get('bundle_published')).toBe(false);
+            expect(wouldPublish(changed)).toBe(true);
+
+            // A successful publish records that the bundle reached the server, so
+            // the next unchanged connection skips again. (Stub the network so we
+            // don't have to answer the publish IQ here.)
+            spyOn(api.pubsub, 'publish').and.resolveTo();
+            await store.publishBundle();
+            expect(store.get('bundle_published')).toBe(true);
+            expect(wouldPublish(await store.ensureProvisioned())).toBe(false);
+
+            // A bundle that never reached the server (e.g. the initial publish
+            // failed) is retried even when nothing changed. This is what a
+            // resumed-session check would have missed on a BOSH prebind attach.
+            store.save({ bundle_published: false });
+            expect(wouldPublish(await store.ensureProvisioned())).toBe(true);
+        }),
+    );
 });
 
 describe('OMEMO 2 sending', function () {

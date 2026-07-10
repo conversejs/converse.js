@@ -115,15 +115,19 @@ export function parseAtomEntry(item, { from, node } = {}) {
     const author_uri = author ? sizzle('> uri', author).pop()?.textContent?.trim() : undefined;
     const author_jid = author_uri ? getJIDFromURI(author_uri) : undefined;
 
-    // Links carry repost provenance (`rel="via"`) and the comments node
-    // (`rel="replies"`); both are un-prefixed Atom elements. The via href/ref
-    // are kept verbatim so reposting a repost can propagate them (the via link
-    // must keep pointing at the *original* post, per XEP-0277).
+    // Links carry repost provenance (`rel="via"`), the comments node
+    // (`rel="replies"`), media attachments (`rel="enclosure"`), and the entry's
+    // canonical web URL (`rel="alternate"`); all are un-prefixed Atom elements. The
+    // via href/ref are kept verbatim so reposting a repost can propagate them (the
+    // via link must keep pointing at the *original* post, per XEP-0277).
     let via_jid;
     let via_href;
     let via_ref;
     let comments_jid;
     let comments_node;
+    let alternate_url;
+    const enclosures = [];
+
     for (const link of sizzle('> link', entry)) {
         const rel = link.getAttribute('rel');
         if (rel === 'via') {
@@ -136,6 +140,24 @@ export function parseAtomEntry(item, { from, node } = {}) {
             const href = link.getAttribute('href');
             comments_jid = href ? getJIDFromURI(href) : undefined;
             comments_node = getNodeFromURI(href);
+        } else if (rel === 'enclosure') {
+            // RFC 4287 media attachment
+            const href = link.getAttribute('href');
+            if (href) {
+                enclosures.push({
+                    href,
+                    type: link.getAttribute('type') || undefined,
+                    title: link.getAttribute('title') || undefined,
+                });
+            }
+        } else if (!rel || rel === 'alternate') {
+            // The entry's canonical URL (RFC 4287 §4.2.7.2: a missing rel means
+            // "alternate"). Blog/news bridges (WordPress via atomtopubsub) put the
+            // article permalink here while the body is only a teaser, so keep the
+            // first one to render as a "read more" link. Ignore non-web schemes
+            // (e.g. an xmpp: self-reference).
+            const href = link.getAttribute('href');
+            if (href && !alternate_url && href.startsWith('http')) alternate_url = href;
         }
     }
 
@@ -183,6 +205,8 @@ export function parseAtomEntry(item, { from, node } = {}) {
             ),
         comments_jid,
         comments_node,
+        alternate_url,
+        ...(enclosures.length ? { enclosures } : {}),
         categories: sizzle('> category', entry)
             .map((el) => el.getAttribute('term'))
             .filter(Boolean),

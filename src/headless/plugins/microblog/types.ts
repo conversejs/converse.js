@@ -26,6 +26,7 @@ export type PubSubMessageAttrs = {
     summary?: string;
 
     title_xhtml?: string;
+    summary_xhtml?: string;
     content_xhtml?: string;
 
     author_name?: string;

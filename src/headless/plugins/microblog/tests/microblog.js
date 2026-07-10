@@ -250,29 +250,46 @@ describe('The microblog plugin', function () {
     );
 
     it(
-        'parses a post with rich (XHTML) content',
+        'parses rich Atom text constructs: xhtml, entity-escaped html, a MIME text/html, and a duplicated (Movim) construct',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
-            const bare_jid = _converse.session.get('bare_jid');
-            const feed = await api.microblog.feeds.own();
+            const jid = 'pubsub.movim.eu';
+            const feed = await api.microblog.feeds.get(jid, MICROBLOG_NODE, true);
 
+            // `rich-1` exercises every construct shorthand: an entity-escaped
+            // `type="html"` <summary> (blog feeds), an XHTML `<div>` <content>, and a
+            // duplicated <content> where a trailing `type="text"` Markdown source
+            // follows the rich one (Movim). `rich-2` uses a MIME `type="text/html"`
+            // <content> (the atomtopubsub WordPress bridge, via Movim). We keep the
+            // markup as the `_xhtml` variant, derive a tag-stripped plain-text form
+            // for previews, and never let `.pop()` land on the Markdown sibling.
             receive(
                 _converse,
                 stx`
-                <message xmlns="jabber:client" from="${bare_jid}" to="${bare_jid}" type="headline">
+                <message xmlns="jabber:client" from="${jid}" to="${jid}" type="headline">
                   <event xmlns="${PUBSUB_EVENT}">
                     <items node="${MICROBLOG_NODE}">
-                      <item id="rich-1" publisher="${bare_jid}">
+                      <item id="rich-1" publisher="${jid}">
                         <entry xmlns="${ATOM}">
-                          <title type="xhtml">
+                          <title>Movim 0.34.1 is out</title>
+                          <summary type="html">&lt;p&gt;A short &lt;em&gt;excerpt&lt;/em&gt;.&lt;/p&gt;</summary>
+                          <content type="xhtml">
                             <div xmlns="http://www.w3.org/1999/xhtml">
-                              <p>hanging out at the <strong>Café</strong></p>
+                              <p>A small <a href="https://mov.im/x">patch</a> release.</p>
+                              <h2>Redesigned notifications</h2>
                             </div>
-                          </title>
-                          <id>tag:montague.lit,2024-01-01:posts-rich-1</id>
-                          <published>2024-01-01T18:30:02Z</published>
-                          <updated>2024-01-01T18:30:02Z</updated>
+                          </content>
+                          <content type="text">A small [patch](https://mov.im/x) release.## Redesigned notifications</content>
+                          <published>2026-06-28T16:39:45Z</published>
+                          <updated>2026-06-29T04:23:34Z</updated>
+                        </entry>
+                      </item>
+                      <item id="rich-2" publisher="${jid}">
+                        <entry xmlns="${ATOM}">
+                          <title>Jet Fuel Can't Melt Magic Rings</title>
+                          <content type="text/html">&lt;p&gt;Nasty &lt;strong&gt;hobbitses&lt;/strong&gt;&lt;/p&gt;&lt;img src="https://arcaderage.co/x.png"/&gt;</content>
+                          <updated>2026-05-10T14:13:06Z</updated>
                         </entry>
                       </item>
                     </items>
@@ -280,9 +297,31 @@ describe('The microblog plugin', function () {
                 </message>`,
             );
 
-            await u.waitUntil(() => feed.messages.length === 1);
-            const post = feed.messages.at(0);
-            expect(post.get('title_xhtml')).toContain('<strong>Café</strong>');
+            await u.waitUntil(() => feed.messages.length === 2);
+            const post = feed.messages.get('rich-1');
+
+            // XHTML <div> content: inner markup kept, and preferred over the trailing
+            // Markdown sibling (no `##` / `](` leaks). The XHTML namespace serialises
+            // onto block children as an xmlns attr, which DOMPurify drops at render.
+            expect(post.get('content_xhtml')).toContain('<a href="https://mov.im/x">patch</a>');
+            expect(post.get('content_xhtml')).toMatch(/<h2[^>]*>Redesigned notifications<\/h2>/);
+            expect(post.get('content_xhtml')).not.toContain('##');
+            expect(post.get('content_xhtml')).not.toContain('](');
+
+            // Entity-escaped `type="html"` summary: markup kept, plain text derived.
+            expect(post.get('summary_xhtml')).toContain('<em>excerpt</em>');
+            expect(post.get('summary')).toBe('A short excerpt.');
+            expect(post.get('summary')).not.toContain('<');
+
+            // The plain <title> stays its own construct.
+            expect(post.get('title')).toBe('Movim 0.34.1 is out');
+
+            // A MIME `type="text/html"` <content> is treated like `html`: markup kept
+            // for rich rendering, plain text derived tag-free (not rendered literally).
+            const html_post = feed.messages.get('rich-2');
+            expect(html_post.get('content_xhtml')).toContain('<strong>hobbitses</strong>');
+            expect(html_post.get('content_xhtml')).toContain('<img src="https://arcaderage.co/x.png"');
+            expect(html_post.get('content')).not.toContain('<');
         }),
     );
 

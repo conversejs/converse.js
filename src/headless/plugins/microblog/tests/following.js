@@ -110,6 +110,35 @@ describe('Microblog following (XEP-0330)', function () {
     );
 
     it(
+        'collapses duplicate items for the same (server, node) pair',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            // A feed re-followed over time can leave several items for the same
+            // (server, node); a service can also host several distinct nodes.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({
+                items: [
+                    stx`<item id="a1"><subscription xmlns="${NS_SUBSCRIPTION}"
+                            server="pubsub.movim.eu" node="comics"><title>Comics</title></subscription></item>`.tree(),
+                    stx`<item id="a2"><subscription xmlns="${NS_SUBSCRIPTION}"
+                            server="pubsub.movim.eu" node="comics"><title>Comics</title></subscription></item>`.tree(),
+                    stx`<item id="a3"><subscription xmlns="${NS_SUBSCRIPTION}"
+                            server="pubsub.movim.eu" node="news"><title>News</title></subscription></item>`.tree(),
+                ],
+            });
+
+            const following = await api.microblog.following();
+            // The two `comics` items collapse to one; `news` (a distinct node on
+            // the same service) is kept.
+            expect(following).toEqual([
+                { server: 'pubsub.movim.eu', node: 'comics', title: 'Comics' },
+                { server: 'pubsub.movim.eu', node: 'news', title: 'News' },
+            ]);
+        }),
+    );
+
+    it(
         'materialises and backfills the own + followed feeds from the durable list',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

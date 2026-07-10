@@ -16,6 +16,14 @@ declare class SocialApp extends CustomElement {
             type: StringConstructor;
             state: boolean;
         };
+        profile_node: {
+            type: StringConstructor;
+            state: boolean;
+        };
+        profile_tab: {
+            type: StringConstructor;
+            state: boolean;
+        };
         filter: {
             type: StringConstructor;
             state: boolean;
@@ -27,15 +35,28 @@ declare class SocialApp extends CustomElement {
     };
     open_post: any;
     open_profile: string;
+    profile_node: string;
+    profile_tab: string;
     filter: string;
     _resolving: boolean;
     router: HashRouter;
     render(): import("lit-html/directive.js").DirectiveResult<{
         new (_partInfo: import("lit-html/directive.js").PartInfo): import("lit-html/directives/keyed.js").Keyed<import("lit-html").TemplateResult<1>>;
     }>;
-    /** @param {string} jid */
-    onProfileSelected(jid: string): void;
+    /**
+     * @param {string} jid
+     * @param {string} [node=MICROBLOG_NODE] the node to show (a community feed if
+     *      not the microblog node)
+     * @param {'posts'|'following'} [tab='posts'] which tab to open the profile on
+     */
+    onProfileSelected(jid: string, node?: string, tab?: "posts" | "following"): void;
     onCloseProfile(): void;
+    /**
+     * Switch the open profile's tab (bubbled from its tab bar). Same JID, so the
+     * keyed profile element stays mounted and only re-renders with the new tab.
+     * @param {'posts'|'following'} tab
+     */
+    onProfileTab(tab: "posts" | "following"): void;
     /** @param {import('@converse/headless').PubSubMessage} post */
     onPostSelected(post: import("@converse/headless").PubSubMessage): void;
     onClosePost(): void;

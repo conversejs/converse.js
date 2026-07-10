@@ -1280,6 +1280,86 @@ describe('The social profile view', function () {
             expect(profileB.jid).toBe(stranger);
         }),
     );
+
+    it(
+        "the profile 'more' menu messages and adds a non-contact author",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const stranger = 'yorick@denmark.lit';
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            const open = vi.spyOn(api.chats, 'open').mockResolvedValue(undefined);
+            const switchApp = vi.spyOn(api.apps, 'switch').mockImplementation(() => null);
+            const modalShow = vi.spyOn(api.modal, 'show').mockResolvedValue(undefined);
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            el.onProfileSelected(stranger);
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+
+            // Message opens a 1:1 chat and switches to the Chat app.
+            const msg = await u.waitUntil(() => profile.querySelector('.social-profile__message'));
+            msg.click();
+            await u.waitUntil(() => open.mock.calls.length > 0);
+            expect(open).toHaveBeenCalledWith(stranger, {}, true);
+            expect(switchApp).toHaveBeenCalledWith('chat');
+
+            // A non-contact shows "Add to contacts", which opens the add modal.
+            const add = profile.querySelector('.social-profile__add-contact');
+            expect(add).not.toBe(null);
+            add.click();
+            expect(modalShow).toHaveBeenCalledWith(
+                'converse-add-contact-modal',
+                expect.objectContaining({ contact: expect.anything() }),
+                expect.anything(),
+            );
+        }),
+    );
+
+    it(
+        'hides "Add to contacts" for an author already in the roster',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const { api } = _converse;
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            el.onProfileSelected('mercutio@montague.lit');
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+
+            // Message is still offered, but not "Add to contacts" (already a contact).
+            await u.waitUntil(() => profile.querySelector('.social-profile__message'));
+            expect(profile.querySelector('.social-profile__add-contact')).toBe(null);
+        }),
+    );
+
+    it(
+        'offers "Edit profile" (and no follow/message) on your own profile',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            const modalShow = vi.spyOn(api.modal, 'show').mockResolvedValue(undefined);
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            el.onProfileSelected(bare_jid);
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+
+            const edit = await u.waitUntil(() => profile.querySelector('.social-profile__edit'));
+            expect(profile.querySelector('.social-profile__follow')).toBe(null);
+            expect(profile.querySelector('.social-profile__message')).toBe(null);
+
+            edit.click();
+            expect(modalShow).toHaveBeenCalledWith(
+                'converse-profile-modal',
+                expect.objectContaining({ tab: 'profile' }),
+                expect.anything(),
+            );
+        }),
+    );
 });
 
 describe('The Social app with URL routing enabled', function () {

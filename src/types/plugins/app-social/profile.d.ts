@@ -61,6 +61,11 @@ export default class SocialProfile extends SocialProfile_base {
      * @returns {boolean}
      */
     get accessDenied(): boolean;
+    /**
+     * Whether the author is already in our roster (so we hide "Add to contacts").
+     * @returns {boolean}
+     */
+    get isContact(): boolean;
     render(): import("lit-html").TemplateResult<1> | "";
     /**
      * The banner image failed to load (e.g. a dead link / 404). Fall back to the
@@ -69,6 +74,23 @@ export default class SocialProfile extends SocialProfile_base {
     onBannerError(): void;
     /** Return to the timeline. */
     goBack(): void;
+    /**
+     * Open a 1:1 chat with the author and switch to the Chat app.
+     * @param {Event} [ev]
+     */
+    onMessage(ev?: Event): Promise<void>;
+    /**
+     * Add the author to the roster (a chat contact). Opens the add-contact modal
+     * pre-filled with their address so the user can confirm / name them.
+     * @param {Event} [ev]
+     */
+    onAddContact(ev?: Event): void;
+    /**
+     * Edit the logged-in user's own profile (avatar, nickname). Reuses the
+     * existing profile modal, opened on its "Profile" tab.
+     * @param {Event} [ev]
+     */
+    onEditProfile(ev?: Event): void;
     /**
      * Follow or unfollow this author. The button is disabled while in flight so a
      * double-click can't fire two follows. On success the feed is re-resolved so

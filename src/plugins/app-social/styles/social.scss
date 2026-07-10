@@ -254,9 +254,36 @@
             white-space: nowrap;
         }
 
-        .social-profile__follow {
+        // The header action cluster, pushed to the trailing edge: the Follow
+        // toggle plus a "more" (⋯) menu (Message / Add to contacts), or the
+        // Edit-profile button on your own profile.
+        .social-profile__actions {
+            margin-inline-start: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25em;
+            flex-shrink: 0;
+        }
+
+        .social-profile__edit {
             margin-inline-start: auto;
             flex-shrink: 0;
+        }
+
+        .social-profile__follow {
+            flex-shrink: 0;
+        }
+
+        .social-profile__menu .dropdown-toggle {
+            color: var(--subdued-color);
+        }
+
+        // The menu's item icons are sized 1.5em (wider than the shared
+        // dropdown's 1.25em icon box, so the glyph overflows into the default
+        // 0.25rem gap). Widen the gap so icon and label don't touch, matching
+        // the roster contact menu.
+        .social-profile__menu .dropdown-item converse-icon {
+            margin-inline-end: 0.5em;
         }
 
         // The "feed isn't public" notice: a lock glyph above/left of the text.

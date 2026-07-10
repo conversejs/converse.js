@@ -213,6 +213,13 @@
     </implements>
     <implements>
       <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0277.html"/>
+        <xmpp:status>partial</xmpp:status>
+        <xmpp:note>The "Social" app: publishing, reading and deleting microblog posts, plus comments, likes and reposts. Atom geolocation and some optional entry metadata are not implemented.</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0280.html"/>
         <xmpp:since>0.8.0</xmpp:since>
         <xmpp:status>complete</xmpp:status>
@@ -403,6 +410,13 @@
       <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0461.html"/>
         <xmpp:status>complete</xmpp:status>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0472.html"/>
+        <xmpp:status>partial</xmpp:status>
+        <xmpp:note>Microblog profile of the Pubsub Social Feed: the social-feed discovery feature and Base-profile node config used by the "Social" app. The Gallery profile is not implemented.</xmpp:note>
       </xmpp:SupportedXep>
     </implements>
   </Project>

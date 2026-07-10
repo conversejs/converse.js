@@ -326,6 +326,45 @@ describe('The microblog plugin', function () {
     );
 
     it(
+        'does not mistake a full-JID publisher for a repost (Movim)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const jid = 'blabla.movim.eu';
+            const feed = await api.microblog.feeds.get(jid, MICROBLOG_NODE, true);
+
+            // Movim stamps the item @publisher as a FULL JID (with a resource),
+            // while the atom:author is the bare JID. A naive bare-vs-full compare
+            // would wrongly flag every such post as a repost.
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${jid}" to="${jid}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${MICROBLOG_NODE}">
+                      <item id="meme-1" publisher="eyome@movim.eu/movimB5YD1U">
+                        <entry xmlns="${ATOM}">
+                          <title>On comprend mieux !</title>
+                          <author><uri>xmpp:eyome@movim.eu</uri></author>
+                          <content type="text">#Humour, #meme, #Avosmemes</content>
+                          <published>2023-07-18T08:05:56+00:00</published>
+                          <updated>2023-07-18T08:05:56+00:00</updated>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            await u.waitUntil(() => feed.messages.length === 1);
+            const post = feed.messages.at(0);
+            // The bare author matches the bare publisher, so this is an original post.
+            expect(post.get('is_repost')).toBe(false);
+            expect(post.get('is_mine')).toBe(false);
+        }),
+    );
+
+    it(
         'parses the Atom title, summary and content as distinct constructs',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

@@ -171,7 +171,7 @@ describe('The social feed', function () {
     );
 
     it(
-        'renders rich Atom content (html/xhtml) as real HTML, not literal tags or Markdown',
+        'renders rich Atom content (html/xhtml/text-html) as real HTML, with a Read more source link',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const bare_jid = _converse.bare_jid;
@@ -179,9 +179,12 @@ describe('The social feed', function () {
             const el = mountSocialFeed();
             await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
 
-            // One post covering both rich source formats through the template's
-            // sanitize-and-render path: an entity-escaped `type="html"` <summary>,
-            // and a Movim-style duplicated <content> (rich XHTML + trailing Markdown).
+            // Two posts through the template's sanitize-and-render path. `rich-ui-1`:
+            // an entity-escaped `type="html"` <summary> and a Movim-style duplicated
+            // <content> (rich XHTML + trailing Markdown), plus a `rel="alternate"`
+            // whose URL the body already links to (so no duplicate "Read more").
+            // `news-ui-1`: a Phoronix-style MIME `type="text/html"` teaser whose only
+            // link to the article is the `rel="alternate"` permalink → a "Read more".
             receive(
                 _converse,
                 stx`
@@ -199,8 +202,18 @@ describe('The social feed', function () {
                             </div>
                           </content>
                           <content type="text">A small [patch](https://mov.im/x) release.## Notifications</content>
+                          <link href="https://mov.im/x" type="text/html" rel="alternate"/>
                           <published>2026-06-28T16:39:45Z</published>
                           <updated>2026-06-28T16:39:45Z</updated>
+                        </entry>
+                      </item>
+                      <item id="news-ui-1" publisher="${bare_jid}">
+                        <entry xmlns="${ATOM}">
+                          <title>Debian 13.6 Released</title>
+                          <content type="text/html">&lt;body&gt;Debian 13.6 is out...&lt;/body&gt;</content>
+                          <link href="https://www.phoronix.com/news/Debian-13.6-Released" type="text/html" rel="alternate"/>
+                          <published>2026-07-11T14:31:23Z</published>
+                          <updated>2026-07-11T14:31:23Z</updated>
                         </entry>
                       </item>
                     </items>
@@ -224,6 +237,72 @@ describe('The social feed', function () {
             expect(summary.querySelector('em').textContent).toBe('excerpt');
             expect(summary.textContent).not.toContain('<p>');
             expect(summary.textContent).not.toContain('&lt;');
+
+            // The body already links to the alternate URL, so we don't add a second one.
+            expect(post.querySelector('.social-post__source')).toBe(null);
+
+            // The Phoronix-style teaser: `type="text/html"` renders as real HTML (no
+            // literal tags), and its permalink surfaces as a "Read more" link.
+            const news = await u.waitUntil(() =>
+                Array.from(el.querySelectorAll('.social-post')).find((a) => a.textContent.includes('Debian 13.6')),
+            );
+            expect(news.textContent).toContain('Debian 13.6 is out...');
+            expect(news.textContent).not.toContain('&lt;');
+            const source = news.querySelector(
+                '.social-post__source a[href="https://www.phoronix.com/news/Debian-13.6-Released"]',
+            );
+            expect(source).not.toBe(null);
+            expect(source.textContent).toContain('Read more');
+        }),
+    );
+
+    it(
+        'renders an image `<link rel="enclosure">`, degrading to a link if it fails to load',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const bare_jid = _converse.bare_jid;
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            // A Movim meme post: the picture lives only in the enclosure link, the
+            // body is hashtags. The parser must surface the enclosure and the
+            // template must render it as a real <img>.
+            const src = 'https://media.discordapp.net/attachments/1/2/image.png';
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${bare_jid}" to="${bare_jid}" type="headline">
+                  <event xmlns="http://jabber.org/protocol/pubsub#event">
+                    <items node="${MICROBLOG_NODE}">
+                      <item id="meme-ui-1" publisher="${bare_jid}">
+                        <entry xmlns="${ATOM}">
+                          <title>On comprend mieux !</title>
+                          <link type="image/png" href="${src}" title="${src}" rel="enclosure"/>
+                          <content type="text">#Humour, #meme</content>
+                          <published>2026-06-28T16:39:45Z</published>
+                          <updated>2026-06-28T16:39:45Z</updated>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            const post = await u.waitUntil(() =>
+                Array.from(el.querySelectorAll('.social-post')).find((a) =>
+                    a.textContent.includes('On comprend mieux'),
+                ),
+            );
+            const img = await u.waitUntil(() => post.querySelector('.social-post__media img'));
+            expect(img.getAttribute('src')).toBe(src);
+
+            // We pass the URL as the image's href, so a failed load (e.g. an expired
+            // CDN link) degrades to a link rather than the browser's broken-image icon.
+            img.dispatchEvent(new Event('error'));
+            const link = await u.waitUntil(() => post.querySelector(`.social-post__enclosure a[href="${src}"]`));
+            expect(link).not.toBe(null);
+            expect(post.querySelector('.social-post__media img')).toBe(null);
         }),
     );
 

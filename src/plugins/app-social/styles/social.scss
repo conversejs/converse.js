@@ -879,6 +879,58 @@
                 }
             }
 
+            // Media attachments (<link rel="enclosure">): a post's image/audio/
+            // video, stacked below the body text.
+            &__media {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5em;
+                margin-top: 0.75em;
+            }
+
+            &__enclosure {
+                img {
+                    border-radius: 0.5em;
+                    cursor: pointer;
+                }
+
+                img,
+                video,
+                audio {
+                    max-width: 100%;
+                    height: auto;
+                }
+
+                // A failed image degrades to a link (directive onError); keep the
+                // long URL from overflowing the post column.
+                a {
+                    word-break: break-all;
+                }
+            }
+
+            &__enclosure-link {
+                color: var(--link-color);
+                word-break: break-all;
+            }
+
+            // "Read more" link to the entry's canonical URL (<link rel="alternate">),
+            // for news/blog posts whose body is only a teaser.
+            &__source {
+                margin-top: 0.75em;
+
+                a {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.4em;
+                    color: var(--link-color);
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+
             &__hashtag {
                 color: var(--link-color);
                 cursor: pointer;

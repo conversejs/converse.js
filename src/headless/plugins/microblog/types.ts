@@ -29,6 +29,13 @@ export type PubSubMessageAttrs = {
     summary_xhtml?: string;
     content_xhtml?: string;
 
+    // RFC 4287 media attachments (<link rel="enclosure">)
+    enclosures?: Array<{ href: string; type?: string; title?: string }>;
+
+    // The entry's canonical web URL (<link rel="alternate">) — an article permalink
+    // for blog/news feeds whose body is only a teaser.
+    alternate_url?: string;
+
     author_name?: string;
     author_jid?: string; // Derived from <atom:author><uri>
     publisher?: string; // Server-stamped item @publisher (authoritative)

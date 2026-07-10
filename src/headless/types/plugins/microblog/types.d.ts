@@ -17,6 +17,12 @@ export type PubSubMessageAttrs = {
     title_xhtml?: string;
     summary_xhtml?: string;
     content_xhtml?: string;
+    enclosures?: Array<{
+        href: string;
+        type?: string;
+        title?: string;
+    }>;
+    alternate_url?: string;
     author_name?: string;
     author_jid?: string;
     publisher?: string;

@@ -289,6 +289,7 @@ describe('The microblog plugin', function () {
                         <entry xmlns="${ATOM}">
                           <title>Jet Fuel Can't Melt Magic Rings</title>
                           <content type="text/html">&lt;p&gt;Nasty &lt;strong&gt;hobbitses&lt;/strong&gt;&lt;/p&gt;&lt;img src="https://arcaderage.co/x.png"/&gt;</content>
+                          <link href="https://arcaderage.co/2026/05/10/lotr/" type="text/html" rel="alternate"/>
                           <updated>2026-05-10T14:13:06Z</updated>
                         </entry>
                       </item>
@@ -322,6 +323,10 @@ describe('The microblog plugin', function () {
             expect(html_post.get('content_xhtml')).toContain('<strong>hobbitses</strong>');
             expect(html_post.get('content_xhtml')).toContain('<img src="https://arcaderage.co/x.png"');
             expect(html_post.get('content')).not.toContain('<');
+
+            // `rel="alternate"` (a news/blog permalink whose body is only a teaser) is
+            // captured so the UI can surface a "Read more" link.
+            expect(html_post.get('alternate_url')).toBe('https://arcaderage.co/2026/05/10/lotr/');
         }),
     );
 
@@ -361,6 +366,49 @@ describe('The microblog plugin', function () {
             // The bare author matches the bare publisher, so this is an original post.
             expect(post.get('is_repost')).toBe(false);
             expect(post.get('is_mine')).toBe(false);
+        }),
+    );
+
+    it(
+        'parses an image `<link rel="enclosure">` media attachment (Movim)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const jid = 'blabla.movim.eu';
+            const feed = await api.microblog.feeds.get(jid, MICROBLOG_NODE, true);
+
+            // A real Movim meme post: the picture is *only* in the enclosure link
+            // (the body is hashtags), so we must surface it or the image is lost.
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${jid}" to="${jid}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${MICROBLOG_NODE}">
+                      <item id="meme-1" publisher="eyome@movim.eu/movimB5YD1U">
+                        <entry xmlns="${ATOM}">
+                          <title>On comprend mieux !</title>
+                          <author><uri>xmpp:eyome@movim.eu</uri></author>
+                          <link type="image/png"
+                                href="https://media.discordapp.net/attachments/1/2/image.png"
+                                title="https://media.discordapp.net/attachments/1/2/image.png"
+                                rel="enclosure"/>
+                          <content type="text">#Humour, #meme, #Avosmemes</content>
+                          <published>2023-07-18T08:05:56+00:00</published>
+                          <updated>2023-07-18T08:05:56+00:00</updated>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            await u.waitUntil(() => feed.messages.length === 1);
+            const post = feed.messages.at(0);
+            const enclosures = post.get('enclosures');
+            expect(enclosures.length).toBe(1);
+            expect(enclosures[0].href).toBe('https://media.discordapp.net/attachments/1/2/image.png');
+            expect(enclosures[0].type).toBe('image/png');
         }),
     );
 

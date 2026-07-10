@@ -8,6 +8,7 @@ import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import { collectionSignal } from 'shared/signals.js';
 import 'shared/components/logo.js';
+import 'shared/components/dropdown.js';
 import tplProfile from './templates/profile.js';
 
 const { Strophe } = converse.env;
@@ -47,24 +48,27 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
     async initialize() {
         this.profile = api.microblog.profile.get(this.jid);
 
-        // Re-render when the author's vCard/contact (avatar, display name) resolves.
         this.listenTo(this.profile, 'vcard:add', () => this.requestUpdate());
         this.listenTo(this.profile, 'vcard:change', () => this.requestUpdate());
         this.listenTo(this.profile, 'contact:add', () => this.requestUpdate());
         this.listenTo(this.profile, 'contact:change', () => this.requestUpdate());
 
-        // Fetch the author's banner (best-effort) and re-render if one resolves.
-        // A new URL gets a fresh shot at loading (clear any prior load error).
+        // Fetch the author's banner and re-render if one resolves.
         this.listenTo(this.profile, 'change:banner_url', () => {
             this._banner_error = false;
             this.requestUpdate();
         });
         this.profile.fetchBanner();
 
-        // Re-render the follow toggle when the follow list (isFollowing's source
-        // of truth) changes, e.g. a follow/unfollow from elsewhere.
+        // Re-render the follow toggle when the follow list changes
         this.listenTo(_converse.state.following, 'add', () => this.requestUpdate());
         this.listenTo(_converse.state.following, 'remove', () => this.requestUpdate());
+
+        // Re-render the "Add to contacts" menu item as the roster changes
+        if (_converse.state.roster) {
+            this.listenTo(_converse.state.roster, 'add', () => this.requestUpdate());
+            this.listenTo(_converse.state.roster, 'remove', () => this.requestUpdate());
+        }
 
         await this.setupFeed();
     }
@@ -137,6 +141,14 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
         return err === 'forbidden' || err === 'not-authorized';
     }
 
+    /**
+     * Whether the author is already in our roster (so we hide "Add to contacts").
+     * @returns {boolean}
+     */
+    get isContact() {
+        return !!_converse.state.roster?.get(Strophe.getBareJidFromJid(this.jid));
+    }
+
     render() {
         if (!this.jid || !this.profile) return '';
         return tplProfile(this);
@@ -153,6 +165,36 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
     /** Return to the timeline. */
     goBack() {
         this.dispatchEvent(new CustomEvent('closeprofile', { bubbles: true, composed: true }));
+    }
+
+    /**
+     * Open a 1:1 chat with the author and switch to the Chat app.
+     * @param {Event} [ev]
+     */
+    async onMessage(ev) {
+        ev?.preventDefault?.();
+        await api.chats.open(this.jid, {}, true);
+        api.apps.switch('chat');
+    }
+
+    /**
+     * Add the author to the roster (a chat contact). Opens the add-contact modal
+     * pre-filled with their address so the user can confirm / name them.
+     * @param {Event} [ev]
+     */
+    onAddContact(ev) {
+        ev?.preventDefault?.();
+        api.modal.show('converse-add-contact-modal', { contact: this.profile }, ev);
+    }
+
+    /**
+     * Edit the logged-in user's own profile (avatar, nickname). Reuses the
+     * existing profile modal, opened on its "Profile" tab.
+     * @param {Event} [ev]
+     */
+    onEditProfile(ev) {
+        ev?.preventDefault?.();
+        api.modal.show('converse-profile-modal', { model: _converse.state.profile, tab: 'profile' }, ev);
     }
 
     /**

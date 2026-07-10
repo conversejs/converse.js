@@ -64,15 +64,49 @@ export default (el) => {
                     <span class="social-profile__jid">${el.jid}</span>
                 </div>
                 ${el.isOwn
-                    ? ''
-                    : html`<button
+                    ? html`<button
                           type="button"
-                          class="btn ${el.isFollowing ? 'btn-secondary' : 'btn-primary'} social-profile__follow"
-                          ?disabled=${el._busy}
-                          @click=${() => el.onToggleFollow()}
+                          class="btn btn-secondary social-profile__edit"
+                          @click=${(ev) => el.onEditProfile(ev)}
                       >
-                          ${el.isFollowing ? __('Unfollow') : __('Follow')}
-                      </button>`}
+                          ${__('Edit profile')}
+                      </button>`
+                    : html`<span class="social-profile__actions">
+                          <button
+                              type="button"
+                              class="btn ${el.isFollowing ? 'btn-secondary' : 'btn-primary'} social-profile__follow"
+                              ?disabled=${el._busy}
+                              @click=${() => el.onToggleFollow()}
+                          >
+                              ${el.isFollowing ? __('Unfollow') : __('Follow')}
+                          </button>
+                          <converse-dropdown
+                              class="social-profile__menu btn-group dropstart"
+                              icon_classes="fa fa-ellipsis-vertical"
+                              .items=${[
+                                  html`<a
+                                      class="dropdown-item social-profile__message"
+                                      role="button"
+                                      @click=${(ev) => el.onMessage(ev)}
+                                  >
+                                      <converse-icon class="fa fa-comments" size="1.5em"></converse-icon>
+                                      ${__('Message')}
+                                  </a>`,
+                                  ...(el.isContact
+                                      ? []
+                                      : [
+                                            html`<a
+                                                class="dropdown-item social-profile__add-contact"
+                                                role="button"
+                                                @click=${(ev) => el.onAddContact(ev)}
+                                            >
+                                                <converse-icon class="fa fa-user-plus" size="1.5em"></converse-icon>
+                                                ${__('Add to contacts')}
+                                            </a>`,
+                                        ]),
+                              ]}
+                          ></converse-dropdown>
+                      </span>`}
             </div>
 
             <div class="social-profile__posts">

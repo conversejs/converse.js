@@ -11,6 +11,7 @@ import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js';
 import { getJIDFromURI, getNodeFromURI } from '../../utils/jid.js';
 import { getUniqueId } from '../../utils/index.js';
+import { decodeHTMLEntities } from '../../utils/html.js';
 import { MICROBLOG_TYPE, NS_ATOM } from './constants.js';
 
 /**
@@ -24,21 +25,66 @@ function getEntry(item) {
 }
 
 /**
- * Parse an Atom "Text construct" (`<title>`, `<summary>` or `<content>`): either
- * plain text or the Atom / XEP-0071 XHTML subset (a wrapping `<div>`).
+ * Classify an Atom text construct's `type` into how we render it. RFC 4287 §3.1
+ * defines the shorthands `text`/`html`/`xhtml` for text constructs, but
+ * `atom:content` (§4.1.3) may instead carry a MIME type: bridges like
+ * atomtopubsub (WordPress → XMPP, seen here via Movim) stamp `type="text/html"`
+ * for entity-escaped HTML, so treat that as `html`. An absent or unrecognised
+ * type is plain text.
+ * @param {Element} el
+ * @returns {'text'|'html'|'xhtml'}
+ */
+function textConstructKind(el) {
+    const type = (el.getAttribute('type') || '').toLowerCase();
+    if (type === 'xhtml') return 'xhtml';
+    if (type === 'html' || type === 'text/html') return 'html';
+    return 'text';
+}
+
+/**
+ * Parse an Atom "Text construct" (`<title>`, `<summary>` or `<content>`): plain
+ * text, a wrapping XHTML `<div>` (`xhtml`), or an entity-escaped HTML fragment
+ * (`html` / `text/html`, common in blog/Atom feeds). For the two markup forms we
+ * return the HTML in `xhtml` (the caller renders it sanitized) plus a plain-text
+ * form in `text` for previews.
  * @param {Element|undefined} el
  * @returns {{ text?: string, xhtml?: string }}
  */
 function parseTextConstruct(el) {
     if (!el) return {};
-    if (el.getAttribute('type') === 'xhtml') {
+    const kind = textConstructKind(el);
+    if (kind === 'xhtml') {
         const div = sizzle('> div', el).pop();
         return {
             text: el.textContent?.trim() || undefined,
-            xhtml: div ? div.innerHTML : el.innerHTML,
+            xhtml: (div ? div.innerHTML : el.innerHTML) || undefined,
         };
     }
+    if (kind === 'html') {
+        // The XML parser has already unescaped the fragment, so textContent is the
+        // HTML markup itself. Keep it for rich rendering; derive plain text for
+        // previews (decodeHTMLEntities sanitizes and strips tags).
+        const markup = el.textContent?.trim() || undefined;
+        return { text: markup ? decodeHTMLEntities(markup) : undefined, xhtml: markup };
+    }
     return { text: el.textContent?.trim() || undefined };
+}
+
+/**
+ * Select the best rendition of an Atom text construct from every sibling of the
+ * same name.
+ *
+ * Movim publishes the same construct twice: a rich `<content type="xhtml">`
+ * alongside a `<content type="text">` Markdown source.
+ * @param {Element[]} els
+ * @returns {{ text?: string, xhtml?: string }}
+ */
+function pickTextConstruct(els) {
+    if (!els.length) return {};
+    const isRich = (el) => textConstructKind(el) !== 'text';
+    const rich = parseTextConstruct(els.find(isRich));
+    const plain = parseTextConstruct(els.find((el) => !isRich(el)));
+    return { xhtml: rich.xhtml, text: plain.text ?? rich.text };
 }
 
 /**
@@ -97,9 +143,9 @@ export function parseAtomEntry(item, { from, node } = {}) {
     // - <title> XEP-0277 short posts put the whole post here
     // - <summary> Excerpt.
     // - <content> Full body Atom-native feeds use this, often with an empty <title>.
-    const title = parseTextConstruct(sizzle('> title', entry).pop());
-    const summary = parseTextConstruct(sizzle('> summary', entry).pop());
-    const content = parseTextConstruct(sizzle('> content', entry).pop());
+    const title = pickTextConstruct(sizzle('> title', entry));
+    const summary = pickTextConstruct(sizzle('> summary', entry));
+    const content = pickTextConstruct(sizzle('> content', entry));
 
     const published = sizzle('> published', entry).pop()?.textContent?.trim();
     const updated = sizzle('> updated', entry).pop()?.textContent?.trim();
@@ -115,6 +161,7 @@ export function parseAtomEntry(item, { from, node } = {}) {
         content: content.text,
         summary: summary.text,
         title_xhtml: title.xhtml,
+        summary_xhtml: summary.xhtml,
         content_xhtml: content.xhtml,
         atom_id: sizzle('> id', entry).pop()?.textContent?.trim(),
         author_name,

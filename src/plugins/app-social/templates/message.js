@@ -1,5 +1,7 @@
+import DOMPurify from 'dompurify';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { __ } from 'i18n';
 import { api, converse } from '@converse/headless';
 import renderTexture from 'shared/texture/directives/texture.js';
@@ -20,19 +22,24 @@ export default (el) => {
     // never conflated (X.com-style "<reposter> reposted").
     const reposter = m.get('is_mine') ? __('You') : (m.getReposterName() ?? '');
 
-    // Render one Atom text construct as rich text via the shared texture pipeline:
-    // URLs, media, emojis and XEP-0393 styling, plus social-only hashtags.
+    // Render one Atom text construct. Atom-native feeds (blogs, Movim) send
+    // `type="html"`/`"xhtml"` markup, kept as the `_xhtml` variant: render it
+    // sanitized so links and formatting survive rather than showing as literal
+    // tags. Plain-text constructs go through the shared texture pipeline: URLs,
+    // media, emojis and XEP-0393 styling, plus social-only hashtags.
     const render_media = api.settings.get('render_media');
-    const renderConstruct = (/** @type {string} */ text) =>
-        renderTexture(text, 0, {
-            render_styling: true,
-            render_hashtags: true,
-            show_images: render_media,
-            embed_audio: render_media,
-            embed_videos: render_media,
-            onImgClick: /** @param {MouseEvent} ev */ (ev) => el.onImgClick(ev),
-            onImgLoad: () => el.onImgLoad(),
-        });
+    const renderConstruct = (/** @type {string} */ text, /** @type {string} */ xhtml) =>
+        xhtml
+            ? html`<div class="social-post__richtext">${unsafeHTML(DOMPurify.sanitize(xhtml))}</div>`
+            : renderTexture(text, 0, {
+                  render_styling: true,
+                  render_hashtags: true,
+                  show_images: render_media,
+                  embed_audio: render_media,
+                  embed_videos: render_media,
+                  onImgClick: /** @param {MouseEvent} ev */ (ev) => el.onImgClick(ev),
+                  onImgLoad: () => el.onImgLoad(),
+              });
 
     // An Atom entry can carry up to three text constructs:
     // <title>, <summary> and <content>
@@ -43,7 +50,10 @@ export default (el) => {
     const title = m.get('title');
     const summary = m.get('summary');
     const content = m.get('content');
-    const title_is_heading = !!title && (!!summary || !!content);
+    const title_xhtml = m.get('title_xhtml');
+    const summary_xhtml = m.get('summary_xhtml');
+    const content_xhtml = m.get('content_xhtml');
+    const title_is_heading = !!(title || title_xhtml) && !!(summary || summary_xhtml || content || content_xhtml);
 
     // Colour the author name per-author
     const color = m.get('color');
@@ -150,19 +160,21 @@ export default (el) => {
                               `}
                     </header>
                     <div class="social-post__body">
-                        ${title
+                        ${title || title_xhtml
                             ? html`<div
                                   class="social-post__title ${title_is_heading ? 'social-post__title--heading' : ''}"
                               >
-                                  ${renderConstruct(title)}
+                                  ${renderConstruct(title, title_xhtml)}
                               </div>`
                             : ''}
-                        ${summary
+                        ${summary || summary_xhtml
                             ? html`<div class="social-post__summary ${content ? 'social-post__summary--excerpt' : ''}">
-                                  ${renderConstruct(summary)}
+                                  ${renderConstruct(summary, summary_xhtml)}
                               </div>`
                             : ''}
-                        ${content ? html`<div class="social-post__content">${renderConstruct(content)}</div>` : ''}
+                        ${content || content_xhtml
+                            ? html`<div class="social-post__content">${renderConstruct(content, content_xhtml)}</div>`
+                            : ''}
                     </div>
                 </div>
             </div>

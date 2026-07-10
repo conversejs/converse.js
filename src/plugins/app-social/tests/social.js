@@ -171,6 +171,63 @@ describe('The social feed', function () {
     );
 
     it(
+        'renders rich Atom content (html/xhtml) as real HTML, not literal tags or Markdown',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const bare_jid = _converse.bare_jid;
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            // One post covering both rich source formats through the template's
+            // sanitize-and-render path: an entity-escaped `type="html"` <summary>,
+            // and a Movim-style duplicated <content> (rich XHTML + trailing Markdown).
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${bare_jid}" to="${bare_jid}" type="headline">
+                  <event xmlns="http://jabber.org/protocol/pubsub#event">
+                    <items node="${MICROBLOG_NODE}">
+                      <item id="rich-ui-1" publisher="${bare_jid}">
+                        <entry xmlns="${ATOM}">
+                          <title>Patch release</title>
+                          <summary type="html">&lt;p&gt;A short &lt;em&gt;excerpt&lt;/em&gt;.&lt;/p&gt;</summary>
+                          <content type="xhtml">
+                            <div xmlns="http://www.w3.org/1999/xhtml">
+                              <p>A small <a href="https://mov.im/x">patch</a> release.</p>
+                              <h2>Notifications</h2>
+                            </div>
+                          </content>
+                          <content type="text">A small [patch](https://mov.im/x) release.## Notifications</content>
+                          <published>2026-06-28T16:39:45Z</published>
+                          <updated>2026-06-28T16:39:45Z</updated>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            const post = await u.waitUntil(() =>
+                Array.from(el.querySelectorAll('.social-post')).find((a) => a.textContent.includes('patch release')),
+            );
+
+            // XHTML content: real link + heading elements, no Markdown tokens leaked.
+            const content = post.querySelector('.social-post__content');
+            expect(content.querySelector('a[href="https://mov.im/x"]')).not.toBe(null);
+            expect(content.querySelector('h2').textContent).toBe('Notifications');
+            expect(content.textContent).not.toContain('##');
+            expect(content.textContent).not.toContain('](');
+
+            // Entity-escaped `type="html"` summary: real emphasis, never literal tags.
+            const summary = post.querySelector('.social-post__summary');
+            expect(summary.querySelector('em').textContent).toBe('excerpt');
+            expect(summary.textContent).not.toContain('<p>');
+            expect(summary.textContent).not.toContain('&lt;');
+        }),
+    );
+
+    it(
         'deletes an own post via the delete button',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

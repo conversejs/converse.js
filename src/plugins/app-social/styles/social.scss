@@ -787,6 +787,98 @@
                 font-style: italic;
             }
 
+            // Sanitized HTML from `type="html"`/`"xhtml"` Atom constructs (blog
+            // feeds, Movim). Unlike plain-text constructs it carries its own block
+            // structure, so drop the `pre-wrap` whitespace handling and let the
+            // first/last block sit flush with the construct box.
+            &__richtext {
+                white-space: normal;
+
+                > :first-child {
+                    margin-top: 0;
+                }
+
+                > :last-child {
+                    margin-bottom: 0;
+                }
+
+                // Blog feeds embed full heading hierarchies; the browser defaults
+                // (h1 ~2em) dwarf the post text. Rein them in to a compact scale
+                // that still reads as headings against ~1em body copy.
+                h1,
+                h2,
+                h3,
+                h4,
+                h5,
+                h6 {
+                    font-weight: bold;
+                    line-height: 1.3;
+                    margin: 0.6em 0 0.3em;
+                }
+
+                h1 {
+                    font-size: 1.3em;
+                }
+
+                h2 {
+                    font-size: 1.2em;
+                }
+
+                h3 {
+                    font-size: 1.1em;
+                }
+
+                h4,
+                h5,
+                h6 {
+                    font-size: 1em;
+                }
+
+                a {
+                    color: var(--link-color);
+                }
+
+                img,
+                video {
+                    max-width: 100%;
+                    height: auto;
+                }
+
+                // Long-form structure that blog / Movim posts lean on.
+                p {
+                    margin: 0 0 0.5em;
+                }
+
+                ul,
+                ol {
+                    margin: 0 0 0.5em;
+                    padding-inline-start: 1.5em;
+                }
+
+                blockquote {
+                    margin: 0.5em 0;
+                    padding-inline-start: 0.75em;
+                    border-inline-start: 3px solid var(--subdued-color);
+                    color: var(--subdued-color);
+                }
+
+                code {
+                    font-family: monospace;
+                    font-size: 0.9em;
+                }
+
+                pre {
+                    overflow-x: auto;
+                    padding: 0.5em 0.75em;
+                    border-radius: 0.25em;
+                    background-color: rgba(0, 0, 0, 0.05);
+
+                    code {
+                        font-size: inherit;
+                    }
+                }
+            }
+
             &__hashtag {
                 color: var(--link-color);
                 cursor: pointer;

@@ -169,10 +169,18 @@ export function parseAtomEntry(item, { from, node } = {}) {
         publisher,
         // An author JID that differs from the publisher marks a repeated post
         // (XEP-0277 § Repeating a Post); a `rel="via"` link is the explicit signal.
+        // Compare both sides bare: Movim stamps a *full* JID publisher (with a
+        // resource), so a naive bare-vs-full check would flag every post a repost.
         via_jid,
         via_href,
         via_ref,
-        is_repost: !!via_jid || !!(author_jid && publisher && Strophe.getBareJidFromJid(author_jid) !== publisher),
+        is_repost:
+            !!via_jid ||
+            !!(
+                author_jid &&
+                publisher &&
+                Strophe.getBareJidFromJid(author_jid) !== Strophe.getBareJidFromJid(publisher)
+            ),
         comments_jid,
         comments_node,
         categories: sizzle('> category', entry)

@@ -9,7 +9,9 @@
  *
  * Grammar:
  *   #converse/social                                    timeline
- *   #converse/social/profile/<jid>                      author profile
+ *   #converse/social/profile/<jid>                      author profile (posts)
+ *   #converse/social/profile/<jid>/following            author profile (who they follow)
+ *   #converse/social/feed/<jid>/<node>                  a followed community/topic feed
  *   #converse/social/post/<feedJid>/<itemId>            post detail (microblog node)
  *   #converse/social/post/<feedJid>/<node>/<itemId>     post detail (explicit node)
  *   #converse/social/tag/<tag>                          hashtag filter (tag without '#')
@@ -56,9 +58,17 @@ export function parseSocialRoute(hash = location.hash) {
         case 'profile': {
             // A malformed/empty jid falls back to the timeline; a non-empty but
             // otherwise invalid jid just yields a profile that fails to load
-            // (validation is a view concern, kept out of this pure module).
+            // (validation is a view concern, kept out of this pure module). A
+            // trailing `/following` segment selects that tab.
             const jid = seg[1];
-            return jid ? { view: 'profile', jid } : { view: 'timeline' };
+            if (!jid) return { view: 'timeline' };
+            return seg[2] === 'following' ? { view: 'profile', jid, tab: 'following' } : { view: 'profile', jid };
+        }
+        case 'feed': {
+            // A followed community/topic feed: the same profile view, node-aware.
+            const jid = seg[1];
+            const node = seg[2];
+            return jid && node ? { view: 'profile', jid, node } : { view: 'timeline' };
         }
         case 'post':
             if (seg.length === 3) return { view: 'post', feedJid: seg[1], node: MICROBLOG_NODE, itemId: seg[2] };
@@ -82,8 +92,15 @@ export function parseSocialRoute(hash = location.hash) {
  */
 export function buildSocialRoute(route) {
     switch (route?.view) {
-        case 'profile':
-            return route.jid ? `${SOCIAL_ROUTE_ROOT}/profile/${encodeURIComponent(route.jid)}` : null;
+        case 'profile': {
+            if (!route.jid) return null;
+            // A non-microblog node is a followed community feed: its own route.
+            if (route.node && route.node !== MICROBLOG_NODE) {
+                return `${SOCIAL_ROUTE_ROOT}/feed/${encodeURIComponent(route.jid)}/${encodeURIComponent(route.node)}`;
+            }
+            const base = `${SOCIAL_ROUTE_ROOT}/profile/${encodeURIComponent(route.jid)}`;
+            return route.tab === 'following' ? `${base}/following` : base;
+        }
         case 'post': {
             if (!route.feedJid || !route.itemId) return null;
             const node = route.node ?? MICROBLOG_NODE;

@@ -1547,3 +1547,290 @@ describe('The Social app with URL routing enabled', function () {
         ),
     );
 });
+
+describe('The profile Following tab', function () {
+    /**
+     * Stub the pubsub layer so `follow`/`unfollow` are no-ops that still mutate
+     * the XEP-0330 mirror (`_converse.state.following`) and `pubsubfeeds`.
+     * @param {any} api
+     */
+    function stubFollowPlumbing(api) {
+        vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+        vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+        vi.spyOn(api.pubsub, 'unsubscribe').mockResolvedValue(undefined);
+        vi.spyOn(api.pubsub, 'retract').mockResolvedValue(undefined);
+        vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+    }
+
+    /**
+     * Find a profile tab button by its label.
+     * @param {Element} profile
+     * @param {string} label
+     * @returns {HTMLElement}
+     */
+    function tab(profile, label) {
+        return /** @type {HTMLElement} */ (
+            Array.from(profile.querySelectorAll('.social-profile__tab')).find((t) => t.textContent.includes(label))
+        );
+    }
+
+    it(
+        "opens your own profile's Following tab from the timeline, listing followed authors",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const { api } = _converse;
+            stubDiscoverFollowable(api, []);
+            stubFollowPlumbing(api);
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // Following nobody: no entry point on the timeline.
+            expect(el.querySelector('.social-feed__following-btn')).toBe(null);
+
+            await api.microblog.follow('mercutio@montague.lit');
+            await api.microblog.follow('juliet@capulet.lit');
+
+            // The entry appears with a live count and opens your own profile on
+            // the Following tab.
+            const btn = await u.waitUntil(() => el.querySelector('.social-feed__following-btn'));
+            expect(btn.querySelector('.social-feed__following-count').textContent.trim()).toBe('2');
+            btn.click();
+
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+            expect(profile.getAttribute('jid')).toBe(_converse.bare_jid);
+            const list = await u.waitUntil(() => profile.querySelector('converse-social-following'));
+            await u.waitUntil(() => list.querySelectorAll('.social-following__item').length === 2);
+            const jids = Array.from(list.querySelectorAll('.social-following__jid')).map((n) => n.textContent.trim());
+            expect(jids).toContain('mercutio@montague.lit');
+            expect(jids).toContain('juliet@capulet.lit');
+            expect(tab(profile, 'Following').classList.contains('social-profile__tab--active')).toBe(true);
+        }),
+    );
+
+    it(
+        'switches between the Posts and Following tabs on a profile',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const { api } = _converse;
+            stubDiscoverFollowable(api, []);
+            stubFollowPlumbing(api);
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await api.microblog.follow('mercutio@montague.lit');
+
+            // Open your own profile (posts tab by default).
+            /** @type {any} */ (el).onProfileSelected(_converse.bare_jid);
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+            expect(profile.querySelector('.social-profile__posts')).not.toBe(null);
+            expect(profile.querySelector('converse-social-following')).toBe(null);
+
+            // Switch to Following -> the list appears, posts area goes away.
+            tab(profile, 'Following').click();
+            await u.waitUntil(() => profile.querySelector('converse-social-following .social-following__item'));
+            expect(profile.querySelector('.social-profile__posts')).toBe(null);
+
+            // Switch back to Posts.
+            tab(profile, 'Posts').click();
+            await u.waitUntil(() => profile.querySelector('.social-profile__posts'));
+            expect(profile.querySelector('converse-social-following')).toBe(null);
+        }),
+    );
+
+    it(
+        'unfollows an author from your profile Following tab',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const { api } = _converse;
+            stubDiscoverFollowable(api, []);
+            stubFollowPlumbing(api);
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await api.microblog.follow('mercutio@montague.lit');
+
+            const btn = await u.waitUntil(() => el.querySelector('.social-feed__following-btn'));
+            btn.click();
+            const list = await u.waitUntil(() => el.querySelector('converse-social-following'));
+            const row = await u.waitUntil(() => list.querySelector('.social-following__item'));
+
+            // Clicking Unfollow drops the row and clears the follow.
+            row.querySelector('.social-following__unfollow').click();
+            await u.waitUntil(() => list.querySelector('.social-following__item') === null);
+            expect(api.microblog.isFollowing('mercutio@montague.lit')).toBe(false);
+            expect(list.querySelector('.social-feed__empty')).not.toBe(null);
+        }),
+    );
+
+    it(
+        "opens a followed author's profile from the Following tab",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const { api } = _converse;
+            stubDiscoverFollowable(api, []);
+            stubFollowPlumbing(api);
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await api.microblog.follow('mercutio@montague.lit');
+
+            const btn = await u.waitUntil(() => el.querySelector('.social-feed__following-btn'));
+            btn.click();
+            const list = await u.waitUntil(() => el.querySelector('converse-social-following'));
+            const row = await u.waitUntil(() => list.querySelector('.social-following__item'));
+
+            // Clicking a row navigates to that author's profile on its Posts tab.
+            row.click();
+            await u.waitUntil(() => el.querySelector('converse-social-profile')?.getAttribute('jid') === 'mercutio@montague.lit');
+            const profile = el.querySelector('converse-social-profile');
+            expect(profile.querySelector('converse-social-following')).toBe(null);
+            expect(profile.querySelector('.social-profile__posts')).not.toBe(null);
+        }),
+    );
+
+    it(
+        'shows an empty state when you follow nobody',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            stubDiscoverFollowable(api, []);
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // No timeline entry point; open your own profile Following tab directly.
+            expect(el.querySelector('.social-feed__following-btn')).toBe(null);
+            /** @type {any} */ (el).onProfileSelected(_converse.bare_jid, undefined, 'following');
+
+            const list = await u.waitUntil(() => el.querySelector('converse-social-following'));
+            const empty = await u.waitUntil(() => list.querySelector('.social-feed__empty'));
+            expect(empty.textContent).toContain("aren't following anyone");
+        }),
+    );
+
+    it(
+        "browses who another account follows from their profile's Following tab",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const { api } = _converse;
+            const contact = 'mercutio@montague.lit';
+
+            // The contact follows two accounts; their list is readable.
+            vi.spyOn(api.microblog, 'following').mockResolvedValue([
+                { server: 'romeo@montague.lit', node: MICROBLOG_NODE },
+                { server: 'juliet@capulet.lit', node: MICROBLOG_NODE },
+            ]);
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            /** @type {any} */ (el).onProfileSelected(contact);
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+
+            // The Following tab shows a count of 2; opening it lists them.
+            const following_tab = await u.waitUntil(() => {
+                const t = tab(profile, 'Following');
+                return t?.querySelector('.social-profile__tab-count')?.textContent.trim() === '2' ? t : null;
+            });
+            following_tab.click();
+
+            const list = await u.waitUntil(() => profile.querySelector('converse-social-following'));
+            await u.waitUntil(() => list.querySelectorAll('.social-following__item').length === 2);
+            // Another account's list is read-only (no Unfollow).
+            expect(list.querySelector('.social-following__unfollow')).toBe(null);
+            const jids = Array.from(list.querySelectorAll('.social-following__jid')).map((n) => n.textContent.trim());
+            expect(jids).toContain('romeo@montague.lit');
+            expect(jids).toContain('juliet@capulet.lit');
+        }),
+    );
+
+    it(
+        "shows a graceful notice when an author's follow list is refused",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const forbidden = Object.assign(new Error('forbidden'), { name: 'forbidden' });
+            vi.spyOn(api.microblog, 'following').mockRejectedValue(forbidden);
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // Open a stranger's profile Following tab directly; the read is refused.
+            /** @type {any} */ (el).onProfileSelected('yorick@denmark.lit', undefined, 'following');
+            const list = await u.waitUntil(() => el.querySelector('converse-social-following'));
+            const notice = await u.waitUntil(() => list.querySelector('.social-following__unavailable'));
+            expect(notice.textContent).toContain("can't see");
+        }),
+    );
+
+    it(
+        'labels a community feed by its title or node name, not the service JID',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            // Two feeds on one service: one with a title, one where the node name
+            // is the human label (Movim leaves the title empty).
+            vi.spyOn(api.microblog, 'following').mockResolvedValue([
+                { server: 'alt.movim.eu', node: 'Fakir', title: undefined },
+                { server: 'pubsub.movim.eu', node: 'comics', title: 'Comics' },
+            ]);
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            /** @type {any} */ (el).onProfileSelected('somebody@movim.eu', undefined, 'following');
+            const list = await u.waitUntil(() => el.querySelector('converse-social-following'));
+            await u.waitUntil(() => list.querySelectorAll('.social-following__item').length === 2);
+
+            // The main label is the title (else the node name), and the subtitle
+            // is the service JID.
+            const names = Array.from(list.querySelectorAll('.social-following__name')).map((n) => n.textContent.trim());
+            expect(names).toContain('Fakir'); // node name, since the title is empty
+            expect(names).toContain('Comics'); // the title
+            const addresses = Array.from(list.querySelectorAll('.social-following__jid')).map((n) =>
+                n.textContent.trim(),
+            );
+            expect(addresses).toContain('alt.movim.eu');
+            expect(addresses).toContain('pubsub.movim.eu');
+        }),
+    );
+
+    it(
+        'opens a followed community feed in feed mode (its node, no person chrome)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const { api } = _converse;
+
+            vi.spyOn(api.microblog, 'following').mockResolvedValue([
+                { server: 'alt.movim.eu', node: 'Fakir', title: undefined },
+            ]);
+            const itemsGet = vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // Open an account's Following tab, then click the community feed row.
+            /** @type {any} */ (el).onProfileSelected('somebody@movim.eu', undefined, 'following');
+            const following = await u.waitUntil(() => el.querySelector('converse-social-following'));
+            const row = await u.waitUntil(() => following.querySelector('.social-following__item'));
+            row.click();
+
+            // A feed-mode profile opens for the node itself, named by the node.
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile[node="Fakir"]'));
+            expect(profile.getAttribute('jid')).toBe('alt.movim.eu');
+            await u.waitUntil(() => profile.querySelector('.social-profile__name')?.textContent.trim() === 'Fakir');
+            // No person chrome: no Posts/Following tabs, no message/add-contact menu.
+            expect(profile.querySelector('.social-profile__tabs')).toBe(null);
+            expect(profile.querySelector('.social-profile__menu')).toBe(null);
+            // A Follow toggle is present and the feed is read from the Fakir node.
+            expect(profile.querySelector('.social-profile__follow')).not.toBe(null);
+            expect(itemsGet.mock.calls.some((c) => c[0] === 'alt.movim.eu' && c[1] === 'Fakir')).toBe(true);
+        }),
+    );
+});

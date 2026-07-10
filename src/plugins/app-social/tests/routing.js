@@ -20,6 +20,25 @@ describe('Social hash routing grammar', function () {
         expect(buildSocialRoute({ view: 'timeline' })).toBe('#converse/social');
     });
 
+    it('round-trips a profile route on the following tab', function () {
+        const hash = buildSocialRoute({ view: 'profile', jid: 'juliet@capulet.lit', tab: 'following' });
+        expect(hash).toBe('#converse/social/profile/juliet%40capulet.lit/following');
+        expect(parseSocialRoute(hash)).toEqual({ view: 'profile', jid: 'juliet@capulet.lit', tab: 'following' });
+    });
+
+    it('omits the tab segment for the default posts tab', function () {
+        expect(buildSocialRoute({ view: 'profile', jid: 'juliet@capulet.lit', tab: 'posts' })).toBe(
+            '#converse/social/profile/juliet%40capulet.lit',
+        );
+    });
+
+    it('round-trips a followed community feed on its own /feed route', function () {
+        const route = { view: 'profile', jid: 'pubsub.movim.eu', node: 'comics' };
+        const hash = buildSocialRoute(route);
+        expect(hash).toBe('#converse/social/feed/pubsub.movim.eu/comics');
+        expect(parseSocialRoute(hash)).toEqual(route);
+    });
+
     it('round-trips a profile route, encoding the JID', function () {
         const hash = buildSocialRoute({ view: 'profile', jid: 'juliet@capulet.lit' });
         expect(hash).toBe('#converse/social/profile/juliet%40capulet.lit');

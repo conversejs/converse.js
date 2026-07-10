@@ -1,12 +1,19 @@
 declare const SocialProfile_base: typeof CustomElement & (new (...args: any[]) => import("@lit-labs/signals").SignalWatcherApi);
 /**
- * An author's profile view. A header above that author's feed, newest-first.
- * `SignalWatcher` auto-tracks the `collectionSignal` over the profile feed's
- * messages, so the post list re-renders as posts are backfilled or pushed live.
+ * An author's profile view, or a followed community feed (when {@link node} is
+ * not the microblog node). A header above the feed, newest-first. `SignalWatcher`
+ * auto-tracks the `collectionSignal` over the feed's messages, so the post list
+ * re-renders as posts are backfilled or pushed live.
  */
 export default class SocialProfile extends SocialProfile_base {
     static get properties(): {
         jid: {
+            type: StringConstructor;
+        };
+        node: {
+            type: StringConstructor;
+        };
+        tab: {
             type: StringConstructor;
         };
         _busy: {
@@ -21,8 +28,14 @@ export default class SocialProfile extends SocialProfile_base {
             type: BooleanConstructor;
             state: boolean;
         };
+        _following_count: {
+            type: NumberConstructor;
+            state: boolean;
+        };
     };
     jid: any;
+    node: string;
+    tab: string;
     /** @type {import('@converse/headless').MicroblogProfile} */
     profile: import("@converse/headless").MicroblogProfile;
     /** @type {import('@converse/headless').PubSubFeed} */
@@ -31,7 +44,28 @@ export default class SocialProfile extends SocialProfile_base {
     _busy: boolean;
     _loaded: boolean;
     _banner_error: boolean;
+    _following_count: any;
     initialize(): Promise<void>;
+    /**
+     * Whether this is a followed community/topic feed (a non-microblog node)
+     * rather than a person's profile. Feed mode drops the person-only chrome
+     * (message, add-contact, following tab) and labels the header by the node.
+     * @returns {boolean}
+     */
+    get isFeed(): boolean;
+    /**
+     * Read the author's follow-list count once (best-effort). Their XEP-0330 node
+     * is presence-access, so this is refused for strangers; on any failure the
+     * count stays null and the "Following" link is simply hidden.
+     * @returns {Promise<void>}
+     */
+    fetchFollowingCount(): Promise<void>;
+    /**
+     * How many accounts this author follows. Our own is the live mirror (reactive
+     * to follow/unfollow); another author's is the fetched snapshot.
+     * @returns {number}
+     */
+    get followingCount(): number;
     /**
      * Resolve the feed backing the post list (shared feed when we follow
      * the author, a detached browse-only feed otherwise) and backfill it. The
@@ -46,7 +80,7 @@ export default class SocialProfile extends SocialProfile_base {
      */
     get isOwn(): boolean;
     /**
-     * Whether we currently follow this author.
+     * Whether we currently follow this author (or community feed).
      * @returns {boolean}
      */
     get isFollowing(): boolean;
@@ -74,6 +108,12 @@ export default class SocialProfile extends SocialProfile_base {
     onBannerError(): void;
     /** Return to the timeline. */
     goBack(): void;
+    /**
+     * Switch between this profile's "Posts" and "Following" tabs. SocialApp owns
+     * the tab (so it's routable), so we bubble the choice up rather than set it here.
+     * @param {'posts'|'following'} tab
+     */
+    onTab(tab: "posts" | "following"): void;
     /**
      * Open a 1:1 chat with the author and switch to the Chat app.
      * @param {Event} [ev]

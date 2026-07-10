@@ -4,6 +4,11 @@ import { HashRouter } from '../rootview/routing.js';
 import { SOCIAL_ROUTE_ROOT, buildSocialRoute, parseSocialRoute } from './routing.js';
 import tplSocial from './templates/social.js';
 
+// The default microblog node (a person's feed). A profile opened on any other
+// node is a community/topic feed. Duplicated locally (not re-exported from
+// @converse/headless) as a fixed protocol namespace.
+const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
+
 import './compose.js';
 import './message.js';
 import './onboarding.js';
@@ -27,6 +32,11 @@ class SocialApp extends CustomElement {
             open_post: { type: Object, state: true },
             // The JID whose profile view is open, or null.
             open_profile: { type: String, state: true },
+            // The pubsub node the open profile shows: the microblog node (a
+            // person's feed) or a community/topic node (a feed we follow).
+            profile_node: { type: String, state: true },
+            // Which profile tab is shown: 'posts' (the feed) or 'following'.
+            profile_tab: { type: String, state: true },
             // The active hashtag filter (without the leading `#`), or null. Owned
             // here (not the feed) so it is routable and works from any Social view.
             filter: { type: String, state: true },
@@ -39,6 +49,8 @@ class SocialApp extends CustomElement {
         super();
         this.open_post = null;
         this.open_profile = null;
+        this.profile_node = MICROBLOG_NODE;
+        this.profile_tab = 'posts';
         this.filter = null;
         this._resolving = false;
         this.router = new HashRouter({ root: SOCIAL_ROUTE_ROOT, onRoute: () => this.syncFromHash() });
@@ -50,10 +62,12 @@ class SocialApp extends CustomElement {
         this.listenTo(_converse, 'disconnected', () => this.requestUpdate());
 
         // Navigation events bubble up from posts / profile / post-detail / feed.
-        this.addEventListener('profileselected', (ev) =>
-            this.onProfileSelected(/** @type {CustomEvent} */ (ev).detail.jid),
-        );
+        this.addEventListener('profileselected', (ev) => {
+            const { jid, node, tab } = /** @type {CustomEvent} */ (ev).detail;
+            this.onProfileSelected(jid, node, tab);
+        });
         this.addEventListener('closeprofile', () => this.onCloseProfile());
+        this.addEventListener('profiletab', (ev) => this.onProfileTab(/** @type {CustomEvent} */ (ev).detail.tab));
         this.addEventListener('postselected', (ev) => this.onPostSelected(/** @type {CustomEvent} */ (ev).detail.post));
         this.addEventListener('closepost', () => this.onClosePost());
         this.addEventListener('hashtagselected', (ev) =>
@@ -80,13 +94,22 @@ class SocialApp extends CustomElement {
         return tplSocial(this);
     }
 
-    /** @param {string} jid */
-    onProfileSelected(jid) {
+    /**
+     * @param {string} jid
+     * @param {string} [node=MICROBLOG_NODE] the node to show (a community feed if
+     *      not the microblog node)
+     * @param {'posts'|'following'} [tab='posts'] which tab to open the profile on
+     */
+    onProfileSelected(jid, node, tab) {
+        node = node || MICROBLOG_NODE;
+        tab = tab || 'posts';
         if (this.router.enabled) {
-            this.navigate({ view: 'profile', jid });
+            this.navigate({ view: 'profile', jid, node, tab });
             return;
         }
         this.open_post = null;
+        this.profile_node = node;
+        this.profile_tab = tab;
         this.open_profile = jid;
     }
 
@@ -97,6 +120,19 @@ class SocialApp extends CustomElement {
         }
         this.open_post = null;
         this.open_profile = null;
+    }
+
+    /**
+     * Switch the open profile's tab (bubbled from its tab bar). Same JID, so the
+     * keyed profile element stays mounted and only re-renders with the new tab.
+     * @param {'posts'|'following'} tab
+     */
+    onProfileTab(tab) {
+        if (this.router.enabled) {
+            this.navigate({ view: 'profile', jid: this.open_profile, node: this.profile_node, tab });
+            return;
+        }
+        this.profile_tab = tab;
     }
 
     /** @param {import('@converse/headless').PubSubMessage} post */
@@ -163,10 +199,15 @@ class SocialApp extends CustomElement {
         this._resolve_seq = (this._resolve_seq || 0) + 1;
         this.open_post = null;
         this.open_profile = null;
+        this.profile_node = MICROBLOG_NODE;
+        this.profile_tab = 'posts';
         this.filter = null;
         this._resolving = false;
-        if (route.view === 'profile') this.open_profile = route.jid;
-        else if (route.view === 'tag') this.filter = route.tag;
+        if (route.view === 'profile') {
+            this.open_profile = route.jid;
+            this.profile_node = route.node ?? MICROBLOG_NODE;
+            this.profile_tab = route.tab ?? 'posts';
+        } else if (route.view === 'tag') this.filter = route.tag;
         else if (route.view === 'post') this.resolvePost(route);
         this.requestUpdate();
     }

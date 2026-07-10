@@ -4,6 +4,12 @@ converse-icon {
     margin: 0;
     svg {
 	fill: var(--secondary-color);
+	// Many Font Awesome glyphs are drawn flush to their viewBox edges (e.g.
+	// `comments`, whose right speech-bubble sits exactly at the right edge).
+	// The UA default `overflow: hidden` on a non-root <svg> then shaves those
+	// edge pixels, so the icon looks slightly cut off. FA's own stylesheet sets
+	// `overflow: visible` for this reason; mirror it here.
+	overflow: visible;
     }
     &.clickable {
 	&:hover {

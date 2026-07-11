@@ -39,7 +39,7 @@ beforeAll(() => {
                         result.message =
                             `Stanzas don't match:\n` +
                             `Actual:\n${(actual.tree?.() ?? actual).outerHTML}\n` +
-                            `Expected:\n${expected.tree().outerHTML}`;
+                            `Expected:\n${(expected.tree?.() ?? expected).outerHTML}`;
                     }
                     return result;
                 },

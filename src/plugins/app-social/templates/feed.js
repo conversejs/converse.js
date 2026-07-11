@@ -32,6 +32,7 @@ function tplFilterBar(el) {
 function tplFollowingBar(el) {
     const count = _converse.state.following?.length ?? 0;
     if (!count) return '';
+
     const jid = _converse.session.get('bare_jid');
     return html`<div class="social-feed__following">
         <button
@@ -61,6 +62,10 @@ export default (el) => {
     const posts = el.visiblePosts;
     const filtering = !!el.filter;
 
+    const own_jid = _converse.session.get('bare_jid');
+    const own_profile = _converse.state.profile;
+    const i18n_view_feed = __('View own feed');
+
     const empty = filtering
         ? html`<p class="social-feed__empty">${__('No posts tagged #%1$s.', el.filter)}</p>`
         : html`<p class="social-feed__empty">${__('No posts yet.')}</p>`;
@@ -70,7 +75,34 @@ export default (el) => {
             ${filtering
                 ? tplFilterBar(el)
                 : html`
-                      ${tplFollowingBar(el)}
+                      <div class="social-feed__header">
+                          <div class="social-feed__profile">
+                              <a
+                                  href="#"
+                                  @click="${(ev) => {
+                                      ev.preventDefault();
+                                      el.dispatchEvent(
+                                          new CustomEvent('profileselected', {
+                                              detail: { jid: own_jid, tab: 'posts' },
+                                              bubbles: true,
+                                              composed: true,
+                                          }),
+                                      );
+                                  }}"
+                                  title="${i18n_view_feed}"
+                              >
+                                  <converse-avatar
+                                      class="avatar align-self-center"
+                                      .model=${own_profile}
+                                      name="${own_profile.getDisplayName()}"
+                                      nonce=${own_profile.vcard?.get('vcard_updated')}
+                                      height="40"
+                                      width="40"
+                                  ></converse-avatar>
+                              </a>
+                          </div>
+                          ${tplFollowingBar(el)}
+                      </div>
                       <converse-social-compose .model=${el.model}></converse-social-compose>
                       <converse-social-onboarding></converse-social-onboarding>
                   `}

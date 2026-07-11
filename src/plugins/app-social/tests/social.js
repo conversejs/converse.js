@@ -1180,16 +1180,38 @@ describe('The social profile view', function () {
     );
 
     it(
-        'browses a non-followed author without polluting the timeline, then follows',
+        'browses a non-followed author without polluting the timeline, then follows without the list blanking',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
             const bare_jid = _converse.bare_jid;
             const stranger = 'yorick@denmark.lit';
 
+            // The detached browse feed serves one post on its first backfill; every
+            // later fetch (the shared feed created on follow, and its re-fetch)
+            // returns empty. So the stranger's post only ever reaches the shared
+            // feed by being *seeded* from the browse feed on follow, not re-fetched.
+            const postItem = stx`
+                <item id="y-1" publisher="${stranger}">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">Poor Yorick</title>
+                    <id>tag:denmark.lit,2024:posts-y-1</id>
+                    <published>2024-01-03T10:00:00Z</published>
+                    <updated>2024-01-03T10:00:00Z</updated>
+                  </entry>
+                </item>`.tree();
+            let served = false;
             vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
             vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
-            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation((jid, node) => {
+                // Only the browse feed's first microblog-node backfill serves the
+                // post (not the repost's comment-summary fetch on the same JID).
+                if (jid === stranger && node === MICROBLOG_NODE && !served) {
+                    served = true;
+                    return Promise.resolve({ items: [postItem] });
+                }
+                return Promise.resolve({ items: [] });
+            });
 
             const el = mountSocialApp();
             await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
@@ -1207,6 +1229,13 @@ describe('The social profile view', function () {
             // aggregated collection (else their posts would enter the timeline).
             expect(_converse.state.pubsubfeeds.getFeed(stranger, MICROBLOG_NODE, false)).toBeUndefined();
 
+            // The browse feed's backfilled post is shown.
+            const hasPost = () =>
+                Array.from(profile.querySelectorAll('.social-profile__posts .social-post__body')).some((n) =>
+                    n.textContent.includes('Poor Yorick'),
+                );
+            await u.waitUntil(hasPost);
+
             // A Follow button is shown; clicking it follows (creating their feed),
             // and the toggle flips to Unfollow.
             const follow_btn = await u.waitUntil(() => {
@@ -1214,11 +1243,16 @@ describe('The social profile view', function () {
                 return b && b.textContent.trim() === 'Follow' ? b : null;
             });
             follow_btn.click();
+            // Wait until the follow settled (button re-enabled after setupFeed).
             await u.waitUntil(() => {
                 const b = profile.querySelector('.social-profile__follow');
-                return b && b.textContent.trim() === 'Unfollow';
+                return b && b.textContent.trim() === 'Unfollow' && !b.hasAttribute('disabled');
             });
             expect(api.microblog.isFollowing(stranger)).toBe(true);
+
+            // Following swaps the browse feed for the shared (live) one; its posts
+            // must stay visible (seeded) rather than the list blanking to re-fetch.
+            expect(hasPost()).toBe(true);
         }),
     );
 

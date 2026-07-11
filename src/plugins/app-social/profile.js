@@ -147,11 +147,27 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
             return;
         }
 
-        if (this.feed) this.stopListening(this.feed);
+        const previous = this.feed;
+        if (previous && previous !== feed) {
+            // Following (or unfollowing) swaps the detached browse feed for the
+            // shared, live one (or vice versa). Seed the newly-resolved feed with
+            // the posts we already have so the list doesn't blank while the new
+            // feed backfills in the background.
+            await feed.messages.hydrated;
+            if (!feed.messages.length && previous.getPosts().length) {
+                feed.messages.add(
+                    previous.getPosts().map((m) => ({ ...m.attributes })),
+                    { merge: true },
+                );
+            }
+            this.stopListening(previous);
+        }
 
         this.feed = feed;
         this.posts = collectionSignal(this.feed.messages);
-        this._loaded = false;
+        // Only show the loading placeholder when there's nothing to show yet, so a
+        // re-point after follow (or a warm cache) doesn't flash "Loading…".
+        this._loaded = this.feed.messages.length > 0;
 
         // Re-render if the fetch outcome changes (e.g. a later refetch is refused).
         this.listenTo(this.feed, 'change:fetch_error', () => this.requestUpdate());

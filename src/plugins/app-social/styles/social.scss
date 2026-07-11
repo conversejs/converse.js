@@ -25,6 +25,12 @@
             padding: 1em;
         }
 
+        .social-feed__header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5em;
+        }
+
         .social-feed__empty {
             opacity: 0.6;
             text-align: center;

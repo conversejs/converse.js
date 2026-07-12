@@ -3,6 +3,9 @@
  * @typedef {module:headless-plugins-muc-muc.MUCMessageData} MUCMessageData
  * @typedef {module:headless-plugins-chat-utils.MessageData} MessageData
  * @typedef {import('@converse/headless').RosterContact} RosterContact
+ * @typedef {import('@converse/headless').PubSubMessage} PubSubMessage
+ * @typedef {{ feedJid: string, node: string, itemId: string }} PostRef
+ * @typedef {{ type: 'comment'|'like', post?: PubSubMessage, comment: PubSubMessage, ref: PostRef }} MicroblogNotificationData
  */
 import Favico from 'favico.js-slevomat';
 import { __, i18n } from 'i18n';
@@ -277,7 +280,7 @@ function showMessageNotification(data) {
     };
 }
 
-function playSoundNotification() {
+export function playSoundNotification() {
     if (api.settings.get('play_sounds') && window.Audio !== undefined) {
         const audioOgg = new Audio(api.settings.get('sounds_path') + 'msg_received.ogg');
         const canPlayOgg = audioOgg.canPlayType('audio/ogg');
@@ -325,6 +328,80 @@ export function handleFeedback(data) {
     if (areDesktopNotificationsEnabled()) {
         showFeedbackNotification(data);
     }
+}
+
+/**
+ * Whether the Social app isn't the user's current focus, so a comment on their
+ * post is worth a desktop alert. Mirrors {@link isMessageToHiddenChat}: always
+ * true under test, and true when the tab is hidden or another app is active.
+ * @returns {boolean}
+ */
+function isSocialAppHidden() {
+    return isTestEnv() || document.hidden || api.apps?.getActive?.()?.name !== 'social';
+}
+
+/**
+ * Show an HTML5 Notification for new activity on one of the user's own posts.
+ * Clicking it asks the Social app to open the post's comment thread.
+ * @param {string} title
+ * @param {string} body
+ * @param {PostRef} ref
+ */
+function showMicroblogNotification(title, body, ref) {
+    const n = new Notification(title, {
+        body,
+        lang: i18n.getLocale(),
+        icon: api.settings.get('notification_icon'),
+        requireInteraction: !api.settings.get('notification_delay'),
+    });
+    if (api.settings.get('notification_delay')) {
+        setTimeout(() => n.close(), api.settings.get('notification_delay'));
+    }
+    n.onclick = function (event) {
+        event.preventDefault();
+        window.focus();
+        // The Social app (converse-app-social) listens for this to switch to the
+        // Social view and open the post's comment thread.
+        api.trigger('openMicroblogPost', ref);
+    };
+}
+
+/**
+ * Event handler for on('microblogNotification'). Raises a desktop notification
+ * (and sound) for a comment on, or a ♥ like of, one of the user's own posts,
+ * subject to the same enabled/visibility gating as chat messages.
+ * @param {MicroblogNotificationData} data
+ */
+export function handleMicroblogNotification(data) {
+    if (data?.type !== 'comment' && data?.type !== 'like') {
+        return;
+    }
+    if (!areDesktopNotificationsEnabled()) {
+        return;
+    }
+    // Suppress when the user is already looking at the Social app (unless they've
+    // opted into notifications for everything), matching the chat "hidden" gate.
+    if (api.settings.get('show_desktop_notifications') !== 'all' && !isSocialAppHidden()) {
+        return;
+    }
+    try {
+        playSoundNotification();
+    } catch (error) {
+        // Likely "play() failed because the user didn't interact with the document first"
+        log.error(error);
+    }
+    const { comment, post, ref } = data;
+    const name = comment.getDisplayName() || comment.get('author_name') || comment.get('author_jid') || __('Someone');
+    let title, body;
+    if (data.type === 'like') {
+        title = __('%1$s liked your post', name);
+        // The ♥ marker makes a poor body; show what was liked (the post's text).
+        body = post?.get('title') || post?.get('content') || __('Someone liked your post');
+    } else {
+        title = __('%1$s commented on your post', name);
+        body = comment.get('title') || comment.get('content') || __('New comment on your post');
+    }
+    showMicroblogNotification(title, body, ref);
 }
 
 /**

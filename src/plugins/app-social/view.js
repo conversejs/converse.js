@@ -9,6 +9,23 @@ import tplSocial from './templates/social.js';
 // @converse/headless) as a fixed protocol namespace.
 const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
 
+// A post queued by the desktop-notification click (see requestOpenPost). The
+// (re)mounting SocialApp consumes it in connectedCallback and opens that thread.
+let pending_open_ref = null;
+
+/**
+ * Queue a post to open, then bring the Social app forward. Called via the
+ * `openMicroblogPost` event from the desktop-notification click for a comment on
+ * one of our posts. By the notification's own visibility gate the app is almost
+ * always not mounted, so the intent is consumed when the element next mounts.
+ * @param {{ feedJid: string, node?: string, itemId: string }} ref
+ */
+export function requestOpenPost(ref) {
+    if (!ref?.feedJid || !ref?.itemId) return;
+    pending_open_ref = ref;
+    api.apps.switch('social');
+}
+
 import './compose.js';
 import './message.js';
 import './onboarding.js';
@@ -83,6 +100,14 @@ class SocialApp extends CustomElement {
         // (no-op when routing is off). Paired with stop() below since a raw window
         // listener isn't auto-cleaned and the element is recreated on app switch.
         this.router.start();
+
+        // Open a post queued while the app was unmounted (a desktop-notification
+        // click on a comment for one of our posts).
+        if (pending_open_ref) {
+            const ref = pending_open_ref;
+            pending_open_ref = null;
+            this.openPostByRef(ref);
+        }
     }
 
     disconnectedCallback() {
@@ -133,6 +158,19 @@ class SocialApp extends CustomElement {
             return;
         }
         this.profile_tab = tab;
+    }
+
+    /**
+     * Open a post's detail view (its comment thread) from a
+     * `{ feedJid, node, itemId }` reference, resolving or fetching the post as
+     * needed. Used by the desktop notification for a comment on one of our posts.
+     * @param {{ feedJid: string, node?: string, itemId: string }} ref
+     */
+    openPostByRef(ref) {
+        /** @type {import('./types.ts').SocialRoute} */
+        const route = { view: 'post', feedJid: ref.feedJid, node: ref.node || MICROBLOG_NODE, itemId: ref.itemId };
+        if (this.router.enabled) this.navigate(route);
+        else this.applyRoute(route);
     }
 
     /** @param {import('@converse/headless').PubSubMessage} post */

@@ -10,6 +10,7 @@ import {
     handleContactRequestNotification,
     handleFeedback,
     handleMessageNotification,
+    handleMicroblogNotification,
     requestPermission,
     updateUnreadFavicon
 } from './utils.js';
@@ -47,6 +48,7 @@ converse.plugins.add('converse-notification', {
             api.listen.on('contactRequest', handleContactRequestNotification);
             api.listen.on('contactPresenceChanged', handleChatStateNotification);
             api.listen.on('message', handleMessageNotification);
+            api.listen.on('microblogNotification', handleMicroblogNotification);
             api.listen.on('feedback', handleFeedback);
             api.listen.on('connected', requestPermission);
         });

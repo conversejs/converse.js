@@ -5,7 +5,7 @@
 import { html } from 'lit';
 import { api, converse } from '@converse/headless';
 import { addHashtagAnnotations } from './texture.js';
-import './view.js';
+import { requestOpenPost } from './view.js';
 import '../rootview/index.js';
 
 converse.plugins.add('converse-app-social', {
@@ -13,6 +13,10 @@ converse.plugins.add('converse-app-social', {
 
     initialize() {
         api.listen.on('afterMessageBodyTransformed', addHashtagAnnotations);
+
+        // A desktop-notification click for a comment on one of our posts asks the
+        // Social app to open that post's thread (see the notifications plugin).
+        api.listen.on('openMicroblogPost', requestOpenPost);
 
         // Registers a second top-level app (alongside "chat") in the app
         // switcher: the XEP-0277 (Microblogging over XMPP) "Social" feed.

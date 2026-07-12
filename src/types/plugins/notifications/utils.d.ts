@@ -15,12 +15,20 @@ export function updateUnreadFavicon(): void;
  */
 export function shouldNotifyOfGroupMessage(attrs: MUCMessageAttributes): Promise<any>;
 export function showFeedbackNotification(data: any): void;
+export function playSoundNotification(): Promise<void>;
 /**
  * Event handler for the on('message') event. Will call methods
  * to play sounds and show HTML5 notifications.
  */
 export function handleMessageNotification(data: any): Promise<boolean>;
 export function handleFeedback(data: any): void;
+/**
+ * Event handler for on('microblogNotification'). Raises a desktop notification
+ * (and sound) for a comment on one of the user's own posts, subject to the same
+ * enabled/visibility gating as chat messages.
+ * @param {MicroblogNotificationData} data
+ */
+export function handleMicroblogNotification(data: MicroblogNotificationData): void;
 /**
  * Event handler for on('contactPresenceChanged').
  * Will show an HTML5 notification to indicate that the chat status has changed.
@@ -40,4 +48,15 @@ export type MUCMessageAttributes = import("@converse/headless/types/plugins/muc/
 export type MUCMessageData = any;
 export type MessageData = any;
 export type RosterContact = import("@converse/headless").RosterContact;
+export type PubSubMessage = import("@converse/headless").PubSubMessage;
+export type PostRef = {
+    feedJid: string;
+    node: string;
+    itemId: string;
+};
+export type MicroblogNotificationData = {
+    type: string;
+    comment: PubSubMessage;
+    ref: PostRef;
+};
 //# sourceMappingURL=utils.d.ts.map

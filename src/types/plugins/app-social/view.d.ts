@@ -1,3 +1,15 @@
+/**
+ * Queue a post to open, then bring the Social app forward. Called via the
+ * `openMicroblogPost` event from the desktop-notification click for a comment on
+ * one of our posts. By the notification's own visibility gate the app is almost
+ * always not mounted, so the intent is consumed when the element next mounts.
+ * @param {{ feedJid: string, node?: string, itemId: string }} ref
+ */
+export function requestOpenPost(ref: {
+    feedJid: string;
+    node?: string;
+    itemId: string;
+}): void;
 export default SocialApp;
 /**
  * The Social app container. Owns "which view is showing": the timeline, an
@@ -57,6 +69,17 @@ declare class SocialApp extends CustomElement {
      * @param {'posts'|'following'} tab
      */
     onProfileTab(tab: "posts" | "following"): void;
+    /**
+     * Open a post's detail view (its comment thread) from a
+     * `{ feedJid, node, itemId }` reference, resolving or fetching the post as
+     * needed. Used by the desktop notification for a comment on one of our posts.
+     * @param {{ feedJid: string, node?: string, itemId: string }} ref
+     */
+    openPostByRef(ref: {
+        feedJid: string;
+        node?: string;
+        itemId: string;
+    }): void;
     /** @param {import('@converse/headless').PubSubMessage} post */
     onPostSelected(post: import("@converse/headless").PubSubMessage): void;
     onClosePost(): void;

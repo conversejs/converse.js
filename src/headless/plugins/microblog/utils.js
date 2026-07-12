@@ -7,7 +7,7 @@ import { Strophe } from 'strophe.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import log from '@converse/log';
-import { syncCommentThread } from './comment-summary.js';
+import { findPostForThread, syncCommentThread } from './comment-summary.js';
 import { COMMENTS_NODE_PREFIX, MICROBLOG_NODE } from './constants.js';
 
 /**
@@ -70,12 +70,24 @@ export function handleMicroblogEvent(message) {
             if (!feed) continue;
 
             if (items.length) {
+                // Snapshot the thread's existing comment ids so a re-delivered
+                // item (already present) can't raise a second notification.
+                const known = is_comments ? new Set(feed.messages.models.map((m) => m.get('id'))) : null;
                 const added = feed.addItems(items);
                 // A live comment/like landing on a materialised (pinned/open)
                 // thread updates the owning post's denormalised counts, so the
-                // timeline reflects it without reopening the thread. addItems is
-                // async, so guard the follow-up against an escaping rejection.
-                if (is_comments) added.then(() => syncCommentThread(from, node, feed)).catch((e) => log.error(e));
+                // timeline reflects it without reopening the thread, and a comment
+                // or like on one of *our* posts raises a desktop notification.
+                // addItems is async, so guard the follow-up against an escaping
+                // rejection.
+                if (is_comments) {
+                    added
+                        .then((comments) => {
+                            syncCommentThread(from, node, feed);
+                            notifyOfThreadActivity(from, node, comments, known);
+                        })
+                        .catch((e) => log.error(e));
+                }
             }
             if (retracts.length) {
                 feed.removeItems(retracts);
@@ -86,6 +98,42 @@ export function handleMicroblogEvent(message) {
         log.error(e);
     }
     return true;
+}
+
+/**
+ * Raise a `microblogNotification` for each newly-arrived comment or ♥ like on one
+ * of *our* own posts, so the notifications plugin can show a desktop alert (parity
+ * with chat messages). Deliberately narrow:
+ *  - runs only from the live PEP path (never the `fetchComments` backfill), so
+ *    opening or pinning a thread never back-notifies its existing activity;
+ *  - `known` filters out a re-delivered item already in the thread;
+ *  - our own comments/likes are skipped;
+ *  - a ♥ like notifies as `type: 'like'`, a text comment as `type: 'comment'`,
+ *    so the notifications plugin can word each one;
+ *  - the thread's owning post must be ours (`is_mine`), which also requires it to
+ *    be loaded in a timeline feed (otherwise there's nothing to open/attribute).
+ *
+ * @param {string} service - The comments service JID.
+ * @param {string} node - The comments node.
+ * @param {import('./post-comment').default[]} comments - The models `addItems` returned.
+ * @param {Set<string>} known - Comment ids present before this batch.
+ */
+function notifyOfThreadActivity(service, node, comments, known) {
+    const post = findPostForThread(service, node);
+    if (!post?.get('is_mine')) return;
+    const ref = { feedJid: post.get('from'), node: post.get('node'), itemId: post.get('id') };
+    for (const comment of comments) {
+        if (known.has(comment.get('id')) || comment.get('is_mine')) continue;
+        const type = comment.isLike?.() ? 'like' : 'comment';
+        /**
+         * Triggered for a notifiable microblog event: a comment on, or a ♥ like
+         * of, one of the user's own posts. The notifications plugin listens for
+         * this to raise an HTML5 desktop notification.
+         * @event _converse#microblogNotification
+         * @type {{ type: 'comment'|'like', post: import('./message').default, comment: import('./post-comment').default, ref: { feedJid: string, node: string, itemId: string } }}
+         */
+        api.trigger('microblogNotification', { type, post, comment, ref });
+    }
 }
 
 /**

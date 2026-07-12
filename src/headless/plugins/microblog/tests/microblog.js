@@ -1718,6 +1718,55 @@ describe('The microblog plugin', function () {
     );
 
     it(
+        'raises a notification event for a foreign comment or like on our own post',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            // Our own post and a stranger's, both with their comment threads
+            // materialised (as pinning, or opening a thread, does).
+            const { post: mine } = await seedPost(api, { author: bare_jid, id: 'p1' });
+            const { post: theirs } = await seedPost(api, { author: 'juliet@capulet.lit', id: 'p9' });
+            expect(mine.get('is_mine')).toBe(true);
+            expect(theirs.get('is_mine')).toBe(false);
+            const my_node = mine.getCommentsNode();
+            const their_node = theirs.getCommentsNode();
+            const my_thread = _converse.state.commentfeeds.getFeed(bare_jid, my_node, true);
+            const their_thread = _converse.state.commentfeeds.getFeed('juliet@capulet.lit', their_node, true);
+
+            const events = [];
+            api.listen.on('microblogNotification', (d) => events.push(d));
+
+            // A live comment from someone else on OUR post → one notification event.
+            receive(_converse, makeCommentEvent(bare_jid, my_node, 'c1', 'nice post', 'bob@montague.lit', 'Bob'));
+            await u.waitUntil(() => events.length === 1);
+            expect(events[0].type).toBe('comment');
+            expect(events[0].comment.get('id')).toBe('c1');
+            expect(events[0].post).toBe(mine);
+            expect(events[0].ref).toEqual({ feedJid: bare_jid, node: MICROBLOG_NODE, itemId: 'p1' });
+
+            // A ♥ like from someone else on OUR post → a 'like' notification event.
+            receive(_converse, makeCommentEvent(bare_jid, my_node, 'l1', '♥', 'bob@montague.lit', 'Bob'));
+            await u.waitUntil(() => events.length === 2);
+            expect(events[1].type).toBe('like');
+            expect(events[1].comment.get('id')).toBe('l1');
+            expect(events[1].post).toBe(mine);
+
+            // None of these notify: a re-delivery of the same comment, our own
+            // comment, or activity on someone else's post.
+            receive(_converse, makeCommentEvent(bare_jid, my_node, 'c1', 'nice post', 'bob@montague.lit', 'Bob'));
+            receive(_converse, makeCommentEvent(bare_jid, my_node, 'c2', 'thanks!', bare_jid, 'Me'));
+            receive(_converse, makeCommentEvent('juliet@capulet.lit', their_node, 'x1', 'hi', 'bob@montague.lit', 'Bob'));
+            await u.waitUntil(() => my_thread.messages.get('c2') && their_thread.messages.get('x1'));
+            // Flush the addItems().then() that runs the notification check.
+            await new Promise((r) => setTimeout(r, 50));
+            expect(events.length).toBe(2);
+        }),
+    );
+
+    it(
         'bounds pinned threads, unsubscribing the least-recently-pinned past the cap',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

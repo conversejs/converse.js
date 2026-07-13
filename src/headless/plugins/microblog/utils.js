@@ -8,7 +8,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import log from '@converse/log';
 import { findPostForThread, syncCommentThread } from './comment-summary.js';
-import { COMMENTS_NODE_PREFIX, MICROBLOG_NODE } from './constants.js';
+import { COMMENTS_NODE_PREFIX, FOLLOWING_NODE, MICROBLOG_NODE } from './constants.js';
 
 /**
  * Build the `tag:` URI used as the Atom `<id>` of a new entry (RFC 4151).
@@ -56,6 +56,34 @@ export function parseFeedAddress(address) {
     return { jid, node };
 }
 
+// Coalesce follow-list re-syncs. A burst of `+notify` pushes (e.g. a bulk-follow
+// on another device) must not fire N concurrent list re-reads: while one pass
+// runs, further triggers just mark it to run once more when it finishes.
+let resyncing_following = false;
+let resync_following_pending = false;
+
+/**
+ * Re-sync the local follow state from the durable XEP-0330 list (coalesced,
+ * fire-and-forget). Triggered by a `+notify` push on our own follow-list node.
+ */
+function resyncFollowing() {
+    if (resyncing_following) {
+        resync_following_pending = true;
+        return;
+    }
+    resyncing_following = true;
+    (async () => {
+        do {
+            resync_following_pending = false;
+            await api.microblog.syncFollowing();
+        } while (resync_following_pending);
+    })()
+        .catch((e) => log.error(e))
+        .finally(() => {
+            resyncing_following = false;
+        });
+}
+
 /**
  * Handle an incoming PEP/PubSub event, routing items to the relevant feed. A feed
  * is auto-created only for the user's own microblog node; events from any other
@@ -79,6 +107,16 @@ export function handleMicroblogEvent(message) {
         for (const items_el of sizzle('> items', event)) {
             const node = items_el.getAttribute('node');
             if (!node) continue;
+
+            // A change to our *own* XEP-0330 follow list (a follow/unfollow made
+            // on another device or client) arrives here via `+notify`. It isn't a
+            // timeline node, so re-sync the mirror + feeds from the server rather
+            // than routing items. A contact's list (from someone else) must never
+            // mutate our own follows, so it's ignored.
+            if (node === FOLLOWING_NODE) {
+                if (from === bare_jid) resyncFollowing();
+                continue;
+            }
 
             // Route by feed *existence*, not by node name, so any followed node
             // works (a contact's `urn:xmpp:microblog:0`, or an arbitrary community

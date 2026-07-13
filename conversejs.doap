@@ -215,7 +215,7 @@
       <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0277.html"/>
         <xmpp:status>partial</xmpp:status>
-        <xmpp:note>The "Social" app: publishing, reading and deleting microblog posts, plus comments, likes and reposts. Atom geolocation and some optional entry metadata are not implemented.</xmpp:note>
+        <xmpp:note>The "Social" app: publishing, reading and deleting microblog posts, following authors and arbitrary pubsub feed nodes (community/news feeds), comments, likes, reposts, and rendering media enclosures (images, audio and video). Atom geolocation and some optional entry metadata are not implemented.</xmpp:note>
       </xmpp:SupportedXep>
     </implements>
     <implements>
@@ -262,6 +262,7 @@
       <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0330.html"/>
         <xmpp:status>partial</xmpp:status>
+        <xmpp:note>The follow-list backing the "Social" app: publishing and retracting entries on the user's own subscription node as they follow and unfollow, reading a contact's list of followed feeds, and live multi-device synchronisation of the user's own list (a follow or unfollow on one device propagates to the others via a +notify subscription). The followers side is not exposed.</xmpp:note>
       </xmpp:SupportedXep>
     </implements>
     <implements>

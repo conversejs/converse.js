@@ -144,3 +144,20 @@ export function mountSocialApp() {
 export function stubDiscoverFollowable(api, candidates) {
     return vi.spyOn(api.microblog, 'discoverFollowable').mockResolvedValue(candidates);
 }
+
+/**
+ * Open the Discover modal from a mounted social feed (clicking the compose
+ * toolbar's Discover button) and return the modal element once its content has
+ * rendered.
+ * @param {Element} el - The mounted <converse-social-feed>.
+ * @param {any} api
+ * @returns {Promise<Element>}
+ */
+export async function openDiscover(el, api) {
+    const { u } = converse.env;
+    const btn = await u.waitUntil(() => el.querySelector('.social-discover__btn'));
+    /** @type {HTMLButtonElement} */ (btn).click();
+    const modal = await u.waitUntil(() => api.modal.get('converse-social-discover-modal'));
+    await u.waitUntil(() => modal.querySelector('.social-scan__btn') && modal.querySelector('input[name="address"]'));
+    return modal;
+}

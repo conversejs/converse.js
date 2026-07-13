@@ -7,6 +7,7 @@ import { api, converse } from '@converse/headless';
 import { addHashtagAnnotations } from './texture.js';
 import { requestOpenPost } from './view.js';
 import '../rootview/index.js';
+import './modals/discover.js';
 
 converse.plugins.add('converse-app-social', {
     dependencies: ['converse-rootview', 'converse-microblog'],

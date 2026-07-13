@@ -104,7 +104,6 @@ export default (el) => {
                           ${tplFollowingBar(el)}
                       </div>
                       <converse-social-compose .model=${el.model}></converse-social-compose>
-                      <converse-social-onboarding></converse-social-onboarding>
                   `}
             <div class="social-feed__posts">
                 ${posts.length

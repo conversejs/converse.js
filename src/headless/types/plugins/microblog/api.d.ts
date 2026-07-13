@@ -126,6 +126,40 @@ declare namespace _default {
             error?: Error;
         }>>;
         /**
+         * Parse a feed address into a `{ jid, node }` pair, or null if it isn't a
+         * usable address. Accepts a bare JID (a user or a pubsub service, which
+         * defaults to the PEP microblog node) or an XMPP pubsub URI carrying an
+         * explicit node (`xmpp:pubsub.example.org?;node=news`). Exposed so the
+         * "Follow a feed" UI can validate and preview input as it's typed.
+         * @method _converse.api.microblog.parseFeedAddress
+         * @param {string} address
+         * @returns {{ jid: string, node: string }|null}
+         */
+        function parseFeedAddress(address: string): {
+            jid: string;
+            node: string;
+        } | null;
+        /**
+         * Follow a feed given a free-form address (a bare JID or an XMPP pubsub
+         * node URI), probing it first so an unreadable or missing node fails loudly
+         * rather than adding an empty feed. This is the entry point for following
+         * feeds that aren't roster contacts, e.g. a community or news node on a
+         * pubsub service.
+         *
+         * @method _converse.api.microblog.followByAddress
+         * @param {string} address - A bare JID or `xmpp:` pubsub URI.
+         * @param {object} [options]
+         * @param {string} [options.node] - Overrides the node parsed from the address.
+         * @param {string} [options.title] - A human-readable label for the follow.
+         * @returns {Promise<import('./feed').default|undefined>}
+         * @throws {Error} named `InvalidFeedAddress` if the address can't be parsed,
+         *      or `FeedNotFound` if the node has no readable feed.
+         */
+        function followByAddress(address: string, { node, title }?: {
+            node?: string;
+            title?: string;
+        }): Promise<import("./feed").default | undefined>;
+        /**
          * Unfollow a contact's social feed: retract the XEP-0330 item, unsubscribe
          * to stop live delivery and drop the local feed and its cached posts.
          * @method _converse.api.microblog.unfollow

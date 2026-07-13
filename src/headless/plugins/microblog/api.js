@@ -7,6 +7,7 @@ import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import { publishFollow, readFollowing, retractFollow } from './utils/following.js';
+import { parseFeedAddress as parseAddress } from './utils.js';
 import { comment_summary_queue, syncCommentSummary } from './comment-summary.js';
 import MicroblogProfile from './profile.js';
 import PubSubFeed from './feed.js';
@@ -23,16 +24,17 @@ import {
 } from './constants.js';
 
 /**
- * Probe one contact's microblog node to learn whether they have a followable
- * feed. Resolves to a verdict for the followable cache. A node that returns at
- * least one item is followable (and yields a preview timestamp); an empty node,
- * a missing node, or an access error is not.
- * @param {string} jid - The contact's bare JID.
+ * Probe a JID's PubSub node to learn whether it holds a followable feed. Resolves
+ * to a verdict, used by the followable cache and by {@link followByAddress}. A
+ * node that returns at least one item is followable (and yields a preview
+ * timestamp); an empty node, a missing node, or an access error is not.
+ * @param {string} jid - The feed's JID (a contact's bare JID, or a pubsub service).
+ * @param {string} [node=MICROBLOG_NODE] - The node to probe.
  * @returns {Promise<{ followable: boolean, latest?: string|null }>}
  */
-async function probeMicroblogFeed(jid) {
+async function probeFeed(jid, node = MICROBLOG_NODE) {
     try {
-        const result = await api.pubsub.items.get(jid, MICROBLOG_NODE, {
+        const result = await api.pubsub.items.get(jid, node, {
             max_items: 1,
             timeout: FOLLOWABLE_PROBE_TIMEOUT,
         });
@@ -40,14 +42,14 @@ async function probeMicroblogFeed(jid) {
         if (!item) return { followable: false };
         let latest = null;
         try {
-            latest = parseAtomEntry(item, { from: jid, node: MICROBLOG_NODE })?.time ?? null;
+            latest = parseAtomEntry(item, { from: jid, node })?.time ?? null;
         } catch (e) {
             // The preview timestamp is best-effort; ignore a parse failure.
-            log.debug(`scanFollowable: could not parse latest item for ${jid}: ${e}`);
+            log.debug(`probeFeed: could not parse latest item for ${jid} (${node}): ${e}`);
         }
         return { followable: true, latest };
     } catch (e) {
-        log.debug(`scanFollowable: ${jid} has no readable microblog feed: ${e}`);
+        log.debug(`probeFeed: ${jid} has no readable feed at ${node}: ${e}`);
         return { followable: false };
     }
 }
@@ -226,7 +228,7 @@ export default {
             const worker = async () => {
                 while (queue.length && !signal?.aborted) {
                     const jid = queue.shift();
-                    const verdict = await probeMicroblogFeed(jid);
+                    const verdict = await probeFeed(jid);
                     cache?.record(jid, verdict);
                     if (verdict.followable) found.push(jid);
                     scanned++;
@@ -291,6 +293,53 @@ export default {
                 }
             }
             return results;
+        },
+
+        /**
+         * Parse a feed address into a `{ jid, node }` pair, or null if it isn't a
+         * usable address. Accepts a bare JID (a user or a pubsub service, which
+         * defaults to the PEP microblog node) or an XMPP pubsub URI carrying an
+         * explicit node (`xmpp:pubsub.example.org?;node=news`). Exposed so the
+         * "Follow a feed" UI can validate and preview input as it's typed.
+         * @method _converse.api.microblog.parseFeedAddress
+         * @param {string} address
+         * @returns {{ jid: string, node: string }|null}
+         */
+        parseFeedAddress(address) {
+            return parseAddress(address);
+        },
+
+        /**
+         * Follow a feed given a free-form address (a bare JID or an XMPP pubsub
+         * node URI), probing it first so an unreadable or missing node fails loudly
+         * rather than adding an empty feed. This is the entry point for following
+         * feeds that aren't roster contacts, e.g. a community or news node on a
+         * pubsub service.
+         *
+         * @method _converse.api.microblog.followByAddress
+         * @param {string} address - A bare JID or `xmpp:` pubsub URI.
+         * @param {object} [options]
+         * @param {string} [options.node] - Overrides the node parsed from the address.
+         * @param {string} [options.title] - A human-readable label for the follow.
+         * @returns {Promise<import('./feed').default|undefined>}
+         * @throws {Error} named `InvalidFeedAddress` if the address can't be parsed,
+         *      or `FeedNotFound` if the node has no readable feed.
+         */
+        async followByAddress(address, { node, title } = {}) {
+            const parsed = parseAddress(address);
+            if (!parsed) {
+                throw Object.assign(new Error(`Not a valid feed address: ${address}`), {
+                    name: 'InvalidFeedAddress',
+                });
+            }
+            const target_node = node || parsed.node;
+            const { followable } = await probeFeed(parsed.jid, target_node);
+            if (!followable) {
+                throw Object.assign(new Error(`No readable feed at ${parsed.jid} (${target_node})`), {
+                    name: 'FeedNotFound',
+                });
+            }
+            return api.microblog.follow(parsed.jid, { node: target_node, title });
         },
 
         /**

@@ -60,6 +60,153 @@ describe('The microblog plugin', function () {
     );
 
     it(
+        'routes a live push from a followed community node into its feed',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+
+            // A community feed lives on a pubsub service under an arbitrary node
+            // name, not a PEP `urn:xmpp:microblog:0` node. Materialise it as if we
+            // already follow it (routing keys on the feed existing, not the name).
+            const service = 'pubsub.montague.lit';
+            const node = 'news';
+            const feed = await api.microblog.feeds.get(service, node, true);
+            expect(feed.messages.length).toBe(0);
+
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${service}" to="${bare_jid}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${node}">
+                      <item id="news-1" publisher="${service}">
+                        <entry xmlns="${ATOM}">
+                          <title type="text">Council approves the new aqueduct</title>
+                          <id>tag:montague.lit,2024-01-01:news-1</id>
+                          <published>2024-01-01T09:00:00Z</published>
+                          <updated>2024-01-01T09:00:00Z</updated>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            await u.waitUntil(() => feed.messages.length === 1);
+            const post = feed.messages.at(0);
+            expect(post.get('title')).toBe('Council approves the new aqueduct');
+            expect(post.get('id')).toBe('news-1');
+            // A community node isn't ours, so its posts are never deletable-as-mine.
+            expect(post.get('is_mine')).toBe(false);
+        }),
+    );
+
+    it(
+        'ignores a live push to one of our own non-microblog PEP nodes',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+
+            // The own microblog feed exists; a push to a *different* own PEP node
+            // (avatar metadata, bookmarks, OMEMO...) must not spawn a bogus feed,
+            // since routing now keys on feed existence rather than node name.
+            const own = await api.microblog.feeds.own();
+            expect(own.messages.length).toBe(0);
+
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${bare_jid}" to="${bare_jid}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="urn:xmpp:avatar:metadata">
+                      <item id="av-1" publisher="${bare_jid}">
+                        <metadata xmlns="urn:xmpp:avatar:metadata">
+                          <info bytes="1" height="1" width="1" id="abc" type="image/png"/>
+                        </metadata>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            // No feed is created for the avatar node, and the own feed is untouched.
+            expect(_converse.state.pubsubfeeds.getFeed(bare_jid, 'urn:xmpp:avatar:metadata', false)).toBeUndefined();
+            expect(own.messages.length).toBe(0);
+        }),
+    );
+
+    it(
+        'parses feed addresses (bare JID, service, and xmpp: node URI)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            const { api } = _converse;
+            const parse = api.microblog.parseFeedAddress;
+            // A bare JID (a user or a service) defaults to the PEP microblog node.
+            expect(parse('news@example.org')).toEqual({ jid: 'news@example.org', node: MICROBLOG_NODE });
+            expect(parse('pubsub.example.org')).toEqual({ jid: 'pubsub.example.org', node: MICROBLOG_NODE });
+            // An xmpp: URI carries an explicit (possibly encoded) node.
+            expect(parse('xmpp:pubsub.example.org?;node=news')).toEqual({ jid: 'pubsub.example.org', node: 'news' });
+            expect(parse('xmpp:example.org?;node=urn%3Axmpp%3Amicroblog%3A0')).toEqual({
+                jid: 'example.org',
+                node: MICROBLOG_NODE,
+            });
+            // A resource is stripped.
+            expect(parse('news@example.org/phone')).toEqual({ jid: 'news@example.org', node: MICROBLOG_NODE });
+            // Not a usable address.
+            expect(parse('   ')).toBeNull();
+            expect(parse('notadomain')).toBeNull();
+        }),
+    );
+
+    it(
+        'follows a community feed by address after probing it',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const stub = stubPubsubNetwork(api);
+            // The probe (and the follow's backfill) find one item, so it's followable.
+            const item = stx`
+                <item id="n-1">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">Council approves the new aqueduct</title>
+                    <id>tag:montague.lit,2024-01-01:n-1</id>
+                    <published>2024-01-01T09:00:00Z</published>
+                  </entry>
+                </item>`.tree();
+            stub.items_get.mockResolvedValue({ items: [item] });
+
+            const feed = await api.microblog.followByAddress('xmpp:pubsub.montague.lit?;node=news', {
+                title: 'Town News',
+            });
+            expect(feed).toBeDefined();
+            expect(feed.get('jid')).toBe('pubsub.montague.lit');
+            expect(feed.get('node')).toBe('news');
+            expect(api.microblog.isFollowing('pubsub.montague.lit', 'news')).toBe(true);
+            // Recorded the durable follow and subscribed for live delivery.
+            expect(stub.publish).toHaveBeenCalled();
+            expect(stub.subscribe).toHaveBeenCalledWith('pubsub.montague.lit', 'news');
+        }),
+    );
+
+    it(
+        'rejects a feed address with no readable feed, without following',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            // The default stub resolves items.get to an empty node, so the probe
+            // reports it not followable.
+            const stub = stubPubsubNetwork(api);
+            await expect(api.microblog.followByAddress('pubsub.montague.lit', { node: 'ghost' })).rejects.toThrow(
+                /no readable feed/i,
+            );
+            expect(api.microblog.isFollowing('pubsub.montague.lit', 'ghost')).toBe(false);
+            expect(stub.publish).not.toHaveBeenCalled();
+            expect(stub.subscribe).not.toHaveBeenCalled();
+        }),
+    );
+
+    it(
         'detects a repost and surfaces the original author',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

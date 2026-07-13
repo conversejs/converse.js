@@ -24,7 +24,14 @@ import MicroblogProfile from './profile.js';
 import microblog_api from './api.js';
 import { comment_summary_queue } from './comment-summary.js';
 import { registerMicroblogHandler } from './utils.js';
-import { MICROBLOG_NODE, NS_ATOM, NS_AVATAR_METADATA, NS_THREAD, SOCIAL_FEED_FEATURE } from './constants.js';
+import {
+    FOLLOWING_NODE,
+    MICROBLOG_NODE,
+    NS_ATOM,
+    NS_AVATAR_METADATA,
+    NS_THREAD,
+    SOCIAL_FEED_FEATURE,
+} from './constants.js';
 import '../pubsub/index.js';
 import PubsubPlaceholderMessage from './placeholder.js';
 
@@ -70,6 +77,12 @@ converse.plugins.add('converse-microblog', {
             // and the microblog node.
             api.disco.own.features.add(SOCIAL_FEED_FEATURE);
             api.disco.own.features.add(MICROBLOG_NODE);
+            // Ask the server to push changes to our own XEP-0330 follow list to
+            // all our online resources (`+notify`), so a follow/unfollow on one
+            // device syncs live to the others. Unlike the microblog node (curated
+            // content, delivered by explicit subscription) the follow list is
+            // presence-broadcast profile state, so `+notify` is the right fit.
+            api.disco.own.features.add(`${FOLLOWING_NODE}+notify`);
         });
 
         api.listen.on('clearSession', () => {

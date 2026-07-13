@@ -287,6 +287,22 @@ declare namespace _default {
          */
         function initFollowing(): Promise<void>;
         /**
+         * Re-read the durable XEP-0330 follow list from our own PEP service and
+         * bring local state into line with it: reconcile the `following` mirror,
+         * materialise and backfill any feed newly followed on another device or
+         * client, and drop any feed unfollowed elsewhere. Only the delta is
+         * touched (feeds we already follow are left as they are), and every step
+         * is idempotent, so re-running it (e.g. on a `+notify` echo of our own
+         * change) is a no-op.
+         *
+         * Driven by the `+notify` push on our follow-list node (see
+         * `handleMicroblogEvent`), which is how a follow/unfollow made on one
+         * device propagates live to the others.
+         * @method _converse.api.microblog.syncFollowing
+         * @returns {Promise<void>}
+         */
+        function syncFollowing(): Promise<void>;
+        /**
          * Whether the user currently follows a JID + node, per the durable
          * XEP-0330 follow list (mirrored in `_converse.state.following`). This is
          * independent of whether a feed happens to be loaded for the JID — a

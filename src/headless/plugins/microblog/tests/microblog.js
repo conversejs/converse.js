@@ -15,6 +15,31 @@ import {
 
 const { stx, u } = converse.env;
 
+// XEP-0330 follow-list node + its `<subscription>` payload namespace.
+const FOLLOWING_NODE = 'urn:xmpp:pubsub:subscription';
+const NS_SUBSCRIPTION = 'urn:xmpp:pubsub:subscription:0';
+
+/** A XEP-0330 follow-list `<item>` (as `items.get` on the list returns it). */
+function followItem(server, node, title) {
+    return stx`
+        <item id="id-${server}-${node}">
+          <subscription xmlns="${NS_SUBSCRIPTION}" server="${server}" node="${node}"
+            >${title ? stx`<title>${title}</title>` : ''}</subscription>
+        </item>`.tree();
+}
+
+/** A `+notify` push telling `from` that its follow list changed. */
+function followListPush(from) {
+    return stx`
+        <message xmlns="jabber:client" from="${from}" to="${from}" type="headline">
+          <event xmlns="${PUBSUB_EVENT}">
+            <items node="${FOLLOWING_NODE}">
+              <item id="whatever"><subscription xmlns="${NS_SUBSCRIPTION}" server="x" node="y"/></item>
+            </items>
+          </event>
+        </message>`;
+}
+
 describe('The microblog plugin', function () {
     it(
         'parses an incoming PEP microblog event into the feed',
@@ -203,6 +228,79 @@ describe('The microblog plugin', function () {
             expect(api.microblog.isFollowing('pubsub.montague.lit', 'ghost')).toBe(false);
             expect(stub.publish).not.toHaveBeenCalled();
             expect(stub.subscribe).not.toHaveBeenCalled();
+        }),
+    );
+
+    it(
+        'syncs a follow made on another device from a follow-list push',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            const stub = stubPubsubNetwork(api);
+
+            // The server now holds a follow we never made on this device (added on
+            // another client). The list read returns it; feed backfills stay empty.
+            const followed = 'bob@montague.lit';
+            stub.items_get.mockImplementation((_jid, node) =>
+                Promise.resolve({ items: node === FOLLOWING_NODE ? [followItem(followed, MICROBLOG_NODE)] : [] }),
+            );
+            expect(api.microblog.isFollowing(followed)).toBe(false);
+
+            // A `+notify` push on our own follow-list node drives the re-sync.
+            receive(_converse, followListPush(bare_jid));
+
+            await u.waitUntil(() => api.microblog.isFollowing(followed));
+            // The followed feed is materialised so its posts join the timeline.
+            expect(_converse.state.pubsubfeeds.getFeed(followed, MICROBLOG_NODE, false)).toBeDefined();
+            expect(stub.items_get).toHaveBeenCalledWith(null, FOLLOWING_NODE);
+        }),
+    );
+
+    it(
+        'drops a follow removed on another device from a follow-list push',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            const stub = stubPubsubNetwork(api);
+
+            // Follow someone on this device first, then have the server report an
+            // empty list (they were unfollowed on another client).
+            const followed = 'bob@montague.lit';
+            await api.microblog.follow(followed);
+            expect(api.microblog.isFollowing(followed)).toBe(true);
+            expect(_converse.state.pubsubfeeds.getFeed(followed, MICROBLOG_NODE, false)).toBeDefined();
+
+            // The server now reports an empty follow list (unfollowed elsewhere).
+            stub.items_get.mockResolvedValue({ items: [] });
+            receive(_converse, followListPush(bare_jid));
+
+            await u.waitUntil(() => !api.microblog.isFollowing(followed));
+            // The feed and its cached posts are torn down.
+            expect(_converse.state.pubsubfeeds.getFeed(followed, MICROBLOG_NODE, false)).toBeUndefined();
+        }),
+    );
+
+    it(
+        "ignores a follow-list push from a contact (never touches our own follows)",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const stub = stubPubsubNetwork(api);
+
+            const followed = 'bob@montague.lit';
+            await api.microblog.follow(followed);
+            // Reset the spy so we can assert the list is *not* re-read below.
+            stub.items_get.mockClear();
+
+            // A push from someone else's follow-list node (from !== our bare JID)
+            // must not re-sync our mirror.
+            receive(_converse, followListPush('carol@montague.lit'));
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            expect(api.microblog.isFollowing(followed)).toBe(true);
+            expect(stub.items_get).not.toHaveBeenCalledWith(null, FOLLOWING_NODE);
         }),
     );
 

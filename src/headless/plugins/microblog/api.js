@@ -664,6 +664,63 @@ export default {
         },
 
         /**
+         * Re-read the durable XEP-0330 follow list from our own PEP service and
+         * bring local state into line with it: reconcile the `following` mirror,
+         * materialise and backfill any feed newly followed on another device or
+         * client, and drop any feed unfollowed elsewhere. Only the delta is
+         * touched (feeds we already follow are left as they are), and every step
+         * is idempotent, so re-running it (e.g. on a `+notify` echo of our own
+         * change) is a no-op.
+         *
+         * Driven by the `+notify` push on our follow-list node (see
+         * `handleMicroblogEvent`), which is how a follow/unfollow made on one
+         * device propagates live to the others.
+         * @method _converse.api.microblog.syncFollowing
+         * @returns {Promise<void>}
+         */
+        async syncFollowing() {
+            await api.waitUntil('pubsubFeedsInitialized');
+            const feeds = _converse.state.pubsubfeeds;
+            const mirror = _converse.state.following;
+            if (!feeds || !mirror) return;
+
+            let following;
+            try {
+                following = await readFollowing();
+            } catch (e) {
+                // A transient read failure must never wipe the mirror; leave
+                // local state untouched and wait for the next notification.
+                log.debug(`api.microblog.syncFollowing: could not read the follow list: ${e}`);
+                return;
+            }
+
+            // Snapshot the follows we held *before* reconciling, so we can tell
+            // which entries were added or removed on the other device. The mirror
+            // id is `server/node`, matching a feed's id.
+            const had = new Map(
+                mirror.map(/** @param {import('./following').FollowedFeed} m */ (m) => [
+                    m.id,
+                    { server: m.get('server'), node: m.get('node') },
+                ]),
+            );
+            await mirror.reconcile(following);
+
+            const desired = new Set(following.map(({ server, node }) => `${server}/${node}`));
+            // Materialise + backfill feeds newly followed elsewhere.
+            for (const { server, node } of following) {
+                if (had.has(`${server}/${node}`)) continue;
+                feeds.getFeed(server, node, true)?.fetchPosts();
+            }
+            // Drop feeds unfollowed elsewhere (mirrors `unfollow`). We don't
+            // unsubscribe: the device that unfollowed already did, and the
+            // subscription is a durable account-wide (bare-JID) one.
+            for (const [id, { server, node }] of had) {
+                if (desired.has(id)) continue;
+                await feeds.getFeed(server, node, false)?.close();
+            }
+        },
+
+        /**
          * Whether the user currently follows a JID + node, per the durable
          * XEP-0330 follow list (mirrored in `_converse.state.following`). This is
          * independent of whether a feed happens to be loaded for the JID — a

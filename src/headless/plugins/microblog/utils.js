@@ -23,18 +23,44 @@ export function buildTagId(jid, id) {
 }
 
 /**
- * @param {string} [node]
- * @returns {boolean}
+ * Parse a feed address into a `{ jid, node }` pair, or null if it isn't a usable
+ * address. Accepts either a bare JID (a user like `news@example.org` or a service
+ * like `pubsub.example.org`), which defaults to the PEP microblog node, or an XMPP
+ * pubsub URI carrying an explicit node (`xmpp:pubsub.example.org?;node=news`, per
+ * RFC 5122 / XEP-0060).
+ * @param {string} address
+ * @returns {{ jid: string, node: string }|null}
  */
-export function isMicroblogNode(node) {
-    return node === MICROBLOG_NODE || (!!node && node.startsWith(COMMENTS_NODE_PREFIX));
+export function parseFeedAddress(address) {
+    const raw = address?.trim();
+    if (!raw) return null;
+
+    let jid = raw;
+    let node = MICROBLOG_NODE;
+
+    if (/^xmpp:/i.test(raw)) {
+        const [jid_part, query = ''] = raw.slice('xmpp:'.length).split('?');
+        jid = decodeURIComponent(jid_part);
+        // The query is `[action];key=value;key=value` (the leading action may be
+        // empty), so pick out the `node=` pair wherever it sits.
+        const node_pair = query.split(';').find((p) => p.startsWith('node='));
+        if (node_pair) node = decodeURIComponent(node_pair.slice('node='.length));
+    }
+
+    // Strip any resource and require a dotted domain, so a stray word isn't taken
+    // for a JID. A service JID (`pubsub.example.org`) has no local part.
+    jid = Strophe.getBareJidFromJid(jid) || jid;
+    const domain = Strophe.getDomainFromJid(jid);
+    if (!jid || !node || !domain?.includes('.')) return null;
+
+    return { jid, node };
 }
 
 /**
- * Handle an incoming PEP/PubSub event, routing microblog items to the relevant
- * feed. New feeds are auto-created only for the user's own PEP node; events from
- * other JIDs are applied only to feeds the user already follows (M3 adds the
- * machinery to follow others).
+ * Handle an incoming PEP/PubSub event, routing items to the relevant feed. A feed
+ * is auto-created only for the user's own microblog node; events from any other
+ * node are applied only to a feed the user already follows (a contact's microblog
+ * or an arbitrary community node on a pubsub service).
  *
  * @param {Element} message
  * @returns {boolean} Always `true`, to keep the Strophe handler registered.
@@ -52,22 +78,29 @@ export function handleMicroblogEvent(message) {
 
         for (const items_el of sizzle('> items', event)) {
             const node = items_el.getAttribute('node');
-            if (!isMicroblogNode(node)) continue;
+            if (!node) continue;
+
+            // Route by feed *existence*, not by node name, so any followed node
+            // works (a contact's `urn:xmpp:microblog:0`, or an arbitrary community
+            // node on a pubsub service), while our own non-feed PEP nodes (avatar,
+            // bookmarks, OMEMO...) are ignored:
+            //  - a comments node routes to its own collection, and only into an
+            //    already-open thread (create=false), so it never surfaces in the timeline;
+            //  - our own microblog node is auto-created;
+            //  - a followed community/contact node routes into its already-materialised
+            //    feed (persisted, so present even before the Social app opens);
+            //  - anything else has no feed and is dropped.
+            const is_comments = node.startsWith(COMMENTS_NODE_PREFIX);
+            const feed = is_comments
+                ? _converse.state.commentfeeds?.getFeed(from, node, false)
+                : feeds.getFeed(from, node, from === bare_jid && node === MICROBLOG_NODE);
+            if (!feed) continue;
 
             const items = sizzle('> item', items_el);
             const retracts = sizzle('> retract', items_el)
                 .map((el) => el.getAttribute('id'))
                 .filter(Boolean);
             if (!items.length && !retracts.length) continue;
-
-            // Comments route to their own separate collection, and only when a
-            // thread is already open (create=false) — so a comment event never
-            // creates a timeline feed nor surfaces in the aggregated feed.
-            const is_comments = node.startsWith(COMMENTS_NODE_PREFIX);
-            const feed = is_comments
-                ? _converse.state.commentfeeds?.getFeed(from, node, false)
-                : feeds.getFeed(from, node, from === bare_jid);
-            if (!feed) continue;
 
             if (items.length) {
                 // Snapshot the thread's existing comment ids so a re-delivered

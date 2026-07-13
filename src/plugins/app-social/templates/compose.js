@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import { api } from '@converse/headless';
 import { __ } from 'i18n';
 
 /**
@@ -13,7 +14,13 @@ export default (el) => html`
             @keydown=${(ev) => el.onKeyDown(ev)}
         ></textarea>
         <div class="social-compose__toolbar">
-            <converse-social-scan></converse-social-scan>
+            <button
+                type="button"
+                class="social-discover__btn"
+                @click=${(ev) => api.modal.show('converse-social-discover-modal', {}, ev)}
+            >
+                <converse-icon class="fa fa-search" size="0.9em"></converse-icon> ${__('Discover')}
+            </button>
             <button type="submit" class="btn btn-primary">${__('Post')}</button>
         </div>
     </form>

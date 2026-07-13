@@ -28,7 +28,6 @@ export function requestOpenPost(ref) {
 
 import './compose.js';
 import './message.js';
-import './onboarding.js';
 import './feed.js';
 import './post.js';
 import './profile.js';

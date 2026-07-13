@@ -624,6 +624,51 @@
         }
     }
 
+    // The single "Discover" entry point in the compose toolbar (opens the Discover
+    // modal). Quiet and icon-led so it doesn't compete with the Post button.
+    .social-discover__btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4em;
+        padding: 0;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--subdued-color);
+
+        converse-icon svg {
+            fill: currentColor;
+        }
+
+        &:hover {
+            color: var(--link-color);
+        }
+    }
+
+    // The Discover modal: two stacked sections ("Find people to follow" and
+    // "Follow a feed") separated by a divider.
+    .social-discover {
+        &__section + .social-discover__section {
+            margin-top: 0.5em;
+        }
+
+        &__heading {
+            font-size: 1em;
+            font-weight: bold;
+            margin-bottom: 0.25em;
+        }
+
+        &__divider {
+            margin: 1em 0;
+            opacity: 0.25;
+        }
+
+        &__preview {
+            margin: 0.5em 0;
+            font-size: 0.9em;
+        }
+    }
+
     converse-social-message {
         display: block;
 

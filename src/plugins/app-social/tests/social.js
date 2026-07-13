@@ -9,6 +9,7 @@ import {
     makeRichPost,
     mountSocialApp,
     mountSocialFeed,
+    openDiscover,
     receive,
     stubDiscoverFollowable,
 } from './utils.js';
@@ -590,7 +591,7 @@ describe('The social feed', function () {
     );
 });
 
-describe('The social onboarding card', function () {
+describe('The Discover modal suggestions', function () {
     it(
         'suggests followable contacts and lets you bulk-follow them',
         mock.initConverse(converse, [], {}, async function (_converse) {
@@ -603,10 +604,11 @@ describe('The social onboarding card', function () {
             const followMany = vi.spyOn(api.microblog, 'followMany').mockResolvedValue([]);
 
             const el = mountSocialFeed();
+            const modal = await openDiscover(el, api);
 
             // The card appears with the candidate, pre-checked. The contact name
             // is rendered asynchronously, so wait for it to appear.
-            const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
+            const card = await u.waitUntil(() => modal.querySelector('converse-social-onboarding .social-onboarding'));
             await u.waitUntil(() => card.textContent.includes('Juliet'));
             const checkbox = /** @type {HTMLInputElement} */ (card.querySelector('input[type="checkbox"]'));
             expect(checkbox.checked).toBe(true);
@@ -631,17 +633,18 @@ describe('The social onboarding card', function () {
             cache.record(jid, { followable: true });
 
             const el = mountSocialFeed();
-            const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
+            const modal = await openDiscover(el, api);
+            const card = await u.waitUntil(() => modal.querySelector('converse-social-onboarding .social-onboarding'));
             await u.waitUntil(() => card.textContent.includes('Juliet'));
 
             // Dismiss snoozes the shown candidate: the suggestions card empties and
             // the snooze is persisted on the cache (not a permanent global flag).
             /** @type {HTMLButtonElement} */ (card.querySelector('.social-onboarding__dismiss')).click();
-            await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding') === null);
+            await u.waitUntil(() => modal.querySelector('converse-social-onboarding .social-onboarding') === null);
             expect(cache.get(jid).get('snoozed')).toBe(true);
-            // The "Find people to follow" control (in the compose toolbar) remains
-            // as the re-entry point to discovery.
-            expect(el.querySelector('.social-scan__btn')).not.toBe(null);
+            // The "Discover" control (in the compose toolbar) remains as the
+            // re-entry point to discovery.
+            expect(el.querySelector('.social-discover__btn')).not.toBe(null);
         }),
     );
 
@@ -658,10 +661,12 @@ describe('The social onboarding card', function () {
             cache.snooze([jid]);
 
             const el = mountSocialFeed();
-            // The scan control appears (compose toolbar), but no suggestions card —
-            // the one known followable contact has been snoozed.
-            await u.waitUntil(() => el.querySelector('.social-scan__btn'));
-            expect(el.querySelector('converse-social-onboarding .social-onboarding')).toBe(null);
+            const modal = await openDiscover(el, api);
+            // The scan control is present, but no suggestions card — the one known
+            // followable contact has been snoozed.
+            const onboarding = await u.waitUntil(() => modal.querySelector('converse-social-onboarding'));
+            await onboarding.updateComplete;
+            expect(onboarding.querySelector('.social-onboarding')).toBe(null);
         }),
     );
 
@@ -678,7 +683,8 @@ describe('The social onboarding card', function () {
             cache.record(jid, { followable: true });
 
             const el = mountSocialFeed();
-            const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
+            const modal = await openDiscover(el, api);
+            const card = await u.waitUntil(() => modal.querySelector('converse-social-onboarding .social-onboarding'));
             await u.waitUntil(() => card.textContent.includes('Juliet'));
         }),
     );
@@ -708,12 +714,13 @@ describe('The social onboarding card', function () {
             );
 
             const el = mountSocialFeed();
-            // The scan control lives in the compose toolbar.
-            const scan = await u.waitUntil(() => el.querySelector('.social-scan__btn'));
+            // The scan control now lives in the Discover modal.
+            const modal = await openDiscover(el, api);
+            const scan = await u.waitUntil(() => modal.querySelector('.social-scan__btn'));
             /** @type {HTMLButtonElement} */ (scan).click();
 
-            // The sweep finds Juliet and the suggestions card renders her.
-            const card = await u.waitUntil(() => el.querySelector('converse-social-onboarding .social-onboarding'));
+            // The sweep finds Juliet and the modal's suggestions render her.
+            const card = await u.waitUntil(() => modal.querySelector('converse-social-onboarding .social-onboarding'));
             await u.waitUntil(() => card.textContent.includes('Juliet'));
         }),
     );
@@ -734,11 +741,12 @@ describe('The social onboarding card', function () {
             });
 
             const el = mountSocialFeed();
-            const scanBtn = await u.waitUntil(() => el.querySelector('.social-scan__btn'));
+            const modal = await openDiscover(el, api);
+            const scanBtn = await u.waitUntil(() => modal.querySelector('.social-scan__btn'));
             /** @type {HTMLButtonElement} */ (scanBtn).click();
 
             // It enters the scanning state and starts probing.
-            const cancel = await u.waitUntil(() => el.querySelector('.social-scan--scanning button'));
+            const cancel = await u.waitUntil(() => modal.querySelector('.social-scan--scanning button'));
             const probes_before_cancel = probes;
             expect(probes_before_cancel).toBeGreaterThan(0);
 
@@ -746,12 +754,12 @@ describe('The social onboarding card', function () {
 
             // The control leaves the scanning state immediately, without waiting for
             // the in-flight probes to settle.
-            await u.waitUntil(() => el.querySelector('.social-scan--scanning') === null);
+            await u.waitUntil(() => modal.querySelector('.social-scan--scanning') === null);
 
             // Scanning again starts a fresh sweep (more probes are issued).
-            const scanAgain = await u.waitUntil(() => el.querySelector('.social-scan__btn'));
+            const scanAgain = await u.waitUntil(() => modal.querySelector('.social-scan__btn'));
             /** @type {HTMLButtonElement} */ (scanAgain).click();
-            await u.waitUntil(() => el.querySelector('.social-scan--scanning'));
+            await u.waitUntil(() => modal.querySelector('.social-scan--scanning'));
             await u.waitUntil(() => probes > probes_before_cancel);
         }),
     );
@@ -779,9 +787,10 @@ describe('The social onboarding card', function () {
                 .mockImplementation(() => Promise.resolve(has_feed ? [jid] : []));
 
             const el = mountSocialFeed();
+            const modal = await openDiscover(el, api);
 
             // Initially nothing to suggest → no card.
-            const onboarding = await u.waitUntil(() => el.querySelector('converse-social-onboarding'));
+            const onboarding = await u.waitUntil(() => modal.querySelector('converse-social-onboarding'));
             await u.waitUntil(() => discover.mock.calls.length >= 1);
             await onboarding.updateComplete;
             expect(onboarding.querySelector('.social-onboarding')).toBe(null);

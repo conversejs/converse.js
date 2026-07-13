@@ -24,8 +24,8 @@ export function handleMessageNotification(data: any): Promise<boolean>;
 export function handleFeedback(data: any): void;
 /**
  * Event handler for on('microblogNotification'). Raises a desktop notification
- * (and sound) for a comment on one of the user's own posts, subject to the same
- * enabled/visibility gating as chat messages.
+ * (and sound) for a comment on, or a ♥ like of, one of the user's own posts,
+ * subject to the same enabled/visibility gating as chat messages.
  * @param {MicroblogNotificationData} data
  */
 export function handleMicroblogNotification(data: MicroblogNotificationData): void;
@@ -55,7 +55,8 @@ export type PostRef = {
     itemId: string;
 };
 export type MicroblogNotificationData = {
-    type: string;
+    type: "comment" | "like";
+    post?: PubSubMessage;
     comment: PubSubMessage;
     ref: PostRef;
 };

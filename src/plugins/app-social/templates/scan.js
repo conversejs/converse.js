@@ -21,6 +21,6 @@ export default (el) => {
     }
 
     return html`<button type="button" class="social-scan__btn" @click=${() => el.scan()}>
-        <converse-icon class="fa fa-search" size="0.9em"></converse-icon> ${__('Find people to follow')}
+        <converse-icon class="fa fa-search" size="0.9em"></converse-icon> ${__('Scan contacts')}
     </button>`;
 };

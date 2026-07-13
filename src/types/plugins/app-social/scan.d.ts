@@ -1,5 +1,5 @@
 /**
- * The compact "Find people to follow" control that lives in the compose toolbar.
+ * The compact "Find people to follow" control that lives in the Discover modal.
  * It runs the explicit microblog discovery sweep
  * ({@link _converse.api.microblog.scanFollowable}) and shows inline progress with
  * a cancel affordance. It owns no suggestion state: results land in the followable

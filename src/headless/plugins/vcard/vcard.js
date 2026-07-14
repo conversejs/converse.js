@@ -12,11 +12,14 @@ class VCard extends Model {
     }
 
     /**
-     * @param {import("../../shared/types").ModelAttributes} [_attrs]
-     * @param {import("./types").VCardModelOptions} [options]
+     * @param {import("../../shared/types.ts").ModelAttributes} [_attrs]
+     * @param {import("./types.ts").VCardModelOptions} [options]
      */
     initialize(_attrs, options) {
-        this.lazy_load = api.settings.get('lazy_load_vcards') && !!options?.lazy_load;
+        // A vcard rehydrated from cache (`fromStorage`) already represents a known
+        // entity, so it must not eagerly refetch on every page load.
+        const lazy = !!options?.lazy_load || !!options?.fromStorage;
+        this.lazy_load = api.settings.get('lazy_load_vcards') && lazy;
 
         if (this.lazy_load) {
             this.once('visibilityChanged', () => api.vcard.update(this));

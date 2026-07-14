@@ -23,6 +23,7 @@ export interface ModelOptions {
     parse?: boolean;
     unset?: boolean;
     silent?: boolean;
+    fromStorage?: boolean;
 }
 
 // XEP-0059 Result Set Management

@@ -18,6 +18,7 @@ export interface ModelOptions {
     parse?: boolean;
     unset?: boolean;
     silent?: boolean;
+    fromStorage?: boolean;
 }
 export type RSMQueryOptions = {
     after?: string;

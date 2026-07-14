@@ -7,10 +7,10 @@ declare class VCard extends Model<import("@converse/skeletor").ModelAttributes> 
     constructor(attrs: import("../../shared/types").ModelAttributes, options: import("./types").VCardModelOptions);
     _vcard: any;
     /**
-     * @param {import("../../shared/types").ModelAttributes} [_attrs]
-     * @param {import("./types").VCardModelOptions} [options]
+     * @param {import("../../shared/types.ts").ModelAttributes} [_attrs]
+     * @param {import("./types.ts").VCardModelOptions} [options]
      */
-    initialize(_attrs?: import("../../shared/types").ModelAttributes, options?: import("./types").VCardModelOptions): void;
+    initialize(_attrs?: import("../../shared/types.ts").ModelAttributes, options?: import("./types.ts").VCardModelOptions): void;
     lazy_load: boolean;
     /**
      * Helper method that returns the user's nickname given that there's more

@@ -70,7 +70,12 @@ export default class SocialFeed extends SignalWatcher(CustomElement) {
     }
 
     render() {
-        if (!this.model) return '';
+        // `_converse.state.profile` can be torn down a tick before this element is
+        // removed, while a `SignalWatcher` recompute still fires one last render;
+        // the template dereferences it (the own-feed avatar), so bail rather than
+        // throw. In normal operation the profile is always present here.
+        if (!this.model || !_converse.state.profile) return '';
+
         return tplFeed(this);
     }
 }

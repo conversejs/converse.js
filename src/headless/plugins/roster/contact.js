@@ -102,7 +102,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
      * "subscribe" to the contact
      */
     ackSubscribe() {
-        api.send(stx`<presence type="subscribe" to="${this.get('jid')}" xmlns="jabber:client"></presence>`);
+        api.user.presence.send({ type: 'subscribe', to: this.get('jid') });
     }
 
     /**

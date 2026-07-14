@@ -106,7 +106,7 @@ describe('XEP-0198 Stream Management', function () {
                 expect(unacked_stanzas[2]).toEqualStanza(IQ_stanzas[4]);
                 expect(unacked_stanzas[3]).toEqualStanza(
                     stx`<presence xmlns="jabber:client"><priority>0</priority><x xmlns="vcard-temp:x:update"/>
-                        <c hash="sha-1" node="https://conversejs.org" ver="lvcDSoElfrbbjpiLJQNl0mi9Q18=" xmlns="http://jabber.org/protocol/caps"/>
+                        <c hash="sha-1" node="https://conversejs.org" ver="0a5bLauQjlc9FKeqwwDZ3dCpOCc=" xmlns="http://jabber.org/protocol/caps"/>
                         </presence>`,
                 );
 

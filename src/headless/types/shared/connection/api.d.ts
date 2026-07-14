@@ -6,7 +6,12 @@ declare namespace _default {
      * @return {Connection|MockConnection}
      */
     function init(jid?: string): Connection | MockConnection;
-    function get(): any;
+    /**
+     * @method api.connection.get
+     * @memberOf api.connection
+     * @return {Connection|MockConnection}
+     */
+    function get(): Connection | MockConnection;
     function destroy(): void;
     /**
      * @method api.connection.authenticated

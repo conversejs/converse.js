@@ -74,8 +74,11 @@ export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
         return options?.context === 'roster' ? `${name} (${__('me')})` : name;
     }
 
+    /**
+     * @returns {string|undefined}
+     */
     getNickname() {
-        return this.vcard?.get('nickname') || api.settings.get('nickname');
+        return this.vcard?.getNickname() || api.settings.get('nickname') || undefined;
     }
 
     /**

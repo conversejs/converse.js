@@ -439,7 +439,7 @@ describe('A MUC', function () {
                         xmlns="jabber:client">
                     <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
-                        ver="0cez5x5tbZP5NuLq2WClRoMmeKw="/>>
+                        ver="LtdUA9LYgaH8dsa9k2gMJKk4fY0="/>>
                 </presence>`);
 
                 while (IQ_stanzas.length) IQ_stanzas.pop();
@@ -473,7 +473,7 @@ describe('A MUC', function () {
                         xmlns="jabber:client">
                     <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
-                        ver="0cez5x5tbZP5NuLq2WClRoMmeKw="/>>
+                        ver="LtdUA9LYgaH8dsa9k2gMJKk4fY0="/>>
                 </presence>`);
 
                 while (IQ_stanzas.length) IQ_stanzas.pop();
@@ -507,7 +507,7 @@ describe('A MUC', function () {
                         xmlns="jabber:client">
                     <x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" node="https://conversejs.org"
-                        ver="0cez5x5tbZP5NuLq2WClRoMmeKw="/>>
+                        ver="LtdUA9LYgaH8dsa9k2gMJKk4fY0="/>>
                 </presence>`);
             }),
         );

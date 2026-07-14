@@ -59,6 +59,11 @@ export default {
         return connection;
     },
 
+    /**
+     * @method api.connection.get
+     * @memberOf api.connection
+     * @return {Connection|MockConnection}
+     */
     get() {
         return connection;
     },

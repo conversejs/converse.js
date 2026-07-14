@@ -3,6 +3,10 @@
 ## 15.0.0 (Unreleased)
 
 - #194: Full support for XEP-0115: Entity capabilities
+- Full XEP-0172 User Nickname support. Converse now publishes its own nickname to PEP and
+  consumes a contact's nickname from a PEP event, a presence hint, or by retrieving their nick node, so
+  a contact's display name updates live without an avatar change to trigger a vcard refetch. It also
+  advertises `nick+notify` and attaches the nickname to outgoing subscription requests.
 - refactor(smacks): XEP-0198 Stream Management is now implemented natively by Strophe.js (see its
   `enableStreamManagement` connection option). The `converse-smacks` plugin is reduced to mapping
   the existing `enable_smacks` and `smacks_max_unacked_stanzas` settings onto that option, and two

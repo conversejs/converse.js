@@ -12,7 +12,11 @@ import VCards from './vcards.js';
 import {
     clearVCardsSession,
     onOccupantAvatarChanged,
+    publishOwnNickname,
+    registerNickHandler,
     registerPresenceHandler,
+    resetNickState,
+    unregisterNickHandler,
     unregisterPresenceHandler,
     updatePresence,
 } from './utils.js';
@@ -43,14 +47,26 @@ converse.plugins.add('converse-vcard', {
             'chatRoomInitialized',
             /** @param {import('../muc/muc').default} m */ (m) => {
                 m.listenTo(m.occupants, 'change:image_hash', (o) => onOccupantAvatarChanged(o));
-            }
+            },
         );
 
         api.listen.on('addClientFeatures', () => {
             api.disco.own.features.add(Strophe.NS.VCARD);
             api.disco.own.features.add(Strophe.NS.VCARD_UPDATE);
+
+            // Ask XEP-0163 PEP services to push XEP-0172 nickname changes to us.
+            api.disco.own.features.add(Strophe.NS.NICK + '+notify');
         });
-        api.listen.on('clearSession', () => clearVCardsSession());
+        api.listen.on('clearSession', () => {
+            clearVCardsSession();
+            resetNickState();
+        });
+
+        api.listen.on('statusInitialized', () => {
+            // XEP-0172: publish our own nickname to PEP on login and when changed.
+            publishOwnNickname();
+            _converse.state.profile?.on('vcard:change', () => publishOwnNickname());
+        });
 
         api.listen.on('visibilityChanged', ({ el }) => {
             const { model } = el;
@@ -63,8 +79,14 @@ converse.plugins.add('converse-vcard', {
             Object.assign(_converse, { vcards }); // XXX DEPRECATED
         });
 
-        api.listen.on('presencesInitialized', () => registerPresenceHandler());
-        api.listen.on('beforeTearDown', () => unregisterPresenceHandler());
+        api.listen.on('presencesInitialized', () => {
+            registerPresenceHandler();
+            registerNickHandler();
+        });
+        api.listen.on('beforeTearDown', () => {
+            unregisterPresenceHandler();
+            unregisterNickHandler();
+        });
         api.listen.on('constructedPresence', (_, p) => updatePresence(p));
     },
 });

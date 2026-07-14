@@ -32,6 +32,19 @@ export function fetchVCard(jid: string): Promise<import("./types.js").VCardResul
 }>;
 export function unregisterPresenceHandler(): void;
 export function registerPresenceHandler(): void;
+export function unregisterNickHandler(): void;
+export function registerNickHandler(): void;
+/**
+ * Reset the module-level XEP-0172 session state (own published nick and the
+ * once-per-contact retrieval guard), so a fresh session republishes and refetches.
+ */
+export function resetNickState(): void;
+/**
+ * Publish our own nickname to our PEP node (XEP-0172 § 3), so contacts
+ * are notified when it changes.
+ * @returns {Promise<void>}
+ */
+export function publishOwnNickname(): Promise<void>;
 /**
  * @param {import('strophe.js').Builder} stanza
  */

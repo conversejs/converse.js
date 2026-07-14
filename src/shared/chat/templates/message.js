@@ -1,15 +1,13 @@
 import { html, nothing } from 'lit';
-import { converse } from '@converse/headless';
 import { shouldRenderMediaFromURL } from '../../../utils/url.js';
 import { getAuthorStyle } from '../../../utils/color.js';
-import { getRelativeTime } from '../../../utils/time.js';
 import { getHats } from '../utils.js';
 import { __ } from 'i18n';
 import 'shared/avatar/avatar.js';
 import 'shared/chat/unfurl.js';
 import 'shared/chat/reply-context.js';
+import 'shared/components/time.js';
 
-const { dayjs } = converse.env;
 /**
  * @param {import('../message').default} el
  */
@@ -27,10 +25,6 @@ export default (el) => {
 
     const contact = el.model.occupant || el.model.contact;
     const author_style = getAuthorStyle(contact);
-
-    const dayjs_time = dayjs(edited || time);
-    const pretty_time = getRelativeTime(edited || time);
-    const pretty_date = dayjs_time.format('llll');
 
     const hats = getHats(el.model);
     const username = el.model.getDisplayName();
@@ -81,9 +75,8 @@ export default (el) => {
                               >
                           </span>
                           ${hats.map((h) => html`<span class="badge badge-secondary">${h.title}</span>`)}
-                          <time title="${pretty_date}" timestamp="${edited || time}" class="chat-msg__time"
-                              >${pretty_time}</time
-                          >
+
+                          <converse-time timestamp="${edited || time}" class="chat-msg__time"></converse-time>
                           ${el.model.get('is_encrypted')
                               ? html`<converse-icon class="fa fa-lock" size="1.1em"></converse-icon>`
                               : ''}
@@ -104,9 +97,7 @@ export default (el) => {
                 >
                     <div class="chat-msg__message">
                         ${is_action
-                            ? html`<time title="${pretty_date}" timestamp="${edited || time}" class="chat-msg__time"
-                                      >${pretty_time}</time
-                                  >
+                            ? html`<converse-time timestamp="${edited || time}" class="chat-msg__time"></converse-time>
                                   ${is_me_message
                                       ? html`<span class="chat-msg__author" style="${author_style}"
                                                 >${is_me_message ? '**' : ''}${username}</span

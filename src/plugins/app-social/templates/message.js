@@ -3,14 +3,12 @@ import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { __ } from 'i18n';
-import { api, converse, u } from '@converse/headless';
+import { api, u } from '@converse/headless';
 import renderTexture from 'shared/texture/directives/texture.js';
 import { renderImage } from 'shared/texture/directives/image.js';
 import tplVideo from 'shared/texture/templates/video.js';
 import tplAudio from 'shared/texture/templates/audio.js';
-import { getRelativeTime } from 'utils/time.js';
-
-const { dayjs } = converse.env;
+import 'shared/components/time.js';
 
 /**
  * Classify an Atom `<link rel="enclosure">` attachment by its MIME `type`,
@@ -151,12 +149,7 @@ export default (el) => {
                         <span class="social-post__jid">${m.get('author_jid')}</span>
 
                         ${time
-                            ? html`<time
-                                  class="social-post__time"
-                                  datetime="${time}"
-                                  title="${dayjs(time).format('llll')}"
-                                  >${getRelativeTime(time)}</time
-                              >`
+                            ? html`<converse-time timestamp="${time}" class="social-post__time"></converse-time>`
                             : ''}
                         ${el.compact
                             ? ''
@@ -237,10 +230,7 @@ export default (el) => {
                         ${alternate_url && !body_links_to_source
                             ? html`<div class="social-post__source">
                                   <a href="${alternate_url}" target="_blank" rel="noopener noreferrer">
-                                      <converse-icon
-                                          size="0.9em"
-                                          class="fa fa-external-link-alt"
-                                      ></converse-icon>
+                                      <converse-icon size="0.9em" class="fa fa-external-link-alt"></converse-icon>
                                       <span>${__('Read more')}</span>
                                   </a>
                               </div>`

@@ -54,7 +54,7 @@ export default class ImagePicker extends CustomElement {
      */
     clearImage(ev) {
         ev.preventDefault();
-        const input = /** @type {HTMLInputElement} */(this.querySelector('input[name="avatar_image'));
+        const input = /** @type {HTMLInputElement} */ (this.querySelector('input[name="avatar_image'));
         input.value = '';
         this.model.vcard.set({
             image: null,

@@ -500,8 +500,10 @@ describe('A Chat Message', function () {
             expect(msg_obj.get('is_delayed')).toEqual(true);
             await u.waitUntil(() => chatbox.vcard.get('fullname') === 'Juliet Capulet');
             expect(view.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
-            // A message older than 24h shows the calendar date rather than a relative time.
-            expect(view.querySelector('.chat-msg__time').textContent).toMatch(/\d{4}/);
+            // A message from the day before shows "Yesterday" and the time.
+            expect(view.querySelector('.chat-msg__time').textContent).toBe(
+                `Yesterday at ${dayjs(one_day_ago).format('LT')}`,
+            );
             await u.waitUntil(
                 () => view.querySelector('span.chat-msg__author').textContent.trim() === 'Juliet Capulet',
             );

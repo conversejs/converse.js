@@ -8,16 +8,18 @@ import { __ } from 'i18n';
 import tplDiscover from './templates/discover.js';
 import '../scan.js';
 import '../onboarding.js';
+import '../browse.js';
 
 /**
  * The "Discover" modal: the single entry point for growing who you follow, so the
- * feed's compose area stays uncluttered. Houses two actions:
+ * feed's compose area stays uncluttered. Houses three actions:
  *  - "Find people to follow": the {@link SocialScan} sweep over roster contacts
- *    (its results surface in the feed's suggestions card); and
- *  - "Follow a feed": follow a social feed that isn't a roster contact (a
- *    community or news node on a pubsub service) by address, probing it via
+ *    (its results surface in the feed's suggestions card);
+ *  - "Follow a feed": browse the feed nodes hosted on a pubsub service
+ *    ({@link SocialBrowse} → {@link _converse.api.microblog.browseFeeds}) and pick
+ *    one, or, for a known address, follow it directly by address, probing it via
  *    {@link _converse.api.microblog.followByAddress} so an unreadable address
- *    fails loudly, and recording the durable XEP-0330 follow.
+ *    fails loudly. Either way the durable XEP-0330 follow is recorded.
  */
 export default class SocialDiscoverModal extends BaseModal {
     constructor() {
@@ -36,6 +38,22 @@ export default class SocialDiscoverModal extends BaseModal {
             () => /** @type {HTMLInputElement} */ (this.querySelector('input[name="address"]'))?.focus(),
             false,
         );
+        // A feed picked in the browse list. This modal renders in the modal
+        // portal (outside the Social app), so we bridge the intent over the event
+        // bus rather than by DOM bubbling, then close the modal.
+        this.addEventListener('feedselected', (ev) => this.onFeedSelected(/** @type {CustomEvent} */ (ev)));
+    }
+
+    /**
+     * Open a browsed feed in the Social app's read-only feed view and close this
+     * modal. The app listens for `openSocialFeed` (see {@link SocialApp}).
+     * @param {CustomEvent} ev
+     */
+    onFeedSelected(ev) {
+        const { jid, node } = ev.detail ?? {};
+        if (!jid || !node) return;
+        api.trigger('openSocialFeed', { jid, node });
+        this.modal.hide();
     }
 
     renderModal() {

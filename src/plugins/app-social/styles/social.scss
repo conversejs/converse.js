@@ -667,6 +667,133 @@
             margin: 0.5em 0;
             font-size: 0.9em;
         }
+
+        &__manual > summary {
+            cursor: pointer;
+            color: var(--subdued-color);
+            font-size: 0.9em;
+        }
+    }
+
+    // The "Browse a service" control: a service-JID input + results list of the
+    // feed nodes hosted there, each with a per-row follow button.
+    .social-browse {
+        &__form {
+            display: flex;
+            gap: 0.5em;
+            align-items: center;
+
+            .form-control {
+                flex: 1;
+            }
+        }
+
+        &__progress {
+            margin: 0.5em 0 0;
+        }
+
+        &__list {
+            list-style: none;
+            margin: 0.5em 0 0;
+            padding: 0;
+            max-height: 16em;
+            overflow-y: auto;
+            // Leave a gutter for the scrollbar so it doesn't sit on top of the
+            // right-aligned Follow buttons.
+            padding-right: 0.5em;
+        }
+
+        &__item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5em;
+            padding: 0.4em 0;
+            border-top: 1px solid var(--foreground-color-lighten-20, rgba(127, 127, 127, 0.2));
+        }
+
+        &__info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15em;
+            min-width: 0;
+            // Break long unbreakable labels/descriptions instead of forcing the
+            // list to scroll horizontally.
+            overflow-wrap: anywhere;
+            // The info column is a link opening a read-only preview of the feed
+            // (middle-/⌘-clickable into a new tab when URL routing is on). Reset
+            // the default link look so only the title underlines on hover.
+            cursor: pointer;
+            border-radius: 0.25em;
+            color: inherit;
+            text-decoration: none;
+
+            &:hover .social-browse__title {
+                text-decoration: underline;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--link-color);
+                outline-offset: 2px;
+            }
+        }
+
+        &__title {
+            font-weight: bold;
+        }
+
+        &__meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5em;
+            align-items: center;
+            font-size: 0.8em;
+            color: var(--subdued-color);
+        }
+
+        &__badge {
+            padding: 0 0.4em;
+            border-radius: 0.75em;
+            background: var(--link-color);
+            color: var(--inverse-link-color, #fff);
+            font-size: 0.9em;
+        }
+
+        &__node {
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        &__desc {
+            font-size: 0.85em;
+            color: var(--subdued-color);
+        }
+
+        &__following {
+            color: var(--subdued-color);
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        &__toggle {
+            margin-top: 0.5em;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--link-color);
+            font-size: 0.9em;
+        }
+
+        &__more {
+            display: block;
+            margin-top: 0.75em;
+        }
+
+        &__error {
+            margin: 0.5em 0 0;
+            font-size: 0.9em;
+        }
     }
 
     converse-social-message {

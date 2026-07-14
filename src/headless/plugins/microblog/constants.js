@@ -83,6 +83,12 @@ export const FOLLOWABLE_SCAN_CONCURRENCY = 10;
 export const FOLLOWABLE_PROBE_TIMEOUT = 10000;
 
 /**
+ * How many nodes to request per RSM page when listing a service's nodes
+ * (`api.microblog.browseFeeds`).
+ */
+export const BROWSE_PAGE_SIZE = 100;
+
+/**
  * Node configuration for our own social feed node, sent as XEP-0060
  * publish-options. This is the XEP-0472 "Base profile" config, plus an open
  * access model.

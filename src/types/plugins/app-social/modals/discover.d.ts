@@ -1,12 +1,13 @@
 /**
  * The "Discover" modal: the single entry point for growing who you follow, so the
- * feed's compose area stays uncluttered. Houses two actions:
+ * feed's compose area stays uncluttered. Houses three actions:
  *  - "Find people to follow": the {@link SocialScan} sweep over roster contacts
- *    (its results surface in the feed's suggestions card); and
- *  - "Follow a feed": follow a social feed that isn't a roster contact (a
- *    community or news node on a pubsub service) by address, probing it via
+ *    (its results surface in the feed's suggestions card);
+ *  - "Follow a feed": browse the feed nodes hosted on a pubsub service
+ *    ({@link SocialBrowse} → {@link _converse.api.microblog.browseFeeds}) and pick
+ *    one, or, for a known address, follow it directly by address, probing it via
  *    {@link _converse.api.microblog.followByAddress} so an unreadable address
- *    fails loudly, and recording the durable XEP-0330 follow.
+ *    fails loudly. Either way the durable XEP-0330 follow is recorded.
  */
 export default class SocialDiscoverModal extends BaseModal {
     constructor();
@@ -18,6 +19,12 @@ export default class SocialDiscoverModal extends BaseModal {
         node: string;
     } | null;
     submitting: boolean;
+    /**
+     * Open a browsed feed in the Social app's read-only feed view and close this
+     * modal. The app listens for `openSocialFeed` (see {@link SocialApp}).
+     * @param {CustomEvent} ev
+     */
+    onFeedSelected(ev: CustomEvent): void;
     renderModal(): import("lit-html").TemplateResult<1>;
     getModalTitle(): any;
     /**

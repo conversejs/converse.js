@@ -1461,6 +1461,37 @@ describe('The social profile view', function () {
     );
 
     it(
+        'opens a browse-only community feed asked for over the event bus',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            // The browse-only feed backfills via a pubsub items fetch; answer it
+            // empty so the view settles.
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // The Discover modal renders in the modal portal (outside the app), so
+            // a feed picked there reaches the app over the event bus, not by DOM
+            // bubbling. We don't follow it, so it opens read-only.
+            const service = 'pubsub.montague.lit';
+            const node = 'news';
+            expect(api.microblog.isFollowing(service, node)).toBe(false);
+            api.trigger('openSocialFeed', { jid: service, node });
+
+            const profile = await u.waitUntil(() => {
+                const p = el.querySelector('converse-social-profile');
+                return p && p.node === node ? p : null;
+            });
+            expect(profile.jid).toBe(service);
+            // A non-microblog node opens in feed mode (no person-only chrome).
+            expect(profile.isFeed).toBe(true);
+        }),
+    );
+
+    it(
         "the profile 'more' menu messages and adds a non-contact author",
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

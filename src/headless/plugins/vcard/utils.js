@@ -232,6 +232,11 @@ function setNickForJID(jid, nick) {
  */
 async function handleVCardUpdatePresence(pres) {
     await api.waitUntil('VCardsInitialized');
+
+    // MUC occupant updates are handled in onOccupantAvatarChanged
+    const is_muc = sizzle(`x[xmlns="http://jabber.org/protocol/muc#user"]`, pres).length > 0;
+    if (is_muc) return;
+
     const from_jid = Strophe.getBareJidFromJid(pres.getAttribute('from'));
 
     // XEP-0153: refetch the vCard when the advertised avatar hash changed.
@@ -244,10 +249,8 @@ async function handleVCardUpdatePresence(pres) {
         }
     }
 
-    // XEP-0172: apply a nickname hint carried directly in the presence. Skipped
-    // for MUC occupant presence, whose bare `from` is the room, not a person.
-    const is_muc = sizzle(`x[xmlns="http://jabber.org/protocol/muc#user"]`, pres).length > 0;
-    const nick_el = is_muc ? null : sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, pres).pop();
+    // XEP-0172: apply a nickname hint carried directly in the presence.
+    const nick_el = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, pres).pop();
     if (nick_el) {
         setNickForJID(from_jid, nick_el.textContent?.trim());
     }

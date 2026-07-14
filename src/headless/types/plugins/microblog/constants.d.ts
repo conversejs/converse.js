@@ -64,6 +64,11 @@ export const FOLLOWABLE_SCAN_CONCURRENCY: 10;
  * a worker instead of stalling the whole sweep.
  */
 export const FOLLOWABLE_PROBE_TIMEOUT: 10000;
+/**
+ * How many nodes to request per RSM page when listing a service's nodes
+ * (`api.microblog.browseFeeds`).
+ */
+export const BROWSE_PAGE_SIZE: 100;
 export namespace MICROBLOG_PUBLISH_OPTIONS {
     let access_model_1: string;
     export { access_model_1 as access_model };

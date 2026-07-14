@@ -160,6 +160,41 @@ declare namespace _default {
             title?: string;
         }): Promise<import("./feed").default | undefined>;
         /**
+         * Browse one page of the feed nodes hosted on a PubSub service. Sends
+         * disco#items to list the service's nodes (XEP-0060 § 5.5 Discover Nodes),
+         * then probes each node's disco#info (§ 5.4 meta-data) with bounded
+         * concurrency to learn its title, description, payload type and subscriber
+         * count.
+         *
+         * A busy service returns its nodes one page at a time via XEP-0059 RSM, so
+         * this fetches a single page and returns the server's `<last>` cursor plus
+         * `has_more`; the caller pages by calling again with `after: cursor`. RSM is
+         * the only standard way to bound a disco#items query, so a service without
+         * it just returns its nodes in one unpaged batch (no cursor, `has_more`
+         * false).
+         *
+         * @method _converse.api.microblog.browseFeeds
+         * @param {string} service_jid - A pubsub service JID (or any JID that
+         *      answers disco#items with a node list).
+         * @param {object} [opts]
+         * @param {string} [opts.after] - RSM cursor from a previous page's `cursor`
+         *      (omit for the first page).
+         * @param {number} [opts.max=BROWSE_PAGE_SIZE] - Page size (RSM `max`).
+         * @param {(p: {probed: number, total: number}) => void} [opts.onProgress]
+         * @param {AbortSignal} [opts.signal] - Abort to stop probing further nodes.
+         * @returns {Promise<import('./types.ts').BrowseFeedsResult>}
+         * @throws {Error} named `InvalidFeedAddress` if `service_jid` isn't usable.
+         */
+        function browseFeeds(service_jid: string, { after, max, onProgress, signal }?: {
+            after?: string;
+            max?: number;
+            onProgress?: (p: {
+                probed: number;
+                total: number;
+            }) => void;
+            signal?: AbortSignal;
+        }): Promise<import("./types.ts").BrowseFeedsResult>;
+        /**
          * Unfollow a contact's social feed: retract the XEP-0330 item, unsubscribe
          * to stop live delivery and drop the local feed and its cached posts.
          * @method _converse.api.microblog.unfollow

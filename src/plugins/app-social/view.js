@@ -77,6 +77,11 @@ class SocialApp extends CustomElement {
         this.listenTo(_converse, 'reconnected', () => this.requestUpdate());
         this.listenTo(_converse, 'disconnected', () => this.requestUpdate());
 
+        // A feed picked in the Discover modal, which renders in the modal portal
+        // (outside this element) and so can't reach us by DOM bubbling. Opens the
+        // feed's read-only view (a detached, browse-only feed when unfollowed).
+        this.listenTo(_converse, 'openSocialFeed', ({ jid, node }) => this.onProfileSelected(jid, node));
+
         // Navigation events bubble up from posts / profile / post-detail / feed.
         this.addEventListener('profileselected', (ev) => {
             const { jid, node, tab } = /** @type {CustomEvent} */ (ev).detail;

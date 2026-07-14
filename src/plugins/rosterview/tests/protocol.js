@@ -161,7 +161,7 @@ describe('Presence subscriptions', function () {
                             <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
                             <c hash="sha-1"
                                 node="https://conversejs.org"
-                                ver="0cez5x5tbZP5NuLq2WClRoMmeKw="
+                                ver="LtdUA9LYgaH8dsa9k2gMJKk4fY0="
                                 xmlns="http://jabber.org/protocol/caps"/>
                         </presence>
                     `);
@@ -227,9 +227,17 @@ describe('Presence subscriptions', function () {
                      * stanza of type "subscribe".
                      */
                     await u.waitUntil(() => contact.ackSubscribe.calls.count());
-                    expect(sent_stanza).toEqualStanza(
-                        stx`<presence to="contact@example.org" type="subscribe" xmlns="jabber:client"/>`,
-                    );
+                    expect(sent_stanza).toEqualStanza(stx`
+                        <presence to="contact@example.org" type="subscribe" xmlns="jabber:client">
+                            <nick xmlns="http://jabber.org/protocol/nick">Romeo</nick>
+                            <priority>0</priority>
+                            <x xmlns="${Strophe.NS.VCARD_UPDATE}"></x>
+                            <c hash="sha-1"
+                                node="https://conversejs.org"
+                                ver="LtdUA9LYgaH8dsa9k2gMJKk4fY0="
+                                xmlns="http://jabber.org/protocol/caps"/>
+                        </presence>
+                    `);
 
                     /* The user's server MUST initiate a roster push to all of the user's
                      * available resources that have requested the roster,

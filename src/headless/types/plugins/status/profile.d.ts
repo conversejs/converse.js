@@ -189,7 +189,10 @@ export default class Profile extends Profile_base {
      * @param {import('../roster/types.js').ContactDisplayNameOptions} [options]
      */
     getDisplayName(options?: import("../roster/types.js").ContactDisplayNameOptions): any;
-    getNickname(): any;
+    /**
+     * @returns {string|undefined}
+     */
+    getNickname(): string | undefined;
     /**
      * Constructs a presence stanza
      * @param {import('./types').PresenceAttrs} [attrs={}]

@@ -128,7 +128,7 @@ export class Connection extends Strophe.Connection {
     }
 
     /**
-     * @param {string} reason
+     * @param {string} [reason]
      */
     disconnect(reason) {
         super.disconnect(reason);

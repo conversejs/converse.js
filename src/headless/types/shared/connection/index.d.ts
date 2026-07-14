@@ -30,10 +30,6 @@ export class Connection extends Connection_base {
      */
     connect(jid: string, password: string, callback?: import("strophe.js").ConnectCallback): Promise<void>;
     /**
-     * @param {string} reason
-     */
-    disconnect(reason: string): void;
-    /**
      * Switch to a different transport if a service URL is available for it.
      *
      * When reconnecting with a new transport, we call setUserJID

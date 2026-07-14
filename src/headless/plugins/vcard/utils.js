@@ -156,12 +156,45 @@ export function clearVCardsSession() {
     }
 }
 
+// Bare JIDs whose XEP-0172 nick node we've already retrieved this session, so we
+// fetch it at most once per contact (see maybeFetchPublishedNick).
+const nick_fetched = new Set();
+
+/**
+ * Best-effort XEP-0172 active retrieval (XEP-0060 § 6.5): fetch a contact's
+ * published nickname from their PEP node and apply it, once per session and only
+ * for our own JID and roster contacts (the XEP-0172 audience), so it doesn't fan
+ * out to MUC occupants or arbitrary social-feed authors. Runs fire-and-forget so
+ * it never blocks the vcard-temp result; a missing/unreadable node leaves any
+ * existing `pep_nickname` untouched.
+ * @param {string} jid
+ */
+function maybeFetchPublishedNick(jid) {
+    if (!api.pubsub?.items) return;
+    const bare = Strophe.getBareJidFromJid(jid);
+    const is_target = bare === _converse.session.get('bare_jid') || !!_converse.state.roster?.get(bare);
+    if (!is_target || nick_fetched.has(bare)) return;
+    nick_fetched.add(bare);
+
+    api.pubsub.items
+        .get(jid, Strophe.NS.NICK, { max_items: 1 })
+        .then(({ items }) => {
+            const item = items?.[0];
+            const nick = item ? sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, item).pop()?.textContent?.trim() : undefined;
+            if (nick) setNickForJID(bare, nick);
+        })
+        .catch(() => {
+            // Node absent, access denied, or unsupported: nothing to apply.
+        });
+}
+
 /**
  * @param {string} jid
  */
 export async function fetchVCard(jid) {
     const bare_jid = _converse.session.get('bare_jid');
     const to = Strophe.getBareJidFromJid(jid) === bare_jid ? null : jid;
+    maybeFetchPublishedNick(jid);
     let iq;
     try {
         iq = await api.sendIQ(createStanza('get', to));
@@ -179,18 +212,44 @@ export async function fetchVCard(jid) {
 }
 
 /**
+ * Apply an XEP-0172 nickname to a JID's VCard model, storing it under
+ * `pep_nickname` (never `nickname`, which vcard-temp owns and would clobber on
+ * refetch). The VCard is created if we don't have one yet. An empty/undefined
+ * nick clears the value, so the display name falls back to the vCard name and
+ * then the JID.
+ * @param {string} jid - The bare JID asserting the nickname.
+ * @param {string} [nick]
+ */
+function setNickForJID(jid, nick) {
+    const { vcards } = _converse.state;
+    const vcard = vcards.get(jid) || vcards.create({ jid }, { lazy_load: true });
+    // Idempotent: saving an unchanged value fires no `change`.
+    vcard?.save({ pep_nickname: nick || undefined });
+}
+
+/**
  * @param {Element} pres
  */
 async function handleVCardUpdatePresence(pres) {
     await api.waitUntil('VCardsInitialized');
+    const from_jid = Strophe.getBareJidFromJid(pres.getAttribute('from'));
+
+    // XEP-0153: refetch the vCard when the advertised avatar hash changed.
     const photo = sizzle(`x[xmlns="${Strophe.NS.VCARD_UPDATE}"] photo`, pres).pop();
     if (photo) {
         const avatar_hash = photo.textContent;
-        const from_jid = Strophe.getBareJidFromJid(pres.getAttribute('from'));
         const vcard = await _converse.state.vcards.get(from_jid);
         if (vcard?.get('image_hash') !== avatar_hash) {
             api.vcard.update(from_jid, true).catch((e) => log.error(e));
         }
+    }
+
+    // XEP-0172: apply a nickname hint carried directly in the presence. Skipped
+    // for MUC occupant presence, whose bare `from` is the room, not a person.
+    const is_muc = sizzle(`x[xmlns="http://jabber.org/protocol/muc#user"]`, pres).length > 0;
+    const nick_el = is_muc ? null : sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, pres).pop();
+    if (nick_el) {
+        setNickForJID(from_jid, nick_el.textContent?.trim());
     }
 }
 
@@ -221,6 +280,84 @@ export function registerPresenceHandler() {
         'presence',
         null,
     );
+}
+
+/**
+ * Handle an inbound XEP-0172 User Nickname update delivered as a PEP event
+ * (node `http://jabber.org/protocol/nick`), so a contact's display name
+ * re-renders when they change it.
+ * @param {Element} message
+ */
+async function handleNickUpdate(message) {
+    const items = sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"] items[node="${Strophe.NS.NICK}"]`, message).pop();
+    if (!items) return;
+
+    const from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+    if (!from_jid) return;
+
+    await api.waitUntil('VCardsInitialized');
+
+    const nick = sizzle(`item nick[xmlns="${Strophe.NS.NICK}"]`, items).pop()?.textContent?.trim();
+    setNickForJID(from_jid, nick);
+}
+
+let nick_ref;
+
+export function unregisterNickHandler() {
+    if (nick_ref) {
+        const connection = api.connection.get();
+        connection.deleteHandler(nick_ref);
+        nick_ref = null;
+    }
+}
+
+export function registerNickHandler() {
+    unregisterNickHandler();
+    const connection = api.connection.get();
+    nick_ref = connection.addHandler(
+        /** @param {Element} message */
+        (message) => {
+            handleNickUpdate(message).catch((e) => log.error(e));
+            return true;
+        },
+        `${Strophe.NS.PUBSUB}#event`,
+        'message',
+    );
+}
+
+let last_published_nick;
+
+/**
+ * Reset the module-level XEP-0172 session state (own published nick and the
+ * once-per-contact retrieval guard), so a fresh session republishes and refetches.
+ */
+export function resetNickState() {
+    last_published_nick = undefined;
+    nick_fetched.clear();
+}
+
+/**
+ * Publish our own nickname to our PEP node (XEP-0172 § 3), so contacts
+ * are notified when it changes.
+ * @returns {Promise<void>}
+ */
+export async function publishOwnNickname() {
+    if (!api.pubsub?.publish) return;
+
+    const { profile } = _converse.state;
+    if (!profile) return;
+
+    const nick = profile.getNickname() || '';
+    if (nick === (last_published_nick ?? '')) return; // unchanged since last publish
+    if (last_published_nick === undefined && !nick) return; // nothing published yet, nothing to clear
+
+    const item = stx`<item id="current"><nick xmlns="${Strophe.NS.NICK}">${nick}</nick></item>`;
+    try {
+        await api.pubsub.publish(null, Strophe.NS.NICK, item, { persist_items: true, max_items: 1 }, false);
+        last_published_nick = nick;
+    } catch (e) {
+        log.error(e);
+    }
 }
 
 /**

@@ -3,6 +3,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from '@converse/log';
+import { RSM } from '../../shared/rsm.js';
 
 const { Stanza, Strophe, stx } = converse.env;
 
@@ -174,9 +175,17 @@ export default {
          * @method api.disco.items
          * @param {string} jid The Jabber ID of the entity to query for items
          * @param {string} [node] A specific node identifier associated with the JID
+         * @param {object} [options]
+         * @param {import('../../shared/rsm').RSM|object} [options.rsm] XEP-0059 Result
+         *      Set Management query options (e.g. `{ max: 100, after: '<cursor>' }`),
+         *      so a caller can page through a large item set. The response's `<set>`
+         *      is returned verbatim in the result stanza for the caller to read the
+         *      cursor (`<last>`) and request the next page.
+         * @param {number} [options.timeout]
          * @returns {promise} Promise which resolves once we have a result from the server.
          */
-        items(jid, node) {
+        items(jid, node, options) {
+            const rsm = options?.rsm ? (options.rsm instanceof RSM ? options.rsm : new RSM(options.rsm)) : null;
             return api.sendIQ(
                 stx`
                     <iq from="${api.connection.get().jid}"
@@ -185,8 +194,10 @@ export default {
                         xmlns="jabber:client">
                         <query xmlns="${Strophe.NS.DISCO_ITEMS}"
                                ${node ? Stanza.unsafeXML(`node="${node}"`) : ''}>
+                            ${rsm ? Stanza.fromString(rsm.toString()) : ''}
                         </query>
-                    </iq>`
+                    </iq>`,
+                options?.timeout
             );
         },
 

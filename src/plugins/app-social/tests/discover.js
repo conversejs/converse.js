@@ -17,17 +17,17 @@ describe('The Discover modal (follow a feed by address)', function () {
             const address = modal.querySelector('input[name="address"]');
 
             // The follow button stays disabled until the address parses.
-            const submit = modal.querySelector('button[type="submit"]');
+            const submit = modal.querySelector('.converse-form button[type="submit"]');
             expect(submit.disabled).toBe(true);
 
             const spy = vi.spyOn(api.microblog, 'followByAddress').mockResolvedValue(/** @type {any} */ ({}));
 
             address.value = 'xmpp:pubsub.montague.lit?;node=news';
             address.dispatchEvent(new Event('input'));
-            await u.waitUntil(() => !modal.querySelector('button[type="submit"]').disabled);
+            await u.waitUntil(() => !modal.querySelector('.converse-form button[type="submit"]').disabled);
 
             modal.querySelector('input[name="title"]').value = 'Town News';
-            modal.querySelector('button[type="submit"]').click();
+            modal.querySelector('.converse-form button[type="submit"]').click();
 
             await u.waitUntil(() => spy.mock.calls.length === 1);
             expect(spy).toHaveBeenCalledWith('xmpp:pubsub.montague.lit?;node=news', {
@@ -55,8 +55,8 @@ describe('The Discover modal (follow a feed by address)', function () {
 
             address.value = 'pubsub.montague.lit';
             address.dispatchEvent(new Event('input'));
-            await u.waitUntil(() => !modal.querySelector('button[type="submit"]').disabled);
-            modal.querySelector('button[type="submit"]').click();
+            await u.waitUntil(() => !modal.querySelector('.converse-form button[type="submit"]').disabled);
+            modal.querySelector('.converse-form button[type="submit"]').click();
 
             const alert = await u.waitUntil(() => modal.querySelector('.alert-danger'));
             expect(alert.textContent).toMatch(/no feed found/i);

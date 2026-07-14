@@ -84,6 +84,33 @@ export type PubSubCommentAttrs = {
 };
 
 /**
+ * One node returned by browsing a pubsub service (`api.microblog.browseFeeds`):
+ * a `{ jid, node }` address plus the disco#info meta-data we could read for it.
+ */
+export type BrowsableFeed = {
+    jid: string; // The pubsub service JID hosting the node
+    node: string; // The node id
+    name?: string; // The <item name> from disco#items, if any
+    title?: string; // pubsub#title (preferred label; falls back to name/node in the UI)
+    description?: string; // pubsub#description
+    type?: string; // pubsub#type — the payload namespace (Atom for a social feed)
+    node_type?: string; // 'leaf' | 'collection', from the pubsub identity
+    num_subscribers?: number; // pubsub#num_subscribers, if exposed
+    is_feed: boolean; // Whether it looks like an Atom social feed (type === Atom)
+    probed: boolean; // Whether disco#info was fetched (false past the browse cap)
+};
+
+/**
+ * One page of results from `api.microblog.browseFeeds`: the probed nodes plus the
+ * paging state a caller needs to fetch the next page (or explain a truncated one).
+ */
+export type BrowseFeedsResult = {
+    feeds: BrowsableFeed[]; // Every node on the page (is_feed flags the Atom social feeds)
+    cursor: string | null; // XEP-0059 RSM `<last>` cursor to pass as `after` for the next page, else null
+    has_more: boolean; // Whether a further page exists (a full page plus a fresh cursor)
+};
+
+/**
  * Attributes of a {@link PubSubFeed} — one PubSub node at one JID.
  */
 export type PubSubFeedAttrs = {

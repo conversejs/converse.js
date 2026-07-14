@@ -21,6 +21,15 @@ export default (el) => {
             <p class="form-text text-muted">
                 ${__('Follow a community or news feed that isn’t one of your contacts.')}
             </p>
+
+            <p class="form-text text-muted">${__('Browse the feeds on a pubsub service:')}</p>
+            <converse-social-browse></converse-social-browse>
+
+            <details class="social-discover__manual mt-3">
+                <summary>${__('Enter an address manually')}</summary>
+                <p class="form-text text-muted mt-2">
+                    ${__('Already know the exact address? Follow it directly.')}
+                </p>
             <form class="converse-form" @submit=${(/** @type {Event} */ ev) => el.submit(ev)}>
                 <div class="mb-3">
                     <label class="form-label clearfix" for="discover-feed-address">${__('Feed address')}:</label>
@@ -71,6 +80,7 @@ export default (el) => {
                     ${el.submitting ? __('Following…') : __('Follow')}
                 </button>
             </form>
+            </details>
         </section>
     </div>`;
 };

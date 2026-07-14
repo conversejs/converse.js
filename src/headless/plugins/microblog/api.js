@@ -2,10 +2,12 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js';
 import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
+import { RSM } from '../../shared/rsm.js';
 import { publishFollow, readFollowing, retractFollow } from './utils/following.js';
 import { parseFeedAddress as parseAddress } from './utils.js';
 import { comment_summary_queue, syncCommentSummary } from './comment-summary.js';
@@ -16,10 +18,13 @@ import { parseAtomEntry } from './parsers.js';
 import { getUniqueId } from '../../utils/index.js';
 import { safeSave } from '../../utils/init.js';
 import {
+    BROWSE_PAGE_SIZE,
+    COMMENTS_NODE_PREFIX,
     FOLLOWABLE_PROBE_TIMEOUT,
     FOLLOWABLE_SCAN_CONCURRENCY,
     LIKE_MARKER,
     MICROBLOG_NODE,
+    NS_ATOM,
     SOCIAL_FEED_FEATURE,
 } from './constants.js';
 
@@ -51,6 +56,39 @@ async function probeFeed(jid, node = MICROBLOG_NODE) {
     } catch (e) {
         log.debug(`probeFeed: ${jid} has no readable feed at ${node}: ${e}`);
         return { followable: false };
+    }
+}
+
+/**
+ * Fetch one pubsub node's disco#info and distil the XEP-0060 § 5.4 metadata form
+ * into the fields the browse UI needs. Best-effort: a node that doesn't answer,
+ * or carries no metadata form, resolves to `is_feed: false`.
+ * @param {string} jid - The pubsub service JID.
+ * @param {string} node - The node id to inspect.
+ * @returns {Promise<Partial<import('./types').BrowsableFeed>>}
+ */
+async function probeNodeMeta(jid, node) {
+    try {
+        const stanza = await api.disco.info(jid, node, { timeout: FOLLOWABLE_PROBE_TIMEOUT });
+        const field = /** @param {string} name */ (name) =>
+            sizzle(`x[type="result"] field[var="${name}"] value`, stanza)[0]?.textContent || undefined;
+        const node_type = sizzle(`identity[category="pubsub"]`, stanza)[0]?.getAttribute('type') || undefined;
+        const type = field('pubsub#type');
+        const subs = field('pubsub#num_subscribers');
+        const num_subscribers = subs !== undefined && subs !== '' ? Number(subs) : undefined;
+        return {
+            title: field('pubsub#title'),
+            description: field('pubsub#description'),
+            type,
+            node_type,
+            num_subscribers,
+            // A leaf node carrying Atom payloads is a social/microblog feed. Nodes
+            // that omit `pubsub#type` (or are collections) fall under "show all".
+            is_feed: type === NS_ATOM,
+        };
+    } catch (e) {
+        log.debug(`browseFeeds: could not read node meta for ${jid} (${node}): ${e}`);
+        return { is_feed: false };
     }
 }
 
@@ -340,6 +378,95 @@ export default {
                 });
             }
             return api.microblog.follow(parsed.jid, { node: target_node, title });
+        },
+
+        /**
+         * Browse one page of the feed nodes hosted on a PubSub service. Sends
+         * disco#items to list the service's nodes (XEP-0060 § 5.5 Discover Nodes),
+         * then probes each node's disco#info (§ 5.4 meta-data) with bounded
+         * concurrency to learn its title, description, payload type and subscriber
+         * count.
+         *
+         * A busy service returns its nodes one page at a time via XEP-0059 RSM, so
+         * this fetches a single page and returns the server's `<last>` cursor plus
+         * `has_more`; the caller pages by calling again with `after: cursor`. RSM is
+         * the only standard way to bound a disco#items query, so a service without
+         * it just returns its nodes in one unpaged batch (no cursor, `has_more`
+         * false).
+         *
+         * @method _converse.api.microblog.browseFeeds
+         * @param {string} service_jid - A pubsub service JID (or any JID that
+         *      answers disco#items with a node list).
+         * @param {object} [opts]
+         * @param {string} [opts.after] - RSM cursor from a previous page's `cursor`
+         *      (omit for the first page).
+         * @param {number} [opts.max=BROWSE_PAGE_SIZE] - Page size (RSM `max`).
+         * @param {(p: {probed: number, total: number}) => void} [opts.onProgress]
+         * @param {AbortSignal} [opts.signal] - Abort to stop probing further nodes.
+         * @returns {Promise<import('./types.ts').BrowseFeedsResult>}
+         * @throws {Error} named `InvalidFeedAddress` if `service_jid` isn't usable.
+         */
+        async browseFeeds(service_jid, { after, max = BROWSE_PAGE_SIZE, onProgress, signal } = {}) {
+            const jid = Strophe.getBareJidFromJid(service_jid?.trim() || '') || service_jid?.trim();
+            const domain = Strophe.getDomainFromJid(jid || '');
+            if (!jid || !domain?.includes('.')) {
+                throw Object.assign(new Error(`Not a valid service address: ${service_jid}`), {
+                    name: 'InvalidFeedAddress',
+                });
+            }
+
+            // 1. List one page of the service's nodes (XEP-0060 § 5.5) via RSM. Only
+            //    items carrying a `node` attribute are pubsub nodes (a bare-JID item
+            //    is a child entity, not a feed).
+            const items_iq = await api.disco.items(jid, undefined, {
+                rsm: { max, ...(after ? { after } : {}) },
+                timeout: FOLLOWABLE_PROBE_TIMEOUT,
+            });
+            const page = sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"] item`, items_iq)
+                .filter((el) => el.getAttribute('node'))
+                .map((el) => ({
+                    jid: el.getAttribute('jid') || jid,
+                    node: el.getAttribute('node'),
+                    name: el.getAttribute('name') || undefined,
+                }));
+
+            // A full page plus a cursor means there are more pages.
+            // A short page is the end of the set.
+            const set = sizzle(`set[xmlns="${Strophe.NS.RSM}"]`, items_iq)[0];
+            const cursor = (set ? RSM.parseXMLResult(set).last : undefined) ?? null;
+            const full = page.length >= max;
+            const has_more = full && cursor !== null && cursor !== after;
+
+            // Drop XEP-0277 per-post comment threads
+            const nodes = page.filter((n) => !n.node.startsWith(COMMENTS_NODE_PREFIX));
+            const dropped = page.length - nodes.length;
+            if (dropped) log.debug(`browseFeeds: ${jid} — hid ${dropped} comment node(s) from the page`);
+
+            // `title` holds pubsub#title only (filled in by the info probe); the
+            // display label falls back to `name` then `node` in the UI.
+            /** @type {import('./types').BrowsableFeed[]} */
+            const feeds = nodes.map((n) => ({ ...n, is_feed: false, probed: false }));
+
+            const total = feeds.length;
+            let probed = 0;
+            onProgress?.({ probed, total });
+
+            // 2. Probe each node's disco#info with a streaming worker pool + short
+            //    timeout (same shape as scanFollowable): one slow node never holds
+            //    up the rest, and an aborted browse stops launching further probes.
+            const queue = Array.from({ length: total }, (_, i) => i);
+            const worker = async () => {
+                while (queue.length && !signal?.aborted) {
+                    const idx = queue.shift();
+                    const meta = await probeNodeMeta(jid, feeds[idx].node);
+                    Object.assign(feeds[idx], meta, { probed: true });
+                    probed++;
+                    onProgress?.({ probed, total });
+                }
+            };
+            const pool = Array.from({ length: Math.min(FOLLOWABLE_SCAN_CONCURRENCY, total) }, () => worker());
+            await Promise.all(pool);
+            return { feeds, cursor, has_more };
         },
 
         /**
@@ -698,10 +825,12 @@ export default {
             // which entries were added or removed on the other device. The mirror
             // id is `server/node`, matching a feed's id.
             const had = new Map(
-                mirror.map(/** @param {import('./following').FollowedFeed} m */ (m) => [
-                    m.id,
-                    { server: m.get('server'), node: m.get('node') },
-                ]),
+                mirror.map(
+                    /** @param {import('./following').FollowedFeed} m */ (m) => [
+                        m.id,
+                        { server: m.get('server'), node: m.get('node') },
+                    ],
+                ),
             );
             await mirror.reconcile(following);
 

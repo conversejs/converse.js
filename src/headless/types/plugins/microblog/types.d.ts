@@ -62,6 +62,31 @@ export type PubSubCommentAttrs = {
     published?: string;
 };
 /**
+ * One node returned by browsing a pubsub service (`api.microblog.browseFeeds`):
+ * a `{ jid, node }` address plus the disco#info meta-data we could read for it.
+ */
+export type BrowsableFeed = {
+    jid: string;
+    node: string;
+    name?: string;
+    title?: string;
+    description?: string;
+    type?: string;
+    node_type?: string;
+    num_subscribers?: number;
+    is_feed: boolean;
+    probed: boolean;
+};
+/**
+ * One page of results from `api.microblog.browseFeeds`: the probed nodes plus the
+ * paging state a caller needs to fetch the next page (or explain a truncated one).
+ */
+export type BrowseFeedsResult = {
+    feeds: BrowsableFeed[];
+    cursor: string | null;
+    has_more: boolean;
+};
+/**
  * Attributes of a {@link PubSubFeed} — one PubSub node at one JID.
  */
 export type PubSubFeedAttrs = {

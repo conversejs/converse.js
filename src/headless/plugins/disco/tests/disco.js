@@ -255,4 +255,31 @@ describe('Service Discovery', function () {
             }),
         );
     });
+
+    describe('when querying an entity for its items', function () {
+        it(
+            'can include an XEP-0059 RSM page request',
+            mock.initConverse(converse, ['discoInitialized'], {}, async function (_converse) {
+                const { api } = _converse;
+                const IQ_stanzas = api.connection.get().IQ_stanzas;
+
+                // Fire the query (the response never arrives in the mock, but the
+                // request is enqueued synchronously for us to inspect).
+                api.disco.items('pubsub.montague.lit', undefined, { rsm: { max: 100, after: 'cursor-x' } });
+
+                const iq = await u.waitUntil(() =>
+                    IQ_stanzas.find(
+                        (s) =>
+                            sizzle(
+                                'iq[to="pubsub.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"] set[xmlns="http://jabber.org/protocol/rsm"]',
+                                s,
+                            ).length,
+                    ),
+                );
+                const set = sizzle('query > set', iq)[0];
+                expect(sizzle('max', set)[0].textContent).toBe('100');
+                expect(sizzle('after', set)[0].textContent).toBe('cursor-x');
+            }),
+        );
+    });
 });

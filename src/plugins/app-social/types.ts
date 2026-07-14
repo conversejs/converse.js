@@ -7,3 +7,21 @@ export type SocialRoute = {
     itemId?: string; // post: the PubSub item id
     tag?: string; // tag: the hashtag, without a leading '#'
 };
+
+/**
+ * The view-model for one node in the "Browse a service" list — the UI's mirror of
+ * the headless `BrowsableFeed` (`api.microblog.browseFeeds`). Kept local because
+ * the headless package doesn't re-export its pure data types.
+ */
+export type BrowsableFeed = {
+    jid: string; // The pubsub service JID hosting the node
+    node: string; // The node id
+    name?: string; // The <item name> from disco#items, if any
+    title?: string; // pubsub#title (preferred label; falls back to name/node)
+    description?: string; // pubsub#description
+    type?: string; // pubsub#type — the payload namespace (Atom for a social feed)
+    node_type?: string; // 'leaf' | 'collection', from the pubsub identity
+    num_subscribers?: number; // pubsub#num_subscribers, if exposed
+    is_feed: boolean; // Whether it looks like an Atom social feed
+    probed: boolean; // Whether disco#info was fetched (false past the browse cap)
+};

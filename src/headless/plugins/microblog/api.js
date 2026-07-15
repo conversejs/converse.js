@@ -290,8 +290,8 @@ export default {
          * @returns {Promise<import('./feed').default|undefined>}
          */
         async follow(jid, { title, node = MICROBLOG_NODE } = {}) {
+            jid = Strophe.getBareJidFromJid(jid);
             await publishFollow(jid, node, title);
-            // Mirror the durable follow locally so isFollowing reflects it at once.
             _converse.state.following?.track({ server: jid, node, title });
             try {
                 await api.pubsub.subscribe(jid, node);
@@ -299,9 +299,7 @@ export default {
                 // Explicit subscription is the live-delivery path. If a server
                 // doesn't honour cross-account PEP subscriptions this is
                 // non-fatal: the XEP-0330 list is the durable record of the
-                // follow, and the items.get backfill below still populates the
-                // feed (and is the source of history regardless, since the node
-                // config is send_last_published_item=never).
+                // follow, and the items.get backfill below still populates the feed.
                 log.debug(`api.microblog.follow: explicit subscribe to ${jid} failed (non-fatal): ${e}`);
             }
             const feed = await api.microblog.feeds.get(jid, node, true);
@@ -479,6 +477,8 @@ export default {
          * @returns {Promise<void>}
          */
         async unfollow(jid, { node = MICROBLOG_NODE } = {}) {
+            // Match the bare-JID key recorded by follow() (see there).
+            jid = Strophe.getBareJidFromJid(jid);
             await retractFollow(jid, node);
             _converse.state.following?.untrack(jid, node);
             try {
@@ -861,9 +861,10 @@ export default {
          */
         isFollowing(jid, node = MICROBLOG_NODE) {
             const bare_jid = _converse.session.get('bare_jid');
-            // The user's own feed isn't a "follow".
-            if (Strophe.getBareJidFromJid(jid) === bare_jid) return false;
-            return !!_converse.state.following?.isFollowing(jid, node);
+            const server = Strophe.getBareJidFromJid(jid);
+            if (server === bare_jid) return false;
+
+            return !!_converse.state.following?.isFollowing(server, node);
         },
     },
 };

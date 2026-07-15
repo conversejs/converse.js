@@ -153,7 +153,10 @@ export default (el) => {
                                         ? html`<converse-history-placeholder
                                               .model=${p}
                                           ></converse-history-placeholder>`
-                                        : html`<converse-social-message .model=${p}></converse-social-message>`,
+                                        : html`<converse-social-message
+                                              .model=${p}
+                                              ?hidesource=${el.isFeed}
+                                          ></converse-social-message>`,
                             )
                           : !el._loaded
                             ? html`<p class="social-feed__empty">${__('Loading…')}</p>`

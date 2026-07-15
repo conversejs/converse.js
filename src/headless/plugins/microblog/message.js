@@ -6,7 +6,7 @@ import { Strophe } from 'strophe.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import BaseMessage from '../../shared/message.js';
-import { COMMENTS_NODE_PREFIX, MICROBLOG_TYPE } from './constants.js';
+import { COMMENTS_NODE_PREFIX, MICROBLOG_NODE, MICROBLOG_TYPE } from './constants.js';
 
 /**
  * Represents a single microblog post (a parsed Atom entry).
@@ -61,6 +61,7 @@ class PubSubMessage extends BaseMessage {
      */
     getReposterJID() {
         if (!this.get('is_repost')) return undefined;
+
         const jid = this.get('publisher') || this.get('from');
         return jid ? Strophe.getBareJidFromJid(jid) : undefined;
     }
@@ -81,8 +82,10 @@ class PubSubMessage extends BaseMessage {
      */
     async setReposter() {
         if (this.get('is_mine')) return;
+
         const jid = this.getReposterJID();
         if (!jid) return;
+
         await api.waitUntil('VCardsInitialized');
         const { vcards } = _converse.state;
         const vcard = vcards.get(jid) || vcards.create({ jid }, { lazy_load: true });
@@ -99,6 +102,7 @@ class PubSubMessage extends BaseMessage {
     getReposterName() {
         const jid = this.getReposterJID();
         if (!jid) return undefined;
+
         return this._reposter_vcard?.getDisplayName() || jid;
     }
 
@@ -109,6 +113,7 @@ class PubSubMessage extends BaseMessage {
     async setAuthorName() {
         const vcard = await this.getVCard();
         if (!vcard) return;
+
         const sync = () => {
             if (this.contact) return; // a roster contact's nickname wins
             const name = vcard.get('nickname') || vcard.get('fullname');
@@ -137,14 +142,14 @@ class PubSubMessage extends BaseMessage {
                 deps: ['author_name', 'nickname', 'author_jid', 'publisher', 'from'],
                 // Prefer the post's self-declared author name, then the resolved
                 // contact/vCard nickname, and only fall back to the bare JID when
-                // no human name is known (see setAuthorName / setModelContact).
-                fn: (m) =>
-                    m.get('author_name') ||
-                    m.get('nickname') ||
-                    m.get('author_jid') ||
-                    m.get('publisher') ||
-                    m.get('from') ||
-                    '',
+                // no human name is known.
+                fn: (m) => {
+                    const name = m.get('author_name') || m.get('nickname');
+                    if (name) return name;
+
+                    const jid = m.get('author_jid') || m.get('publisher') || m.get('from');
+                    return jid ? Strophe.getBareJidFromJid(jid) : '';
+                },
             },
             // Whether the logged-in user published this post (replaces the legacy
             // `sender: 'me'|'them'` flag). Authorship is the publisher's, not the
@@ -154,12 +159,9 @@ class PubSubMessage extends BaseMessage {
                 fn: (m) => {
                     // Authorship is the server-stamped `publisher` when present.
                     // Otherwise: for a repost it's the reposter (the node owner,
-                    // `from` — never the via-author); for anything else (incl.
-                    // comments, which always carry an <author>) it's the claimed
-                    // author, falling back to the node owner for own posts with
-                    // no <author>. This matters for comments fetched via
-                    // retrieve-items, where Prosody omits `publisher` and `from`
-                    // is the *post author's* comments service, not the commenter.
+                    // `from`); for anything else (incl. comments, which always
+                    // carry an <author>) it's the claimed author, falling back
+                    // to the node owner for own posts with no <author>.
                     const jid =
                         m.get('publisher') ||
                         (m.get('is_repost') ? m.get('from') : m.get('author_jid') || m.get('from'));
@@ -186,6 +188,27 @@ class PubSubMessage extends BaseMessage {
      */
     getAuthorJID() {
         return this.get('author_jid') || this.get('via_jid') || this.get('publisher') || this.get('from');
+    }
+
+    /**
+     * The community/topic feed this post arrived through, when that feed is a
+     * thing distinct from its author. Null for an ordinary personal-microblog
+     * post and for comment items.
+     *
+     * `title` is the human label we follow the feed by (from the XEP-0330 list),
+     * falling back to the raw node id for a feed we're only browsing.
+     * @returns {{ jid: string, node: string, title: string }|null}
+     */
+    getSourceFeed() {
+        const jid = this.get('from');
+        const node = this.get('node');
+
+        if (!jid || !node) return null;
+        if (node === MICROBLOG_NODE || node.startsWith(COMMENTS_NODE_PREFIX)) return null;
+
+        const bare = Strophe.getBareJidFromJid(jid);
+        const title = _converse.state.following?.get(`${bare}/${node}`)?.get('title') || node;
+        return { jid: bare, node, title };
     }
 
     /**

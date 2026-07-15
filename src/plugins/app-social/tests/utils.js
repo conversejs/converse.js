@@ -136,6 +136,34 @@ export function mountSocialApp() {
 }
 
 /**
+ * Drive the rich (Lexical) composer to publish a post: attach the editor (it
+ * loads lazily on first focus), type the given text, wait for the Post button to
+ * enable, and click it. Returns the `<converse-social-compose-rich>` element so
+ * callers can assert on its cleared state afterwards.
+ * @param {Element} el - The mounted `<converse-social-feed>` (or `<converse-app-social>`).
+ * @param {string} text
+ * @returns {Promise<any>}
+ */
+export async function publishViaComposer(el, text) {
+    const { u } = converse.env;
+    const compose = await u.waitUntil(() => el.querySelector('converse-social-compose-rich'));
+    const editable = await u.waitUntil(() => compose.querySelector('.social-rich__editable'));
+    // Lexical attaches lazily; ensureEditor() imports it, mounts it on the host and
+    // focuses (establishing a selection), so the subsequent insertText has a caret.
+    const handle = await compose.ensureEditor();
+    /** @type {HTMLElement} */ (editable).focus();
+    handle.insertText(text);
+    // The Post button is disabled while the editor reports empty; the insertText
+    // above flips `_empty` via the onChange listener, so wait for it to enable.
+    const post = await u.waitUntil(() => {
+        const btn = /** @type {HTMLButtonElement} */ (compose.querySelector('.social-rich__post'));
+        return btn && !btn.disabled ? btn : null;
+    });
+    post.click();
+    return compose;
+}
+
+/**
  * Stub `api.microblog.discoverFollowable` to resolve with the given candidate
  * JIDs, returning the spy.
  * @param {any} api

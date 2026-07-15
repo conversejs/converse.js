@@ -45,6 +45,7 @@ export type PubSubMessageAttrs = {
  */
 export type PubSubPublishAttrs = {
     body: string;
+    xhtml?: string;
     id?: string;
     atom_id?: string;
     published?: string;

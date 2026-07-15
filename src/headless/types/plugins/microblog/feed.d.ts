@@ -117,11 +117,22 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
      */
     close(): Promise<void>;
     /**
-     * Publish a new plain-text post to this feed's node.
-     * @param {string} body
+     * Publish a new post to this feed's node.
+     *
+     * With no `xhtml` the post is a plain-text `<title>` (the historical short-post
+     * form). With `xhtml` (a well-formed `<div xmlns="…xhtml">…</div>` fragment,
+     * produced by the rich composer) the post carries Movim-compatible **dual
+     * content**: `<content type="text">` (the markdown source in `body`) plus
+     * `<content type="xhtml">` (the rendered fragment). See {@link parseAtomEntry}'s
+     * `pickTextConstruct`, which reads exactly that pair back.
+     * @param {string} body - Plain text, or the markdown source when `xhtml` is set.
+     * @param {object} [opts]
+     * @param {string} [opts.xhtml] - A well-formed XHTML `<div>` fragment for a rich post.
      * @returns {Promise<void>}
      */
-    publishPost(body: string): Promise<void>;
+    publishPost(body: string, { xhtml }?: {
+        xhtml?: string;
+    }): Promise<void>;
     /**
      * Create this post's open comments node so others can add comments.
      * Best-effort and swallows errors (the node may already exist,

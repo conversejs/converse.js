@@ -13,7 +13,7 @@ import {
     stubPubsubNetwork,
 } from './utils.js';
 
-const { stx, u } = converse.env;
+const { sizzle, stx, u } = converse.env;
 
 // XEP-0330 follow-list node + its `<subscription>` payload namespace.
 const FOLLOWING_NODE = 'urn:xmpp:pubsub:subscription';
@@ -1039,6 +1039,40 @@ describe('The microblog plugin', function () {
             await u.waitUntil(() => feed.messages.length === 1);
             expect(feed.messages.at(0).get('title')).toBe('hanging out at the Café');
             expect(feed.messages.at(0).get('is_mine')).toBe(true);
+        }),
+    );
+
+    it(
+        'publishes a rich post as Movim-compatible dual content (markdown + xhtml)',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const feed = await api.microblog.feeds.own();
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub, 'create').mockResolvedValue(undefined);
+
+            const md = '**Hello** _world_';
+            const xhtml =
+                '<div xmlns="http://www.w3.org/1999/xhtml"><p><strong>Hello</strong> <em>world</em></p></div>';
+            await feed.publishPost(md, { xhtml });
+
+            // The published item carries Movim-style dual content: the markdown
+            // source (`type="text"`) plus the rendered XHTML (`type="xhtml"`),
+            // and no plain-text `<title>`.
+            const item = publish.mock.calls[0][2].tree();
+            expect(sizzle('content[type="text"]', item).pop().textContent).toBe(md);
+            const rich = sizzle('content[type="xhtml"]', item).pop();
+            expect(rich).toBeDefined();
+            expect(sizzle('div', rich).pop().namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+            expect(sizzle('title', item).length).toBe(0);
+
+            // Round-tripped through parseAtomEntry on the optimistic add: the text
+            // construct is the markdown, the rich construct is the xhtml fragment.
+            await u.waitUntil(() => feed.messages.length === 1);
+            const post = feed.messages.at(0);
+            expect(post.get('content')).toBe(md);
+            expect(post.get('content_xhtml')).toContain('<strong>Hello</strong>');
         }),
     );
 

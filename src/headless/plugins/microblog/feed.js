@@ -23,7 +23,7 @@ import {
 import PubsubPlaceholderMessage from './placeholder.js';
 import { buildTagId } from './utils.js';
 
-const { stx } = converse.env;
+const { stx, Stanza } = converse.env;
 
 /**
  * One PubSub feed: a single node at a single JID (your own
@@ -362,11 +362,20 @@ class PubSubFeed extends Model {
     }
 
     /**
-     * Publish a new plain-text post to this feed's node.
-     * @param {string} body
+     * Publish a new post to this feed's node.
+     *
+     * With no `xhtml` the post is a plain-text `<title>` (the historical short-post
+     * form). With `xhtml` (a well-formed `<div xmlns="…xhtml">…</div>` fragment,
+     * produced by the rich composer) the post carries Movim-compatible **dual
+     * content**: `<content type="text">` (the markdown source in `body`) plus
+     * `<content type="xhtml">` (the rendered fragment). See {@link parseAtomEntry}'s
+     * `pickTextConstruct`, which reads exactly that pair back.
+     * @param {string} body - Plain text, or the markdown source when `xhtml` is set.
+     * @param {object} [opts]
+     * @param {string} [opts.xhtml] - A well-formed XHTML `<div>` fragment for a rich post.
      * @returns {Promise<void>}
      */
-    async publishPost(body) {
+    async publishPost(body, { xhtml } = {}) {
         const text = body?.trim();
         if (!text) return;
 
@@ -374,7 +383,7 @@ class PubSubFeed extends Model {
         // Provision the post's open comments node so *others* can reply.
         this.ensureCommentsNode(id);
 
-        const item = this.createPostStanza({ body: text, id });
+        const item = this.createPostStanza({ body: text, xhtml, id });
         // Publish with the XEP-0472 Base-profile node config so our node stays a
         // well-formed social feed that contacts can subscribe to. Non-strict:
         // if the server can't honour the publish-options precondition we still
@@ -420,10 +429,20 @@ class PubSubFeed extends Model {
         const comments_node = COMMENTS_NODE_PREFIX + id;
         const comments_href = `xmpp:${this.get('jid')}?;node=${encodeURIComponent(comments_node)}`;
 
+        // A rich post carries dual content (Movim-compatible): the markdown source
+        // as `<content type="text">` plus the rendered `<content type="xhtml">`.
+        // The xhtml fragment is injected raw (it's already well-formed XML built by
+        // the composer); the plain-text path keeps the historical `<title>` form.
+        const body = attrs.xhtml
+            ? stx`<content type="text">${attrs.body}</content>${Stanza.unsafeXML(
+                  `<content type="xhtml">${attrs.xhtml}</content>`,
+              )}`
+            : stx`<title type="text">${attrs.body}</title>`;
+
         return stx`
             <item id="${id}">
                 <entry xmlns="${NS_ATOM}">
-                    <title type="text">${attrs.body}</title>
+                    ${body}
                     <link rel="replies" title="comments" href="${comments_href}"/>
                     <id>${tag_id}</id>
                     <published>${published}</published>

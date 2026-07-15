@@ -150,22 +150,6 @@ globalThis.jasmine = {
         expect.extend(adapted);
     },
 
-    clock: () => ({
-        install() {
-            vi.useFakeTimers();
-            return this;
-        },
-        uninstall() {
-            vi.useRealTimers();
-        },
-        mockDate(date) {
-            vi.setSystemTime(date ?? new Date());
-        },
-        tick(ms) {
-            vi.advanceTimersByTime(ms);
-        },
-    }),
-
     get DEFAULT_TIMEOUT_INTERVAL() {
         return _timeout;
     },

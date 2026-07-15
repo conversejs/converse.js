@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 
@@ -764,8 +765,8 @@ describe('A Chat Message', function () {
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             api.settings.set('filter_by_resource', true);
 
-            jasmine.clock().install();
-            jasmine.clock().mockDate(base_time);
+            vi.useFakeTimers();
+            vi.setSystemTime(base_time);
 
             _converse.handleMessageStanza(
                 stx`
@@ -782,7 +783,7 @@ describe('A Chat Message', function () {
             const view = _converse.chatboxviews.get(sender_jid);
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
-            jasmine.clock().tick(3 * ONE_MINUTE_LATER);
+            vi.advanceTimersByTime(3 * ONE_MINUTE_LATER);
             _converse.handleMessageStanza(
                 stx`
                     <message from="${sender_jid}"
@@ -796,7 +797,7 @@ describe('A Chat Message', function () {
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
-            jasmine.clock().tick(11 * ONE_MINUTE_LATER);
+            vi.advanceTimersByTime(11 * ONE_MINUTE_LATER);
             _converse.handleMessageStanza(
                 stx`
                     <message from="${sender_jid}"
@@ -810,7 +811,7 @@ describe('A Chat Message', function () {
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
-            jasmine.clock().tick(1 * ONE_MINUTE_LATER);
+            vi.advanceTimersByTime(1 * ONE_MINUTE_LATER);
 
             _converse.handleMessageStanza(
                 stx`
@@ -825,7 +826,7 @@ describe('A Chat Message', function () {
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
-            jasmine.clock().tick(1 * ONE_MINUTE_LATER);
+            vi.advanceTimersByTime(1 * ONE_MINUTE_LATER);
             await mock.sendMessage(_converse, view, 'Another message within 10 minutes, but from a different person');
 
             await u.waitUntil(() => view.querySelectorAll('.message').length === 6);
@@ -948,7 +949,7 @@ describe('A Chat Message', function () {
                 'Another message within 10 minutes, but from a different person',
             );
 
-            jasmine.clock().uninstall();
+            vi.useRealTimers();
         }),
     );
 

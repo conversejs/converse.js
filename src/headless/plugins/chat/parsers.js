@@ -89,16 +89,19 @@ export async function parseMessage(stanza) {
 
     const is_headline = isHeadline(stanza);
     const is_server_message = isServerMessage(stanza);
-    let contact, contact_jid;
+    let contact_jid;
+
     if (!is_headline && !is_server_message) {
         contact_jid = is_me ? Strophe.getBareJidFromJid(to_jid) : from_bare_jid;
-        contact = await api.contacts.get(contact_jid);
-        if (contact === undefined && !api.settings.get('allow_non_roster_messaging')) {
-            log.error(stanza);
-            return new StanzaParseError(
-                stanza,
-                `Blocking messaging with a JID not in our roster because allow_non_roster_messaging is false.`,
-            );
+        if (!api.settings.get('allow_non_roster_messaging')) {
+            const contact = await api.contacts.get(contact_jid);
+            if (contact === undefined) {
+                log.error(stanza);
+                return new StanzaParseError(
+                    stanza,
+                    `Blocking messaging with a JID not in our roster because allow_non_roster_messaging is false.`,
+                );
+            }
         }
     }
     const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
@@ -119,7 +122,6 @@ export async function parseMessage(stanza) {
             'is_marker': !!marker,
             'is_unstyled': !!sizzle(`unstyled[xmlns="${Strophe.NS.STYLING}"]`, stanza).length,
             'marker_id': marker && marker.getAttribute('id'),
-            'nick': contact?.attributes?.nickname,
             'receipt_id': getReceiptId(stanza),
             'received': new Date().toISOString(),
             'references': getReferences(stanza),

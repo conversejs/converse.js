@@ -146,11 +146,11 @@ export async function handleMessageStanza(stanza) {
         return log.error(message);
     }
 
-    const { body, plaintext, contact_jid, nick } = /** @type {MessageAttributes} */ (attrs);
+    const { body, plaintext, contact_jid } = /** @type {MessageAttributes} */ (attrs);
 
     // XXX: Need to take XEP-428 <fallback> into consideration
     const has_body = !!(body || plaintext);
-    const chatbox = await api.chats.get(contact_jid, { nickname: nick }, has_body);
+    const chatbox = await api.chats.get(contact_jid, {}, has_body);
     await chatbox?.queueMessage(attrs);
     /**
      * @typedef {Object} MessageData

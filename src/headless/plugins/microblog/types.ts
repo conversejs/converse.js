@@ -64,7 +64,8 @@ export type PubSubMessageAttrs = {
  * Attributes accepted by {@link PubSubFeed.createPostStanza} when composing a new post.
  */
 export type PubSubPublishAttrs = {
-    body: string;
+    body: string; // Plain text, or the Markdown source when `xhtml` is set (a rich post).
+    xhtml?: string; // A well-formed XHTML `<div>` fragment; emits Movim-style dual content.
     id?: string;
     atom_id?: string;
     published?: string;

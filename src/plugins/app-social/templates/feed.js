@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { __ } from 'i18n';
-import { _converse } from '@converse/headless';
+import { _converse, api } from '@converse/headless';
 
 /**
  * @param {import('../feed.js').default} el
@@ -31,25 +31,35 @@ function tplFilterBar(el) {
  */
 function tplFollowingBar(el) {
     const count = _converse.state.following?.length ?? 0;
-    if (!count) return '';
-
     const jid = _converse.session.get('bare_jid');
+    // Discover is always available (a fresh user following nobody needs it most);
+    // the Following button only appears once you follow at least one feed.
     return html`<div class="social-feed__following">
         <button
             type="button"
-            class="social-feed__following-btn"
-            @click=${() =>
-                el.dispatchEvent(
-                    new CustomEvent('profileselected', {
-                        detail: { jid, tab: 'following' },
-                        bubbles: true,
-                        composed: true,
-                    }),
-                )}
+            class="social-discover__btn"
+            title="${__('Find people and feeds to follow')}"
+            @click=${(/** @type {Event} */ ev) => api.modal.show('converse-social-discover-modal', {}, ev)}
         >
-            <converse-icon size="0.9em" class="fa fa-users"></converse-icon>
-            ${__('Following')} <span class="social-feed__following-count">${count}</span>
+            <converse-icon size="0.9em" class="fa fa-search"></converse-icon> ${__('Discover')}
         </button>
+        ${count
+            ? html`<button
+                  type="button"
+                  class="social-feed__following-btn"
+                  @click=${() =>
+                      el.dispatchEvent(
+                          new CustomEvent('profileselected', {
+                              detail: { jid, tab: 'following' },
+                              bubbles: true,
+                              composed: true,
+                          }),
+                      )}
+              >
+                  <converse-icon size="0.9em" class="fa fa-users"></converse-icon>
+                  ${__('Following')} <span class="social-feed__following-count">${count}</span>
+              </button>`
+            : ''}
     </div>`;
 }
 
@@ -104,7 +114,7 @@ export default (el) => {
                           </div>
                           ${tplFollowingBar(el)}
                       </div>
-                      <converse-social-compose .model=${el.model}></converse-social-compose>
+                      <converse-social-compose-rich .model=${el.model}></converse-social-compose-rich>
                   `}
             <div class="social-feed__posts">
                 ${posts.length

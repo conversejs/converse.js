@@ -26,7 +26,7 @@ export function requestOpenPost(ref) {
     api.apps.switch('social');
 }
 
-import './compose.js';
+import './compose-rich.js';
 import './message.js';
 import './feed.js';
 import './post.js';

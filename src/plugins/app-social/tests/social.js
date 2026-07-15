@@ -10,6 +10,7 @@ import {
     mountSocialApp,
     mountSocialFeed,
     openDiscover,
+    publishViaComposer,
     receive,
     stubDiscoverFollowable,
 } from './utils.js';
@@ -91,7 +92,7 @@ describe('The social feed', function () {
             const el = mountSocialFeed();
 
             // It resolves the own feed and renders the compose box.
-            const textarea = await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
             expect(el.querySelector('.social-feed__empty')).not.toBe(null);
 
             // A post arrives via PEP and is rendered (SignalWatcher + collectionSignal).
@@ -102,8 +103,7 @@ describe('The social feed', function () {
 
             // Publishing via the compose box builds + publishes, then optimistically renders.
             const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
-            textarea.value = 'My first microblog post';
-            el.querySelector('.social-compose__toolbar button[type="submit"]').click();
+            const compose = await publishViaComposer(el, 'My first microblog post');
 
             await u.waitUntil(() => publish.mock.calls.length === 1);
             const [jid, node] = publish.mock.calls[0];
@@ -115,8 +115,8 @@ describe('The social feed', function () {
                     n.textContent.includes('My first microblog post'),
                 ),
             );
-            // The textarea is cleared after a successful publish.
-            expect(textarea.value).toBe('');
+            // The composer is cleared after a successful publish.
+            await u.waitUntil(() => compose._handle.isEmpty());
         }),
     );
 
@@ -127,7 +127,7 @@ describe('The social feed', function () {
             const bare_jid = _converse.bare_jid;
 
             const el = mountSocialFeed();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             // All three constructs: a bold-heading title, an italic-excerpt
             // summary, and normal-weight content — three distinct blocks.
@@ -178,7 +178,7 @@ describe('The social feed', function () {
             const bare_jid = _converse.bare_jid;
 
             const el = mountSocialFeed();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             // Two posts through the template's sanitize-and-render path. `rich-ui-1`:
             // an entity-escaped `type="html"` <summary> and a Movim-style duplicated
@@ -264,7 +264,7 @@ describe('The social feed', function () {
             const bare_jid = _converse.bare_jid;
 
             const el = mountSocialFeed();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             // A Movim meme post: the picture lives only in the enclosure link, the
             // body is hashtags. The parser must surface the enclosure and the
@@ -315,7 +315,7 @@ describe('The social feed', function () {
             const bare_jid = _converse.bare_jid;
 
             const el = mountSocialFeed();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'a doomed post'));
 
@@ -346,7 +346,7 @@ describe('The social feed', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialFeed();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             // Follow a contact: this creates their feed in the aggregated timeline.
             await api.microblog.follow(contact_jid);
@@ -396,7 +396,7 @@ describe('The social feed', function () {
             await _converse.api.microblog.feeds.get(stranger, MICROBLOG_NODE, true);
 
             const el = mountSocialFeed();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             receive(_converse, makePost(bare_jid, bare_jid, 'mine-1', 'My own post', '2024-01-01T09:00:00Z'));
             receive(_converse, makePost(bare_jid, stranger, 'theirs-1', 'A stranger speaks', '2024-01-02T09:00:00Z'));
@@ -434,7 +434,7 @@ describe('The social feed', function () {
             const feed = await _converse.api.microblog.feeds.get('news.movim.eu', 'Phoronix', true);
 
             const el = mountSocialFeed();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             await feed.addItems([
                 stx`
@@ -476,7 +476,7 @@ describe('The social feed', function () {
             const bare_jid = _converse.bare_jid;
 
             const el = mountSocialFeed();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             receive(_converse, makePost(bare_jid, bare_jid, 'p1', 'reading https://conversejs.org about #xmpp today'));
 
@@ -505,7 +505,7 @@ describe('The social feed', function () {
             // The hashtag filter is owned by the Social app (so it's routable), so
             // mount the whole app rather than a standalone feed.
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             receive(_converse, makePost(bare_jid, bare_jid, 'p1', 'learning #xmpp today', '2024-01-02T09:00:00Z'));
             receive(_converse, makePost(bare_jid, bare_jid, 'p2', 'just #coffee', '2024-01-01T09:00:00Z'));
@@ -523,12 +523,12 @@ describe('The social feed', function () {
             await u.waitUntil(() => el.querySelector('.social-feed__filter'));
             await u.waitUntil(() => el.querySelectorAll('.social-post').length === 1);
             expect(el.querySelector('.social-post__body').textContent).toContain('#xmpp');
-            expect(el.querySelector('.social-compose__textarea')).toBe(null);
+            expect(el.querySelector('.social-rich__editable')).toBe(null);
 
             // Clearing restores the full timeline and the compose box.
             el.querySelector('.social-feed__filter-clear').click();
             await u.waitUntil(() => el.querySelectorAll('.social-post').length === 2);
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
         }),
     );
 
@@ -546,7 +546,7 @@ describe('The social feed', function () {
             _converse.state.vcards.create({ jid: reposter, nickname: 'Alice' });
 
             const el = mountSocialFeed();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             // A plain own post and a repost: Alice repeats Bob's original post.
             receive(_converse, makePost(bare_jid, bare_jid, 'mine-1', 'A plain post', '2024-01-01T09:00:00Z'));
@@ -587,7 +587,7 @@ describe('The social feed', function () {
             const toast = vi.spyOn(api.toast, 'show');
 
             const el = mountSocialFeed();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             // Follow a contact and receive one of their posts. Clear the follow's
             // own publish (the XEP-0330 list item) so we assert only reposts.
@@ -883,7 +883,7 @@ describe('The social post detail view', function () {
 
             const el = mountSocialApp();
             // The app mounts the feed once connected.
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // An own post arrives; open its thread via the Comments button.
             receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello world'));
@@ -954,7 +954,7 @@ describe('The social timeline comment counts', function () {
 
             try {
                 const el = mountSocialFeed();
-                await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+                await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
                 receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Count my comments'));
                 const msg = /** @type {any} */ (await u.waitUntil(() => el.querySelector('converse-social-message')));
@@ -1007,7 +1007,7 @@ describe('The social timeline comment counts', function () {
 
             try {
                 const el = mountSocialFeed();
-                await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+                await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
                 receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Later'));
                 const msg = /** @type {any} */ (await u.waitUntil(() => el.querySelector('converse-social-message')));
@@ -1044,7 +1044,7 @@ describe('Liking a post', function () {
             const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
 
             const el = mountSocialFeed();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
             receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Like me'));
 
             const like = await u.waitUntil(() => el.querySelector('.social-post__action--like'));
@@ -1080,7 +1080,7 @@ describe('Liking a post', function () {
             vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
 
             const el = mountSocialFeed();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
             receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Like me'));
 
             // Like it first.
@@ -1117,7 +1117,7 @@ describe('Liking a post', function () {
             );
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
             receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello'));
 
             const comment_btn = await u.waitUntil(() => el.querySelector('.social-post__action--comment'));
@@ -1156,7 +1156,7 @@ describe('The social profile view', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // An own post; clicking our name opens our own profile.
             receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello world'));
@@ -1207,7 +1207,7 @@ describe('The social profile view', function () {
             ]);
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // In the aggregated timeline the post names its source feed.
             const via = await u.waitUntil(() => el.querySelector('converse-social-feed .social-post__via'));
@@ -1242,7 +1242,7 @@ describe('The social profile view', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // Follow the contact, then a post from them arrives in the timeline.
             await api.microblog.follow(contact_jid);
@@ -1309,7 +1309,7 @@ describe('The social profile view', function () {
             });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // We repost a stranger's post into our own feed; the author header is
             // the *original* author (the stranger), so clicking it opens theirs.
@@ -1364,7 +1364,7 @@ describe('The social profile view', function () {
             vi.spyOn(api.pubsub.items, 'get').mockRejectedValue(forbidden);
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // Reach the stranger's profile via a repost of theirs.
             receive(_converse, makeRepost(bare_jid, bare_jid, 'r-1', 'Alas', stranger, 'Yorick'));
@@ -1409,7 +1409,7 @@ describe('The social profile view', function () {
             });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // Open our own profile from a post.
             receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello world'));
@@ -1434,7 +1434,7 @@ describe('The social profile view', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello world'));
             const author = await u.waitUntil(() => el.querySelector('.social-post__author.show-msg-author-modal'));
@@ -1473,7 +1473,7 @@ describe('The social profile view', function () {
             });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello world'));
             const author = await u.waitUntil(() => el.querySelector('.social-post__author.show-msg-author-modal'));
@@ -1502,7 +1502,7 @@ describe('The social profile view', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // An own plain post and an own repost of a stranger, both in our feed.
             receive(_converse, makePost(bare_jid, bare_jid, 'p-1', 'My own note', '2024-01-02T09:00:00Z'));
@@ -1557,7 +1557,7 @@ describe('The social profile view', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // The Discover modal renders in the modal portal (outside the app), so
             // a feed picked there reaches the app over the event bus, not by DOM
@@ -1589,7 +1589,7 @@ describe('The social profile view', function () {
             const modalShow = vi.spyOn(api.modal, 'show').mockResolvedValue(undefined);
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
             el.onProfileSelected(stranger);
             const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
 
@@ -1620,7 +1620,7 @@ describe('The social profile view', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
             el.onProfileSelected('mercutio@montague.lit');
             const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
 
@@ -1640,7 +1640,7 @@ describe('The social profile view', function () {
             const modalShow = vi.spyOn(api.modal, 'show').mockResolvedValue(undefined);
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
             el.onProfileSelected(bare_jid);
             const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
 
@@ -1708,7 +1708,7 @@ describe('The Social app with URL routing enabled', function () {
 
             location.hash = buildSocialRoute({ view: 'timeline' });
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             // A reposted post: clicking its author opens the (stranger) author's profile.
             receive(_converse, makeRepost(bare_jid, bare_jid, 'r1', 'Alas', stranger, 'Yorick'));
@@ -1802,7 +1802,7 @@ describe('The Social app with URL routing enabled', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             receive(_converse, makeRepost(bare_jid, bare_jid, 'r1', 'Alas', stranger, 'Yorick'));
             const author = await u.waitUntil(() => el.querySelector('.social-post__author.show-msg-author-modal'));
@@ -1879,7 +1879,7 @@ describe('The profile Following tab', function () {
             stubFollowPlumbing(api);
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // Following nobody: no entry point on the timeline.
             expect(el.querySelector('.social-feed__following-btn')).toBe(null);
@@ -1913,7 +1913,7 @@ describe('The profile Following tab', function () {
             stubFollowPlumbing(api);
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
             await api.microblog.follow('mercutio@montague.lit');
 
             // Open your own profile (posts tab by default).
@@ -1943,7 +1943,7 @@ describe('The profile Following tab', function () {
             stubFollowPlumbing(api);
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
             await api.microblog.follow('mercutio@montague.lit');
 
             const btn = await u.waitUntil(() => el.querySelector('.social-feed__following-btn'));
@@ -1968,7 +1968,7 @@ describe('The profile Following tab', function () {
             stubFollowPlumbing(api);
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
             await api.microblog.follow('mercutio@montague.lit');
 
             const btn = await u.waitUntil(() => el.querySelector('.social-feed__following-btn'));
@@ -1994,7 +1994,7 @@ describe('The profile Following tab', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // No timeline entry point; open your own profile Following tab directly.
             expect(el.querySelector('.social-feed__following-btn')).toBe(null);
@@ -2021,7 +2021,7 @@ describe('The profile Following tab', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             /** @type {any} */ (el).onProfileSelected(contact);
             const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
@@ -2053,7 +2053,7 @@ describe('The profile Following tab', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // Open a stranger's profile Following tab directly; the read is refused.
             /** @type {any} */ (el).onProfileSelected('yorick@denmark.lit', undefined, 'following');
@@ -2078,7 +2078,7 @@ describe('The profile Following tab', function () {
             vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             /** @type {any} */ (el).onProfileSelected('somebody@movim.eu', undefined, 'following');
             const list = await u.waitUntil(() => el.querySelector('converse-social-following'));
@@ -2109,7 +2109,7 @@ describe('The profile Following tab', function () {
             const itemsGet = vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
 
             const el = mountSocialApp();
-            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
 
             // Open an account's Following tab, then click the community feed row.
             /** @type {any} */ (el).onProfileSelected('somebody@movim.eu', undefined, 'following');

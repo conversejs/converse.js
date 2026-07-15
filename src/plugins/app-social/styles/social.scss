@@ -93,11 +93,15 @@
         // A slim, right-aligned entry point to the "Following" list.
         .social-feed__following {
             display: flex;
+            align-items: center;
             justify-content: flex-end;
+            gap: 0.5em;
             margin-bottom: 0.5em;
         }
 
-        .social-feed__following-btn {
+        // "Discover" and "Following" share the same slim look in the top bar.
+        .social-feed__following-btn,
+        .social-discover__btn {
             display: inline-flex;
             align-items: center;
             gap: 0.4em;
@@ -601,56 +605,6 @@
             &:hover {
                 color: var(--danger-color);
             }
-        }
-    }
-
-    .social-compose {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5em;
-        margin-bottom: 1em;
-
-        .social-compose__textarea {
-            width: 100%;
-            resize: vertical;
-            padding: 0.5em;
-            border: 1px solid var(--foreground-color);
-            border-radius: 0.25em;
-            // Use the same themed colours as the chat textarea so the text
-            // stays legible in every theme (the previous `--background`/
-            // `--text-color` guesses fell back to white, hiding the text in
-            // dark themes like Dracula).
-            color: var(--foreground-color);
-            background-color: var(--background-color);
-            font-family: inherit;
-        }
-
-        .social-compose__toolbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.5em;
-        }
-    }
-
-    // The single "Discover" entry point in the compose toolbar (opens the Discover
-    // modal). Quiet and icon-led so it doesn't compete with the Post button.
-    .social-discover__btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4em;
-        padding: 0;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--subdued-color);
-
-        converse-icon svg {
-            fill: currentColor;
-        }
-
-        &:hover {
-            color: var(--link-color);
         }
     }
 

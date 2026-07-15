@@ -1,0 +1,90 @@
+.conversejs {
+    // The Lexical rich composer. A contenteditable host with an overlaid placeholder and an inline format
+    // toolbar, styled to sit alongside the plain textarea variant.
+    converse-social-compose-rich {
+        .social-rich {
+            position: relative;
+
+            &__editable {
+                min-height: 4.5em;
+                width: 100%;
+                padding: 0.5em;
+                border: 1px solid var(--foreground-color);
+                border-radius: 0.25em;
+                color: var(--foreground-color);
+                background-color: var(--background-color);
+                font-family: inherit;
+                outline: none;
+                overflow-wrap: anywhere;
+
+                &:focus-within {
+                    border-color: var(--chat-color, var(--foreground-color));
+                }
+
+                p {
+                    margin: 0 0 0.4em;
+                }
+
+                .social-rich__bold {
+                    font-weight: bold;
+                }
+                .social-rich__italic {
+                    font-style: italic;
+                }
+                .social-rich__strike {
+                    text-decoration: line-through;
+                }
+                .social-rich__code {
+                    font-family: monospace;
+                }
+                .social-rich__quote {
+                    margin: 0 0 0.4em;
+                    padding-left: 0.75em;
+                    border-left: 3px solid var(--subdued-color);
+                    color: var(--subdued-color);
+                }
+            }
+
+            // Sits over the editable's first line; clicks fall through to the editor.
+            &__placeholder {
+                position: absolute;
+                top: 0.5em;
+                left: 0.5em;
+                color: var(--subdued-color);
+                pointer-events: none;
+                user-select: none;
+            }
+        }
+
+        .social-rich__toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.3em;
+            margin-top: 0.5em;
+        }
+
+        .social-rich__spacer {
+            flex: 1;
+        }
+
+        .social-rich__fmt {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.9em;
+            height: 1.9em;
+            padding: 0 0.4em;
+            background: none;
+            border: none;
+            border-radius: 0.25em;
+            cursor: pointer;
+            color: var(--foreground-color);
+            opacity: 0.7;
+
+            &:hover {
+                opacity: 1;
+                background-color: var(--highlight-color-hover);
+            }
+        }
+    }
+}

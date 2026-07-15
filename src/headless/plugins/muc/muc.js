@@ -1289,7 +1289,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * Refresh the disco identity, features and fields for this {@link MUC}.
      * *features* are stored on the features {@link Model} attribute on this {@link MUC}.
      * *fields* are stored on the config {@link Model} attribute on this {@link MUC}.
-     * @param {import('@converse/headless/plugins/disco/types').DiscoInfoOptions} [options]
+     * @param {import('../disco/types').DiscoInfoOptions} [options]
      * @returns {Promise}
      */
     async refreshDiscoInfo(options) {

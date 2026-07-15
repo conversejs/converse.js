@@ -40,7 +40,7 @@ export function showModeratorToolsModal(muc: MUC, affiliation?: string): void;
  */
 export function showOccupantModal(ev: Event, model: import("@converse/headless").MUCOccupant): void;
 export function parseMessageForMUCCommands(data: any, handled: any): Promise<any>;
-export type MUC = import("@converse/headless/types/plugins/muc/muc.js").default;
+export type MUC = import("@converse/headless/types/plugins/muc/muc").default;
 export type Avatar = import("shared/avatar/avatar").default;
 export type Suggestion = import("shared/autocomplete/suggestion").default;
 //# sourceMappingURL=utils.d.ts.map

@@ -5,14 +5,14 @@
 export default function ModelWithVCard<T extends import("./types").ModelExtender>(BaseModel: T): {
     new (...args: any[]): {
         [x: string]: any;
-        _vcard: import("../plugins/vcard/vcard").default;
+        _vcard: import("../index.js").VCard;
         lazy_load_vcard: boolean;
         initialize(): void;
-        readonly vcard: import("../plugins/vcard/vcard").default;
+        readonly vcard: import("../index.js").VCard;
         /**
          * @returns {Promise<VCard|null>}
          */
-        getVCard(): Promise<import("../plugins/vcard/vcard").default | null>;
+        getVCard(): Promise<import("../index.js").VCard | null>;
         "__#4@#private": any;
         _storage?: import("@converse/skeletor").PersistentStorage;
         _changing: boolean;

@@ -22,7 +22,7 @@ export default function ModelWithContact<T extends import("./types").ModelExtend
          * @public
          * @type {RosterContact|Profile}
          */
-        contact: import("../plugins/roster/contact").default | import("../index.js").Profile;
+        contact: import("../index.js").RosterContact | import("../index.js").Profile;
         updateContactUnreadCounter(): void;
         /**
          * @param {string} jid

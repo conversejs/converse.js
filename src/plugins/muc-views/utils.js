@@ -1,5 +1,5 @@
 /**
- * @typedef {import('@converse/headless/types/plugins/muc/muc.js').default} MUC
+ * @typedef {import('@converse/headless/types/plugins/muc/muc').default} MUC
  * @typedef {import("shared/avatar/avatar").default} Avatar
  * @typedef {import("shared/autocomplete/suggestion").default} Suggestion
  */

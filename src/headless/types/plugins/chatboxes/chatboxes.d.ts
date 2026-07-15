@@ -19,9 +19,9 @@ declare class ChatBoxes extends Collection<import("../../shared/chatbox").defaul
     onConnected(reconnecting: boolean): void;
     /**
      * @param {import('./types').CreateModelAttributes} attrs
-     * @param {import('@converse/skeletor/dist/skeletor.d').ModelOptions} options
+     * @param {import('@converse/skeletor').ModelOptions} options
      */
-    createModel(attrs: import("./types").CreateModelAttributes, options: import("@converse/skeletor/dist/skeletor.d").ModelOptions): any;
+    createModel(attrs: import("./types").CreateModelAttributes, options: import("@converse/skeletor").ModelOptions): any;
 }
 import { Collection } from '@converse/skeletor';
 //# sourceMappingURL=chatboxes.d.ts.map

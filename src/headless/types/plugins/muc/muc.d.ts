@@ -102,35 +102,35 @@ declare const MUC_base: {
         fetchMessages(): any;
         afterMessagesFetched(): void;
         onMessage(_attrs_or_error: import("../../shared/types").MessageAttributes | Error): Promise<void>;
-        getUpdatedMessageAttributes(message: import("../../shared/message.js").default, attrs: import("../../shared/types").MessageAttributes): Promise<object>;
-        updateMessage(message: import("../../shared/message.js").default, attrs: import("../../shared/types").MessageAttributes): Promise<void>;
-        handleCorrection(attrs: import("../../shared/types").MessageAttributes | import("./types").MUCMessageAttributes): Promise<import("../../shared/message.js").default | void>;
+        getUpdatedMessageAttributes(message: import("../../index.js").BaseMessage, attrs: import("../../shared/types").MessageAttributes): Promise<object>;
+        updateMessage(message: import("../../index.js").BaseMessage, attrs: import("../../shared/types").MessageAttributes): Promise<void>;
+        handleCorrection(attrs: import("../../shared/types").MessageAttributes | import("./types").MUCMessageAttributes): Promise<import("../../index.js").BaseMessage | void>;
         queueMessage(attrs: import("../../shared/types").MessageAttributes): any;
         msg_chain: any;
         getOutgoingMessageAttributes(_attrs?: import("../../shared/types").MessageAttributes): Promise<import("../../shared/types").MessageAttributes>;
-        getReferencedMessage(reply_to_id: string): import("../../shared/message.js").default | undefined;
+        getReferencedMessage(reply_to_id: string): import("../../index.js").BaseMessage | undefined;
         addReplyFallback(attrs: import("../../shared/types").MessageAttributes): import("../../shared/types").MessageAttributes;
-        sendMessage(attrs?: any): Promise<import("../../shared/message.js").default>;
-        retractOwnMessage(message: import("../../shared/message.js").default): void;
+        sendMessage(attrs?: any): Promise<import("../../index.js").BaseMessage>;
+        retractOwnMessage(message: import("../../index.js").BaseMessage): void;
         sendFiles(files: File[]): Promise<void>;
         setEditable(attrs: any, send_time: string): void;
         setChatState(state: string, options?: object): any;
         chat_state_timeout: number;
-        onMessageAdded(message: import("../../shared/message.js").default): void;
-        onMessageUploadChanged(message: import("../../shared/message.js").default): Promise<void>;
-        onMessageCorrecting(message: import("../../shared/message.js").default): void;
+        onMessageAdded(message: import("../../index.js").BaseMessage): void;
+        onMessageUploadChanged(message: import("../../index.js").BaseMessage): Promise<void>;
+        onMessageCorrecting(message: import("../../index.js").BaseMessage): void;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
         shouldShowErrorMessage(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
-        isChatMessage(_message: import("../../shared/message.js").default): boolean;
-        getOldestMessage(): import("../../shared/message.js").default;
-        getMostRecentMessage(): import("../../shared/message.js").default;
+        isChatMessage(_message: import("../../index.js").BaseMessage): boolean;
+        getOldestMessage(): import("../../index.js").BaseMessage;
+        getMostRecentMessage(): import("../../index.js").BaseMessage;
         getMessageReferencedByError(attrs: object): any;
-        findDanglingRetraction(attrs: object): import("../../shared/message.js").default | null;
-        getDuplicateMessage(attrs: object): Promise<import("../../shared/message.js").default | undefined>;
+        findDanglingRetraction(attrs: object): import("../../index.js").BaseMessage | null;
+        getDuplicateMessage(attrs: object): Promise<import("../../index.js").BaseMessage | undefined>;
         getOriginIdQueryAttrs(attrs: object): {
             origin_id: any;
             from: any;
@@ -140,15 +140,15 @@ declare const MUC_base: {
             from: any;
             msgid: any;
         };
-        sendMarkerForMessage(msg: import("../../shared/message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
-        handleUnreadMessage(message: import("../../shared/message.js").default): void;
-        getErrorAttributesForMessage(message: import("../../shared/message.js").default, attrs: import("../../shared/types").MessageAttributes): Promise<any>;
+        sendMarkerForMessage(msg: import("../../index.js").BaseMessage, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
+        handleUnreadMessage(message: import("../../index.js").BaseMessage): void;
+        getErrorAttributesForMessage(message: import("../../index.js").BaseMessage, attrs: import("../../shared/types").MessageAttributes): Promise<any>;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
-        incrementUnreadMsgsCounter(message: import("../../shared/message.js").default): void;
+        incrementUnreadMsgsCounter(message: import("../../index.js").BaseMessage): void;
         clearUnreadMsgCounter(): void;
         handleRetraction(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;
         handleReceipt(attrs: import("../../shared/types").MessageAttributes): boolean;
-        createMessageStanza(message: import("../../shared/message.js").default): Promise<any>;
+        createMessageStanza(message: import("../../index.js").BaseMessage): Promise<any>;
         pruneHistory(): void;
         debouncedPruneHistory: import("lodash").DebouncedFunc<() => void>;
         isScrolledUp(): any;
@@ -389,7 +389,7 @@ declare class MUC extends MUC_base {
      * @param {boolean} [force=false] - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.
      */
-    sendMarkerForMessage(msg: import("../../shared/message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
+    sendMarkerForMessage(msg: import("../../index.js").BaseMessage, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
     /**
      * Finds the last eligible message and then sends a XEP-0333 chat marker for it.
      * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
@@ -489,7 +489,7 @@ declare class MUC extends MUC_base {
      * Retract one of your messages in this groupchat
      * @param {BaseMessage} message - The message which we're retracting.
      */
-    retractOwnMessage(message: import("../../shared/message.js").default): Promise<void>;
+    retractOwnMessage(message: import("../../index.js").BaseMessage): Promise<void>;
     /**
      * Retract someone else's message in this groupchat.
      * @param {MUCMessage} message - The message which we're retracting.
@@ -584,10 +584,10 @@ declare class MUC extends MUC_base {
      * Refresh the disco identity, features and fields for this {@link MUC}.
      * *features* are stored on the features {@link Model} attribute on this {@link MUC}.
      * *fields* are stored on the config {@link Model} attribute on this {@link MUC}.
-     * @param {import('@converse/headless/plugins/disco/types').DiscoInfoOptions} [options]
+     * @param {import('../disco/types').DiscoInfoOptions} [options]
      * @returns {Promise}
      */
-    refreshDiscoInfo(options?: import("@converse/headless/plugins/disco/types").DiscoInfoOptions): Promise<any>;
+    refreshDiscoInfo(options?: import("../disco/types").DiscoInfoOptions): Promise<any>;
     /**
      * Fetch the *extended* MUC info from the server and cache it locally
      * https://xmpp.org/extensions/xep-0045.html#disco-roominfo
@@ -978,11 +978,11 @@ declare class MUC extends MUC_base {
      * was mentioned in a message.
      * @param {BaseMessage} message - The text message
      */
-    isUserMentioned(message: import("../../shared/message.js").default): boolean;
+    isUserMentioned(message: import("../../index.js").BaseMessage): boolean;
     /**
      * @param {BaseMessage} message - The text message
      */
-    incrementUnreadMsgsCounter(message: import("../../shared/message.js").default): void;
+    incrementUnreadMsgsCounter(message: import("../../index.js").BaseMessage): void;
     clearUnreadMsgCounter(): Promise<void>;
 }
 import { Model } from '@converse/skeletor';

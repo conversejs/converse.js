@@ -36,7 +36,7 @@ export type navigator = Navigator & {
     clearAppBadge: Function;
     setAppBadge: Function;
 };
-export type MUCMessageAttributes = import("@converse/headless/plugins/muc/types").MUCMessageAttributes;
+export type MUCMessageAttributes = import("@converse/headless/types/plugins/muc/types").MUCMessageAttributes;
 export type MUCMessageData = any;
 export type MessageData = any;
 export type RosterContact = import("@converse/headless").RosterContact;

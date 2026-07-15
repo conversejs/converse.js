@@ -18,7 +18,7 @@ import './styles/omemo.scss';
 
 converse.plugins.add('converse-omemo-views', {
     /**
-     * @param {import('@converse/headless/types/shared/_converse.d.js').ConversePrivateGlobal} _converse
+     * @param {import('@converse/headless/types/shared/_converse').ConversePrivateGlobal} _converse
      */
     enabled(_converse) {
         return _converse.pluggable.plugins['converse-omemo']?.enabled(_converse);

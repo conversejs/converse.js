@@ -1,8 +1,8 @@
 /**
  * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
- * @typedef {import('@converse/skeletor/dist/skeletor.d').ModelAttributes} ModelAttributes
- * @typedef {import('@converse/skeletor/dist/skeletor.d').CollectionOptions} CollectionOptions
- * @typedef {import('@converse/skeletor/dist/skeletor.d').Options} Options
+ * @typedef {import('@converse/skeletor').ModelAttributes} ModelAttributes
+ * @typedef {import('@converse/skeletor').CollectionOptions} CollectionOptions
+ * @typedef {import('@converse/skeletor').Options} Options
  */
 import MUCOccupant from './occupant.js';
 import _converse from '../../shared/_converse.js';

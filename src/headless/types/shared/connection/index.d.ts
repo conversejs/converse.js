@@ -1,4 +1,4 @@
-declare const Connection_base: typeof import("strophe.js/dist/types/connection.js").default;
+declare const Connection_base: typeof import("../../../../node_modules/strophe.js/dist/types/connection.js").default;
 /**
  * The Connection class manages the connection to the XMPP server. It's
  * agnostic concerning the underlying protocol (i.e. websocket, long-polling
@@ -115,7 +115,7 @@ export class MockConnection extends Connection {
     IQ_stanzas: any[];
     IQ_ids: any[];
     mock: boolean;
-    get _sasl_mechanism(): import("strophe.js/dist/types/sasl-sha256.js").default;
+    get _sasl_mechanism(): import("../../../../node_modules/strophe.js/dist/types/sasl-sha256.js").default;
     _processRequest(): void;
     sendIQ(iq: any, callback: any, errback: any): string;
     send(stanza: any): void;

@@ -34,7 +34,7 @@ declare const _default: {
     isForbiddenError(stanza: Element): boolean;
     isServiceUnavailableError(stanza: Element): boolean;
     getAttributes(stanza: Element): object;
-    toStanza: typeof import("@converse/headless").Stanza.toElement;
+    toStanza: typeof import("strophe.js").Stanza.toElement;
     isUniView(): boolean;
     isTestEnv(): boolean;
     getUnloadEvent(): "pagehide" | "beforeunload" | "unload";
@@ -75,7 +75,7 @@ declare const _default: {
     safeSave(model: import("@converse/skeletor").Model, attributes: any, options: any): void;
     isElement(el: unknown): boolean;
     isEqualNode(actual: Element, expected: Element): boolean;
-    isTagEqual(stanza: Element | typeof import("@converse/headless").Builder, name: string): boolean;
+    isTagEqual(stanza: Element | typeof import("strophe.js").Builder, name: string): boolean;
     stringToElement(s: string): Element;
     queryChildren(el: HTMLElement, selector: string): ChildNode[];
     siblingIndex(el: Element): number;
@@ -109,7 +109,7 @@ declare const _default: {
     getHyperlinkTemplate(url: string): TemplateResult | string;
     slideOut(el: HTMLElement, duration?: number): Promise<any>;
     slideIn(el: HTMLElement, duration?: number): Promise<any>;
-    xFormField2TemplateResult(xfield: import("headless/shared/types.js").XFormField, options?: import("./types.js").XFormFieldOptions): TemplateResult;
+    xFormField2TemplateResult(xfield: import("headless/types/shared/types.js").XFormField, options?: import("./types.js").XFormFieldOptions): TemplateResult;
     getOuterWidth(el: HTMLElement, include_margin?: boolean): number;
     getRootElement(): HTMLElement;
     default: {
@@ -148,7 +148,7 @@ declare const _default: {
         isForbiddenError(stanza: Element): boolean;
         isServiceUnavailableError(stanza: Element): boolean;
         getAttributes(stanza: Element): object;
-        toStanza: typeof import("@converse/headless").Stanza.toElement;
+        toStanza: typeof import("strophe.js").Stanza.toElement;
         isUniView(): boolean;
         isTestEnv(): boolean;
         getUnloadEvent(): "pagehide" | "beforeunload" | "unload";
@@ -189,7 +189,7 @@ declare const _default: {
         safeSave(model: import("@converse/skeletor").Model, attributes: any, options: any): void;
         isElement(el: unknown): boolean;
         isEqualNode(actual: Element, expected: Element): boolean;
-        isTagEqual(stanza: Element | typeof import("@converse/headless").Builder, name: string): boolean;
+        isTagEqual(stanza: Element | typeof import("strophe.js").Builder, name: string): boolean;
         stringToElement(s: string): Element;
         queryChildren(el: HTMLElement, selector: string): ChildNode[];
         siblingIndex(el: Element): number;

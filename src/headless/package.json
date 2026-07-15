@@ -16,7 +16,10 @@
         "default": "./dist/converse-headless.js"
       }
     },
-    "./dist/*": "./dist/*"
+    "./dist/*": "./dist/*",
+    "./types/*": {
+      "types": "./types/*.d.ts"
+    }
   },
   "main": "./dist/converse-headless.js",
   "types": "./types/index.d.ts",

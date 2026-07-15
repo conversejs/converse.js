@@ -47,7 +47,7 @@ class ChatBoxes extends Collection {
 
     /**
      * @param {import('./types').CreateModelAttributes} attrs
-     * @param {import('@converse/skeletor/dist/skeletor.d').ModelOptions} options
+     * @param {import('@converse/skeletor').ModelOptions} options
      */
     createModel(attrs, options) {
         if (!attrs.type) {

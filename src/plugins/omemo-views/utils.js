@@ -1,7 +1,7 @@
 /**
  * @typedef {module:plugins-omemo-index.WindowWithLibsignal} WindowWithLibsignal
- * @typedef {import('@converse/headless/shared/types').MessageAttributes} MessageAttributes
- * @typedef {import('@converse/headless/plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {import('@converse/headless/types/shared/types').MessageAttributes} MessageAttributes
+ * @typedef {import('@converse/headless/types/plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
  * @typedef {import('@converse/headless').ChatBox} ChatBox
  * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
  */

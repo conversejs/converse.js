@@ -32,8 +32,8 @@ export function getDeviceForContact(jid: string, device_id: string): Promise<imp
  */
 export function getOMEMOToolbarButton(toolbar_el: import("shared/chat/toolbar").ChatToolbar, buttons: Array<import("lit").TemplateResult>): import("lit-html").TemplateResult<1 | 2 | 3>[];
 export type WindowWithLibsignal = any;
-export type MessageAttributes = import("@converse/headless/shared/types").MessageAttributes;
-export type MUCMessageAttributes = import("@converse/headless/plugins/muc/types").MUCMessageAttributes;
+export type MessageAttributes = import("@converse/headless/types/shared/types").MessageAttributes;
+export type MUCMessageAttributes = import("@converse/headless/types/plugins/muc/types").MUCMessageAttributes;
 export type ChatBox = import("@converse/headless").ChatBox;
 export type BaseMessage = import("@converse/headless/types/shared/message").default;
 //# sourceMappingURL=utils.d.ts.map

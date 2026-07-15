@@ -11,6 +11,9 @@ export default class SocialMessage extends ObservableElement {
         compact: {
             type: BooleanConstructor;
         };
+        hidesource: {
+            type: BooleanConstructor;
+        };
         _reposting: {
             type: BooleanConstructor;
             state: boolean;
@@ -27,6 +30,7 @@ export default class SocialMessage extends ObservableElement {
         };
     };
     compact: boolean;
+    hidesource: boolean;
     render(): import("lit-html").TemplateResult<1>;
     /**
      * Open the author's profile view when their avatar or name is clicked.
@@ -35,6 +39,14 @@ export default class SocialMessage extends ObservableElement {
      * @param {MouseEvent} [ev]
      */
     showProfile(ev?: MouseEvent): void;
+    /**
+     * Open the community/topic feed this post arrived through (its pubsub node's
+     * read-only profile), distinct from the author's own profile. Only relevant
+     * when {@link PubSubMessage#getSourceFeed} is non-null (a news/topic node, not
+     * a personal microblog).
+     * @param {MouseEvent} [ev]
+     */
+    showSourceFeed(ev?: MouseEvent): void;
     /**
      * Open an inline post image in the lightbox modal when clicked.
      * @param {MouseEvent} ev

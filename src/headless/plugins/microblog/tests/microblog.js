@@ -164,7 +164,7 @@ describe('The microblog plugin', function () {
 
     it(
         'parses feed addresses (bare JID, service, and xmpp: node URI)',
-        mock.initConverse(converse, [], {}, async function (_converse) {
+        mock.initConverse(converse, [], {}, function (_converse) {
             const { api } = _converse;
             const parse = api.microblog.parseFeedAddress;
             // A bare JID (a user or a service) defaults to the PEP microblog node.
@@ -2531,6 +2531,73 @@ describe('The microblog plugin', function () {
 
             await profile.fetchBanner();
             expect(profile.get('banner_url')).toBeUndefined();
+        }),
+    );
+
+    it(
+        'exposes the source feed for a post from a community/topic node',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            // A news node (Phoronix on news.movim.eu) republished by a gateway:
+            // the item's publisher is a *full* JID that isn't the node owner.
+            const feed = await api.microblog.feeds.get('news.movim.eu', 'Phoronix', true);
+            await feed.addItems([
+                stx`
+                <item id="p1" publisher="edhelas@movim.eu/atomtopubsub">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">OpenCL 3.1 on Asahi</title>
+                    <id>tag:news.movim.eu,2026:p1</id>
+                    <published>2026-07-15T01:00:00Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+
+            const post = feed.messages.get('p1');
+            // getAuthorJID keeps the raw publisher; the resource is dropped at
+            // the profile-navigation boundary (see SocialMessage.showProfile).
+            expect(post.getAuthorJID()).toBe('edhelas@movim.eu/atomtopubsub');
+            // With no <author> and no vCard, the name falls back to the JID, but
+            // bared — the `/atomtopubsub` resource never shows.
+            expect(post.getDisplayName()).toBe('edhelas@movim.eu');
+
+            // The source feed is the pubsub node it arrived through. Un-followed,
+            // so the label falls back to the raw node id.
+            expect(post.getSourceFeed()).toEqual({
+                jid: 'news.movim.eu',
+                node: 'Phoronix',
+                title: 'Phoronix',
+            });
+
+            // Once followed with a title, the label prefers that human name.
+            _converse.state.following.track({ server: 'news.movim.eu', node: 'Phoronix', title: 'Phoronix Linux' });
+            expect(post.getSourceFeed().title).toBe('Phoronix Linux');
+        }),
+    );
+
+    it(
+        'reports no source feed for an ordinary personal-microblog post',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const feed = await api.microblog.feeds.get('juliet@capulet.lit', MICROBLOG_NODE, true);
+            await feed.addItems([
+                stx`
+                <item id="m1" publisher="juliet@capulet.lit">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">O Romeo</title>
+                    <id>tag:capulet.lit,2024:m1</id>
+                    <published>2024-01-01T18:30:02Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+
+            // The feed *is* the author, so there's nothing to attribute "via".
+            expect(feed.messages.get('m1').getSourceFeed()).toBe(null);
         }),
     );
 });

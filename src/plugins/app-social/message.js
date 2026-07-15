@@ -2,12 +2,14 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { api, PubSubMessage } from '@converse/headless';
+import { api, converse, PubSubMessage } from '@converse/headless';
 import log from '@converse/log';
 import { __ } from 'i18n';
 import { ObservableElement } from 'shared/components/observable.js';
 import 'shared/modals/image.js';
 import tplMessage from './templates/message.js';
+
+const { Strophe } = converse.env;
 
 /**
  * Renders a single microblog post. The `SignalWatcher`-driven feed list passes
@@ -23,6 +25,10 @@ export default class SocialMessage extends ObservableElement {
             // action buttons (comment / repost / delete), which belong to the
             // timeline.
             compact: { type: Boolean },
+            // When set, suppress the "via <feed>" source line. Passed by the feed
+            // profile view, where every post is from the feed on show, so naming
+            // it on each row would just be noise (see getSourceFeed).
+            hidesource: { type: Boolean },
             _reposting: { type: Boolean, state: true },
             _liking: { type: Boolean, state: true },
         };
@@ -31,6 +37,7 @@ export default class SocialMessage extends ObservableElement {
     constructor() {
         super();
         this.compact = false;
+        this.hidesource = false;
         // Fetch this post's comment/like counts once it's scrolled into view
         this.observable = /** @type {import('shared/components/types').ObservableProperty} */ ('once');
         this.observableRequireFocus = true;
@@ -64,8 +71,36 @@ export default class SocialMessage extends ObservableElement {
         ev?.preventDefault?.();
         const jid = this.model.getAuthorJID();
         if (!jid) return;
+        // A profile is a person/feed keyed by bare JID. A post's `publisher` can
+        // be a full JID (Movim stamps `edhelas@movim.eu/atomtopubsub`), so drop
+        // the resource, or the profile won't match the bare-JID follow record.
+        this.dispatchEvent(
+            new CustomEvent('profileselected', {
+                bubbles: true,
+                composed: true,
+                detail: { jid: Strophe.getBareJidFromJid(jid) },
+            }),
+        );
+    }
 
-        this.dispatchEvent(new CustomEvent('profileselected', { bubbles: true, composed: true, detail: { jid } }));
+    /**
+     * Open the community/topic feed this post arrived through (its pubsub node's
+     * read-only profile), distinct from the author's own profile. Only relevant
+     * when {@link PubSubMessage#getSourceFeed} is non-null (a news/topic node, not
+     * a personal microblog).
+     * @param {MouseEvent} [ev]
+     */
+    showSourceFeed(ev) {
+        ev?.preventDefault?.();
+        const source = this.model.getSourceFeed();
+        if (!source) return;
+        this.dispatchEvent(
+            new CustomEvent('profileselected', {
+                bubbles: true,
+                composed: true,
+                detail: { jid: source.jid, node: source.node },
+            }),
+        );
     }
 
     /**

@@ -79,6 +79,20 @@ declare class PubSubMessage extends BaseMessage {
      */
     getAuthorJID(): string | undefined;
     /**
+     * The community/topic feed this post arrived through, when that feed is a
+     * thing distinct from its author. Null for an ordinary personal-microblog
+     * post and for comment items.
+     *
+     * `title` is the human label we follow the feed by (from the XEP-0330 list),
+     * falling back to the raw node id for a feed we're only browsing.
+     * @returns {{ jid: string, node: string, title: string }|null}
+     */
+    getSourceFeed(): {
+        jid: string;
+        node: string;
+        title: string;
+    } | null;
+    /**
      * Colour the post by its *displayed* author, so every post from the same
      * author shares a colour and the name colour matches the avatar. Overrides
      * {@link ColorAwareModel}'s default, which would key on `from` — the

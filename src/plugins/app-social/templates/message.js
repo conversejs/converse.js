@@ -32,6 +32,11 @@ export default (el) => {
     const time = m.get('time');
     const name = m.get('displayName');
 
+    // The community/topic feed this post came through (a news/topic node, not a
+    // personal microblog), so the reader can open its feed. Null for own-author
+    // posts, where naming the feed would just repeat the author. See getSourceFeed.
+    const source = m.getSourceFeed();
+
     // For a repost the main author (avatar + name + handle) is the *original*
     // poster; this eyebrow names who repeated it into the feed, so the two are
     // never conflated (X.com-style "<reposter> reposted").
@@ -204,6 +209,14 @@ export default (el) => {
                                         </button>`}
                               `}
                     </header>
+                    ${source && !el.hidesource
+                        ? html`<a
+                              class="social-post__via"
+                              @click=${(/** @type {MouseEvent} */ ev) => el.showSourceFeed(ev)}
+                              title="${__('View this feed')}"
+                              >${__('via %1$s on %2$s', source.title, source.jid)}</a
+                          >`
+                        : ''}
                     <div class="social-post__body">
                         ${title || title_xhtml
                             ? html`<div

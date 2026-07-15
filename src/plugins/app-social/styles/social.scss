@@ -881,6 +881,24 @@
                 opacity: 0.6;
             }
 
+            // Quiet attribution line under the header: names the topic/news feed
+            // a post was republished through (e.g. "via Phoronix on
+            // news.movim.eu") and links to that node's feed profile, so the
+            // source is distinct from the publisher shown above.
+            &__via {
+                display: inline-block;
+                margin-bottom: 0.5em;
+                font-size: 0.8em;
+                color: var(--subdued-color) !important;
+                cursor: pointer;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                    color: var(--link-color) !important;
+                }
+            }
+
             &__action {
                 background: none;
                 border: none;

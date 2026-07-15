@@ -85,6 +85,34 @@ describe('Microblog following (XEP-0330)', function () {
     );
 
     it(
+        'normalises a full JID to bare when following and checking',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const { publish, subscribe } = stubPubsubNetwork(api);
+
+            // A post's server-stamped `publisher` can carry a resource
+            // (Movim: `edhelas@movim.eu/atomtopubsub`). Following that must record
+            // the bare account, not the full JID.
+            await api.microblog.follow('juliet@capulet.lit/balcony');
+
+            const sub = publish.mock.calls[0][2].tree().querySelector('subscription');
+            expect(sub.getAttribute('server')).toBe('juliet@capulet.lit');
+            expect(subscribe).toHaveBeenCalledWith('juliet@capulet.lit', MICROBLOG_NODE);
+
+            // isFollowing matches regardless of any resource on either side.
+            expect(api.microblog.isFollowing('juliet@capulet.lit')).toBe(true);
+            expect(api.microblog.isFollowing('juliet@capulet.lit/phone')).toBe(true);
+
+            // Unfollowing by the full JID drops the same bare entry.
+            vi.spyOn(api.pubsub, 'retract').mockResolvedValue(undefined);
+            await api.microblog.unfollow('juliet@capulet.lit/balcony');
+            expect(api.microblog.isFollowing('juliet@capulet.lit')).toBe(false);
+        }),
+    );
+
+    it(
         'reads the durable follow list from the XEP-0330 node',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

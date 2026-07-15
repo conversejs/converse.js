@@ -425,6 +425,51 @@ describe('The social feed', function () {
     );
 
     it(
+        'attributes a community-feed post to its source node and its bare publisher',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+
+            // A news node (Phoronix on news.movim.eu) republished by a gateway,
+            // whose item publisher is a *full* JID (Movim: `…/atomtopubsub`).
+            const feed = await _converse.api.microblog.feeds.get('news.movim.eu', 'Phoronix', true);
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            await feed.addItems([
+                stx`
+                <item id="p1" publisher="edhelas@movim.eu/atomtopubsub">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">OpenCL 3.1 on Asahi</title>
+                    <id>tag:news.movim.eu,2026:p1</id>
+                    <published>2026-07-15T01:00:00Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+
+            await u.waitUntil(() => el.querySelector('.social-post'));
+
+            // A quiet "via <node> on <service>" line links to the node's feed.
+            const via = await u.waitUntil(() => el.querySelector('.social-post__via'));
+            expect(via.textContent.trim()).toMatch(/via Phoronix on news\.movim\.eu/);
+
+            const events = [];
+            el.addEventListener('profileselected', (ev) => events.push(ev.detail));
+
+            // Clicking the "via" line opens the pubsub node's feed profile.
+            via.click();
+            await u.waitUntil(() => events.length === 1);
+            expect(events[0]).toEqual({ jid: 'news.movim.eu', node: 'Phoronix' });
+
+            // Clicking the author opens the *bare* publisher's profile: the
+            // `/atomtopubsub` resource is dropped so it matches a bare follow.
+            el.querySelector('a.social-post__author').click();
+            await u.waitUntil(() => events.length === 2);
+            expect(events[1].jid).toBe('edhelas@movim.eu');
+        }),
+    );
+
+    it(
         'renders URLs and hashtags in a post body as rich elements',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
@@ -1138,6 +1183,47 @@ describe('The social profile view', function () {
             await u.waitUntil(
                 () => el.querySelector('converse-social-feed') && !el.querySelector('converse-social-profile'),
             );
+        }),
+    );
+
+    it(
+        'suppresses the "via" attribution inside a feed’s own profile',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            // A community feed with one post; it also surfaces in the timeline.
+            const feed = await api.microblog.feeds.get('news.movim.eu', 'Phoronix', true);
+            await feed.addItems([
+                stx`
+                <item id="p1" publisher="edhelas@movim.eu/atomtopubsub">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">OpenCL 3.1 on Asahi</title>
+                    <id>tag:news.movim.eu,2026:p1</id>
+                    <published>2026-07-15T01:00:00Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-compose__textarea'));
+
+            // In the aggregated timeline the post names its source feed.
+            const via = await u.waitUntil(() => el.querySelector('converse-social-feed .social-post__via'));
+            expect(via.textContent.trim()).toMatch(/via Phoronix on news\.movim\.eu/);
+
+            // Follow the "via" link into that feed's own profile.
+            via.click();
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+            await u.waitUntil(() =>
+                Array.from(profile.querySelectorAll('.social-profile__posts .social-post__body')).some((n) =>
+                    n.textContent.includes('OpenCL 3.1 on Asahi'),
+                ),
+            );
+
+            // The post is listed, but the now-redundant "via" line is suppressed.
+            expect(profile.querySelector('.social-post__via')).toBe(null);
         }),
     );
 

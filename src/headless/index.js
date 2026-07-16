@@ -12,6 +12,8 @@ export { BaseMessage };
 import ModelWithMessages from './shared/model-with-messages.js';
 export { ModelWithMessages };
 
+export { uploadFile, getUploadService } from './shared/http-upload.js'; // XEP-0363 HTTP File Upload
+
 // START: Removable components
 // ---------------------------
 // The following components may be removed if they're not needed.

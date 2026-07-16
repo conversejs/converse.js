@@ -65,6 +65,13 @@ export default class SocialComposeRich extends CustomElement {
      */
     removeAttachment(index: number): void;
     /**
+     * Paste files (e.g. a screenshot) straight into the upload flow, exactly like a
+     * paperclip pick. A text/rich paste carries no files, so it falls through to
+     * Lexical unchanged.
+     * @param {ClipboardEvent} ev
+     */
+    onPaste(ev: ClipboardEvent): void;
+    /**
      * Normalise Lexical's HTML export to a well-formed XHTML `<div>` fragment: run
      * it through DOMPurify (stripping the editor-only `class`/`style` hooks Lexical
      * stamps on for styling, so they never reach the wire), then re-serialize via

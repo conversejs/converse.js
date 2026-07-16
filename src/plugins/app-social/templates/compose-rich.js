@@ -34,6 +34,7 @@ export default (el) => html`
                 aria-multiline="true"
                 aria-label="${__('Write a post')}"
                 @focusin=${() => el.ensureEditor()}
+                @paste=${(/** @type {ClipboardEvent} */ ev) => el.onPaste(ev)}
             ></div>
             ${el._empty ? html`<span class="social-rich__placeholder">${__('What’s on your mind?')}</span>` : ''}
         </div>

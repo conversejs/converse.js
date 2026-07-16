@@ -19,6 +19,7 @@ import * as omemo_constants from './plugins/omemo/constants.js';
 export { BaseMessage, ModelWithMessages, api, converse, _converse, i18n, log, u, parsers, errors };
 export { Collection, EventEmitter, Model } from "@converse/skeletor";
 export { Builder, Stanza } from "strophe.js";
+export { uploadFile, getUploadService } from "./shared/http-upload.js";
 export { Bookmark, Bookmarks } from "./plugins/bookmarks/index.js";
 export { ChatBox, Message, Messages } from "./plugins/chat/index.js";
 export { Device, Devices, DeviceList, DeviceLists } from "./plugins/omemo/index.js";

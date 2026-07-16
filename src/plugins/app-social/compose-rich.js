@@ -22,7 +22,50 @@ import './styles/compose-rich.scss';
 
 const NS_XHTML = 'http://www.w3.org/1999/xhtml';
 
-const MAX_EMOJI_SUGGESTIONS = 8; // Caps inline emoji-autocomplete list
+const MAX_SUGGESTIONS = 8; // Caps inline typeahead list
+
+/**
+ * The composer's caret-typeahead sources. Each source owns one trigger character:
+ * `getQuery` reads the trigger's query from the caret (null when the caret isn't
+ * on this source's trigger), `getItems` builds the ranked menu for a query, and
+ * `choose` replaces the trigger with the picked item. The triggers are mutually
+ * exclusive, so at most one source is active at a time.
+ */
+const TYPEAHEAD_SOURCES = [
+    {
+        kind: 'emoji',
+        /** @param {SocialComposeRich} el */
+        getQuery: (el) => el._handle?.getEmojiQuery?.() ?? null,
+        /**
+         * All emoji whose shortname contains the query, prefix matches (then
+         * alphabetical) first.
+         * @param {SocialComposeRich} _el
+         * @param {string} query
+         * @returns {Promise<import('./types').TypeaheadItem[]>}
+         */
+        async getItems(_el, query) {
+            await api.emojis.initialize();
+            const q = query.toLowerCase();
+            const ranked = [];
+            for (const emoji of /** @type {any[]} */ (converse.emojis.list)) {
+                const idx = emoji.sn.slice(1, -1).indexOf(q); // strip the wrapping colons
+                if (idx !== -1) ranked.push({ emoji, idx });
+            }
+            ranked.sort((a, b) => a.idx - b.idx || (a.emoji.sn < b.emoji.sn ? -1 : 1));
+            return ranked.slice(0, MAX_SUGGESTIONS).map(({ emoji }) => ({
+                label: emoji.sn,
+                url: emoji.url,
+                glyph: shortnamesToEmojis(emoji.sn, { unicode_only: true, add_title_wrapper: false }).join(''),
+            }));
+        },
+        /**
+         * @param {SocialComposeRich} el
+         * @param {string} query
+         * @param {import('./types').TypeaheadItem} item
+         */
+        choose: (el, query, item) => el._handle?.replaceEmojiTrigger(query, item.glyph),
+    },
+];
 
 export default class SocialComposeRich extends CustomElement {
     static get properties() {
@@ -32,9 +75,9 @@ export default class SocialComposeRich extends CustomElement {
             _uploading: { type: Boolean, state: true },
             _empty: { type: Boolean, state: true },
             _attachments: { type: Array, state: true },
-            _emoji_suggestions: { type: Array, state: true },
-            _emoji_index: { type: Number, state: true },
-            _emoji_pos: { type: Object, state: true },
+            _ac_items: { type: Array, state: true },
+            _ac_index: { type: Number, state: true },
+            _ac_pos: { type: Object, state: true },
         };
     }
 
@@ -55,21 +98,24 @@ export default class SocialComposeRich extends CustomElement {
         /** @type {Promise<import('./types').EditorHandle>|null} */
         this._init = null;
 
-        // Inline emoji-shortname autocomplete
-        /** @type {Array<{ sn: string, glyph: string, url?: string }>} */
-        this._emoji_suggestions = [];
-        this._emoji_index = 0;
+        // The inline caret typeahead (emoji shortnames, mentions), open only while
+        // items exist. `_ac_kind` names the source the menu is showing for.
+        /** @type {import('./types').TypeaheadItem[]} */
+        this._ac_items = [];
+        this._ac_index = 0;
+        this._ac_kind = '';
 
         /** @type {{ left: number, top: number }} */
-        this._emoji_pos = { left: 0, top: 0 };
+        this._ac_pos = { left: 0, top: 0 };
 
-        // The query the current suggestions were built for
-        this._emoji_query = '';
+        // The query the current items were built for (the chars after the trigger).
+        this._ac_query = '';
 
-        // The query the user dismissed with Escape; the menu stays closed for it until
-        // the query changes
+        // The dismissal key (see `_ac_dismiss_key`) the user dismissed with Escape;
+        // the menu stays closed for it until the query changes (so a later editor
+        // update can't re-open the same trigger).
         /** @type {string|null} */
-        this._emoji_dismissed_query = null;
+        this._ac_dismissed = null;
 
         // Set (for the current event dispatch only) when a blur closed an open menu,
         // so an Escape keydown arriving in the same dispatch can tell the menu was
@@ -132,69 +178,76 @@ export default class SocialComposeRich extends CustomElement {
     onChange() {
         const empty = this._handle?.isEmpty() ?? true;
         if (empty !== this._empty) this._empty = empty;
-        this.updateEmojiTypeahead();
+        this.updateTypeahead();
     }
 
     /**
-     * Recompute the inline emoji autocomplete after each edit: if the caret sits on
-     * a `:query` trigger, show the matching shortnames; otherwise close the menu.
+     * The key an Escape dismissal is remembered under: the source plus its query,
+     * NUL-joined (NUL can appear in neither), so dismissing e.g. `:sm` can never
+     * also suppress `@sm`.
      */
-    async updateEmojiTypeahead() {
-        const query = this._handle?.getEmojiQuery() ?? null;
-        if (!query) {
+    get _ac_dismiss_key() {
+        return `${this._ac_kind}\x00${this._ac_query}`;
+    }
+
+    /**
+     * Recompute the caret typeahead after each edit: if the caret sits on a
+     * source's trigger (a `:query` / `@query` token), show that source's matches;
+     * otherwise close the menu.
+     */
+    async updateTypeahead() {
+        let source = null;
+        let query = null;
+        for (const candidate of TYPEAHEAD_SOURCES) {
+            // N.B. sources normalize "no trigger" to null; an empty-string query is
+            // valid (a bare `@` lists the whole follow list).
+            query = candidate.getQuery(this);
+            if (query !== null) {
+                source = candidate;
+                break;
+            }
+        }
+        if (!source) {
             // The caret left every trigger, so forget any earlier Escape dismissal.
-            this._emoji_dismissed_query = null;
-            return this.closeEmojiTypeahead();
+            this._ac_dismissed = null;
+            return this.closeTypeahead();
         }
 
         // Honour an Escape dismissal: stay closed until the query actually changes.
-        if (query === this._emoji_dismissed_query) return this.closeEmojiTypeahead();
-        this._emoji_dismissed_query = null;
+        const dismissal = `${source.kind}\x00${query}`;
+        if (dismissal === this._ac_dismissed) return this.closeTypeahead();
+        this._ac_dismissed = null;
 
-        await api.emojis.initialize();
+        const items = await source.getItems(this, query);
 
-        // The caret may have moved, or the menu been dismissed, while emojis loaded.
-        if (this._handle?.getEmojiQuery() !== query || this._emoji_dismissed_query === query) return;
+        // The caret may have moved, or the menu been dismissed, while items loaded.
+        if (source.getQuery(this) !== query || this._ac_dismissed === dismissal) return;
 
         // Only open while the user is actually typing in the editor. Lexical keeps
         // its selection (and so the trigger query) across a blur, so without this a
         // pending update could re-open the menu after focus has moved elsewhere.
         const host = /** @type {HTMLElement} */ (this.querySelector('.social-rich__editable'));
         if (host && host !== document.activeElement && !host.contains(document.activeElement)) {
-            return this.closeEmojiTypeahead();
+            return this.closeTypeahead();
         }
 
-        const q = query.toLowerCase();
-        const ranked = [];
-        for (const emoji of /** @type {any[]} */ (converse.emojis.list)) {
-            const idx = emoji.sn.slice(1, -1).indexOf(q); // strip the wrapping colons
-            if (idx !== -1) ranked.push({ emoji, idx });
-        }
-        // Prefix matches (idx 0) before substring matches, then alphabetical.
-        ranked.sort((a, b) => a.idx - b.idx || (a.emoji.sn < b.emoji.sn ? -1 : 1));
+        if (!items.length) return this.closeTypeahead();
 
-        const suggestions = ranked.slice(0, MAX_EMOJI_SUGGESTIONS).map(({ emoji }) => ({
-            sn: emoji.sn,
-            url: emoji.url,
-            glyph: shortnamesToEmojis(emoji.sn, { unicode_only: true, add_title_wrapper: false }).join(''),
-        }));
-
-        if (!suggestions.length) return this.closeEmojiTypeahead();
-
-        this._emoji_query = query;
-        this._emoji_suggestions = suggestions;
-        this._emoji_index = 0;
-        this._emoji_pos = this.caretPosition();
+        this._ac_kind = source.kind;
+        this._ac_query = query;
+        this._ac_items = items;
+        this._ac_index = 0;
+        this._ac_pos = this.caretPosition();
     }
 
-    /** Close the emoji autocomplete menu. */
-    closeEmojiTypeahead() {
-        if (this._emoji_suggestions.length) this._emoji_suggestions = [];
+    /** Close the typeahead menu. */
+    closeTypeahead() {
+        if (this._ac_items.length) this._ac_items = [];
     }
 
-    /** The emoji menu's inline position, as a single CSS declaration string. */
-    get emojiMenuStyle() {
-        return `left: ${this._emoji_pos.left}px; top: ${this._emoji_pos.top}px`;
+    /** The typeahead menu's inline position, as a single CSS declaration string. */
+    get typeaheadStyle() {
+        return `left: ${this._ac_pos.left}px; top: ${this._ac_pos.top}px`;
     }
 
     /**
@@ -223,13 +276,13 @@ export default class SocialComposeRich extends CustomElement {
     }
 
     /**
-     * Keyboard navigation for the emoji menu. Intercepts arrows / Enter / Tab / Escape
-     * only while the menu is open, keeping them away from Lexical (which handles the
-     * same keys on the same element).
+     * Keyboard navigation for the typeahead menu. Intercepts arrows / Enter / Tab /
+     * Escape only while the menu is open, keeping them away from Lexical (which
+     * handles the same keys on the same element).
      * @param {KeyboardEvent} ev
      */
     onEditorKeyDown(ev) {
-        if (!this._emoji_suggestions.length) {
+        if (!this._ac_items.length) {
             if (ev.key === 'Escape' && this._menu_closed_by_blur) {
                 // This Escape's own blur (an extension blurring the editor before
                 // we ran) already closed the menu: finish the dismissal by
@@ -238,7 +291,7 @@ export default class SocialComposeRich extends CustomElement {
                 // menu involved) falls through instead, and blurs. That is the
                 // keyboard user's escape hatch out of the editor.
                 this._menu_closed_by_blur = false;
-                this._emoji_dismissed_query = this._emoji_query;
+                this._ac_dismissed = this._ac_dismiss_key;
                 ev.preventDefault();
                 ev.stopImmediatePropagation();
                 this._handle?.focus();
@@ -248,20 +301,20 @@ export default class SocialComposeRich extends CustomElement {
 
         switch (ev.key) {
             case 'ArrowDown':
-                this.moveEmojiSelection(1);
+                this.moveTypeaheadSelection(1);
                 break;
             case 'ArrowUp':
-                this.moveEmojiSelection(-1);
+                this.moveTypeaheadSelection(-1);
                 break;
             case 'Enter':
             case 'Tab':
-                this.chooseEmoji(this._emoji_index);
+                this.chooseSuggestion(this._ac_index);
                 break;
             case 'Escape':
                 // Remember the dismissal so a later editor update can't re-open it,
                 // and put focus back in the editor with the caret where it was.
-                this._emoji_dismissed_query = this._emoji_query;
-                this.closeEmojiTypeahead();
+                this._ac_dismissed = this._ac_dismiss_key;
+                this.closeTypeahead();
                 this._handle?.focus();
                 break;
             default:
@@ -277,7 +330,7 @@ export default class SocialComposeRich extends CustomElement {
      * @param {FocusEvent} [ev]
      */
     onEditorFocusOut(ev) {
-        const had_menu = this._emoji_suggestions.length > 0;
+        const had_menu = this._ac_items.length > 0;
         if (had_menu) {
             // Remember, only until the current event dispatch has run its course,
             // that a blur (not a pick or dismissal) closed the menu. If this blur
@@ -289,7 +342,7 @@ export default class SocialComposeRich extends CustomElement {
             setTimeout(() => (this._menu_closed_by_blur = false));
         }
 
-        this.closeEmojiTypeahead();
+        this.closeTypeahead();
 
         // Vimium (and kin) can swallow the Escape keydown entirely, so the page
         // never sees the key. This blur is the only signal. A keyboard-initiated
@@ -298,10 +351,10 @@ export default class SocialComposeRich extends CustomElement {
         // elsewhere), a focus move to a real element, or the window itself losing
         // focus must all genuinely take focus away instead.
         if (had_menu && !ev?.relatedTarget && !this._pointer_down) {
-            const query = this._emoji_query;
+            const dismissed = this._ac_dismiss_key;
             setTimeout(() => {
                 if (document.hasFocus() && document.activeElement === document.body) {
-                    this._emoji_dismissed_query = query;
+                    this._ac_dismissed = dismissed;
                     this._handle?.focus();
                 }
             });
@@ -312,9 +365,9 @@ export default class SocialComposeRich extends CustomElement {
      * Move the active suggestion, wrapping around the ends.
      * @param {number} delta
      */
-    moveEmojiSelection(delta) {
-        const n = this._emoji_suggestions.length;
-        if (n) this._emoji_index = (this._emoji_index + delta + n) % n;
+    moveTypeaheadSelection(delta) {
+        const n = this._ac_items.length;
+        if (n) this._ac_index = (this._ac_index + delta + n) % n;
     }
 
     /**
@@ -327,14 +380,15 @@ export default class SocialComposeRich extends CustomElement {
     }
 
     /**
-     * Insert the chosen suggestion's glyph in place of the `:query` trigger.
+     * Insert the chosen item in place of the trigger, via the active source.
      * @param {number} index
      */
-    chooseEmoji(index) {
-        const choice = this._emoji_suggestions[index];
-        if (!choice) return;
-        this._handle?.replaceEmojiTrigger(this._emoji_query, choice.glyph);
-        this.closeEmojiTypeahead();
+    chooseSuggestion(index) {
+        const item = this._ac_items[index];
+        const source = TYPEAHEAD_SOURCES.find((s) => s.kind === this._ac_kind);
+        if (!item || !source) return;
+        source.choose(this, this._ac_query, item);
+        this.closeTypeahead();
         this._handle?.focus();
     }
 

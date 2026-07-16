@@ -20,33 +20,32 @@ const fmtButton = (el, type, label, icon) =>
     </button>`;
 
 /**
- * The inline emoji-shortname autocomplete menu, anchored just below the caret. Each
- * row shows the glyph (or the custom emoji's image) and its shortname. `mousedown` is
- * prevented so picking with the mouse never blurs the editor / collapses the caret
- * before the replacement runs.
+ * The inline caret-typeahead menu (emoji shortnames, mentions), anchored just below
+ * the caret. Each row shows an optional glyph (or a custom emoji's image), the
+ * label, and optional muted detail text. `mousedown` is prevented so picking with
+ * the mouse never blurs the editor / collapses the caret before the replacement runs.
  * @param {import('../compose-rich.js').default} el
  */
-const emojiAutocomplete = (el) => html`<ul
-    class="social-rich__emoji-ac"
-    role="listbox"
-    style="${el.emojiMenuStyle}"
->
-    ${el._emoji_suggestions.map(
-        (s, i) => html`<li
+const caretTypeahead = (el) => html`<ul class="social-rich__ac" role="listbox" style="${el.typeaheadStyle}">
+    ${el._ac_items.map(
+        (item, i) => html`<li
             role="option"
-            aria-selected=${i === el._emoji_index ? 'true' : 'false'}
-            class="social-rich__emoji-ac-item ${i === el._emoji_index ? 'is-active' : ''}"
+            aria-selected=${i === el._ac_index ? 'true' : 'false'}
+            class="social-rich__ac-item ${i === el._ac_index ? 'is-active' : ''}"
             @mousedown=${(/** @type {MouseEvent} */ ev) => {
                 ev.preventDefault();
-                el.chooseEmoji(i);
+                el.chooseSuggestion(i);
             }}
         >
-            <span class="social-rich__emoji-ac-glyph">
-                ${s.url
-                    ? html`<img class="social-rich__emoji-ac-img" src="${s.url}" alt="${s.sn}" />`
-                    : s.glyph}
-            </span>
-            <span class="social-rich__emoji-ac-sn">${s.sn}</span>
+            ${item.url || item.glyph
+                ? html`<span class="social-rich__ac-glyph">
+                      ${item.url
+                          ? html`<img class="social-rich__ac-img" src="${item.url}" alt="${item.label}" />`
+                          : item.glyph}
+                  </span>`
+                : ''}
+            <span class="social-rich__ac-label">${item.label}</span>
+            ${item.detail ? html`<span class="social-rich__ac-detail">${item.detail}</span>` : ''}
         </li>`,
     )}
 </ul>`;
@@ -71,7 +70,7 @@ export default (el) => html`
                 @keydown=${(/** @type {KeyboardEvent} */ ev) => el.onEditorKeyDown(ev)}
             ></div>
             ${el._empty ? html`<span class="social-rich__placeholder">${__('What’s on your mind?')}</span>` : ''}
-            ${el._emoji_suggestions.length ? emojiAutocomplete(el) : ''}
+            ${el._ac_items.length ? caretTypeahead(el) : ''}
         </div>
 
         ${el._attachments.length || el._uploading

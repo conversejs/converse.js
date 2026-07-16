@@ -42,4 +42,13 @@ export type BrowsableFeed = {
  * import so the code-split editor module is never statically pulled into the core bundle.
  */
 export type EditorHandle = ReturnType<typeof import('./lexical-editor.js').createSocialEditor>;
+/**
+ * One row of the composer's caret-typeahead menu.
+ */
+export type TypeaheadItem = {
+    label: string;
+    detail?: string;
+    glyph?: string;
+    url?: string;
+};
 //# sourceMappingURL=types.d.ts.map

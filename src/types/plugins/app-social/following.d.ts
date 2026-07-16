@@ -30,7 +30,7 @@ export default class SocialFollowing extends SocialFollowing_base {
     jid: any;
     _loaded: boolean;
     _error: any;
-    following: import("@lit-labs/signals").Signal.State<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[]>;
+    following: import("signal-polyfill").Signal.State<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[]>;
     _entries: any[];
     /**
      * Whether this is our own follow list (live + editable) vs another account's.

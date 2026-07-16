@@ -55,8 +55,9 @@
                 user-select: none;
             }
 
-            // Inline emoji-shortname autocomplete, anchored just below the caret.
-            &__emoji-ac {
+            // The inline caret typeahead (emoji shortnames, mentions), anchored just
+            // below the caret.
+            &__ac {
                 position: absolute;
                 z-index: 10;
                 margin: 0.15em 0 0;
@@ -71,7 +72,7 @@
                 box-shadow: var(--raised-el-shadow);
             }
 
-            &__emoji-ac-item {
+            &__ac-item {
                 display: flex;
                 align-items: center;
                 gap: 0.6em;
@@ -86,20 +87,20 @@
                 }
             }
 
-            &__emoji-ac-glyph {
+            &__ac-glyph {
                 flex: 0 0 1.4em;
                 font-size: 1.2em;
                 line-height: 1;
                 text-align: center;
             }
 
-            &__emoji-ac-img {
+            &__ac-img {
                 width: 1.2em;
                 height: 1.2em;
                 vertical-align: middle;
             }
 
-            &__emoji-ac-sn {
+            &__ac-label {
                 font-size: 0.9em;
                 white-space: nowrap;
                 overflow: hidden;

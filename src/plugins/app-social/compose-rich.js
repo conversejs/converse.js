@@ -10,17 +10,18 @@
  * On submit the post is published as dual content:
  * Markdown (`<content type="text">`) plus rendered XHTML (`<content type="xhtml">`).
  */
-import { api, converse, log, uploadFile, PubSubFeed } from '@converse/headless';
+import { _converse, api, converse, log, uploadFile, PubSubFeed } from '@converse/headless';
 import DOMPurify from 'dompurify';
 import { CustomElement } from 'shared/components/element.js';
 import { shortnamesToEmojis } from 'shared/chat/utils.js';
 import { __ } from 'i18n';
 import tplComposeRich from './templates/compose-rich.js';
 import './emoji-dropdown.js';
+import { MICROBLOG_NODE } from './constants.js';
 
 import './styles/compose-rich.scss';
 
-const NS_XHTML = 'http://www.w3.org/1999/xhtml';
+const { Strophe } = converse.env;
 
 const MAX_SUGGESTIONS = 8; // Caps inline typeahead list
 
@@ -34,8 +35,10 @@ const MAX_SUGGESTIONS = 8; // Caps inline typeahead list
 const TYPEAHEAD_SOURCES = [
     {
         kind: 'emoji',
+
         /** @param {SocialComposeRich} el */
         getQuery: (el) => el._handle?.getEmojiQuery?.() ?? null,
+
         /**
          * All emoji whose shortname contains the query, prefix matches (then
          * alphabetical) first.
@@ -64,6 +67,70 @@ const TYPEAHEAD_SOURCES = [
          * @param {import('./types').TypeaheadItem} item
          */
         choose: (el, query, item) => el._handle?.replaceEmojiTrigger(query, item.glyph),
+    },
+    {
+        kind: 'mention',
+
+        /** @param {SocialComposeRich} el */
+        getQuery: (el) => el._handle?.getMentionQuery?.() ?? null,
+
+        /**
+         * The people whose name or JID contains the query, drawn from two pools:
+         * the XEP-0330 follow list, plus authors browsed this session without
+         * following them (their cached profile feeds). Microblog-node entries
+         * only, since community feeds aren't people.
+         * @param {SocialComposeRich} _el
+         * @param {string} query
+         * @returns {import('./types').TypeaheadItem[]}
+         */
+        getItems(_el, query) {
+            /** @type {Map<string, {jid: string, name: string, followed: boolean}>} */
+            const candidates = new Map();
+
+            for (const follow of _converse.state.following?.models ?? []) {
+                if (follow.get('node') !== MICROBLOG_NODE) continue;
+                const jid = follow.get('server');
+                const name = follow.get('title') || api.microblog.profile.get(jid).getDisplayName();
+                candidates.set(jid, { jid, name, followed: true });
+            }
+
+            for (const feed of api.microblog.feeds.browsed()) {
+                if (feed.get('node') !== MICROBLOG_NODE) continue;
+                const jid = feed.get('jid');
+                if (candidates.has(jid)) continue;
+                candidates.set(jid, { jid, name: api.microblog.profile.get(jid).getDisplayName(), followed: false });
+            }
+
+            const q = query.toLowerCase();
+            const ranked = [];
+            for (const { jid, name, followed } of candidates.values()) {
+                const name_idx = name.toLowerCase().indexOf(q);
+                const jid_idx = jid.toLowerCase().indexOf(q);
+                if (name_idx === -1 && jid_idx === -1) continue;
+                const rank = name_idx === 0 ? 0 : jid_idx === 0 ? 1 : 2;
+                ranked.push({ rank, followed, name, jid });
+            }
+            ranked.sort(
+                (a, b) => a.rank - b.rank || Number(b.followed) - Number(a.followed) || a.name.localeCompare(b.name),
+            );
+
+            return ranked.slice(0, MAX_SUGGESTIONS).map(({ name, jid }) => ({
+                label: name,
+                detail: jid,
+                jid,
+                name,
+            }));
+        },
+
+        /**
+         * Insert the mention as a link, `@Name` → `xmpp:jid`: Converse renders and
+         * routes `xmpp:` URIs to the profile view, other clients get a plain link,
+         * and a bridge (e.g. XMPP→Nostr) can rewrite it into its own mention format.
+         * @param {SocialComposeRich} el
+         * @param {string} query
+         * @param {import('./types').TypeaheadItem} item
+         */
+        choose: (el, query, item) => el._handle?.replaceMentionTrigger(query, `@${item.name}`, `xmpp:${item.jid}`),
     },
 ];
 
@@ -480,7 +547,7 @@ export default class SocialComposeRich extends CustomElement {
             FORBID_ATTR: ['class', 'style'],
         });
         const parsed = new DOMParser().parseFromString(clean, 'text/html');
-        const div = document.createElementNS(NS_XHTML, 'div');
+        const div = document.createElementNS(Strophe.NS.XHTML, 'div');
         while (parsed.body.firstChild) div.appendChild(parsed.body.firstChild);
         return new XMLSerializer().serializeToString(div);
     }

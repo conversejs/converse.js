@@ -3,11 +3,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { HashRouter } from '../rootview/routing.js';
 import { SOCIAL_ROUTE_ROOT, buildSocialRoute, parseSocialRoute } from './routing.js';
 import tplSocial from './templates/social.js';
-
-// The default microblog node (a person's feed). A profile opened on any other
-// node is a community/topic feed. Duplicated locally (not re-exported from
-// @converse/headless) as a fixed protocol namespace.
-const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
+import { MICROBLOG_NODE } from './constants.js';
 
 // A post queued by the desktop-notification click (see requestOpenPost). The
 // (re)mounting SocialApp consumes it in connectedCallback and opens that thread.

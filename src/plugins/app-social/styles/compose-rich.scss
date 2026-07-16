@@ -84,6 +84,10 @@
                 &:hover {
                     background-color: var(--highlight-color, var(--chat-head-color));
                     color: var(--inverse-link-color, #fff);
+
+                    .social-rich__ac-detail {
+                        color: inherit;
+                    }
                 }
             }
 
@@ -102,6 +106,15 @@
 
             &__ac-label {
                 font-size: 0.9em;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            &__ac-detail {
+                margin-inline-start: auto;
+                font-size: 0.8em;
+                color: var(--subdued-color);
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;

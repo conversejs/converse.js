@@ -139,6 +139,22 @@ export default class SocialComposeRich extends CustomElement {
     }
 
     /**
+     * Paste files (e.g. a screenshot) straight into the upload flow, exactly like a
+     * paperclip pick. A text/rich paste carries no files, so it falls through to
+     * Lexical unchanged.
+     * @param {ClipboardEvent} ev
+     */
+    onPaste(ev) {
+        const files = ev.clipboardData?.files;
+        if (!files?.length) return;
+        ev.preventDefault();
+        // Stop Lexical's own paste handler (registered on the same element) from also
+        // acting on the event.
+        ev.stopImmediatePropagation();
+        this.onAttach(files);
+    }
+
+    /**
      * Normalise Lexical's HTML export to a well-formed XHTML `<div>` fragment: run
      * it through DOMPurify (stripping the editor-only `class`/`style` hooks Lexical
      * stamps on for styling, so they never reach the wire), then re-serialize via

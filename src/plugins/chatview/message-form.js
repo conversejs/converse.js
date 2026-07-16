@@ -147,10 +147,12 @@ export default class MessageForm extends CustomElement {
             this.shiftDown = true;
         }
 
+        // N.B. ESCAPE must not be in this early-return list, otherwise the
+        // `onEscapePressed` branch below is unreachable dead code.
         if (
             ev.ctrlKey ||
             (ev.shiftKey && ev.key === keycodes.ENTER) ||
-            [keycodes.SHIFT, keycodes.META, keycodes.ESCAPE, keycodes.ALT].includes(ev.key)
+            [keycodes.SHIFT, keycodes.META, keycodes.ALT].includes(ev.key)
         ) {
             return;
         }

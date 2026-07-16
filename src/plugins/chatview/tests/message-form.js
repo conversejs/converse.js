@@ -66,6 +66,25 @@ describe('A message form', function () {
     );
 
     it(
+        'cancels an in-progress message correction when Escape is pressed',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            const message = await view.model.sendMessage({ body: 'hello world' });
+            message.save('correcting', true);
+
+            const textarea = view.querySelector('textarea.chat-textarea');
+            const escEvent = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+            textarea.dispatchEvent(escEvent);
+
+            expect(message.get('correcting')).toBe(false);
+            expect(escEvent.defaultPrevented).toBe(true);
+        }),
+    );
+
+    it(
         'allows native paste if no files',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);

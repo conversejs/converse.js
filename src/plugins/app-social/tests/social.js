@@ -4,6 +4,7 @@ import converse from '../../../../dist/converse.js';
 import {
     ATOM,
     MICROBLOG_NODE,
+    PUBSUB_EVENT,
     makePost,
     makeRepost,
     makeRichPost,
@@ -421,6 +422,63 @@ describe('The social feed', function () {
             articleFor('A stranger speaks').querySelector('a.social-post__avatar').click();
             await u.waitUntil(() => selected !== null);
             expect(selected).toBe(stranger);
+        }),
+    );
+
+    it(
+        'routes xmpp: links in a post body to the in-app profile view',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const bare_jid = _converse.bare_jid;
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
+
+            // A post whose XHTML body mentions Bob via an xmpp: link (the shape the
+            // rich composer's mention typeahead publishes), with an RFC 5122 query
+            // part to prove it gets stripped from the profile JID.
+            receive(
+                _converse,
+                stx`<message xmlns="jabber:client" from="${bare_jid}" to="${bare_jid}" type="headline">
+                    <event xmlns="${PUBSUB_EVENT}">
+                        <items node="${MICROBLOG_NODE}">
+                            <item id="mention-1" publisher="${bare_jid}">
+                                <entry xmlns="${ATOM}">
+                                    <title type="text">Hello [@Bob](xmpp:bob@shakespeare.lit)</title>
+                                    <content type="xhtml">
+                                        <div xmlns="http://www.w3.org/1999/xhtml"><p>Hello <a href="xmpp:bob@shakespeare.lit?message">@Bob</a> and <a href="https://example.org/">a plain link</a></p></div>
+                                    </content>
+                                    <id>tag:shakespeare.lit,2024:posts-mention-1</id>
+                                    <published>2024-01-03T09:00:00Z</published>
+                                    <updated>2024-01-03T09:00:00Z</updated>
+                                </entry>
+                            </item>
+                        </items>
+                    </event>
+                </message>`,
+            );
+
+            // Clicking the mention opens Bob's profile in-app (no OS protocol handler).
+            const anchor = await u.waitUntil(() => el.querySelector('.social-post__body a[href^="xmpp:"]'));
+            let detail = null;
+            el.addEventListener('profileselected', (ev) => (detail = ev.detail));
+            anchor.click();
+            await u.waitUntil(() => detail !== null);
+            expect(detail.jid).toBe('bob@shakespeare.lit');
+
+            // A regular https link is not intercepted. (A document-level guard
+            // records whether anything below prevented the default, then prevents
+            // it itself so the test page doesn't actually navigate away.)
+            detail = null;
+            const plain = el.querySelector('.social-post__body a[href^="https:"]');
+            let was_prevented = null;
+            const guard = (/** @type {MouseEvent} */ ev) => {
+                was_prevented = ev.defaultPrevented;
+                ev.preventDefault();
+            };
+            document.addEventListener('click', guard, { once: true });
+            plain.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+            expect(detail).toBe(null);
+            expect(was_prevented).toBe(false);
         }),
     );
 

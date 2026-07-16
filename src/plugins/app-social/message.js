@@ -94,11 +94,35 @@ export default class SocialMessage extends ObservableElement {
         ev?.preventDefault?.();
         const source = this.model.getSourceFeed();
         if (!source) return;
+
         this.dispatchEvent(
             new CustomEvent('profileselected', {
                 bubbles: true,
                 composed: true,
                 detail: { jid: source.jid, node: source.node },
+            }),
+        );
+    }
+
+    /**
+     * Route clicks on `xmpp:` links in the post body to the in-app profile view.
+     * We use these links for @ mentions.
+     * @param {MouseEvent} ev
+     */
+    onBodyClicked(ev) {
+        const anchor = /** @type {HTMLElement} */ (ev.target)?.closest?.('a[href^="xmpp:"]');
+        if (!anchor) return;
+
+        ev.preventDefault();
+        // An XMPP URI is `xmpp:jid`, optionally with a `?query` part (RFC 5122).
+        const jid = anchor.getAttribute('href').slice('xmpp:'.length).split('?')[0];
+        if (!jid) return;
+
+        this.dispatchEvent(
+            new CustomEvent('profileselected', {
+                bubbles: true,
+                composed: true,
+                detail: { jid: Strophe.getBareJidFromJid(jid) },
             }),
         );
     }
@@ -128,6 +152,7 @@ export default class SocialMessage extends ObservableElement {
     async onRetract() {
         const result = await api.confirm(__('Confirm'), __('Are you sure you want to delete this post?'));
         if (!result) return;
+
         const feed = this.model.collection?.feed;
         await feed?.retractPost(this.model.get('id'));
     }
@@ -162,6 +187,7 @@ export default class SocialMessage extends ObservableElement {
 
     async onToggleLike() {
         if (this._liking) return;
+
         this._liking = true;
         const was_liked = this.model.get('liked_by_me');
         try {

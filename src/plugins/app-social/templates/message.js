@@ -217,7 +217,7 @@ export default (el) => {
                               >${__('via %1$s on %2$s', source.title, source.jid)}</a
                           >`
                         : ''}
-                    <div class="social-post__body">
+                    <div class="social-post__body" @click=${(/** @type {MouseEvent} */ ev) => el.onBodyClicked(ev)}>
                         ${title || title_xhtml
                             ? html`<div
                                   class="social-post__title ${title_is_heading ? 'social-post__title--heading' : ''}"

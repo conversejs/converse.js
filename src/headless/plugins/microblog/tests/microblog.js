@@ -1077,6 +1077,42 @@ describe('The microblog plugin', function () {
     );
 
     it(
+        'publishes media attachments as `<link rel="enclosure">` and allows attachment-only posts',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const feed = await api.microblog.feeds.own();
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub, 'create').mockResolvedValue(undefined);
+
+            const enclosures = [
+                { href: 'https://upload.example.org/a/cat.png', type: 'image/png', title: 'cat.png' },
+                { href: 'https://upload.example.org/b/clip.mp4', type: 'video/mp4', title: 'clip.mp4' },
+            ];
+            // Attachment-only (empty body) is allowed.
+            await feed.publishPost('', { enclosures });
+
+            const item = publish.mock.calls[0][2].tree();
+            const links = sizzle('link[rel="enclosure"]', item);
+            expect(links.length).toBe(2);
+            expect(links[0].getAttribute('href')).toBe(enclosures[0].href);
+            expect(links[0].getAttribute('type')).toBe('image/png');
+            expect(links[0].getAttribute('title')).toBe('cat.png');
+            expect(links[1].getAttribute('type')).toBe('video/mp4');
+
+            // Round-tripped through parseAtomEntry on the optimistic add.
+            await u.waitUntil(() => feed.messages.length === 1);
+            expect(feed.messages.at(0).get('enclosures')?.length).toBe(2);
+
+            // With neither text nor attachments, nothing is published.
+            publish.mockClear();
+            await feed.publishPost('   ', {});
+            expect(publish).not.toHaveBeenCalled();
+        }),
+    );
+
+    it(
         'reposts a post to the own node, attributed to the original author, with via pointing at the original',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

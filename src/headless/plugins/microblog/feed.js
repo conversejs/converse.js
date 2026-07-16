@@ -373,17 +373,20 @@ class PubSubFeed extends Model {
      * @param {string} body - Plain text, or the markdown source when `xhtml` is set.
      * @param {object} [opts]
      * @param {string} [opts.xhtml] - A well-formed XHTML `<div>` fragment for a rich post.
+     * @param {import('./types').PubSubEnclosure[]} [opts.enclosures] - Media attachments
+     *      (e.g. XEP-0363-uploaded files), emitted as `<link rel="enclosure">`.
      * @returns {Promise<void>}
      */
-    async publishPost(body, { xhtml } = {}) {
+    async publishPost(body, { xhtml, enclosures } = {}) {
         const text = body?.trim();
-        if (!text) return;
+        // A post needs either text or at least one media attachment.
+        if (!text && !enclosures?.length) return;
 
         const id = getUniqueId();
         // Provision the post's open comments node so *others* can reply.
         this.ensureCommentsNode(id);
 
-        const item = this.createPostStanza({ body: text, xhtml, id });
+        const item = this.createPostStanza({ body: text, xhtml, enclosures, id });
         // Publish with the XEP-0472 Base-profile node config so our node stays a
         // well-formed social feed that contacts can subscribe to. Non-strict:
         // if the server can't honour the publish-options precondition we still
@@ -439,10 +442,17 @@ class PubSubFeed extends Model {
               )}`
             : stx`<title type="text">${attrs.body}</title>`;
 
+        // Media attachments (RFC 4287 / XEP-0277) as `<link rel="enclosure">`; the
+        // reader renders images/audio/video inline (see the social message template).
+        const enclosures = (attrs.enclosures || []).map(
+            (e) => stx`<link rel="enclosure" href="${e.href}" type="${e.type || ''}" title="${e.title || ''}"/>`,
+        );
+
         return stx`
             <item id="${id}">
                 <entry xmlns="${NS_ATOM}">
                     ${body}
+                    ${enclosures}
                     <link rel="replies" title="comments" href="${comments_href}"/>
                     <id>${tag_id}</id>
                     <published>${published}</published>

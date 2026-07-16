@@ -61,11 +61,21 @@ export type PubSubMessageAttrs = {
 };
 
 /**
+ * A media attachment on a post: an Atom `<link rel="enclosure">` (RFC 4287 / XEP-0277).
+ */
+export type PubSubEnclosure = {
+    href: string; // The media URL (e.g. a XEP-0363-uploaded file).
+    type?: string; // MIME type, used to classify image/audio/video on render.
+    title?: string; // Optional filename / caption.
+};
+
+/**
  * Attributes accepted by {@link PubSubFeed.createPostStanza} when composing a new post.
  */
 export type PubSubPublishAttrs = {
     body: string; // Plain text, or the Markdown source when `xhtml` is set (a rich post).
     xhtml?: string; // A well-formed XHTML `<div>` fragment; emits Movim-style dual content.
+    enclosures?: PubSubEnclosure[]; // Media attachments, emitted as `<link rel="enclosure">`.
     id?: string;
     atom_id?: string;
     published?: string;

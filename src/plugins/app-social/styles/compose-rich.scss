@@ -67,6 +67,26 @@
             flex: 1;
         }
 
+        // The emoji picker toggle lives in the toolbar; make its host a flex item so it
+        // lines up inline with the format buttons. The picker's internal grid + scroll
+        // come from the shared emoji stylesheet (which now scopes this element too); here
+        // we only size the floating menu so ~10 emoji columns fit, matching the category row.
+        converse-social-emoji-dropdown {
+            display: inline-flex;
+
+            .dropdown-menu {
+                padding: 0;
+                // A fixed ~10-column width (cells are 1.5 * --font-size-huge = 30px): wide
+                // enough to match the category row, narrow enough that a category spills past
+                // the 8em list cap and the scrollbar appears. Clamped on tiny viewports.
+                width: 20em;
+                max-width: calc(100vw - 2em);
+                // The picker paints its own --background-color, so it blends into the page;
+                // lift it off with the same shadow the other dropdowns use for contrast.
+                box-shadow: var(--raised-el-shadow);
+            }
+        }
+
         .social-rich__fmt {
             display: inline-flex;
             align-items: center;

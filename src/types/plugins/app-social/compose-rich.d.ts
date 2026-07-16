@@ -34,6 +34,11 @@ export default class SocialComposeRich extends CustomElement {
      */
     onFormat(type: import("lexical").TextFormatType): Promise<void>;
     /**
+     * Insert a picked emoji (already resolved to a unicode glyph / text) at the cursor.
+     * @param {string} text
+     */
+    onEmoji(text: string): Promise<void>;
+    /**
      * Normalise Lexical's HTML export to a well-formed XHTML `<div>` fragment: run
      * it through DOMPurify (stripping the editor-only `class`/`style` hooks Lexical
      * stamps on for styling, so they never reach the wire), then re-serialize via

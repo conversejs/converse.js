@@ -15,6 +15,7 @@ import DOMPurify from 'dompurify';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import tplComposeRich from './templates/compose-rich.js';
+import './emoji-dropdown.js';
 
 import './styles/compose-rich.scss';
 
@@ -82,6 +83,17 @@ export default class SocialComposeRich extends CustomElement {
     async onFormat(type) {
         await this.ensureEditor();
         this._handle?.format(type);
+    }
+
+    /**
+     * Insert a picked emoji (already resolved to a unicode glyph / text) at the cursor.
+     * @param {string} text
+     */
+    async onEmoji(text) {
+        if (!text) return;
+        await this.ensureEditor();
+        this._handle?.insertText(text);
+        this._handle?.focus();
     }
 
     /**

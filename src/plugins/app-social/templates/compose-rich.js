@@ -43,6 +43,11 @@ export default (el) => html`
             ${fmtButton(el, 'strikethrough', __('Strikethrough'), 'strikethrough')}
             ${fmtButton(el, 'code', __('Monospace'), 'code')}
 
+            <converse-social-emoji-dropdown
+                .model=${el.model}
+                @emojipicked=${(/** @type {CustomEvent} */ ev) => el.onEmoji(ev.detail.text)}
+            ></converse-social-emoji-dropdown>
+
             <span class="social-rich__spacer"></span>
 
             <button

@@ -10,9 +10,10 @@
  * On submit the post is published as dual content:
  * Markdown (`<content type="text">`) plus rendered XHTML (`<content type="xhtml">`).
  */
-import { api, log, uploadFile, PubSubFeed } from '@converse/headless';
+import { api, converse, log, uploadFile, PubSubFeed } from '@converse/headless';
 import DOMPurify from 'dompurify';
 import { CustomElement } from 'shared/components/element.js';
+import { shortnamesToEmojis } from 'shared/chat/utils.js';
 import { __ } from 'i18n';
 import tplComposeRich from './templates/compose-rich.js';
 import './emoji-dropdown.js';
@@ -20,6 +21,8 @@ import './emoji-dropdown.js';
 import './styles/compose-rich.scss';
 
 const NS_XHTML = 'http://www.w3.org/1999/xhtml';
+
+const MAX_EMOJI_SUGGESTIONS = 8; // Caps inline emoji-autocomplete list
 
 export default class SocialComposeRich extends CustomElement {
     static get properties() {
@@ -29,6 +32,9 @@ export default class SocialComposeRich extends CustomElement {
             _uploading: { type: Boolean, state: true },
             _empty: { type: Boolean, state: true },
             _attachments: { type: Array, state: true },
+            _emoji_suggestions: { type: Array, state: true },
+            _emoji_index: { type: Number, state: true },
+            _emoji_pos: { type: Object, state: true },
         };
     }
 
@@ -37,21 +43,65 @@ export default class SocialComposeRich extends CustomElement {
         this._publishing = false;
         this._uploading = false;
         this._empty = true;
+
         // Pending media attachments (XEP-0363-uploaded), published as enclosures.
         /** @type {Array<{ href: string, type?: string, title?: string }>} */
         this._attachments = [];
+
         // The Lexical editor handle, created lazily on first focus (see ensureEditor).
         /** @type {import('./types').EditorHandle|null} */
         this._handle = null;
+
         /** @type {Promise<import('./types').EditorHandle>|null} */
         this._init = null;
+
+        // Inline emoji-shortname autocomplete
+        /** @type {Array<{ sn: string, glyph: string, url?: string }>} */
+        this._emoji_suggestions = [];
+        this._emoji_index = 0;
+
+        /** @type {{ left: number, top: number }} */
+        this._emoji_pos = { left: 0, top: 0 };
+
+        // The query the current suggestions were built for
+        this._emoji_query = '';
+
+        // The query the user dismissed with Escape; the menu stays closed for it until
+        // the query changes
+        /** @type {string|null} */
+        this._emoji_dismissed_query = null;
+
+        // Set (for the current event dispatch only) when a blur closed an open menu,
+        // so an Escape keydown arriving in the same dispatch can tell the menu was
+        // open for it (see onEditorFocusOut / onEditorKeyDown).
+        this._menu_closed_by_blur = false;
+
+        // Whether a pointer recently went down anywhere in the document (see
+        // connectedCallback / onEditorFocusOut).
+        this._pointer_down = false;
     }
 
     render() {
         return tplComposeRich(this);
     }
 
+    connectedCallback() {
+        super.connectedCallback();
+
+        // Track (briefly) that a pointer went down anywhere, so a menu-closing blur
+        // can tell a mouse click apart from a keyboard-initiated blur (see
+        // onEditorFocusOut). Capture phase, so no handler can swallow it first.
+        this._onDocPointerDown = () => {
+            this._pointer_down = true;
+            clearTimeout(this._pointer_down_timer);
+            this._pointer_down_timer = setTimeout(() => (this._pointer_down = false), 400);
+        };
+        document.addEventListener('pointerdown', this._onDocPointerDown, { capture: true });
+    }
+
     disconnectedCallback() {
+        document.removeEventListener('pointerdown', this._onDocPointerDown, { capture: true });
+        clearTimeout(this._pointer_down_timer);
         this._handle?.destroy();
         this._handle = null;
         this._init = null;
@@ -66,6 +116,8 @@ export default class SocialComposeRich extends CustomElement {
      */
     ensureEditor() {
         if (this._init) return this._init;
+
+        api.emojis.initialize();
         const host = /** @type {HTMLElement} */ (this.querySelector('.social-rich__editable'));
         this._init = import('./lexical-editor.js').then((m) => {
             const handle = m.createSocialEditor(host, { onChange: () => this.onChange() });
@@ -80,6 +132,210 @@ export default class SocialComposeRich extends CustomElement {
     onChange() {
         const empty = this._handle?.isEmpty() ?? true;
         if (empty !== this._empty) this._empty = empty;
+        this.updateEmojiTypeahead();
+    }
+
+    /**
+     * Recompute the inline emoji autocomplete after each edit: if the caret sits on
+     * a `:query` trigger, show the matching shortnames; otherwise close the menu.
+     */
+    async updateEmojiTypeahead() {
+        const query = this._handle?.getEmojiQuery() ?? null;
+        if (!query) {
+            // The caret left every trigger, so forget any earlier Escape dismissal.
+            this._emoji_dismissed_query = null;
+            return this.closeEmojiTypeahead();
+        }
+
+        // Honour an Escape dismissal: stay closed until the query actually changes.
+        if (query === this._emoji_dismissed_query) return this.closeEmojiTypeahead();
+        this._emoji_dismissed_query = null;
+
+        await api.emojis.initialize();
+
+        // The caret may have moved, or the menu been dismissed, while emojis loaded.
+        if (this._handle?.getEmojiQuery() !== query || this._emoji_dismissed_query === query) return;
+
+        // Only open while the user is actually typing in the editor. Lexical keeps
+        // its selection (and so the trigger query) across a blur, so without this a
+        // pending update could re-open the menu after focus has moved elsewhere.
+        const host = /** @type {HTMLElement} */ (this.querySelector('.social-rich__editable'));
+        if (host && host !== document.activeElement && !host.contains(document.activeElement)) {
+            return this.closeEmojiTypeahead();
+        }
+
+        const q = query.toLowerCase();
+        const ranked = [];
+        for (const emoji of /** @type {any[]} */ (converse.emojis.list)) {
+            const idx = emoji.sn.slice(1, -1).indexOf(q); // strip the wrapping colons
+            if (idx !== -1) ranked.push({ emoji, idx });
+        }
+        // Prefix matches (idx 0) before substring matches, then alphabetical.
+        ranked.sort((a, b) => a.idx - b.idx || (a.emoji.sn < b.emoji.sn ? -1 : 1));
+
+        const suggestions = ranked.slice(0, MAX_EMOJI_SUGGESTIONS).map(({ emoji }) => ({
+            sn: emoji.sn,
+            url: emoji.url,
+            glyph: shortnamesToEmojis(emoji.sn, { unicode_only: true, add_title_wrapper: false }).join(''),
+        }));
+
+        if (!suggestions.length) return this.closeEmojiTypeahead();
+
+        this._emoji_query = query;
+        this._emoji_suggestions = suggestions;
+        this._emoji_index = 0;
+        this._emoji_pos = this.caretPosition();
+    }
+
+    /** Close the emoji autocomplete menu. */
+    closeEmojiTypeahead() {
+        if (this._emoji_suggestions.length) this._emoji_suggestions = [];
+    }
+
+    /** The emoji menu's inline position, as a single CSS declaration string. */
+    get emojiMenuStyle() {
+        return `left: ${this._emoji_pos.left}px; top: ${this._emoji_pos.top}px`;
+    }
+
+    /**
+     * The caret's position relative to the `.social-rich` container, so the menu can
+     * be anchored just below the current line. Falls back to the editable's box when
+     * a caret rect is unavailable.
+     * @returns {{ left: number, top: number }}
+     */
+    caretPosition() {
+        const container = this.querySelector('.social-rich');
+        if (!container) return { left: 0, top: 0 };
+
+        const base = container.getBoundingClientRect();
+        const sel = window.getSelection();
+
+        let rect = null;
+        if (sel && sel.rangeCount) {
+            const range = sel.getRangeAt(0).cloneRange();
+            range.collapse(true);
+            rect = range.getBoundingClientRect();
+        }
+        if (!rect || (!rect.width && !rect.height && !rect.left && !rect.top)) {
+            rect = this.querySelector('.social-rich__editable')?.getBoundingClientRect() ?? base;
+        }
+        return { left: rect.left - base.left, top: rect.bottom - base.top };
+    }
+
+    /**
+     * Keyboard navigation for the emoji menu. Intercepts arrows / Enter / Tab / Escape
+     * only while the menu is open, keeping them away from Lexical (which handles the
+     * same keys on the same element).
+     * @param {KeyboardEvent} ev
+     */
+    onEditorKeyDown(ev) {
+        if (!this._emoji_suggestions.length) {
+            if (ev.key === 'Escape' && this._menu_closed_by_blur) {
+                // This Escape's own blur (an extension blurring the editor before
+                // we ran) already closed the menu: finish the dismissal by
+                // reclaiming focus, and consume the event so the editor's own
+                // blur-on-Escape doesn't immediately re-blur. A bare Escape (no
+                // menu involved) falls through instead, and blurs. That is the
+                // keyboard user's escape hatch out of the editor.
+                this._menu_closed_by_blur = false;
+                this._emoji_dismissed_query = this._emoji_query;
+                ev.preventDefault();
+                ev.stopImmediatePropagation();
+                this._handle?.focus();
+            }
+            return;
+        }
+
+        switch (ev.key) {
+            case 'ArrowDown':
+                this.moveEmojiSelection(1);
+                break;
+            case 'ArrowUp':
+                this.moveEmojiSelection(-1);
+                break;
+            case 'Enter':
+            case 'Tab':
+                this.chooseEmoji(this._emoji_index);
+                break;
+            case 'Escape':
+                // Remember the dismissal so a later editor update can't re-open it,
+                // and put focus back in the editor with the caret where it was.
+                this._emoji_dismissed_query = this._emoji_query;
+                this.closeEmojiTypeahead();
+                this._handle?.focus();
+                break;
+            default:
+                return;
+        }
+        ev.preventDefault();
+        // Stop Lexical's own keydown handler (registered on the same element) too.
+        ev.stopImmediatePropagation();
+    }
+
+    /**
+     * Close the emoji menu whenever focus leaves the editor.
+     * @param {FocusEvent} [ev]
+     */
+    onEditorFocusOut(ev) {
+        const had_menu = this._emoji_suggestions.length > 0;
+        if (had_menu) {
+            // Remember, only until the current event dispatch has run its course,
+            // that a blur (not a pick or dismissal) closed the menu. If this blur
+            // was itself caused by an Escape press (a vim-style browser extension
+            // blurring the focused element at document level, before our keydown
+            // handler gets to run), the keydown handler must still treat that
+            // Escape as "dismiss the menu" and reclaim focus.
+            this._menu_closed_by_blur = true;
+            setTimeout(() => (this._menu_closed_by_blur = false));
+        }
+
+        this.closeEmojiTypeahead();
+
+        // Vimium (and kin) can swallow the Escape keydown entirely, so the page
+        // never sees the key. This blur is the only signal. A keyboard-initiated
+        // blur to nowhere while the menu was open can only be such a dismissal,
+        // so reclaim focus for the editor. A pointer-initiated blur (a click
+        // elsewhere), a focus move to a real element, or the window itself losing
+        // focus must all genuinely take focus away instead.
+        if (had_menu && !ev?.relatedTarget && !this._pointer_down) {
+            const query = this._emoji_query;
+            setTimeout(() => {
+                if (document.hasFocus() && document.activeElement === document.body) {
+                    this._emoji_dismissed_query = query;
+                    this._handle?.focus();
+                }
+            });
+        }
+    }
+
+    /**
+     * Move the active suggestion, wrapping around the ends.
+     * @param {number} delta
+     */
+    moveEmojiSelection(delta) {
+        const n = this._emoji_suggestions.length;
+        if (n) this._emoji_index = (this._emoji_index + delta + n) % n;
+    }
+
+    /**
+     * The emoji picker dropdown was closed (Escape, outside click, or a pick):
+     * hand focus back to the editor, with the caret where it was. Mirrors chat,
+     * where the message textarea is refocused when the picker closes.
+     */
+    onPickerClosed() {
+        this._handle?.focus();
+    }
+
+    /**
+     * Insert the chosen suggestion's glyph in place of the `:query` trigger.
+     * @param {number} index
+     */
+    chooseEmoji(index) {
+        const choice = this._emoji_suggestions[index];
+        if (!choice) return;
+        this._handle?.replaceEmojiTrigger(this._emoji_query, choice.glyph);
+        this.closeEmojiTypeahead();
+        this._handle?.focus();
     }
 
     /**

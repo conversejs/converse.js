@@ -45,3 +45,13 @@ export type BrowsableFeed = {
  * import so the code-split editor module is never statically pulled into the core bundle.
  */
 export type EditorHandle = ReturnType<typeof import('./lexical-editor.js').createSocialEditor>;
+
+/**
+ * One row of the composer's caret-typeahead menu.
+ */
+export type TypeaheadItem = {
+    label: string; // The row's primary text (a shortname or display name)
+    detail?: string; // Secondary muted text (e.g. a mentioned JID)
+    glyph?: string; // A unicode emoji glyph rendered before the label
+    url?: string; // A custom emoji's image, rendered instead of `glyph`
+};

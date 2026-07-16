@@ -19,15 +19,15 @@ export default class SocialComposeRich extends CustomElement {
             type: ArrayConstructor;
             state: boolean;
         };
-        _emoji_suggestions: {
+        _ac_items: {
             type: ArrayConstructor;
             state: boolean;
         };
-        _emoji_index: {
+        _ac_index: {
             type: NumberConstructor;
             state: boolean;
         };
-        _emoji_pos: {
+        _ac_pos: {
             type: ObjectConstructor;
             state: boolean;
         };
@@ -45,21 +45,18 @@ export default class SocialComposeRich extends CustomElement {
     _handle: import("./types").EditorHandle | null;
     /** @type {Promise<import('./types').EditorHandle>|null} */
     _init: Promise<import("./types").EditorHandle> | null;
-    /** @type {Array<{ sn: string, glyph: string, url?: string }>} */
-    _emoji_suggestions: Array<{
-        sn: string;
-        glyph: string;
-        url?: string;
-    }>;
-    _emoji_index: number;
+    /** @type {import('./types').TypeaheadItem[]} */
+    _ac_items: import("./types").TypeaheadItem[];
+    _ac_index: number;
+    _ac_kind: string;
     /** @type {{ left: number, top: number }} */
-    _emoji_pos: {
+    _ac_pos: {
         left: number;
         top: number;
     };
-    _emoji_query: string;
+    _ac_query: string;
     /** @type {string|null} */
-    _emoji_dismissed_query: string | null;
+    _ac_dismissed: string | null;
     _menu_closed_by_blur: boolean;
     _pointer_down: boolean;
     render(): import("lit-html").TemplateResult<1>;
@@ -75,14 +72,21 @@ export default class SocialComposeRich extends CustomElement {
     /** Reflect emptiness (placeholder + Post enabled) only when it actually flips. */
     onChange(): void;
     /**
-     * Recompute the inline emoji autocomplete after each edit: if the caret sits on
-     * a `:query` trigger, show the matching shortnames; otherwise close the menu.
+     * The key an Escape dismissal is remembered under: the source plus its query,
+     * NUL-joined (NUL can appear in neither), so dismissing e.g. `:sm` can never
+     * also suppress `@sm`.
      */
-    updateEmojiTypeahead(): Promise<void>;
-    /** Close the emoji autocomplete menu. */
-    closeEmojiTypeahead(): void;
-    /** The emoji menu's inline position, as a single CSS declaration string. */
-    get emojiMenuStyle(): string;
+    get _ac_dismiss_key(): string;
+    /**
+     * Recompute the caret typeahead after each edit: if the caret sits on a
+     * source's trigger (a `:query` / `@query` token), show that source's matches;
+     * otherwise close the menu.
+     */
+    updateTypeahead(): Promise<void>;
+    /** Close the typeahead menu. */
+    closeTypeahead(): void;
+    /** The typeahead menu's inline position, as a single CSS declaration string. */
+    get typeaheadStyle(): string;
     /**
      * The caret's position relative to the `.social-rich` container, so the menu can
      * be anchored just below the current line. Falls back to the editable's box when
@@ -94,9 +98,9 @@ export default class SocialComposeRich extends CustomElement {
         top: number;
     };
     /**
-     * Keyboard navigation for the emoji menu. Intercepts arrows / Enter / Tab / Escape
-     * only while the menu is open, keeping them away from Lexical (which handles the
-     * same keys on the same element).
+     * Keyboard navigation for the typeahead menu. Intercepts arrows / Enter / Tab /
+     * Escape only while the menu is open, keeping them away from Lexical (which
+     * handles the same keys on the same element).
      * @param {KeyboardEvent} ev
      */
     onEditorKeyDown(ev: KeyboardEvent): void;
@@ -109,7 +113,7 @@ export default class SocialComposeRich extends CustomElement {
      * Move the active suggestion, wrapping around the ends.
      * @param {number} delta
      */
-    moveEmojiSelection(delta: number): void;
+    moveTypeaheadSelection(delta: number): void;
     /**
      * The emoji picker dropdown was closed (Escape, outside click, or a pick):
      * hand focus back to the editor, with the caret where it was. Mirrors chat,
@@ -117,10 +121,10 @@ export default class SocialComposeRich extends CustomElement {
      */
     onPickerClosed(): void;
     /**
-     * Insert the chosen suggestion's glyph in place of the `:query` trigger.
+     * Insert the chosen item in place of the trigger, via the active source.
      * @param {number} index
      */
-    chooseEmoji(index: number): void;
+    chooseSuggestion(index: number): void;
     /**
      * @param {import('lexical').TextFormatType} type - the toolbar uses
      *      'bold' | 'italic' | 'strikethrough' | 'code'

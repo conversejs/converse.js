@@ -1,8 +1,5 @@
 export default Placeholder;
 declare class Placeholder extends ObservableElement {
-    /**
-     * @typedef {import('shared/components/types').ObservableProperty} ObservableProperty
-     */
     static get properties(): {
         model: {
             type: ObjectConstructor;

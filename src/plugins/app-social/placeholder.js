@@ -3,10 +3,6 @@ import { ObservableElement } from 'shared/components/observable.js';
 import tplPlaceholder from './templates/placeholder.js';
 
 class Placeholder extends ObservableElement {
-    /**
-     * @typedef {import('shared/components/types').ObservableProperty} ObservableProperty
-     */
-
     static get properties() {
         return {
             ...super.properties,
@@ -17,7 +13,7 @@ class Placeholder extends ObservableElement {
     constructor() {
         super();
         this.model = null;
-        this.observable = /** @type {ObservableProperty} */ ('once');
+        this.observable = /** @type {import('shared/components/types').ObservableProperty} */ ('once');
         this.intersectionRatio = 0.1;
     }
 

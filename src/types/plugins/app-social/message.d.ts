@@ -48,6 +48,12 @@ export default class SocialMessage extends ObservableElement {
      */
     showSourceFeed(ev?: MouseEvent): void;
     /**
+     * Route clicks on `xmpp:` links in the post body to the in-app profile view.
+     * We use these links for @ mentions.
+     * @param {MouseEvent} ev
+     */
+    onBodyClicked(ev: MouseEvent): void;
+    /**
      * Open an inline post image in the lightbox modal when clicked.
      * @param {MouseEvent} ev
      */

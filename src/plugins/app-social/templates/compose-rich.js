@@ -20,6 +20,38 @@ const fmtButton = (el, type, label, icon) =>
     </button>`;
 
 /**
+ * The inline emoji-shortname autocomplete menu, anchored just below the caret. Each
+ * row shows the glyph (or the custom emoji's image) and its shortname. `mousedown` is
+ * prevented so picking with the mouse never blurs the editor / collapses the caret
+ * before the replacement runs.
+ * @param {import('../compose-rich.js').default} el
+ */
+const emojiAutocomplete = (el) => html`<ul
+    class="social-rich__emoji-ac"
+    role="listbox"
+    style="${el.emojiMenuStyle}"
+>
+    ${el._emoji_suggestions.map(
+        (s, i) => html`<li
+            role="option"
+            aria-selected=${i === el._emoji_index ? 'true' : 'false'}
+            class="social-rich__emoji-ac-item ${i === el._emoji_index ? 'is-active' : ''}"
+            @mousedown=${(/** @type {MouseEvent} */ ev) => {
+                ev.preventDefault();
+                el.chooseEmoji(i);
+            }}
+        >
+            <span class="social-rich__emoji-ac-glyph">
+                ${s.url
+                    ? html`<img class="social-rich__emoji-ac-img" src="${s.url}" alt="${s.sn}" />`
+                    : s.glyph}
+            </span>
+            <span class="social-rich__emoji-ac-sn">${s.sn}</span>
+        </li>`,
+    )}
+</ul>`;
+
+/**
  * @param {import('../compose-rich.js').default} el
  */
 export default (el) => html`
@@ -34,9 +66,12 @@ export default (el) => html`
                 aria-multiline="true"
                 aria-label="${__('Write a post')}"
                 @focusin=${() => el.ensureEditor()}
+                @focusout=${(/** @type {FocusEvent} */ ev) => el.onEditorFocusOut(ev)}
                 @paste=${(/** @type {ClipboardEvent} */ ev) => el.onPaste(ev)}
+                @keydown=${(/** @type {KeyboardEvent} */ ev) => el.onEditorKeyDown(ev)}
             ></div>
             ${el._empty ? html`<span class="social-rich__placeholder">${__('What’s on your mind?')}</span>` : ''}
+            ${el._emoji_suggestions.length ? emojiAutocomplete(el) : ''}
         </div>
 
         ${el._attachments.length || el._uploading
@@ -78,6 +113,7 @@ export default (el) => html`
             <converse-social-emoji-dropdown
                 .model=${el.model}
                 @emojipicked=${(/** @type {CustomEvent} */ ev) => el.onEmoji(ev.detail.text)}
+                @emojipickerblur=${() => el.onPickerClosed()}
             ></converse-social-emoji-dropdown>
 
             <button

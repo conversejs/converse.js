@@ -24,7 +24,7 @@ export default class SocialFeed extends SocialFeed_base {
     filter: any;
     /** @type {import('@converse/headless').PubSubFeed} */
     model: import("@converse/headless").PubSubFeed;
-    posts: import("@lit-labs/signals").Signal.Computed<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[]>;
+    posts: import("signal-polyfill").Signal.Computed<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[]>;
     initialize(): Promise<void>;
     /**
      * The posts to show. Either the full aggregated timeline, or filtered by a

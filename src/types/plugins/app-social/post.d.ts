@@ -22,7 +22,7 @@ export default class SocialPost extends SocialPost_base {
     model: import("@converse/headless").PubSubMessage;
     /** @type {import('@converse/headless').PubSubFeed} */
     feed: import("@converse/headless").PubSubFeed;
-    comments: import("@lit-labs/signals").Signal.State<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[]>;
+    comments: import("signal-polyfill").Signal.State<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[]>;
     _submitting: boolean;
     initialize(): Promise<void>;
     /**

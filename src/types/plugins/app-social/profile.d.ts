@@ -40,7 +40,7 @@ export default class SocialProfile extends SocialProfile_base {
     profile: import("@converse/headless").MicroblogProfile;
     /** @type {import('@converse/headless').PubSubFeed} */
     feed: import("@converse/headless").PubSubFeed;
-    posts: import("@lit-labs/signals").Signal.State<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[]>;
+    posts: import("signal-polyfill").Signal.State<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[]>;
     _busy: boolean;
     _loaded: boolean;
     _banner_error: boolean;

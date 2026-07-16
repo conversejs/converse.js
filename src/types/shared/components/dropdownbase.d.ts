@@ -19,6 +19,7 @@ export default class DropdownBase extends CustomElement {
     show(): void;
     _popper: import("@popperjs/core").Instance;
     _onDocumentClick: (ev: MouseEvent) => void;
+    _onDocumentKeyDown: (ev: KeyboardEvent) => void;
     /** Hide the dropdown */
     hide(): void;
 }

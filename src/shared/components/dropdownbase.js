@@ -1,6 +1,9 @@
 import { createPopper } from '@popperjs/core';
 import log from '@converse/log';
+import { constants } from '@converse/headless';
 import { CustomElement } from './element.js';
+
+const { KEYCODES } = constants;
 
 export default class DropdownBase extends CustomElement {
     /**
@@ -32,6 +35,9 @@ export default class DropdownBase extends CustomElement {
         }
         if (this._onDocumentClick) {
             document.removeEventListener('click', this._onDocumentClick);
+        }
+        if (this._onDocumentKeyDown) {
+            document.removeEventListener('keydown', this._onDocumentKeyDown);
         }
         this._popper?.destroy();
         super.disconnectedCallback();
@@ -90,6 +96,12 @@ export default class DropdownBase extends CustomElement {
         };
         document.addEventListener('click', this._onDocumentClick);
 
+        // Escape must close the dropdown regardless of where focus sits.
+        this._onDocumentKeyDown = /** @param {KeyboardEvent} ev */ (ev) => {
+            if (ev.key === KEYCODES.ESCAPE) this.hide();
+        };
+        document.addEventListener('keydown', this._onDocumentKeyDown);
+
         this.dispatchEvent(new CustomEvent('converse:dropdown:show', { bubbles: true }));
     }
 
@@ -112,6 +124,11 @@ export default class DropdownBase extends CustomElement {
         if (this._onDocumentClick) {
             document.removeEventListener('click', this._onDocumentClick);
             this._onDocumentClick = null;
+        }
+
+        if (this._onDocumentKeyDown) {
+            document.removeEventListener('keydown', this._onDocumentKeyDown);
+            this._onDocumentKeyDown = null;
         }
 
         this.dispatchEvent(new CustomEvent('converse:dropdown:hide', { bubbles: true }));

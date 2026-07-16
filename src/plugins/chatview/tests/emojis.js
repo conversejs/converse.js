@@ -108,6 +108,34 @@ describe('Emojis', function () {
         );
 
         it(
+            'is closed by Escape even when focus is not inside it',
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+                const contact_jid = mock.cur_names[2].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                await mock.waitForRoster(_converse, 'current');
+                await mock.openControlBox(_converse);
+                await mock.openChatBoxFor(_converse, contact_jid);
+                const view = _converse.chatboxviews.get(contact_jid);
+                const toolbar = await u.waitUntil(() => view.querySelector('converse-chat-toolbar'));
+                toolbar.querySelector('.toggle-emojis').click();
+                await u.waitUntil(() => u.isVisible(view.querySelector('.emoji-picker__lists')), 1000);
+
+                // Focus sits in the message textarea (as it does when the picker was
+                // opened via the ":shortname" tab-autocomplete), NOT inside the
+                // dropdown, so only a document-level handler can see this keydown.
+                const textarea = view.querySelector('textarea.chat-textarea');
+                textarea.focus();
+                textarea.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+
+                const dropdown = view.querySelector('converse-emoji-dropdown');
+                await u.waitUntil(
+                    () => !dropdown.querySelector('.dropdown-menu').classList.contains('show'),
+                    1000,
+                );
+                expect(dropdown.querySelector('.dropdown-menu').classList.contains('show')).toBe(false);
+            }),
+        );
+
+        it(
             'renders the popular category with recently used emojis',
             mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);

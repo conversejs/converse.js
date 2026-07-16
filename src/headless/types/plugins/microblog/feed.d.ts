@@ -128,10 +128,13 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
      * @param {string} body - Plain text, or the markdown source when `xhtml` is set.
      * @param {object} [opts]
      * @param {string} [opts.xhtml] - A well-formed XHTML `<div>` fragment for a rich post.
+     * @param {import('./types').PubSubEnclosure[]} [opts.enclosures] - Media attachments
+     *      (e.g. XEP-0363-uploaded files), emitted as `<link rel="enclosure">`.
      * @returns {Promise<void>}
      */
-    publishPost(body: string, { xhtml }?: {
+    publishPost(body: string, { xhtml, enclosures }?: {
         xhtml?: string;
+        enclosures?: import("./types").PubSubEnclosure[];
     }): Promise<void>;
     /**
      * Create this post's open comments node so others can add comments.

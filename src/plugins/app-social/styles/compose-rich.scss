@@ -106,5 +106,70 @@
                 background-color: var(--highlight-color-hover);
             }
         }
+
+        // Pending XEP-0363 attachments: a wrapping row of thumbnails / filename pills,
+        // each with a corner remove button, plus an "Uploading…" hint while in flight.
+        .social-rich__attachments {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5em;
+            margin-top: 0.5em;
+        }
+
+        .social-rich__attachment {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            max-width: 12em;
+        }
+
+        .social-rich__attachment-thumb {
+            display: block;
+            max-height: 4em;
+            max-width: 100%;
+            border-radius: 0.35em;
+        }
+
+        .social-rich__attachment-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+            max-width: 100%;
+            padding: 0.35em 0.5em;
+            border-radius: 0.35em;
+            background-color: var(--highlight-color-hover);
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-size: var(--font-size-small);
+            color: var(--text-color);
+        }
+
+        .social-rich__attachment-remove {
+            position: absolute;
+            top: -0.5em;
+            right: -0.5em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.4em;
+            height: 1.4em;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--background-color);
+            background-color: var(--secondary-color);
+            opacity: 0.85;
+            &:hover {
+                opacity: 1;
+            }
+        }
+
+        .social-rich__uploading {
+            font-size: var(--font-size-small);
+            color: var(--subdued-color);
+        }
     }
 }

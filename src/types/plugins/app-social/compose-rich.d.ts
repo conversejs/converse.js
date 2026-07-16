@@ -7,13 +7,28 @@ export default class SocialComposeRich extends CustomElement {
             type: BooleanConstructor;
             state: boolean;
         };
+        _uploading: {
+            type: BooleanConstructor;
+            state: boolean;
+        };
         _empty: {
             type: BooleanConstructor;
             state: boolean;
         };
+        _attachments: {
+            type: ArrayConstructor;
+            state: boolean;
+        };
     };
     _publishing: boolean;
+    _uploading: boolean;
     _empty: boolean;
+    /** @type {Array<{ href: string, type?: string, title?: string }>} */
+    _attachments: Array<{
+        href: string;
+        type?: string;
+        title?: string;
+    }>;
     /** @type {import('./types').EditorHandle|null} */
     _handle: import("./types").EditorHandle | null;
     /** @type {Promise<import('./types').EditorHandle>|null} */
@@ -38,6 +53,17 @@ export default class SocialComposeRich extends CustomElement {
      * @param {string} text
      */
     onEmoji(text: string): Promise<void>;
+    /**
+     * Upload the chosen file(s) via XEP-0363 and add each as a pending attachment,
+     * published later as a media enclosure. Failures are toasted per file.
+     * @param {FileList|File[]} files
+     */
+    onAttach(files: FileList | File[]): Promise<void>;
+    /**
+     * Drop a pending attachment before publishing.
+     * @param {number} index
+     */
+    removeAttachment(index: number): void;
     /**
      * Normalise Lexical's HTML export to a well-formed XHTML `<div>` fragment: run
      * it through DOMPurify (stripping the editor-only `class`/`style` hooks Lexical

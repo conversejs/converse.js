@@ -10,7 +10,7 @@
  * On submit the post is published as dual content:
  * Markdown (`<content type="text">`) plus rendered XHTML (`<content type="xhtml">`).
  */
-import { api, log, PubSubFeed } from '@converse/headless';
+import { api, log, uploadFile, PubSubFeed } from '@converse/headless';
 import DOMPurify from 'dompurify';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
@@ -26,14 +26,20 @@ export default class SocialComposeRich extends CustomElement {
         return {
             model: { type: PubSubFeed },
             _publishing: { type: Boolean, state: true },
+            _uploading: { type: Boolean, state: true },
             _empty: { type: Boolean, state: true },
+            _attachments: { type: Array, state: true },
         };
     }
 
     constructor() {
         super();
         this._publishing = false;
+        this._uploading = false;
         this._empty = true;
+        // Pending media attachments (XEP-0363-uploaded), published as enclosures.
+        /** @type {Array<{ href: string, type?: string, title?: string }>} */
+        this._attachments = [];
         // The Lexical editor handle, created lazily on first focus (see ensureEditor).
         /** @type {import('./types').EditorHandle|null} */
         this._handle = null;
@@ -97,6 +103,42 @@ export default class SocialComposeRich extends CustomElement {
     }
 
     /**
+     * Upload the chosen file(s) via XEP-0363 and add each as a pending attachment,
+     * published later as a media enclosure. Failures are toasted per file.
+     * @param {FileList|File[]} files
+     */
+    async onAttach(files) {
+        const list = Array.from(files || []);
+        if (!list.length) return;
+
+        this._uploading = true;
+        try {
+            for (const file of list) {
+                try {
+                    const { url, type, name } = await uploadFile(file);
+                    this._attachments = [...this._attachments, { href: url, type, title: name }];
+                } catch (e) {
+                    log.error(e);
+                    api.toast?.show?.('social-upload-failed', {
+                        type: 'danger',
+                        body: __('Sorry, could not upload “%1$s”', file.name),
+                    });
+                }
+            }
+        } finally {
+            this._uploading = false;
+        }
+    }
+
+    /**
+     * Drop a pending attachment before publishing.
+     * @param {number} index
+     */
+    removeAttachment(index) {
+        this._attachments = this._attachments.filter((_, i) => i !== index);
+    }
+
+    /**
      * Normalise Lexical's HTML export to a well-formed XHTML `<div>` fragment: run
      * it through DOMPurify (stripping the editor-only `class`/`style` hooks Lexical
      * stamps on for styling, so they never reach the wire), then re-serialize via
@@ -122,14 +164,18 @@ export default class SocialComposeRich extends CustomElement {
      */
     async onSubmit(ev) {
         ev?.preventDefault?.();
-        if (this._publishing || !this._handle || this._handle.isEmpty()) return;
+        const has_text = !!this._handle && !this._handle.isEmpty();
+        // Postable with text, an attachment, or both; never while an upload is in flight.
+        if (this._publishing || this._uploading || (!has_text && !this._attachments.length)) return;
 
         this._publishing = true;
         try {
-            const markdown = this._handle.getMarkdown();
-            const xhtml = this.htmlToXhtml(this._handle.getHtml());
-            await this.model.publishPost(markdown, { xhtml });
-            this._handle.clear();
+            const markdown = has_text ? this._handle.getMarkdown() : '';
+            const xhtml = has_text ? this.htmlToXhtml(this._handle.getHtml()) : undefined;
+            const enclosures = this._attachments.length ? this._attachments : undefined;
+            await this.model.publishPost(markdown, { xhtml, enclosures });
+            this._handle?.clear();
+            this._attachments = [];
             this._empty = true;
         } catch (e) {
             log.error(e);

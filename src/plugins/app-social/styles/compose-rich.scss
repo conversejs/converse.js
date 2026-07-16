@@ -54,6 +54,57 @@
                 pointer-events: none;
                 user-select: none;
             }
+
+            // Inline emoji-shortname autocomplete, anchored just below the caret.
+            &__emoji-ac {
+                position: absolute;
+                z-index: 10;
+                margin: 0.15em 0 0;
+                padding: 0.25em 0;
+                min-width: 14em;
+                max-height: 14em;
+                overflow-y: auto;
+                list-style: none;
+                background-color: var(--background-color);
+                border: 1px solid var(--foreground-color);
+                border-radius: 0.25em;
+                box-shadow: var(--raised-el-shadow);
+            }
+
+            &__emoji-ac-item {
+                display: flex;
+                align-items: center;
+                gap: 0.6em;
+                padding: 0.3em 0.75em;
+                cursor: pointer;
+                color: var(--foreground-color);
+
+                &.is-active,
+                &:hover {
+                    background-color: var(--highlight-color, var(--chat-head-color));
+                    color: var(--inverse-link-color, #fff);
+                }
+            }
+
+            &__emoji-ac-glyph {
+                flex: 0 0 1.4em;
+                font-size: 1.2em;
+                line-height: 1;
+                text-align: center;
+            }
+
+            &__emoji-ac-img {
+                width: 1.2em;
+                height: 1.2em;
+                vertical-align: middle;
+            }
+
+            &__emoji-ac-sn {
+                font-size: 0.9em;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
 
         .social-rich__toolbar {

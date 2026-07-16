@@ -41,11 +41,20 @@ export type PubSubMessageAttrs = {
     my_like_id?: string;
 };
 /**
+ * A media attachment on a post: an Atom `<link rel="enclosure">` (RFC 4287 / XEP-0277).
+ */
+export type PubSubEnclosure = {
+    href: string;
+    type?: string;
+    title?: string;
+};
+/**
  * Attributes accepted by {@link PubSubFeed.createPostStanza} when composing a new post.
  */
 export type PubSubPublishAttrs = {
     body: string;
     xhtml?: string;
+    enclosures?: PubSubEnclosure[];
     id?: string;
     atom_id?: string;
     published?: string;

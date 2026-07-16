@@ -93,6 +93,9 @@ converse.plugins.add('converse-microblog', {
             // Drop cached author profiles (and their vCard listeners).
             MicroblogProfile.clearProfiles();
 
+            // Drop the session's detached browse feeds (unfollowed authors' feeds).
+            PubSubFeed.clearBrowseFeeds();
+
             const { state } = _converse;
             if (state.pubsubfeeds) {
                 state.pubsubfeeds.clearStore?.({ silent: true });

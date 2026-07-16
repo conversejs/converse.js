@@ -17,6 +17,13 @@ declare namespace _default {
              * @returns {Promise<import('./feed').default>}
              */
             function own(): Promise<import("./feed").default>;
+            /**
+             * The detached browse feeds cached this session. Feeds the user
+             * looked at (e.g. via an author's profile) without following them.
+             * @method _converse.api.microblog.feeds.browsed
+             * @returns {import('./feed').default[]}
+             */
+            function browsed(): import("./feed").default[];
         }
         namespace profile {
             /**
@@ -35,8 +42,9 @@ declare namespace _default {
              * When we follow the author (or it's our own), this is the *shared* feed
              * from {@link _converse.state.pubsubfeeds}. When we don't follow them,
              * it's a **detached**, browse-only feed that is deliberately *not* added
-             * to that collection (it stays in-memory only). Either way the caller
-             * should {@link PubSubFeed.fetchPosts} to backfill it.
+             * to that collection (it stays in-memory only), but cached for the
+             * session (see {@link PubSubFeed.getBrowseFeed}) so re-visits are warm.
+             * Either way the caller should {@link PubSubFeed.fetchPosts} to backfill it.
              * @method _converse.api.microblog.profile.feed
              * @param {string} jid - The author's (bare) JID.
              * @param {string} [node=MICROBLOG_NODE]

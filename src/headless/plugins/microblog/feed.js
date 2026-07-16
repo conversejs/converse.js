@@ -25,6 +25,13 @@ import { buildTagId } from './utils.js';
 
 const { stx, Stanza } = converse.env;
 
+// One detached browse feed per JID + node, reused across profile-view opens (the
+// same pattern MicroblogProfile uses): re-visiting an unfollowed author gets the
+// already-fetched feed instead of a blank refetch, and the set of browsed-but-not-
+// followed feeds becomes enumerable (see {@link PubSubFeed.browseFeeds}). Session-
+// scoped: cleared on logout via {@link PubSubFeed.clearBrowseFeeds}.
+const browse_feeds = new Map();
+
 /**
  * One PubSub feed: a single node at a single JID (your own
  * `urn:xmpp:microblog:0`, a contact's microblog, or a community node).
@@ -69,6 +76,55 @@ class PubSubFeed extends Model {
     getMessagesCacheKey() {
         const bare_jid = _converse.session.get('bare_jid');
         return `converse.pubsub-messages-${this.get('jid')}-${this.get('node')}-${bare_jid}`;
+    }
+
+    /**
+     * Get (creating + caching if necessary) the detached, in-memory browse feed
+     * for a JID + node the user does *not* follow. Deliberately kept out of
+     * `_converse.state.pubsubfeeds` (that collection is persisted and aggregated
+     * wholesale into the timeline), but cached here so re-opening a profile is
+     * warm and browsed feeds are enumerable for e.g. mention completion.
+     * @param {string} jid
+     * @param {string} node
+     * @returns {PubSubFeed}
+     */
+    static getBrowseFeed(jid, node) {
+        const id = `${jid}/${node}`;
+        let feed = browse_feeds.get(id);
+        if (!feed) {
+            feed = new PubSubFeed({ jid, node, in_memory: true });
+            browse_feeds.set(id, feed);
+        }
+        return feed;
+    }
+
+    /**
+     * Drop a cached browse feed, e.g. when a follow supersedes it with the
+     * shared feed from `_converse.state.pubsubfeeds`.
+     * @param {string} jid
+     * @param {string} node
+     */
+    static dropBrowseFeed(jid, node) {
+        browse_feeds.delete(`${jid}/${node}`);
+    }
+
+    /**
+     * The feeds browsed this session without following them.
+     * @returns {PubSubFeed[]}
+     */
+    static browseFeeds() {
+        return [...browse_feeds.values()];
+    }
+
+    /**
+     * Drop every cached browse feed and its listeners (on logout / session clear).
+     */
+    static clearBrowseFeeds() {
+        browse_feeds.forEach((feed) => {
+            feed.messages?.stopListening();
+            feed.stopListening();
+        });
+        browse_feeds.clear();
     }
 
     /**

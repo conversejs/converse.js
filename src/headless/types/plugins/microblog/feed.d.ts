@@ -5,6 +5,33 @@ export default PubSubFeed;
  * @extends {Model}
  */
 declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttributes> {
+    /**
+     * Get (creating + caching if necessary) the detached, in-memory browse feed
+     * for a JID + node the user does *not* follow. Deliberately kept out of
+     * `_converse.state.pubsubfeeds` (that collection is persisted and aggregated
+     * wholesale into the timeline), but cached here so re-opening a profile is
+     * warm and browsed feeds are enumerable for e.g. mention completion.
+     * @param {string} jid
+     * @param {string} node
+     * @returns {PubSubFeed}
+     */
+    static getBrowseFeed(jid: string, node: string): PubSubFeed;
+    /**
+     * Drop a cached browse feed, e.g. when a follow supersedes it with the
+     * shared feed from `_converse.state.pubsubfeeds`.
+     * @param {string} jid
+     * @param {string} node
+     */
+    static dropBrowseFeed(jid: string, node: string): void;
+    /**
+     * The feeds browsed this session without following them.
+     * @returns {PubSubFeed[]}
+     */
+    static browseFeeds(): PubSubFeed[];
+    /**
+     * Drop every cached browse feed and its listeners (on logout / session clear).
+     */
+    static clearBrowseFeeds(): void;
     constructor(attributes?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
     defaults(): {
         node: string;

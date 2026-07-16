@@ -125,6 +125,16 @@ export default {
             async own() {
                 return await api.microblog.feeds.get();
             },
+
+            /**
+             * The detached browse feeds cached this session. Feeds the user
+             * looked at (e.g. via an author's profile) without following them.
+             * @method _converse.api.microblog.feeds.browsed
+             * @returns {import('./feed').default[]}
+             */
+            browsed() {
+                return PubSubFeed.browseFeeds();
+            },
         },
 
         profile: {
@@ -147,8 +157,9 @@ export default {
              * When we follow the author (or it's our own), this is the *shared* feed
              * from {@link _converse.state.pubsubfeeds}. When we don't follow them,
              * it's a **detached**, browse-only feed that is deliberately *not* added
-             * to that collection (it stays in-memory only). Either way the caller
-             * should {@link PubSubFeed.fetchPosts} to backfill it.
+             * to that collection (it stays in-memory only), but cached for the
+             * session (see {@link PubSubFeed.getBrowseFeed}) so re-visits are warm.
+             * Either way the caller should {@link PubSubFeed.fetchPosts} to backfill it.
              * @method _converse.api.microblog.profile.feed
              * @param {string} jid - The author's (bare) JID.
              * @param {string} [node=MICROBLOG_NODE]
@@ -158,7 +169,12 @@ export default {
                 await api.waitUntil('pubsubFeedsInitialized');
                 const bare_jid = _converse.session.get('bare_jid');
                 const shared = _converse.state.pubsubfeeds?.getFeed(jid || bare_jid, node, false);
-                return shared || new PubSubFeed({ jid, node, in_memory: true });
+                if (shared) {
+                    // A follow may have superseded a cached browse feed; drop the stale copy.
+                    PubSubFeed.dropBrowseFeed(jid || bare_jid, node);
+                    return shared;
+                }
+                return PubSubFeed.getBrowseFeed(jid || bare_jid, node);
             },
         },
 
@@ -303,6 +319,7 @@ export default {
                 log.debug(`api.microblog.follow: explicit subscribe to ${jid} failed (non-fatal): ${e}`);
             }
             const feed = await api.microblog.feeds.get(jid, node, true);
+            PubSubFeed.dropBrowseFeed(jid, node);
             feed?.fetchPosts();
             return feed;
         },

@@ -2497,6 +2497,31 @@ describe('The microblog plugin', function () {
     );
 
     it(
+        'caches browse-only feeds for the session and evicts them on follow',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            stubPubsubNetwork(api);
+
+            // Re-opening the profile reuses the same feed (a warm re-visit
+            // instead of a blank refetch), and the browsed-but-not-followed set
+            // is enumerable, e.g. for mention completion.
+            const jid = 'stranger@shakespeare.lit';
+            const feed = await api.microblog.profile.getFeed(jid);
+            expect(await api.microblog.profile.getFeed(jid)).toBe(feed);
+            expect(api.microblog.feeds.browsed()).toEqual([feed]);
+
+            // Following swaps in the shared timeline feed and drops the now
+            // superseded browse copy.
+            const shared = await api.microblog.follow(jid);
+            expect(api.microblog.feeds.browsed()).toEqual([]);
+            expect(await api.microblog.profile.getFeed(jid)).toBe(shared);
+        }),
+    );
+
+    it(
         'records a fetch access-error on the feed and clears it on success',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

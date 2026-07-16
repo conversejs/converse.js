@@ -10,12 +10,9 @@ import 'shared/components/logo.js';
 import 'shared/components/dropdown.js';
 import './following.js';
 import tplProfile from './templates/profile.js';
+import { MICROBLOG_NODE } from './constants.js';
 
 const { Strophe } = converse.env;
-
-// The default microblog node (a person's feed). A profile opened on any other
-// node is a followed community/topic feed.
-const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
 
 /**
  * An author's profile view, or a followed community feed (when {@link node} is

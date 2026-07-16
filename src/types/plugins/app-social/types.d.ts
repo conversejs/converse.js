@@ -7,6 +7,8 @@ export type LexicalEditor = {
     format: (type: import('lexical').TextFormatType) => boolean;
     getEmojiQuery: () => string | null;
     replaceEmojiTrigger: (query: string, replacement: string) => void;
+    getMentionQuery: () => string | null;
+    replaceMentionTrigger: (query: string, text: string, url: string) => void;
     clear: () => void;
     focus: () => void;
     destroy: () => void;
@@ -43,12 +45,16 @@ export type BrowsableFeed = {
  */
 export type EditorHandle = ReturnType<typeof import('./lexical-editor.js').createSocialEditor>;
 /**
- * One row of the composer's caret-typeahead menu.
+ * One row of the composer's caret-typeahead menu. `label`/`detail`/`glyph`/`url`
+ * drive the shared row template; the remaining fields are set by the source that
+ * built the item, for its own `choose` action.
  */
 export type TypeaheadItem = {
     label: string;
     detail?: string;
     glyph?: string;
     url?: string;
+    jid?: string;
+    name?: string;
 };
 //# sourceMappingURL=types.d.ts.map

@@ -13,11 +13,19 @@
  *   createSocialEditor(rootEl) → { getMarkdown, getHtml, isEmpty, insertText,
  *                                  format, clear, focus, destroy }
  */
-import { $getRoot, $getSelection, $isRangeSelection, $isTextNode, createEditor, FORMAT_TEXT_COMMAND } from 'lexical';
+import {
+    $createTextNode,
+    $getRoot,
+    $getSelection,
+    $isRangeSelection,
+    $isTextNode,
+    createEditor,
+    FORMAT_TEXT_COMMAND,
+} from 'lexical';
 import { HeadingNode, QuoteNode, registerRichText } from '@lexical/rich-text';
 import { createEmptyHistoryState, registerHistory } from '@lexical/history';
 import { $generateHtmlFromNodes } from '@lexical/html';
-import { LinkNode } from '@lexical/link';
+import { $createLinkNode, LinkNode } from '@lexical/link';
 import { mergeRegister } from '@lexical/utils';
 import {
     $convertToMarkdownString,
@@ -38,8 +46,10 @@ import {
 // A curated transformer set: the inline styles and blocks a social post needs,
 // serialized as standard (GitHub-flavoured-compatible) Markdown so Movim reads
 // the `<content type="text">` we publish. Lists and fenced code blocks are left
-// out for now (they need extra nodes/packages); mentions and images
-// will be TEXT_MATCH transformers later.
+// out for now (they need extra nodes/packages); images will be a
+// TEXT_MATCH transformer later. Mentions are plain LinkNodes (`[@Name](xmpp:jid)`
+// via LINK), so an XMPP client renders them as profile links and the renostr
+// bridge can translate them to NIP-27 `nostr:` mentions.
 const TRANSFORMERS = [
     HEADING,
     QUOTE,
@@ -59,6 +69,28 @@ const TRANSFORMERS = [
 // shortname character. Capture group 1 is the typed query (the chars after the
 // colon). A closing `:` ends the token, so a completed `:smile:` no longer matches.
 const EMOJI_TRIGGER = /(?:^|\s):([-+\w]+)$/;
+
+// A mention autocomplete trigger: an `@` that starts a token, followed by zero or
+// more name/JID characters (so a bare `@` lists the whole follow list). `@` and `.`
+// are in the charset so a full JID can be typed; `:` is not, so the two triggers
+// are mutually exclusive.
+const MENTION_TRIGGER = /(?:^|\s)@([\w.@-]*)$/;
+
+/**
+ * If the collapsed caret sits right after `regex`'s trigger token, return the
+ * typed query (the regex's first capture), else `null`. Must run inside an
+ * editor state read.
+ * @param {RegExp} regex
+ * @returns {string|null}
+ */
+function $getTriggerQuery(regex) {
+    const selection = $getSelection();
+    if (!$isRangeSelection(selection) || !selection.isCollapsed()) return null;
+    const node = selection.anchor.getNode();
+    if (!$isTextNode(node)) return null;
+    const before = node.getTextContent().slice(0, selection.anchor.offset);
+    return before.match(regex)?.[1] ?? null;
+}
 
 // Class names Lexical stamps onto its DOM for styling hooks. Kept minimal; these
 // are editor-only and get stripped from the published XHTML (see the composer's
@@ -93,6 +125,25 @@ export function createSocialEditor(rootEl, { onChange } = {}) {
         namespace: 'converse-social-compose',
         nodes: [HeadingNode, QuoteNode, LinkNode],
         theme: THEME,
+        html: {
+            export: new Map([
+                [
+                    // LinkNode's own DOM export whitelists http(s)/mailto/sms/tel and
+                    // rewrites every other scheme (so our xmpp: mention URIs) to
+                    // about:blank. Export links with the raw URL instead; the composer
+                    // runs the exported HTML through DOMPurify (whose URI allowlist
+                    // includes xmpp:) before anything reaches the wire.
+                    LinkNode,
+                    (_editor, /** @type {LinkNode} */ node) => {
+                        const element = document.createElement('a');
+                        element.href = node.getURL();
+                        const title = node.getTitle();
+                        if (title) element.title = title;
+                        return { element };
+                    },
+                ],
+            ]),
+        },
         onError: (e) => {
             // Surface Lexical's internal errors rather than swallowing them.
             throw e;
@@ -138,15 +189,7 @@ export function createSocialEditor(rootEl, { onChange } = {}) {
          * (a `:foo` token), return the typed query (`foo`), else `null`. Used to
          * drive the composer's inline emoji autocomplete.
          */
-        getEmojiQuery: () =>
-            editor.getEditorState().read(() => {
-                const selection = $getSelection();
-                if (!$isRangeSelection(selection) || !selection.isCollapsed()) return null;
-                const node = selection.anchor.getNode();
-                if (!$isTextNode(node)) return null;
-                const before = node.getTextContent().slice(0, selection.anchor.offset);
-                return before.match(EMOJI_TRIGGER)?.[1] ?? null;
-            }),
+        getEmojiQuery: () => editor.getEditorState().read(() => $getTriggerQuery(EMOJI_TRIGGER)),
 
         /**
          * Replace the `:query` trigger immediately before the caret with `replacement`
@@ -165,6 +208,44 @@ export function createSocialEditor(rootEl, { onChange } = {}) {
                 const trigger = `:${query}`;
                 if (!node.getTextContent().slice(0, offset).endsWith(trigger)) return;
                 node.spliceText(offset - trigger.length, trigger.length, replacement, true);
+            }),
+
+        /**
+         * If the collapsed caret sits right after a mention trigger (an `@foo`
+         * token, possibly a bare `@`), return the typed query (`foo`, or `''`),
+         * else `null`. Drives the composer's mention autocomplete.
+         */
+        getMentionQuery: () => editor.getEditorState().read(() => $getTriggerQuery(MENTION_TRIGGER)),
+
+        /**
+         * Replace the `@query` trigger immediately before the caret with a link
+         * (the mention: `text` linking to `url`, e.g. `@Name` → `xmpp:jid`),
+         * followed by a space. Serialized by the LINK markdown transformer as
+         * `[text](url)`. A no-op if the caret has since moved off the trigger.
+         * The caret ends up just after the trailing space.
+         * @param {string} query - The chars typed after the `@` (without the `@`).
+         * @param {string} text - The link's text (e.g. `@Alice`).
+         * @param {string} url - The link's target (e.g. `xmpp:alice@example.org`).
+         */
+        replaceMentionTrigger: (query, text, url) =>
+            editor.update(() => {
+                const selection = $getSelection();
+                if (!$isRangeSelection(selection) || !selection.isCollapsed()) return;
+                const node = selection.anchor.getNode();
+                if (!$isTextNode(node)) return;
+                const offset = selection.anchor.offset;
+                const trigger = `@${query}`;
+                if (!node.getTextContent().slice(0, offset).endsWith(trigger)) return;
+                // Isolate the trigger's text node, then swap it for the link.
+                const start = offset - trigger.length;
+                const parts = node.splitText(start, offset);
+                const target = parts[start === 0 ? 0 : 1];
+                const link = $createLinkNode(url);
+                link.append($createTextNode(text));
+                target.replace(link);
+                const space = $createTextNode(' ');
+                link.insertAfter(space);
+                space.select(1, 1);
             }),
 
         clear: () =>

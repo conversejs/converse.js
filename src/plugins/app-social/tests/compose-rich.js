@@ -69,6 +69,90 @@ describe('The rich Social composer', function () {
     );
 
     it(
+        'builds a ranked mention menu from follows and browsed authors',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await customElements.whenDefined('converse-social-compose-rich');
+            const el = /** @type {any} */ (document.createElement('converse-social-compose-rich'));
+
+            // Two followed people plus a followed community feed (a non-microblog
+            // node), which is not a person and must never be offered as a mention.
+            await converse.env.u.waitUntil(() => _converse.state.following);
+            _converse.state.following.track({ server: 'bob@example.org', title: 'Bobby' });
+            _converse.state.following.track({ server: 'anna@example.org', title: 'Anna' });
+            _converse.state.following.track({ server: 'pubsub.example.org', node: 'SomeTopic' });
+
+            // Browsed this session without following: a person (offered, ranked
+            // below follows), a community node (never offered), and an author we
+            // already follow (deduplicated, the follow entry wins).
+            const { api } = _converse;
+            await api.microblog.profile.getFeed('walt@example.org');
+            await api.microblog.profile.getFeed('pubsub2.example.org', 'AnotherTopic');
+            await api.microblog.profile.getFeed('bob@example.org');
+
+            // Stub the editor handle to report an `@` trigger under the caret.
+            let query = '';
+            el._handle = { getEmojiQuery: () => null, getMentionQuery: () => query, focus: vi.fn() };
+
+            // A bare `@` lists every person: follows first (alphabetical), then
+            // browsed authors. Assert on JIDs, since a browsed author's label
+            // depends on when their vCard resolves.
+            await el.updateTypeahead();
+            expect(el._ac_kind).toBe('mention');
+            expect(el._ac_items.map((i) => i.jid)).toEqual([
+                'anna@example.org',
+                'bob@example.org',
+                'walt@example.org',
+            ]);
+            expect(el._ac_items[0].detail).toBe('anna@example.org');
+
+            // A name match filters; the JID is matched too (rank: name-prefix first).
+            query = 'bo';
+            await el.updateTypeahead();
+            expect(el._ac_items.map((i) => i.jid)).toEqual(['bob@example.org']);
+
+            query = 'walt';
+            await el.updateTypeahead();
+            expect(el._ac_items.map((i) => i.jid)).toEqual(['walt@example.org']);
+
+            // On equal match quality (all JID-substring), follows outrank browsed.
+            query = 'example.org';
+            await el.updateTypeahead();
+            expect(el._ac_items.map((i) => i.jid)).toEqual([
+                'anna@example.org',
+                'bob@example.org',
+                'walt@example.org',
+            ]);
+
+            // No match closes the menu.
+            query = 'zzz';
+            await el.updateTypeahead();
+            expect(el._ac_items.length).toBe(0);
+        }),
+    );
+
+    it(
+        'inserts the chosen mention as an xmpp: profile link',
+        mock.initConverse(converse, [], {}, async function () {
+            await customElements.whenDefined('converse-social-compose-rich');
+            const el = /** @type {any} */ (document.createElement('converse-social-compose-rich'));
+            const replaceMentionTrigger = vi.fn();
+            el._handle = { replaceMentionTrigger, focus: vi.fn() };
+            el._ac_kind = 'mention';
+            el._ac_query = 'bo';
+            el._ac_items = [{ label: 'Bobby', detail: 'bob@example.org', name: 'Bobby', jid: 'bob@example.org' }];
+            el._ac_index = 0;
+
+            // Enter replaces the `@bo` trigger with a link: `@Bobby` → xmpp:bob@…,
+            // which the LINK transformer serializes as [@Bobby](xmpp:bob@example.org).
+            const enter = keyEvent('Enter');
+            el.onEditorKeyDown(enter);
+            expect(enter.preventDefault).toHaveBeenCalled();
+            expect(replaceMentionTrigger).toHaveBeenCalledWith('bo', '@Bobby', 'xmpp:bob@example.org');
+            expect(el._ac_items.length).toBe(0);
+        }),
+    );
+
+    it(
         'navigates the typeahead menu by keyboard and inserts the chosen glyph',
         mock.initConverse(converse, [], {}, async function () {
             await customElements.whenDefined('converse-social-compose-rich');

@@ -8,13 +8,9 @@ import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import { collectionSignal } from 'shared/signals.js';
 import tplFollowing from './templates/following.js';
+import { MICROBLOG_NODE } from './constants.js';
 
 const { Strophe } = converse.env;
-
-// The default microblog node. A follow on any other node is a community/topic
-// feed whose node name is the human-readable label (Movim leaves the XEP-0330
-// <title> empty and names the feed via the node, e.g. `Fakir`, `UsbekRica`).
-const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
 
 /**
  * The following list (embedded in a profile's "Following" tab): the accounts an

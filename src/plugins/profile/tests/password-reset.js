@@ -3,7 +3,7 @@ import converse from '../../../../dist/converse.js';
 
 const { Strophe, sizzle, u, stx } = converse.env;
 
-async function submitPasswordResetForm(_converse) {
+async function submitPasswordResetForm(_converse, current_password = 'current-password') {
     await mock.openControlBox(_converse);
     const cbview = _converse.chatboxviews.get('controlbox');
     cbview.querySelector('a.show-profile')?.click();
@@ -13,6 +13,8 @@ async function submitPasswordResetForm(_converse) {
     modal.querySelector('#passwordreset-tab').click();
     const form = await u.waitUntil(() => modal.querySelector('.passwordreset-form'));
 
+    const current_pw_input = form.querySelector('input[name="current_password"]');
+    current_pw_input.value = current_password;
     const pw_input = form.querySelector('input[name="password"]');
     pw_input.value = 'secret-password';
     const pw_check_input = form.querySelector('input[name="password_check"]');
@@ -148,6 +150,46 @@ describe('The profile modal', function () {
 
             const alert = await u.waitUntil(() => modal.querySelector('.alert-danger'));
             expect(alert.textContent).toBe('You are not allowed to change your password');
+        }),
+    );
+
+    it(
+        'informs you if the current password is incorrect',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            const modal = await submitPasswordResetForm(_converse);
+
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+            const query_iq = await u.waitUntil(() =>
+                sent_IQs.filter((iq) => sizzle('query[xmlns="jabber:iq:register"]', iq).length).pop(),
+            );
+
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(_converse, 
+                    u.toStanza(`
+                    <iq type='result' id='${query_iq.getAttribute('id')}'>
+                        <query xmlns='jabber:iq:register'>
+                            <username>romeo@montague.lit</username>
+                            <password/>
+                        </query>
+                    </iq>`),
+                ),
+            );
+
+            const set_iq = await u.waitUntil(() =>
+                sent_IQs.filter((iq) => sizzle('iq[type="set"] query[xmlns="jabber:iq:register"]', iq).length).pop(),
+            );
+
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(_converse, 
+                    u.toStanza(`
+                <iq type='result' id="${set_iq.getAttribute('id')}">
+                    <error type="auth"><not-authorized xmlns="${Strophe.NS.STANZAS}"/></error>
+                </iq>`),
+                ),
+            );
+
+            const alert = await u.waitUntil(() => modal.querySelector('.alert-danger'));
+            expect(alert.textContent).toBe('The current password you provided is incorrect');
         }),
     );
 });

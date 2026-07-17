@@ -4,11 +4,27 @@ import { html } from 'lit';
 export default el => {
     const i18n_submit = __('Submit');
     const i18n_passwords_must_match = __('The new passwords must match');
+    const i18n_current_password = __('Current password');
     const i18n_new_password = __('New password');
     const i18n_confirm_password = __('Confirm new password');
 
     return html`<form class="converse-form passwordreset-form" method="POST" @submit=${ev => el.onSubmit(ev)}>
         ${el.alert_message ? html`<div class="alert alert-danger" role="alert">${el.alert_message}</div>` : ''}
+
+        <div class="py-2">
+            <label for="converse_password_reset_current" class="form-label">${i18n_current_password}</label>
+            <input
+                class="form-control"
+                type="password"
+                value=""
+                name="current_password"
+                required="required"
+                id="converse_password_reset_current"
+                autocomplete="current-password"
+                minlength="8"
+                ?disabled="${el.alert_message}"
+            />
+        </div>
 
         <div class="py-2">
             <label for="converse_password_reset_new" class="form-label">${i18n_new_password}</label>

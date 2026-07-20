@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-26 10:16+0200\n"
-"PO-Revision-Date: 2026-07-19 18:01+0000\n"
+"PO-Revision-Date: 2026-07-21 16:01+0000\n"
 "Last-Translator: Libre <6n0n1m0s@proton.me>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
@@ -3105,9 +3105,8 @@ msgstr ""
 "Dirección inválida de la cadena de grupos, no se permite un corte adelante."
 
 #: dist/converse-no-dependencies.js:145076
-#, fuzzy
 msgid "Invalid groupchat address, more than one @ sign is not allowed."
-msgstr "Dirección inválida de groupchat, no se permite más de un signo @."
+msgstr "Dirección inválida de groupchat, no se concede más de un signo @."
 
 #: dist/converse-no-dependencies.js:145082
 msgid "Invalid groupchat address, it cannot start or end with an @ sign."

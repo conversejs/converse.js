@@ -6,7 +6,11 @@ import { Strophe, Builder, Stanza } from 'strophe.js';
  * @returns {boolean}
  */
 export function isElement(el) {
-    return el instanceof Element || el instanceof HTMLDocument;
+    // Checked by nodeType rather than `instanceof`, because `HTMLDocument`
+    // doesn't exist outside a browser and because stanzas built in another
+    // realm (a shared worker, an iframe) fail an `instanceof` check.
+    const node_type = /** @type {Node} */ (el)?.nodeType;
+    return node_type === 1 /* ELEMENT_NODE */ || node_type === 9; /* DOCUMENT_NODE */
 }
 
 const EMPTY_TEXT_REGEX = /\s*\n\s*/;

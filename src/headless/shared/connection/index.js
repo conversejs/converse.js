@@ -1,6 +1,6 @@
 import debounce from 'lodash-es/debounce.js';
 import log from '@converse/log';
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import _converse from '../_converse.js';
 import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
 import { CONNECTION_STATUS } from '../constants.js';
@@ -8,6 +8,7 @@ import { MemoryStorageBackend, Strophe } from 'strophe.js';
 import { clearSession, tearDown } from '../../utils/session.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID } from '../../utils/init.js';
+import { setLocalStorageItem } from '../../utils/environment.js';
 
 /**
  * The Connection class manages the connection to the XMPP server. It's
@@ -225,7 +226,7 @@ export class Connection extends Strophe.Connection {
         // recreate the session from SCRAM keys
         if (_converse.state.config.get('trusted')) {
             const bare_jid = _converse.session.get('bare_jid');
-            localStorage.setItem('conversejs-session-jid', bare_jid);
+            setLocalStorageItem('conversejs-session-jid', bare_jid);
         }
 
         /**
@@ -487,12 +488,6 @@ export class MockConnection extends Connection {
 
         // @ts-ignore
         this._proto._processRequest = () => {};
-
-        // _dataRecv unwraps injected stanzas via _reqToData, which only the
-        // BOSH transport implements. Provide it for the websocket transport
-        // too, so tests inject stanzas the same way on either transport.
-        const proto = /** @type {any} */ (this._proto);
-        proto._reqToData = proto._reqToData ?? ((/** @type {any} */ req) => req.getResponse?.() ?? req);
         this._proto._disconnect = () => this._onDisconnectTimeout();
         this._proto._onDisconnectTimeout = () => {};
 
@@ -518,6 +513,20 @@ export class MockConnection extends Connection {
             // explicitResourceBinding).
             this._onStreamFeaturesAfterSASL(this.features);
         };
+    }
+
+    /**
+     * Strophe's `Connection._dataRecv` unwraps an injected request into its
+     * stanza element via the transport's `_reqToData`, but only for BOSH; on
+     * websocket it expects the element directly. Tests inject a Request-shaped
+     * object on both transports (see `createRequest`), so unwrap it here for
+     * the websocket case before Strophe processes it.
+     * @param {any} req
+     * @param {string} [raw]
+     */
+    _dataRecv(req, raw) {
+        const elem = this._proto instanceof Strophe.Bosh ? req : (req?.getResponse?.() ?? req);
+        return super._dataRecv(elem, raw);
     }
 
     // @ts-ignore

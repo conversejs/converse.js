@@ -5,6 +5,7 @@ import { getOpenPromise } from '@converse/openpromise';
 import { Model } from '@converse/skeletor';
 import log from '@converse/log';
 import { initStorage } from '../utils/storage.js';
+import { isAppHidden } from '../utils/environment.js';
 import * as constants from './constants.js';
 import converse from './api/public.js';
 import api from './api/index.js';
@@ -1118,7 +1119,7 @@ export default function ModelWithMessages(BaseModel) {
          * @returns {boolean}
          */
         isHidden() {
-            return this.get('hidden') || this.isScrolledUp() || document.hidden;
+            return this.get('hidden') || this.isScrolledUp() || isAppHidden();
         }
     };
 }

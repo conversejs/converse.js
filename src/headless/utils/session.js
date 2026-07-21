@@ -22,19 +22,6 @@ export function isTestEnv () {
     return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';
 }
 
-export function getUnloadEvent () {
-    if ('onpagehide' in window) {
-        // Pagehide gets thrown in more cases than unload. Specifically it
-        // gets thrown when the page is cached and not just
-        // closed/destroyed. It's the only viable event on mobile Safari.
-        // https://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
-        return 'pagehide';
-    } else if ('onbeforeunload' in window) {
-        return 'beforeunload';
-    }
-    return 'unload';
-}
-
 /**
  * @param {ConversePrivateGlobal} _converse
  * @param {string} name

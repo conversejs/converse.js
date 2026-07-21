@@ -80,8 +80,24 @@ export default defineConfig({
                 test: {
                     name: 'headless',
                     include: ['**/tests/**/*.js', '**/tests/*.js'],
-                    exclude: [...commonExclude],
+                    // The shims are Node-only; they're covered by the
+                    // `headless-node` project below.
+                    exclude: ['shims/**', ...commonExclude],
                     browser: makeBrowser(),
+                },
+            },
+            {
+                // Runs under Node rather than a browser, covering the shims that
+                // stand in for the browser DOM there. Deliberately does not
+                // extend the root config: those setup files inject stylesheets
+                // and a Jasmine compatibility layer that only make sense in a
+                // page, and the aliases point at the browser bundles.
+                root: abs('src/headless'),
+                test: {
+                    name: 'headless-node',
+                    environment: 'node',
+                    include: ['shims/tests/**/*.js'],
+                    exclude: [...commonExclude],
                 },
             },
         ],

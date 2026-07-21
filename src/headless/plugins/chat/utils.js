@@ -5,7 +5,7 @@
  * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
  * @typedef {import('strophe.js').Builder} Builder
  */
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import { Model } from '@converse/skeletor';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
@@ -14,6 +14,7 @@ import log from '@converse/log';
 import { isArchived, isHeadline, isMUCPrivateMessage, isServerMessage } from '../../shared/parsers.js';
 import { parseMessage } from './parsers.js';
 import { PRIVATE_CHAT_TYPE } from '../../shared/constants.js';
+import { getRouteHash } from '../../utils/environment.js';
 
 const { Strophe, u } = converse.env;
 
@@ -27,11 +28,12 @@ export function routeToChat(event) {
     if (api.settings.get('enable_url_routing') && api.settings.get('view_mode') === 'fullscreen') {
         return;
     }
-    if (!location.hash.startsWith('#converse/chat?jid=')) {
+    const hash = getRouteHash();
+    if (!hash.startsWith('#converse/chat?jid=')) {
         return;
     }
     event?.preventDefault();
-    const jid = location.hash.split('=').pop();
+    const jid = hash.split('=').pop();
     if (!u.isValidJID(jid)) {
         return log.warn(`Invalid JID "${jid}" provided in URL fragment`);
     }

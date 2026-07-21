@@ -5,7 +5,7 @@ import { sprintf } from 'sprintf-js';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat.js';
 import localizedFormat from 'dayjs/plugin/localizedFormat.js';
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import { Stanza, Strophe, $build, $iq, $msg, $pres, stx } from 'strophe.js';
 import { Collection, Model } from '@converse/skeletor';
 import { filesize } from 'filesize';
@@ -19,6 +19,7 @@ import ConnectionFeedback from './../connection/feedback.js';
 import u, { setLogLevelFromRoute } from '../../utils/index.js';
 import { ANONYMOUS, CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';
 import { isTestEnv } from '../../utils/session.js';
+import { addRouteListener } from '../../utils/environment.js';
 import { TimeoutError } from '../errors.js';
 import { initAppSettings } from '../settings/utils.js';
 import * as errors from '../errors.js';
@@ -76,7 +77,7 @@ const env = /** @type {import('./types').ConverseEnv} */ {
  * @global
  * @namespace converse
  */
-const converse = Object.assign(/** @type {ConversePrivateGlobal} */ (window).converse || {}, {
+const converse = Object.assign(/** @type {ConversePrivateGlobal} */ (globalThis).converse || {}, {
     CHAT_STATES,
 
     keycodes: KEYCODES,
@@ -120,7 +121,7 @@ const converse = Object.assign(/** @type {ConversePrivateGlobal} */ (window).con
         }
 
         setLogLevelFromRoute();
-        addEventListener('hashchange', setLogLevelFromRoute);
+        addRouteListener(setLogLevelFromRoute);
 
         const connfeedback = new ConnectionFeedback();
         Object.assign(_converse, { connfeedback }); // XXX: DEPRECATED

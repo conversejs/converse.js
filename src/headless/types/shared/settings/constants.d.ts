@@ -69,6 +69,9 @@ export type ConfigurationSettings = {
     password?: string;
     persistent_store?: ("IndexedDB" | "localStorage");
     rid?: string;
+    /**
+     * - The DOM node Converse renders into. Null outside a browser.
+     */
     root?: Element;
     sid?: string;
     singleton?: boolean;

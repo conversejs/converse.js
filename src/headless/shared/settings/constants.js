@@ -24,7 +24,7 @@
  * @property {String} [password]
  * @property {('IndexedDB'|'localStorage')} [persistent_store='IndexedDB']
  * @property {String} [rid]
- * @property {Element} [root=window.document]
+ * @property {Element} [root=window.document] - The DOM node Converse renders into. Null outside a browser.
  * @property {String} [sid]
  * @property {Boolean} [singleton=false]
  * @property {Boolean} [strict_plugin_dependencies=false]
@@ -32,6 +32,7 @@
  * @property {String} [websocket_url]
  * @property {Array<String>} [whitelisted_plugins]
  */
+import { IS_BROWSER } from '../../utils/environment.js';
 export const DEFAULT_SETTINGS = {
     allow_non_roster_messaging: true,
     allow_url_history_change: true,
@@ -101,7 +102,7 @@ export const DEFAULT_SETTINGS = {
     password: undefined,
     persistent_store: 'IndexedDB',
     rid: undefined,
-    root: window.document,
+    root: IS_BROWSER ? window.document : null,
     sid: undefined,
     singleton: false,
     strict_plugin_dependencies: false,

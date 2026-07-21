@@ -204,7 +204,8 @@ export default {
                             // The publish-options precondition couldn't be met.
                             // We re-publish but without publish-options.
                             const el = stanza.tree();
-                            el.querySelector('publish-options').outerHTML = '';
+                            const options_el = el.querySelector('publish-options');
+                            options_el.parentNode.removeChild(options_el);
                             log.warn(`api.pubsub.publish: #publish-options precondition-not-met, publishing anyway.`);
                             await api.sendIQ(el);
                         } else {

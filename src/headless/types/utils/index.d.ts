@@ -54,7 +54,6 @@ declare const _default: {
     toStanza: typeof import("strophe.js").Stanza.toElement;
     isUniView(): boolean;
     isTestEnv(): boolean;
-    getUnloadEvent(): "pagehide" | "beforeunload" | "unload";
     replacePromise(_converse: ConversePrivateGlobal, name: string): void;
     shouldClearCache(_converse: ConversePrivateGlobal): boolean;
     tearDown(_converse: ConversePrivateGlobal): Promise<any>;
@@ -100,6 +99,20 @@ declare const _default: {
     siblingIndex(el: Element): number;
     decodeHTMLEntities(str: string): string;
     unescapeHTML(string: string): string;
+    getUnloadEvent(): "pagehide" | "beforeunload" | "unload";
+    addUnloadListener(listener: EventListener, options?: AddEventListenerOptions): void;
+    removeUnloadListener(listener: EventListener): void;
+    isAppHidden(): boolean;
+    addVisibilityListener(listener: EventListener): void;
+    removeVisibilityListener(listener: EventListener): void;
+    getRouteHash(): string;
+    addRouteListener(listener: EventListener): void;
+    removeRouteListener(listener: EventListener): void;
+    getLocalStorageItem(key: string): string | null;
+    setLocalStorageItem(key: string, value: string): void;
+    removeLocalStorageItem(key: string): void;
+    hasCredentialsAPI(): boolean;
+    IS_BROWSER: boolean;
     colorize(s: string): Promise<string>;
     appendArrayBuffer(buffer1: any, buffer2: any): ArrayBufferLike;
     arrayBufferToHex(ab: any): any;

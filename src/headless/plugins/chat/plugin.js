@@ -7,6 +7,7 @@ import converse from '../../shared/api/public.js';
 import chatboxes_api from '../chatboxes/api.js';
 import chat_api from './api.js';
 import { PRIVATE_CHAT_TYPE } from '../../shared/constants.js';
+import { addRouteListener } from '../../utils/environment.js';
 import {
     autoJoinChats,
     enableCarbons,
@@ -48,7 +49,7 @@ converse.plugins.add('converse-chat', {
         chatboxes_api.registry.add(PRIVATE_CHAT_TYPE, ChatBox);
 
         routeToChat();
-        addEventListener('hashchange', routeToChat);
+        addRouteListener(routeToChat);
 
         api.listen.on('chatBoxesFetched', autoJoinChats);
         api.listen.on('presencesInitialized', registerMessageHandlers);

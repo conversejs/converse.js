@@ -13,77 +13,35 @@
 import { _converse, api, converse, log, uploadFile, PubSubFeed } from '@converse/headless';
 import DOMPurify from 'dompurify';
 import { CustomElement } from 'shared/components/element.js';
-import { shortnamesToEmojis } from 'shared/chat/utils.js';
+import { EMOJI_SOURCE } from 'shared/rich-composer/emoji-source.js';
+import { MENTION_TRIGGER } from 'shared/rich-composer/triggers.js';
+import { TypeaheadController, MAX_SUGGESTIONS } from 'shared/rich-composer/typeahead.js';
 import { __ } from 'i18n';
 import tplComposeRich from './templates/compose-rich.js';
-import './emoji-dropdown.js';
 import { MICROBLOG_NODE } from './constants.js';
+import './emoji-dropdown.js';
 
 import './styles/compose-rich.scss';
+import 'shared/rich-composer/styles/typeahead.scss';
 
 const { Strophe } = converse.env;
 
-const MAX_SUGGESTIONS = 8; // Caps inline typeahead list
-
-/**
- * The composer's caret-typeahead sources. Each source owns one trigger character:
- * `getQuery` reads the trigger's query from the caret (null when the caret isn't
- * on this source's trigger), `getItems` builds the ranked menu for a query, and
- * `choose` replaces the trigger with the picked item. The triggers are mutually
- * exclusive, so at most one source is active at a time.
- */
 const TYPEAHEAD_SOURCES = [
-    {
-        kind: 'emoji',
-
-        /** @param {SocialComposeRich} el */
-        getQuery: (el) => el._handle?.getEmojiQuery?.() ?? null,
-
-        /**
-         * All emoji whose shortname contains the query, prefix matches (then
-         * alphabetical) first.
-         * @param {SocialComposeRich} _el
-         * @param {string} query
-         * @returns {Promise<import('./types').TypeaheadItem[]>}
-         */
-        async getItems(_el, query) {
-            await api.emojis.initialize();
-            const q = query.toLowerCase();
-            const ranked = [];
-            for (const emoji of /** @type {any[]} */ (converse.emojis.list)) {
-                const idx = emoji.sn.slice(1, -1).indexOf(q); // strip the wrapping colons
-                if (idx !== -1) ranked.push({ emoji, idx });
-            }
-            ranked.sort((a, b) => a.idx - b.idx || (a.emoji.sn < b.emoji.sn ? -1 : 1));
-            return ranked.slice(0, MAX_SUGGESTIONS).map(({ emoji }) => ({
-                label: emoji.sn,
-                url: emoji.url,
-                glyph: shortnamesToEmojis(emoji.sn, { unicode_only: true, add_title_wrapper: false }).join(''),
-            }));
-        },
-        /**
-         * @param {SocialComposeRich} el
-         * @param {string} query
-         * @param {import('./types').TypeaheadItem} item
-         */
-        choose: (el, query, item) => el._handle?.replaceEmojiTrigger(query, item.glyph),
-    },
+    EMOJI_SOURCE,
     {
         kind: 'mention',
 
-        /** @param {SocialComposeRich} el */
-        getQuery: (el) => el._handle?.getMentionQuery?.() ?? null,
+        getQuery: (handle) => handle?.getTriggerQuery?.(MENTION_TRIGGER) ?? null,
 
         /**
          * The people whose name or JID contains the query, drawn from two pools:
          * the XEP-0330 follow list, plus authors browsed this session without
          * following them (their cached profile feeds). Microblog-node entries
          * only, since community feeds aren't people.
-         * @param {SocialComposeRich} _el
          * @param {string} query
-         * @returns {import('./types').TypeaheadItem[]}
+         * @returns {import('shared/rich-composer/types').TypeaheadItem[]}
          */
-        getItems(_el, query) {
+        getItems(query) {
             /** @type {Map<string, {jid: string, name: string, followed: boolean}>} */
             const candidates = new Map();
 
@@ -126,11 +84,12 @@ const TYPEAHEAD_SOURCES = [
          * Insert the mention as a link, `@Name` → `xmpp:jid`: Converse renders and
          * routes `xmpp:` URIs to the profile view, other clients get a plain link,
          * and a bridge (e.g. XMPP→Nostr) can rewrite it into its own mention format.
-         * @param {SocialComposeRich} el
+         * @param {import('shared/rich-composer/types').RichEditor} handle
          * @param {string} query
-         * @param {import('./types').TypeaheadItem} item
+         * @param {import('shared/rich-composer/types').TypeaheadItem} item
          */
-        choose: (el, query, item) => el._handle?.replaceMentionTrigger(query, `@${item.name}`, `xmpp:${item.jid}`),
+        choose: (handle, query, item) =>
+            handle?.replaceTriggerWithLink(`@${query}`, `@${item.name}`, `xmpp:${item.jid}`),
     },
 ];
 
@@ -142,9 +101,6 @@ export default class SocialComposeRich extends CustomElement {
             _uploading: { type: Boolean, state: true },
             _empty: { type: Boolean, state: true },
             _attachments: { type: Array, state: true },
-            _ac_items: { type: Array, state: true },
-            _ac_index: { type: Number, state: true },
-            _ac_pos: { type: Object, state: true },
         };
     }
 
@@ -165,56 +121,19 @@ export default class SocialComposeRich extends CustomElement {
         /** @type {Promise<import('./types').EditorHandle>|null} */
         this._init = null;
 
-        // The inline caret typeahead (emoji shortnames, mentions), open only while
-        // items exist. `_ac_kind` names the source the menu is showing for.
-        /** @type {import('./types').TypeaheadItem[]} */
-        this._ac_items = [];
-        this._ac_index = 0;
-        this._ac_kind = '';
-
-        /** @type {{ left: number, top: number }} */
-        this._ac_pos = { left: 0, top: 0 };
-
-        // The query the current items were built for (the chars after the trigger).
-        this._ac_query = '';
-
-        // The dismissal key (see `_ac_dismiss_key`) the user dismissed with Escape;
-        // the menu stays closed for it until the query changes (so a later editor
-        // update can't re-open the same trigger).
-        /** @type {string|null} */
-        this._ac_dismissed = null;
-
-        // Set (for the current event dispatch only) when a blur closed an open menu,
-        // so an Escape keydown arriving in the same dispatch can tell the menu was
-        // open for it (see onEditorFocusOut / onEditorKeyDown).
-        this._menu_closed_by_blur = false;
-
-        // Whether a pointer recently went down anywhere in the document (see
-        // connectedCallback / onEditorFocusOut).
-        this._pointer_down = false;
+        this.typeahead = new TypeaheadController(this, {
+            sources: TYPEAHEAD_SOURCES,
+            getHandle: () => this._handle,
+            container: '.social-rich',
+            editable: '.social-rich__editable',
+        });
     }
 
     render() {
         return tplComposeRich(this);
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-
-        // Track (briefly) that a pointer went down anywhere, so a menu-closing blur
-        // can tell a mouse click apart from a keyboard-initiated blur (see
-        // onEditorFocusOut). Capture phase, so no handler can swallow it first.
-        this._onDocPointerDown = () => {
-            this._pointer_down = true;
-            clearTimeout(this._pointer_down_timer);
-            this._pointer_down_timer = setTimeout(() => (this._pointer_down = false), 400);
-        };
-        document.addEventListener('pointerdown', this._onDocPointerDown, { capture: true });
-    }
-
     disconnectedCallback() {
-        document.removeEventListener('pointerdown', this._onDocPointerDown, { capture: true });
-        clearTimeout(this._pointer_down_timer);
         this._handle?.destroy();
         this._handle = null;
         this._init = null;
@@ -245,196 +164,22 @@ export default class SocialComposeRich extends CustomElement {
     onChange() {
         const empty = this._handle?.isEmpty() ?? true;
         if (empty !== this._empty) this._empty = empty;
-        this.updateTypeahead();
+        this.typeahead.update();
     }
 
     /**
-     * The key an Escape dismissal is remembered under: the source plus its query,
-     * NUL-joined (NUL can appear in neither), so dismissing e.g. `:sm` can never
-     * also suppress `@sm`.
-     */
-    get _ac_dismiss_key() {
-        return `${this._ac_kind}\x00${this._ac_query}`;
-    }
-
-    /**
-     * Recompute the caret typeahead after each edit: if the caret sits on a
-     * source's trigger (a `:query` / `@query` token), show that source's matches;
-     * otherwise close the menu.
-     */
-    async updateTypeahead() {
-        let source = null;
-        let query = null;
-        for (const candidate of TYPEAHEAD_SOURCES) {
-            // N.B. sources normalize "no trigger" to null; an empty-string query is
-            // valid (a bare `@` lists the whole follow list).
-            query = candidate.getQuery(this);
-            if (query !== null) {
-                source = candidate;
-                break;
-            }
-        }
-        if (!source) {
-            // The caret left every trigger, so forget any earlier Escape dismissal.
-            this._ac_dismissed = null;
-            return this.closeTypeahead();
-        }
-
-        // Honour an Escape dismissal: stay closed until the query actually changes.
-        const dismissal = `${source.kind}\x00${query}`;
-        if (dismissal === this._ac_dismissed) return this.closeTypeahead();
-        this._ac_dismissed = null;
-
-        const items = await source.getItems(this, query);
-
-        // The caret may have moved, or the menu been dismissed, while items loaded.
-        if (source.getQuery(this) !== query || this._ac_dismissed === dismissal) return;
-
-        // Only open while the user is actually typing in the editor. Lexical keeps
-        // its selection (and so the trigger query) across a blur, so without this a
-        // pending update could re-open the menu after focus has moved elsewhere.
-        const host = /** @type {HTMLElement} */ (this.querySelector('.social-rich__editable'));
-        if (host && host !== document.activeElement && !host.contains(document.activeElement)) {
-            return this.closeTypeahead();
-        }
-
-        if (!items.length) return this.closeTypeahead();
-
-        this._ac_kind = source.kind;
-        this._ac_query = query;
-        this._ac_items = items;
-        this._ac_index = 0;
-        this._ac_pos = this.caretPosition();
-    }
-
-    /** Close the typeahead menu. */
-    closeTypeahead() {
-        if (this._ac_items.length) this._ac_items = [];
-    }
-
-    /** The typeahead menu's inline position, as a single CSS declaration string. */
-    get typeaheadStyle() {
-        return `left: ${this._ac_pos.left}px; top: ${this._ac_pos.top}px`;
-    }
-
-    /**
-     * The caret's position relative to the `.social-rich` container, so the menu can
-     * be anchored just below the current line. Falls back to the editable's box when
-     * a caret rect is unavailable.
-     * @returns {{ left: number, top: number }}
-     */
-    caretPosition() {
-        const container = this.querySelector('.social-rich');
-        if (!container) return { left: 0, top: 0 };
-
-        const base = container.getBoundingClientRect();
-        const sel = window.getSelection();
-
-        let rect = null;
-        if (sel && sel.rangeCount) {
-            const range = sel.getRangeAt(0).cloneRange();
-            range.collapse(true);
-            rect = range.getBoundingClientRect();
-        }
-        if (!rect || (!rect.width && !rect.height && !rect.left && !rect.top)) {
-            rect = this.querySelector('.social-rich__editable')?.getBoundingClientRect() ?? base;
-        }
-        return { left: rect.left - base.left, top: rect.bottom - base.top };
-    }
-
-    /**
-     * Keyboard navigation for the typeahead menu. Intercepts arrows / Enter / Tab /
-     * Escape only while the menu is open, keeping them away from Lexical (which
-     * handles the same keys on the same element).
+     * Let the typeahead claim arrows / Enter / Tab / Escape while its menu is open.
      * @param {KeyboardEvent} ev
      */
     onEditorKeyDown(ev) {
-        if (!this._ac_items.length) {
-            if (ev.key === 'Escape' && this._menu_closed_by_blur) {
-                // This Escape's own blur (an extension blurring the editor before
-                // we ran) already closed the menu: finish the dismissal by
-                // reclaiming focus, and consume the event so the editor's own
-                // blur-on-Escape doesn't immediately re-blur. A bare Escape (no
-                // menu involved) falls through instead, and blurs. That is the
-                // keyboard user's escape hatch out of the editor.
-                this._menu_closed_by_blur = false;
-                this._ac_dismissed = this._ac_dismiss_key;
-                ev.preventDefault();
-                ev.stopImmediatePropagation();
-                this._handle?.focus();
-            }
-            return;
-        }
-
-        switch (ev.key) {
-            case 'ArrowDown':
-                this.moveTypeaheadSelection(1);
-                break;
-            case 'ArrowUp':
-                this.moveTypeaheadSelection(-1);
-                break;
-            case 'Enter':
-            case 'Tab':
-                this.chooseSuggestion(this._ac_index);
-                break;
-            case 'Escape':
-                // Remember the dismissal so a later editor update can't re-open it,
-                // and put focus back in the editor with the caret where it was.
-                this._ac_dismissed = this._ac_dismiss_key;
-                this.closeTypeahead();
-                this._handle?.focus();
-                break;
-            default:
-                return;
-        }
-        ev.preventDefault();
-        // Stop Lexical's own keydown handler (registered on the same element) too.
-        ev.stopImmediatePropagation();
+        this.typeahead.onKeyDown(ev);
     }
 
     /**
-     * Close the emoji menu whenever focus leaves the editor.
      * @param {FocusEvent} [ev]
      */
     onEditorFocusOut(ev) {
-        const had_menu = this._ac_items.length > 0;
-        if (had_menu) {
-            // Remember, only until the current event dispatch has run its course,
-            // that a blur (not a pick or dismissal) closed the menu. If this blur
-            // was itself caused by an Escape press (a vim-style browser extension
-            // blurring the focused element at document level, before our keydown
-            // handler gets to run), the keydown handler must still treat that
-            // Escape as "dismiss the menu" and reclaim focus.
-            this._menu_closed_by_blur = true;
-            setTimeout(() => (this._menu_closed_by_blur = false));
-        }
-
-        this.closeTypeahead();
-
-        // Vimium (and kin) can swallow the Escape keydown entirely, so the page
-        // never sees the key. This blur is the only signal. A keyboard-initiated
-        // blur to nowhere while the menu was open can only be such a dismissal,
-        // so reclaim focus for the editor. A pointer-initiated blur (a click
-        // elsewhere), a focus move to a real element, or the window itself losing
-        // focus must all genuinely take focus away instead.
-        if (had_menu && !ev?.relatedTarget && !this._pointer_down) {
-            const dismissed = this._ac_dismiss_key;
-            setTimeout(() => {
-                if (document.hasFocus() && document.activeElement === document.body) {
-                    this._ac_dismissed = dismissed;
-                    this._handle?.focus();
-                }
-            });
-        }
-    }
-
-    /**
-     * Move the active suggestion, wrapping around the ends.
-     * @param {number} delta
-     */
-    moveTypeaheadSelection(delta) {
-        const n = this._ac_items.length;
-        if (n) this._ac_index = (this._ac_index + delta + n) % n;
+        this.typeahead.onFocusOut(ev);
     }
 
     /**
@@ -443,19 +188,6 @@ export default class SocialComposeRich extends CustomElement {
      * where the message textarea is refocused when the picker closes.
      */
     onPickerClosed() {
-        this._handle?.focus();
-    }
-
-    /**
-     * Insert the chosen item in place of the trigger, via the active source.
-     * @param {number} index
-     */
-    chooseSuggestion(index) {
-        const item = this._ac_items[index];
-        const source = TYPEAHEAD_SOURCES.find((s) => s.kind === this._ac_kind);
-        if (!item || !source) return;
-        source.choose(this, this._ac_query, item);
-        this.closeTypeahead();
         this._handle?.focus();
     }
 

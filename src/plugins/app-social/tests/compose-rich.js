@@ -45,26 +45,30 @@ describe('The rich Social composer', function () {
             const el = /** @type {any} */ (document.createElement('converse-social-compose-rich'));
 
             // Stub the editor handle to report a `:smile` trigger under the caret.
-            el._handle = { getEmojiQuery: () => 'smile', replaceEmojiTrigger: vi.fn(), focus: vi.fn() };
+            el._handle = {
+                getTriggerQuery: (re) => (re.source.includes(':(') ? 'smile' : null),
+                replaceTrigger: vi.fn(),
+                focus: vi.fn(),
+            };
 
-            await el.updateTypeahead();
+            await el.typeahead.update();
 
-            expect(el._ac_kind).toBe('emoji');
-            expect(el._ac_items.length).toBeGreaterThan(0);
-            expect(el._ac_items.length).toBeLessThanOrEqual(8);
+            expect(el.typeahead.kind).toBe('emoji');
+            expect(el.typeahead.items.length).toBeGreaterThan(0);
+            expect(el.typeahead.items.length).toBeLessThanOrEqual(8);
             // Every suggestion matches the query and carries a resolved glyph (not the shortname).
-            for (const item of el._ac_items) {
+            for (const item of el.typeahead.items) {
                 expect(item.label.includes('smile')).toBe(true);
                 expect(item.glyph).toBeTruthy();
                 expect(item.glyph).not.toBe(item.label);
             }
             // The exact prefix match ranks first.
-            expect(el._ac_items[0].label).toBe(':smile:');
+            expect(el.typeahead.items[0].label).toBe(':smile:');
 
             // When the caret moves off any trigger, the menu closes.
-            el._handle.getEmojiQuery = () => null;
-            await el.updateTypeahead();
-            expect(el._ac_items.length).toBe(0);
+            el._handle.getTriggerQuery = () => null;
+            await el.typeahead.update();
+            expect(el.typeahead.items.length).toBe(0);
         }),
     );
 
@@ -91,33 +95,36 @@ describe('The rich Social composer', function () {
 
             // Stub the editor handle to report an `@` trigger under the caret.
             let query = '';
-            el._handle = { getEmojiQuery: () => null, getMentionQuery: () => query, focus: vi.fn() };
+            el._handle = {
+                getTriggerQuery: (re) => (re.source.includes('@(') ? query : null),
+                focus: vi.fn(),
+            };
 
             // A bare `@` lists every person: follows first (alphabetical), then
             // browsed authors. Assert on JIDs, since a browsed author's label
             // depends on when their vCard resolves.
-            await el.updateTypeahead();
-            expect(el._ac_kind).toBe('mention');
-            expect(el._ac_items.map((i) => i.jid)).toEqual([
+            await el.typeahead.update();
+            expect(el.typeahead.kind).toBe('mention');
+            expect(el.typeahead.items.map((i) => i.jid)).toEqual([
                 'anna@example.org',
                 'bob@example.org',
                 'walt@example.org',
             ]);
-            expect(el._ac_items[0].detail).toBe('anna@example.org');
+            expect(el.typeahead.items[0].detail).toBe('anna@example.org');
 
             // A name match filters; the JID is matched too (rank: name-prefix first).
             query = 'bo';
-            await el.updateTypeahead();
-            expect(el._ac_items.map((i) => i.jid)).toEqual(['bob@example.org']);
+            await el.typeahead.update();
+            expect(el.typeahead.items.map((i) => i.jid)).toEqual(['bob@example.org']);
 
             query = 'walt';
-            await el.updateTypeahead();
-            expect(el._ac_items.map((i) => i.jid)).toEqual(['walt@example.org']);
+            await el.typeahead.update();
+            expect(el.typeahead.items.map((i) => i.jid)).toEqual(['walt@example.org']);
 
             // On equal match quality (all JID-substring), follows outrank browsed.
             query = 'example.org';
-            await el.updateTypeahead();
-            expect(el._ac_items.map((i) => i.jid)).toEqual([
+            await el.typeahead.update();
+            expect(el.typeahead.items.map((i) => i.jid)).toEqual([
                 'anna@example.org',
                 'bob@example.org',
                 'walt@example.org',
@@ -125,8 +132,8 @@ describe('The rich Social composer', function () {
 
             // No match closes the menu.
             query = 'zzz';
-            await el.updateTypeahead();
-            expect(el._ac_items.length).toBe(0);
+            await el.typeahead.update();
+            expect(el.typeahead.items.length).toBe(0);
         }),
     );
 
@@ -135,20 +142,20 @@ describe('The rich Social composer', function () {
         mock.initConverse(converse, [], {}, async function () {
             await customElements.whenDefined('converse-social-compose-rich');
             const el = /** @type {any} */ (document.createElement('converse-social-compose-rich'));
-            const replaceMentionTrigger = vi.fn();
-            el._handle = { replaceMentionTrigger, focus: vi.fn() };
-            el._ac_kind = 'mention';
-            el._ac_query = 'bo';
-            el._ac_items = [{ label: 'Bobby', detail: 'bob@example.org', name: 'Bobby', jid: 'bob@example.org' }];
-            el._ac_index = 0;
+            const replaceTriggerWithLink = vi.fn();
+            el._handle = { replaceTriggerWithLink, focus: vi.fn() };
+            el.typeahead.kind = 'mention';
+            el.typeahead.query = 'bo';
+            el.typeahead.items = [{ label: 'Bobby', detail: 'bob@example.org', name: 'Bobby', jid: 'bob@example.org' }];
+            el.typeahead.index = 0;
 
             // Enter replaces the `@bo` trigger with a link: `@Bobby` → xmpp:bob@…,
             // which the LINK transformer serializes as [@Bobby](xmpp:bob@example.org).
             const enter = keyEvent('Enter');
             el.onEditorKeyDown(enter);
             expect(enter.preventDefault).toHaveBeenCalled();
-            expect(replaceMentionTrigger).toHaveBeenCalledWith('bo', '@Bobby', 'xmpp:bob@example.org');
-            expect(el._ac_items.length).toBe(0);
+            expect(replaceTriggerWithLink).toHaveBeenCalledWith('@bo', '@Bobby', 'xmpp:bob@example.org');
+            expect(el.typeahead.items.length).toBe(0);
         }),
     );
 
@@ -157,35 +164,35 @@ describe('The rich Social composer', function () {
         mock.initConverse(converse, [], {}, async function () {
             await customElements.whenDefined('converse-social-compose-rich');
             const el = /** @type {any} */ (document.createElement('converse-social-compose-rich'));
-            const replaceEmojiTrigger = vi.fn();
-            el._handle = { replaceEmojiTrigger, focus: vi.fn() };
-            el._ac_kind = 'emoji';
-            el._ac_query = 'smile';
-            el._ac_items = [
+            const replaceTrigger = vi.fn();
+            el._handle = { replaceTrigger, focus: vi.fn() };
+            el.typeahead.kind = 'emoji';
+            el.typeahead.query = 'smile';
+            el.typeahead.items = [
                 { label: ':smile:', glyph: '😄' },
                 { label: ':smiley:', glyph: '😃' },
                 { label: ':smirk:', glyph: '😏' },
             ];
-            el._ac_index = 0;
+            el.typeahead.index = 0;
 
             // Arrow keys move the active row (and wrap), stopping Lexical from seeing them.
             const down = keyEvent('ArrowDown');
             el.onEditorKeyDown(down);
-            expect(el._ac_index).toBe(1);
+            expect(el.typeahead.index).toBe(1);
             expect(down.preventDefault).toHaveBeenCalled();
             expect(down.stopImmediatePropagation).toHaveBeenCalled();
 
             const up = keyEvent('ArrowUp');
             el.onEditorKeyDown(up); // 1 -> 0
             el.onEditorKeyDown(keyEvent('ArrowUp')); // 0 -> wraps to 2
-            expect(el._ac_index).toBe(2);
+            expect(el.typeahead.index).toBe(2);
 
             // Enter inserts the active suggestion's glyph in place of the trigger, closes the menu.
             const enter = keyEvent('Enter');
             el.onEditorKeyDown(enter);
             expect(enter.preventDefault).toHaveBeenCalled();
-            expect(replaceEmojiTrigger).toHaveBeenCalledWith('smile', '😏');
-            expect(el._ac_items.length).toBe(0);
+            expect(replaceTrigger).toHaveBeenCalledWith(':smile', '😏');
+            expect(el.typeahead.items.length).toBe(0);
         }),
     );
 
@@ -196,29 +203,33 @@ describe('The rich Social composer', function () {
             await customElements.whenDefined('converse-social-compose-rich');
             const el = /** @type {any} */ (document.createElement('converse-social-compose-rich'));
             let query = 'smile';
-            el._handle = { getEmojiQuery: () => query, replaceEmojiTrigger: vi.fn(), focus: vi.fn() };
+            el._handle = {
+                getTriggerQuery: (re) => (re.source.includes(':(') ? query : null),
+                replaceTrigger: vi.fn(),
+                focus: vi.fn(),
+            };
 
             // Open the menu, then dismiss it with Escape.
-            await el.updateTypeahead();
-            expect(el._ac_items.length).toBeGreaterThan(0);
+            await el.typeahead.update();
+            expect(el.typeahead.items.length).toBeGreaterThan(0);
             el.onEditorKeyDown(keyEvent('Escape'));
-            expect(el._ac_items.length).toBe(0);
+            expect(el.typeahead.items.length).toBe(0);
 
             // A later editor update for the SAME trigger (e.g. a selection change) must
             // not re-open the menu.
-            await el.updateTypeahead();
-            expect(el._ac_items.length).toBe(0);
+            await el.typeahead.update();
+            expect(el.typeahead.items.length).toBe(0);
 
             // Changing the query re-opens it.
             query = 'smiley';
-            await el.updateTypeahead();
-            expect(el._ac_items.length).toBeGreaterThan(0);
+            await el.typeahead.update();
+            expect(el.typeahead.items.length).toBeGreaterThan(0);
 
             // Moving the caret off the trigger entirely clears the dismissal memory.
             query = null;
-            await el.updateTypeahead();
-            expect(el._ac_items.length).toBe(0);
-            expect(el._ac_dismissed).toBe(null);
+            await el.typeahead.update();
+            expect(el.typeahead.items.length).toBe(0);
+            expect(el.typeahead.dismissed).toBe(null);
         }),
     );
 
@@ -230,9 +241,9 @@ describe('The rich Social composer', function () {
 
             // Any focus move away from the editable closes the menu: without editor
             // focus its keyboard handling is unreachable, so it must never linger.
-            el._ac_items = [{ label: ':smile:', glyph: '😄' }];
+            el.typeahead.items = [{ label: ':smile:', glyph: '😄' }];
             el.onEditorFocusOut();
-            expect(el._ac_items.length).toBe(0);
+            expect(el.typeahead.items.length).toBe(0);
         }),
     );
 
@@ -242,25 +253,25 @@ describe('The rich Social composer', function () {
             await customElements.whenDefined('converse-social-compose-rich');
             const el = /** @type {any} */ (document.createElement('converse-social-compose-rich'));
             const focus = vi.fn();
-            el._handle = { replaceEmojiTrigger: vi.fn(), focus };
-            el._ac_kind = 'emoji';
-            el._ac_query = 'smile';
-            el._ac_items = [{ label: ':smile:', glyph: '😄' }];
+            el._handle = { replaceTrigger: vi.fn(), focus };
+            el.typeahead.kind = 'emoji';
+            el.typeahead.query = 'smile';
+            el.typeahead.items = [{ label: ':smile:', glyph: '😄' }];
             /** @type {HTMLElement} */ (document.activeElement)?.blur?.(); // focus lands on <body>
             vi.spyOn(document, 'hasFocus').mockReturnValue(true); // headless tab lacks OS focus
 
             // Vimium swallows the Escape keydown at window level, so the page never
             // sees the key; the only signal is a blur to nowhere, with no pointer.
             el.onEditorFocusOut({ relatedTarget: null });
-            expect(el._ac_items.length).toBe(0);
+            expect(el.typeahead.items.length).toBe(0);
             await new Promise((r) => setTimeout(r, 25));
             expect(focus).toHaveBeenCalled();
-            expect(el._ac_dismissed).toBe('emoji\x00smile');
+            expect(el.typeahead.dismissed).toBe('emoji\x00smile');
 
             // A pointer-initiated blur (a click elsewhere) must NOT reclaim focus.
             focus.mockClear();
-            el._pointer_down = true;
-            el._ac_items = [{ label: ':smile:', glyph: '😄' }];
+            el.typeahead.pointer_down = true;
+            el.typeahead.items = [{ label: ':smile:', glyph: '😄' }];
             el.onEditorFocusOut({ relatedTarget: null });
             await new Promise((r) => setTimeout(r, 25));
             expect(focus).not.toHaveBeenCalled();
@@ -272,16 +283,16 @@ describe('The rich Social composer', function () {
         mock.initConverse(converse, [], {}, async function () {
             await customElements.whenDefined('converse-social-compose-rich');
             const el = /** @type {any} */ (document.createElement('converse-social-compose-rich'));
-            el._handle = { replaceEmojiTrigger: vi.fn(), focus: vi.fn() };
-            el._ac_kind = 'emoji';
-            el._ac_query = 'smile';
-            el._ac_items = [{ label: ':smile:', glyph: '😄' }];
+            el._handle = { replaceTrigger: vi.fn(), focus: vi.fn() };
+            el.typeahead.kind = 'emoji';
+            el.typeahead.query = 'smile';
+            el.typeahead.items = [{ label: ':smile:', glyph: '😄' }];
 
             // A vim-style extension blurs the editor on Escape at document level,
             // so the focusout (which closes the menu) runs before our keydown
             // handler does, within the same Escape dispatch.
             el.onEditorFocusOut();
-            expect(el._ac_items.length).toBe(0);
+            expect(el.typeahead.items.length).toBe(0);
 
             // The keydown handler must still treat this Escape as a dismissal:
             // consume it and put focus back in the editor.
@@ -290,7 +301,7 @@ describe('The rich Social composer', function () {
             expect(esc.preventDefault).toHaveBeenCalled();
             expect(esc.stopImmediatePropagation).toHaveBeenCalled();
             expect(el._handle.focus).toHaveBeenCalled();
-            expect(el._ac_dismissed).toBe('emoji\x00smile');
+            expect(el.typeahead.dismissed).toBe('emoji\x00smile');
 
             // A later, unrelated bare Escape falls through untouched, leaving the
             // editor's blur-on-Escape (the keyboard escape hatch) to act.
@@ -305,7 +316,7 @@ describe('The rich Social composer', function () {
         mock.initConverse(converse, [], {}, async function () {
             await customElements.whenDefined('converse-social-compose-rich');
             const el = /** @type {any} */ (document.createElement('converse-social-compose-rich'));
-            el._handle = { replaceEmojiTrigger: vi.fn(), focus: vi.fn() };
+            el._handle = { replaceTrigger: vi.fn(), focus: vi.fn() };
 
             // With the menu closed, keys are left entirely to Lexical (no preventDefault).
             const enter = keyEvent('Enter');
@@ -314,13 +325,13 @@ describe('The rich Social composer', function () {
 
             // Escape dismisses an open menu without inserting anything, and leaves
             // focus in the editor (with the caret where it was).
-            el._ac_kind = 'emoji';
-            el._ac_items = [{ label: ':smile:', glyph: '😄' }];
+            el.typeahead.kind = 'emoji';
+            el.typeahead.items = [{ label: ':smile:', glyph: '😄' }];
             const esc = keyEvent('Escape');
             el.onEditorKeyDown(esc);
             expect(esc.preventDefault).toHaveBeenCalled();
-            expect(el._ac_items.length).toBe(0);
-            expect(el._handle.replaceEmojiTrigger).not.toHaveBeenCalled();
+            expect(el.typeahead.items.length).toBe(0);
+            expect(el._handle.replaceTrigger).not.toHaveBeenCalled();
             expect(el._handle.focus).toHaveBeenCalled();
         }),
     );

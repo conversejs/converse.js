@@ -17,6 +17,32 @@ export type RichEditor = {
     destroy: () => void;
 };
 
+/**
+ * One row of a composer's caret-typeahead menu. `label`/`detail`/`glyph`/`url` drive the
+ * shared row template; the remaining fields are set by the source that built the item, for
+ * its own `choose` action.
+ */
+export type TypeaheadItem = {
+    label: string; // The row's primary text (a shortname or display name)
+    detail?: string; // Secondary muted text (e.g. a mentioned JID)
+    glyph?: string; // A unicode emoji glyph rendered before the label
+    url?: string; // A custom emoji's image, rendered instead of `glyph`
+    jid?: string; // A mention's bare JID
+    name?: string; // A mention's display name (the link text, sans `@`)
+};
+
+/**
+ * A typeahead source owns one trigger character. `getQuery` reads its query from the caret
+ * (null when the caret isn't on this source's trigger), `getItems` builds the ranked menu,
+ * and `choose` replaces the trigger with the picked item.
+ */
+export type TypeaheadSource = {
+    kind: string;
+    getQuery: (handle: RichEditor | null) => string | null;
+    getItems: (query: string) => TypeaheadItem[] | Promise<TypeaheadItem[]>;
+    choose: (handle: RichEditor | null, query: string, item: TypeaheadItem) => void;
+};
+
 export type RichEditorOptions = {
     namespace?: string;
     nodes?: Array<any>; // Lexical node classes the transformers need

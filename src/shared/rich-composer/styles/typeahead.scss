@@ -1,0 +1,67 @@
+.conversejs {
+    // The inline caret-typeahead menu, shared by the rich composers. Positioned absolutely
+    // against whichever composer container it sits in, so that container must be
+    // `position: relative`.
+    .rich-ac {
+        position: absolute;
+        z-index: 10;
+        margin: 0.15em 0 0;
+        padding: 0.25em 0;
+        min-width: 14em;
+        max-height: 14em;
+        overflow-y: auto;
+        list-style: none;
+        background-color: var(--background-color);
+        border: 1px solid var(--foreground-color);
+        border-radius: 0.25em;
+        box-shadow: var(--raised-el-shadow);
+    }
+
+    .rich-ac__item {
+        display: flex;
+        align-items: center;
+        gap: 0.6em;
+        padding: 0.3em 0.75em;
+        cursor: pointer;
+        color: var(--foreground-color);
+
+        &.is-active,
+        &:hover {
+            background-color: var(--highlight-color, var(--chat-head-color));
+            color: var(--inverse-link-color, #fff);
+
+            .rich-ac__detail {
+                color: inherit;
+            }
+        }
+    }
+
+    .rich-ac__glyph {
+        flex: 0 0 1.4em;
+        font-size: 1.2em;
+        line-height: 1;
+        text-align: center;
+    }
+
+    .rich-ac__img {
+        width: 1.2em;
+        height: 1.2em;
+        vertical-align: middle;
+    }
+
+    .rich-ac__label {
+        font-size: 0.9em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .rich-ac__detail {
+        margin-inline-start: auto;
+        font-size: 0.8em;
+        color: var(--subdued-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

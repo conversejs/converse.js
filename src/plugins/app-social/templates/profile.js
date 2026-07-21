@@ -12,7 +12,8 @@ export default (el) => {
     // In feed mode the header names the community feed by its node; otherwise it's
     // a person, named by their display name.
     const name = el.isFeed ? el.node : profile.getDisplayName();
-    const posts = el.authorPosts;
+    // Only the current render window of the feed hits the DOM (see windowed.js).
+    const posts = el.windowedItems;
     // Show the author's banner when they've published one and it loads; otherwise
     // fall back to a Converse logo watermark so the header never looks broken.
     const banner_url = profile.get('banner_url');

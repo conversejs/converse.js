@@ -57,9 +57,10 @@ function tplFollowingBar(el) {
  * @param {import('../feed.js').default} el
  */
 export default (el) => {
-    // Reading the signal (via `visiblePosts`) is auto-tracked by `SignalWatcher`,
-    // so the list re-renders when the underlying collection changes.
-    const posts = el.visiblePosts;
+    // Reading the signal (via `windowedItems` → `visiblePosts`) is auto-tracked
+    // by `SignalWatcher`, so the list re-renders when the underlying collection
+    // changes. Only the current render window of the timeline hits the DOM.
+    const posts = el.windowedItems;
     const filtering = !!el.filter;
 
     const own_jid = _converse.session.get('bare_jid');

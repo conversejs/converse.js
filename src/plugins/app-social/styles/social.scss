@@ -18,6 +18,9 @@
         display: block;
         height: 100%;
         overflow-y: auto;
+        // The windowed post list keeps the reading position itself (see
+        // windowed.js); disable native scroll anchoring so both don't compensate.
+        overflow-anchor: none;
 
         .social-feed {
             max-width: 42em;
@@ -154,6 +157,12 @@
     // A post's detail view (its comment thread) and an author's profile view,
     // which take over the app area. Both mirror the feed container (scrollable,
     // centred, same max width) and share the sticky back bar.
+    // The profile's post list is windowed and keeps the reading position itself
+    // (see windowed.js); disable native scroll anchoring so both don't compensate.
+    converse-social-profile {
+        overflow-anchor: none;
+    }
+
     converse-social-post,
     converse-social-profile {
         display: block;

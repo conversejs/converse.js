@@ -4,6 +4,7 @@
  */
 import { SignalWatcher } from '@lit-labs/signals';
 import { CustomElement } from 'shared/components/element.js';
+import { isEditableTarget } from '../../utils/html.js';
 
 const WINDOW_SIZE = 50; // Number of items rendered to the DOM at a time.
 const WINDOW_DELTA = 5; // How many items the window moves at a time.
@@ -44,6 +45,14 @@ export class WindowedListElement extends SignalWatcher(CustomElement) {
 
     #scroll_pending = false;
 
+    // While set (during an "End"-button jump-to-bottom), the scroll is held at the
+    // bottom instead of pinning the top anchor.
+    #pin_bottom = false;
+    // The bottom offset we last forced. A smaller scrollTop can only be the user
+    // scrolling up (our own corrections and item growth never move the scroll up),
+    // which releases it.
+    #pin_scroll_top = 0;
+
     constructor() {
         super();
 
@@ -53,10 +62,16 @@ export class WindowedListElement extends SignalWatcher(CustomElement) {
         this.window_size = WINDOW_SIZE;
 
         this.scrollHandler = () => {
+            // A user scroll upward releases an End jump-to-bottom pin. Our own
+            // corrections and item growth only ever push the scroll down to the
+            // bottom, so a decrease in scrollTop can only be the user.
+            if (this.#pin_bottom && this.scrollTop < this.#pin_scroll_top - 2) this.#pin_bottom = false;
+
             // The scroll (the user's, or our own correction) settled on a new
-            // position. Re-pick the anchor there, synchronously, so content
-            // arriving before the next frame can't displace it uncorrected.
-            this.#captureAnchor();
+            // position. Re-pick the top anchor there (unless we're holding the
+            // bottom), synchronously, so content arriving before the next frame
+            // can't displace it uncorrected.
+            if (!this.#pin_bottom) this.#captureAnchor();
 
             if (this.#scroll_pending) return;
             this.#scroll_pending = true;
@@ -66,11 +81,18 @@ export class WindowedListElement extends SignalWatcher(CustomElement) {
                 this.#setWindow();
             });
         };
+
+        // Home / End jump to the very top / bottom of the whole list
+        this.keydownHandler = /** @param {KeyboardEvent} ev */ (ev) => this.#onKeyDown(ev);
     }
 
     connectedCallback() {
         super.connectedCallback();
         this.addEventListener('scroll', this.scrollHandler, { passive: true });
+
+        // On the document, not this element. After a wheel/trackpad scroll focus
+        // sits on <body>, which wouldn't reach a listener on the element.
+        document.addEventListener('keydown', this.keydownHandler);
 
         // Corrects the reading position when rendered items change height after
         // our own update has already run.
@@ -79,6 +101,7 @@ export class WindowedListElement extends SignalWatcher(CustomElement) {
 
     disconnectedCallback() {
         this.removeEventListener('scroll', this.scrollHandler);
+        document.removeEventListener('keydown', this.keydownHandler);
         this.#resize_observer?.disconnect();
         this.#resize_observer = null;
         this.#observed_container = null;
@@ -117,12 +140,65 @@ export class WindowedListElement extends SignalWatcher(CustomElement) {
     }
 
     /**
-     * Re-pin the window to the top, e.g. when the underlying list changes
-     * wholesale (a filter or tab change).
+     * Re-pin the window to the top. When the underlying list changes wholesale
+     * (a filter or tab change), or when the user presses Home. Drops the scroll
+     * anchor first, otherwise the next `updated()` would restore the old topmost
+     * item and fight the reset.
      */
     resetWindow() {
+        this.#anchor = null;
+        this.#pin_bottom = false;
         this.window_top = 0;
         this.scrollTop = 0;
+    }
+
+    /**
+     * Jump to the very bottom of the whole list (the oldest post), not just the
+     * rendered window, when the user presses "End". Moves the window to its last
+     * page and holds the scroll at the bottom through the freshly-windowed items'
+     * async height growth (see {@link #stickToBottom}).
+     */
+    resetToBottom() {
+        const total = this.virtualizedItems.length;
+        this.#anchor = null;
+        this.#pin_bottom = true;
+
+        // Start below any value the pre-render scroll position can clamp to, so a
+        // shrink-on-swap doesn't read as the user scrolling up before we settle.
+        this.#pin_scroll_top = 0;
+        this.window_top = Math.max(0, total - this.window_size);
+        this.#stickToBottom();
+    }
+
+    /**
+     * Hold the scroll at the bottom while the last page renders. A ResizeObserver
+     * can't do this. Swapping one full window for another of the same height
+     * leaves the container's net size unchanged, so it may never fire, even
+     * though `scrollTop` needs correcting as each item grows from its empty first
+     * render. So re-assert the bottom each frame until the height settles (or the
+     * user scrolls up, which clears {@link #pin_bottom} via the scroll handler).
+     */
+    #stickToBottom() {
+        let last_height = -1;
+        let stable = 0;
+        const step = () => {
+            if (!this.#pin_bottom) return; // The user scrolled away.
+
+            this.scrollTop = this.scrollHeight;
+            this.#pin_scroll_top = this.scrollTop;
+
+            if (this.scrollHeight === last_height) {
+                if (++stable >= 2) {
+                    this.#pin_bottom = false; // Settled at the bottom; a one-shot jump.
+                    return;
+                }
+            } else {
+                stable = 0;
+                last_height = this.scrollHeight;
+            }
+            requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
     }
 
     /**
@@ -198,7 +274,7 @@ export class WindowedListElement extends SignalWatcher(CustomElement) {
      * Put the anchor element back where it was pinned, so content changing
      * above the viewport doesn't move what the user is reading. The correction
      * scrolls, which re-picks the anchor at the restored position (via the
-     * scroll handler).
+     * scroll handler). A no-op while an End jump holds the bottom (no anchor).
      */
     #restoreAnchor() {
         const anchor = this.#anchor;
@@ -211,5 +287,21 @@ export class WindowedListElement extends SignalWatcher(CustomElement) {
 
         const delta = anchor.el.getBoundingClientRect().top - anchor.top;
         if (delta) this.scrollTop += delta;
+    }
+
+    /**
+     * Jump to the top (Home) or bottom (End) of the whole list. Skipped while a
+     * text field (the compose box or a search input) has focus, so the keys still
+     * move the caret there, and for Alt/Meta chords (OS/browser shortcuts).
+     * @param {KeyboardEvent} ev
+     */
+    #onKeyDown(ev) {
+        if (ev.altKey || ev.metaKey) return;
+        if (ev.key !== 'Home' && ev.key !== 'End') return;
+        if (isEditableTarget(ev.target)) return;
+
+        ev.preventDefault();
+        if (ev.key === 'Home') this.resetWindow();
+        else this.resetToBottom();
     }
 }

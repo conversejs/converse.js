@@ -69,6 +69,12 @@ export function xFormField2TemplateResult(xfield: import("@converse/headless/typ
  */
 export function getOuterWidth(el: HTMLElement, include_margin?: boolean): number;
 export function getRootElement(): HTMLElement;
+/**
+ * Whether an event target is a text-entry element
+ * @param {EventTarget|null} target
+ * @returns {boolean}
+ */
+export function isEditableTarget(target: EventTarget | null): boolean;
 export default u;
 export type TemplateResult = import("lit").TemplateResult;
 import { u } from '@converse/headless';

@@ -24,7 +24,12 @@ export default class MessageLimitIndicator extends CustomElement {
         this.listenTo(this.model, 'change:draft', () => {
             this._draft_length = this.model.get('draft')?.length ?? 0;
         });
-        this.listenTo(this.model, 'event:keyup', ({ ev }) => {
+        this.listenTo(this.model, 'event:keyup', ({ ev, text }) => {
+            // A contenteditable composer has no `.value`, so it reports its text directly.
+            if (typeof text === 'string') {
+                this._draft_length = text.length;
+                return;
+            }
             const textarea = /** @type {HTMLTextAreaElement} */ (ev.target);
             this._draft_length = textarea.value.length;
         });

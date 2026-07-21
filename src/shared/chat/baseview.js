@@ -73,14 +73,6 @@ export default class BaseChatView extends CustomElement {
         }
     }
 
-    getMessageForm() {
-        if (this.model.get('type') === CHATROOMS_TYPE) {
-            return this.querySelector('converse-muc-message-form');
-        } else {
-            return this.querySelector('converse-message-form');
-        }
-    }
-
     /**
      * Scrolls the chat down.
      *

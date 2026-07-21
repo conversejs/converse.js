@@ -207,14 +207,8 @@ describe('OMEMO Trust Verification', function () {
                 const device = devicelist.devices.get('555');
                 device.save('trusted', UNTRUSTED);
 
-                const textarea = view.querySelector('.chat-textarea');
-                textarea.value = 'This message should not be encrypted for untrusted device';
-                const message_form = view.querySelector('converse-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, 'This message should not be encrypted for untrusted device');
+                await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() =>
                     mock.bundleFetched(_converse, {
@@ -270,14 +264,8 @@ describe('OMEMO Trust Verification', function () {
                 const device = devicelist.devices.get('555');
                 expect(device.get('trusted')).toBe(UNDECIDED);
 
-                const textarea = view.querySelector('.chat-textarea');
-                textarea.value = 'This message should be encrypted for undecided device';
-                const message_form = view.querySelector('converse-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, 'This message should be encrypted for undecided device');
+                await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() =>
                     mock.bundleFetched(_converse, {
@@ -334,14 +322,8 @@ describe('OMEMO Trust Verification', function () {
                 const device = devicelist.devices.get('555');
                 device.save('trusted', TRUSTED);
 
-                const textarea = view.querySelector('.chat-textarea');
-                textarea.value = 'This message should be encrypted for trusted device';
-                const message_form = view.querySelector('converse-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, 'This message should be encrypted for trusted device');
+                await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() =>
                     mock.bundleFetched(_converse, {
@@ -586,14 +568,8 @@ describe('OMEMO Trust Verification', function () {
                     },
                 });
 
-                const textarea = view.querySelector('.chat-textarea');
-                textarea.value = 'This message should skip inactive devices';
-                const message_form = view.querySelector('converse-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, 'This message should skip inactive devices');
+                await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() =>
                     mock.bundleFetched(_converse, {

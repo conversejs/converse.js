@@ -30,14 +30,8 @@ describe('The OMEMO module', function () {
             const view = _converse.chatboxviews.get(contact_jid);
             view.model.set('omemo_active', true);
 
-            const textarea = view.querySelector('.chat-textarea');
-            textarea.value = 'This message will be encrypted';
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'This message will be encrypted');
+            await mock.pressComposerKey(view, 'Enter');
 
             await u.waitUntil(() =>
                 mock.bundleFetched(_converse, {
@@ -313,14 +307,8 @@ describe('The OMEMO module', function () {
             expect(my_devicelist.devices.at(2).get('id')).toBe('988349631');
             expect(my_devicelist.devices.get('988349631').get('active')).toBe(true);
 
-            const textarea = view.querySelector('.chat-textarea');
-            textarea.value = 'This is an encrypted message from this device';
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'This is an encrypted message from this device');
+            await mock.pressComposerKey(view, 'Enter');
             iq_stanza = await u.waitUntil(() => mock.bundleIQRequestSent(_converse, _converse.bare_jid, '988349631'));
             expect(iq_stanza).toEqualStanza(
                 stx`<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute('id')}" to="${_converse.bare_jid}" type="get" xmlns="jabber:client">
@@ -1195,14 +1183,8 @@ describe('The OMEMO module', function () {
             expect(u.hasClass('fa-unlock', icon)).toBe(false);
             expect(u.hasClass('fa-lock', icon)).toBe(true);
 
-            const textarea = view.querySelector('.chat-textarea');
-            textarea.value = 'This message will be sent encrypted';
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'This message will be sent encrypted');
+            await mock.pressComposerKey(view, 'Enter');
 
             view.model.save({ 'omemo_supported': false });
             await u.waitUntil(() => toolbar.querySelector('.toggle-omemo')?.dataset.disabled === 'true');

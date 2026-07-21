@@ -1,0 +1,65 @@
+.conversejs {
+    // The Lexical rich composer (gated by `chat_rich_compose`). The editable keeps the
+    // `chat-textarea` class, so it inherits the plain composer's sizing and colours; only
+    // the contenteditable-specific bits and the inline format hooks live here.
+    converse-message-form-rich {
+        .chat-rich {
+            position: relative;
+        }
+
+        .chat-rich__editable {
+            outline: none;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+
+            p {
+                margin: 0;
+            }
+
+            &.disabled {
+                opacity: 0.6;
+            }
+        }
+
+        // Sits over the editable's first line; clicks fall through to the editor.
+        .chat-rich__placeholder {
+            position: absolute;
+            top: 0.5em;
+            left: 0.5em;
+            color: var(--subdued-color);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        // XEP-0393 span directives, shown as the reader will see them.
+        .chat-rich__bold {
+            font-weight: bold;
+        }
+        .chat-rich__italic {
+            font-style: italic;
+        }
+        .chat-rich__strike {
+            text-decoration: line-through;
+        }
+        .chat-rich__code {
+            font-family: monospace;
+        }
+
+        // Block directives.
+        .chat-rich__quote {
+            margin: 0 0 0.4em;
+            padding-left: 0.75em;
+            border-left: 3px solid var(--subdued-color);
+            color: var(--subdued-color);
+        }
+        .chat-rich__code-block {
+            display: block;
+            margin: 0 0 0.4em;
+            padding: 0.4em 0.6em;
+            border-radius: 0.25em;
+            background-color: var(--highlight-color-hover);
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    }
+}

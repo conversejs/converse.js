@@ -21,6 +21,26 @@ export default class MessageForm extends CustomElement {
      */
     insertIntoTextArea(value: string, replace?: (boolean | string), position?: number, separator?: string): void;
     /**
+     * The composer's current text, trimmed. Overridden by the rich composer, which
+     * serializes its document instead of reading a textarea's value.
+     * @returns {string}
+     */
+    getInputText(): string;
+    /** Empty the composer after a successful send. */
+    clearInput(): void;
+    /**
+     * Block or unblock input while a message is in flight.
+     * @param {boolean} disabled
+     */
+    setInputDisabled(disabled: boolean): void;
+    focusInput(): void;
+    /**
+     * Insert `text` at the caret, or append it when there is no caret to speak of,
+     * persisting the result as the draft. Used by the quote action.
+     * @param {string} text
+     */
+    insertAtCaret(text: string): void;
+    /**
      * Handles the escape key press event to stop correcting a message.
      * @param {KeyboardEvent} ev
      */

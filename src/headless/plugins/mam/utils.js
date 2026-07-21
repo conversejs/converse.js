@@ -3,7 +3,7 @@
  * @typedef {import('../chat/model').default} ChatBox
  * @typedef {import('@converse/skeletor').Model} Model
  */
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import { Strophe, $iq } from 'strophe.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';

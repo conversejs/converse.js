@@ -1,4 +1,4 @@
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import log from '@converse/log';
 import { Model } from '@converse/skeletor';
 import converse from '../../shared/api/public.js';
@@ -626,7 +626,7 @@ async function encryptMessage(plaintext) {
     // by implementations.
     //
     // https://crypto.stackexchange.com/questions/26783/ciphertext-and-tag-size-and-iv-transmission-with-aes-in-gcm-mode
-    const iv = crypto.getRandomValues(new window.Uint8Array(12));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
     const key = await crypto.subtle.generateKey(KEY_ALGO, true, ['encrypt', 'decrypt']);
     const algo = /** @type {AesGcmParams} */ {
         iv,
@@ -1218,7 +1218,7 @@ export async function encryptFile(file) {
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
     const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, await file.arrayBuffer());
-    const exported_key = await window.crypto.subtle.exportKey('raw', key);
+    const exported_key = await crypto.subtle.exportKey('raw', key);
     const encrypted_file = new File([encrypted], file.name, { type: file.type, lastModified: file.lastModified });
 
     Object.assign(encrypted_file, { xep454_ivkey: arrayBufferToHex(iv) + arrayBufferToHex(exported_key) });

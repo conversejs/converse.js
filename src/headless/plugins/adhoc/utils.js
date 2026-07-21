@@ -1,4 +1,4 @@
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import converse from '../../shared/api/public.js';
 import { parseXForm } from '../../shared/parsers.js';
 

@@ -5,6 +5,7 @@ import _converse from '../_converse.js';
 import presence_api from './presence.js';
 import connection_api from '../connection/api.js';
 import { replacePromise } from '../../utils/session.js';
+import { removeLocalStorageItem } from '../../utils/environment.js';
 import { attemptNonPreboundSession, setUserJID } from '../../utils/init.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { user_settings_api } from '../settings/user/api.js';
@@ -110,7 +111,7 @@ const api = {
 
                 // Remove the session JID, otherwise the user would just be logged
                 // in again upon reload. See #2759
-                localStorage.removeItem('conversejs-session-jid');
+                removeLocalStorageItem('conversejs-session-jid');
 
                 /**
                  * Triggered once the user has logged out.

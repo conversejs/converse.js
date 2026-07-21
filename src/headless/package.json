@@ -11,14 +11,28 @@
   "license": "MPL-2.0",
   "exports": {
     ".": {
+      "node": {
+        "types": "./types/index-node.d.ts",
+        "import": "./index-node.js"
+      },
       "import": {
         "types": "./types/index.d.ts",
         "default": "./dist/converse-headless.js"
       }
     },
+    "./node": {
+      "types": "./types/index-node.d.ts",
+      "import": "./index-node.js"
+    },
     "./dist/*": "./dist/*",
     "./types/*": {
       "types": "./types/*.d.ts"
+    }
+  },
+  "imports": {
+    "#sizzle": {
+      "node": "./shims/sizzle.js",
+      "default": "sizzle"
     }
   },
   "main": "./dist/converse-headless.js",
@@ -54,6 +68,7 @@
   "scripts": {
     "test": "cd ../.. && vitest run --project headless",
     "test:browser": "cd ../.. && vitest --project headless --browser.headless=false",
+    "test:node": "cd ../.. && vitest run --project headless-node",
     "types": "tsc -p tsconfig.json"
   },
   "bugs": {
@@ -72,7 +87,13 @@
     "pluggable.js": "3.0.1",
     "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
-    "strophe.js": "4.1.2"
+    "strophe.js": "^5.0.0"
   },
-  "devDependencies": {}
+  "optionalDependencies": {
+    "@xmldom/xmldom": "^0.9.0",
+    "ws": "^8.21.1"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
 }

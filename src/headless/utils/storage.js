@@ -1,7 +1,7 @@
 import { PersistentStorage } from '@converse/skeletor';
 import _converse from '../shared/_converse.js';
 import { settings_api } from '../shared/settings/api.js';
-import { getUnloadEvent } from './session.js';
+import { addUnloadListener, IS_BROWSER, removeUnloadListener } from './environment.js';
 
 const settings = settings_api;
 
@@ -21,13 +21,17 @@ export function getDefaultStorageType() {
  * @param {import('./types').StorageType} type
  */
 function storeUsesIndexedDB(type) {
-    return type === 'persistent' && settings.get('persistent_store') === 'IndexedDB';
+    return IS_BROWSER && type === 'persistent' && settings.get('persistent_store') === 'IndexedDB';
 }
 
 /**
  * @returns {boolean}
  */
 export function isPersistentStorageAvailable() {
+    // Every store type Converse knows about is a browser API. Node currently
+    // keeps everything in memory, so nothing survives a restart.
+    if (!IS_BROWSER) return false;
+
     const store = settings.get('persistent_store');
     if (store === 'sessionStorage') {
         try {
@@ -72,9 +76,8 @@ export function initStorage(model, id, type) {
     model.storage = createStore(id, type);
     if (storeUsesIndexedDB(type)) {
         const flush = () => model.storage.flush();
-        const unloadevent = getUnloadEvent();
-        window.addEventListener(unloadevent, flush);
-        model.on('destroy', () => window.removeEventListener(unloadevent, flush));
+        addUnloadListener(flush);
+        model.on('destroy', () => removeUnloadListener(flush));
         model.listenTo(_converse, 'beforeLogout', flush);
     }
 }

@@ -9,6 +9,7 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import ping_api from './api.js';
 import { onWindowStateChanged, registerHandlers, unregisterIntervalHandler } from './utils.js';
+import { addVisibilityListener } from '../../utils/environment.js';
 
 const { Strophe } = converse.env;
 
@@ -29,6 +30,6 @@ converse.plugins.add('converse-ping', {
         api.listen.on('reconnected', registerHandlers);
         api.listen.on('disconnected', unregisterIntervalHandler);
 
-        document.addEventListener('visibilitychange', onWindowStateChanged);
+        addVisibilityListener(onWindowStateChanged);
     }
 });

@@ -1,7 +1,7 @@
 /**
  * @module:headless-shared-parsers
  */
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import { Strophe } from 'strophe.js';
 import log from '@converse/log';
 import { decodeHTMLEntities } from '../utils/html.js';

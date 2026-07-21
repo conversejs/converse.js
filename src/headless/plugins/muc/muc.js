@@ -3,7 +3,7 @@
  */
 import debounce from 'lodash-es/debounce.js';
 import pick from 'lodash-es/pick.js';
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import { getOpenPromise } from '@converse/openpromise';
 import { Model } from '@converse/skeletor';
 import log from '@converse/log';

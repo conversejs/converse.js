@@ -1,4 +1,4 @@
-import sizzle from "sizzle";
+import sizzle from "#sizzle";
 import { Strophe, Stanza } from 'strophe.js';
 import log from "@converse/log";
 import _converse from '../../shared/_converse.js';

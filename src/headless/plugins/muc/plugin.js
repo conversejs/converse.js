@@ -17,6 +17,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
+import { addRouteListener, addVisibilityListener } from '../../utils/environment.js';
 import {
     autoJoinRooms,
     disconnectChatRooms,
@@ -160,7 +161,7 @@ converse.plugins.add('converse-muc', {
         Object.assign(_converse, labels); // XXX DEPRECATED
 
         routeToRoom();
-        addEventListener('hashchange', routeToRoom);
+        addRouteListener(routeToRoom);
 
         // TODO: DEPRECATED
         const legacy_exports = {
@@ -206,6 +207,6 @@ converse.plugins.add('converse-muc', {
         api.listen.on('streamResumed', onBeforeResourceBinding);
         api.listen.on('beforeResourceBinding', onBeforeResourceBinding);
 
-        document.addEventListener('visibilitychange', onWindowStateChanged);
+        addVisibilityListener(onWindowStateChanged);
     },
 });

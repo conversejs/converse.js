@@ -5,7 +5,7 @@ import log from '@converse/log';
 import { MUC_ROLE_WEIGHTS } from './constants.js';
 import { safeSave } from '../../utils/init.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
-import { getUnloadEvent } from '../../utils/session.js';
+import { addUnloadListener, getRouteHash, isAppHidden } from '../../utils/environment.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
@@ -100,7 +100,7 @@ export function disconnectChatRooms() {
 }
 
 export async function onWindowStateChanged() {
-    if (!document.hidden && api.connection.connected()) {
+    if (!isAppHidden() && api.connection.connected()) {
         const rooms = await api.rooms.get();
         rooms.forEach((room) => room.rejoinIfNecessary());
     }
@@ -116,11 +116,12 @@ export async function routeToRoom(event) {
     if (api.settings.get('enable_url_routing') && api.settings.get('view_mode') === 'fullscreen') {
         return;
     }
-    if (!location.hash.startsWith('#converse/room?jid=')) {
+    const hash = getRouteHash();
+    if (!hash.startsWith('#converse/room?jid=')) {
         return;
     }
     event?.preventDefault();
-    const jid = location.hash.split('=').pop();
+    const jid = hash.split('=').pop();
     if (!u.isValidMUCJID(jid)) {
         return log.warn(`invalid jid "${jid}" provided in url fragment`);
     }
@@ -280,7 +281,7 @@ export function onParsePresence(stanza, attrs) {
 }
 
 export function onStatusInitialized() {
-    window.addEventListener(getUnloadEvent(), () => {
+    addUnloadListener(() => {
         const using_websocket = api.connection.isType('websocket');
         if (using_websocket && !api.connection.get()?.sm?.state.id) {
             // For non-SMACKS websocket connections, or non-resumeable

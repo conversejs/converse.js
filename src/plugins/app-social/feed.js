@@ -3,16 +3,16 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { _converse, api, log } from '@converse/headless';
-import { SignalWatcher } from '@lit-labs/signals';
-import { CustomElement } from 'shared/components/element.js';
 import { aggregatedCollectionSignal } from 'shared/signals.js';
 import { postMatchesHashtag } from './texture.js';
 import tplFeed from './templates/feed.js';
+import { WindowedListElement } from './windowed.js';
 import { byTimeDesc } from 'utils/time.js';
 
 /**
  * Renders the social timeline: a compose box plus the merged list of posts from
- * the user's own feed and every feed they follow, newest-first.
+ * the user's own feed and every feed they follow, newest-first. Only a window
+ * of the timeline is in the DOM at a time (see {@link WindowedListElement}).
  *
  * Also serves as a reference adoption of TC39 Signals in a Converse component:
  * `SignalWatcher` auto-tracks the `aggregatedCollectionSignal` read during
@@ -22,13 +22,13 @@ import { byTimeDesc } from 'utils/time.js';
  * @param {string} [jid] attribute — the compose feed's JID; defaults to the
  *      user's own. (The timeline itself always aggregates all feeds.)
  */
-export default class SocialFeed extends SignalWatcher(CustomElement) {
+export default class SocialFeed extends WindowedListElement {
     static get properties() {
         return {
+            ...super.properties,
             jid: { type: String },
             // The active hashtag filter (without the leading `#`), or null for the
-            // full timeline. Set by the parent `SocialApp` (which owns it, so it's
-            // routable); a reactive property, so a change re-renders.
+            // full timeline.
             filter: { type: String },
         };
     }
@@ -67,6 +67,28 @@ export default class SocialFeed extends SignalWatcher(CustomElement) {
     get visiblePosts() {
         const posts = /** @type {import('@converse/headless').PubSubMessage[]} */ (this.posts?.get() ?? []);
         return this.filter ? posts.filter((p) => postMatchesHashtag(p, this.filter)) : posts;
+    }
+
+    /**
+     * The full timeline the render window slides over (see {@link WindowedListElement}).
+     * @returns {import('@converse/headless').PubSubMessage[]}
+     */
+    get virtualizedItems() {
+        return this.visiblePosts;
+    }
+
+    /** @returns {HTMLElement|null} */
+    get itemsContainer() {
+        return this.querySelector('.social-feed__posts');
+    }
+
+    /**
+     * @param {import('lit').PropertyValues} changed
+     */
+    willUpdate(changed) {
+        if (changed.has('filter') && this.hasUpdated) this.resetWindow();
+
+        super.willUpdate(changed);
     }
 
     render() {

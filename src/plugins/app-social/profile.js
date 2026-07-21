@@ -3,10 +3,9 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { _converse, api, converse, log } from '@converse/headless';
-import { SignalWatcher } from '@lit-labs/signals';
 import { __ } from 'i18n';
-import { CustomElement } from 'shared/components/element.js';
 import { collectionSignal } from 'shared/signals.js';
+import { WindowedListElement } from './windowed.js';
 import 'shared/components/logo.js';
 import 'shared/components/dropdown.js';
 import './following.js';
@@ -22,27 +21,19 @@ const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
  * An author's profile view, or a followed community feed (when {@link node} is
  * not the microblog node). A header above the feed, newest-first. `SignalWatcher`
  * auto-tracks the `collectionSignal` over the feed's messages, so the post list
- * re-renders as posts are backfilled or pushed live.
+ * re-renders as posts are backfilled or pushed live. Only a window of the feed
+ * is in the DOM at a time (see {@link WindowedListElement}).
  */
-export default class SocialProfile extends SignalWatcher(CustomElement) {
+export default class SocialProfile extends WindowedListElement {
     static get properties() {
         return {
+            ...super.properties,
             jid: { type: String },
-            // The node to show: the microblog node (a person's feed) or a
-            // community/topic node (a feed we follow), which switches to feed mode.
             node: { type: String },
-            // Which tab is shown: the author's 'posts' feed or their 'following'
-            // list. Owned by SocialApp (so it's routable) and passed in.
             tab: { type: String },
             _busy: { type: Boolean, state: true },
-            // Whether the initial post backfill has settled. Until then we hold
-            // off on the "no posts" / "not public" empty states.
             _loaded: { type: Boolean, state: true },
-            // Set when the banner image fails to load (e.g. a 404), so we fall
-            // back to the logo watermark instead of a broken-image placeholder.
             _banner_error: { type: Boolean, state: true },
-            // How many accounts this author follows (their XEP-0330 list),
-            // fetched best-effort for other authors; null until known/refused.
             _following_count: { type: Number, state: true },
         };
     }
@@ -203,6 +194,29 @@ export default class SocialProfile extends SignalWatcher(CustomElement) {
      */
     get authorPosts() {
         return /** @type {import('@converse/headless').PubSubMessage[]} */ (this.posts?.get() ?? []);
+    }
+
+    /**
+     * The full post list the render window slides over (see {@link WindowedListElement}).
+     * Empty on the "Following" tab, which renders a different list entirely.
+     * @returns {import('@converse/headless').PubSubMessage[]}
+     */
+    get virtualizedItems() {
+        return this.tab === 'following' && !this.isFeed ? [] : this.authorPosts;
+    }
+
+    /** @returns {HTMLElement|null} */
+    get itemsContainer() {
+        return this.querySelector('.social-profile__posts');
+    }
+
+    /**
+     * @param {import('lit').PropertyValues} changed
+     */
+    willUpdate(changed) {
+        if (changed.has('tab') && this.hasUpdated) this.resetWindow();
+
+        super.willUpdate(changed);
     }
 
     /**

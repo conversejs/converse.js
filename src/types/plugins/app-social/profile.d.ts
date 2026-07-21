@@ -1,11 +1,11 @@
-declare const SocialProfile_base: typeof CustomElement & (new (...args: any[]) => import("@lit-labs/signals").SignalWatcherApi);
 /**
  * An author's profile view, or a followed community feed (when {@link node} is
  * not the microblog node). A header above the feed, newest-first. `SignalWatcher`
  * auto-tracks the `collectionSignal` over the feed's messages, so the post list
- * re-renders as posts are backfilled or pushed live.
+ * re-renders as posts are backfilled or pushed live. Only a window of the feed
+ * is in the DOM at a time (see {@link WindowedListElement}).
  */
-export default class SocialProfile extends SocialProfile_base {
+export default class SocialProfile extends WindowedListElement {
     static get properties(): {
         jid: {
             type: StringConstructor;
@@ -30,6 +30,9 @@ export default class SocialProfile extends SocialProfile_base {
         };
         _following_count: {
             type: NumberConstructor;
+            state: boolean;
+        };
+        window_top: {
             state: boolean;
         };
     };
@@ -91,6 +94,12 @@ export default class SocialProfile extends SocialProfile_base {
      */
     get authorPosts(): import("@converse/headless").PubSubMessage[];
     /**
+     * The full post list the render window slides over (see {@link WindowedListElement}).
+     * Empty on the "Following" tab, which renders a different list entirely.
+     * @returns {import('@converse/headless').PubSubMessage[]}
+     */
+    get virtualizedItems(): import("@converse/headless").PubSubMessage[];
+    /**
      * Whether the backfill was refused because we're not allowed to read this feed
      * @returns {boolean}
      */
@@ -138,6 +147,5 @@ export default class SocialProfile extends SocialProfile_base {
      */
     onToggleFollow(): Promise<void>;
 }
-import { CustomElement } from 'shared/components/element.js';
-export {};
+import { WindowedListElement } from './windowed.js';
 //# sourceMappingURL=profile.d.ts.map

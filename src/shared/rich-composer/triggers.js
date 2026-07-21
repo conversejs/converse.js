@@ -19,4 +19,9 @@ export const EMOJI_TRIGGER = /(?:^|\s):([-+\w]+)$/;
 // A mention trigger. An `@` that starts a token, followed by zero or more name/JID
 // characters (a bare `@` lists everyone). `@` and `.` are in the charset so a full
 // JID can be typed; `:` is not, so this and EMOJI_TRIGGER are mutually exclusive.
-export const MENTION_TRIGGER = /(?:^|\s)@([\w.@-]*)$/;
+//
+// The `@` may follow any non-word character, not just whitespace, so that writing
+// "(@romeo" or "\"@romeo" still offers completions. This mirrors what the textarea
+// autocomplete treated as a mention boundary (any Unicode separator or punctuation).
+// A preceding `@` is excluded, so an email address in flight does not re-trigger.
+export const MENTION_TRIGGER = /(?:^|[^\w@])@([\w.@-]*)$/u;

@@ -17,15 +17,15 @@ describe('The MUC empty state', function () {
             // answer it with an empty archive (no messages, complete) here.
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const mam_iq = await u.waitUntil(() =>
-                sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop()
+                sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop(),
             );
             _converse.api.connection.get()._dataRecv(
                 mock.createRequest(
                     _converse,
                     stx`<iq type="result" id="${mam_iq.getAttribute('id')}" xmlns="jabber:client">
                         <fin xmlns="urn:xmpp:mam:2" complete="true"/>
-                    </iq>`
-                )
+                    </iq>`,
+                ),
             );
 
             // A room we've entered with no conversation yet shows the empty state.

@@ -216,21 +216,12 @@ describe('A Groupchat Message', function () {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, nick);
             const view = _converse.chatboxviews.get(muc_jid);
-            const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
-            expect(textarea.value).toBe('');
-            const message_form = view.querySelector('converse-muc-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
-            expect(textarea.value).toBe('');
+            expect(mock.composerText(view)).toBe('');
+            await mock.pressComposerKey(view, 'ArrowUp');
+            expect(mock.composerText(view)).toBe('');
 
-            textarea.value = 'But soft, what light through yonder airlock breaks?';
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'But soft, what light through yonder airlock breaks?');
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
             expect(view.querySelector('.chat-msg__text').textContent).toBe(
                 'But soft, what light through yonder airlock breaks?',
@@ -239,24 +230,17 @@ describe('A Groupchat Message', function () {
             const first_msg = view.model.messages.findWhere({
                 'message': 'But soft, what light through yonder airlock breaks?',
             });
-            expect(textarea.value).toBe('');
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
-            await u.waitUntil(() => textarea.value === 'But soft, what light through yonder airlock breaks?');
+            expect(mock.composerText(view)).toBe('');
+            await mock.pressComposerKey(view, 'ArrowUp');
+            await u.waitUntil(() => mock.composerText(view) === 'But soft, what light through yonder airlock breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')));
 
             spyOn(_converse.api.connection.get(), 'send');
             const new_text = 'But soft, what light through yonder window breaks?';
-            textarea.value = new_text;
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, new_text);
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(
                 () =>
                     Array.from(view.querySelectorAll('.chat-msg__text')).filter(
@@ -302,21 +286,15 @@ describe('A Groupchat Message', function () {
             expect(view.querySelectorAll('.chat-msg').length).toBe(2);
 
             // Test that pressing the down arrow cancels message correction
-            expect(textarea.value).toBe('');
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
-            await u.waitUntil(() => textarea.value === 'But soft, what light through yonder window breaks?');
+            expect(mock.composerText(view)).toBe('');
+            await mock.pressComposerKey(view, 'ArrowUp');
+            await u.waitUntil(() => mock.composerText(view) === 'But soft, what light through yonder window breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.querySelectorAll('.chat-msg').length).toBe(2);
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
-            expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowDown',
-            });
-            await u.waitUntil(() => textarea.value === '');
+            expect(mock.composerText(view)).toBe('But soft, what light through yonder window breaks?');
+            await mock.pressComposerKey(view, 'ArrowDown');
+            await u.waitUntil(() => mock.composerText(view) === '');
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.querySelectorAll('.chat-msg').length).toBe(2);
             await u.waitUntil(() => !u.hasClass('correcting', view.querySelector('.chat-msg')), 500);

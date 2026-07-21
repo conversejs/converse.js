@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import 'shared/avatar/avatar.js';
 
 /**
  * The inline caret-typeahead menu (emoji shortnames, mentions), anchored just below the
@@ -21,6 +22,15 @@ export default (ac) => html`<ul class="rich-ac" role="listbox" style="${ac.style
                 ac.choose(i);
             }}
         >
+            ${item.avatar
+                ? html`<converse-avatar
+                      .model=${item.avatar}
+                      name="${item.label}"
+                      height="22"
+                      width="22"
+                      class="avatar rich-ac__avatar"
+                  ></converse-avatar>`
+                : ''}
             ${item.url || item.glyph
                 ? html`<span class="rich-ac__glyph">
                       ${item.url ? html`<img class="rich-ac__img" src="${item.url}" alt="${item.label}" />` : item.glyph}

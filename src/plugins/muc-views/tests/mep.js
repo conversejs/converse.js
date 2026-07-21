@@ -196,7 +196,9 @@ describe('A XEP-0316 MEP notification', function () {
             const msg = 'An anonymous user has saluted romeo';
             const reason = 'Thank you for helping me yesterday';
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <message from="${muc_jid}"
                     to="${_converse.jid}"
                     type="headline"
@@ -217,7 +219,8 @@ describe('A XEP-0316 MEP notification', function () {
                     </items>
                 </event>
                 <stanza-id xmlns="urn:xmpp:sid:0" id="stanza-id-1" by="${muc_jid}"/>
-            </message>`),
+            </message>`,
+                ),
             );
 
             await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);

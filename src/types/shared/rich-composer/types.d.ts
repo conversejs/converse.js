@@ -26,6 +26,7 @@ export type TypeaheadItem = {
     detail?: string;
     glyph?: string;
     url?: string;
+    avatar?: any;
     jid?: string;
     name?: string;
 };

@@ -189,15 +189,11 @@ async function createContacts(_converse, type, length) {
 }
 
 /**
- * The chat's message form, whichever composer it renders (the rich Lexical one for
- * one-to-one chats, the textarea for MUC).
+ * The composer form inside `view`, whichever composer it is. Tolerates a missing view, so
+ * it can be polled while one is being torn down and re-created (switching chats does that).
  */
 function getMessageForm(view) {
-    return (
-        view.querySelector('converse-message-form-rich') ||
-        view.querySelector('converse-message-form') ||
-        view.querySelector('converse-muc-message-form')
-    );
+    return view?.querySelector('converse-message-form, converse-muc-message-form');
 }
 
 /**
@@ -209,8 +205,17 @@ function composerText(view) {
     return getMessageForm(view)?.getInputText?.() ?? '';
 }
 
-/** Replace the composer's content. Pass '' to empty it. */
+/**
+ * Replace the composer's content. Pass '' to empty it.
+ *
+ * Waits for the composer to be accepting input first. Submitting disables it until the
+ * message (or command) has gone out, and a spec that writes straight through that would be
+ * doing something no user can: its text would then be wiped by the clear that ends the
+ * in-flight submit, and the next Enter would send nothing.
+ */
 async function setComposerText(view, text) {
+    const { u } = window.converse.env;
+    await u.waitUntil(() => !view.querySelector('.chat-textarea.disabled'));
     const form = getMessageForm(view);
     if (form.ensureEditor) {
         const handle = await form.ensureEditor();
@@ -266,12 +271,7 @@ async function releaseComposerKey(view, key) {
 async function sendMessage(_converse, view, message) {
     const { u } = _converse.env;
     const promise = new Promise((resolve) => view.model.messages.once('rendered', resolve));
-    const message_form = await u.waitUntil(
-        () =>
-            view.querySelector('converse-message-form-rich') ||
-            view.querySelector('converse-message-form') ||
-            view.querySelector('converse-muc-message-form'),
-    );
+    const message_form = await u.waitUntil(() => getMessageForm(view));
     if (message_form.ensureEditor) {
         // The rich composer. Insert literally rather than through setMarkdown, which would
         // parse the text as styling and could rewrite a message a spec cares about.

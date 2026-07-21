@@ -459,7 +459,8 @@ describe('Message Retractions', function () {
                 const mod_jid = `${muc_jid}/${name}`;
                 const mod_occ_id = u.getUniqueId();
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence from="${mod_jid}"
                         id="${u.getUniqueId()}"
                         to="${_converse.bare_jid}"
@@ -737,7 +738,8 @@ describe('Message Retractions', function () {
 
         it(
             "can be retracted by the sender if they're a moderator",
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['chatBoxesFetched'],
                 { 'allow_message_retraction': 'moderator' },
                 async function (_converse) {

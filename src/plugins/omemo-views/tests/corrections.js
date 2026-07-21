@@ -263,7 +263,7 @@ describe('An OMEMO encrypted MUC message', function () {
 
             const original_text = 'This message will be encrypted';
             await mock.setComposerText(view, original_text);
-            const message_form = view.querySelector('converse-muc-message-form');
+            const message_form = mock.getMessageForm(view);
             await mock.pressComposerKey(view, 'Enter');
 
             await u.waitUntil(() =>

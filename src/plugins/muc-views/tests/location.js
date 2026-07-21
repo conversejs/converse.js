@@ -58,7 +58,9 @@ describe('The Location Button', function () {
 
             // Simulate another occupant joining
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                     <presence
                         from="${muc_jid}/firstwitch"
                         id="${u.getUniqueId()}"
@@ -67,7 +69,8 @@ describe('The Location Button', function () {
                     <x xmlns="http://jabber.org/protocol/muc#user">
                         <item affiliation="owner" role="moderator"/>
                     </x>
-                    </presence>`),
+                    </presence>`,
+                ),
             );
 
             if (view.model.get('hidden_occupants')) {

@@ -7,7 +7,8 @@ describe('MAM archived messages', function () {
     it(
         'will be fetched newest first and will automatically fetch again if the placeholder message becomes visible',
 
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             [],
             {
                 archived_messages_page_size: 3,
@@ -70,7 +71,9 @@ describe('MAM archived messages', function () {
                 while (conn.IQ_stanzas.length) conn.IQ_stanzas.pop();
 
                 conn._dataRecv(
-                    mock.createRequest(_converse, stx`
+                    mock.createRequest(
+                        _converse,
+                        stx`
             <iq type="result" id="${iq_id}" xmlns="jabber:client">
                 <fin xmlns="urn:xmpp:mam:2">
                     <set xmlns="http://jabber.org/protocol/rsm">
@@ -78,7 +81,8 @@ describe('MAM archived messages', function () {
                         <last>c2c07703-b285-4529-a4b4-12594f749c58</last>
                     </set>
                 </fin>
-            </iq>`),
+            </iq>`,
+                    ),
                 );
 
                 await u.waitUntil(() => _converse.chatboxes.get(muc_jid).messages.length === 4);
@@ -242,7 +246,8 @@ describe('MAM archived messages', function () {
             const impersonated_jid = `${muc_jid}/i_am_groot`;
             const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence to='romeo@montague.lit/_converse.js-29092160' from='${sender_jid}' xmlns="jabber:client">
                     <x xmlns='${Strophe.NS.MUC_USER}'>
                         <item affiliation='owner' jid='newguy@montague.lit/_converse.js-290929789' role='participant'/>

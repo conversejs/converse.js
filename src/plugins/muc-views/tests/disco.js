@@ -25,7 +25,8 @@ describe('Service Discovery', function () {
             const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<iq type="result"
                     from="montague.lit"
                     to="romeo@montague.lit/orchard"
@@ -51,7 +52,9 @@ describe('Service Discovery', function () {
             );
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq type="result"
                     from="montague.lit"
                     to="romeo@montague.lit/orchard"
@@ -60,7 +63,8 @@ describe('Service Discovery', function () {
                 <query xmlns="http://jabber.org/protocol/disco#items">
                     <item jid="chat.shakespeare.lit" name="Chatroom Service"/>
                 </query>
-            </iq>`),
+            </iq>`,
+                ),
             );
 
             stanza = await u.waitUntil(() =>
@@ -73,7 +77,9 @@ describe('Service Discovery', function () {
             );
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq type="result"
                     from="chat.shakespeare.lit"
                     to="romeo@montague.lit/orchard"
@@ -83,7 +89,8 @@ describe('Service Discovery', function () {
                     <identity category="conference" name="Play-Specific Chatrooms" type="text"/>
                     <feature var="http://jabber.org/protocol/muc"/>
                 </query>
-            </iq>`),
+            </iq>`,
+                ),
             );
 
             const entities = await _converse.api.disco.entities.get();

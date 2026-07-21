@@ -457,6 +457,18 @@ export function getRootElement() {
     return root;
 }
 
+/**
+ * Whether an event target is a text-entry element
+ * @param {EventTarget|null} target
+ * @returns {boolean}
+ */
+export function isEditableTarget(target) {
+    if (!(target instanceof HTMLElement)) return false;
+
+    const tag = target.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
+}
+
 Object.assign(u, {
     addClass,
     ancestor,
@@ -468,6 +480,7 @@ Object.assign(u, {
     getRootElement,
     hasClass,
     hideElement,
+    isEditableTarget,
     isInDOM,
     isVisible,
     nextUntil,

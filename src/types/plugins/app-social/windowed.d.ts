@@ -25,6 +25,7 @@ export class WindowedListElement extends WindowedListElement_base {
     window_top: number;
     window_size: number;
     scrollHandler: () => void;
+    keydownHandler: (ev: KeyboardEvent) => void;
     /**
      * The full list of models the window slides over. Subclasses must implement this.
      * @returns {import('@converse/skeletor').Model[]}
@@ -42,10 +43,19 @@ export class WindowedListElement extends WindowedListElement_base {
      */
     get windowedItems(): import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[];
     /**
-     * Re-pin the window to the top, e.g. when the underlying list changes
-     * wholesale (a filter or tab change).
+     * Re-pin the window to the top. When the underlying list changes wholesale
+     * (a filter or tab change), or when the user presses Home. Drops the scroll
+     * anchor first, otherwise the next `updated()` would restore the old topmost
+     * item and fight the reset.
      */
     resetWindow(): void;
+    /**
+     * Jump to the very bottom of the whole list (the oldest post), not just the
+     * rendered window, when the user presses "End". Moves the window to its last
+     * page and holds the scroll at the bottom through the freshly-windowed items'
+     * async height growth (see {@link #stickToBottom}).
+     */
+    resetToBottom(): void;
     #private;
 }
 import { CustomElement } from 'shared/components/element.js';

@@ -117,4 +117,93 @@ describe('The social feed virtualization', function () {
             expect(el.scrollTop).toBeGreaterThan(600);
         }),
     );
+
+    it(
+        'jumps to the top of the whole list when Home is pressed',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const bare_jid = _converse.bare_jid;
+
+            const el = /** @type {any} */ (mountSocialFeed());
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            el.style.display = 'block';
+            el.style.height = '400px';
+            el.style.overflowY = 'auto';
+
+            const total = el.window_size + 30;
+            const t0 = new Date('2024-01-01T10:00:00Z').getTime();
+            for (let i = 0; i < total; i++) {
+                const published = new Date(t0 + i * 60000).toISOString();
+                receive(_converse, makePost(bare_jid, bare_jid, `post-${i}`, `Post number ${i}`, published));
+            }
+            await u.waitUntil(() => el.querySelectorAll('converse-social-message').length === el.window_size);
+
+            // Scroll to the bottom until the window has slid off the newest posts
+            // and the oldest is rendered.
+            await u.waitUntil(() => {
+                el.scrollTop = el.scrollHeight;
+                return renderedBodies(el).includes('Post number 0');
+            });
+            expect(renderedBodies(el)).not.toContain(`Post number ${total - 1}`);
+
+            // Pressing Home (from <body>, as after a wheel scroll) re-pins the
+            // window to the newest post and scrolls to the top of the list.
+            document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+            await u.waitUntil(() => renderedBodies(el)[0] === `Post number ${total - 1}`);
+            expect(el.scrollTop).toBe(0);
+            expect(el.querySelectorAll('converse-social-message').length).toBe(el.window_size);
+
+            // Home while typing in the compose box is left to the browser (caret
+            // to line start): it must not jump the list.
+            await u.waitUntil(() => {
+                el.scrollTop = el.scrollHeight;
+                return renderedBodies(el).includes('Post number 0');
+            });
+            const textarea = /** @type {HTMLTextAreaElement} */ (el.querySelector('.social-compose__textarea'));
+            textarea.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+            // Give a reset (if it wrongly fired) a chance to render before asserting.
+            await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+            expect(renderedBodies(el)).toContain('Post number 0');
+        }),
+    );
+
+    it(
+        'jumps to the bottom of the whole list when End is pressed',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const bare_jid = _converse.bare_jid;
+
+            const el = /** @type {any} */ (mountSocialFeed());
+            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+
+            el.style.display = 'block';
+            el.style.height = '400px';
+            el.style.overflowY = 'auto';
+
+            const total = el.window_size + 30;
+            const t0 = new Date('2024-01-01T10:00:00Z').getTime();
+            for (let i = 0; i < total; i++) {
+                const published = new Date(t0 + i * 60000).toISOString();
+                receive(_converse, makePost(bare_jid, bare_jid, `post-${i}`, `Post number ${i}`, published));
+            }
+
+            // Starts pinned to the top: the newest post is rendered, the oldest is not.
+            await u.waitUntil(() => el.querySelectorAll('converse-social-message').length === el.window_size);
+            expect(renderedBodies(el)).not.toContain('Post number 0');
+
+            // Pressing End (from <body>) jumps straight to the last page: the
+            // oldest post is rendered at the very bottom and the newest is pruned.
+            document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+            await u.waitUntil(() => renderedBodies(el).includes('Post number 0'));
+            const bodies = renderedBodies(el);
+            expect(bodies[bodies.length - 1]).toBe('Post number 0');
+            expect(bodies).not.toContain(`Post number ${total - 1}`);
+            expect(el.querySelectorAll('converse-social-message').length).toBe(el.window_size);
+
+            // The scroller is held at the bottom even as the freshly-windowed
+            // posts finish rendering and grow to their real height.
+            await u.waitUntil(() => el.scrollHeight - el.scrollTop - el.clientHeight <= 2);
+        }),
+    );
 });

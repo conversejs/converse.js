@@ -29,8 +29,9 @@ export default class MessageForm extends CustomElement {
         this.listenTo(this.model, 'change:hidden', () => {
             if (this.model.get('hidden')) {
                 const draft_hint = /** @type {HTMLInputElement} */ (this.querySelector('.spoiler-hint'))?.value;
-                const draft_message = /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea'))?.value;
-                u.safeSave(this.model, { draft: draft_message, draft_hint });
+                // Via the seam, so the rich composer serializes its document rather than
+                // reading a `.value` that a contenteditable doesn't have.
+                u.safeSave(this.model, { draft: this.getInputText(), draft_hint });
             }
         });
 
@@ -82,6 +83,55 @@ export default class MessageForm extends CustomElement {
         const ev = new Event('change', { bubbles: false, cancelable: true });
         textarea.dispatchEvent(ev);
         u.placeCaretAtEnd(textarea);
+    }
+
+    /**
+     * The composer's current text, trimmed. Overridden by the rich composer, which
+     * serializes its document instead of reading a textarea's value.
+     * @returns {string}
+     */
+    getInputText() {
+        return /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea')).value.trim();
+    }
+
+    /** Empty the composer after a successful send. */
+    clearInput() {
+        const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea'));
+        textarea.value = '';
+        textarea.style.height = 'auto';
+    }
+
+    /**
+     * Block or unblock input while a message is in flight.
+     * @param {boolean} disabled
+     */
+    setInputDisabled(disabled) {
+        const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea'));
+        if (disabled) {
+            u.addClass('disabled', textarea);
+            textarea.setAttribute('disabled', 'disabled');
+        } else {
+            textarea.removeAttribute('disabled');
+            u.removeClass('disabled', textarea);
+        }
+    }
+
+    focusInput() {
+        /** @type {HTMLElement} */ (this.querySelector('.chat-textarea'))?.focus();
+    }
+
+    /**
+     * Insert `text` at the caret, or append it when there is no caret to speak of,
+     * persisting the result as the draft. Used by the quote action.
+     * @param {string} text
+     */
+    insertAtCaret(text) {
+        const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea'));
+        const idx = textarea?.selectionEnd;
+        const draft = this.model.get('draft') ?? '';
+        this.model.save({
+            draft: idx ? `${draft.slice(0, idx)}\n${text}\n${draft.slice(idx)}` : draft + text,
+        });
     }
 
     /**
@@ -200,8 +250,7 @@ export default class MessageForm extends CustomElement {
     async onFormSubmitted(ev) {
         ev?.preventDefault?.();
         const { chatboxviews } = _converse.state;
-        const textarea = /** @type {HTMLTextAreaElement} */ (this.querySelector('.chat-textarea'));
-        const message_text = textarea.value.trim();
+        const message_text = this.getInputText();
         if (
             (api.settings.get('message_limit') && message_text.length > api.settings.get('message_limit')) ||
             !message_text.replace(/\s/g, '').length
@@ -220,16 +269,14 @@ export default class MessageForm extends CustomElement {
             hint_el = /** @type {HTMLInputElement} */ (this.querySelector('form.chat-message-form input.spoiler-hint'));
             spoiler_hint = hint_el.value;
         }
-        u.addClass('disabled', textarea);
-        textarea.setAttribute('disabled', 'disabled');
+        this.setInputDisabled(true);
         /** @type {EmojiDropdown} */ (this.querySelector('converse-emoji-dropdown'))?.hide();
 
         const is_command = await parseMessageForCommands(this.model, message_text);
         const message = is_command ? null : await this.model.sendMessage({ 'body': message_text, spoiler_hint });
         if (is_command || message) {
             hint_el.value = '';
-            textarea.value = '';
-            textarea.style.height = 'auto';
+            this.clearInput();
             this.model.save({ 'draft': '' });
         }
         if (api.settings.get('view_mode') === 'overlayed') {
@@ -239,8 +286,7 @@ export default class MessageForm extends CustomElement {
             const msgs_container = chatview.querySelector('.chat-content__messages');
             msgs_container.parentElement.style.display = 'none';
         }
-        textarea.removeAttribute('disabled');
-        u.removeClass('disabled', textarea);
+        this.setInputDisabled(false);
 
         if (api.settings.get('view_mode') === 'overlayed') {
             // XXX: Chrome flexbug workaround.
@@ -251,7 +297,7 @@ export default class MessageForm extends CustomElement {
         // Suppress events, otherwise superfluous CSN gets set
         // immediately after the message, causing rate-limiting issues.
         this.model.setChatState(ACTIVE, { 'silent': true });
-        textarea.focus();
+        this.focusInput();
     }
 }
 

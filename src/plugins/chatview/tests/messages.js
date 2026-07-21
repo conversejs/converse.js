@@ -1325,16 +1325,8 @@ describe('A Chat Message', function () {
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
 
-                    const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                    textarea.value = 'hello world';
-                    const enter_event = {
-                        'target': textarea,
-                        'preventDefault': function preventDefault() {},
-                        'stopPropagation': function stopPropagation() {},
-                        key: 'Enter',
-                    };
-                    const message_form = view.querySelector('converse-message-form');
-                    message_form.onKeyDown(enter_event);
+                    await mock.setComposerText(view, 'hello world');
+                    await mock.pressComposerKey(view, 'Enter');
                     await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
                     const msg = stx`
@@ -1377,16 +1369,8 @@ describe('A Chat Message', function () {
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
 
-                    const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                    textarea.value = 'hello world';
-                    const enter_event = {
-                        'target': textarea,
-                        'preventDefault': function preventDefault() {},
-                        'stopPropagation': function stopPropagation() {},
-                        key: 'Enter',
-                    };
-                    const message_form = view.querySelector('converse-message-form');
-                    message_form.onKeyDown(enter_event);
+                    await mock.setComposerText(view, 'hello world');
+                    await mock.pressComposerKey(view, 'Enter');
                     await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
                     // Normally "modify" errors need to have their id set to the

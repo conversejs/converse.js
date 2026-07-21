@@ -91,14 +91,8 @@ describe('A spoiler message', function () {
             let spoiler_toggle = view.querySelector('.toggle-compose-spoiler');
             spoiler_toggle.click();
 
-            const textarea = view.querySelector('.chat-textarea');
-            textarea.value = 'This is the spoiler';
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'This is the spoiler');
+            await mock.pressComposerKey(view, 'Enter');
             await new Promise((resolve) => api.listen.on('sendMessage', resolve));
 
             const stanza = api.connection.get().send.calls.argsFor(0)[0];
@@ -152,17 +146,11 @@ describe('A spoiler message', function () {
 
             spyOn(api.connection.get(), 'send');
 
-            const textarea = view.querySelector('.chat-textarea');
-            textarea.value = 'This is the spoiler';
+            await mock.setComposerText(view, 'This is the spoiler');
             const hint_input = view.querySelector('.spoiler-hint');
             hint_input.value = 'This is the hint';
 
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.pressComposerKey(view, 'Enter');
             await new Promise((resolve) => api.listen.on('sendMessage', resolve));
 
             const stanza = api.connection.get().send.calls.argsFor(0)[0];
@@ -223,7 +211,7 @@ describe('A spoiler message', function () {
 
             await mock.openChatBoxFor(_converse, contact1_jid);
             await mock.waitUntilDiscoConfirmed(_converse, contact1_jid + '/phone', [], [Strophe.NS.SPOILER]);
-            const view = _converse.chatboxviews.get(contact1_jid);
+            let view = _converse.chatboxviews.get(contact1_jid);
             spyOn(api.connection.get(), 'send');
 
             await u.waitUntil(() => view.querySelector('.toggle-compose-spoiler'));
@@ -233,17 +221,18 @@ describe('A spoiler message', function () {
             let hint_input = view.querySelector('.spoiler-hint');
             hint_input.value = 'This is the hint';
 
-            let textarea = view.querySelector('.chat-textarea');
-            textarea.value = 'This is the spoiler';
+            await mock.setComposerText(view, 'This is the spoiler');
 
             await mock.openChatBoxFor(_converse, contact2_jid);
             await mock.openChatBoxFor(_converse, contact1_jid);
+            // Re-fetch: switching chats replaces the view, and the old element is detached.
+            view = _converse.chatboxviews.get(contact1_jid);
 
             hint_input = view.querySelector('.spoiler-hint');
             expect(hint_input.value).toBe('This is the hint');
 
-            textarea = view.querySelector('.chat-textarea');
-            expect(textarea.value).toBe('This is the spoiler');
+            // Restoring a draft means loading it into the editor, which attaches lazily.
+            await u.waitUntil(() => mock.composerText(view) === 'This is the spoiler');
         }),
     );
 });

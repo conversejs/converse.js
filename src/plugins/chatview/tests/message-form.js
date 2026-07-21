@@ -9,7 +9,7 @@ describe('A message form', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            const textarea = view.querySelector('textarea.chat-textarea');
+            const textarea = view.querySelector('.chat-textarea');
 
             const clipboardData = new DataTransfer();
             clipboardData.items.add(new File(['test'], 'test.txt', { type: 'text/plain' }));
@@ -34,7 +34,7 @@ describe('A message form', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            const textarea = view.querySelector('textarea.chat-textarea');
+            const textarea = view.querySelector('.chat-textarea');
 
             const keyDownEvent = new KeyboardEvent('keydown', {
                 key: 'Shift',
@@ -75,7 +75,7 @@ describe('A message form', function () {
             const message = await view.model.sendMessage({ body: 'hello world' });
             message.save('correcting', true);
 
-            const textarea = view.querySelector('textarea.chat-textarea');
+            const textarea = view.querySelector('.chat-textarea');
             const escEvent = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
             textarea.dispatchEvent(escEvent);
 
@@ -91,7 +91,7 @@ describe('A message form', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            const textarea = view.querySelector('textarea.chat-textarea');
+            const textarea = view.querySelector('.chat-textarea');
 
             const clipboardData = new DataTransfer();
             clipboardData.setData('text/plain', 'Hello');

@@ -12,16 +12,10 @@ describe('A Chat Message', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            const textarea = view.querySelector('textarea.chat-textarea');
             const firstMessageText = 'But soft, what light through yonder airlock breaks?';
 
-            textarea.value = firstMessageText;
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, firstMessageText);
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
             let el = view.querySelector('converse-chat-message converse-avatar .avatar-initials');

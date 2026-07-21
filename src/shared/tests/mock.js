@@ -188,17 +188,105 @@ async function createContacts(_converse, type, length) {
     await Promise.all(promises);
 }
 
+/**
+ * The chat's message form, whichever composer it renders (the rich Lexical one for
+ * one-to-one chats, the textarea for MUC).
+ */
+function getMessageForm(view) {
+    return (
+        view.querySelector('converse-message-form-rich') ||
+        view.querySelector('converse-message-form') ||
+        view.querySelector('converse-muc-message-form')
+    );
+}
+
+/**
+ * The composer's current text, whichever composer it is. Deliberately synchronous, so it
+ * can be used inside `u.waitUntil` (which tests the predicate's return value for
+ * truthiness, and would treat a promise as an immediate success).
+ */
+function composerText(view) {
+    return getMessageForm(view)?.getInputText?.() ?? '';
+}
+
+/** Replace the composer's content. Pass '' to empty it. */
+async function setComposerText(view, text) {
+    const form = getMessageForm(view);
+    if (form.ensureEditor) {
+        const handle = await form.ensureEditor();
+        handle.clear();
+        if (text) handle.insertText(text);
+        form.onChange();
+    } else {
+        /** @type {HTMLTextAreaElement} */ (view.querySelector('.chat-textarea')).value = text;
+    }
+}
+
+/**
+ * Dispatch a keydown at the composer, the way a spec used to hand-roll one against the
+ * textarea. The event still carries a `target`, since the textarea path reads selection
+ * state off it.
+ */
+async function pressComposerKey(view, key, extra = {}) {
+    const form = getMessageForm(view);
+    if (form.ensureEditor) await form.ensureEditor();
+    // Deliberately not awaited. The textarea path fired this straight off a keydown, so
+    // specs register their 'rendered' listener after the call but before the message
+    // actually renders; awaiting the submit here would let the render slip past them.
+    form.onKeyDown({
+        target: view.querySelector('.chat-textarea'),
+        key,
+        preventDefault: () => {},
+        stopPropagation: () => {},
+        ...extra,
+    });
+}
+
+/**
+ * Put the caret at the start of the composer. A real browser does this when you arrow up,
+ * but a synthetic keydown does not, so specs that walk back through corrections say so.
+ */
+async function placeComposerCaretAtStart(view) {
+    const form = getMessageForm(view);
+    if (form.ensureEditor) {
+        const handle = await form.ensureEditor();
+        handle.selectStart();
+    } else {
+        /** @type {HTMLTextAreaElement} */ (view.querySelector('.chat-textarea')).selectionEnd = 0;
+    }
+}
+
+/** The keyup counterpart of pressComposerKey, for specs watching `event:keyup`. */
+async function releaseComposerKey(view, key) {
+    const form = getMessageForm(view);
+    if (form.ensureEditor) await form.ensureEditor();
+    form.onKeyUp({ target: view.querySelector('.chat-textarea'), key, preventDefault: () => {} });
+}
+
 async function sendMessage(_converse, view, message) {
     const { u } = _converse.env;
     const promise = new Promise((resolve) => view.model.messages.once('rendered', resolve));
-    const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-    textarea.value = message;
-    const message_form = view.querySelector('converse-message-form') || view.querySelector('converse-muc-message-form');
-    message_form.onKeyDown({
-        target: view.querySelector('textarea.chat-textarea'),
-        preventDefault: () => {},
-        key: 'Enter',
-    });
+    const message_form = await u.waitUntil(
+        () =>
+            view.querySelector('converse-message-form-rich') ||
+            view.querySelector('converse-message-form') ||
+            view.querySelector('converse-muc-message-form'),
+    );
+    if (message_form.ensureEditor) {
+        // The rich composer. Insert literally rather than through setMarkdown, which would
+        // parse the text as styling and could rewrite a message a spec cares about.
+        const handle = await message_form.ensureEditor();
+        handle.clear();
+        handle.insertText(message);
+        // Deliberately not awaited, matching how the textarea path fired this off a
+        // keydown: some specs send bodies that cannot be serialized into a stanza (a raw
+        // control character, say) and assert only on the locally rendered echo.
+        message_form.onFormSubmitted();
+    } else {
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
+        textarea.value = message;
+        message_form.onKeyDown({ target: textarea, preventDefault: () => {}, key: 'Enter' });
+    }
     return promise;
 }
 
@@ -647,6 +735,12 @@ export default {
     req_names,
     returnMemberLists,
     sendMessage,
+    getMessageForm,
+    composerText,
+    setComposerText,
+    pressComposerKey,
+    releaseComposerKey,
+    placeComposerCaretAtStart,
     toggleControlBox,
     waitForMUCDiscoInfo,
     waitForNewMUCDiscoInfo,

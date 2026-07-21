@@ -16,6 +16,6 @@ export default (el) => {
               </div>`
             : ''}
         <converse-reply-preview .model=${el.model}></converse-reply-preview>
-        <converse-message-form .model=${el.model}></converse-message-form>
+        <converse-message-form-rich .model=${el.model}></converse-message-form-rich>
     `;
 };

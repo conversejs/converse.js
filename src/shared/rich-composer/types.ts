@@ -6,9 +6,12 @@ export type RichEditor = {
     isEmpty: () => boolean;
     insertText: (text: string) => void;
     format: (type: import('lexical').TextFormatType) => boolean;
+    isCaretAtStart: () => boolean; // Stands in for a textarea's selectionEnd === 0
+    isCaretAtEnd: () => boolean;
     getTriggerQuery: (regex: RegExp) => string | null; // See ./triggers.js
     replaceTrigger: (trigger: string, replacement: string) => void;
     replaceTriggerWithLink: (trigger: string, text: string, url: string) => void;
+    selectStart: () => void;
     clear: () => void;
     focus: () => void;
     destroy: () => void;

@@ -50,12 +50,7 @@ export default defineConfig({
     test: {
         globals: true,
         restoreMocks: true, // match Jasmine's per-spec spyOn restoration
-        // Converse leaves async work (lit renders, localforage reads) in flight
-        // when a test ends; the next test's initConverse tears down #conversejs and
-        // clears storage, so that trailing work errors against a gone root/store.
-        // Karma+Jasmine silently tolerated these unhandled rejections; match that
-        // so the runner swap doesn't change pass/fail semantics.
-        dangerouslyIgnoreUnhandledErrors: true,
+        dangerouslyIgnoreUnhandledErrors: false,
         testTimeout: 7000,
         setupFiles,
         sequence: { shuffle: false },

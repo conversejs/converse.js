@@ -3,11 +3,30 @@
  *   - OMEMO 2 bundle parsing
  *   - OMEMO 2 message stanza routing
  */
+import { afterEach } from 'vitest';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 import { answerV2DeviceList, answerV2Bundle } from './utils.js';
 
 const { Strophe, sizzle, stx, u } = converse.env;
+
+// These specs answer the device-list IQ that decryption fetches by polling on a timer.
+// Registering the timers means a spec that gives up early (decryption is CPU-heavy, and a
+// wait can time out) cannot leave one running to inject stanzas into whatever runs next.
+const pollers = [];
+function pollFor(fn, ms = 50) {
+    const id = setInterval(fn, ms);
+    pollers.push(id);
+    return id;
+}
+afterEach(() => {
+    while (pollers.length) clearInterval(pollers.pop());
+});
+
+// Decryption sets up an X3DH session before the reaction lands, which can outrun
+// waitUntil's default on a loaded machine. Still inside vitest's per-test timeout, so a
+// genuine failure reports as itself rather than as the whole test timing out.
+const DECRYPT_WAIT = 5000;
 
 /**
  * Override the read-only `document.visibilityState` and fire a
@@ -50,7 +69,7 @@ describe('OMEMO 2 message reception', function () {
             // background with a list containing the sending device.
             const conn = api.connection.get();
             const v2_dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`;
-            const interval = setInterval(() => {
+            const interval = pollFor(() => {
                 const iq = Array.from(conn.IQ_stanzas)
                     .filter((i) => i.querySelector(v2_dl_selector) && !i.dataset_handled)
                     .pop();
@@ -135,7 +154,7 @@ describe('OMEMO 2 message reception', function () {
             // Answer the contact's v2 device-list IQ fetched during decryption.
             const conn = api.connection.get();
             const v2_dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`;
-            const interval = setInterval(() => {
+            const interval = pollFor(() => {
                 const iq = Array.from(conn.IQ_stanzas)
                     .filter((i) => i.querySelector(v2_dl_selector) && !i.dataset_handled)
                     .pop();
@@ -234,7 +253,7 @@ describe('OMEMO 2 message reception', function () {
 
             // Answer the contact's v2 device-list IQ fetched during decryption.
             const v2_dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`;
-            const interval = setInterval(() => {
+            const interval = pollFor(() => {
                 const iq = Array.from(conn.IQ_stanzas)
                     .filter((i) => i.querySelector(v2_dl_selector) && !i.dataset_handled)
                     .pop();
@@ -275,7 +294,7 @@ describe('OMEMO 2 message reception', function () {
             </message>`;
             conn._dataRecv(mock.createRequest(_converse, stanza));
 
-            await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('👍'));
+            await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('👍'), DECRYPT_WAIT);
             clearInterval(interval);
 
             expect(msg_model.get('reactions')[contact_jid]).toContain('👍');
@@ -326,7 +345,7 @@ describe('OMEMO 2 message reception', function () {
 
             // Answer the contact's v2 device-list IQ fetched during decryption.
             const v2_dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`;
-            const interval = setInterval(() => {
+            const interval = pollFor(() => {
                 const iq = Array.from(conn.IQ_stanzas)
                     .filter((i) => i.querySelector(v2_dl_selector) && !i.dataset_handled)
                     .pop();
@@ -367,7 +386,7 @@ describe('OMEMO 2 message reception', function () {
             </message>`;
             conn._dataRecv(mock.createRequest(_converse, stanza));
 
-            await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('👍'));
+            await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('👍'), DECRYPT_WAIT);
             clearInterval(interval);
 
             expect(msg_model.get('reactions')[contact_jid]).toContain('👍');
@@ -484,7 +503,7 @@ describe('OMEMO 2 message reception', function () {
             // list to mark the sending device active. Answer that IQ in the
             // background with a list containing the sending device.
             const dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO_DEVICELIST}"]`;
-            const interval = setInterval(() => {
+            const interval = pollFor(() => {
                 const iq = Array.from(conn.IQ_stanzas)
                     .filter((i) => i.querySelector(dl_selector) && !i.dataset_handled)
                     .pop();

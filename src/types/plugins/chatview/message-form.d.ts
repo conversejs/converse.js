@@ -3,43 +3,75 @@ export default class MessageForm extends CustomElement {
         model: {
             type: ObjectConstructor;
         };
+        is_empty: {
+            type: BooleanConstructor;
+            state: boolean;
+        };
     };
     model: any;
     shiftDown: boolean;
+    is_empty: boolean;
+    /** @type {import('shared/rich-composer/types').RichEditor|null} */
+    _handle: import("shared/rich-composer/types").RichEditor | null;
+    /** @type {Promise<import('shared/rich-composer/types').RichEditor>|null} */
+    _init: Promise<import("shared/rich-composer/types").RichEditor> | null;
+    typeahead: TypeaheadController;
+    /**
+     * The caret-typeahead sources this composer offers, most specific first (the first
+     * whose trigger the caret sits on wins, so triggers must be mutually exclusive).
+     * @returns {import('shared/rich-composer/types').TypeaheadSource[]}
+     */
+    getTypeaheadSources(): import("shared/rich-composer/types").TypeaheadSource[];
     initialize(): Promise<void>;
     handleEmojiSelection: ({ detail }: CustomEvent) => void;
     render(): import("lit-html").TemplateResult<1>;
+    /** Load an externally-set draft into the editor, ignoring the ones we wrote ourselves. */
+    onDraftChanged(): Promise<void>;
+    updated(): void;
     /**
-     * Insert a particular string value into the textarea of this chat box.
-     * @param {string} value - The value to be inserted.
-     * @param {(boolean|string)} [replace] - Whether an existing value
-     *  should be replaced. If set to `true`, the entire textarea will
-     *  be replaced with the new value. If set to a string, then only
-     *  that string will be replaced *if* a position is also specified.
-     * @param {number} [position] - The end index of the string to be
-     *  replaced with the new value.
+     * Load Lexical and attach it to the contenteditable host, once. The dynamic import
+     * keeps the editor out of the core bundle.
+     * @returns {Promise<import('shared/rich-composer/types').RichEditor>}
      */
-    insertIntoTextArea(value: string, replace?: (boolean | string), position?: number, separator?: string): void;
+    ensureEditor(): Promise<import("shared/rich-composer/types").RichEditor>;
+    /** Reflect emptiness so the placeholder shows only when there is nothing to send. */
+    onChange(): void;
     /**
-     * The composer's current text, trimmed. Overridden by the rich composer, which
-     * serializes its document instead of reading a textarea's value.
-     * @returns {string}
+     * @param {FocusEvent} [ev]
      */
+    onEditorFocusOut(ev?: FocusEvent): void;
+    /** The composer's text, untrimmed, which is what the character counter measures. */
+    rawText(): string;
+    /** @returns {string} The document serialized to an XEP-0393 styled body. */
     getInputText(): string;
-    /** Empty the composer after a successful send. */
     clearInput(): void;
-    /**
-     * Block or unblock input while a message is in flight.
-     * @param {boolean} disabled
-     */
+    /** @param {boolean} disabled */
     setInputDisabled(disabled: boolean): void;
     focusInput(): void;
     /**
-     * Insert `text` at the caret, or append it when there is no caret to speak of,
-     * persisting the result as the draft. Used by the quote action.
+     * Insert text at the caret. Overrides the textarea implementation, which the emoji
+     * dropdown drives through the `emojiSelected` event.
+     * @param {string} value
+     */
+    insertIntoTextArea(value: string): Promise<void>;
+    /**
+     * Insert `text` at the caret, then mirror the result into the draft.
+     *
+     * The textarea version writes to `draft` and lets the template render it back, which
+     * an attached editor would never see, so the insert has to go through the editor.
      * @param {string} text
      */
-    insertAtCaret(text: string): void;
+    insertAtCaret(text: string): Promise<void>;
+    /**
+     * Mirrors the base handler, but hands the character counter the composer's text: it
+     * would otherwise read `.value` off the event target, which a contenteditable lacks.
+     * @param {KeyboardEvent} ev
+     */
+    onKeyUp(ev: KeyboardEvent): void;
+    /**
+     * @param {KeyboardEvent} ev
+     */
+    onKeyDown(ev: KeyboardEvent): any;
     /**
      * Handles the escape key press event to stop correcting a message.
      * @param {KeyboardEvent} ev
@@ -56,18 +88,11 @@ export default class MessageForm extends CustomElement {
      */
     onDrop(ev: DragEvent): void;
     /**
-     * @param {KeyboardEvent} ev
-     */
-    onKeyUp(ev: KeyboardEvent): void;
-    /**
-     * @param {KeyboardEvent} [ev]
-     */
-    onKeyDown(ev?: KeyboardEvent): any;
-    /**
      * @param {SubmitEvent|KeyboardEvent} ev
      */
     onFormSubmitted(ev: SubmitEvent | KeyboardEvent): Promise<void>;
 }
 export type EmojiDropdown = import("shared/chat/emoji-dropdown.js").default;
 import { CustomElement } from 'shared/components/element.js';
+import { TypeaheadController } from 'shared/rich-composer/typeahead.js';
 //# sourceMappingURL=message-form.d.ts.map

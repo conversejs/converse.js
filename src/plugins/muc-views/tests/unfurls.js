@@ -528,46 +528,42 @@ describe('A Groupchat Message', function () {
 
     it(
         'will not render an unfurl that has been removed in a subsequent correction',
-        mock.initConverse(converse, ['chatBoxesFetched'], { auto_register_muc_nickname: false }, async function (_converse) {
-            const { api } = _converse;
-            const { jid: own_jid } = api.connection.get();
-            const nick = 'romeo';
-            const muc_jid = 'lounge@muc.montague.lit';
-            await mock.openAndEnterMUC(_converse, muc_jid, nick);
-            const view = _converse.chatboxviews.get(muc_jid);
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            { auto_register_muc_nickname: false },
+            async function (_converse) {
+                const { api } = _converse;
+                const { jid: own_jid } = api.connection.get();
+                const nick = 'romeo';
+                const muc_jid = 'lounge@muc.montague.lit';
+                await mock.openAndEnterMUC(_converse, muc_jid, nick);
+                const view = _converse.chatboxviews.get(muc_jid);
 
-            const unfurl_image_src = 'https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg';
-            const unfurl_url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+                const unfurl_image_src = 'https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg';
+                const unfurl_url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
 
-            spyOn(_converse.api.connection.get(), 'send').and.callThrough();
+                spyOn(_converse.api.connection.get(), 'send').and.callThrough();
 
-            const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
-            const message_form = view.querySelector('converse-muc-message-form');
-            textarea.value = unfurl_url;
-            const enter_event = {
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                stopPropagation: function stopPropagation() {},
-                key: 'Enter',
-            };
-            message_form.onKeyDown(enter_event);
+                await mock.setComposerText(view, unfurl_url);
+                await mock.pressComposerKey(view, 'Enter');
 
-            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
-            expect(view.querySelector('.chat-msg__text').textContent).toBe(unfurl_url);
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
+                expect(view.querySelector('.chat-msg__text').textContent).toBe(unfurl_url);
 
-            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-            let msg = await u.waitUntil(() => sent_stanzas.filter((s) => s.matches('message')).pop());
-            expect(msg).toEqualStanza(stx`
+                const sent_stanzas = _converse.api.connection.get().sent_stanzas;
+                let msg = await u.waitUntil(() => sent_stanzas.filter((s) => s.matches('message')).pop());
+                expect(msg).toEqualStanza(stx`
             <message from="${own_jid}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">
                 <body>${unfurl_url}</body>
                 <active xmlns="http://jabber.org/protocol/chatstates"/>
                 <origin-id id="${msg.querySelector('origin-id')?.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>
             </message>`);
 
-            const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
-            expect(el.textContent).toBe(unfurl_url);
+                const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
+                expect(el.textContent).toBe(unfurl_url);
 
-            const metadata_stanza = stx`
+                const metadata_stanza = stx`
             <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="${msg.getAttribute('id')}">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
@@ -585,37 +581,35 @@ describe('A Groupchat Message', function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:height" content="720" />
                 </apply-to>
             </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, metadata_stanza));
 
-            const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
-            expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe(unfurl_image_src);
-            expect(unfurl.querySelector('.card-img-top').getAttribute('href')).toBe(unfurl_url);
+                const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
+                expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe(unfurl_image_src);
+                expect(unfurl.querySelector('.card-img-top').getAttribute('href')).toBe(unfurl_url);
 
-            // Modify the message to use a different URL
-            expect(textarea.value).toBe('');
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
-            await u.waitUntil(() => textarea.value === unfurl_url);
-            textarea.value = 'never mind';
-            message_form.onKeyDown(enter_event);
+                // Modify the message to use a different URL
+                expect(mock.composerText(view)).toBe('');
+                await mock.pressComposerKey(view, 'ArrowUp');
+                await u.waitUntil(() => mock.composerText(view) === unfurl_url);
+                await mock.setComposerText(view, 'never mind');
+                await mock.pressComposerKey(view, 'Enter');
 
-            const getSentMessages = () =>
-                _converse.api.connection
-                    .get()
-                    .send.calls.all()
-                    .map((c) => c.args[0])
-                    .filter((s) => s.nodeName === 'message');
-            await u.waitUntil(() => getSentMessages().length == 2);
-            msg = getSentMessages().pop();
-            expect(msg).toEqualStanza(stx`
+                const getSentMessages = () =>
+                    _converse.api.connection
+                        .get()
+                        .send.calls.all()
+                        .map((c) => c.args[0])
+                        .filter((s) => s.nodeName === 'message');
+                await u.waitUntil(() => getSentMessages().length == 2);
+                msg = getSentMessages().pop();
+                expect(msg).toEqualStanza(stx`
             <message from="${own_jid}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">
                 <body>never mind</body>
                 <active xmlns="http://jabber.org/protocol/chatstates"/>
                 <replace id="${msg.querySelector('replace')?.getAttribute('id')}" xmlns="urn:xmpp:message-correct:0"/>
                 <origin-id id="${msg.querySelector('origin-id')?.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>
             </message>`);
-        }),
+            },
+        ),
     );
 });

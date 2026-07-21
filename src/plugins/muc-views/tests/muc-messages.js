@@ -15,16 +15,8 @@ describe('A Groupchat Message', function () {
                 const muc_jid = 'lounge@montague.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
                 const view = _converse.chatboxviews.get(muc_jid);
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = 'hello world';
-                const enter_event = {
-                    'target': textarea,
-                    'preventDefault': function preventDefault() {},
-                    'stopPropagation': function stopPropagation() {},
-                    key: 'Enter',
-                };
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onKeyDown(enter_event);
+                await mock.setComposerText(view, 'hello world');
+                await mock.pressComposerKey(view, 'Enter');
                 await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
                 const msg = view.model.messages.at(0);
@@ -319,14 +311,8 @@ describe('A Groupchat Message', function () {
             const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
             await mock.openAndEnterMUC(_converse, muc_jid, nick, features);
             const view = _converse.chatboxviews.get(muc_jid);
-            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            textarea.value = 'But soft, what light through yonder airlock breaks?';
-            const message_form = view.querySelector('converse-muc-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'But soft, what light through yonder airlock breaks?');
+            await mock.pressComposerKey(view, 'Enter');
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
             expect(view.querySelectorAll('.chat-msg__body.chat-msg__body--received').length).toBe(0);
 
@@ -364,14 +350,8 @@ describe('A Groupchat Message', function () {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
-            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            textarea.value = 'But soft, what light through yonder airlock breaks?';
-            const message_form = view.querySelector('converse-muc-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'But soft, what light through yonder airlock breaks?');
+            await mock.pressComposerKey(view, 'Enter');
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
 

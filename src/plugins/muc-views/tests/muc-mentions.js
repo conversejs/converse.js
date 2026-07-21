@@ -8,7 +8,8 @@ const { dayjs, stx, u } = converse.env;
 describe('MUC Mention Notifications', function () {
     it(
         'may be received from a MUC in which the user is not currently present',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             [],
             {
                 allow_bookmarks: false, // Hack to get the rooms list to render

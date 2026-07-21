@@ -1,10 +1,19 @@
 .conversejs {
-    // The Lexical rich composer (gated by `chat_rich_compose`). The editable keeps the
-    // `chat-textarea` class, so it inherits the plain composer's sizing and colours; only
-    // the contenteditable-specific bits and the inline format hooks live here.
-    converse-message-form-rich {
+    // The Lexical composer. The editable keeps the `chat-textarea` class, so it inherits
+    // the sizing and colours that were the textarea's; only the contenteditable-specific
+    // bits and the inline format hooks live here.
+    //
+    // Both composers are listed: MUC renders `converse-muc-message-form`, and none of this
+    // reaches it otherwise.
+    converse-message-form,
+    converse-muc-message-form {
         .chat-rich {
             position: relative;
+            // A textarea got this from the UA stylesheet, so it ignored the centering that
+            // converse-muc-bottom-panel applies to its other states (the muted notice, the
+            // nickname form). A contenteditable is an ordinary element and inherits it, so
+            // say it here rather than relying on an ancestor.
+            text-align: start;
         }
 
         .chat-rich__editable {

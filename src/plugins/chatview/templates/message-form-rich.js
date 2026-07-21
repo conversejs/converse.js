@@ -1,6 +1,7 @@
 import { __ } from 'i18n';
 import { api, u } from '@converse/headless';
 import { html } from 'lit';
+import tplTypeahead from 'shared/rich-composer/templates/typeahead.js';
 
 /**
  * The rich (Lexical) variant of the chat message form. Mirrors the plain template's
@@ -68,12 +69,14 @@ export default (el) => {
                     aria-multiline="true"
                     aria-label="${label_message}"
                     @focusin=${() => el.ensureEditor()}
+                    @focusout=${/** @param {FocusEvent} ev */ (ev) => el.onEditorFocusOut(ev)}
                     @drop="${/** @param {DragEvent} ev */ (ev) => el.onDrop(ev)}"
                     @keydown="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyDown(ev)}"
                     @keyup="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyUp(ev)}"
                     @paste="${/** @param {ClipboardEvent} ev */ (ev) => el.onPaste(ev)}"
                 ></div>
                 ${el.is_empty ? html`<span class="chat-rich__placeholder">${label_message}</span>` : ''}
+                ${el.typeahead.is_open ? tplTypeahead(el.typeahead) : ''}
             </div>
         </form>`;
 };

@@ -13,6 +13,7 @@ export default class MessageFormRich extends MessageForm {
     _handle: import("shared/rich-composer/types").RichEditor | null;
     /** @type {Promise<import('shared/rich-composer/types').RichEditor>|null} */
     _init: Promise<import("shared/rich-composer/types").RichEditor> | null;
+    typeahead: TypeaheadController;
     /** Load an externally-set draft into the editor, ignoring the ones we wrote ourselves. */
     onDraftChanged(): Promise<void>;
     updated(): void;
@@ -24,6 +25,10 @@ export default class MessageFormRich extends MessageForm {
     ensureEditor(): Promise<import("shared/rich-composer/types").RichEditor>;
     /** Reflect emptiness so the placeholder shows only when there is nothing to send. */
     onChange(): void;
+    /**
+     * @param {FocusEvent} [ev]
+     */
+    onEditorFocusOut(ev?: FocusEvent): void;
     /** The composer's text, untrimmed, which is what the character counter measures. */
     rawText(): string;
     /**
@@ -46,4 +51,5 @@ export default class MessageFormRich extends MessageForm {
     onKeyDown(ev: KeyboardEvent): any;
 }
 import MessageForm from './message-form.js';
+import { TypeaheadController } from 'shared/rich-composer/typeahead.js';
 //# sourceMappingURL=message-form-rich.d.ts.map

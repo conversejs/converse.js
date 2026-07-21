@@ -39,8 +39,11 @@ export class TypeaheadController {
     query: string;
     pos: {
         left: number;
-        top: number;
+        below: number;
+        above: number;
     };
+    flip_up: boolean;
+    max_height: number;
     /** @type {string|null} */
     dismissed: string | null;
     closed_by_blur: boolean;
@@ -56,7 +59,11 @@ export class TypeaheadController {
      * suppress `@sm`.
      */
     get dismissKey(): string;
-    /** The menu's inline position, as a single CSS declaration string. */
+    /**
+     * The menu's inline position, as a single CSS declaration string. Anchored by its
+     * bottom when flipped, so it grows upwards from the caret without needing to know its
+     * own height.
+     */
     get style(): string;
     /**
      * Recompute after an edit: if the caret sits on a source's trigger, show that source's
@@ -66,21 +73,25 @@ export class TypeaheadController {
     close(): void;
     /** @param {number} delta */
     move(delta: number): void;
+    /** Keep the highlighted row visible when the list is long enough to scroll. */
+    revealActive(): void;
     /**
      * Insert the chosen item in place of the trigger, via the active source.
      * @param {number} index
      */
     choose(index: number): void;
     /**
-     * The caret's position relative to the container, so the menu can be anchored just
-     * below the current line. Falls back to the editable's box when a caret rect is
-     * unavailable.
-     * @returns {{ left: number, top: number }}
+     * Anchor the menu to the caret, kept inside the viewport.
+     *
+     * The composer often sits at the bottom of the window, where a menu hanging below the
+     * caret would fall off the screen, so it flips above the line when there is more room
+     * there. It is also clamped horizontally, since a caret near the right edge would
+     * otherwise push the menu past it.
+     *
+     * Called once before the menu renders (falling back to its CSS bounds) and again once
+     * it is in the DOM, when its real size is known.
      */
-    caretPosition(): {
-        left: number;
-        top: number;
-    };
+    place(): void;
     /**
      * Keyboard navigation, intercepting arrows / Enter / Tab / Escape only while the menu
      * is open so they stay away from Lexical, which handles the same keys on the same

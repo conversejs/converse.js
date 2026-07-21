@@ -7,8 +7,16 @@
         z-index: 10;
         margin: 0.15em 0 0;
         padding: 0.25em 0;
+        // Size to the content. Without an explicit width a `ul` here picks up a full-width
+        // rule and stretches across the composer, which then overflows the viewport once
+        // the menu is offset to the caret. Never wider than the composer either.
+        width: max-content;
         min-width: 14em;
-        max-height: 14em;
+        max-width: 100%;
+        // Tall enough for a full list of suggestions (they are capped, see MAX_SUGGESTIONS),
+        // so the common case has nothing to scroll. The controller narrows this inline when
+        // there is less room on screen than that.
+        max-height: 20em;
         overflow-y: auto;
         list-style: none;
         background-color: var(--background-color);

@@ -36,7 +36,8 @@ describe('An incoming groupchat message', function () {
             const view = _converse.chatboxviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                         to="tom@montague.lit/resource"
                         from="lounge@montague.lit/${nick}"
@@ -102,7 +103,8 @@ describe('An incoming groupchat message', function () {
             const muc = await mock.openAndEnterMUC(_converse, muc_jid, nick);
             const view = _converse.chatboxviews.get(muc_jid);
             api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence
                     to="romeo@montague.lit/resource"
                     from="lounge@montague.lit/ThUnD3r|Gr33n"
@@ -116,14 +118,14 @@ describe('An incoming groupchat message', function () {
             await u.waitUntil(() => muc.occupants.length === 1);
 
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            textarea.value = 'hello @ThUnD3r|Gr33n';
+            await mock.setComposerText(view, 'hello @ThUnD3r|Gr33n');
             const enter_event = {
                 'target': textarea,
                 'preventDefault': function preventDefault() {},
                 'stopPropagation': function stopPropagation() {},
                 key: 'Enter',
             };
-            const message_form = view.querySelector('converse-muc-message-form');
+            const message_form = mock.getMessageForm(view);
             message_form.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
@@ -159,7 +161,8 @@ describe('An incoming groupchat message', function () {
             const view = _converse.chatboxviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                         to="tom@montague.lit/resource"
                         from="lounge@montague.lit/${nick}"
@@ -222,7 +225,8 @@ describe('A sent groupchat message', function () {
                 const view = _converse.chatboxviews.get(muc_jid);
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh', 'Link Mauve', 'robot'].forEach((nick) => {
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, 
+                        mock.createRequest(
+                            _converse,
                             stx`<presence
                             to="tom@montague.lit/resource"
                             from="lounge@montague.lit/${nick}"
@@ -377,7 +381,8 @@ describe('A sent groupchat message', function () {
                 const view = _converse.chatboxviews.get(muc_jid);
                 ['NotAnAdress', 'darnuria'].forEach((nick) => {
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, 
+                        mock.createRequest(
+                            _converse,
                             stx`<presence
                             to="tom@montague.lit/resource"
                             from="lounge@montague.lit/${nick}"
@@ -412,7 +417,8 @@ describe('A sent groupchat message', function () {
                 await mock.openAndEnterMUC(_converse, muc_jid, nick);
                 const view = _converse.chatboxviews.get(muc_jid);
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                         to="tom@montague.lit/resource"
                         from="lounge@montague.lit/Link Mauve"
@@ -426,14 +432,14 @@ describe('A sent groupchat message', function () {
                 await u.waitUntil(() => view.model.occupants.length === 2);
 
                 const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = 'hello @Link Mauve';
+                await mock.setComposerText(view, 'hello @Link Mauve');
                 const enter_event = {
                     'target': textarea,
                     'preventDefault': function preventDefault() {},
                     'stopPropagation': function stopPropagation() {},
                     key: 'Enter',
                 };
-                const message_form = view.querySelector('converse-muc-message-form');
+                const message_form = mock.getMessageForm(view);
                 message_form.onKeyDown(enter_event);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 const sent_stanzas = _converse.api.connection.get().sent_stanzas;
@@ -476,7 +482,8 @@ describe('A sent groupchat message', function () {
                 const view = _converse.chatboxviews.get(muc_jid);
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, 
+                        mock.createRequest(
+                            _converse,
                             stx`<presence
                             to="tom@montague.lit/resource"
                             from="lounge@montague.lit/${nick}"
@@ -490,15 +497,15 @@ describe('A sent groupchat message', function () {
                 });
                 await u.waitUntil(() => view.model.occupants.length === 5);
 
-                const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
-                textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?';
+                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
+                await mock.setComposerText(view, 'hello @z3r0 @gibson @mr.robot, how are you?');
                 const enter_event = {
                     'target': textarea,
                     'preventDefault': function preventDefault() {},
                     'stopPropagation': function stopPropagation() {},
                     key: 'Enter',
                 };
-                const message_form = view.querySelector('converse-muc-message-form');
+                const message_form = mock.getMessageForm(view);
                 message_form.onKeyDown(enter_event);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
@@ -531,12 +538,12 @@ describe('A sent groupchat message', function () {
                 action.style.opacity = 1;
                 action.click();
 
-                await u.waitUntil(() => textarea.value === 'hello @z3r0 @gibson @mr.robot, how are you?');
+                await u.waitUntil(() => mock.composerText(view) === 'hello @z3r0 @gibson @mr.robot, how are you?');
                 expect(view.model.messages.at(0).get('correcting')).toBe(true);
                 expect(view.querySelectorAll('.chat-msg').length).toBe(1);
                 await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
 
-                textarea.value = 'hello @z3r0 @gibson @sw0rdf1sh, how are you?';
+                await mock.setComposerText(view, 'hello @z3r0 @gibson @sw0rdf1sh, how are you?');
                 message_form.onKeyDown(enter_event);
                 await u.waitUntil(
                     () =>
@@ -573,7 +580,8 @@ describe('A sent groupchat message', function () {
 
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, 
+                        mock.createRequest(
+                            _converse,
                             stx`<presence
                             to="tom@montague.lit/resource"
                             from="lounge@montague.lit/${nick}"
@@ -589,14 +597,14 @@ describe('A sent groupchat message', function () {
 
                 spyOn(_converse.api.connection.get(), 'send');
                 const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?';
+                await mock.setComposerText(view, 'hello @z3r0 @gibson @mr.robot, how are you?');
                 const enter_event = {
                     'target': textarea,
                     'preventDefault': function preventDefault() {},
                     'stopPropagation': function stopPropagation() {},
                     key: 'Enter',
                 };
-                const message_form = view.querySelector('converse-muc-message-form');
+                const message_form = mock.getMessageForm(view);
                 message_form.onKeyDown(enter_event);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
@@ -627,14 +635,17 @@ describe('A sent groupchat message', function () {
             await mock.openAndEnterMUC(_converse, muc_jid, 'tom', [], members);
             const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            textarea.value = 'Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/';
+            await mock.setComposerText(
+                view,
+                'Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/',
+            );
             const enter_event = {
                 'target': textarea,
                 'preventDefault': function preventDefault() {},
                 'stopPropagation': function stopPropagation() {},
                 key: 'Enter',
             };
-            const message_form = view.querySelector('converse-muc-message-form');
+            const message_form = mock.getMessageForm(view);
             message_form.onKeyDown(enter_event);
             const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
             expect(message.innerHTML.replace(/<!-.*?->/g, '')).toEqual(

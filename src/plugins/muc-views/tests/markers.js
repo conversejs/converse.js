@@ -13,14 +13,8 @@ describe('A XEP-0333 Chat Marker', function () {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
-            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            textarea.value = 'But soft, what light through yonder airlock breaks?';
-            const message_form = view.querySelector('converse-muc-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'But soft, what light through yonder airlock breaks?');
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.querySelector('.chat-msg .chat-msg__text').textContent.trim()).toBe(

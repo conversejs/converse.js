@@ -4,11 +4,8 @@ import converse from '../../../../dist/converse.js';
 const { stx, sizzle, Strophe, u } = converse.env;
 
 async function openModtools(_converse, view) {
-    const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-    textarea.value = '/modtools';
-    const enter = { 'target': textarea, 'preventDefault': function preventDefault() {}, key: 'Enter' };
-    const message_form = view.querySelector('converse-muc-message-form');
-    message_form.onKeyDown(enter);
+    await mock.setComposerText(view, '/modtools');
+    await mock.pressComposerKey(view, 'Enter');
     const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
     await u.waitUntil(() => u.isVisible(modal), 1000);
     return modal;
@@ -287,11 +284,8 @@ describe('The groupchat moderator tool', function () {
             );
             await u.waitUntil(() => view.model.occupants.length === 7, 1000);
 
-            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            textarea.value = '/modtools';
-            const enter = { 'target': textarea, 'preventDefault': function preventDefault() {}, key: 'Enter' };
-            const message_form = view.querySelector('converse-muc-message-form');
-            message_form.onKeyDown(enter);
+            await mock.setComposerText(view, '/modtools');
+            await mock.pressComposerKey(view, 'Enter');
 
             const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
             await u.waitUntil(() => u.isVisible(modal), 1000);
@@ -504,11 +498,8 @@ describe('The groupchat moderator tool', function () {
             const members = [{ 'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner' }];
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members);
             const view = _converse.chatboxviews.get(muc_jid);
-            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            textarea.value = '/modtools';
-            const enter = { 'target': textarea, 'preventDefault': function preventDefault() {}, key: 'Enter' };
-            const message_form = view.querySelector('converse-muc-message-form');
-            message_form.onKeyDown(enter);
+            await mock.setComposerText(view, '/modtools');
+            await mock.pressComposerKey(view, 'Enter');
 
             await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
             const occupant = view.model.occupants.findWhere({ 'jid': _converse.bare_jid });

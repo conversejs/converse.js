@@ -181,14 +181,17 @@ describe('Groupchats', function () {
                 expect(room instanceof Model).toBeTruthy();
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, stx`
+                    mock.createRequest(
+                        _converse,
+                        stx`
                 <presence xmlns="jabber:client" to="romeo@montague.lit/pda" from="room@conference.example.org/some1">
                     <x xmlns="http://jabber.org/protocol/muc#user">
                         <item affiliation="owner" jid="romeo@montague.lit/pda" role="moderator"/>
                         <status code="110"/>
                         <status code="201"/>
                     </x>
-                </presence>`),
+                </presence>`,
+                    ),
                 );
 
                 const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;

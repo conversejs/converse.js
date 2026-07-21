@@ -27,6 +27,7 @@ export type TypeaheadItem = {
     detail?: string; // Secondary muted text (e.g. a mentioned JID)
     glyph?: string; // A unicode emoji glyph rendered before the label
     url?: string; // A custom emoji's image, rendered instead of `glyph`
+    avatar?: any; // A model to render an avatar from, for occupant mentions
     jid?: string; // A mention's bare JID
     name?: string; // A mention's display name (the link text, sans `@`)
 };

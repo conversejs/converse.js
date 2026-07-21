@@ -312,7 +312,7 @@ class MessageActions extends CustomElement {
     getMessageForm() {
         return u
             .ancestor(this, '.chatbox')
-            ?.querySelector('converse-message-form-rich, converse-message-form, converse-muc-message-form');
+            ?.querySelector('converse-message-form, converse-muc-message-form');
     }
 
     /** @param {MouseEvent} [ev] */

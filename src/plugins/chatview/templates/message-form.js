@@ -1,7 +1,7 @@
 import { __ } from 'i18n';
 import { api, u } from '@converse/headless';
 import { html } from 'lit';
-import { resetElementHeight } from '../utils.js';
+import tplTypeahead from 'shared/rich-composer/templates/typeahead.js';
 import 'shared/chat/reply-preview.js';
 
 /**
@@ -52,25 +52,30 @@ export default (el) => {
                 }"
                 class="${composing_spoiler ? '' : 'hidden'} spoiler-hint"
             />
-            <textarea
-                autofocus
-                type="text"
-                enterkeyhint="send"
-                .value="${el.model.get('draft') ?? ''}"
-                @drop="${/** @param {DragEvent} ev */ (ev) => el.onDrop(ev)}"
-                @input="${resetElementHeight}"
-                @keydown="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyDown(ev)}"
-                @keyup="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyUp(ev)}"
-                @paste="${/** @param {ClipboardEvent} ev */ (ev) => el.onPaste(ev)}"
-                @change="${
-                    /** @param {Event} ev */ (ev) =>
-                        u.safeSave(el.model, { draft: /** @type {HTMLTextAreaElement} */ (ev.target).value })
-                }"
-                class="chat-textarea
-                        ${el.model.get('correcting') ? 'correcting' : ''}
-                        ${show_send_button ? 'chat-textarea-send-button' : ''}
-                        ${composing_spoiler ? 'spoiler' : ''}"
-                placeholder="${label_message}"
-            ></textarea>
+
+            <div class="chat-rich">
+                <!-- Stable host: no dynamic bindings inside, so Lit never re-renders its
+                     children and Lexical's managed DOM survives the component's updates.
+                     Keeps the chat-textarea class, because the chat views focus the
+                     composer by that selector. -->
+                <div
+                    class="chat-textarea chat-rich__editable
+                            ${el.model.get('correcting') ? 'correcting' : ''}
+                            ${show_send_button ? 'chat-textarea-send-button' : ''}
+                            ${composing_spoiler ? 'spoiler' : ''}"
+                    contenteditable="true"
+                    role="textbox"
+                    aria-multiline="true"
+                    aria-label="${label_message}"
+                    @focusin=${() => el.ensureEditor()}
+                    @focusout=${/** @param {FocusEvent} ev */ (ev) => el.onEditorFocusOut(ev)}
+                    @drop="${/** @param {DragEvent} ev */ (ev) => el.onDrop(ev)}"
+                    @keydown="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyDown(ev)}"
+                    @keyup="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyUp(ev)}"
+                    @paste="${/** @param {ClipboardEvent} ev */ (ev) => el.onPaste(ev)}"
+                ></div>
+                ${el.is_empty ? html`<span class="chat-rich__placeholder">${label_message}</span>` : ''}
+                ${el.typeahead.is_open ? tplTypeahead(el.typeahead) : ''}
+            </div>
         </form>`;
 };

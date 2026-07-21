@@ -27,6 +27,7 @@ import {
     STRIKETHROUGH,
 } from '@lexical/markdown';
 import { createRichEditor } from 'shared/rich-composer/editor.js';
+import { withStylingShortcuts } from 'shared/rich-composer/styling.js';
 import { EMOJI_TRIGGER, MENTION_TRIGGER } from 'shared/rich-composer/triggers.js';
 
 // A curated transformer set: the inline styles and blocks a social post needs,
@@ -43,8 +44,12 @@ const TRANSFORMERS = [
     BOLD_ITALIC_UNDERSCORE,
     BOLD_STAR,
     BOLD_UNDERSCORE,
-    ITALIC_STAR,
+    // `_italic_` before `*italic*`: both are valid GFM, but only the underscore spelling
+    // also means italic under XEP-0393 (where a single `*` is bold). Serializing the
+    // unambiguous one keeps a post readable whichever convention renders it, including
+    // Converse's own texture renderer, which applies XEP-0393 styling to post bodies.
     ITALIC_UNDERSCORE,
+    ITALIC_STAR,
     STRIKETHROUGH,
     INLINE_CODE,
     LINK,
@@ -101,6 +106,10 @@ export function createSocialEditor(rootEl, { onChange } = {}) {
         nodes: [HeadingNode, QuoteNode, LinkNode],
         theme: THEME,
         transformers: TRANSFORMERS,
+        // Type the way chat does (XEP-0393's `*bold*`, `~strike~`) while still publishing
+        // GitHub-flavoured Markdown, so the two composers feel the same. `**bold**` and
+        // `~~strike~~` keep working for anyone used to CommonMark.
+        input_transformers: withStylingShortcuts(TRANSFORMERS),
         html_export: HTML_EXPORT,
         onChange,
     });

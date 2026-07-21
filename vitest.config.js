@@ -42,6 +42,10 @@ export default defineConfig({
                 find: /(?:\.\.\/)+dist\/converse-headless\.js$/,
                 replacement: abs('src/headless/dist/converse-headless.js'),
             },
+            // Source modules import siblings by the bare `shared/...` specifier that the
+            // bundler resolves via tsconfig's baseUrl. Specs that exercise a source module
+            // directly (rather than the prebuilt bundle) need the same mapping.
+            { find: /^shared\//, replacement: abs('src/shared/') },
         ],
     },
     optimizeDeps: {

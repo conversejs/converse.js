@@ -121,9 +121,13 @@ export function createRichEditor(
         /**
          * Replace the document with `text`, parsed through the same output transformers.
          * Used to restore a draft or load a message being corrected.
+         *
+         * Committed discretely, so callers can read the document straight back rather than
+         * waiting for Lexical's normal (asynchronous) reconciliation.
          * @param {string} text
          */
-        setMarkdown: (text) => editor.update(() => $convertFromMarkdownString(text ?? '', transformers)),
+        setMarkdown: (text) =>
+            editor.update(() => $convertFromMarkdownString(text ?? '', transformers), { discrete: true }),
 
         /** Serialize the document to HTML (normalised to XHTML by the caller, if needed). */
         getHtml: () => editor.getEditorState().read(() => $generateHtmlFromNodes(editor, null)),

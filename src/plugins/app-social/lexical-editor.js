@@ -2,33 +2,18 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  *
- * Lexical integration for the rich Social composer.
+ * The Social composer's Lexical configuration: transformer set, theme and node types,
+ * layered over the shared editor in {@link shared/rich-composer/editor.js}.
  *
- * **Every Lexical import lives in this one module**, which the composer loads with a dynamic
- * `import()` on first focus, so the whole editor is split into its own chunk and stays out
- * of Converse's core bundle.
+ * Like that module, this one is only ever reached through the composer's dynamic
+ * `import()` on first focus, so both stay out of Converse's core bundle.
  *
- * Exposes a tiny, framework-agnostic handle so the Lit component never touches
- * Lexical internals directly:
- *   createSocialEditor(rootEl) → { getMarkdown, getHtml, isEmpty, insertText,
- *                                  format, clear, focus, destroy }
+ * It re-exposes the shared handle with mention/emoji-specific wrappers, so the composer
+ * talks in terms of its own triggers rather than passing regexes around.
  */
+import { HeadingNode, QuoteNode } from '@lexical/rich-text';
+import { LinkNode } from '@lexical/link';
 import {
-    $createTextNode,
-    $getRoot,
-    $getSelection,
-    $isRangeSelection,
-    $isTextNode,
-    createEditor,
-    FORMAT_TEXT_COMMAND,
-} from 'lexical';
-import { HeadingNode, QuoteNode, registerRichText } from '@lexical/rich-text';
-import { createEmptyHistoryState, registerHistory } from '@lexical/history';
-import { $generateHtmlFromNodes } from '@lexical/html';
-import { $createLinkNode, LinkNode } from '@lexical/link';
-import { mergeRegister } from '@lexical/utils';
-import {
-    $convertToMarkdownString,
     BOLD_ITALIC_STAR,
     BOLD_ITALIC_UNDERSCORE,
     BOLD_STAR,
@@ -40,8 +25,9 @@ import {
     LINK,
     QUOTE,
     STRIKETHROUGH,
-    registerMarkdownShortcuts,
 } from '@lexical/markdown';
+import { createRichEditor } from 'shared/rich-composer/editor.js';
+import { EMOJI_TRIGGER, MENTION_TRIGGER } from 'shared/rich-composer/triggers.js';
 
 // A curated transformer set: the inline styles and blocks a social post needs,
 // serialized as standard (GitHub-flavoured-compatible) Markdown so Movim reads
@@ -64,34 +50,6 @@ const TRANSFORMERS = [
     LINK,
 ];
 
-// An emoji-shortname autocomplete trigger: a `:` that starts a token (at the very
-// start of the text node, or right after whitespace) followed by at least one
-// shortname character. Capture group 1 is the typed query (the chars after the
-// colon). A closing `:` ends the token, so a completed `:smile:` no longer matches.
-const EMOJI_TRIGGER = /(?:^|\s):([-+\w]+)$/;
-
-// A mention autocomplete trigger: an `@` that starts a token, followed by zero or
-// more name/JID characters (so a bare `@` lists the whole follow list). `@` and `.`
-// are in the charset so a full JID can be typed; `:` is not, so the two triggers
-// are mutually exclusive.
-const MENTION_TRIGGER = /(?:^|\s)@([\w.@-]*)$/;
-
-/**
- * If the collapsed caret sits right after `regex`'s trigger token, return the
- * typed query (the regex's first capture), else `null`. Must run inside an
- * editor state read.
- * @param {RegExp} regex
- * @returns {string|null}
- */
-function $getTriggerQuery(regex) {
-    const selection = $getSelection();
-    if (!$isRangeSelection(selection) || !selection.isCollapsed()) return null;
-    const node = selection.anchor.getNode();
-    if (!$isTextNode(node)) return null;
-    const before = node.getTextContent().slice(0, selection.anchor.offset);
-    return before.match(regex)?.[1] ?? null;
-}
-
 // Class names Lexical stamps onto its DOM for styling hooks. Kept minimal; these
 // are editor-only and get stripped from the published XHTML (see the composer's
 // htmlToXhtml normaliser), so they never reach the wire.
@@ -111,8 +69,25 @@ const THEME = {
     },
 };
 
+// LinkNode's own DOM export whitelists http(s)/mailto/sms/tel and rewrites every
+// other scheme (so our xmpp: mention URIs) to about:blank. Export links with the
+// raw URL instead; the composer runs the exported HTML through DOMPurify (whose
+// URI allowlist includes xmpp:) before anything reaches the wire.
+const HTML_EXPORT = new Map([
+    [
+        LinkNode,
+        (_editor, /** @type {LinkNode} */ node) => {
+            const element = document.createElement('a');
+            element.href = node.getURL();
+            const title = node.getTitle();
+            if (title) element.title = title;
+            return { element };
+        },
+    ],
+]);
+
 /**
- * Attach a Lexical rich-text editor to `rootEl` and return a small handle.
+ * Attach a Lexical rich-text editor configured for Social posts.
  * @param {HTMLElement} rootEl - A `contenteditable` host element.
  * @param {object} [opts]
  * @param {() => void} [opts.onChange] - Called after each edit (e.g. to toggle a
@@ -121,145 +96,45 @@ const THEME = {
  * @returns {import('./types.ts').LexicalEditor}
  */
 export function createSocialEditor(rootEl, { onChange } = {}) {
-    const editor = createEditor({
+    const handle = createRichEditor(rootEl, {
         namespace: 'converse-social-compose',
         nodes: [HeadingNode, QuoteNode, LinkNode],
         theme: THEME,
-        html: {
-            export: new Map([
-                [
-                    // LinkNode's own DOM export whitelists http(s)/mailto/sms/tel and
-                    // rewrites every other scheme (so our xmpp: mention URIs) to
-                    // about:blank. Export links with the raw URL instead; the composer
-                    // runs the exported HTML through DOMPurify (whose URI allowlist
-                    // includes xmpp:) before anything reaches the wire.
-                    LinkNode,
-                    (_editor, /** @type {LinkNode} */ node) => {
-                        const element = document.createElement('a');
-                        element.href = node.getURL();
-                        const title = node.getTitle();
-                        if (title) element.title = title;
-                        return { element };
-                    },
-                ],
-            ]),
-        },
-        onError: (e) => {
-            // Surface Lexical's internal errors rather than swallowing them.
-            throw e;
-        },
+        transformers: TRANSFORMERS,
+        html_export: HTML_EXPORT,
+        onChange,
     });
-    editor.setRootElement(rootEl);
-
-    const cleanup = mergeRegister(
-        registerRichText(editor),
-        registerHistory(editor, createEmptyHistoryState(), 1000),
-        registerMarkdownShortcuts(editor, TRANSFORMERS),
-        onChange ? editor.registerUpdateListener(() => onChange()) : () => {},
-    );
 
     return {
-        editor,
-
-        /** Serialize the document to Markdown (the `<content type="text">` source). */
-        getMarkdown: () => editor.getEditorState().read(() => $convertToMarkdownString(TRANSFORMERS)),
-
-        /** Serialize the document to HTML (normalised to XHTML by the caller). */
-        getHtml: () => editor.getEditorState().read(() => $generateHtmlFromNodes(editor, null)),
-
-        isEmpty: () => editor.getEditorState().read(() => $getRoot().getTextContent().trim().length === 0),
-
-        insertText: (text) =>
-            editor.update(() => {
-                let selection = $getSelection();
-                if (!$isRangeSelection(selection)) {
-                    // Focus may sit in the emoji picker rather than the editor, so there
-                    // is no live range selection: fall back to appending at the very end.
-                    $getRoot().selectEnd();
-                    selection = $getSelection();
-                }
-                if ($isRangeSelection(selection)) selection.insertText(text);
-            }),
-
-        /** Toggle an inline format on the selection: 'bold' | 'italic' | 'strikethrough' | 'code'. */
-        format: (type) => editor.dispatchCommand(FORMAT_TEXT_COMMAND, type),
+        ...handle,
 
         /**
          * If the collapsed caret sits right after an emoji-shortname trigger
-         * (a `:foo` token), return the typed query (`foo`), else `null`. Used to
-         * drive the composer's inline emoji autocomplete.
+         * (a `:foo` token), return the typed query (`foo`), else `null`.
          */
-        getEmojiQuery: () => editor.getEditorState().read(() => $getTriggerQuery(EMOJI_TRIGGER)),
+        getEmojiQuery: () => handle.getTriggerQuery(EMOJI_TRIGGER),
 
         /**
          * Replace the `:query` trigger immediately before the caret with `replacement`
-         * (the resolved emoji glyph). A no-op if the caret has since moved off the
-         * trigger. The caret ends up just after the inserted glyph.
+         * (the resolved emoji glyph).
          * @param {string} query - The chars typed after the colon (without the colon).
          * @param {string} replacement
          */
-        replaceEmojiTrigger: (query, replacement) =>
-            editor.update(() => {
-                const selection = $getSelection();
-                if (!$isRangeSelection(selection) || !selection.isCollapsed()) return;
-                const node = selection.anchor.getNode();
-                if (!$isTextNode(node)) return;
-                const offset = selection.anchor.offset;
-                const trigger = `:${query}`;
-                if (!node.getTextContent().slice(0, offset).endsWith(trigger)) return;
-                node.spliceText(offset - trigger.length, trigger.length, replacement, true);
-            }),
+        replaceEmojiTrigger: (query, replacement) => handle.replaceTrigger(`:${query}`, replacement),
 
         /**
-         * If the collapsed caret sits right after a mention trigger (an `@foo`
-         * token, possibly a bare `@`), return the typed query (`foo`, or `''`),
-         * else `null`. Drives the composer's mention autocomplete.
+         * If the collapsed caret sits right after a mention trigger (an `@foo` token,
+         * possibly a bare `@`), return the typed query (`foo`, or `''`), else `null`.
          */
-        getMentionQuery: () => editor.getEditorState().read(() => $getTriggerQuery(MENTION_TRIGGER)),
+        getMentionQuery: () => handle.getTriggerQuery(MENTION_TRIGGER),
 
         /**
-         * Replace the `@query` trigger immediately before the caret with a link
-         * (the mention: `text` linking to `url`, e.g. `@Name` → `xmpp:jid`),
-         * followed by a space. Serialized by the LINK markdown transformer as
-         * `[text](url)`. A no-op if the caret has since moved off the trigger.
-         * The caret ends up just after the trailing space.
+         * Replace the `@query` trigger immediately before the caret with a link (the
+         * mention: `text` linking to `url`), followed by a space.
          * @param {string} query - The chars typed after the `@` (without the `@`).
          * @param {string} text - The link's text (e.g. `@Alice`).
          * @param {string} url - The link's target (e.g. `xmpp:alice@example.org`).
          */
-        replaceMentionTrigger: (query, text, url) =>
-            editor.update(() => {
-                const selection = $getSelection();
-                if (!$isRangeSelection(selection) || !selection.isCollapsed()) return;
-                const node = selection.anchor.getNode();
-                if (!$isTextNode(node)) return;
-                const offset = selection.anchor.offset;
-                const trigger = `@${query}`;
-                if (!node.getTextContent().slice(0, offset).endsWith(trigger)) return;
-                // Isolate the trigger's text node, then swap it for the link.
-                const start = offset - trigger.length;
-                const parts = node.splitText(start, offset);
-                const target = parts[start === 0 ? 0 : 1];
-                const link = $createLinkNode(url);
-                link.append($createTextNode(text));
-                target.replace(link);
-                const space = $createTextNode(' ');
-                link.insertAfter(space);
-                space.select(1, 1);
-            }),
-
-        clear: () =>
-            editor.update(() => {
-                $getRoot().clear();
-            }),
-
-        focus: () => editor.focus(),
-
-        destroy: () => {
-            cleanup();
-            editor.setRootElement(null);
-        },
+        replaceMentionTrigger: (query, text, url) => handle.replaceTriggerWithLink(`@${query}`, text, url),
     };
 }
-
-

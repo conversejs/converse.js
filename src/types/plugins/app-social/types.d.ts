@@ -1,17 +1,8 @@
-export type LexicalEditor = {
-    editor: import('lexical').LexicalEditor;
-    getMarkdown: () => string;
-    getHtml: () => string;
-    isEmpty: () => boolean;
-    insertText: (text: string) => void;
-    format: (type: import('lexical').TextFormatType) => boolean;
+export type LexicalEditor = import('shared/rich-composer/types').RichEditor & {
     getEmojiQuery: () => string | null;
     replaceEmojiTrigger: (query: string, replacement: string) => void;
     getMentionQuery: () => string | null;
     replaceMentionTrigger: (query: string, text: string, url: string) => void;
-    clear: () => void;
-    focus: () => void;
-    destroy: () => void;
 };
 export type SocialRoute = {
     view: 'timeline' | 'profile' | 'post' | 'tag';

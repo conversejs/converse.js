@@ -20,14 +20,8 @@ describe('The OMEMO module', function () {
             const view = _converse.chatboxviews.get(contact_jid);
             view.model.set('omemo_active', true);
 
-            const textarea = view.querySelector('.chat-textarea');
-            textarea.value = 'This message will be encrypted';
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'This message will be encrypted');
+            await mock.pressComposerKey(view, 'Enter');
 
             await u.waitUntil(() =>
                 mock.bundleFetched(_converse, {

@@ -13,17 +13,11 @@ describe('XEP-0461 Message Replies', function () {
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
-                const textarea = view.querySelector('textarea.chat-textarea');
 
                 const firstMessageText = 'But soft, what light through yonder airlock breaks?';
 
-                textarea.value = firstMessageText;
-                const message_form = view.querySelector('converse-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, firstMessageText);
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
                 // Click the reply button
@@ -52,17 +46,11 @@ describe('XEP-0461 Message Replies', function () {
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
-                const textarea = view.querySelector('textarea.chat-textarea');
 
                 const firstMessageText = 'Hello world';
 
-                textarea.value = firstMessageText;
-                const message_form = view.querySelector('converse-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, firstMessageText);
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
                 // Click the reply button
@@ -95,17 +83,11 @@ describe('XEP-0461 Message Replies', function () {
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
-                const textarea = view.querySelector('textarea.chat-textarea');
 
                 // Send a message first
                 const firstMessageText = 'Original message';
-                textarea.value = firstMessageText;
-                const message_form = view.querySelector('converse-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, firstMessageText);
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
                 // Click reply
@@ -121,12 +103,8 @@ describe('XEP-0461 Message Replies', function () {
                     return send.call(api.connection.get(), stanza);
                 });
 
-                textarea.value = 'This is my reply';
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, 'This is my reply');
+                await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() => sent_stanzas.length === 1);
 
@@ -196,11 +174,9 @@ describe('XEP-0461 Message Replies', function () {
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
-                const textarea = view.querySelector('textarea.chat-textarea');
-                const message_form = view.querySelector('converse-message-form');
 
-                textarea.value = 'Original message';
-                message_form.onKeyDown({ target: textarea, preventDefault() {}, key: 'Enter' });
+            await mock.setComposerText(view, 'Original message');
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
                 view.querySelector('.chat-msg__action-reply').click();
@@ -214,8 +190,8 @@ describe('XEP-0461 Message Replies', function () {
                 });
 
                 const reply_text = 'This is my reply';
-                textarea.value = reply_text;
-                message_form.onKeyDown({ target: textarea, preventDefault() {}, key: 'Enter' });
+            await mock.setComposerText(view, reply_text);
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => sent_stanzas.length === 1);
 
                 const sent_stanza = sent_stanzas[0];
@@ -249,13 +225,11 @@ describe('XEP-0461 Message Replies', function () {
                 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
-                const textarea = view.querySelector('textarea.chat-textarea');
-                const message_form = view.querySelector('converse-message-form');
 
                 const long_original =
                     'But soft, what light through yonder airlock breaks? It is the east and Juliet is the sun, arise fair sun';
-                textarea.value = long_original;
-                message_form.onKeyDown({ target: textarea, preventDefault() {}, key: 'Enter' });
+            await mock.setComposerText(view, long_original);
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
                 view.querySelector('.chat-msg__action-reply').click();
@@ -269,8 +243,8 @@ describe('XEP-0461 Message Replies', function () {
                 });
 
                 const reply_text = 'Indeed it does';
-                textarea.value = reply_text;
-                message_form.onKeyDown({ target: textarea, preventDefault() {}, key: 'Enter' });
+            await mock.setComposerText(view, reply_text);
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => sent_stanzas.length === 1);
 
                 const sent_stanza = sent_stanzas[0];

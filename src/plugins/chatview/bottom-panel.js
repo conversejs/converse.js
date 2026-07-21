@@ -8,6 +8,7 @@ import { CustomElement } from 'shared/components/element.js';
 import tplBottomPanel from './templates/bottom-panel.js';
 import { clearMessages } from './utils.js';
 import './message-form.js';
+import './message-form-rich.js';
 
 import './styles/chat-bottom-panel.scss';
 

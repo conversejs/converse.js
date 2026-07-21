@@ -40,6 +40,21 @@ export const STYLING_TRANSFORMERS = [
     INLINE_CODE,
 ];
 
+// Lexical escapes markdown-special characters when serializing, so a URL like
+// `.../Ender's_Game` comes out as `.../Ender's\_Game`. XEP-0393 defines no escape syntax
+// at all, so that backslash is not an escape on the wire: it is a literal character the
+// recipient would render. Undo it.
+const MARKDOWN_ESCAPE = /\\([\\*_~`>])/g;
+
+/**
+ * Strip the backslash escapes Lexical adds, which XEP-0393 has no notion of.
+ * @param {string} text
+ * @returns {string}
+ */
+export function stripMarkdownEscapes(text) {
+    return text.replace(MARKDOWN_ESCAPE, '$1');
+}
+
 /**
  * Build a typing-shortcut set that accepts XEP-0393's single-character markers *on top of*
  * a consumer's own set, so every composer shares one typing experience regardless of what

@@ -18,7 +18,6 @@ export default class BaseChatView extends CustomElement {
     maybeFocus(): void;
     focus(): this;
     getBottomPanel(): Element;
-    getMessageForm(): Element;
     /**
      * Scrolls the chat down.
      *

@@ -127,27 +127,71 @@ export function createRichEditor(
          * @param {string} text
          */
         setMarkdown: (text) =>
-            editor.update(() => $convertFromMarkdownString(text ?? '', transformers), { discrete: true }),
+            editor.update(
+                () => {
+                    $convertFromMarkdownString(text ?? '', transformers);
+                    // Leave the caret at the end, where someone loading a draft or a message
+                    // to correct would carry on typing. Without this the document has no
+                    // selection at all, and nothing can tell where the caret notionally is.
+                    $getRoot().selectEnd();
+                },
+                { discrete: true },
+            ),
 
         /** Serialize the document to HTML (normalised to XHTML by the caller, if needed). */
         getHtml: () => editor.getEditorState().read(() => $generateHtmlFromNodes(editor, null)),
 
         isEmpty: () => editor.getEditorState().read(() => $getRoot().getTextContent().trim().length === 0),
 
+        // Discrete, like setMarkdown: callers routinely insert and then read the document
+        // straight back (the composer serializes it to send), and Lexical's default
+        // asynchronous commit would hand them the state from before the insert.
         insertText: (text) =>
-            editor.update(() => {
-                let selection = $getSelection();
-                if (!$isRangeSelection(selection)) {
-                    // Focus may sit elsewhere (e.g. an emoji picker) so there is no live
-                    // range selection: fall back to appending at the very end.
-                    $getRoot().selectEnd();
-                    selection = $getSelection();
-                }
-                if ($isRangeSelection(selection)) selection.insertText(text);
-            }),
+            editor.update(
+                () => {
+                    let selection = $getSelection();
+                    if (!$isRangeSelection(selection)) {
+                        // Focus may sit elsewhere (e.g. an emoji picker) so there is no live
+                        // range selection: fall back to appending at the very end.
+                        $getRoot().selectEnd();
+                        selection = $getSelection();
+                    }
+                    if ($isRangeSelection(selection)) selection.insertText(text);
+                },
+                { discrete: true },
+            ),
 
         /** Toggle an inline format on the selection: 'bold' | 'italic' | 'strikethrough' | 'code'. */
         format: (type) => editor.dispatchCommand(FORMAT_TEXT_COMMAND, type),
+
+        /**
+         * Whether a collapsed caret sits at the very start of the document. Stands in for
+         * a textarea's `selectionEnd === 0`, which a contenteditable has no equivalent of.
+         * An empty document counts as both start and end.
+         */
+        isCaretAtStart: () =>
+            editor.getEditorState().read(() => {
+                // An untouched editor has no selection at all, and an empty document has
+                // nowhere else for the caret to be.
+                if ($getRoot().getTextContent().length === 0) return true;
+                const selection = $getSelection();
+                if (!$isRangeSelection(selection) || !selection.isCollapsed()) return false;
+                if (selection.anchor.offset !== 0) return false;
+                const first = $getRoot().getFirstDescendant();
+                return first === null || selection.anchor.getNode().is(first);
+            }),
+
+        /** Whether a collapsed caret sits at the very end of the document. */
+        isCaretAtEnd: () =>
+            editor.getEditorState().read(() => {
+                if ($getRoot().getTextContent().length === 0) return true;
+                const selection = $getSelection();
+                if (!$isRangeSelection(selection) || !selection.isCollapsed()) return false;
+                const last = $getRoot().getLastDescendant();
+                if (last === null) return true;
+                const node = selection.anchor.getNode();
+                return node.is(last) && selection.anchor.offset === node.getTextContent().length;
+            }),
 
         /**
          * If the collapsed caret sits right after `regex`'s trigger token, return the
@@ -199,9 +243,15 @@ export function createRichEditor(
             }),
 
         clear: () =>
-            editor.update(() => {
-                $getRoot().clear();
-            }),
+            editor.update(
+                () => {
+                    $getRoot().clear();
+                },
+                { discrete: true },
+            ),
+
+        /** Put the caret at the very start, as arrowing up does in a real browser. */
+        selectStart: () => editor.update(() => $getRoot().selectStart(), { discrete: true }),
 
         focus: () => editor.focus(),
 

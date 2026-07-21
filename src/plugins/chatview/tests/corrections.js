@@ -13,21 +13,12 @@ describe('A Chat Message', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            const textarea = view.querySelector('textarea.chat-textarea');
-            expect(textarea.value).toBe('');
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
-            expect(textarea.value).toBe('');
+            expect(mock.composerText(view)).toBe('');
+            await mock.pressComposerKey(view, 'ArrowUp');
+            expect(mock.composerText(view)).toBe('');
 
-            textarea.value = 'But soft, what light through yonder airlock breaks?';
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'But soft, what light through yonder airlock breaks?');
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.querySelector('.chat-msg__text').textContent).toBe(
@@ -37,24 +28,19 @@ describe('A Chat Message', function () {
             const first_msg = view.model.messages.findWhere({
                 'message': 'But soft, what light through yonder airlock breaks?',
             });
-            expect(textarea.value).toBe('');
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
-            await u.waitUntil(() => textarea.value === 'But soft, what light through yonder airlock breaks?');
+            expect(mock.composerText(view)).toBe('');
+            await mock.pressComposerKey(view, 'ArrowUp');
+            await u.waitUntil(
+                () => mock.composerText(view) === 'But soft, what light through yonder airlock breaks?',
+            );
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
 
             spyOn(api.connection.get(), 'send');
             let new_text = 'But soft, what light through yonder window breaks?';
-            textarea.value = new_text;
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, new_text);
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(
                 () => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === new_text,
             );
@@ -86,32 +72,22 @@ describe('A Chat Message', function () {
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')) === false, 500);
 
             // Test that pressing the down arrow cancels message correction
-            await u.waitUntil(() => textarea.value === '');
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
-            await u.waitUntil(() => textarea.value === 'But soft, what light through yonder window breaks?');
+            await u.waitUntil(() => mock.composerText(view) === '');
+            await mock.pressComposerKey(view, 'ArrowUp');
+            await u.waitUntil(() => mock.composerText(view) === 'But soft, what light through yonder window breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
-            expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowDown',
-            });
-            await u.waitUntil(() => textarea.value === '');
+            expect(mock.composerText(view)).toBe('But soft, what light through yonder window breaks?');
+            await mock.pressComposerKey(view, 'ArrowDown');
+            await u.waitUntil(() => mock.composerText(view) === '');
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')) === false, 500);
 
             new_text = 'It is the east, and Juliet is the one.';
-            textarea.value = new_text;
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, new_text);
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(
                 () =>
                     Array.from(view.querySelectorAll('.chat-msg__text')).filter(
@@ -120,43 +96,30 @@ describe('A Chat Message', function () {
             );
             expect(view.querySelectorAll('.chat-msg').length).toBe(2);
 
-            textarea.value = 'Arise, fair sun, and kill the envious moon';
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'Arise, fair sun, and kill the envious moon');
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
 
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
-            await u.waitUntil(() => textarea.value === 'Arise, fair sun, and kill the envious moon');
+            await mock.pressComposerKey(view, 'ArrowUp');
+            await u.waitUntil(() => mock.composerText(view) === 'Arise, fair sun, and kill the envious moon');
             await u.waitUntil(() => view.model.messages.at(2).get('correcting') === true);
             expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
             expect(view.model.messages.at(1).get('correcting')).toBeFalsy();
             await u.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg:last', view).pop()), 750);
 
-            textarea.selectionEnd = 0; // Happens by pressing up,
-            // but for some reason not in tests, so we set it manually.
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
-            await u.waitUntil(() => textarea.value === 'It is the east, and Juliet is the one.');
+            // Arrowing up puts the caret at the start in a real browser, but a synthetic
+            // keydown does not, so do it explicitly.
+            await mock.placeComposerCaretAtStart(view);
+            await mock.pressComposerKey(view, 'ArrowUp');
+            await u.waitUntil(() => mock.composerText(view) === 'It is the east, and Juliet is the one.');
             expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
             expect(view.model.messages.at(1).get('correcting')).toBe(true);
             expect(view.model.messages.at(2).get('correcting')).toBeFalsy();
             await u.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg', view)[1]), 500);
 
-            textarea.value = 'It is the east, and Juliet is the sun.';
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
-            await u.waitUntil(() => textarea.value === '');
+            await mock.setComposerText(view, 'It is the east, and Juliet is the sun.');
+            await mock.pressComposerKey(view, 'Enter');
+            await u.waitUntil(() => mock.composerText(view) === '');
             await u.waitUntil(
                 () =>
                     Array.from(view.querySelectorAll('.chat-msg__text')).filter(
@@ -191,22 +154,16 @@ describe('A Chat Message', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            const textarea = view.querySelector('textarea.chat-textarea');
 
-            textarea.value = 'But soft, what light through yonder airlock breaks?';
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'But soft, what light through yonder airlock breaks?');
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.querySelector('.chat-msg__text').textContent).toBe(
                 'But soft, what light through yonder airlock breaks?',
             );
-            await u.waitUntil(() => textarea.value === '');
+            await u.waitUntil(() => mock.composerText(view) === '');
 
             const first_msg = view.model.messages.findWhere({
                 'message': 'But soft, what light through yonder airlock breaks?',
@@ -218,19 +175,15 @@ describe('A Chat Message', function () {
             action.style.opacity = 1;
             action.click();
 
-            await u.waitUntil(() => textarea.value === 'But soft, what light through yonder airlock breaks?');
+            await u.waitUntil(() => mock.composerText(view) === 'But soft, what light through yonder airlock breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')));
 
             spyOn(api.connection.get(), 'send');
             const text = 'But soft, what light through yonder window breaks?';
-            textarea.value = text;
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, text);
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(
                 () => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === text,
             );
@@ -261,21 +214,21 @@ describe('A Chat Message', function () {
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
 
             // Test that clicking the pencil icon a second time cancels editing.
-            action = view.querySelector('.chat-msg .chat-msg__action-edit');
+            action = await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__action-edit'));
             action.style.opacity = 1;
             action.click();
 
-            await u.waitUntil(() => textarea.value === 'But soft, what light through yonder window breaks?');
+            await u.waitUntil(() => mock.composerText(view) === 'But soft, what light through yonder window breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')) === true);
 
-            action = view.querySelector('.chat-msg .chat-msg__action-edit');
+            action = await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__action-edit'));
             action.style.opacity = 1;
             action.click();
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
-            await u.waitUntil(() => textarea.value === '');
+            await u.waitUntil(() => mock.composerText(view) === '');
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')) === false, 500);
 
             // Test that messages from other users don't have the pencil icon
@@ -294,8 +247,8 @@ describe('A Chat Message', function () {
 
             // Test confirmation dialog
             spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
-            textarea.value = 'But soft, what light through yonder airlock breaks?';
-            action = view.querySelector('.chat-msg .chat-msg__action-edit');
+            await mock.setComposerText(view, 'But soft, what light through yonder airlock breaks?');
+            action = await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__action-edit'));
             action.style.opacity = 1;
             action.click();
 
@@ -305,9 +258,9 @@ describe('A Chat Message', function () {
                 'You have an unsent message which will be lost if you continue. Are you sure?',
             );
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
-            await u.waitUntil(() => textarea.value === 'But soft, what light through yonder window breaks?');
+            await u.waitUntil(() => mock.composerText(view) === 'But soft, what light through yonder window breaks?');
 
-            textarea.value = 'But soft, what light through yonder airlock breaks?';
+            await mock.setComposerText(view, 'But soft, what light through yonder airlock breaks?');
             action.click();
 
             await u.waitUntil(() => _converse.api.confirm.calls.count() === 2);

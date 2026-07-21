@@ -19,14 +19,8 @@ describe('An OMEMO encrypted message', function () {
             const view = _converse.chatboxviews.get(contact_jid);
             view.model.set('omemo_active', true);
 
-            const textarea = view.querySelector('.chat-textarea');
-            textarea.value = 'But soft, what light through yonder airlock breaks?';
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'But soft, what light through yonder airlock breaks?');
+            await mock.pressComposerKey(view, 'Enter');
 
             await u.waitUntil(() =>
                 mock.bundleFetched(_converse, {
@@ -57,13 +51,10 @@ describe('An OMEMO encrypted message', function () {
                 'But soft, what light through yonder airlock breaks?',
             );
 
-            await u.waitUntil(() => textarea.value === '');
+            await u.waitUntil(() => mock.composerText(view) === '');
 
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
-            await u.waitUntil(() => textarea.value === 'But soft, what light through yonder airlock breaks?');
+            await mock.pressComposerKey(view, 'ArrowUp');
+            await u.waitUntil(() => mock.composerText(view) === 'But soft, what light through yonder airlock breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
 
             const first_msg = view.model.messages.findWhere({
@@ -71,12 +62,8 @@ describe('An OMEMO encrypted message', function () {
             });
 
             const newer_text = 'But soft, what light through yonder door breaks?';
-            textarea.value = newer_text;
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, newer_text);
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(
                 () => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === newer_text,
             );
@@ -117,19 +104,12 @@ describe('An OMEMO encrypted message', function () {
             expect(first_msg.get('body')).toBe(fallback_text);
             expect(first_msg.get('message')).toBe(fallback_text);
 
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
-            await u.waitUntil(() => textarea.value === 'But soft, what light through yonder door breaks?');
+            await mock.pressComposerKey(view, 'ArrowUp');
+            await u.waitUntil(() => mock.composerText(view) === 'But soft, what light through yonder door breaks?');
 
             const newest_text = 'But soft, what light through yonder window breaks?';
-            textarea.value = newest_text;
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, newest_text);
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(
                 () => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === newest_text,
             );
@@ -282,14 +262,9 @@ describe('An OMEMO encrypted MUC message', function () {
             expect(view.model.get('omemo_active')).toBe(true);
 
             const original_text = 'This message will be encrypted';
-            const textarea = view.querySelector('.chat-textarea');
-            textarea.value = original_text;
+            await mock.setComposerText(view, original_text);
             const message_form = view.querySelector('converse-muc-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.pressComposerKey(view, 'Enter');
 
             await u.waitUntil(() =>
                 mock.bundleFetched(_converse, {
@@ -340,24 +315,17 @@ describe('An OMEMO encrypted MUC message', function () {
                 <encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>
             </message>`);
 
-            await u.waitUntil(() => textarea.value === '');
+            await u.waitUntil(() => mock.composerText(view) === '');
 
             const first_msg = view.model.messages.findWhere({ 'message': original_text });
 
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
-            await u.waitUntil(() => textarea.value === original_text);
+            await mock.pressComposerKey(view, 'ArrowUp');
+            await u.waitUntil(() => mock.composerText(view) === original_text);
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
 
             const new_text = 'This is an edit of the encrypted message';
-            textarea.value = new_text;
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, new_text);
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(
                 () => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === new_text,
             );

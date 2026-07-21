@@ -114,6 +114,7 @@ declare const _default: {
     xFormField2TemplateResult(xfield: import("headless/types/shared/types.js").XFormField, options?: import("./types.js").XFormFieldOptions): TemplateResult;
     getOuterWidth(el: HTMLElement, include_margin?: boolean): number;
     getRootElement(): HTMLElement;
+    isEditableTarget(target: EventTarget | null): boolean;
     default: {
         getRandomInt: typeof import("headless/types/utils/index.js").getRandomInt;
         getUniqueId: typeof import("headless/types/utils/index.js").getUniqueId;

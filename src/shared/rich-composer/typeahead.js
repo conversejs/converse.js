@@ -36,7 +36,9 @@ export class TypeaheadController {
         this.index = 0;
         this.kind = ''; // The source the menu is currently showing for
         this.query = ''; // The query the current items were built for
-        this.pos = { left: 0, top: 0 };
+        this.pos = { left: 0, below: 0, above: 0 };
+        this.flip_up = false;
+        this.max_height = 0; // Room on screen, capped inline so the menu cannot overflow it
 
         // The dismissal key (see `dismissKey`) the user pressed Escape on. The menu stays
         // closed for it until the query changes, so a later editor update cannot re-open
@@ -81,9 +83,14 @@ export class TypeaheadController {
         return `${this.kind}\x00${this.query}`;
     }
 
-    /** The menu's inline position, as a single CSS declaration string. */
+    /**
+     * The menu's inline position, as a single CSS declaration string. Anchored by its
+     * bottom when flipped, so it grows upwards from the caret without needing to know its
+     * own height.
+     */
     get style() {
-        return `left: ${this.pos.left}px; top: ${this.pos.top}px`;
+        const anchor = this.flip_up ? `bottom: ${this.pos.above}px` : `top: ${this.pos.below}px`;
+        return `left: ${this.pos.left}px; ${anchor}; max-height: ${this.max_height}px`;
     }
 
     /**
@@ -133,8 +140,18 @@ export class TypeaheadController {
         this.query = query;
         this.items = items;
         this.index = 0;
-        this.pos = this.caretPosition();
+        this.place();
         this.host.requestUpdate();
+
+        // Re-place once it is in the DOM and its real size is known: the first pass could
+        // only work from the bounds the stylesheet guarantees. Deliberately not awaited,
+        // both because callers only need the items computed and because a host that was
+        // never attached (as in specs) has an updateComplete that never settles.
+        this.host.updateComplete?.then(() => {
+            const before = this.style;
+            this.place();
+            if (this.style !== before) this.host.requestUpdate();
+        });
     }
 
     close() {
@@ -147,9 +164,28 @@ export class TypeaheadController {
     /** @param {number} delta */
     move(delta) {
         const n = this.items.length;
-        if (n) {
-            this.index = (this.index + delta + n) % n;
-            this.host.requestUpdate();
+        if (!n) return;
+        this.index = (this.index + delta + n) % n;
+        this.host.requestUpdate();
+        this.host.updateComplete?.then(() => this.revealActive());
+    }
+
+    /** Keep the highlighted row visible when the list is long enough to scroll. */
+    revealActive() {
+        const menu = /** @type {HTMLElement} */ (this.host.querySelector('.rich-ac'));
+        const active = /** @type {HTMLElement} */ (menu?.querySelector('.is-active'));
+        if (!menu || !active) return;
+
+        // At either end, scroll all the way, so the menu's own padding is not left clipped
+        // above the first row or below the last.
+        if (this.index === 0) {
+            menu.scrollTop = 0;
+        } else if (this.index === this.items.length - 1) {
+            menu.scrollTop = menu.scrollHeight;
+        } else {
+            // `nearest` scrolls by the minimum needed and leaves the page alone, and gets
+            // the padding and border right, which hand-rolled offsetTop maths does not.
+            active.scrollIntoView({ block: 'nearest' });
         }
     }
 
@@ -168,14 +204,19 @@ export class TypeaheadController {
     }
 
     /**
-     * The caret's position relative to the container, so the menu can be anchored just
-     * below the current line. Falls back to the editable's box when a caret rect is
-     * unavailable.
-     * @returns {{ left: number, top: number }}
+     * Anchor the menu to the caret, kept inside the viewport.
+     *
+     * The composer often sits at the bottom of the window, where a menu hanging below the
+     * caret would fall off the screen, so it flips above the line when there is more room
+     * there. It is also clamped horizontally, since a caret near the right edge would
+     * otherwise push the menu past it.
+     *
+     * Called once before the menu renders (falling back to its CSS bounds) and again once
+     * it is in the DOM, when its real size is known.
      */
-    caretPosition() {
+    place() {
         const container = this.host.querySelector(this.container_selector);
-        if (!container) return { left: 0, top: 0 };
+        if (!container) return;
 
         const base = container.getBoundingClientRect();
         const sel = window.getSelection();
@@ -189,7 +230,31 @@ export class TypeaheadController {
         if (!rect || (!rect.width && !rect.height && !rect.left && !rect.top)) {
             rect = this.host.querySelector(this.editable_selector)?.getBoundingClientRect() ?? base;
         }
-        return { left: rect.left - base.left, top: rect.bottom - base.top };
+
+        // Before the first render there is nothing to measure, so fall back to the bounds
+        // the stylesheet guarantees (max-height and min-width, both 14em).
+        const menu = this.host.querySelector('.rich-ac')?.getBoundingClientRect();
+        const height = menu?.height || 14 * 16;
+        const width = menu?.width || 14 * 16;
+
+        const room_below = window.innerHeight - rect.bottom;
+        this.flip_up = room_below < height && rect.top > room_below;
+
+        // Never taller than the room on the side it opens towards, less a small margin, and
+        // never so short that it stops being a usable list.
+        this.max_height = Math.max(96, (this.flip_up ? rect.top : room_below) - 8);
+
+        // Clamped against both the container and the window: the container is not always
+        // inside the viewport itself (a narrow screen can leave it hanging off the edge),
+        // so keeping the menu within it is not enough on its own.
+        const desired = rect.left - base.left;
+        const limit = Math.min(base.width - width, window.innerWidth - width - base.left);
+
+        this.pos = {
+            left: Math.max(0, Math.min(desired, limit)),
+            below: rect.bottom - base.top,
+            above: base.bottom - rect.top,
+        };
     }
 
     /**

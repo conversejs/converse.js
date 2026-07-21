@@ -13,6 +13,8 @@
 import { api, constants, converse, u } from '@converse/headless';
 import MessageForm from './message-form.js';
 import tplMessageFormRich from './templates/message-form-rich.js';
+import { TypeaheadController } from 'shared/rich-composer/typeahead.js';
+import { EMOJI_SOURCE } from 'shared/rich-composer/emoji-source.js';
 
 import './styles/message-form-rich.scss';
 import 'shared/rich-composer/styles/typeahead.scss';
@@ -34,6 +36,15 @@ export default class MessageFormRich extends MessageForm {
         this._handle = null;
         /** @type {Promise<import('shared/rich-composer/types').RichEditor>|null} */
         this._init = null;
+
+        // Emoji shortname completion. Mentions are MUC's business, and MUC still renders
+        // the plain form, so this composer has the one source for now.
+        this.typeahead = new TypeaheadController(this, {
+            sources: [EMOJI_SOURCE],
+            getHandle: () => this._handle,
+            container: '.chat-rich',
+            editable: '.chat-rich__editable',
+        });
     }
 
     async initialize() {
@@ -105,6 +116,14 @@ export default class MessageFormRich extends MessageForm {
         // Keep the character counter honest on every edit, not just on keyup: text can
         // arrive from the emoji picker or a quote without a key ever being pressed.
         this.model?.trigger('event:keyup', { text: this.rawText() });
+        this.typeahead.update();
+    }
+
+    /**
+     * @param {FocusEvent} [ev]
+     */
+    onEditorFocusOut(ev) {
+        this.typeahead.onFocusOut(ev);
     }
 
     /** The composer's text, untrimmed, which is what the character counter measures. */
@@ -182,6 +201,10 @@ export default class MessageFormRich extends MessageForm {
      * @param {KeyboardEvent} ev
      */
     onKeyDown(ev) {
+        // The menu owns arrows / Enter / Tab / Escape while it is open, so they reach
+        // neither Lexical nor the send-and-correct handling below.
+        if (this.typeahead.onKeyDown(ev)) return;
+
         const { keycodes } = converse;
         if (ev.key === keycodes.SHIFT) this.shiftDown = true;
 

@@ -191,7 +191,10 @@
                 line-height: var(--line-height-huge);
             }
             .chat-message-form {
-                ul {
+                // Every list in the form is full width except the caret typeahead, which is
+                // a popup and has to size to its content. Excluded here rather than fought
+                // with specificity at the popup, since this selector is the over-broad one.
+                ul:not(.rich-ac) {
                     width: 100%;
                 }
             }

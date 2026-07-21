@@ -22,7 +22,7 @@ describe('The social feed virtualization', function () {
             const bare_jid = _converse.bare_jid;
 
             const el = /** @type {any} */ (mountSocialFeed());
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             // Constrain the scroller (inline, so it holds regardless of the
             // stylesheet) to make the post list actually overflow.
@@ -76,7 +76,7 @@ describe('The social feed virtualization', function () {
             const bare_jid = _converse.bare_jid;
 
             const el = /** @type {any} */ (mountSocialFeed());
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             el.style.display = 'block';
             el.style.height = '400px';
@@ -125,7 +125,7 @@ describe('The social feed virtualization', function () {
             const bare_jid = _converse.bare_jid;
 
             const el = /** @type {any} */ (mountSocialFeed());
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             el.style.display = 'block';
             el.style.height = '400px';
@@ -160,7 +160,7 @@ describe('The social feed virtualization', function () {
                 el.scrollTop = el.scrollHeight;
                 return renderedBodies(el).includes('Post number 0');
             });
-            const textarea = /** @type {HTMLTextAreaElement} */ (el.querySelector('.social-compose__textarea'));
+            const textarea = /** @type {HTMLTextAreaElement} */ (el.querySelector('.social-rich__editable'));
             textarea.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
             // Give a reset (if it wrongly fired) a chance to render before asserting.
             await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -175,7 +175,7 @@ describe('The social feed virtualization', function () {
             const bare_jid = _converse.bare_jid;
 
             const el = /** @type {any} */ (mountSocialFeed());
-            await u.waitUntil(() => el.querySelector('.social-compose__textarea'));
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
 
             el.style.display = 'block';
             el.style.height = '400px';

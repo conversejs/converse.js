@@ -19,18 +19,6 @@ export default class SocialComposeRich extends CustomElement {
             type: ArrayConstructor;
             state: boolean;
         };
-        _ac_items: {
-            type: ArrayConstructor;
-            state: boolean;
-        };
-        _ac_index: {
-            type: NumberConstructor;
-            state: boolean;
-        };
-        _ac_pos: {
-            type: ObjectConstructor;
-            state: boolean;
-        };
     };
     _publishing: boolean;
     _uploading: boolean;
@@ -45,23 +33,8 @@ export default class SocialComposeRich extends CustomElement {
     _handle: import("./types").EditorHandle | null;
     /** @type {Promise<import('./types').EditorHandle>|null} */
     _init: Promise<import("./types").EditorHandle> | null;
-    /** @type {import('./types').TypeaheadItem[]} */
-    _ac_items: import("./types").TypeaheadItem[];
-    _ac_index: number;
-    _ac_kind: string;
-    /** @type {{ left: number, top: number }} */
-    _ac_pos: {
-        left: number;
-        top: number;
-    };
-    _ac_query: string;
-    /** @type {string|null} */
-    _ac_dismissed: string | null;
-    _menu_closed_by_blur: boolean;
-    _pointer_down: boolean;
+    typeahead: TypeaheadController;
     render(): import("lit-html").TemplateResult<1>;
-    _onDocPointerDown: () => void;
-    _pointer_down_timer: number;
     /**
      * Lazily load Lexical and attach it to the contenteditable host, once. The
      * dynamic import keeps the (sizeable) editor out of the core bundle: the chunk
@@ -72,59 +45,20 @@ export default class SocialComposeRich extends CustomElement {
     /** Reflect emptiness (placeholder + Post enabled) only when it actually flips. */
     onChange(): void;
     /**
-     * The key an Escape dismissal is remembered under: the source plus its query,
-     * NUL-joined (NUL can appear in neither), so dismissing e.g. `:sm` can never
-     * also suppress `@sm`.
-     */
-    get _ac_dismiss_key(): string;
-    /**
-     * Recompute the caret typeahead after each edit: if the caret sits on a
-     * source's trigger (a `:query` / `@query` token), show that source's matches;
-     * otherwise close the menu.
-     */
-    updateTypeahead(): Promise<void>;
-    /** Close the typeahead menu. */
-    closeTypeahead(): void;
-    /** The typeahead menu's inline position, as a single CSS declaration string. */
-    get typeaheadStyle(): string;
-    /**
-     * The caret's position relative to the `.social-rich` container, so the menu can
-     * be anchored just below the current line. Falls back to the editable's box when
-     * a caret rect is unavailable.
-     * @returns {{ left: number, top: number }}
-     */
-    caretPosition(): {
-        left: number;
-        top: number;
-    };
-    /**
-     * Keyboard navigation for the typeahead menu. Intercepts arrows / Enter / Tab /
-     * Escape only while the menu is open, keeping them away from Lexical (which
-     * handles the same keys on the same element).
+     * Let the typeahead claim arrows / Enter / Tab / Escape while its menu is open.
      * @param {KeyboardEvent} ev
      */
     onEditorKeyDown(ev: KeyboardEvent): void;
     /**
-     * Close the emoji menu whenever focus leaves the editor.
      * @param {FocusEvent} [ev]
      */
     onEditorFocusOut(ev?: FocusEvent): void;
-    /**
-     * Move the active suggestion, wrapping around the ends.
-     * @param {number} delta
-     */
-    moveTypeaheadSelection(delta: number): void;
     /**
      * The emoji picker dropdown was closed (Escape, outside click, or a pick):
      * hand focus back to the editor, with the caret where it was. Mirrors chat,
      * where the message textarea is refocused when the picker closes.
      */
     onPickerClosed(): void;
-    /**
-     * Insert the chosen item in place of the trigger, via the active source.
-     * @param {number} index
-     */
-    chooseSuggestion(index: number): void;
     /**
      * @param {import('lexical').TextFormatType} type - the toolbar uses
      *      'bold' | 'italic' | 'strikethrough' | 'code'
@@ -170,5 +104,6 @@ export default class SocialComposeRich extends CustomElement {
     onSubmit(ev?: Event): Promise<void>;
 }
 import { CustomElement } from 'shared/components/element.js';
+import { TypeaheadController } from 'shared/rich-composer/typeahead.js';
 import { PubSubFeed } from '@converse/headless';
 //# sourceMappingURL=compose-rich.d.ts.map

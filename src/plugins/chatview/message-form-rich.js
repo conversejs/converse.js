@@ -15,6 +15,7 @@ import MessageForm from './message-form.js';
 import tplMessageFormRich from './templates/message-form-rich.js';
 
 import './styles/message-form-rich.scss';
+import 'shared/rich-composer/styles/typeahead.scss';
 
 const { COMPOSING } = constants;
 

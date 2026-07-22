@@ -16,6 +16,12 @@ declare module 'node:path' {
     export function join(...paths: string[]): string;
 }
 
+declare module 'node:fs' {
+    export function readFileSync(path: string | URL): { toString(encoding: string): string };
+    const fs: { readFileSync: typeof readFileSync };
+    export default fs;
+}
+
 declare const process: {
     env: Record<string, string | undefined>;
 };

@@ -1,4 +1,3 @@
-import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js';
 import { Model } from '@converse/skeletor';
 import log from '@converse/log';
@@ -10,8 +9,9 @@ import ModelWithContact from '../shared/model-with-contact.js';
 import ModelWithVCard from '../shared/model-with-vcard.js';
 import { getUniqueId } from '../utils/index.js';
 import converse from './api/public.js';
+import { NO_SLOT, putFile, requestSlot } from './http-upload.js';
 
-const { dayjs, stx } = converse.env;
+const { dayjs } = converse.env;
 
 /**
  * @extends {Model<import('./types').BaseMessageAttributes>}
@@ -203,129 +203,77 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
     }
 
     /**
-     * Send out an IQ stanza to request a file upload slot.
-     * https://xmpp.org/extensions/xep-0363.html#request
+     * Request an upload slot (XEP-0363 § 4) and record it on the message, which starts
+     * the upload: saving `put` fires the `change:put` handler set up in `initialize`.
+     *
+     * The protocol itself lives in `http-upload.js`; what belongs here is reporting a
+     * failure as an ephemeral error message in the conversation.
      */
-    sendSlotRequestStanza() {
-        if (!this.file) return Promise.reject(new Error('file is undefined'));
-
-        const iq = stx`
-            <iq from="${_converse.session.get('jid')}"
-                to="${this.get('slot_request_url')}"
-                type="get"
-                xmlns="jabber:client">
-                <request xmlns="${Strophe.NS.HTTPUPLOAD}"
-                         filename="${this.file.name}"
-                         size="${this.file.size}"
-                         content-type="${this.file.type}">
-                </request>
-            </iq>`;
-        return api.sendIQ(iq);
-    }
-
-    /**
-     * @param {Element} stanza
-     */
-    getUploadRequestMetadata(stanza) {
-        const headers = sizzle(`slot[xmlns="${Strophe.NS.HTTPUPLOAD}"] put header`, stanza);
-        // https://xmpp.org/extensions/xep-0363.html#request
-        // TODO: Can't set the Cookie header in JavaScript, instead cookies need
-        // to be manually set via document.cookie, so we're leaving it out here.
-        return {
-            headers: headers
-                .map((h) => ({ name: h.getAttribute('name'), value: h.textContent }))
-                .filter((h) => ['Authorization', 'Expires'].includes(h.name)),
-        };
-    }
-
     async getRequestSlotURL() {
         const { __ } = _converse;
-        let stanza;
+        if (!this.file) {
+            log.error('getRequestSlotURL called with no file');
+            return;
+        }
+        let slot;
         try {
-            stanza = await this.sendSlotRequestStanza();
+            slot = await requestSlot(this.file, this.get('slot_request_url'));
         } catch (e) {
             log.error(e);
             return this.save({
                 is_ephemeral: true,
-                message: __('Sorry, could not determine upload URL.'),
+                message:
+                    e.code === NO_SLOT
+                        ? __('Sorry, could not determine file upload URL.')
+                        : __('Sorry, could not determine upload URL.'),
                 type: 'error',
             });
         }
-        const slot = sizzle(`slot[xmlns="${Strophe.NS.HTTPUPLOAD}"]`, stanza).pop();
-        if (slot) {
-            this.upload_metadata = this.getUploadRequestMetadata(stanza);
-            this.save({
-                get: slot.querySelector('get').getAttribute('url'),
-                put: slot.querySelector('put').getAttribute('url'),
-            });
-        } else {
-            return this.save({
-                is_ephemeral: true,
-                message: __('Sorry, could not determine file upload URL.'),
-                type: 'error',
-            });
-        }
+        this.upload_metadata = { headers: slot.headers };
+        this.save({ get: slot.get, put: slot.put });
     }
 
-    uploadFile() {
-        const xhr = new XMLHttpRequest();
-
-        xhr.onreadystatechange = async (event) => {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                log.info('Status: ' + xhr.status);
-                if (xhr.status === 200 || xhr.status === 201) {
-                    let attrs = {
-                        body: this.get('get'),
-                        message: this.get('get'),
-                        oob_url: this.get('get'),
-                        upload: SUCCESS,
-                    };
-                    /**
-                     * *Hook* which allows plugins to change the attributes
-                     * saved on the message once a file has been uploaded.
-                     * @event _converse#afterFileUploaded
-                     */
-                    attrs = await api.hook('afterFileUploaded', this, attrs);
-                    this.save(attrs);
-                } else {
-                    log.error(event);
-                    xhr.onerror(new ProgressEvent(`Response status: ${xhr.status}`));
-                }
-            }
-        };
-
-        xhr.upload.addEventListener(
-            'progress',
-            (evt) => {
-                if (evt.lengthComputable) {
-                    this.set('progress', evt.loaded / evt.total);
-                }
-            },
-            false,
-        );
-
-        xhr.onerror = () => {
-            const { __ } = _converse;
-            let message;
-            if (xhr.responseText) {
-                message = __(
-                    'Sorry, could not successfully upload your file. Your server’s response: "%1$s"',
-                    xhr.responseText,
-                );
-            } else {
-                message = __('Sorry, could not successfully upload your file.');
-            }
-            this.save({
+    /**
+     * PUT the file to the slot recorded by {@link getRequestSlotURL}, tracking progress
+     * on the message so the UI can show a progress bar.
+     *
+     * Called off a `change:put` listener, so nothing awaits it: it has to settle its own
+     * failures rather than reject.
+     */
+    async uploadFile() {
+        const { __ } = _converse;
+        try {
+            await putFile(this.file, { put: this.get('put'), headers: this.upload_metadata?.headers }, (fraction) =>
+                this.set('progress', fraction),
+            );
+        } catch (e) {
+            log.error(e);
+            return this.save({
                 is_ephemeral: true,
-                message,
+                message: e.responseText
+                    ? __(
+                          'Sorry, could not successfully upload your file. Your server’s response: "%1$s"',
+                          e.responseText,
+                      )
+                    : __('Sorry, could not successfully upload your file.'),
                 type: 'error',
                 upload: FAILURE,
             });
+        }
+
+        let attrs = {
+            body: this.get('get'),
+            message: this.get('get'),
+            oob_url: this.get('get'),
+            upload: SUCCESS,
         };
-        xhr.open('PUT', this.get('put'), true);
-        xhr.setRequestHeader('Content-type', this.file.type);
-        this.upload_metadata.headers?.forEach((h) => xhr.setRequestHeader(h.name, h.value));
-        xhr.send(this.file);
+        /**
+         * *Hook* which allows plugins to change the attributes
+         * saved on the message once a file has been uploaded.
+         * @event _converse#afterFileUploaded
+         */
+        attrs = await api.hook('afterFileUploaded', this, attrs);
+        this.save(attrs);
     }
 }
 

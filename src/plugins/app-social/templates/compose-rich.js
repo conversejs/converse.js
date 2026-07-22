@@ -29,17 +29,17 @@ export default (el) => html`
             <!-- Stable host: no dynamic bindings inside, so Lit never re-renders it
                  and Lexical's managed DOM survives the component's state changes. -->
             <div
-                class="social-rich__editable"
+                class="social-rich__editable ${el._empty ? 'is-empty' : ''}"
                 contenteditable="true"
                 role="textbox"
                 aria-multiline="true"
                 aria-label="${__('Write a post')}"
+                data-placeholder="${__('What’s on your mind?')}"
                 @focusin=${() => el.ensureEditor()}
                 @focusout=${(/** @type {FocusEvent} */ ev) => el.onEditorFocusOut(ev)}
                 @paste=${(/** @type {ClipboardEvent} */ ev) => el.onPaste(ev)}
                 @keydown=${(/** @type {KeyboardEvent} */ ev) => el.onEditorKeyDown(ev)}
             ></div>
-            ${el._empty ? html`<span class="social-rich__placeholder">${__('What’s on your mind?')}</span>` : ''}
             ${el.typeahead.is_open ? tplTypeahead(el.typeahead) : ''}
         </div>
 

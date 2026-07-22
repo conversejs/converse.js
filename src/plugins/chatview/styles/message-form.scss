@@ -14,30 +14,65 @@
             // nickname form). A contenteditable is an ordinary element and inherits it, so
             // say it here rather than relying on an ancestor.
             text-align: start;
-        }
 
-        .chat-rich__editable {
-            outline: none;
-            overflow-wrap: anywhere;
-            white-space: pre-wrap;
+            // Nested inside .chat-rich, which is where it lives, so these rules outrank
+            // `.conversejs .chatbox .chat-body p` below. That one is written for message
+            // bodies and would otherwise reach into the composer.
+            .chat-rich__editable {
+                position: relative;
+                outline: none;
+                overflow-wrap: anywhere;
+                white-space: pre-wrap;
 
-            p {
-                margin: 0;
+                // Said explicitly, because the rule that used to size the composer
+                // (`.conversejs textarea`, in _core.scss) is a type selector, and a
+                // contenteditable div matches nothing there. Left to inherit, it would take
+                // its container: the body font in a chat, but the deliberately smaller
+                // `--font-size-small` in a MUC, whose bottom panel sets that for the notices
+                // it also hosts. Both composers therefore have to be told.
+                //
+                // `--font-size` rather than the textarea's `--font-size-large`: it matches
+                // `--message-font-size`, so what you type is the size it will be read at.
+                //
+                // Kept low enough in specificity that the embedded-mode override on
+                // `.chat-textarea` still wins.
+                font-size: var(--font-size);
+
+                // Lexical wraps each line in a <p>, which the chat-body paragraph rule would
+                // otherwise indent by 0.25em and resize to the message font. Neutralised so a
+                // paragraph adds nothing of its own: text then starts exactly at the editable's
+                // content origin, which is where the placeholder is.
+                p {
+                    margin: 0;
+                    padding: 0;
+                    font-size: inherit;
+                    color: inherit;
+                }
+
+                &.disabled {
+                    opacity: 0.6;
+                }
+
+                // The placeholder, sitting over the editable's first line with clicks falling
+                // through to the editor.
+                //
+                // A pseudo-element rather than a sibling span, so it cannot drift out of
+                // alignment with the text: it inherits the editable's font and, via
+                // `padding: inherit`, its padding, and so starts exactly where the first
+                // character will. A sibling had to restate both, and got them wrong wherever
+                // the theme resized the composer (MUC gives .chat-textarea `font-size: 110%`,
+                // which made the sibling's `0.5em` offsets smaller than the editable's own
+                // padding, leaving the placeholder up and to the left of the caret).
+                &.is-empty::before {
+                    content: attr(data-placeholder);
+                    position: absolute;
+                    inset: 0;
+                    padding: inherit;
+                    color: var(--subdued-color);
+                    pointer-events: none;
+                    user-select: none;
+                }
             }
-
-            &.disabled {
-                opacity: 0.6;
-            }
-        }
-
-        // Sits over the editable's first line; clicks fall through to the editor.
-        .chat-rich__placeholder {
-            position: absolute;
-            top: 0.5em;
-            left: 0.5em;
-            color: var(--subdued-color);
-            pointer-events: none;
-            user-select: none;
         }
 
         // XEP-0393 span directives, shown as the reader will see them.

@@ -97,6 +97,26 @@ declare namespace _default {
              * @returns {Promise<import('./types').PubSubItemsResult>}
              */
             function get(jid: string | null, node: string, options?: import("./types").PubSubItemsOptions): Promise<import("./types").PubSubItemsResult>;
+            /**
+             * Resolve the payloads of a batch of PubSub event items, retrieving any
+             * that arrived as a bare `<item id/>` header.
+             *
+             * A node whose `pubsub#deliver_payloads` is `false` is
+             * "notification-only". It notifies subscribers with headers and expects
+             * them to retrieve the content themselves (XEP-0060 § 4.3 Event Types).
+             *
+             * Best-effort: an id the service doesn't return is logged and left out,
+             * rather than silently thinning the batch. The order of the rest is
+             * preserved.
+             *
+             * @method _converse.api.pubsub.items.resolve
+             * @param {string|null} jid - The JID of the pubsub service where the node
+             *      resides. Pass a falsy value for your own PEP service (bare JID).
+             * @param {string} node - The node the items were published to
+             * @param {Element[]} items - The `<item>` elements from the event
+             * @returns {Promise<Element[]>}
+             */
+            function resolve(jid: string | null, node: string, items: Element[]): Promise<Element[]>;
         }
     }
 }

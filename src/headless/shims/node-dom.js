@@ -42,6 +42,18 @@ if (!(globalThis.document?.createElement('sample') instanceof xmldom.Element)) {
     );
 }
 
+// Declared, but left undefined, because Node has no Web Storage. skeletor's
+// session-storage driver probes for it with a bare `sessionStorage` reference
+// inside a try/catch and logs the resulting ReferenceError, so every process
+// start prints a stack trace. Declaring the global makes the reference resolve
+// to `undefined`, the probe fall through, and the log go away.
+//
+// Anything testing for Web Storage must therefore use `typeof`, not
+// `'sessionStorage' in globalThis`, which this makes true. That is the test
+// localforage and `utils/storage.js` already use. `localStorage` is left
+// undeclared because nothing probes for it the same way.
+globalThis.sessionStorage = undefined;
+
 Object.assign(globalThis, {
     Attr: xmldom.Attr,
     CDATASection: xmldom.CDATASection,

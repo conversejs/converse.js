@@ -10,6 +10,7 @@ import log from '@converse/log';
 import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN } from '../shared/constants.js';
 import { Strophe } from 'strophe.js';
 import { createStore, initStorage } from './storage.js';
+import { getNodeStore } from './node-store.js';
 import { generateResource, getConnectionServiceURL } from '../shared/connection/utils.js';
 import { isValidJID } from './jid.js';
 import { addUnloadListener, getLocalStorageItem, hasCredentialsAPI, IS_BROWSER } from './environment.js';
@@ -95,7 +96,7 @@ export async function initSessionStorage(_converse) {
         // store as the persistent one. Nothing depends on it being cleared when
         // the process exits: `clear_cache_on_logout` and the logout path both
         // clear it explicitly.
-        _converse.storage['session'] = 'node';
+        _converse.storage['session'] = getNodeStore();
         return;
     }
     await BrowserStorage.sessionStorageInitialized;
@@ -116,10 +117,10 @@ export function initPersistentStorage(_converse, store_name, key = 'persistent')
     const { api } = _converse;
     if (!IS_BROWSER) {
         // IndexedDB, localStorage and sessionStorage are all browser APIs, so
-        // `persistent_store` has nothing to select between under Node. Storage
-        // is @converse/skeletor's SQLite store, which writes one database per
-        // store beneath `.skeletor-storage` in the working directory.
-        _converse.storage[key] = 'node';
+        // `persistent_store` has nothing to select between under Node. Every
+        // store shares one SQLite database, the same way they share one
+        // localForage instance in the browser.
+        _converse.storage[key] = getNodeStore();
         return;
     }
     if (api.settings.get('persistent_store') === 'sessionStorage') {

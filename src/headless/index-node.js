@@ -18,6 +18,8 @@
 // Must be first: installs `document`, `DOMParser`, `WebSocket` and the
 // `Element`/`Node` constructors before any module touches a stanza.
 import './shims/node-dom.js';
+// Registers the shared SQLite driver that `utils/node-store.js` hands to every store.
+import './shims/node-storage.js';
 
 export * from './index.js';
 export { default } from './index.js';

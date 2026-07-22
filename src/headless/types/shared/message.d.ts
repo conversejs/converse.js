@@ -70,27 +70,24 @@ declare class BaseMessage extends Model<import("./types").BaseMessageAttributes>
      */
     stripReplyFallback(text: string): string;
     /**
-     * Send out an IQ stanza to request a file upload slot.
-     * https://xmpp.org/extensions/xep-0363.html#request
+     * Request an upload slot (XEP-0363 § 4) and record it on the message, which starts
+     * the upload: saving `put` fires the `change:put` handler set up in `initialize`.
+     *
+     * The protocol itself lives in `http-upload.js`; what belongs here is reporting a
+     * failure as an ephemeral error message in the conversation.
      */
-    sendSlotRequestStanza(): any;
-    /**
-     * @param {Element} stanza
-     */
-    getUploadRequestMetadata(stanza: Element): {
-        headers: {
-            name: string;
-            value: string;
-        }[];
-    };
     getRequestSlotURL(): Promise<any>;
     upload_metadata: {
-        headers: {
-            name: string;
-            value: string;
-        }[];
+        headers: import("./types").UploadSlotHeader[];
     };
-    uploadFile(): void;
+    /**
+     * PUT the file to the slot recorded by {@link getRequestSlotURL}, tracking progress
+     * on the message so the UI can show a progress bar.
+     *
+     * Called off a `change:put` listener, so nothing awaits it: it has to settle its own
+     * failures rather than reject.
+     */
+    uploadFile(): Promise<any>;
 }
 import { Model } from '@converse/skeletor';
 //# sourceMappingURL=message.d.ts.map

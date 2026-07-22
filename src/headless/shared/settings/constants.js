@@ -26,6 +26,8 @@
  * @property {String} [rid]
  * @property {Element} [root=window.document] - The DOM node Converse renders into. Null outside a browser.
  * @property {String} [sid]
+ * @property {String} [storage_path] - Node.js only. Directory for the SQLite database.
+ *  Defaults to `$XDG_STATE_HOME/converse`, or `~/.local/state/converse`.
  * @property {Boolean} [singleton=false]
  * @property {Boolean} [strict_plugin_dependencies=false]
  * @property {('fullscreen'|'embedded'|'overlayed')} [view_mode='fullscreen']
@@ -104,6 +106,7 @@ export const DEFAULT_SETTINGS = {
     rid: undefined,
     root: IS_BROWSER ? window.document : null,
     sid: undefined,
+    storage_path: undefined,
     singleton: false,
     strict_plugin_dependencies: false,
     stanza_timeout: 60000,

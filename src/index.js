@@ -38,7 +38,7 @@ import './plugins/push/index.js'; // XEP-0357 Push Notifications
 import './plugins/register/index.js'; // XEP-0077 In-band registration
 import './plugins/roomslist/index.js'; // Show currently open chat rooms
 import './plugins/rootview/index.js';
-import './plugins/app-social/index.js'; // XEP-0277 Microblogging ("Social" app) — WIP placeholder
+import './plugins/app-social/index.js'; // XEP-0277 Microblogging ("Social" app)
 import './plugins/rosterview/index.js';
 import './plugins/singleton/index.js';
 import './plugins/dragresize/index.js'; // Allows chat boxes to be resized by dragging them

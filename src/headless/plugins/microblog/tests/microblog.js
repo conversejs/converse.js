@@ -130,6 +130,49 @@ describe('The microblog plugin', function () {
     );
 
     it(
+        'publishes with the node config that keeps the feed followable and attributable',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const feed = await api.microblog.feeds.own();
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            const create = vi.spyOn(api.pubsub, 'create').mockResolvedValue(undefined);
+
+            await feed.publishPost('O Romeo');
+
+            // Pinned in full: each field is load-bearing (see constants.js), so a
+            // change to the wire config should have to be deliberate.
+            expect(publish.mock.calls[0][3]).toEqual({
+                access_model: 'open',
+                persist_items: 'true',
+                max_items: 'max',
+                send_last_published_item: 'never',
+                notify_retract: 'true',
+                deliver_payloads: 'true',
+                itemreply: 'publisher',
+            });
+            // Non-strict, so a server that can't honour the precondition still gets
+            // the post rather than dropping it.
+            expect(publish.mock.calls[0][4]).toBe(false);
+
+            // The comments node is anyone-can-publish, so `itemreply` is what keeps
+            // a comment's authorship server-stamped rather than self-asserted.
+            await feed.ensureCommentsNode('post-1');
+            expect(create.mock.calls.at(-1)[2]).toEqual({
+                access_model: 'open',
+                publish_model: 'open',
+                persist_items: 'true',
+                max_items: 'max',
+                send_last_published_item: 'never',
+                notify_retract: 'true',
+                deliver_payloads: 'true',
+                itemreply: 'publisher',
+            });
+        }),
+    );
+
+    it(
         'fetches the payload when a followed node notifies with headers only',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

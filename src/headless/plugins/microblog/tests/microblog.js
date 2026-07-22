@@ -7,7 +7,9 @@ import {
     PUBSUB_EVENT,
     commentItem,
     makeCommentEvent,
+    makeHeaderEvent,
     makePostStanza,
+    postItem,
     receive,
     seedPost,
     stubPubsubNetwork,
@@ -124,6 +126,202 @@ describe('The microblog plugin', function () {
             expect(post.get('id')).toBe('news-1');
             // A community node isn't ours, so its posts are never deletable-as-mine.
             expect(post.get('is_mine')).toBe(false);
+        }),
+    );
+
+    it(
+        'fetches the payload when a followed node notifies with headers only',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            // Movim configures its community nodes with `pubsub#deliver_payloads`
+            // false, so a publish notifies with a bare `<item id/>` header and the
+            // content has to be retrieved. We don't own such a node, so we can't
+            // configure the difference away.
+            const service = 'pubsub.montague.lit';
+            const node = 'news';
+            const feed = await api.microblog.feeds.get(service, node, true);
+            expect(feed.messages.length).toBe(0);
+
+            const items_get = vi
+                .spyOn(api.pubsub.items, 'get')
+                .mockResolvedValue({ items: [postItem('news-1', 'Council approves the new aqueduct', service)] });
+
+            receive(_converse, makeHeaderEvent(service, node, 'news-1'));
+
+            await u.waitUntil(() => feed.messages.length === 1);
+            expect(items_get).toHaveBeenCalledWith(service, node, { item_ids: ['news-1'] });
+            expect(feed.messages.at(0).get('title')).toBe('Council approves the new aqueduct');
+        }),
+    );
+
+    it(
+        'keeps the items it can parse when a header-only fetch fails',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const service = 'pubsub.montague.lit';
+            const node = 'news';
+            const feed = await api.microblog.feeds.get(service, node, true);
+
+            const items_get = vi.spyOn(api.pubsub.items, 'get').mockRejectedValue(new Error('forbidden'));
+
+            // A batch mixing a full item with a header-only one. The retrieval
+            // fails, so the header is dropped, but that mustn't take the item that
+            // arrived complete down with it.
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${service}" to="${service}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${node}">
+                      <item id="news-1"/>
+                      <item id="news-2" publisher="${service}">
+                        <entry xmlns="${ATOM}">
+                          <title type="text">Verona wins the joust</title>
+                          <id>tag:montague.lit,2024-01-01:news-2</id>
+                          <published>2024-01-01T09:00:00Z</published>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            await u.waitUntil(() => feed.messages.length === 1);
+            expect(feed.messages.at(0).get('id')).toBe('news-2');
+            // Only the header was asked for; the complete item wasn't re-fetched.
+            expect(items_get).toHaveBeenCalledWith(service, node, { item_ids: ['news-1'] });
+        }),
+    );
+
+    it(
+        'retrieves a batch of headers in one request',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const service = 'pubsub.montague.lit';
+            const node = 'news';
+            const feed = await api.microblog.feeds.get(service, node, true);
+
+            // XEP-0060 § 6.5.6 requires a service to accept several ItemIDs in one
+            // request, so a batch of headers costs a single round trip.
+            const titles = {
+                'news-1': 'Council approves the new aqueduct',
+                'news-2': 'Verona wins the joust',
+            };
+            const items_get = vi.spyOn(api.pubsub.items, 'get').mockImplementation(async (_jid, _node, opts) => ({
+                items: (opts?.item_ids ?? []).map((id) => postItem(id, titles[id], service)),
+            }));
+
+            receive(_converse, makeHeaderEvent(service, node, 'news-1', 'news-2'));
+
+            await u.waitUntil(() => feed.messages.length === 2);
+            expect(feed.messages.get('news-1').get('title')).toBe(titles['news-1']);
+            expect(feed.messages.get('news-2').get('title')).toBe(titles['news-2']);
+            expect(items_get.mock.calls.filter((c) => c[2]?.item_ids)).toEqual([
+                [service, node, { item_ids: ['news-1', 'news-2'] }],
+            ]);
+        }),
+    );
+
+    it(
+        'keeps the headers the service does answer for',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const service = 'pubsub.montague.lit';
+            const node = 'news';
+            const feed = await api.microblog.feeds.get(service, node, true);
+
+            // A short answer: both ids were asked for, only one came back (retracted
+            // between the notification and the retrieval, say). The missing one is
+            // dropped without taking the other with it.
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation(async (_jid, _node, opts) => ({
+                items: (opts?.item_ids ?? [])
+                    .filter((id) => id !== 'news-2')
+                    .map((id) => postItem(id, 'Council approves the new aqueduct', service)),
+            }));
+
+            receive(_converse, makeHeaderEvent(service, node, 'news-1', 'news-2'));
+
+            await u.waitUntil(() => feed.messages.length === 1);
+            expect(feed.messages.get('news-1')).toBeDefined();
+            expect(feed.messages.get('news-2')).toBeUndefined();
+        }),
+    );
+
+    it(
+        'never re-fetches a header for an item it already holds',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const service = 'pubsub.montague.lit';
+            const node = 'news';
+            const feed = await api.microblog.feeds.get(service, node, true);
+
+            const items_get = vi.spyOn(api.pubsub.items, 'get').mockImplementation(async (_jid, _node, opts) => {
+                const id = opts?.item_ids?.[0];
+                return { items: id ? [postItem(id, 'Council approves the new aqueduct', service)] : [] };
+            });
+
+            receive(_converse, makeHeaderEvent(service, node, 'news-1'));
+            await u.waitUntil(() => feed.messages.length === 1);
+
+            // A redelivery of the same header (the `send_last_published_item=on_sub`
+            // push on a resubscribe, say) is already in the feed, so there's nothing
+            // to retrieve.
+            receive(_converse, makeHeaderEvent(service, node, 'news-1', 'news-2'));
+
+            await u.waitUntil(() => feed.messages.length === 2);
+            expect(items_get.mock.calls.filter((c) => c[2]?.item_ids)).toEqual([
+                [service, node, { item_ids: ['news-1'] }],
+                [service, node, { item_ids: ['news-2'] }],
+            ]);
+        }),
+    );
+
+    it(
+        'never re-fetches an item that arrived with a payload of its own',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const service = 'pubsub.montague.lit';
+            const node = 'news';
+            const feed = await api.microblog.feeds.get(service, node, true);
+
+            const items_get = vi.spyOn(api.pubsub.items, 'get').mockImplementation(async (_jid, _node, opts) => {
+                const id = opts?.item_ids?.[0];
+                return { items: id ? [postItem(id, 'Verona wins the joust', service)] : [] };
+            });
+
+            // "Notification-only" means no payload at all, not "no Atom entry we
+            // recognise": re-fetching an item that came with a payload we can't
+            // parse would only return the same unparseable payload.
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${service}" to="${service}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${node}">
+                      <item id="news-1"><not-atom xmlns="urn:example:other"/></item>
+                      <item id="news-2"/>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            await u.waitUntil(() => feed.messages.length === 1);
+            expect(feed.messages.get('news-2').get('title')).toBe('Verona wins the joust');
+            expect(items_get.mock.calls.filter((c) => c[2]?.item_ids)).toEqual([
+                [service, node, { item_ids: ['news-2'] }],
+            ]);
         }),
     );
 
@@ -1984,6 +2182,34 @@ describe('The microblog plugin', function () {
             receive(_converse, makeCommentEvent(bare_jid, node, 'l-1', '♥', 'romeo@montague.lit', 'Romeo'));
             await u.waitUntil(() => post.get('like_count') === 1);
             expect(post.get('comment_count') || 0).toBe(0);
+        }),
+    );
+
+    it(
+        'fetches the payload when a comments node notifies with headers only',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.session.get('bare_jid');
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            const { post } = await seedPost(api, { author: bare_jid });
+            const node = post.getCommentsNode();
+
+            vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+            await api.microblog.comments.pin(post);
+
+            // Movim's per-post comments nodes are notification-only too, so a live
+            // comment on a Movim post arrives as a header and has to be retrieved
+            // before the thread (and the post's denormalised count) can reflect it.
+            const items_get = vi
+                .spyOn(api.pubsub.items, 'get')
+                .mockResolvedValue({ items: [commentItem('c-1', 'Nice one!')] });
+
+            receive(_converse, makeHeaderEvent(bare_jid, node, 'c-1'));
+
+            await u.waitUntil(() => post.get('comment_count') === 1);
+            expect(items_get).toHaveBeenCalledWith(bare_jid, node, { item_ids: ['c-1'] });
         }),
     );
 

@@ -17,15 +17,9 @@ export const COMMENTS_NODE_PREFIX = 'urn:xmpp:microblog:0:comments/';
 /**
  * Node configuration for a post's comments node (XEP-0277 § Comments node
  * configuration), sent as XEP-0060 publish-options / node config. `access_model`
- * and `publish_model` are `open` so *anyone* can read and add a comment — the
- * author pre-creates the node when publishing the post, since a foreign
+ * and `publish_model` are `open` so *anyone* can read and add a comment.
+ * The author pre-creates the node when publishing the post, since a foreign
  * commenter can't create nodes on the author's PEP service.
- *
- * `deliver_payloads` is `true` for the same reasons as
- * {@link MICROBLOG_PUBLISH_OPTIONS}. XEP-0277 makes no recommendation either way
- * for comments nodes and XEP-0472's Base profile doesn't cover them, but Movim
- * configures them notification-only, so the fetch-on-header fallback matters here
- * too.
  */
 export const COMMENTS_PUBLISH_OPTIONS = {
     access_model: 'open',
@@ -35,6 +29,11 @@ export const COMMENTS_PUBLISH_OPTIONS = {
     send_last_published_item: 'never',
     notify_retract: 'true',
     deliver_payloads: 'true',
+    // This node is `publish_model` open, so *anyone*
+    // can add an item to it, and without the server-stamped `publisher` the only
+    // authorship on a comment is the `<author>` the commenter wrote themselves.
+    // See {@link MICROBLOG_PUBLISH_OPTIONS}.
+    itemreply: 'publisher',
 };
 
 /**
@@ -110,6 +109,16 @@ export const MICROBLOG_PUBLISH_OPTIONS = {
     // content on demand). That requirement seems tailored towards a caching
     // server-side client like Movim.
     deliver_payloads: 'true',
+
+    // `itemreply` is `publisher` to keep the server's `publisher` attribute on our
+    // items. The field is named for who receives replies, but XEP-0060 § 13.17
+    // ("Associating Events and Payloads with the Generating Entity") notes that "the
+    // primary use of the 'pubsub#itemreply' option is to allow node owners to
+    // determine whether the server will include a 'publisher' attribute in items or
+    // not", and Prosody implements exactly that. Without it the attribute is stripped
+    // from retrieval responses, leaving `is_mine` to trust the entry's self-asserted
+    // `<author>`.
+    itemreply: 'publisher',
 };
 
 /**

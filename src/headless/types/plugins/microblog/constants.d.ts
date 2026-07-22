@@ -19,6 +19,7 @@ export namespace COMMENTS_PUBLISH_OPTIONS {
     let send_last_published_item: string;
     let notify_retract: string;
     let deliver_payloads: string;
+    let itemreply: string;
 }
 /**
  * Disco feature advertised by clients that understand the modern PubSub Social
@@ -82,6 +83,8 @@ export namespace MICROBLOG_PUBLISH_OPTIONS {
     export { notify_retract_1 as notify_retract };
     let deliver_payloads_1: string;
     export { deliver_payloads_1 as deliver_payloads };
+    let itemreply_1: string;
+    export { itemreply_1 as itemreply };
 }
 /**
  * XEP-0330 (Pubsub Subscription): the PEP node holding the user's portable

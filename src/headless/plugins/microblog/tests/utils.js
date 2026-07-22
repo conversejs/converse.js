@@ -45,6 +45,42 @@ export function makePostStanza(from, id, body) {
 }
 
 /**
+ * Build a headline PEP event that carries item *headers* only: bare `<item id/>`
+ * elements, as a node whose `pubsub#deliver_payloads` is `false` pushes them
+ * (XEP-0060 § 4.3 Event Types). The content has to be retrieved separately.
+ * @param {string} from - The JID of the service hosting the node.
+ * @param {string} node - The node the items were published to.
+ * @param {...string} ids - The PubSub item ids.
+ */
+export function makeHeaderEvent(from, node, ...ids) {
+    return stx`
+        <message xmlns="jabber:client" from="${from}" to="${from}" type="headline">
+          <event xmlns="${PUBSUB_EVENT}">
+            <items node="${node}">${ids.map((id) => stx`<item id="${id}"/>`)}</items>
+          </event>
+        </message>`;
+}
+
+/**
+ * Build a timeline post `<item>` tree, as `items.get` returns it.
+ * @param {string} id - The PubSub item id.
+ * @param {string} body - The post body.
+ * @param {string} publisher - The publisher's bare JID.
+ * @returns {Element}
+ */
+export function postItem(id, body, publisher) {
+    return stx`
+        <item id="${id}" publisher="${publisher}">
+          <entry xmlns="${ATOM}">
+            <title type="text">${body}</title>
+            <id>tag:montague.lit,2024-01-01:posts-${id}</id>
+            <published>2024-01-01T09:00:00Z</published>
+            <updated>2024-01-01T09:00:00Z</updated>
+          </entry>
+        </item>`.tree();
+}
+
+/**
  * Build a headline PEP event carrying a single comment, as a comments node
  * (XEP-0277 § Comments) would push it: from the comments service, for the
  * comments node, carrying the commenter's `<author>`.

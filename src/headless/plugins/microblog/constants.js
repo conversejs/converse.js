@@ -20,6 +20,12 @@ export const COMMENTS_NODE_PREFIX = 'urn:xmpp:microblog:0:comments/';
  * and `publish_model` are `open` so *anyone* can read and add a comment — the
  * author pre-creates the node when publishing the post, since a foreign
  * commenter can't create nodes on the author's PEP service.
+ *
+ * `deliver_payloads` is `true` for the same reasons as
+ * {@link MICROBLOG_PUBLISH_OPTIONS}. XEP-0277 makes no recommendation either way
+ * for comments nodes and XEP-0472's Base profile doesn't cover them, but Movim
+ * configures them notification-only, so the fetch-on-header fallback matters here
+ * too.
  */
 export const COMMENTS_PUBLISH_OPTIONS = {
     access_model: 'open',
@@ -99,6 +105,10 @@ export const MICROBLOG_PUBLISH_OPTIONS = {
     max_items: 'max',
     send_last_published_item: 'never',
     notify_retract: 'true',
+    // `deliver_payloads` is a deliberate deviation: XEP-0472 § Base profile says it
+    // SHOULD be `false` (subscribers get bare `<item id/>` headers and fetch the
+    // content on demand). That requirement seems tailored towards a caching
+    // server-side client like Movim.
     deliver_payloads: 'true',
 };
 

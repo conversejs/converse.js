@@ -6,6 +6,7 @@
             position: relative;
 
             &__editable {
+                position: relative;
                 min-height: 4.5em;
                 width: 100%;
                 padding: 0.5em;
@@ -43,18 +44,25 @@
                     border-left: 3px solid var(--subdued-color);
                     color: var(--subdued-color);
                 }
-            }
 
-            // Sits over the editable's first line; clicks fall through to the editor.
-            &__placeholder {
-                position: absolute;
-                top: 0.5em;
-                left: 0.5em;
-                color: var(--subdued-color);
-                pointer-events: none;
-                user-select: none;
+                // The placeholder, sitting over the editable's first line with clicks
+                // falling through to the editor.
+                //
+                // A pseudo-element rather than a sibling span, so it cannot drift out of
+                // alignment with the text: it inherits the editable's font and, via
+                // `padding: inherit`, its padding, and so starts exactly where the first
+                // character will. A sibling had to restate those offsets, and could only
+                // ever approximate them (it had no way to account for the 1px border).
+                &.is-empty::before {
+                    content: attr(data-placeholder);
+                    position: absolute;
+                    inset: 0;
+                    padding: inherit;
+                    color: var(--subdued-color);
+                    pointer-events: none;
+                    user-select: none;
+                }
             }
-
         }
 
         .social-rich__toolbar {

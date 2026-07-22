@@ -200,6 +200,27 @@ export type FileUploadMessageAttributes = {
     oob_url: string;
     upload: 'success' | 'failure';
 };
+export type UploadService = {
+    slot_request_url: string;
+    max_file_size: number;
+};
+export type UploadSlotHeader = {
+    name: string;
+    value: string;
+};
+export type UploadTarget = {
+    put: string;
+    headers?: UploadSlotHeader[];
+};
+export type UploadSlot = UploadTarget & {
+    get: string;
+};
+export type UploadedFile = {
+    url: string;
+    name: string;
+    type: string;
+    size: number;
+};
 export type MessageMarkerType = 'displayed' | 'received' | 'acknowledged';
 export type ChatStateType = 'active' | 'composing' | 'paused' | 'inactive' | 'gone';
 export type StorageKeys = {

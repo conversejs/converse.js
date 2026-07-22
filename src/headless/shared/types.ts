@@ -270,6 +270,37 @@ export type FileUploadMessageAttributes = {
     upload: 'success' | 'failure';
 };
 
+// XEP-0363 HTTP File Upload
+// -------------------------
+
+export type UploadService = {
+    slot_request_url: string; // The upload component's JID, which slot requests are addressed to.
+    max_file_size: number; // Maximum allowed size in bytes, or Infinity if the service advertises none.
+};
+
+export type UploadSlotHeader = {
+    name: string; // Only Authorization and Expires are kept; Cookie cannot be set from JS.
+    value: string;
+};
+
+// Where to PUT a file, which is all putFile needs.
+export type UploadTarget = {
+    put: string; // The URL to PUT the file to.
+    headers?: UploadSlotHeader[]; // Headers the service wants on the PUT.
+};
+
+// A slot as granted by the service: a target, plus where the file will be readable.
+export type UploadSlot = UploadTarget & {
+    get: string; // The public URL the file is readable at once uploaded.
+};
+
+export type UploadedFile = {
+    url: string; // The public GET URL of the uploaded file.
+    name: string; // The original filename.
+    type: string; // The file's MIME type.
+    size: number; // The file's size in bytes.
+};
+
 export type MessageMarkerType = 'displayed' | 'received' | 'acknowledged';
 export type ChatStateType = 'active' | 'composing' | 'paused' | 'inactive' | 'gone';
 

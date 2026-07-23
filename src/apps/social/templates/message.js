@@ -26,6 +26,29 @@ function enclosureKind(enc) {
 }
 
 /**
+ * A map URL for a geotag's coordinates, via the configurable `geouri_replacement`
+ * (OpenStreetMap by default), reusing the same mapping the chat texture pipeline
+ * applies to inline `geo:` URIs.
+ * @param {{ lat: number, lon: number }} geoloc
+ * @returns {string}
+ */
+function geolocMapUrl(geoloc) {
+    return `geo:${geoloc.lat},${geoloc.lon}`.replace(
+        /geo:([\-0-9.]+),([\-0-9.]+)/,
+        api.settings.get('geouri_replacement'),
+    );
+}
+
+/**
+ * A human-readable label for a geotag: its place name, else its coordinates.
+ * @param {{ lat?: number, lon?: number, label?: string }} geoloc
+ * @returns {string}
+ */
+function geolocLabel(geoloc) {
+    return geoloc.label || (geoloc.lat !== undefined ? `${geoloc.lat}, ${geoloc.lon}` : '');
+}
+
+/**
  * @param {import('../message.js').default} el
  */
 export default (el) => {
@@ -91,6 +114,9 @@ export default (el) => {
     // Structured tags (Atom <category>) not already shown as inline #hashtags in
     // the body, rendered as a clickable tag footer.
     const extra_categories = getExtraCategories(m);
+
+    // XEP-0080 geotag (XEP-0277 § Geotagging): a location line linking to a map.
+    const geoloc = m.get('geoloc');
 
     // An Atom entry can carry up to three text constructs:
     // <title>, <summary> and <content>
@@ -268,6 +294,19 @@ export default (el) => {
                         ${extra_categories.length
                             ? html`<div class="social-post__tags">
                                   ${extra_categories.map((tag) => tplHashtag(tag))}
+                              </div>`
+                            : ''}
+                        ${geoloc
+                            ? html`<div class="social-post__location">
+                                  <converse-icon size="0.9em" class="fa fa-globe"></converse-icon>
+                                  ${geoloc.lat !== undefined
+                                      ? html`<a
+                                            href="${geolocMapUrl(geoloc)}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            >${geolocLabel(geoloc)}</a
+                                        >`
+                                      : html`<span>${geolocLabel(geoloc)}</span>`}
                               </div>`
                             : ''}
                         ${alternate_url && !body_links_to_source

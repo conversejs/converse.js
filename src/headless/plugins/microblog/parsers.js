@@ -87,6 +87,32 @@ function pickTextConstruct(els) {
     return { xhtml: rich.xhtml, text: plain.text ?? rich.text };
 }
 
+const NS_GEOLOC = 'http://jabber.org/protocol/geoloc';
+
+/**
+ * Parse an XEP-0080 `<geoloc>` child of an Atom entry (XEP-0277 § Geotagging)
+ * into a compact `{ lat, lon, label }` for rendering a location line, or
+ * `undefined` when there's no geoloc or nothing worth showing. `label` prefers
+ * the free-form `<text>`, else a "locality, region, country" join. Coordinates
+ * are only returned when both parse as finite numbers (a map link needs both).
+ * @param {Element} entry
+ * @returns {{ lat?: number, lon?: number, label?: string }|undefined}
+ */
+function parseGeoloc(entry) {
+    const geo = sizzle('> geoloc', entry).find((g) => g.namespaceURI === NS_GEOLOC);
+    if (!geo) return undefined;
+
+    const field = /** @param {string} name */ (name) => sizzle(`> ${name}`, geo).pop()?.textContent?.trim() || undefined;
+    const lat = Number(field('lat'));
+    const lon = Number(field('lon'));
+    const has_coords = field('lat') !== undefined && field('lon') !== undefined && Number.isFinite(lat) && Number.isFinite(lon);
+    const label =
+        field('text') || [field('locality'), field('region'), field('country')].filter(Boolean).join(', ') || undefined;
+
+    if (!has_coords && !label) return undefined;
+    return { ...(has_coords ? { lat, lon } : {}), ...(label ? { label } : {}) };
+}
+
 /**
  * Parse a single PubSub `<item>` (or a bare `<entry>`) from a microblog node
  * into a flat attributes object suitable for a {@link PubSubMessage}.
@@ -173,6 +199,8 @@ export function parseAtomEntry(item, { from, node } = {}) {
     const updated = sizzle('> updated', entry).pop()?.textContent?.trim();
     const time = published ?? updated;
 
+    const geoloc = parseGeoloc(entry);
+
     return {
         type: MICROBLOG_TYPE,
         msgid: id,
@@ -207,6 +235,7 @@ export function parseAtomEntry(item, { from, node } = {}) {
         comments_node,
         alternate_url,
         ...(enclosures.length ? { enclosures } : {}),
+        ...(geoloc ? { geoloc } : {}),
         categories: sizzle('> category', entry)
             .map((el) => el.getAttribute('term'))
             .filter(Boolean),

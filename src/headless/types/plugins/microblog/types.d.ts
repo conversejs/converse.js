@@ -22,6 +22,11 @@ export type PubSubMessageAttrs = {
         type?: string;
         title?: string;
     }>;
+    geoloc?: {
+        lat?: number;
+        lon?: number;
+        label?: string;
+    };
     alternate_url?: string;
     author_name?: string;
     author_jid?: string;

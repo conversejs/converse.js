@@ -10,7 +10,7 @@
  * On submit the post is published as dual content:
  * Markdown (`<content type="text">`) plus rendered XHTML (`<content type="xhtml">`).
  */
-import { _converse, api, converse, log, uploadFile, PubSubFeed } from '@converse/headless';
+import { _converse, api, converse, log, uploadFile, PubSubFeed, PubSubMessage } from '@converse/headless';
 import DOMPurify from 'dompurify';
 import { CustomElement } from 'shared/components/element.js';
 import { EMOJI_SOURCE } from 'shared/rich-composer/emoji-source.js';
@@ -97,6 +97,7 @@ export default class SocialComposeRich extends CustomElement {
     static get properties() {
         return {
             model: { type: PubSubFeed },
+            post: { type: PubSubMessage }, // When set, the composer is editing this existing post
             _publishing: { type: Boolean, state: true },
             _uploading: { type: Boolean, state: true },
             _empty: { type: Boolean, state: true },
@@ -113,6 +114,9 @@ export default class SocialComposeRich extends CustomElement {
         // Pending media attachments (XEP-0363-uploaded), published as enclosures.
         /** @type {Array<{ href: string, type?: string, title?: string }>} */
         this._attachments = [];
+
+        // Guards the one-time edit-mode prefill in willUpdate.
+        this._prefilled = false;
 
         // The Lexical editor handle, created lazily on first focus (see ensureEditor).
         /** @type {import('./types').EditorHandle|null} */
@@ -131,6 +135,41 @@ export default class SocialComposeRich extends CustomElement {
 
     render() {
         return tplComposeRich(this);
+    }
+
+    /**
+     * When editing, carry over the post's existing media attachments once, before
+     * the first render, so it folds into the current update rather than scheduling
+     * a follow-up (as setting state in firstUpdated would).
+     */
+    willUpdate() {
+        if (this.post && !this._prefilled) {
+            this._prefilled = true;
+            this._attachments = (this.post.get('enclosures') ?? []).map((e) => ({
+                href: e.href,
+                type: e.type,
+                title: e.title,
+            }));
+        }
+    }
+
+    /**
+     * When editing, the editable host now exists. Load Lexical eagerly (rather than
+     * on first focus) so the current text is visible and editable straight away.
+     * The markdown itself is seeded in {@link ensureEditor} once the handle exists.
+     */
+    firstUpdated() {
+        if (this.post) this.ensureEditor();
+    }
+
+    /**
+     * The markdown to prefill when editing: our own posts carry their markdown
+     * source as `<content type="text">` (a rich post) or a plain `<title>` (a
+     * short post). Foreign posts aren't editable, so those are the only cases.
+     * @returns {string}
+     */
+    getEditMarkdown() {
+        return this.post?.get('content') || this.post?.get('title') || '';
     }
 
     disconnectedCallback() {
@@ -154,6 +193,10 @@ export default class SocialComposeRich extends CustomElement {
         this._init = import('./lexical-editor.js').then((m) => {
             const handle = m.createSocialEditor(host, { onChange: () => this.onChange() });
             this._handle = handle;
+            if (this.post) {
+                handle.setMarkdown(this.getEditMarkdown());
+                this._empty = handle.isEmpty();
+            }
             handle.focus();
             return handle;
         });
@@ -298,20 +341,32 @@ export default class SocialComposeRich extends CustomElement {
             const markdown = has_text ? this._handle.getMarkdown() : '';
             const xhtml = has_text ? this.htmlToXhtml(this._handle.getHtml()) : undefined;
             const enclosures = this._attachments.length ? this._attachments : undefined;
-            await this.model.publishPost(markdown, { xhtml, enclosures });
-            this._handle?.clear();
-            this._attachments = [];
-            this._empty = true;
+            if (this.post) {
+                await this.model.editPost(this.post.get('id'), markdown, { xhtml, enclosures });
+
+                // The parent post row exits edit mode and re-renders the updated post
+                this.dispatchEvent(new CustomEvent('edited', { bubbles: true, composed: true }));
+            } else {
+                await this.model.publishPost(markdown, { xhtml, enclosures });
+                this._handle?.clear();
+                this._attachments = [];
+                this._empty = true;
+            }
         } catch (e) {
             log.error(e);
             api.toast?.show?.('social-post-failed', {
                 type: 'danger',
-                body: __('Sorry, could not publish your post'),
+                body: this.post ? __('Sorry, could not save your changes') : __('Sorry, could not publish your post'),
             });
         } finally {
             this._publishing = false;
             this._handle?.focus();
         }
+    }
+
+    /** Abandon an in-progress edit, leaving the post unchanged. */
+    onCancel() {
+        this.dispatchEvent(new CustomEvent('canceledit', { bubbles: true, composed: true }));
     }
 }
 

@@ -458,6 +458,40 @@ class PubSubFeed extends Model {
     }
 
     /**
+     * Edit one of our own posts. Republish to the same PubSub item id,
+     * preserving the entry's `atom:id` and original `published` time while
+     * stamping a fresh `updated`. Per XEP-0060 a publish to an existing item id
+     * replaces it, and {@link addItems} merges the new payload into the cached
+     * post by id, so the timeline updates in place without reordering. The
+     * post's comments node (keyed by the same id) is untouched.
+     * @param {string} id - The PubSub item id of the post to edit.
+     * @param {string} body - Plain text, or the markdown source when `xhtml` is set.
+     * @param {object} [opts]
+     * @param {string} [opts.xhtml] - A well-formed XHTML `<div>` fragment for a rich post.
+     * @param {import('./types').PubSubEnclosure[]} [opts.enclosures] - Media attachments.
+     * @returns {Promise<void>}
+     */
+    async editPost(id, body, { xhtml, enclosures } = {}) {
+        const text = body?.trim();
+        // An edited post, like a new one, needs either text or a media attachment.
+        if (!text && !enclosures?.length) return;
+
+        const existing = this.messages.get(id);
+        const item = this.createPostStanza({
+            body: text,
+            xhtml,
+            enclosures,
+            id,
+            // Keep the entry's stable identity and creation time; only `updated` moves.
+            atom_id: existing?.get('atom_id'),
+            published: existing?.get('published') || existing?.get('time'),
+            updated: new Date().toISOString(),
+        });
+        await api.pubsub.publish(this.get('jid'), this.get('node'), item, MICROBLOG_PUBLISH_OPTIONS, false);
+        await this.addItems([item.tree()]);
+    }
+
+    /**
      * Create this post's open comments node so others can add comments.
      * Best-effort and swallows errors (the node may already exist,
      * or the server may refuse). Returns the in-flight promise for callers that

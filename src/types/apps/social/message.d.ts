@@ -22,6 +22,10 @@ export default class SocialMessage extends ObservableElement {
             type: BooleanConstructor;
             state: boolean;
         };
+        _editing: {
+            type: BooleanConstructor;
+            state: boolean;
+        };
         observable: {
             type: StringConstructor;
         };
@@ -31,6 +35,7 @@ export default class SocialMessage extends ObservableElement {
     };
     compact: boolean;
     hidesource: boolean;
+    _editing: boolean;
     render(): import("lit-html").TemplateResult<1>;
     /**
      * Open the author's profile view when their avatar or name is clicked.
@@ -68,6 +73,16 @@ export default class SocialMessage extends ObservableElement {
      * the node and removes the local copy.
      */
     onRetract(): Promise<void>;
+    /**
+     * Swap the post body for an inline composer prefilled with this post, so the
+     * author can edit it in place (only offered for our own, non-repost posts).
+     */
+    onEdit(): void;
+    /**
+     * Leave edit mode, whether the edit was saved (the post model has already
+     * been updated in place) or cancelled. Re-renders the post body.
+     */
+    onEditDone(): void;
     /**
      * Open this post's detail view (its comment thread). Bubbles a
      * `postselected` event up to the Social app, which swaps the timeline for

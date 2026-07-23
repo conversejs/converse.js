@@ -333,6 +333,66 @@ describe('The social feed', function () {
     );
 
     it(
+        'edits an own post in place, republishing to the same item id',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
+
+            receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'original text', '2024-01-01T18:30:02Z'));
+
+            const body = await u.waitUntil(() => el.querySelector('.social-post__body'));
+            expect(body.textContent.trim()).toBe('original text');
+
+            // Clicking Edit swaps the body for an inline composer prefilled with the post.
+            /** @type {HTMLButtonElement} */ (
+                await u.waitUntil(() => el.querySelector('.social-post__action--edit'))
+            ).click();
+
+            const compose = await u.waitUntil(() => el.querySelector('converse-social-compose-rich.social-post__edit'));
+            const editable = await u.waitUntil(() => compose.querySelector('.social-rich__editable'));
+            const handle = await compose.ensureEditor();
+            await u.waitUntil(() => handle.getMarkdown() === 'original text');
+
+            // Append to the prefilled text, then Save.
+            /** @type {HTMLElement} */ (editable).focus();
+            handle.insertText(' (edited)');
+
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            const save = await u.waitUntil(() => {
+                const btn = /** @type {HTMLButtonElement} */ (compose.querySelector('.social-rich__post'));
+                return btn && !btn.disabled ? btn : null;
+            });
+            save.click();
+
+            await u.waitUntil(() => publish.mock.calls.length === 1);
+            const [jid, node, item] = publish.mock.calls[0];
+            expect(jid).toBe(bare_jid);
+            expect(node).toBe(MICROBLOG_NODE);
+
+            // Republished to the SAME item id: `published` preserved, `updated` bumped,
+            // the edited text carried as `<content type="text">`.
+            const tree = item.tree();
+            const entry = tree.getElementsByTagName('entry')[0];
+            const tagText = (/** @type {string} */ name) =>
+                Array.from(entry.getElementsByTagName(name)).map((n) => n.textContent);
+            expect(tree.getAttribute('id')).toBe('post-1');
+            expect(tagText('published')).toEqual(['2024-01-01T18:30:02Z']);
+            expect(tagText('updated')[0]).not.toBe('2024-01-01T18:30:02Z');
+            expect(tagText('content').join(' ')).toContain('original text (edited)');
+
+            // Edit mode exits and the post body shows the edited text.
+            await u.waitUntil(() => el.querySelector('.social-post__edit') === null);
+            await u.waitUntil(() =>
+                el.querySelector('.social-post__body')?.textContent.includes('original text (edited)'),
+            );
+        }),
+    );
+
+    it(
         "merges a followed contact's posts into the timeline, newest-first",
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');

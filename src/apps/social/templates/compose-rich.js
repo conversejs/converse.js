@@ -110,13 +110,29 @@ export default (el) => html`
 
             <span class="social-rich__spacer"></span>
 
+            ${el.post
+                ? html`<button
+                      type="button"
+                      class="btn btn-secondary social-rich__cancel"
+                      ?disabled=${el._publishing}
+                      @click=${() => el.onCancel()}
+                  >
+                      ${__('Cancel')}
+                  </button>`
+                : ''}
             <button
                 type="button"
                 class="btn btn-primary social-rich__post"
                 ?disabled=${el._publishing || el._uploading || (el._empty && !el._attachments.length)}
                 @click=${(/** @type {Event} */ ev) => el.onSubmit(ev)}
             >
-                ${el._publishing ? __('Posting…') : __('Post')}
+                ${el._publishing
+                    ? el.post
+                        ? __('Saving…')
+                        : __('Posting…')
+                    : el.post
+                      ? __('Save')
+                      : __('Post')}
             </button>
         </div>
     </div>

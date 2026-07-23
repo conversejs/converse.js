@@ -128,5 +128,5 @@ declare class SocialApp extends CustomElement {
     resolvePost(route: import("./types.ts").SocialRoute): Promise<void>;
 }
 import { CustomElement } from 'shared/components/element.js';
-import { HashRouter } from '../rootview/routing.js';
+import { HashRouter } from 'plugins/rootview/routing.js';
 //# sourceMappingURL=view.d.ts.map

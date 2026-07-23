@@ -5,7 +5,7 @@
 import { api, log } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { isURLRoutingEnabled } from '../rootview/routing.js';
+import { isURLRoutingEnabled } from 'plugins/rootview/routing.js';
 import { buildSocialRoute } from './routing.js';
 import tplBrowse from './templates/browse.js';
 
@@ -105,7 +105,11 @@ export default class SocialBrowse extends CustomElement {
             let added_any = false;
             let pages = 0;
             do {
-                const { feeds, cursor: next, has_more } = await api.microblog.browseFeeds(this.service.trim(), {
+                const {
+                    feeds,
+                    cursor: next,
+                    has_more,
+                } = await api.microblog.browseFeeds(this.service.trim(), {
                     after: cursor,
                     signal: controller.signal,
                 });

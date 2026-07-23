@@ -6,7 +6,7 @@ import { html } from 'lit';
 import { api, converse } from '@converse/headless';
 import { addHashtagAnnotations } from './texture.js';
 import { requestOpenPost } from './view.js';
-import '../rootview/index.js';
+import 'plugins/rootview/index.js';
 import './modals/discover.js';
 
 converse.plugins.add('converse-app-social', {

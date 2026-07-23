@@ -7,7 +7,7 @@ import { _converse, api, constants, converse } from '@converse/headless';
 import './view.js';
 import ChatBoxViews from './container.js';
 import { calculateViewportHeightUnit } from './utils.js';
-import '../rootview/index.js';
+import 'plugins/rootview/index.js';
 
 import './styles/chats.scss';
 

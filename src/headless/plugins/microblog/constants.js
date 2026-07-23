@@ -43,6 +43,13 @@ export const COMMENTS_PUBLISH_OPTIONS = {
 export const SOCIAL_FEED_FEATURE = 'urn:xmpp:pubsub-social-feed:1';
 
 /**
+ * The `pubsub#type` (and disco feature) of the XEP-0472 **gallery** profile: a
+ * social-feed node whose every item carries at least one image `enclosure`. We
+ * consume such nodes (rendering them as an image grid), but don't host them.
+ */
+export const GALLERY_TYPE = 'urn:xmpp:pubsub-social-feed:gallery:1';
+
+/**
  * A profile banner is not part of XEP-0277/0472. Movim publishes one to this PEP
  * node using the XEP-0084 User Avatar *metadata* format, but *by reference*:
  * an `<info url="…"/>` element (namespace {@link NS_AVATAR_METADATA}) pointing

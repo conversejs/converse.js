@@ -181,6 +181,34 @@
             padding: 1em;
         }
 
+        // XEP-0472 gallery node: the post list becomes a square-tile image grid.
+        .social-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
+            gap: 0.4em;
+        }
+
+        .social-gallery__tile {
+            display: block;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 0.3em;
+            background-color: rgba(0, 0, 0, 0.05);
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+                cursor: pointer;
+                transition: transform 0.15s ease;
+            }
+
+            &:hover img {
+                transform: scale(1.04);
+            }
+        }
+
         // Sticky back bar so leaving the thread is always one click away.
         .social-post-detail__bar {
             position: sticky;

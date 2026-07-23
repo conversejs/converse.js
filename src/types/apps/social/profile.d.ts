@@ -51,7 +51,7 @@ export default class SocialProfile extends WindowedListElement {
     initialize(): Promise<void>;
     /**
      * Whether this is a followed community/topic feed (a non-microblog node)
-     * rather than a person's profile. Feed mode drops the person-only chrome
+     * rather than a user profile. Feed mode drops the person-only chrome
      * (message, add-contact, following tab) and labels the header by the node.
      * @returns {boolean}
      */
@@ -115,6 +115,15 @@ export default class SocialProfile extends WindowedListElement {
      * logo watermark rather than leave a broken-image placeholder in the header.
      */
     onBannerError(): void;
+    /**
+     * Open a gallery image in the shared lightbox modal.
+     * @param {MouseEvent} ev
+     * @param {{ href: string, title?: string }} enc - The image enclosure clicked.
+     */
+    onTileClick(ev: MouseEvent, enc: {
+        href: string;
+        title?: string;
+    }): void;
     /** Return to the timeline. */
     goBack(): void;
     /**

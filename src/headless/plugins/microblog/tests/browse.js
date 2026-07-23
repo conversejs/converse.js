@@ -85,6 +85,27 @@ describe('Microblog browseFeeds (XEP-0060 node discovery)', function () {
     );
 
     it(
+        'flags XEP-0472 social-feed and gallery nodes as feeds, not just Atom-typed ones',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            const { api } = _converse;
+
+            vi.spyOn(api.disco, 'items').mockResolvedValue(itemsResult([{ node: 'photos' }, { node: 'family' }]));
+            vi.spyOn(api.disco, 'info').mockImplementation((_jid, node) =>
+                node === 'photos'
+                    ? Promise.resolve(infoResult('photos', { type: 'urn:xmpp:pubsub-social-feed:gallery:1' }))
+                    : Promise.resolve(infoResult('family', { type: 'urn:xmpp:pubsub-social-feed:1' })),
+            );
+
+            const { feeds } = await api.microblog.browseFeeds(SERVICE);
+
+            // A gallery node and a base social-feed node identify as feeds by their
+            // modern pubsub#type, not only via the Atom namespace.
+            expect(feeds.find((r) => r.node === 'photos').is_feed).toBe(true);
+            expect(feeds.find((r) => r.node === 'family').is_feed).toBe(true);
+        }),
+    );
+
+    it(
         'falls back to the item name and lists a node whose info probe fails',
         mock.initConverse(converse, [], {}, async function (_converse) {
             const { api } = _converse;

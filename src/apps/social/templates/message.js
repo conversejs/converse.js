@@ -8,6 +8,7 @@ import renderTexture from 'shared/texture/directives/texture.js';
 import { renderImage } from 'shared/texture/directives/image.js';
 import tplVideo from 'shared/texture/templates/video.js';
 import tplAudio from 'shared/texture/templates/audio.js';
+import { getExtraCategories, tplHashtag } from '../texture.js';
 import 'shared/components/time.js';
 
 /**
@@ -86,6 +87,10 @@ export default (el) => {
         >`;
     };
     const enclosures = m.get('enclosures') ?? [];
+
+    // Structured tags (Atom <category>) not already shown as inline #hashtags in
+    // the body, rendered as a clickable tag footer.
+    const extra_categories = getExtraCategories(m);
 
     // An Atom entry can carry up to three text constructs:
     // <title>, <summary> and <content>
@@ -258,6 +263,11 @@ export default (el) => {
                                   ${enclosures.map(
                                       (enc) => html`<div class="social-post__enclosure">${renderEnclosure(enc)}</div>`,
                                   )}
+                              </div>`
+                            : ''}
+                        ${extra_categories.length
+                            ? html`<div class="social-post__tags">
+                                  ${extra_categories.map((tag) => tplHashtag(tag))}
                               </div>`
                             : ''}
                         ${alternate_url && !body_links_to_source

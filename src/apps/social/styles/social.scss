@@ -945,6 +945,19 @@
                 }
             }
 
+            // Structured tags (Atom <category>) footer: a wrap of clickable chips.
+            &__tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.4em;
+                margin-top: 0.5em;
+            }
+
+            &__hashtag {
+                cursor: pointer;
+                color: var(--link-color);
+            }
+
             // The Atom text constructs (<title>/<summary>/<content>), each its own
             // block. `pre-wrap` preserves newlines *within* a construct's text.
             &__title,

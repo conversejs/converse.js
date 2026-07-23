@@ -45,6 +45,31 @@ export function postMatchesHashtag(post, tag) {
 }
 
 /**
+ * A post's Atom `<category>` terms that aren't already present as inline
+ * `#hashtags` in its body (lower-cased, de-duplicated). Rendered as a tag footer
+ * so structured tags published by other clients surface and stay clickable,
+ * without repeating the inline hashtags we already render in the body.
+ * @param {import('@converse/headless').PubSubMessage} post
+ * @returns {string[]}
+ */
+export function getExtraCategories(post) {
+    const inline = new Set();
+    const text = [post.get('title'), post.get('summary'), post.get('content')].filter(Boolean).join('\n');
+    for (const m of text.matchAll(HASHTAG_REGEX)) inline.add(m[1].toLowerCase());
+
+    const extra = [];
+    const seen = new Set();
+    for (const category of post.get('categories') ?? []) {
+        const tag = String(category).toLowerCase();
+        if (tag && !inline.has(tag) && !seen.has(tag)) {
+            seen.add(tag);
+            extra.push(tag);
+        }
+    }
+    return extra;
+}
+
+/**
  * Render a single hashtag as a clickable element. Clicking dispatches a bubbling
  * `hashtagselected` event carrying the tag.
  * @param {string} tag - The tag text, without the leading `#`.

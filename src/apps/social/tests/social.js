@@ -651,6 +651,67 @@ describe('The social feed', function () {
     );
 
     it(
+        'publishes inline #hashtags as machine-readable Atom <category> terms',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
+
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            await publishViaComposer(el, 'Loving #XMPP and #xmpp today');
+
+            await u.waitUntil(() => publish.mock.calls.length === 1);
+            const entry = publish.mock.calls[0][2].tree().getElementsByTagName('entry')[0];
+            const terms = Array.from(entry.getElementsByTagName('category')).map((c) => c.getAttribute('term'));
+            // De-duplicated and lower-cased.
+            expect(terms).toEqual(['xmpp']);
+        }),
+    );
+
+    it(
+        "surfaces a post's category-only tags as clickable chips",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const bare_jid = _converse.bare_jid;
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
+
+            // A post carrying a structured <category> tag, with no inline #hashtag.
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${bare_jid}" to="${bare_jid}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${MICROBLOG_NODE}">
+                      <item id="p1" publisher="${bare_jid}">
+                        <entry xmlns="${ATOM}">
+                          <title type="text">A tidy little post</title>
+                          <category term="Rust"/>
+                          <id>tag:montague.lit,2026:p1</id>
+                          <published>2026-07-15T01:00:00Z</published>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            // The tag surfaces as a clickable chip (lower-cased), not present inline.
+            const chip = await u.waitUntil(() => el.querySelector('.social-post__tags .social-post__hashtag'));
+            expect(chip.textContent.trim()).toBe('#rust');
+
+            // Clicking it requests a filter on that tag.
+            let selected = null;
+            el.addEventListener('hashtagselected', (ev) => (selected = ev.detail.tag));
+            /** @type {HTMLElement} */ (chip).click();
+            expect(selected).toBe('rust');
+        }),
+    );
+
+    it(
         'attributes a repost to the reposter, distinct from the original author',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

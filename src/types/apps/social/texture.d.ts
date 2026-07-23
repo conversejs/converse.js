@@ -14,6 +14,15 @@ export function getPostHashtags(post: import("@converse/headless").PubSubMessage
  */
 export function postMatchesHashtag(post: import("@converse/headless").PubSubMessage, tag: string): boolean;
 /**
+ * A post's Atom `<category>` terms that aren't already present as inline
+ * `#hashtags` in its body (lower-cased, de-duplicated). Rendered as a tag footer
+ * so structured tags published by other clients surface and stay clickable,
+ * without repeating the inline hashtags we already render in the body.
+ * @param {import('@converse/headless').PubSubMessage} post
+ * @returns {string[]}
+ */
+export function getExtraCategories(post: import("@converse/headless").PubSubMessage): string[];
+/**
  * Render a single hashtag as a clickable element. Clicking dispatches a bubbling
  * `hashtagselected` event carrying the tag.
  * @param {string} tag - The tag text, without the leading `#`.

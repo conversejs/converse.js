@@ -1305,6 +1305,54 @@ describe('The social profile view', function () {
     );
 
     it(
+        'renders an XEP-0472 gallery node as an image grid',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const service = 'pubsub.montague.lit';
+            const feed = await api.microblog.feeds.get(service, 'photos', true);
+            // Mark it a gallery so discoverType() short-circuits (no disco round-trip).
+            feed.set({ type: 'urn:xmpp:pubsub-social-feed:gallery:1' });
+            await feed.addItems([
+                stx`
+                <item id="g1" publisher="${service}">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">Sunset</title>
+                    <link rel="enclosure" href="https://montague.lit/img/sunset.jpg" type="image/jpeg" title="Sunset"/>
+                    <id>tag:${service},2026:g1</id>
+                    <published>2026-07-15T01:00:00Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
+
+            // Open the gallery feed's own profile via its "via" link in the timeline.
+            const via = await u.waitUntil(() => el.querySelector('converse-social-feed .social-post__via'));
+            /** @type {HTMLElement} */ (via).click();
+
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+
+            // The posts render as a grid of image tiles, not as text rows.
+            const tile = await u.waitUntil(() => profile.querySelector('.social-gallery .social-gallery__tile img'));
+            expect(tile.getAttribute('src')).toBe('https://montague.lit/img/sunset.jpg');
+            expect(profile.querySelector('.social-post__body')).toBe(null);
+
+            // Clicking a tile opens the shared lightbox with that image.
+            const modal_show = vi.spyOn(api.modal, 'show').mockReturnValue(undefined);
+            /** @type {HTMLElement} */ (profile.querySelector('.social-gallery__tile')).click();
+            expect(modal_show).toHaveBeenCalledWith(
+                'converse-image-modal',
+                expect.objectContaining({ src: 'https://montague.lit/img/sunset.jpg' }),
+                expect.anything(),
+            );
+        }),
+    );
+
+    it(
         'suppresses the "via" attribution inside a feed’s own profile',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

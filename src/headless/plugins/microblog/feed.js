@@ -4,6 +4,7 @@
  */
 import { Model } from '@converse/skeletor';
 import { Strophe } from 'strophe.js';
+import sizzle from 'sizzle';
 import _converse from '../../shared/_converse.js';
 import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';
@@ -14,6 +15,7 @@ import { parseAtomEntry } from './parsers.js';
 import {
     COMMENTS_NODE_PREFIX,
     COMMENTS_PUBLISH_OPTIONS,
+    GALLERY_TYPE,
     MICROBLOG_NODE,
     MICROBLOG_PUBLISH_OPTIONS,
     NS_ATOM,
@@ -133,6 +135,39 @@ class PubSubFeed extends Model {
      */
     isOwnFeed() {
         return Strophe.getBareJidFromJid(this.get('jid')) === _converse.session.get('bare_jid');
+    }
+
+    /**
+     * Whether this feed is an XEP-0472 **gallery** node (its items are images),
+     * as opposed to a text microblog/social feed. Drives the image-grid rendering
+     * in the profile view; depends on {@link discoverType} having run.
+     * @returns {boolean}
+     */
+    isGallery() {
+        return this.get('type') === GALLERY_TYPE;
+    }
+
+    /**
+     * Learn this node's XEP-0472 profile from its `pubsub#type` (XEP-0060 § 5.4
+     * node metadata) and cache it on the model, so the UI can tell a gallery node
+     * from a text feed. Best-effort and skipped once known.
+     * @returns {Promise<string|undefined>}
+     */
+    async discoverType() {
+        const known = this.get('type');
+        if (known) return known;
+
+        try {
+            const stanza = await api.disco.info(this.get('jid'), this.get('node'));
+            const type =
+                sizzle('x[type="result"] field[var="pubsub#type"] value', stanza)[0]?.textContent?.trim() || undefined;
+            if (type) this.set({ type });
+
+            return type;
+        } catch (e) {
+            log.debug(`discoverType: could not read pubsub#type for ${this.get('jid')} (${this.get('node')}): ${e}`);
+            return undefined;
+        }
     }
 
     /**

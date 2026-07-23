@@ -22,6 +22,7 @@ import {
     COMMENTS_NODE_PREFIX,
     FOLLOWABLE_PROBE_TIMEOUT,
     FOLLOWABLE_SCAN_CONCURRENCY,
+    GALLERY_TYPE,
     LIKE_MARKER,
     MICROBLOG_NODE,
     NS_ATOM,
@@ -82,9 +83,7 @@ async function probeNodeMeta(jid, node) {
             type,
             node_type,
             num_subscribers,
-            // A leaf node carrying Atom payloads is a social/microblog feed. Nodes
-            // that omit `pubsub#type` (or are collections) fall under "show all".
-            is_feed: type === NS_ATOM,
+            is_feed: type === NS_ATOM || type === SOCIAL_FEED_FEATURE || type === GALLERY_TYPE,
         };
     } catch (e) {
         log.debug(`browseFeeds: could not read node meta for ${jid} (${node}): ${e}`);

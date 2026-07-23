@@ -8,6 +8,7 @@ import { collectionSignal } from 'shared/signals.js';
 import { WindowedListElement } from './windowed.js';
 import 'shared/components/logo.js';
 import 'shared/components/dropdown.js';
+import 'shared/modals/image.js';
 import './following.js';
 import tplProfile from './templates/profile.js';
 import { MICROBLOG_NODE } from './constants.js';
@@ -86,7 +87,7 @@ export default class SocialProfile extends WindowedListElement {
 
     /**
      * Whether this is a followed community/topic feed (a non-microblog node)
-     * rather than a person's profile. Feed mode drops the person-only chrome
+     * rather than a user profile. Feed mode drops the person-only chrome
      * (message, add-contact, following tab) and labels the header by the node.
      * @returns {boolean}
      */
@@ -152,6 +153,9 @@ export default class SocialProfile extends WindowedListElement {
         }
 
         this.feed = feed;
+
+        if (this.isFeed) this.feed.discoverType().then(() => this.requestUpdate());
+
         this.posts = collectionSignal(this.feed.messages);
         // Only show the loading placeholder when there's nothing to show yet, so a
         // re-point after follow (or a warm cache) doesn't flash "Loading…".
@@ -244,6 +248,16 @@ export default class SocialProfile extends WindowedListElement {
      */
     onBannerError() {
         if (!this._banner_error) this._banner_error = true;
+    }
+
+    /**
+     * Open a gallery image in the shared lightbox modal.
+     * @param {MouseEvent} ev
+     * @param {{ href: string, title?: string }} enc - The image enclosure clicked.
+     */
+    onTileClick(ev, enc) {
+        ev.preventDefault();
+        api.modal.show('converse-image-modal', { src: enc.href, filename: enc.title }, ev);
     }
 
     /** Return to the timeline. */

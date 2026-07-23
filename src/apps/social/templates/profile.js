@@ -2,20 +2,54 @@ import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { until } from 'lit/directives/until.js';
 import { __ } from 'i18n';
-import { _converse } from '@converse/headless';
+import { _converse, u } from '@converse/headless';
+
+/**
+ * Whether an Atom `<link rel="enclosure">` is an image, by its MIME type or,
+ * failing that, its URL extension.
+ * @param {{ href: string, type?: string }} enc
+ * @returns {boolean}
+ */
+const isImageEnclosure = (enc) =>
+    (enc.type || '').toLowerCase().startsWith('image/') || (!enc.type && u.isURLWithImageExtension(enc.href));
+
+/**
+ * The image tiles for an XEP-0472 gallery: one per image enclosure across the
+ * rendered post window. Clicking a tile opens the shared lightbox.
+ * @param {import('../profile.js').default} el
+ * @param {import('@converse/skeletor').Model[]} posts
+ */
+function galleryTiles(el, posts) {
+    const tiles = [];
+    for (const p of posts) {
+        if (p instanceof _converse.exports.PubsubPlaceholderMessage) continue;
+        for (const enc of (p.get('enclosures') ?? []).filter(isImageEnclosure)) {
+            tiles.push(
+                html`<a
+                    class="social-gallery__tile"
+                    href="${enc.href}"
+                    title="${enc.title ?? ''}"
+                    @click=${(/** @type {MouseEvent} */ ev) => el.onTileClick(ev, enc)}
+                >
+                    <img src="${enc.href}" alt="${enc.title ?? ''}" loading="lazy" />
+                </a>`,
+            );
+        }
+    }
+    return tiles;
+}
 
 /**
  * @param {import('../profile.js').default} el
  */
 export default (el) => {
     const profile = el.profile;
-    // In feed mode the header names the community feed by its node; otherwise it's
-    // a person, named by their display name.
     const name = el.isFeed ? el.node : profile.getDisplayName();
-    // Only the current render window of the feed hits the DOM (see windowed.js).
-    const posts = el.windowedItems;
-    // Show the author's banner when they've published one and it loads; otherwise
-    // fall back to a Converse logo watermark so the header never looks broken.
+    const posts = el.windowedItems; // Only render a window of the feed.
+    const is_gallery = el.feed?.isGallery?.() ?? false; // Gallery posts render as a grid
+
+    // Show the author's banner when they've published one and it loads. Otherwise
+    // fall back to a Converse logo watermark.
     const banner_url = profile.get('banner_url');
     const has_banner = banner_url && !el._banner_error;
 
@@ -51,12 +85,7 @@ export default (el) => {
 
             <div class="social-profile__banner ${has_banner ? '' : 'social-profile__banner--fallback'}">
                 ${has_banner
-                    ? html`<img
-                          src="${banner_url}"
-                          alt=""
-                          loading="lazy"
-                          @error=${() => el.onBannerError()}
-                      />`
+                    ? html`<img src="${banner_url}" alt="" loading="lazy" @error=${() => el.onBannerError()} />`
                     : html`<converse-logo></converse-logo>`}
             </div>
 
@@ -141,24 +170,25 @@ export default (el) => {
                               : ''}
                       </button>
                   </nav>`}
-
             ${el.tab === 'following' && !el.isFeed
                 ? html`<converse-social-following jid=${el.jid}></converse-social-following>`
-                : html`<div class="social-profile__posts">
+                : html`<div class="social-profile__posts ${is_gallery ? 'social-profile__posts--gallery' : ''}">
                       ${posts.length
-                          ? repeat(
-                                posts,
-                                /** @param {import('@converse/headless').PubSubMessage} p */ (p) => p.get('id'),
-                                (p) =>
-                                    p instanceof _converse.exports.PubsubPlaceholderMessage
-                                        ? html`<converse-history-placeholder
-                                              .model=${p}
-                                          ></converse-history-placeholder>`
-                                        : html`<converse-social-message
-                                              .model=${p}
-                                              ?hidesource=${el.isFeed}
-                                          ></converse-social-message>`,
-                            )
+                          ? is_gallery
+                              ? html`<div class="social-gallery">${galleryTiles(el, posts)}</div>`
+                              : repeat(
+                                    posts,
+                                    /** @param {import('@converse/headless').PubSubMessage} p */ (p) => p.get('id'),
+                                    (p) =>
+                                        p instanceof _converse.exports.PubsubPlaceholderMessage
+                                            ? html`<converse-history-placeholder
+                                                  .model=${p}
+                                              ></converse-history-placeholder>`
+                                            : html`<converse-social-message
+                                                  .model=${p}
+                                                  ?hidesource=${el.isFeed}
+                                              ></converse-social-message>`,
+                                )
                           : !el._loaded
                             ? html`<p class="social-feed__empty">${__('Loading…')}</p>`
                             : el.accessDenied

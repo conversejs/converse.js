@@ -57,6 +57,20 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
      */
     isOwnFeed(): boolean;
     /**
+     * Whether this feed is an XEP-0472 **gallery** node (its items are images),
+     * as opposed to a text microblog/social feed. Drives the image-grid rendering
+     * in the profile view; depends on {@link discoverType} having run.
+     * @returns {boolean}
+     */
+    isGallery(): boolean;
+    /**
+     * Learn this node's XEP-0472 profile from its `pubsub#type` (XEP-0060 § 5.4
+     * node metadata) and cache it on the model, so the UI can tell a gallery node
+     * from a text feed. Best-effort and skipped once known.
+     * @returns {Promise<string|undefined>}
+     */
+    discoverType(): Promise<string | undefined>;
+    /**
      * Parse incoming PubSub `<item>` elements into posts, add/merge them into the
      * feed, and persist them to the offline cache. Used both for retrieve-items
      * backfill and live PEP events.

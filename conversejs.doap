@@ -417,7 +417,7 @@
       <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0472.html"/>
         <xmpp:status>partial</xmpp:status>
-        <xmpp:note>Microblog profile of the Pubsub Social Feed: the social-feed discovery feature and Base-profile node config used by the "Social" app. The Gallery profile is not implemented.</xmpp:note>
+        <xmpp:note>Microblog profile of the Pubsub Social Feed: the social-feed discovery feature and Base-profile node config used by the "Social" app. Gallery-profile nodes are rendered (consume-only, as an image grid); creating/hosting gallery nodes is not implemented.</xmpp:note>
       </xmpp:SupportedXep>
     </implements>
   </Project>

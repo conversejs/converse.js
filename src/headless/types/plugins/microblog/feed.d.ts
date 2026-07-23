@@ -164,6 +164,24 @@ declare class PubSubFeed extends Model<import("@converse/skeletor").ModelAttribu
         enclosures?: import("./types").PubSubEnclosure[];
     }): Promise<void>;
     /**
+     * Edit one of our own posts. Republish to the same PubSub item id,
+     * preserving the entry's `atom:id` and original `published` time while
+     * stamping a fresh `updated`. Per XEP-0060 a publish to an existing item id
+     * replaces it, and {@link addItems} merges the new payload into the cached
+     * post by id, so the timeline updates in place without reordering. The
+     * post's comments node (keyed by the same id) is untouched.
+     * @param {string} id - The PubSub item id of the post to edit.
+     * @param {string} body - Plain text, or the markdown source when `xhtml` is set.
+     * @param {object} [opts]
+     * @param {string} [opts.xhtml] - A well-formed XHTML `<div>` fragment for a rich post.
+     * @param {import('./types').PubSubEnclosure[]} [opts.enclosures] - Media attachments.
+     * @returns {Promise<void>}
+     */
+    editPost(id: string, body: string, { xhtml, enclosures }?: {
+        xhtml?: string;
+        enclosures?: import("./types").PubSubEnclosure[];
+    }): Promise<void>;
+    /**
      * Create this post's open comments node so others can add comments.
      * Best-effort and swallows errors (the node may already exist,
      * or the server may refuse). Returns the in-flight promise for callers that

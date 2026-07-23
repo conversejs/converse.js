@@ -31,6 +31,9 @@ export default class SocialMessage extends ObservableElement {
             hidesource: { type: Boolean },
             _reposting: { type: Boolean, state: true },
             _liking: { type: Boolean, state: true },
+            // When set, the post body is swapped for an inline rich composer
+            // prefilled with this post, so the author can edit it in place.
+            _editing: { type: Boolean, state: true },
         };
     }
 
@@ -38,6 +41,7 @@ export default class SocialMessage extends ObservableElement {
         super();
         this.compact = false;
         this.hidesource = false;
+        this._editing = false;
         // Fetch this post's comment/like counts once it's scrolled into view
         this.observable = /** @type {import('shared/components/types').ObservableProperty} */ ('once');
         this.observableRequireFocus = true;
@@ -155,6 +159,22 @@ export default class SocialMessage extends ObservableElement {
 
         const feed = this.model.collection?.feed;
         await feed?.retractPost(this.model.get('id'));
+    }
+
+    /**
+     * Swap the post body for an inline composer prefilled with this post, so the
+     * author can edit it in place (only offered for our own, non-repost posts).
+     */
+    onEdit() {
+        this._editing = true;
+    }
+
+    /**
+     * Leave edit mode, whether the edit was saved (the post model has already
+     * been updated in place) or cancelled. Re-renders the post body.
+     */
+    onEditDone() {
+        this._editing = false;
     }
 
     /**

@@ -156,7 +156,7 @@ export default (el) => {
                         ${time
                             ? html`<converse-time timestamp="${time}" class="social-post__time"></converse-time>`
                             : ''}
-                        ${el.compact
+                        ${el.compact || el._editing
                             ? ''
                             : html`
                                   <button
@@ -188,15 +188,26 @@ export default (el) => {
                                           : ''}
                                   </button>
                                   ${m.get('is_mine')
-                                      ? html`<button
-                                            type="button"
-                                            class="social-post__action social-post__action--delete"
-                                            title="${__('Delete')}"
-                                            aria-label="${__('Delete')}"
-                                            @click=${() => el.onRetract()}
-                                        >
-                                            <converse-icon size="1em" class="fa fa-trash-alt"></converse-icon>
-                                        </button>`
+                                      ? html`${m.get('is_repost')
+                                                ? ''
+                                                : html`<button
+                                                      type="button"
+                                                      class="social-post__action social-post__action--edit"
+                                                      title="${__('Edit')}"
+                                                      aria-label="${__('Edit')}"
+                                                      @click=${() => el.onEdit()}
+                                                  >
+                                                      <converse-icon size="1em" class="fa fa-pen"></converse-icon>
+                                                  </button>`}
+                                            <button
+                                                type="button"
+                                                class="social-post__action social-post__action--delete"
+                                                title="${__('Delete')}"
+                                                aria-label="${__('Delete')}"
+                                                @click=${() => el.onRetract()}
+                                            >
+                                                <converse-icon size="1em" class="fa fa-trash-alt"></converse-icon>
+                                            </button>`
                                       : html`<button
                                             type="button"
                                             class="social-post__action social-post__action--repost"
@@ -217,6 +228,15 @@ export default (el) => {
                               >${__('via %1$s on %2$s', source.title, source.jid)}</a
                           >`
                         : ''}
+                    ${el._editing
+                        ? html`<converse-social-compose-rich
+                              class="social-post__edit"
+                              .model=${m.collection?.feed}
+                              .post=${m}
+                              @edited=${() => el.onEditDone()}
+                              @canceledit=${() => el.onEditDone()}
+                          ></converse-social-compose-rich>`
+                        : html`
                     <div class="social-post__body" @click=${(/** @type {MouseEvent} */ ev) => el.onBodyClicked(ev)}>
                         ${title || title_xhtml
                             ? html`<div
@@ -249,6 +269,7 @@ export default (el) => {
                               </div>`
                             : ''}
                     </div>
+                          `}
                 </div>
             </div>
         </article>

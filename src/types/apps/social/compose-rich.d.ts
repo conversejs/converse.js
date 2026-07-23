@@ -3,6 +3,9 @@ export default class SocialComposeRich extends CustomElement {
         model: {
             type: typeof PubSubFeed;
         };
+        post: {
+            type: typeof PubSubMessage;
+        };
         _publishing: {
             type: BooleanConstructor;
             state: boolean;
@@ -29,12 +32,32 @@ export default class SocialComposeRich extends CustomElement {
         type?: string;
         title?: string;
     }>;
+    _prefilled: boolean;
     /** @type {import('./types').EditorHandle|null} */
     _handle: import("./types").EditorHandle | null;
     /** @type {Promise<import('./types').EditorHandle>|null} */
     _init: Promise<import("./types").EditorHandle> | null;
     typeahead: TypeaheadController;
     render(): import("lit-html").TemplateResult<1>;
+    /**
+     * When editing, carry over the post's existing media attachments once, before
+     * the first render, so it folds into the current update rather than scheduling
+     * a follow-up (as setting state in firstUpdated would).
+     */
+    willUpdate(): void;
+    /**
+     * When editing, the editable host now exists. Load Lexical eagerly (rather than
+     * on first focus) so the current text is visible and editable straight away.
+     * The markdown itself is seeded in {@link ensureEditor} once the handle exists.
+     */
+    firstUpdated(): void;
+    /**
+     * The markdown to prefill when editing: our own posts carry their markdown
+     * source as `<content type="text">` (a rich post) or a plain `<title>` (a
+     * short post). Foreign posts aren't editable, so those are the only cases.
+     * @returns {string}
+     */
+    getEditMarkdown(): string;
     /**
      * Lazily load Lexical and attach it to the contenteditable host, once. The
      * dynamic import keeps the (sizeable) editor out of the core bundle: the chunk
@@ -102,8 +125,11 @@ export default class SocialComposeRich extends CustomElement {
      * @param {Event} [ev]
      */
     onSubmit(ev?: Event): Promise<void>;
+    /** Abandon an in-progress edit, leaving the post unchanged. */
+    onCancel(): void;
 }
 import { CustomElement } from 'shared/components/element.js';
 import { TypeaheadController } from 'shared/rich-composer/typeahead.js';
 import { PubSubFeed } from '@converse/headless';
+import { PubSubMessage } from '@converse/headless';
 //# sourceMappingURL=compose-rich.d.ts.map

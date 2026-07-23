@@ -958,6 +958,16 @@
                 color: var(--link-color);
             }
 
+            // XEP-0080 geotag: a quiet location line under the post body.
+            &__location {
+                display: flex;
+                align-items: center;
+                gap: 0.4em;
+                margin-top: 0.5em;
+                font-size: 0.9em;
+                color: var(--subdued-color);
+            }
+
             // The Atom text constructs (<title>/<summary>/<content>), each its own
             // block. `pre-wrap` preserves newlines *within* a construct's text.
             &__title,

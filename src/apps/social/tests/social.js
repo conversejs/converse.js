@@ -712,6 +712,50 @@ describe('The social feed', function () {
     );
 
     it(
+        'renders a geotagged post as a location line linking to a map',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const bare_jid = _converse.bare_jid;
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
+
+            receive(
+                _converse,
+                stx`
+                <message xmlns="jabber:client" from="${bare_jid}" to="${bare_jid}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${MICROBLOG_NODE}">
+                      <item id="p1" publisher="${bare_jid}">
+                        <entry xmlns="${ATOM}">
+                          <title type="text">Lost in the forest</title>
+                          <geoloc xmlns="http://jabber.org/protocol/geoloc">
+                            <lat>48.171761</lat>
+                            <lon>-3.3667986</lon>
+                            <locality>Rennes</locality>
+                            <country>France</country>
+                          </geoloc>
+                          <id>tag:montague.lit,2026:p1</id>
+                          <published>2026-07-15T01:00:00Z</published>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`,
+            );
+
+            // A location line with the place name, linking to the OpenStreetMap
+            // coordinates (via the default geouri_replacement).
+            const loc = await u.waitUntil(() => el.querySelector('.social-post__location a'));
+            expect(loc.textContent.trim()).toBe('Rennes, France');
+            const href = loc.getAttribute('href');
+            expect(href).toContain('openstreetmap.org');
+            expect(href).toContain('mlat=48.171761');
+            expect(href).toContain('mlon=-3.3667986');
+        }),
+    );
+
+    it(
         'attributes a repost to the reposter, distinct from the original author',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);

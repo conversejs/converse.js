@@ -32,6 +32,10 @@ export type PubSubMessageAttrs = {
     // RFC 4287 media attachments (<link rel="enclosure">)
     enclosures?: Array<{ href: string; type?: string; title?: string }>;
 
+    // XEP-0080 geotag (XEP-0277 § Geotagging), for a location line. Coordinates are
+    // present only when both parsed as finite numbers; `label` is a human-readable place.
+    geoloc?: { lat?: number; lon?: number; label?: string };
+
     // The entry's canonical web URL (<link rel="alternate">) — an article permalink
     // for blog/news feeds whose body is only a teaser.
     alternate_url?: string;

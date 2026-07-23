@@ -215,7 +215,7 @@
       <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0277.html"/>
         <xmpp:status>partial</xmpp:status>
-        <xmpp:note>The "Social" app: publishing, reading and deleting microblog posts, following authors and arbitrary pubsub feed nodes (community/news feeds), comments, likes, reposts, and rendering media enclosures (images, audio and video). Atom geolocation and some optional entry metadata are not implemented.</xmpp:note>
+        <xmpp:note>The "Social" app: publishing, reading, editing and deleting microblog posts, following authors and arbitrary pubsub feed nodes (community/news feeds), comments, likes, reposts, category/hashtag tags, rendering media enclosures (images, audio and video), and rendering geotagged posts (XEP-0080) as a map link. Authoring geolocation is not implemented.</xmpp:note>
       </xmpp:SupportedXep>
     </implements>
     <implements>

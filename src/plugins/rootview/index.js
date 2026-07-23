@@ -15,6 +15,7 @@ converse.plugins.add('converse-rootview', {
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
         api.settings.extend({
+            apps: ['chat', 'social'], // Apps offered in the switcher
             auto_insert: true,
             dark_theme: 'dracula',
             // When true, reflect in-app navigation (the active app, and the Social

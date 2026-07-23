@@ -9,6 +9,8 @@ const apps_api = {
          */
         add(app) {
             if (!app.name) throw new Error("Can't add app without a name");
+            if (!api.settings.get('apps')?.includes(app.name)) return;
+
             apps.set(app.name, app);
         },
 
@@ -19,6 +21,7 @@ const apps_api = {
          */
         get(name) {
             if (name) return apps.get(name) ?? null;
+
             return Array.from(apps.values());
         },
 

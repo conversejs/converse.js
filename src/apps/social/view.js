@@ -1,6 +1,6 @@
 import { _converse, api, log } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
-import { HashRouter } from '../rootview/routing.js';
+import { HashRouter } from 'plugins/rootview/routing.js';
 import { SOCIAL_ROUTE_ROOT, buildSocialRoute, parseSocialRoute } from './routing.js';
 import tplSocial from './templates/social.js';
 import { MICROBLOG_NODE } from './constants.js';

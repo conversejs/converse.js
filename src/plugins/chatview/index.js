@@ -2,7 +2,6 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import '../app-chat/index.js';
 import 'shared/chat/chat-content.js';
 import 'shared/chat/help-messages.js';
 import 'shared/chat/toolbar.js';

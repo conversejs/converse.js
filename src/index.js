@@ -17,9 +17,17 @@ _converse.__ = i18n.__; // DEPRECATED
 Object.assign(converse.env, { i18n });
 Object.assign(_converse.env, { i18n });
 
-/* START: Removable plugins
- * ------------------------
- * Any of the following plugin imports may be removed if the plugin is not needed
+/* START: Apps
+ * -----------
+ * You can remove unneeded apps from this list (rebuild required).
+ */
+import './apps/chat/index.js'; // The default/original chat app (1:1 and MUC)
+import './apps/social/index.js'; // XEP-0277 Microblogging ("Social" app)
+/* END: Apps */
+
+/* START: Plugins
+ * --------------
+ * Plugin imports may be removed if the plugin if unneeded (rebuild required)
  */
 import './plugins/modal/index.js';
 import './plugins/adhoc-views/index.js'; // Views for XEP-0050 Ad-Hoc commands
@@ -38,13 +46,12 @@ import './plugins/push/index.js'; // XEP-0357 Push Notifications
 import './plugins/register/index.js'; // XEP-0077 In-band registration
 import './plugins/roomslist/index.js'; // Show currently open chat rooms
 import './plugins/rootview/index.js';
-import './plugins/app-social/index.js'; // XEP-0277 Microblogging ("Social" app)
 import './plugins/rosterview/index.js';
 import './plugins/singleton/index.js';
 import './plugins/dragresize/index.js'; // Allows chat boxes to be resized by dragging them
 import './plugins/fullscreen/index.js';
 import './plugins/reactions-views/index.js'; // XEP-0444 Reactions
-/* END: Removable components */
+/* END: Plugins */
 
 _converse.exports.CustomElement = CustomElement;
 

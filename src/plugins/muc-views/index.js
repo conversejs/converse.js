@@ -4,7 +4,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { api, converse, constants } from '@converse/headless';
-import '../app-chat/index.js';
 import './affiliation-form.js';
 import './role-form.js';
 import MUCView from './muc.js';

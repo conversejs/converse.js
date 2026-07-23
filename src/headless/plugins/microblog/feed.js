@@ -23,7 +23,7 @@ import {
     POSTS_PAGE_SIZE,
 } from './constants.js';
 import PubsubPlaceholderMessage from './placeholder.js';
-import { buildTagId } from './utils.js';
+import { buildTagId, extractHashtags } from './utils.js';
 
 const { stx, Stanza } = converse.env;
 
@@ -573,11 +573,17 @@ class PubSubFeed extends Model {
             (e) => stx`<link rel="enclosure" href="${e.href}" type="${e.type || ''}" title="${e.title || ''}"/>`,
         );
 
+        // The body's inline #hashtags, also emitted as machine-readable Atom
+        // `<category>` terms (XEP-0277 § Post Categories) so aggregators/bridges
+        // can read a post's tags without scraping its text.
+        const categories = extractHashtags(attrs.body).map((term) => stx`<category term="${term}"/>`);
+
         return stx`
             <item id="${id}">
                 <entry xmlns="${NS_ATOM}">
                     ${body}
                     ${enclosures}
+                    ${categories}
                     <link rel="replies" title="comments" href="${comments_href}"/>
                     <id>${tag_id}</id>
                     <published>${published}</published>

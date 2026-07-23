@@ -22,6 +22,25 @@ export function buildTagId(jid, id) {
     return `tag:${domain},${date}:posts-${id}`;
 }
 
+// A hashtag in post text: `#` at a word boundary, then a letter and word chars.
+// Kept in sync with the renderer's pattern in `app-social/texture.js`, so the
+// `<category>` terms we publish match the hashtags shown in a post's body.
+const HASHTAG_REGEX = /(?<![\p{L}\p{N}_])#(\p{L}[\p{L}\p{N}_]*)/gu;
+
+/**
+ * The distinct hashtag terms in `text` (without `#`, lower-cased), for emitting
+ * as Atom `<category>` terms (XEP-0277 § Post Categories) when publishing, so a
+ * post's tags are machine-readable to aggregators and bridges rather than only
+ * inline text.
+ * @param {string} text
+ * @returns {string[]}
+ */
+export function extractHashtags(text) {
+    const tags = new Set();
+    for (const m of (text ?? '').matchAll(HASHTAG_REGEX)) tags.add(m[1].toLowerCase());
+    return Array.from(tags);
+}
+
 /**
  * Parse a feed address into a `{ jid, node }` pair, or null if it isn't a usable
  * address. Accepts either a bare JID (a user like `news@example.org` or a service
@@ -38,7 +57,7 @@ export function parseFeedAddress(address) {
     let jid = raw;
     let node = MICROBLOG_NODE;
 
-    if (/^xmpp:/i.test(raw)) {
+    if ((/^xmpp:/i).test(raw)) {
         const [jid_part, query = ''] = raw.slice('xmpp:'.length).split('?');
         jid = decodeURIComponent(jid_part);
         // The query is `[action];key=value;key=value` (the leading action may be

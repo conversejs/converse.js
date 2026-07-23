@@ -6,6 +6,15 @@
  */
 export function buildTagId(jid: string, id: string): string;
 /**
+ * The distinct hashtag terms in `text` (without `#`, lower-cased), for emitting
+ * as Atom `<category>` terms (XEP-0277 § Post Categories) when publishing, so a
+ * post's tags are machine-readable to aggregators and bridges rather than only
+ * inline text.
+ * @param {string} text
+ * @returns {string[]}
+ */
+export function extractHashtags(text: string): string[];
+/**
  * Parse a feed address into a `{ jid, node }` pair, or null if it isn't a usable
  * address. Accepts either a bare JID (a user like `news@example.org` or a service
  * like `pubsub.example.org`), which defaults to the PEP microblog node, or an XMPP

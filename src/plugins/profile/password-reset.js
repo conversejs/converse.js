@@ -62,12 +62,14 @@ class PasswordReset extends CustomElement {
 
         const data = new FormData(ev.target);
         const password = data.get('password');
+        const current_password = data.get('current_password');
 
         const reset_iq = stx`
             <iq type="set" to="${domain}" xmlns="jabber:client">
                 <query xmlns="${Strophe.NS.REGISTER}">
                     <username>${username}</username>
                     <password>${password}</password>
+                    <old_password>${current_password}</old_password>
                 </query>
             </iq>`;
 
@@ -78,6 +80,8 @@ class PasswordReset extends CustomElement {
             this.alert_message = __('Your server does not allow password reset');
         } else if (sizzle(`error forbidden[xmlns="${Strophe.NS.STANZAS}"]`, iq_result).length) {
             this.alert_message = __('You are not allowed to change your password');
+        } else if (sizzle(`error not-authorized[xmlns="${Strophe.NS.STANZAS}"]`, iq_result).length) {
+            this.alert_message = __('Incorrect current password');
         } else if (u.isErrorStanza(iq_result)) {
             this.alert_message = __('You are not allowed to change your password');
         } else {

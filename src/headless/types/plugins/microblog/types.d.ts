@@ -40,10 +40,15 @@ export type PubSubMessageAttrs = {
     is_repost?: boolean;
     comments_jid?: string;
     comments_node?: string;
+    in_reply_to?: string;
+    in_reply_to_ref?: string;
+    in_reply_to_jid?: string;
+    in_reply_to_node?: string;
     comment_count?: number;
     like_count?: number;
     liked_by_me?: boolean;
     my_like_id?: string;
+    reply_count?: number;
 };
 /**
  * A media attachment on a post: an Atom `<link rel="enclosure">` (RFC 4287 / XEP-0277).
@@ -75,6 +80,8 @@ export type PubSubCommentAttrs = {
     author_name?: string;
     id?: string;
     published?: string;
+    in_reply_to?: string;
+    in_reply_to_ref?: string;
 };
 /**
  * One node returned by browsing a pubsub service (`api.microblog.browseFeeds`):

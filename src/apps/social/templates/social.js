@@ -16,7 +16,11 @@ export default (el) => {
     // A post's detail view (its comment thread) takes over the whole app when
     // open (including over a profile), so back returns to the profile beneath it.
     if (el.open_post) {
-        return html`<converse-social-post class="social-feed-container" .model=${el.open_post}></converse-social-post>`;
+        return html`<converse-social-post
+            class="social-feed-container"
+            .model=${el.open_post}
+            .focused=${el.open_comment}
+        ></converse-social-post>`;
     }
     // An author's profile (or a followed community feed) takes over the timeline
     // when open. Keyed on JID+node so navigating to a different profile/feed

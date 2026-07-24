@@ -11,6 +11,9 @@ export default class SocialMessage extends ObservableElement {
         compact: {
             type: BooleanConstructor;
         };
+        threaditem: {
+            type: BooleanConstructor;
+        };
         hidesource: {
             type: BooleanConstructor;
         };
@@ -34,6 +37,7 @@ export default class SocialMessage extends ObservableElement {
         };
     };
     compact: boolean;
+    threaditem: boolean;
     hidesource: boolean;
     _editing: boolean;
     render(): import("lit-html").TemplateResult<1>;
@@ -89,6 +93,12 @@ export default class SocialMessage extends ObservableElement {
      * the detail view.
      */
     onComments(): void;
+    /**
+     * Drill into this comment in the thread view, focusing it so its own replies
+     * show. Bubbles a `commentselected` event up to the Social app. Only used in
+     * `threaditem` mode.
+     */
+    onDrillIn(): void;
     /**
      * Repost (repeat) this post into our own feed (XEP-0277 § Repeating a Post).
      * The button is disabled while the repost is in flight, so a double-click

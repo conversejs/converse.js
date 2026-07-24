@@ -187,7 +187,40 @@ export default (el) => {
                         ${time
                             ? html`<converse-time timestamp="${time}" class="social-post__time"></converse-time>`
                             : ''}
-                        ${el.compact || el._editing
+                        ${el._editing
+                            ? ''
+                            : el.threaditem
+                            ? html`
+                                  <button
+                                      type="button"
+                                      class="social-post__action social-post__action--comment"
+                                      title="${__('Reply')}"
+                                      aria-label="${__('Reply')}"
+                                      @click=${() => el.onDrillIn()}
+                                  >
+                                      <converse-icon size="1em" class="fa fa-comments"></converse-icon>
+                                      ${m.get('reply_count')
+                                          ? html`<span class="social-post__count">${m.get('reply_count')}</span>`
+                                          : ''}
+                                  </button>
+                                  <button
+                                      type="button"
+                                      class="social-post__action social-post__action--like ${m.get('liked_by_me')
+                                          ? 'social-post__action--liked'
+                                          : ''}"
+                                      title="${m.get('liked_by_me') ? __('Unlike') : __('Like')}"
+                                      aria-label="${m.get('liked_by_me') ? __('Unlike') : __('Like')}"
+                                      aria-pressed="${m.get('liked_by_me') ? 'true' : 'false'}"
+                                      ?disabled=${el._liking}
+                                      @click=${() => el.onToggleLike()}
+                                  >
+                                      <converse-icon size="1em" class="fa fa-heart"></converse-icon>
+                                      ${m.get('like_count')
+                                          ? html`<span class="social-post__count">${m.get('like_count')}</span>`
+                                          : ''}
+                                  </button>
+                              `
+                            : el.compact
                             ? ''
                             : html`
                                   <button

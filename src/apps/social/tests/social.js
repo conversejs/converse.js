@@ -1366,6 +1366,92 @@ describe('Liking a post', function () {
             expect(detail.querySelector('.social-comments__heading').textContent).toContain('1 comment');
         }),
     );
+
+    it(
+        'drills into a comment to show its replies, replies to it, and climbs back',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+            const comments_node = 'urn:xmpp:microblog:0:comments/post-1';
+            const href = `xmpp:${bare_jid}?;node=${encodeURIComponent(comments_node)};item=c-1`;
+
+            // The comments node holds a top-level comment c-1 and a nested reply r-1.
+            vi.spyOn(api.pubsub.items, 'get').mockImplementation((_jid, node) => {
+                if (node.startsWith('urn:xmpp:microblog:0:comments/')) {
+                    return Promise.resolve({
+                        items: [
+                            stx`
+                            <item id="c-1" publisher="benvolio@montague.lit">
+                              <entry xmlns="${ATOM}">
+                                <author><name>Benvolio</name><uri>xmpp:benvolio@montague.lit</uri></author>
+                                <title type="text">Top comment</title>
+                                <id>tag:montague.lit,2024:comments-c-1</id>
+                                <published>2024-01-01T19:00:00Z</published>
+                              </entry>
+                            </item>`.tree(),
+                            stx`
+                            <item id="r-1" publisher="mercutio@montague.lit">
+                              <entry xmlns="${ATOM}" xmlns:thr="http://purl.org/syndication/thread/1.0">
+                                <author><name>Mercutio</name><uri>xmpp:mercutio@montague.lit</uri></author>
+                                <title type="text">Nested reply</title>
+                                <thr:in-reply-to href="${href}"/>
+                                <id>tag:montague.lit,2024:comments-r-1</id>
+                                <published>2024-01-01T19:05:00Z</published>
+                              </entry>
+                            </item>`.tree(),
+                        ],
+                    });
+                }
+                return Promise.resolve({ items: [] });
+            });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
+            receive(_converse, makePost(bare_jid, bare_jid, 'post-1', 'Hello world'));
+            (await u.waitUntil(() => el.querySelector('.social-post__action--comment'))).click();
+            const detail = await u.waitUntil(() => el.querySelector('converse-social-post'));
+
+            // Top level shows the direct comment but NOT the nested reply.
+            await u.waitUntil(() =>
+                Array.from(detail.querySelectorAll('.social-comment .social-post__body')).some((n) =>
+                    n.textContent.includes('Top comment'),
+                ),
+            );
+            const topBodies = () =>
+                Array.from(detail.querySelectorAll('.social-comment .social-post__body')).map((n) => n.textContent);
+            expect(topBodies().some((b) => b.includes('Nested reply'))).toBe(false);
+            // The comment's reply count (its drill affordance) reads 1.
+            await u.waitUntil(() => detail.querySelector('.social-comment .social-post__action--comment .social-post__count'));
+            expect(
+                detail.querySelector('.social-comment .social-post__action--comment .social-post__count').textContent,
+            ).toContain('1');
+
+            // Drill into the comment: now its nested reply is the direct reply.
+            detail.querySelector('.social-comment .social-post__action--comment').click();
+            await u.waitUntil(() =>
+                Array.from(detail.querySelectorAll('.social-comment .social-post__body')).some((n) =>
+                    n.textContent.includes('Nested reply'),
+                ),
+            );
+            expect(detail.querySelector('.social-post-detail__focused')).not.toBe(null);
+            expect(detail.querySelector('.social-comments__heading').textContent).toContain('1 reply');
+
+            // Replying while focused publishes a threaded reply to the focused comment.
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            detail.querySelector('.social-comment-compose__textarea').value = 'Me too';
+            detail.querySelector('.social-comment-compose button[type="submit"]').click();
+            await u.waitUntil(() => publish.mock.calls.length === 1);
+            const item = publish.mock.calls[0][2].tree();
+            const ptr = Array.from(item.querySelector('entry').children).find((c) => c.localName === 'in-reply-to');
+            expect(ptr.getAttribute('href')).toContain('item=c-1');
+
+            // Back climbs to the post level: the top comment is shown again.
+            detail.querySelector('.social-post-detail__back').click();
+            await u.waitUntil(() => detail.querySelector('.social-post-detail__focused') === null);
+            expect(topBodies().some((b) => b.includes('Top comment'))).toBe(true);
+        }),
+    );
 });
 
 describe('The social profile view', function () {

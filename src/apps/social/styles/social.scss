@@ -498,6 +498,33 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
+        // The drill-down context stack: the post, then the ancestor chain, then
+        // the focused comment. Each ancestor sits slightly indented with a thread
+        // rule, so the path from the post down to the focused item reads at a glance.
+        .social-post-detail__ancestor {
+            display: block;
+            margin-inline-start: 0.75em;
+            padding-inline-start: 0.75em;
+            border-inline-start: 2px solid rgba(0, 0, 0, 0.08);
+
+            .social-post {
+                opacity: 0.85;
+            }
+        }
+
+        // The focused comment: the current level, emphasised above its replies.
+        .social-post-detail__focused {
+            display: block;
+            margin-inline-start: 0.75em;
+            padding-inline-start: 0.75em;
+            border-inline-start: 2px solid var(--link-color, rgba(0, 0, 0, 0.2));
+
+            .social-post {
+                border-bottom: none;
+                font-weight: 500;
+            }
+        }
+
         .social-comment-compose {
             display: flex;
             flex-direction: column;

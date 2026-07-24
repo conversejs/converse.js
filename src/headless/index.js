@@ -43,6 +43,9 @@ export {
     PubSubFeeds,
     PubSubMessage,
     PubSubMessages,
+    buildCommentTree,
+    computeThreadCounts,
+    getAncestors,
 } from './plugins/microblog/index.js'; // XEP-0277 Microblogging
 import './plugins/reactions/index.js'; // XEP-0444 Message Reactions
 import './plugins/version/index.js'; // XEP-0092 Software Version

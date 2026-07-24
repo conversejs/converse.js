@@ -25,6 +25,11 @@ export default class SocialMessage extends ObservableElement {
             // action buttons (comment / repost / delete), which belong to the
             // timeline.
             compact: { type: Boolean },
+            // When set, render as a drill-down thread row: a reply-count button
+            // (the affordance to focus this comment) plus a like button, instead
+            // of the timeline actions. Distinct from `compact`, which drops all
+            // actions.
+            threaditem: { type: Boolean },
             // When set, suppress the "via <feed>" source line. Passed by the feed
             // profile view, where every post is from the feed on show, so naming
             // it on each row would just be noise (see getSourceFeed).
@@ -40,6 +45,7 @@ export default class SocialMessage extends ObservableElement {
     constructor() {
         super();
         this.compact = false;
+        this.threaditem = false;
         this.hidesource = false;
         this._editing = false;
         // Fetch this post's comment/like counts once it's scrolled into view
@@ -54,6 +60,7 @@ export default class SocialMessage extends ObservableElement {
         this.listenTo(this.model, 'change:displayName', () => this.requestUpdate());
         this.listenTo(this.model, 'change:like_count', () => this.requestUpdate());
         this.listenTo(this.model, 'change:liked_by_me', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:reply_count', () => this.requestUpdate());
         this.listenTo(this.model, 'change:summary', () => this.requestUpdate());
         this.listenTo(this.model, 'change:title', () => this.requestUpdate());
         this.listenTo(this.model, 'contact:add', () => this.requestUpdate());
@@ -189,6 +196,17 @@ export default class SocialMessage extends ObservableElement {
     }
 
     /**
+     * Drill into this comment in the thread view, focusing it so its own replies
+     * show. Bubbles a `commentselected` event up to the Social app. Only used in
+     * `threaditem` mode.
+     */
+    onDrillIn() {
+        this.dispatchEvent(
+            new CustomEvent('commentselected', { bubbles: true, composed: true, detail: { comment: this.model } }),
+        );
+    }
+
+    /**
      * Repost (repeat) this post into our own feed (XEP-0277 § Repeating a Post).
      * The button is disabled while the repost is in flight, so a double-click
      * can't publish a duplicate item.
@@ -230,7 +248,10 @@ export default class SocialMessage extends ObservableElement {
      * @param {IntersectionObserverEntry} _entry
      */
     onVisibilityChanged(_entry) {
-        if (this.compact) return;
+        // A timeline post fetches its comment/like summary lazily. A thread row's
+        // counts are already local (computed from the one thread fetch), so it
+        // needs no per-row fetch; the context/ancestor rows (compact) need none either.
+        if (this.compact || this.threaditem) return;
         api.microblog.comments.fetchSummary(this.model).catch((e) => log.error(e));
     }
 }

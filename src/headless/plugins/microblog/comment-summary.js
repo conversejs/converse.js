@@ -6,6 +6,7 @@ import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import { safeSave } from '../../utils/init.js';
 import { COMMENT_SUMMARY_CONCURRENCY, COMMENTS_NODE_PREFIX } from './constants.js';
+import { computeThreadCounts } from './utils/thread.js';
 
 /**
  * A bounded, deduped work queue. Runs at most `concurrency` tasks at once, and
@@ -66,7 +67,7 @@ export class DedupeQueue {
                     // fetch error) stays re-enqueueable so a later visibility can
                     // retry rather than caching "never fetched" for the session.
                     () => this._done.add(key),
-                    (e) => log.error(e)
+                    (e) => log.error(e),
                 )
                 .finally(() => {
                     this._active--;
@@ -116,6 +117,25 @@ export function syncCommentSummary(post, feed) {
 }
 
 /**
+ * Recompute and persist each comment's own denormalised counts (`reply_count`,
+ * `like_count`, `liked_by_me`, `my_like_id`) from the thread, so the drill-down
+ * view can show a reply/like tally on every row without re-walking the node.
+ * @param {import('./comment-feed').default} [feed]
+ */
+export function syncCommentCounts(feed) {
+    if (!feed) return;
+
+    const { byComment } = computeThreadCounts(feed.comments);
+    for (const comment of feed.getComments()) {
+        const counts = byComment.get(comment.get('id'));
+        if (!counts) continue;
+
+        const changed = Object.keys(counts).some((k) => comment.get(k) !== counts[k]);
+        if (changed) safeSave(comment, counts);
+    }
+}
+
+/**
  * Find the loaded post a comments node belongs to, by scanning the timeline
  * feeds for a post whose comments node + service match. Returns undefined when
  * the post isn't loaded (its counts then simply aren't synced live).
@@ -147,6 +167,11 @@ export function findPostForThread(service, node) {
  * @param {import('./comment-feed').default} [feed] - The thread, if already resolved.
  */
 export function syncCommentThread(service, node, feed) {
+    feed = feed || _converse.state.commentfeeds?.getFeed(service, node, false);
+    // Per-comment counts drive the thread view and don't depend on the owning post
+    // being loaded, so sync them whenever the thread is materialised.
+    if (feed) syncCommentCounts(feed);
+
     const post = findPostForThread(service, node);
     if (post) syncCommentSummary(post, feed);
 }

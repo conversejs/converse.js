@@ -12,6 +12,13 @@
  */
 export function syncCommentSummary(post: import("./message").default, feed?: import("./comment-feed").default): void;
 /**
+ * Recompute and persist each comment's own denormalised counts (`reply_count`,
+ * `like_count`, `liked_by_me`, `my_like_id`) from the thread, so the drill-down
+ * view can show a reply/like tally on every row without re-walking the node.
+ * @param {import('./comment-feed').default} [feed]
+ */
+export function syncCommentCounts(feed?: import("./comment-feed").default): void;
+/**
  * Find the loaded post a comments node belongs to, by scanning the timeline
  * feeds for a post whose comments node + service match. Returns undefined when
  * the post isn't loaded (its counts then simply aren't synced live).

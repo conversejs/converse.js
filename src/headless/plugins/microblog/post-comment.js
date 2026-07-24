@@ -2,6 +2,7 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import { Strophe } from 'strophe.js';
 import PubSubMessage from './message.js';
 import { LIKE_MARKER } from './constants.js';
 
@@ -17,6 +18,21 @@ class PostComment extends PubSubMessage {
      */
     isLike() {
         return this.get('title') === LIKE_MARKER;
+    }
+
+    /**
+     * The `{ jid, node }` of a *dedicated* comments node this comment advertises
+     * for its own replies, or null. This is the Libervia ActivityPub-gateway model
+     * (a comments node per comment).
+     * @returns {{ jid: string, node: string }|null}
+     */
+    getRepliesRef() {
+        const node = this.get('comments_node');
+        if (!node) return null;
+
+        const author = this.getAuthorJID();
+        const jid = this.get('comments_jid') || (author ? Strophe.getBareJidFromJid(author) : undefined);
+        return jid ? { jid, node } : null;
     }
 }
 

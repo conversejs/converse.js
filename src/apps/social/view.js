@@ -389,11 +389,21 @@ class SocialApp extends CustomElement {
         }
 
         try {
-            const feed = await api.microblog.comments.feed(post);
-            let comment = feed?.messages.get(route.commentId);
-            if (!comment) {
-                await api.microblog.comments.fetch(post);
+            let comment;
+            if (route.commentJid && route.commentNode) {
+                // A Libervia child-node comment: fetch that node directly. (Its
+                // intermediate ancestors aren't recoverable cold, so the chain
+                // shortens to the post; in-session drilling has the full context.)
+                const child = await api.microblog.comments.thread(route.commentJid, route.commentNode);
+                comment = child?.messages.get(route.commentId);
+            } else {
+                // Flat: the comment lives in the post's own thread.
+                const feed = await api.microblog.comments.feed(post);
                 comment = feed?.messages.get(route.commentId);
+                if (!comment) {
+                    await api.microblog.comments.fetch(post);
+                    comment = feed?.messages.get(route.commentId);
+                }
             }
             if (current()) this.open_comment = comment || null;
         } catch (e) {

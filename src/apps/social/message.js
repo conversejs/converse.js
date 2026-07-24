@@ -21,9 +21,8 @@ export default class SocialMessage extends ObservableElement {
         return {
             ...super.properties,
             model: { type: PubSubMessage },
-            // When set, render as a thread item (or the detail header): drop the
-            // action buttons (comment / repost / delete), which belong to the
-            // timeline.
+            // When set, render as a thread item (or the detail header). Drop the
+            // action buttons (comment / repost / delete), which belong to the timeline.
             compact: { type: Boolean },
             // When set, render as a drill-down thread row: a reply-count button
             // (the affordance to focus this comment) plus a like button, instead
@@ -55,14 +54,7 @@ export default class SocialMessage extends ObservableElement {
     }
 
     initialize() {
-        this.listenTo(this.model, 'change:comment_count', () => this.requestUpdate());
-        this.listenTo(this.model, 'change:content', () => this.requestUpdate());
-        this.listenTo(this.model, 'change:displayName', () => this.requestUpdate());
-        this.listenTo(this.model, 'change:like_count', () => this.requestUpdate());
-        this.listenTo(this.model, 'change:liked_by_me', () => this.requestUpdate());
-        this.listenTo(this.model, 'change:reply_count', () => this.requestUpdate());
-        this.listenTo(this.model, 'change:summary', () => this.requestUpdate());
-        this.listenTo(this.model, 'change:title', () => this.requestUpdate());
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.listenTo(this.model, 'contact:add', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
@@ -82,9 +74,10 @@ export default class SocialMessage extends ObservableElement {
         ev?.preventDefault?.();
         const jid = this.model.getAuthorJID();
         if (!jid) return;
+
         // A profile is a person/feed keyed by bare JID. A post's `publisher` can
-        // be a full JID (Movim stamps `edhelas@movim.eu/atomtopubsub`), so drop
-        // the resource, or the profile won't match the bare-JID follow record.
+        // be a full JID, so drop the resource, or the profile won't match the bare-JID
+        // follow record.
         this.dispatchEvent(
             new CustomEvent('profileselected', {
                 bubbles: true,
@@ -248,10 +241,15 @@ export default class SocialMessage extends ObservableElement {
      * @param {IntersectionObserverEntry} _entry
      */
     onVisibilityChanged(_entry) {
-        // A timeline post fetches its comment/like summary lazily. A thread row's
-        // counts are already local (computed from the one thread fetch), so it
-        // needs no per-row fetch; the context/ancestor rows (compact) need none either.
-        if (this.compact || this.threaditem) return;
+        if (this.compact) return; // A context/ancestor row (compact) needs nothing.
+
+        if (this.threaditem) {
+            // Nested replies live in a child node, so probe it to learn the reply/like count
+            if (this.model.getRepliesRef?.()) {
+                api.microblog.comments.replies(this.model).catch((e) => log.error(e));
+            }
+            return;
+        }
         api.microblog.comments.fetchSummary(this.model).catch((e) => log.error(e));
     }
 }

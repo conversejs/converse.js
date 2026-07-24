@@ -10,7 +10,7 @@ import api from '../../shared/api/index.js';
 import { RSM } from '../../shared/rsm.js';
 import { publishFollow, readFollowing, retractFollow } from './utils/following.js';
 import { parseFeedAddress as parseAddress } from './utils.js';
-import { comment_summary_queue, syncCommentCounts, syncCommentSummary } from './comment-summary.js';
+import { comment_summary_queue, syncCommentCounts, syncCommentSummary, syncCommentThread } from './comment-summary.js';
 import MicroblogProfile from './profile.js';
 import PubSubFeed from './feed.js';
 import PubSubFeeds from './feeds.js';
@@ -684,6 +684,51 @@ export default {
             },
 
             /**
+             * Resolve a focused item's direct replies to the feed that holds them,
+             * fetching it. The drill-down view reads two shapes identically:
+             *  - **null**: the flat model (ours / Movim / renostr). The item's
+             *    replies are the items in its *own* thread node whose `in_reply_to`
+             *    is this item, so the caller filters the thread it already has.
+             *  - **a CommentFeed**: the Libervia node-per-comment model. The item
+             *    advertised a dedicated replies node (see
+             *    {@link PostComment.getRepliesRef}); its replies are that feed's
+             *    top-level items.
+             *
+             * Only ever follows the *explicit* replies link, so a flat thread is
+             * never probed. The child feed is an ordinary member of
+             * `commentfeeds`, so LRU eviction, pinning and live routing all apply.
+             * @method _converse.api.microblog.comments.replies
+             * @param {import('./post-comment').default} item
+             * @returns {Promise<import('./comment-feed').default|null>}
+             */
+            async replies(item) {
+                const ref = item?.getRepliesRef?.();
+                if (!ref) return null; // flat: replies live in the item's own thread
+
+                const feed = await api.microblog.comments.thread(ref.jid, ref.node);
+                // Denormalise the owning comment's reply/like count from its child node.
+                if (feed) syncCommentThread(ref.jid, ref.node, feed);
+                return feed;
+            },
+
+            /**
+             * Materialise and backfill a comments node by address, returning its
+             * {@link CommentFeed}. The low-level primitive behind {@link replies}
+             * and used to resolve a deep-linked Libervia child-node comment.
+             * @method _converse.api.microblog.comments.thread
+             * @param {string} jid - The comments service JID.
+             * @param {string} node - The comments node.
+             * @returns {Promise<import('./comment-feed').default|null>}
+             */
+            async thread(jid, node) {
+                await api.waitUntil('pubsubFeedsInitialized');
+                const feed = _converse.state.commentfeeds?.getFeed(jid, node, true);
+                if (!feed) return null;
+                await feed.fetchComments();
+                return feed;
+            },
+
+            /**
              * Fetch a post's comments and denormalise the resulting counts onto
              * the post (see {@link syncCommentSummary}). This is the source for
              * the timeline's comment/like counts.
@@ -777,11 +822,25 @@ export default {
                 const text = body?.trim();
                 if (!text) return undefined;
 
+                const author_jid = _converse.session.get('bare_jid');
+                const author_name = _converse.state.profile?.getDisplayName?.() || author_jid;
+
+                // Publish where the conversation already is. Into a parent's own
+                // replies node, otherwise into the post's thread node with an
+                // in_reply_to pointer at the parent (the flat model).
+                const ref = parent && typeof parent.getRepliesRef === 'function' ? parent.getRepliesRef() : null;
+                if (ref) {
+                    const child = await api.microblog.comments.thread(ref.jid, ref.node);
+                    if (!child) return undefined;
+
+                    const reply = await child.publishComment({ body: text, author_jid, author_name });
+                    syncCommentThread(ref.jid, ref.node, child); // bump the owning comment's count
+                    return reply;
+                }
+
                 const feed = await api.microblog.comments.feed(post);
                 if (!feed) return undefined;
 
-                const author_jid = _converse.session.get('bare_jid');
-                const author_name = _converse.state.profile?.getDisplayName?.() || author_jid;
                 const reply = parent ? { in_reply_to: parent.get('id'), in_reply_to_ref: parent.get('atom_id') } : {};
                 const comment = await feed.publishComment({ body: text, author_jid, author_name, ...reply });
 

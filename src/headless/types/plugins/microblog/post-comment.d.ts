@@ -10,6 +10,16 @@ declare class PostComment extends PubSubMessage {
      * @returns {boolean}
      */
     isLike(): boolean;
+    /**
+     * The `{ jid, node }` of a *dedicated* comments node this comment advertises
+     * for its own replies, or null. This is the Libervia ActivityPub-gateway model
+     * (a comments node per comment).
+     * @returns {{ jid: string, node: string }|null}
+     */
+    getRepliesRef(): {
+        jid: string;
+        node: string;
+    } | null;
 }
 import PubSubMessage from './message.js';
 //# sourceMappingURL=post-comment.d.ts.map

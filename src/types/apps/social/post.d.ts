@@ -30,9 +30,22 @@ export default class SocialPost extends SocialPost_base {
     /** @type {import('@converse/headless').PubSubFeed} */
     feed: import("@converse/headless").PubSubFeed;
     comments: import("signal-polyfill").Signal.State<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[]>;
+    childFeed: any;
+    childComments: import("signal-polyfill").Signal.State<import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[]>;
     _submitting: boolean;
     initialize(): Promise<void>;
     render(): import("lit-html").TemplateResult<1> | "";
+    /**
+     * @param {Map<string, unknown>} changed
+     */
+    updated(changed: Map<string, unknown>): void;
+    /**
+     * Resolve the focused item's replies source. In the flat model this is null
+     * (its replies are in the post's own thread, filtered by the tree). For a
+     * Libervia comment that advertises its own replies node, this fetches and
+     * tracks that child feed so its top-level items render as the replies.
+     */
+    resolveChildFeed(): Promise<void>;
     /**
      * The item currently focused: the comment being viewed, or the post.
      * @returns {import('@converse/headless').PubSubMessage}

@@ -159,19 +159,81 @@ export function findPostForThread(service, node) {
 }
 
 /**
- * Sync a comment thread's counts onto its post after a live event routed into
- * the thread (see `handleMicroblogEvent`). A no-op when the owning post isn't
- * loaded in any timeline feed.
+ * The loaded comment that owns a **Libervia child node** (a comment which
+ * advertised its own replies node, see {@link PostComment.getRepliesRef}), by
+ * scanning the materialised comment threads. Returns undefined when no such
+ * comment is loaded. Bounded by `social_max_comment_threads`; only run on live
+ * events / a child-node fetch.
+ * @param {string} service - The child comments node's service JID.
+ * @param {string} node - The child comments node.
+ * @returns {import('./post-comment').default|undefined}
+ */
+function findOwningComment(service, node) {
+    const feeds = _converse.state.commentfeeds;
+    if (!feeds) return undefined;
+    for (const feed of feeds.models) {
+        for (const m of feed.messages?.models ?? []) {
+            const ref = typeof (/** @type {any} */ (m).getRepliesRef) === 'function' ? m.getRepliesRef() : null;
+            if (ref && ref.node === node && ref.jid === service) return m;
+        }
+    }
+    return undefined;
+}
+
+/**
+ * The loaded entity a comments node hangs off: a post (the common per-post node),
+ * or, for a Libervia child node, the comment that advertised it. Distinguished by
+ * whether the returned model carries `getRepliesRef` (only a {@link PostComment} does).
+ * @param {string} service - The comments service JID.
+ * @param {string} node - The comments node.
+ * @returns {import('./message').default|import('./post-comment').default|undefined}
+ */
+export function findParentForThread(service, node) {
+    return findPostForThread(service, node) || findOwningComment(service, node);
+}
+
+/**
+ * Write a Libervia owning comment's denormalised counts from its child node,
+ * whose top-level items are that comment's direct replies (and post-level ♥ its
+ * likes). This is how a comment whose replies live in a *separate* node gets a
+ * `reply_count` / `like_count`, which the flat model computes locally instead.
+ * @param {import('./post-comment').default} comment
+ * @param {import('./comment-feed').default} [child] - The comment's replies node.
+ */
+export function syncOwningComment(comment, child) {
+    if (!comment || !child) return;
+    const { post } = computeThreadCounts(child.comments);
+    const attrs = {
+        reply_count: post.comment_count,
+        like_count: post.like_count,
+        liked_by_me: post.liked_by_me,
+        my_like_id: post.my_like_id,
+    };
+    const changed = Object.keys(attrs).some((k) => comment.get(k) !== attrs[k]);
+    if (changed) safeSave(comment, attrs);
+}
+
+/**
+ * Sync a comment thread's counts onto its owning entity after a live event routed
+ * into the thread (see `handleMicroblogEvent`), or after a child node is fetched.
+ * Syncs the thread's own per-comment counts, then the owning post's summary, or —
+ * for a Libervia child node — the owning comment's count. A no-op when the owner
+ * isn't loaded.
  * @param {string} service - The comments service JID.
  * @param {string} node - The comments node.
  * @param {import('./comment-feed').default} [feed] - The thread, if already resolved.
  */
 export function syncCommentThread(service, node, feed) {
     feed = feed || _converse.state.commentfeeds?.getFeed(service, node, false);
-    // Per-comment counts drive the thread view and don't depend on the owning post
+    // Per-comment counts drive the thread view and don't depend on the owner
     // being loaded, so sync them whenever the thread is materialised.
     if (feed) syncCommentCounts(feed);
 
-    const post = findPostForThread(service, node);
-    if (post) syncCommentSummary(post, feed);
+    const parent = findParentForThread(service, node);
+    if (!parent) return;
+    if (typeof (/** @type {any} */ (parent).getRepliesRef) === 'function') {
+        syncOwningComment(/** @type {import('./post-comment').default} */ (parent), feed);
+    } else {
+        syncCommentSummary(/** @type {import('./message').default} */ (parent), feed);
+    }
 }

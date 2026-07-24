@@ -28,9 +28,29 @@ export function syncCommentCounts(feed?: import("./comment-feed").default): void
  */
 export function findPostForThread(service: string, node: string): import("./message").default | undefined;
 /**
- * Sync a comment thread's counts onto its post after a live event routed into
- * the thread (see `handleMicroblogEvent`). A no-op when the owning post isn't
- * loaded in any timeline feed.
+ * The loaded entity a comments node hangs off: a post (the common per-post node),
+ * or, for a Libervia child node, the comment that advertised it. Distinguished by
+ * whether the returned model carries `getRepliesRef` (only a {@link PostComment} does).
+ * @param {string} service - The comments service JID.
+ * @param {string} node - The comments node.
+ * @returns {import('./message').default|import('./post-comment').default|undefined}
+ */
+export function findParentForThread(service: string, node: string): import("./message").default | import("./post-comment").default | undefined;
+/**
+ * Write a Libervia owning comment's denormalised counts from its child node,
+ * whose top-level items are that comment's direct replies (and post-level ♥ its
+ * likes). This is how a comment whose replies live in a *separate* node gets a
+ * `reply_count` / `like_count`, which the flat model computes locally instead.
+ * @param {import('./post-comment').default} comment
+ * @param {import('./comment-feed').default} [child] - The comment's replies node.
+ */
+export function syncOwningComment(comment: import("./post-comment").default, child?: import("./comment-feed").default): void;
+/**
+ * Sync a comment thread's counts onto its owning entity after a live event routed
+ * into the thread (see `handleMicroblogEvent`), or after a child node is fetched.
+ * Syncs the thread's own per-comment counts, then the owning post's summary, or —
+ * for a Libervia child node — the owning comment's count. A no-op when the owner
+ * isn't loaded.
  * @param {string} service - The comments service JID.
  * @param {string} node - The comments node.
  * @param {import('./comment-feed').default} [feed] - The thread, if already resolved.

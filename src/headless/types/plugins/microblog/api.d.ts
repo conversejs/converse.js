@@ -268,6 +268,35 @@ declare namespace _default {
              */
             function fetch(post: import("./message").default): Promise<import("./comment-feed").default | undefined>;
             /**
+             * Resolve a focused item's direct replies to the feed that holds them,
+             * fetching it. The drill-down view reads two shapes identically:
+             *  - **null**: the flat model (ours / Movim / renostr). The item's
+             *    replies are the items in its *own* thread node whose `in_reply_to`
+             *    is this item, so the caller filters the thread it already has.
+             *  - **a CommentFeed**: the Libervia node-per-comment model. The item
+             *    advertised a dedicated replies node (see
+             *    {@link PostComment.getRepliesRef}); its replies are that feed's
+             *    top-level items.
+             *
+             * Only ever follows the *explicit* replies link, so a flat thread is
+             * never probed. The child feed is an ordinary member of
+             * `commentfeeds`, so LRU eviction, pinning and live routing all apply.
+             * @method _converse.api.microblog.comments.replies
+             * @param {import('./post-comment').default} item
+             * @returns {Promise<import('./comment-feed').default|null>}
+             */
+            function replies(item: import("./post-comment").default): Promise<import("./comment-feed").default | null>;
+            /**
+             * Materialise and backfill a comments node by address, returning its
+             * {@link CommentFeed}. The low-level primitive behind {@link replies}
+             * and used to resolve a deep-linked Libervia child-node comment.
+             * @method _converse.api.microblog.comments.thread
+             * @param {string} jid - The comments service JID.
+             * @param {string} node - The comments node.
+             * @returns {Promise<import('./comment-feed').default|null>}
+             */
+            function thread(jid: string, node: string): Promise<import("./comment-feed").default | null>;
+            /**
              * Fetch a post's comments and denormalise the resulting counts onto
              * the post (see {@link syncCommentSummary}). This is the source for
              * the timeline's comment/like counts.

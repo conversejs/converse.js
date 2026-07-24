@@ -38,6 +38,10 @@ export default class SocialPost extends SignalWatcher(CustomElement) {
         /** @type {import('@converse/headless').PubSubFeed} */
         this.feed = null;
         this.comments = null;
+        // When the focused comment advertises its own replies node (Libervia), the
+        // child feed holding its replies, plus a signal to react to it.
+        this.childFeed = null;
+        this.childComments = null;
         this._submitting = false;
     }
 
@@ -62,6 +66,38 @@ export default class SocialPost extends SignalWatcher(CustomElement) {
     }
 
     /**
+     * @param {Map<string, unknown>} changed
+     */
+    updated(changed) {
+        if (changed.has('focused')) this.resolveChildFeed();
+    }
+
+    /**
+     * Resolve the focused item's replies source. In the flat model this is null
+     * (its replies are in the post's own thread, filtered by the tree). For a
+     * Libervia comment that advertises its own replies node, this fetches and
+     * tracks that child feed so its top-level items render as the replies.
+     */
+    async resolveChildFeed() {
+        const focused = this.focused;
+        this.childFeed = null;
+        this.childComments = null;
+        if (!focused) {
+            this.requestUpdate();
+            return;
+        }
+        try {
+            const child = await api.microblog.comments.replies(focused);
+            if (this.focused !== focused) return; // superseded by a newer focus
+            this.childFeed = child;
+            this.childComments = child ? collectionSignal(child.messages) : null;
+        } catch (e) {
+            log.error(e);
+        }
+        this.requestUpdate();
+    }
+
+    /**
      * The item currently focused: the comment being viewed, or the post.
      * @returns {import('@converse/headless').PubSubMessage}
      */
@@ -76,20 +112,27 @@ export default class SocialPost extends SignalWatcher(CustomElement) {
      * @returns {{ replies: import('@converse/headless').PubSubMessage[], ancestors: import('@converse/headless').PubSubMessage[], likeCount: number }}
      */
     getView() {
-        this.comments?.get(); // track the collection signal
-        const items = this.feed ? this.feed.comments : [];
-        const list = this.feed ? this.feed.getComments() : [];
-        const { roots, by_id } = buildCommentTree(list);
+        this.comments?.get(); // track the post-thread signal
+        this.childComments?.get(); // and the child feed's, when a Libervia comment is focused
         const focused_id = this.focused?.get('id');
-        const nodes = focused_id ? (by_id.get(focused_id)?.replies ?? []) : roots;
-        const replies = nodes.map((n) => n.comment);
+
+        // Ancestors always come from the post's own thread (best-effort: a deep
+        // Libervia reply isn't in it, so its chain shortens to the post).
+        const { roots, by_id } = buildCommentTree(this.feed ? this.feed.getComments() : []);
         const ancestors = focused_id ? getAncestors(by_id, focused_id).map((n) => n.comment) : [];
 
-        // The focused item's live like count (post-level likes, or the comment's),
-        // deduped by liker. Computed from the thread rather than the post's cached
-        // summary, which the detail view doesn't fetch.
-        const { post, byComment } = computeThreadCounts(items);
-        const likeCount = focused_id ? (byComment.get(focused_id)?.like_count ?? 0) : post.like_count;
+        let replies;
+        let likeCount;
+        if (this.childFeed) {
+            // Libervia: the focused comment's replies are the child node's top-level items.
+            replies = buildCommentTree(this.childFeed.getComments()).roots.map((n) => n.comment);
+            likeCount = computeThreadCounts(this.childFeed.comments).post.like_count;
+        } else {
+            const nodes = focused_id ? (by_id.get(focused_id)?.replies ?? []) : roots;
+            replies = nodes.map((n) => n.comment);
+            const { post, byComment } = computeThreadCounts(this.feed ? this.feed.comments : []);
+            likeCount = focused_id ? (byComment.get(focused_id)?.like_count ?? 0) : post.like_count;
+        }
         return { replies, ancestors, likeCount };
     }
 

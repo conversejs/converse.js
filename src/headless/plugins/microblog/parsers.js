@@ -9,10 +9,10 @@
  */
 import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js';
-import { getJIDFromURI, getNodeFromURI } from '../../utils/jid.js';
+import { getItemFromURI, getJIDFromURI, getNodeFromURI } from '../../utils/jid.js';
 import { getUniqueId } from '../../utils/index.js';
 import { decodeHTMLEntities } from '../../utils/html.js';
-import { MICROBLOG_TYPE, NS_ATOM } from './constants.js';
+import { MICROBLOG_TYPE, NS_ATOM, NS_THREAD } from './constants.js';
 
 /**
  * Resolve the `<atom:entry>` for a PubSub item (or accept a bare entry).
@@ -81,6 +81,7 @@ function parseTextConstruct(el) {
  */
 function pickTextConstruct(els) {
     if (!els.length) return {};
+
     const isRich = (el) => textConstructKind(el) !== 'text';
     const rich = parseTextConstruct(els.find(isRich));
     const plain = parseTextConstruct(els.find((el) => !isRich(el)));
@@ -96,56 +97,78 @@ const NS_GEOLOC = 'http://jabber.org/protocol/geoloc';
  * the free-form `<text>`, else a "locality, region, country" join. Coordinates
  * are only returned when both parse as finite numbers (a map link needs both).
  * @param {Element} entry
- * @returns {{ lat?: number, lon?: number, label?: string }|undefined}
+ * @returns {{geoloc: { lat?: number, lon?: number, label?: string }} | undefined}
  */
 function parseGeoloc(entry) {
     const geo = sizzle('> geoloc', entry).find((g) => g.namespaceURI === NS_GEOLOC);
     if (!geo) return undefined;
 
-    const field = /** @param {string} name */ (name) => sizzle(`> ${name}`, geo).pop()?.textContent?.trim() || undefined;
+    const field = /** @param {string} name */ (name) =>
+        sizzle(`> ${name}`, geo).pop()?.textContent?.trim() || undefined;
     const lat = Number(field('lat'));
     const lon = Number(field('lon'));
-    const has_coords = field('lat') !== undefined && field('lon') !== undefined && Number.isFinite(lat) && Number.isFinite(lon);
+    const has_coords =
+        field('lat') !== undefined && field('lon') !== undefined && Number.isFinite(lat) && Number.isFinite(lon);
     const label =
         field('text') || [field('locality'), field('region'), field('country')].filter(Boolean).join(', ') || undefined;
 
     if (!has_coords && !label) return undefined;
-    return { ...(has_coords ? { lat, lon } : {}), ...(label ? { label } : {}) };
+
+    return { geoloc: { ...(has_coords ? { lat, lon } : {}), ...(label ? { label } : {}) } };
 }
 
 /**
- * Parse a single PubSub `<item>` (or a bare `<entry>`) from a microblog node
- * into a flat attributes object suitable for a {@link PubSubMessage}.
- *
- * @param {Element} item - An `<item>` element (as returned by retrieve-items or a
- *      PEP event), or an `<entry>` element directly.
- * @param {object} [context]
- * @param {string} [context.from] - JID of the feed this item belongs to.
- * @param {string} [context.node] - The PubSub node the item was published to.
- * @returns {import('./types').PubSubMessageAttrs}
+ * RFC 4685 threading (XEP-0277 § Replying to a Post). A comment/reply carries
+ * one or more `<thr:in-reply-to>` pointing at the item it replies to. An entry
+ * MAY carry several (e.g. an http and an xmpp form of the same target), so take
+ * the first whose xmpp href yields an item id, keeping any `ref` (the parent's
+ * atom:id) as a fallback resolver.
+ * @param {Element} entry
  */
-export function parseAtomEntry(item, { from, node } = {}) {
-    const is_entry = item.localName === 'entry' && item.namespaceURI === NS_ATOM;
-    const entry = getEntry(item);
-    if (!entry) {
-        throw new Error('parseAtomEntry: no <entry> found in item');
+function parseThreading(entry) {
+    let in_reply_to;
+    let in_reply_to_ref;
+    let in_reply_to_jid;
+    let in_reply_to_node;
+
+    const in_reply_tos = sizzle('> *', entry).filter(
+        (el) => el.localName === 'in-reply-to' && el.namespaceURI === NS_THREAD,
+    );
+
+    for (const el of in_reply_tos) {
+        const href = el.getAttribute('href') || undefined;
+        const ref = el.getAttribute('ref') || undefined;
+        // Keep the first `ref` seen as a fallback (resolves by atom:id when no href item id available)
+        if (ref && !in_reply_to_ref) in_reply_to_ref = ref;
+
+        const item = href?.startsWith('xmpp:') ? getItemFromURI(href) : undefined;
+        if (item) {
+            in_reply_to = item;
+            in_reply_to_jid = getJIDFromURI(href);
+            in_reply_to_node = getNodeFromURI(href);
+            if (ref) in_reply_to_ref = ref;
+            break;
+        }
     }
+    return {
+        in_reply_to,
+        in_reply_to_ref,
+        in_reply_to_jid,
+        in_reply_to_node,
+    };
+}
 
-    const id = is_entry ? getUniqueId() : item.getAttribute('id');
-    // The PubSub server stamps the publisher on event/retrieve items; trust it
-    // over the (spoofable) atom:author for authorship (XEP-0277 § Security).
-    const publisher = is_entry ? undefined : item.getAttribute('publisher') || undefined;
-
-    const author = sizzle('> author', entry).pop();
-    const author_name = author ? sizzle('> name', author).pop()?.textContent?.trim() : undefined;
-    const author_uri = author ? sizzle('> uri', author).pop()?.textContent?.trim() : undefined;
-    const author_jid = author_uri ? getJIDFromURI(author_uri) : undefined;
-
-    // Links carry repost provenance (`rel="via"`), the comments node
-    // (`rel="replies"`), media attachments (`rel="enclosure"`), and the entry's
-    // canonical web URL (`rel="alternate"`); all are un-prefixed Atom elements. The
-    // via href/ref are kept verbatim so reposting a repost can propagate them (the
-    // via link must keep pointing at the *original* post, per XEP-0277).
+/**
+ * Links carry repost provenance (`rel="via"`), the comments node
+ * (`rel="replies"`), media attachments (`rel="enclosure"`), and the entry's
+ * canonical web URL (`rel="alternate"`) are all unprefixed Atom elements. The
+ * via href/ref are kept verbatim so reposting a repost can propagate them (the
+ * via link must keep pointing at the *original* post, per XEP-0277).
+ * @param {Element} entry
+ * @param {string} author_jid
+ * @param {string} publisher
+ */
+function parseLinks(entry, author_jid, publisher) {
     let via_jid;
     let via_href;
     let via_ref;
@@ -187,10 +210,58 @@ export function parseAtomEntry(item, { from, node } = {}) {
         }
     }
 
+    return {
+        via_jid,
+        via_href,
+        via_ref,
+        comments_jid,
+        comments_node,
+        alternate_url,
+        ...(enclosures.length ? { enclosures } : {}),
+        // An author JID that differs from the publisher marks a repeated post
+        // (XEP-0277 § Repeating a Post). A `rel="via"` link is the explicit signal.
+        is_repost:
+            !!via_jid ||
+            !!(
+                author_jid &&
+                publisher &&
+                Strophe.getBareJidFromJid(author_jid) !== Strophe.getBareJidFromJid(publisher)
+            ),
+    };
+}
+
+/**
+ * Parse a single PubSub `<item>` (or a bare `<entry>`) from a microblog node
+ * into a flat attributes object suitable for a {@link PubSubMessage}.
+ *
+ * @param {Element} item - An `<item>` element (as returned by retrieve-items or a
+ *      PEP event), or an `<entry>` element directly.
+ * @param {object} [context]
+ * @param {string} [context.from] - JID of the feed this item belongs to.
+ * @param {string} [context.node] - The PubSub node the item was published to.
+ * @returns {import('./types').PubSubMessageAttrs}
+ */
+export function parseAtomEntry(item, { from, node } = {}) {
+    const is_entry = item.localName === 'entry' && item.namespaceURI === NS_ATOM;
+    const entry = getEntry(item);
+    if (!entry) {
+        throw new Error('parseAtomEntry: no <entry> found in item');
+    }
+
+    const id = is_entry ? getUniqueId() : item.getAttribute('id');
+    // The PubSub server stamps the publisher on event/retrieve items; trust it
+    // over the (spoofable) atom:author for authorship (XEP-0277 § Security).
+    const publisher = is_entry ? undefined : item.getAttribute('publisher') || undefined;
+
+    const author = sizzle('> author', entry).pop();
+    const author_name = author ? sizzle('> name', author).pop()?.textContent?.trim() : undefined;
+    const author_uri = author ? sizzle('> uri', author).pop()?.textContent?.trim() : undefined;
+    const author_jid = author_uri ? getJIDFromURI(author_uri) : undefined;
+
     // An Atom entry can carry up to three text constructs:
     // - <title> XEP-0277 short posts put the whole post here
-    // - <summary> Excerpt.
-    // - <content> Full body Atom-native feeds use this, often with an empty <title>.
+    // - <summary> Excerpt
+    // - <content> Full body Atom-native feeds use this, often with an empty <title>
     const title = pickTextConstruct(sizzle('> title', entry));
     const summary = pickTextConstruct(sizzle('> summary', entry));
     const content = pickTextConstruct(sizzle('> content', entry));
@@ -198,8 +269,6 @@ export function parseAtomEntry(item, { from, node } = {}) {
     const published = sizzle('> published', entry).pop()?.textContent?.trim();
     const updated = sizzle('> updated', entry).pop()?.textContent?.trim();
     const time = published ?? updated;
-
-    const geoloc = parseGeoloc(entry);
 
     return {
         type: MICROBLOG_TYPE,
@@ -217,30 +286,15 @@ export function parseAtomEntry(item, { from, node } = {}) {
         author_name,
         author_jid,
         publisher,
-        // An author JID that differs from the publisher marks a repeated post
-        // (XEP-0277 § Repeating a Post); a `rel="via"` link is the explicit signal.
-        // Compare both sides bare: Movim stamps a *full* JID publisher (with a
-        // resource), so a naive bare-vs-full check would flag every post a repost.
-        via_jid,
-        via_href,
-        via_ref,
-        is_repost:
-            !!via_jid ||
-            !!(
-                author_jid &&
-                publisher &&
-                Strophe.getBareJidFromJid(author_jid) !== Strophe.getBareJidFromJid(publisher)
-            ),
-        comments_jid,
-        comments_node,
-        alternate_url,
-        ...(enclosures.length ? { enclosures } : {}),
-        ...(geoloc ? { geoloc } : {}),
         categories: sizzle('> category', entry)
             .map((el) => el.getAttribute('term'))
             .filter(Boolean),
         published,
         updated,
         ...(time ? { time } : {}),
+
+        ...parseThreading(entry),
+        ...parseGeoloc(entry),
+        ...parseLinks(entry, author_jid, publisher),
     };
 }

@@ -79,6 +79,18 @@ export function getNodeFromURI(uri) {
 }
 
 /**
+ * Extract the `item` query parameter from an XMPP URI (RFC 5122),
+ * e.g. `xmpp:romeo@montague.lit?;node=urn:xmpp:microblog:0;item=1` → `1`.
+ * @param {string} [uri]
+ * @returns {string|undefined}
+ */
+export function getItemFromURI(uri) {
+    if (!uri) return undefined;
+    const m = uri.match(/[?;&]item=([^;&]+)/);
+    return m ? decodeURIComponent(m[1]) : undefined;
+}
+
+/**
  * @param {string} jid
  * @param {boolean} [include_resource=false]
  * @returns {boolean}

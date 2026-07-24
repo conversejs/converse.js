@@ -2,6 +2,7 @@
 
 ## 15.0.0 (Unreleased)
 
+- #4110: Fix timing race where the contact unread message counter fails to synchronize on load
 - #194: Full support for XEP-0115: Entity capabilities
 - #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds
 - Full XEP-0172 User Nickname support. Converse now publishes its own nickname to PEP and

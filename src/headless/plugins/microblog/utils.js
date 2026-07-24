@@ -170,9 +170,16 @@ export function handleMicroblogEvent(message) {
             //  - a followed community/contact node routes into its already-materialised
             //    feed (persisted, so present even before the Social app opens);
             //  - anything else has no feed and is dropped.
-            const is_comments = node.startsWith(COMMENTS_NODE_PREFIX);
+            // Route by feed *existence* first: a materialised comment thread takes
+            // its live items whatever its node is named, so a Libervia child node
+            // (which need not use the `urn:xmpp:microblog:0:comments/` prefix) still
+            // routes. Then fall back to the node-name test, so a conventional
+            // comments node with no open thread is still recognised as comments (and
+            // dropped, create=false) rather than mistaken for a timeline node.
+            const comment_feed = _converse.state.commentfeeds?.getFeed(from, node, false);
+            const is_comments = !!comment_feed || node.startsWith(COMMENTS_NODE_PREFIX);
             const feed = is_comments
-                ? _converse.state.commentfeeds?.getFeed(from, node, false)
+                ? comment_feed
                 : feeds.getFeed(from, node, from === bare_jid && node === MICROBLOG_NODE);
             if (!feed) continue;
 
@@ -231,16 +238,33 @@ export function handleMicroblogEvent(message) {
  * @param {Set<string>} known - Comment ids present before this batch.
  */
 function notifyOfThreadActivity(service, node, comments, known) {
+    const feed = _converse.state.commentfeeds?.getFeed(service, node, false);
     const post = findPostForThread(service, node);
-    if (!post?.get('is_mine')) return;
-    const ref = { feedJid: post.get('from'), node: post.get('node'), itemId: post.get('id') };
+    const post_is_mine = !!post?.get('is_mine');
+
+    // A ref the notification click opens the thread from: the loaded post, else —
+    // for a conventional per-post comments node — the post id encoded in the node.
+    const ref = post
+        ? { feedJid: post.get('from'), node: post.get('node'), itemId: post.get('id') }
+        : node.startsWith(COMMENTS_NODE_PREFIX)
+          ? { feedJid: service, node: MICROBLOG_NODE, itemId: node.slice(COMMENTS_NODE_PREFIX.length) }
+          : null;
+    if (!ref) return;
+
     for (const comment of comments) {
         if (known.has(comment.get('id')) || comment.get('is_mine')) continue;
+        // Notifiable when it lands on our own post, or replies to / likes one of
+        // our own comments in the loaded thread.
+        const parent_id = comment.get('in_reply_to');
+        const parent = parent_id ? feed?.messages.get(parent_id) : null;
+        if (!post_is_mine && !parent?.get('is_mine')) continue;
+
         const type = comment.isLike?.() ? 'like' : 'comment';
         /**
-         * Triggered for a notifiable microblog event: a comment on, or a ♥ like
-         * of, one of the user's own posts. The notifications plugin listens for
-         * this to raise an HTML5 desktop notification.
+         * Triggered for a notifiable microblog event: a comment or ♥ like on one of
+         * the user's own posts, or a reply to / like of one of their own comments.
+         * The notifications plugin listens for this to raise an HTML5 desktop
+         * notification.
          * @event _converse#microblogNotification
          * @type {{ type: 'comment'|'like', post: import('./message').default, comment: import('./post-comment').default, ref: { feedJid: string, node: string, itemId: string } }}
          */

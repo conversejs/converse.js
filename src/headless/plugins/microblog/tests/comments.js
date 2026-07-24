@@ -7,8 +7,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
-import { commentItem, replyItem, seedPost } from './utils.js';
+import { commentItem, makeCommentEvent, receive, replyItem, seedPost } from './utils.js';
 
+const { u } = converse.env;
 const NS_THREAD = 'http://purl.org/syndication/thread/1.0';
 
 describe('Threaded comments', function () {
@@ -146,6 +147,40 @@ describe('Threaded comments', function () {
             expect(retract).toHaveBeenCalled();
             expect(comment.get('liked_by_me')).toBe(false);
             expect(comment.get('like_count')).toBe(0);
+        }),
+    );
+
+    it(
+        'notifies a live reply to our own comment on someone else\'s post',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            await api.waitUntil('pubsubFeedsInitialized');
+
+            // A stranger's post whose thread we've opened, with our own comment in it.
+            const { post: theirs } = await seedPost(api, { author: 'juliet@capulet.lit', id: 'p9' });
+            const service = theirs.getCommentsService();
+            const node = theirs.getCommentsNode();
+            _converse.state.commentfeeds.getFeed(service, node, true);
+
+            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            const mine = await api.microblog.comments.add(theirs, 'my two cents');
+            expect(mine.get('is_mine')).toBe(true);
+
+            const events = [];
+            api.listen.on('microblogNotification', (d) => events.push(d));
+
+            // A foreign reply pointing at OUR comment → one notification.
+            receive(
+                _converse,
+                makeCommentEvent(service, node, 'r1', 'good point', 'bob@montague.lit', 'Bob', '2024-01-01T20:00:00Z', {
+                    parent: mine.get('id'),
+                }),
+            );
+            await u.waitUntil(() => events.length === 1);
+            expect(events[0].type).toBe('comment');
+            expect(events[0].comment.get('in_reply_to')).toBe(mine.get('id'));
+            expect(events[0].ref).toEqual({ feedJid: 'juliet@capulet.lit', node: 'urn:xmpp:microblog:0', itemId: 'p9' });
         }),
     );
 });

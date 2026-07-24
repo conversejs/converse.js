@@ -91,9 +91,18 @@ export function postItem(id, body, publisher) {
  * @param {string} author_jid - The commenter's bare JID.
  * @param {string} author_name - The commenter's display name.
  * @param {string} [published='2024-01-01T19:00:00Z'] - ISO-8601 publication time.
+ * @param {{ parent: string, ref?: string }} [reply] - When set, a threaded reply:
+ *      adds a `<thr:in-reply-to>` pointing at `parent` (in this same node).
  */
-export function makeCommentEvent(service, node, id, body, author_jid, author_name, published = '2024-01-01T19:00:00Z') {
+export function makeCommentEvent(service, node, id, body, author_jid, author_name, published = '2024-01-01T19:00:00Z', reply) {
     const domain = Strophe.getDomainFromJid(author_jid);
+    const thr = 'http://purl.org/syndication/thread/1.0';
+    const href = reply ? `xmpp:${service}?;node=${encodeURIComponent(node)};item=${encodeURIComponent(reply.parent)}` : '';
+    const ptr = !reply
+        ? ''
+        : reply.ref
+          ? stx`<thr:in-reply-to xmlns:thr="${thr}" ref="${reply.ref}" href="${href}"/>`
+          : stx`<thr:in-reply-to xmlns:thr="${thr}" href="${href}"/>`;
     return stx`
         <message xmlns="jabber:client" from="${service}" to="${service}" type="headline">
           <event xmlns="${PUBSUB_EVENT}">
@@ -105,6 +114,7 @@ export function makeCommentEvent(service, node, id, body, author_jid, author_nam
                     <uri>xmpp:${author_jid}</uri>
                   </author>
                   <title type="text">${body}</title>
+                  ${ptr}
                   <id>tag:${domain},2024-01-01:comments-${id}</id>
                   <published>${published}</published>
                 </entry>

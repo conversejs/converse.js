@@ -4,7 +4,7 @@
  * count partitioning on a CommentFeed (a ♥ on a comment must not inflate the
  * post's like count).
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 import { commentItem, replyItem, seedPost } from './utils.js';
@@ -86,6 +86,66 @@ describe('Threaded comments', function () {
             const c1 = feed.summarize('c1');
             expect(c1.reply_count).toBe(1);
             expect(c1.like_count).toBe(1);
+        }),
+    );
+
+    it(
+        'comments.add with a parent publishes a threaded reply and bumps the parent count',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const { post } = await seedPost(api);
+            const feed = await api.microblog.comments.feed(post);
+            await feed.addItems([commentItem('c1', 'She is so pretty!', 'juliet@capulet.lit')]);
+            const parent = feed.messages.get('c1');
+
+            const publish = vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            const reply = await api.microblog.comments.add(post, 'Agreed!', { parent });
+
+            // Published to the post's one comments node, carrying the pointer.
+            expect(publish).toHaveBeenCalledTimes(1);
+            const [, node, item] = publish.mock.calls[0];
+            expect(node).toBe(post.getCommentsNode());
+            const ptr = Array.from(item.tree().querySelector('entry').children).find(
+                (el) => el.localName === 'in-reply-to' && el.namespaceURI === NS_THREAD,
+            );
+            expect(ptr.getAttribute('href')).toContain('item=c1');
+
+            // Optimistically threaded, and the parent's reply count is bumped.
+            expect(reply.get('in_reply_to')).toBe('c1');
+            expect(parent.get('reply_count')).toBe(1);
+        }),
+    );
+
+    it(
+        'like/unlike on a comment updates the comment, not the post',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const { post } = await seedPost(api);
+            post.set({ like_count: 0, liked_by_me: false });
+            const feed = await api.microblog.comments.feed(post);
+            await feed.addItems([commentItem('c1', 'She is so pretty!', 'juliet@capulet.lit')]);
+            const comment = feed.messages.get('c1');
+
+            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            const retract = vi.spyOn(api.pubsub, 'retract').mockResolvedValue(undefined);
+
+            await api.microblog.like(comment);
+            expect(comment.get('liked_by_me')).toBe(true);
+            expect(comment.get('like_count')).toBe(1);
+            // The ♥ rode the comments node pointing at the comment.
+            const like = feed.getMyLikes('c1');
+            expect(like.length).toBe(1);
+            expect(like[0].get('in_reply_to')).toBe('c1');
+            // The post's like count is untouched (the latent bug).
+            expect(post.get('like_count')).toBe(0);
+            expect(post.get('liked_by_me')).toBe(false);
+
+            await api.microblog.unlike(comment);
+            expect(retract).toHaveBeenCalled();
+            expect(comment.get('liked_by_me')).toBe(false);
+            expect(comment.get('like_count')).toBe(0);
         }),
     );
 });

@@ -10,7 +10,7 @@ import api from '../../shared/api/index.js';
 import { RSM } from '../../shared/rsm.js';
 import { publishFollow, readFollowing, retractFollow } from './utils/following.js';
 import { parseFeedAddress as parseAddress } from './utils.js';
-import { comment_summary_queue, syncCommentSummary } from './comment-summary.js';
+import { comment_summary_queue, syncCommentCounts, syncCommentSummary } from './comment-summary.js';
 import MicroblogProfile from './profile.js';
 import PubSubFeed from './feed.js';
 import PubSubFeeds from './feeds.js';
@@ -89,6 +89,28 @@ async function probeNodeMeta(jid, node) {
         log.debug(`browseFeeds: could not read node meta for ${jid} (${node}): ${e}`);
         return { is_feed: false };
     }
+}
+
+/**
+ * Resolve what a like/unlike targets: a post or a comment.
+ *
+ * A like is always on the post's comments node, the difference is what it points at
+ * and where the denormalised like state lives.
+ *
+ *  - a post → the like is a post-level item (no `in_reply_to`)
+ *      Its counts live on the post, reconciled by {@link syncCommentSummary}.
+ *  - a comment (a {@link PostComment} with `isLike`) → the lie carries `in_reply_to`
+ *      Its counts live on the comment, reconciled by {@link syncCommentCounts}.
+ * @param {import('./message').default} target - A post or a comment.
+ * @returns {Promise<import('./types').LikeTarget>}
+ */
+async function resolveLikeTarget(target) {
+    if (typeof (/** @type {import('./post-comment').default} */ (target).isLike) === 'function') {
+        const feed = target.collection?.feed;
+        return { feed, model: target, parent_id: target.get('id'), reconcile: () => syncCommentCounts(feed) };
+    }
+    const feed = await api.microblog.comments.feed(target);
+    return { feed, model: target, parent_id: undefined, reconcile: () => syncCommentSummary(target, feed) };
 }
 
 export default {
@@ -521,26 +543,27 @@ export default {
         },
 
         /**
-         * Like a post: publish a ♥ comment to the post's comments node.
+         * Like a post *or a comment*: publish a ♥ to the post's comments node,
+         * pointing at the comment when the target is one (see {@link resolveLikeTarget}).
          *
          * Optimistic: the like state flips immediately so that UI can update.
          * If the publish is refused the state is rolled back and the error
          * re-thrown for the caller to surface. A no-op if we already like it.
          * @method _converse.api.microblog.like
-         * @param {import('./message').default} post
-         * @returns {Promise<import('./message').default|undefined>} Our ♥ comment.
+         * @param {import('./message').default} target - A post or a comment.
+         * @returns {Promise<import('./message').default|undefined>} Our ♥ item.
          */
-        async like(post) {
-            if (post.get('liked_by_me')) return undefined;
+        async like(target) {
+            if (target.get('liked_by_me')) return undefined;
 
-            const feed = await api.microblog.comments.feed(post);
+            const { feed, model, parent_id, reconcile } = await resolveLikeTarget(target);
             if (!feed) return undefined;
 
             // The cached flag can be stale (another device already liked). If the
-            // thread we've loaded already holds a ♥ of ours, don't publish a
-            // duplicate, just reconcile the denormalised state and bail.
-            if (feed.getMyLikes().length) {
-                syncCommentSummary(post, feed);
+            // thread we've loaded already holds a ♥ of ours for this target, don't
+            // publish a duplicate, just reconcile the denormalised state and bail.
+            if (feed.getMyLikes(parent_id).length) {
+                reconcile();
                 return undefined;
             }
 
@@ -550,57 +573,63 @@ export default {
 
             // Optimistically reflect the like, keeping a snapshot to revert to.
             const snapshot = {
-                like_count: post.get('like_count'),
-                liked_by_me: post.get('liked_by_me'),
-                my_like_id: post.get('my_like_id'),
+                like_count: model.get('like_count'),
+                liked_by_me: model.get('liked_by_me'),
+                my_like_id: model.get('my_like_id'),
             };
-            safeSave(post, { liked_by_me: true, my_like_id: id, like_count: (post.get('like_count') || 0) + 1 });
+            safeSave(model, { liked_by_me: true, my_like_id: id, like_count: (model.get('like_count') || 0) + 1 });
 
             try {
-                const like = await feed.publishComment({ body: LIKE_MARKER, author_jid, author_name, id });
+                const like = await feed.publishComment({
+                    body: LIKE_MARKER,
+                    author_jid,
+                    author_name,
+                    id,
+                    ...(parent_id ? { in_reply_to: parent_id } : {}),
+                });
                 // Reconcile against the thread now the ♥ has actually landed.
-                syncCommentSummary(post, feed);
+                reconcile();
                 return like;
             } catch (e) {
-                safeSave(post, snapshot);
+                safeSave(model, snapshot);
                 throw e;
             }
         },
 
         /**
-         * Un-like a post: retract *every* ♥ of ours from the post's comments node
-         * (duplicates can accrue across devices / cache resets, so one tap clears
-         * the post regardless of how many accumulated).
+         * Un-like a post *or a comment*: retract *every* ♥ of ours for that target
+         * from the comments node (duplicates can accrue across devices / cache
+         * resets, so one tap clears it regardless of how many accumulated).
          *
          * Optimistic: the like is removed and the count reverts immediately, then
          * the retracts are sent; if any is refused the like is restored and the
          * error re-thrown for the caller to surface. A no-op if we don't like it.
          * @method _converse.api.microblog.unlike
-         * @param {import('./message').default} post
+         * @param {import('./message').default} target - A post or a comment.
          * @returns {Promise<void>}
          */
-        async unlike(post) {
-            if (!post.get('liked_by_me') && !post.get('my_like_id')) return;
+        async unlike(target) {
+            if (!target.get('liked_by_me') && !target.get('my_like_id')) return;
 
-            const feed = await api.microblog.comments.feed(post);
+            const { feed, model, parent_id, reconcile } = await resolveLikeTarget(target);
             if (!feed) return;
 
-            // Every ♥ of ours in the loaded thread, plus the cached id in case the
-            // thread isn't loaded (deduped into a set).
-            const ids = new Set(feed.getMyLikes().map((m) => m.get('id')));
-            if (post.get('my_like_id')) ids.add(post.get('my_like_id'));
+            // Every ♥ of ours for this target in the loaded thread, plus the cached
+            // id in case the thread isn't loaded (deduped into a set).
+            const ids = new Set(feed.getMyLikes(parent_id).map((m) => m.get('id')));
+            if (model.get('my_like_id')) ids.add(model.get('my_like_id'));
             if (!ids.size) return;
 
             // Optimistically remove the like, keeping a snapshot to revert to.
             const snapshot = {
-                like_count: post.get('like_count'),
-                liked_by_me: post.get('liked_by_me'),
-                my_like_id: post.get('my_like_id'),
+                like_count: model.get('like_count'),
+                liked_by_me: model.get('liked_by_me'),
+                my_like_id: model.get('my_like_id'),
             };
-            safeSave(post, {
+            safeSave(model, {
                 liked_by_me: false,
                 my_like_id: undefined,
-                like_count: Math.max(0, (post.get('like_count') || 0) - 1),
+                like_count: Math.max(0, (model.get('like_count') || 0) - 1),
             });
 
             try {
@@ -608,12 +637,12 @@ export default {
                     await api.pubsub.retract(feed.get('jid'), feed.get('node'), id);
                 }
             } catch (e) {
-                safeSave(post, snapshot);
+                safeSave(model, snapshot);
                 throw e;
             }
             // Confirmed: drop our local ♥s and reconcile counts from the thread.
             ids.forEach((id) => feed.messages.get(id)?.destroy());
-            syncCommentSummary(post, feed);
+            reconcile();
         },
 
         /**
@@ -640,7 +669,9 @@ export default {
             },
 
             /**
-             * Fetch a post's comments into its thread and return the thread.
+             * Fetch a post's comments into its thread and return the thread, then
+             * denormalise each comment's own counts (see {@link syncCommentCounts})
+             * so the drill-down view can show a reply/like tally per row.
              * @method _converse.api.microblog.comments.fetch
              * @param {import('./message').default} post
              * @returns {Promise<import('./comment-feed').default|undefined>}
@@ -648,6 +679,7 @@ export default {
             async fetch(post) {
                 const feed = await api.microblog.comments.feed(post);
                 await feed?.fetchComments();
+                if (feed) syncCommentCounts(feed);
                 return feed;
             },
 
@@ -663,14 +695,13 @@ export default {
                 const service = post?.getCommentsService();
                 const node = post?.getCommentsNode();
                 if (!service || !node) return Promise.resolve();
+
                 // Key the dedupe on the comments-feed identity (service + node),
-                // not the post's bare item id — item ids are only unique within a
-                // node, so on an aggregated timeline two authors' posts can share
-                // one (e.g. `post-1`) and would otherwise collide into a single fetch.
                 const key = PubSubFeeds.getFeedId(service, node);
                 return comment_summary_queue.add(key, async () => {
                     const feed = await api.microblog.comments.feed(post);
                     if (!feed) return;
+
                     await feed.fetchComments();
                     syncCommentSummary(post, feed);
                 });
@@ -691,11 +722,13 @@ export default {
                 const service = post?.getCommentsService();
                 const node = post?.getCommentsNode();
                 if (!service || !node) return undefined;
+
                 await api.waitUntil('pubsubFeedsInitialized');
                 const feeds = _converse.state.commentfeeds;
                 const feed = feeds?.getFeed(service, node, true);
                 if (!feed) return undefined;
                 if (!feed.get('pinned')) feed.save({ pinned: true });
+
                 try {
                     await api.pubsub.subscribe(service, node);
                 } catch (e) {
@@ -719,6 +752,7 @@ export default {
                 const bare_jid = _converse.session.get('bare_jid');
                 const own = _converse.state.pubsubfeeds?.getFeed(bare_jid, MICROBLOG_NODE, false);
                 if (!own) return;
+
                 const cap = api.settings.get('social_max_pinned_threads') || 0;
                 // getPosts() is newest-first, so the newest `cap` posts are pinned.
                 for (const post of own.getPosts().slice(0, cap)) {
@@ -727,23 +761,35 @@ export default {
             },
 
             /**
-             * Add a comment to a post: publish an Atom entry, attributed to us,
-             * to the post's comments node.
+             * Add a comment to a post, or a threaded reply to one of its comments.
+             * Publishes an Atom entry attributed to us into the post's comments
+             * node; when `parent` is given, the entry carries a `<thr:in-reply-to>`
+             * pointing at it (RFC 4685), so the whole thread stays in one node.
              * @method _converse.api.microblog.comments.add
-             * @param {import('./message').default} post - The post being commented on.
+             * @param {import('./message').default} post - The post that owns the thread.
              * @param {string} body - The comment text.
+             * @param {object} [opts]
+             * @param {import('./post-comment').default} [opts.parent] - The comment
+             *      being replied to; omit for a direct comment on the post.
              * @returns {Promise<import('./message').default|undefined>}
              */
-            async add(post, body) {
+            async add(post, body, { parent } = {}) {
                 const text = body?.trim();
                 if (!text) return undefined;
+
                 const feed = await api.microblog.comments.feed(post);
                 if (!feed) return undefined;
+
                 const author_jid = _converse.session.get('bare_jid');
                 const author_name = _converse.state.profile?.getDisplayName?.() || author_jid;
-                const comment = await feed.publishComment({ body: text, author_jid, author_name });
-                // Reflect our own new comment in the post's denormalised count.
+                const reply = parent ? { in_reply_to: parent.get('id'), in_reply_to_ref: parent.get('atom_id') } : {};
+                const comment = await feed.publishComment({ body: text, author_jid, author_name, ...reply });
+
+                // Reflect our own new comment in the post's total and, when it's a
+                // reply, in the parent comment's reply count.
                 syncCommentSummary(post, feed);
+                if (parent) syncCommentCounts(feed);
+
                 return comment;
             },
         },

@@ -9,8 +9,13 @@ export default CommentFeed;
  */
 declare class CommentFeed extends PubSubFeed {
     /**
-     * Fetch this thread's comments (one shot, newest first). The node may not
-     * exist yet which surfaces as an error here, treated as an empty thread.
+     * Fetch this thread and make it complete enough to render as a tree. Drives
+     * the inherited {@link PubSubFeed.fetchPosts} paging (RSM where the comments
+     * service supports it, else the newest-`POSTS_MAX_WITHOUT_RSM` window with
+     * `history_complete`), then {@link resolveOrphans} to reconnect a reply whose
+     * parent fell outside the window on a non-RSM node. The node may not exist yet
+     * (an empty thread), which `fetchPosts` records as `fetch_error` rather than
+     * throwing.
      *
      * Marks the thread as fetching for the duration so a concurrent
      * {@link CommentFeeds.pruneThreads} can't evict it mid-fetch.
@@ -18,6 +23,22 @@ declare class CommentFeed extends PubSubFeed {
      */
     fetchComments(): Promise<void>;
     _fetching: boolean;
+    /**
+     * Reconnect orphans (replies whose in-thread parent isn't loaded) by fetching
+     * the missing ancestors by item id, walking up the chain until each branch
+     * reaches a loaded root or a retracted (not-found) ancestor.
+     *
+     * **Non-RSM only.** On an RSM-capable node normal "load older" paging brings
+     * parents in *in order*, so a targeted id-fetch is unnecessary and harmful: an
+     * out-of-order item carries no `rsm_cursor` and lands at an arbitrary time
+     * position, polluting the anchors and gap detection `fetchOlder` relies on. So
+     * this early-returns when the node paged via RSM and lets paging adopt orphans.
+     *
+     * A parent that comes back not-found is recorded in an in-memory absent-set so
+     * it isn't re-requested; its orphan stays kept-but-hidden (see buildCommentTree).
+     * @returns {Promise<void>}
+     */
+    resolveOrphans(): Promise<void>;
     /**
      * Whether a {@link fetchComments} is currently in flight. Consulted by
      * {@link CommentFeeds.pruneThreads} to exempt an actively-fetching thread
@@ -32,7 +53,8 @@ declare class CommentFeed extends PubSubFeed {
      */
     get comments(): import("./post-comment").default[];
     /**
-     * This thread's real comments (every item except ♥ likes).
+     * This thread's real comments (every item except ♥ likes). Excludes any
+     * "load older" placeholders the inherited paging seeds into the collection.
      * @returns {import('./post-comment').default[]}
      */
     getComments(): import("./post-comment").default[];

@@ -36,8 +36,8 @@ export type PubSubMessageAttrs = {
     // present only when both parsed as finite numbers; `label` is a human-readable place.
     geoloc?: { lat?: number; lon?: number; label?: string };
 
-    // The entry's canonical web URL (<link rel="alternate">) — an article permalink
-    // for blog/news feeds whose body is only a teaser.
+    // The entry's canonical web URL (<link rel="alternate">),
+    // an article permalink for blog/news feeds whose body is only a teaser.
     alternate_url?: string;
 
     author_name?: string;
@@ -49,11 +49,18 @@ export type PubSubMessageAttrs = {
 
     // Interaction metadata
     via_jid?: string; // Original author for a repost (<link rel="via">)
-    via_href?: string; // The via link's href — the original post's XMPP URI
-    via_ref?: string; // The via link's ref — the original post's atom id
+    via_href?: string; // The via link's href (the original post's XMPP URI)
+    via_ref?: string; // The via link's ref (the original post's atom id)
     is_repost?: boolean;
     comments_jid?: string; // Service JID of the comments node's <link rel="replies"> href
     comments_node?: string; // Node referenced by <link rel="replies" title="comments">
+
+    // RFC 4685 threading (XEP-0277 § Replying to a Post)
+    in_reply_to?: string; // the parents PubSub item id (from the href's `item=`)
+    in_reply_to_ref?: string; // the parent's atom:id, a fallback resolver
+    // These locate the parent's node, used to tell an in-thread nesting pointer from a cross-node
+    in_reply_to_jid?: string;
+    in_reply_to_node?: string;
 
     // Denormalised comment-thread summary (XEP-0277 § Comments), synced from the
     // post's CommentFeed by syncCommentSummary so the timeline can show counts
@@ -62,6 +69,11 @@ export type PubSubMessageAttrs = {
     like_count?: number; // Number of ♥ (like) items
     liked_by_me?: boolean; // Whether one of the ♥ items is ours
     my_like_id?: string; // That ♥ item's id, needed to retract on un-like
+
+    // Per-comment denormalised count (only on a PostComment in a thread), written
+    // by syncCommentCounts: the number of direct replies to this comment.
+    // Backs the drill-down affordance ("💬 N") in the thread view.
+    reply_count?: number;
 };
 
 /**
@@ -96,6 +108,13 @@ export type PubSubCommentAttrs = {
     author_name?: string; // The commenter's display name (<author><name>)
     id?: string;
     published?: string;
+
+    // RFC 4685 threading: when set, this comment is a reply to another item, and a
+    // `<thr:in-reply-to>` is emitted pointing at it. `in_reply_to` is the parent's
+    // item id (its href is derived from this feed's jid + node); `in_reply_to_ref`
+    // is the parent's atom:id, emitted as the pointer's `ref`.
+    in_reply_to?: string;
+    in_reply_to_ref?: string;
 };
 
 /**
@@ -108,7 +127,7 @@ export type BrowsableFeed = {
     name?: string; // The <item name> from disco#items, if any
     title?: string; // pubsub#title (preferred label; falls back to name/node in the UI)
     description?: string; // pubsub#description
-    type?: string; // pubsub#type — the payload namespace (Atom for a social feed)
+    type?: string; // pubsub#type: the payload namespace (Atom for a social feed)
     node_type?: string; // 'leaf' | 'collection', from the pubsub identity
     num_subscribers?: number; // pubsub#num_subscribers, if exposed
     is_feed: boolean; // Whether it looks like an Atom social feed (type === Atom)

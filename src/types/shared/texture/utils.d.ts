@@ -123,6 +123,7 @@ declare const _default: {
     isSameDomain(jid1: string, jid2: string): boolean;
     getJIDFromURI(jid: string): string;
     getNodeFromURI(uri?: string): string | undefined;
+    getItemFromURI(uri?: string): string | undefined;
     isOwnJID(jid: string, include_resource?: boolean): boolean;
     maybeAppendDomain(jid: string): string;
     initPlugins(_converse: ConversePrivateGlobal): void;

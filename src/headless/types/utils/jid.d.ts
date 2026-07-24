@@ -32,6 +32,13 @@ export function getJIDFromURI(jid: string): string;
  */
 export function getNodeFromURI(uri?: string): string | undefined;
 /**
+ * Extract the `item` query parameter from an XMPP URI (RFC 5122),
+ * e.g. `xmpp:romeo@montague.lit?;node=urn:xmpp:microblog:0;item=1` → `1`.
+ * @param {string} [uri]
+ * @returns {string|undefined}
+ */
+export function getItemFromURI(uri?: string): string | undefined;
+/**
  * @param {string} jid
  * @param {boolean} [include_resource=false]
  * @returns {boolean}

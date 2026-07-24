@@ -2,10 +2,11 @@ import log from '@converse/log';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { getUniqueId } from '../../utils/index.js';
-import { COMMENTS_PUBLISH_OPTIONS, POSTS_MAX_WITHOUT_RSM } from './constants.js';
+import { COMMENTS_PUBLISH_OPTIONS, NS_THREAD, POSTS_MAX_WITHOUT_RSM } from './constants.js';
 import PubSubFeed from './feed.js';
 import PostComments from './post-comments.js';
 import { buildTagId } from './utils.js';
+import { computeThreadCounts } from './utils/thread.js';
 
 const { stx, Strophe } = converse.env;
 
@@ -76,47 +77,41 @@ class CommentFeed extends PubSubFeed {
     }
 
     /**
-     * The ♥ likes in this thread authored by me. There should be at most one,
-     * but duplicates can accrue (e.g. liking from a second device).
-     * {@link _converse.api.microblog.unlike} retracts all of them.
+     * The ♥ likes authored by me that target `parent_id` (a comment's item id),
+     * or the *post* when `parent_id` is omitted. There should be at most one, but
+     * duplicates can accrue (e.g. liking from a second device);
+     * {@link _converse.api.microblog.unlike} retracts all of them. Matches on the
+     * raw `in_reply_to` since our own likes always carry the target's item id.
+     * @param {string} [parent_id] - A comment's item id; omit for the post.
      * @returns {import('./post-comment').default[]}
      */
-    getMyLikes() {
-        return this.comments.filter((m) => m.isLike() && m.get('is_mine'));
+    getMyLikes(parent_id) {
+        return this.comments.filter(
+            (m) =>
+                typeof m.isLike === 'function' &&
+                m.isLike() &&
+                m.get('is_mine') &&
+                (parent_id ? m.get('in_reply_to') === parent_id : !m.get('in_reply_to')),
+        );
     }
 
     /**
-     * Denormalised comment/like counts for this thread, partitioning its items
-     * into real comments and ♥ likes. Written onto the post by
-     * {@link syncCommentSummary} so the timeline can show counts without opening
-     * the thread.
+     * Denormalised counts for one target in this thread: the **post** (omit
+     * `parent_id`) or a specific **comment** (its item id). Written onto the post
+     * by {@link syncCommentSummary} and onto each comment by
+     * {@link syncCommentCounts}, so the timeline/thread can show counts without
+     * re-walking the node.
      *
-     * Likes are counted by **distinct liker**, not raw ♥ items: a post can carry
-     * several ♥ from the same person (e.g. liked from multiple devices, or a
-     * client that doesn't guard against it), and that's one like, not several.
-     * @returns {{ comment_count: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }}
+     * A ♥ is attributed to the item it targets, so a like on a comment no longer
+     * inflates the post's like count; likes are counted by **distinct liker** (a
+     * person liking from two devices is one like). See {@link computeThreadCounts}.
+     * @param {string} [parent_id] - A comment's item id; omit for the post.
+     * @returns {{ comment_count?: number, reply_count?: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }}
      */
-    summarize() {
-        let comment_count = 0;
-        let liked_by_me = false;
-        let my_like_id;
-        const likers = new Set();
-        this.comments.forEach((m) => {
-            if (m.isLike()) {
-                // Dedupe by the liker's bare JID; fall back to the item id when
-                // the author is unknown, so unattributable likes still count once
-                // each rather than collapsing together.
-                const jid = m.getAuthorJID();
-                likers.add(jid ? Strophe.getBareJidFromJid(jid) : `id:${m.get('id')}`);
-                if (m.get('is_mine')) {
-                    liked_by_me = true;
-                    my_like_id = m.get('id');
-                }
-            } else {
-                comment_count++;
-            }
-        });
-        return { comment_count, like_count: likers.size, liked_by_me, my_like_id };
+    summarize(parent_id) {
+        const { post, byComment } = computeThreadCounts(this.comments);
+        if (!parent_id) return post;
+        return byComment.get(parent_id) ?? { reply_count: 0, like_count: 0, liked_by_me: false, my_like_id: undefined };
     }
 
     /**
@@ -130,6 +125,7 @@ class CommentFeed extends PubSubFeed {
         // Non-strict: on someone else's PEP comments node we can't reconfigure
         // it, but if the author created it publish_model=open our publish lands.
         await api.pubsub.publish(this.get('jid'), this.get('node'), item, COMMENTS_PUBLISH_OPTIONS, false);
+
         const [added] = await this.addItems([item.tree()]);
         // The server stamps `publisher` on the echo; set it locally too so our
         // optimistic copy is recognised as ours (is_mine) before any echo.
@@ -138,9 +134,9 @@ class CommentFeed extends PubSubFeed {
     }
 
     /**
-     * Construct the PubSub `<item>` for a new comment (XEP-0277 § Adding a
-     * Comment): an Atom entry carrying the commenter's `<author>` and text. The
-     * `<author><uri>` lets readers run the XEP-0277 § Comment Author check
+     * Construct the PubSub `<item>` for a new comment (XEP-0277 § Adding a Comment).
+     * an Atom entry carrying the commenter's `<author>` and text.
+     * The `<author><uri>` lets readers run the XEP-0277 § Comment Author check
      * (see {@link PubSubMessage.getAuthorMismatch}).
      * @param {import('./types').PubSubCommentAttrs} attrs
      * @returns {import('strophe.js').Stanza}
@@ -149,6 +145,18 @@ class CommentFeed extends PubSubFeed {
         const id = attrs.id || getUniqueId();
         const now = attrs.published || new Date().toISOString();
         const tag_id = buildTagId(this.get('jid'), id);
+
+        const parent = attrs.in_reply_to;
+        // The pointer's href locates the parent item in *this* comments node.
+        const reply_href = parent
+            ? `xmpp:${this.get('jid')}?;node=${encodeURIComponent(this.get('node'))};item=${encodeURIComponent(parent)}`
+            : null;
+        const reply_el = !parent
+            ? ''
+            : attrs.in_reply_to_ref
+              ? stx`<thr:in-reply-to xmlns:thr="${NS_THREAD}" ref="${attrs.in_reply_to_ref}" href="${reply_href}"/>`
+              : stx`<thr:in-reply-to xmlns:thr="${NS_THREAD}" href="${reply_href}"/>`;
+
         return stx`
             <item id="${id}">
                 <entry xmlns="${Strophe.NS.ATOM}">
@@ -157,6 +165,7 @@ class CommentFeed extends PubSubFeed {
                         <uri>xmpp:${attrs.author_jid}</uri>
                     </author>
                     <title type="text">${attrs.body}</title>
+                    ${reply_el}
                     <id>${tag_id}</id>
                     <published>${now}</published>
                     <updated>${now}</updated>

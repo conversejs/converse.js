@@ -71,31 +71,19 @@ export function buildCommentTree(comments) {
     /** @type {import('./types.ts').CommentTreeMap} */
     const by_id = new Map();
 
-    /** @type {import('./types.ts').CommentTreeMap} atom:id → node, for `ref`-only resolution */
-    const by_atom = new Map();
-
     for (const comment of comments) {
         /** @type {import('./types.ts').CommentTreeNode} */
         const node = { comment, replies: [], parent: null };
         by_id.set(comment.get('id'), node);
-
-        const atom_id = comment.get('atom_id');
-        if (atom_id && !by_atom.has(atom_id)) by_atom.set(atom_id, node);
     }
 
-    // Resolve each comment's parent (tentatively; cycles broken below).
+    // Resolve each comment's parent (tentatively; cycles broken below), reusing the
+    // one nesting/resolution pass so structure and counts can never disagree.
+    const parents = resolveThreadParents(comments);
     for (const node of by_id.values()) {
-        const pk = nestingParent(node.comment);
-        if (!pk) continue; // a real root: no nesting pointer
-
-        const parent = by_id.get(pk.id) || (pk.ref ? by_atom.get(pk.ref) : undefined);
-        if (parent && parent !== node) {
-            node.parent = parent;
-        } else if (!parent) {
-            // A nesting pointer whose target isn't loaded: orphan (kept, unshown).
-            // A self-reference (parent === node) is left as a root instead.
-            node.orphan = true;
-        }
+        const info = parents.get(node.comment.get('id'));
+        if (info.parent && by_id.has(info.parent)) node.parent = by_id.get(info.parent);
+        else if (info.orphan) node.orphan = true;
     }
 
     // Break any reference cycle by cutting the edge that closes it, which makes
@@ -126,6 +114,141 @@ export function buildCommentTree(comments) {
     for (const node of by_id.values()) node.replies.sort(byTimeAsc);
 
     return { roots, by_id };
+}
+
+/**
+ * Resolve, for every passed item (comments *and* ♥ likes), how it attaches to the
+ * thread: the loaded item it nests under, or that it is a post-level item (no
+ * nesting pointer), or that it is an orphan (a nesting pointer whose parent isn't
+ * loaded). Shared by {@link buildCommentTree} and {@link computeThreadCounts} so a
+ * rendered reply and its counted total can never disagree.
+ * @param {import('../post-comment').default[]} items
+ * @returns {Map<string, { parent: string|null, orphan: boolean }>}
+ */
+export function resolveThreadParents(items) {
+    const present = new Set();
+    /** @type {Map<string, string>} atom:id → item id */
+    const by_atom = new Map();
+    for (const it of items) {
+        present.add(it.get('id'));
+        const atom_id = it.get('atom_id');
+        if (atom_id && !by_atom.has(atom_id)) by_atom.set(atom_id, it.get('id'));
+    }
+
+    /** @type {Map<string, { parent: string|null, orphan: boolean }>} */
+    const out = new Map();
+    for (const it of items) {
+        const pk = nestingParent(it);
+        let parent = null;
+        let orphan = false;
+        if (pk) {
+            const resolved = pk.id && present.has(pk.id) ? pk.id : pk.ref ? by_atom.get(pk.ref) : undefined;
+            if (resolved && resolved !== it.get('id')) parent = resolved;
+            else if (!resolved) orphan = true; // pointer set, parent not loaded
+            // a self-reference (resolved === own id) falls through as a post-level root
+        }
+        out.set(it.get('id'), { parent, orphan });
+    }
+    return out;
+}
+
+/**
+ * The distinct-liker key for a ♥ item: its author's bare JID, or a per-item
+ * fallback when the author is unknown (so unattributable likes count once each
+ * rather than collapsing together).
+ * @param {import('../post-comment').default} like
+ * @returns {string}
+ */
+function likerKey(like) {
+    const jid = like.getAuthorJID?.();
+    return jid ? Strophe.getBareJidFromJid(jid) : `id:${like.get('id')}`;
+}
+
+/**
+ * Partition a thread's items into denormalised counts in a single pass: the
+ * post-level summary plus per-comment counts, keyed by comment id.
+ *
+ * Likes are attributed to their target (the post when they carry no nesting
+ * pointer, else the comment they reply to) and counted by distinct liker, so a ♥
+ * aimed at a comment never inflates the post's like count. `comment_count` is the
+ * whole thread's reply total (every real comment, orphans included); a comment's
+ * `reply_count` is its *direct* replies only.
+ * @param {import('../post-comment').default[]} items - A thread's items (likes included).
+ * @returns {{
+ *   post: { comment_count: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) },
+ *   byComment: Map<string, { reply_count: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }>
+ * }}
+ */
+export function computeThreadCounts(items) {
+    const reals = items.filter((it) => typeof it.isLike === 'function');
+    const parents = resolveThreadParents(reals);
+
+    let comment_count = 0;
+    const post_likers = new Set();
+    let post_liked_by_me = false;
+    let post_my_like_id;
+
+    /** @type {Map<string, { reply_count: number, likers: Set<string>, liked_by_me: boolean, my_like_id: (string|undefined) }>} */
+    const agg = new Map();
+    const ensure = (/** @type {string} */ id) => {
+        let a = agg.get(id);
+        if (!a) {
+            a = { reply_count: 0, likers: new Set(), liked_by_me: false, my_like_id: undefined };
+            agg.set(id, a);
+        }
+        return a;
+    };
+    // Seed every real comment so a childless, unliked comment still reports zeros.
+    for (const it of reals) if (!it.isLike()) ensure(it.get('id'));
+
+    for (const it of reals) {
+        const info = parents.get(it.get('id'));
+        if (it.isLike()) {
+            // A like belongs to exactly one target; an orphan like (whose target
+            // isn't loaded) is counted nowhere.
+            if (info.orphan) continue;
+            if (info.parent === null) {
+                post_likers.add(likerKey(it));
+                if (it.get('is_mine')) {
+                    post_liked_by_me = true;
+                    post_my_like_id = it.get('id');
+                }
+            } else if (agg.has(info.parent)) {
+                const a = agg.get(info.parent);
+                a.likers.add(likerKey(it));
+                if (it.get('is_mine')) {
+                    a.liked_by_me = true;
+                    a.my_like_id = it.get('id');
+                }
+            }
+        } else {
+            // Every real comment counts toward the thread total, orphans included;
+            // only a resolved, non-orphan parent gets a reply credited to it.
+            comment_count++;
+            if (!info.orphan && info.parent !== null && agg.has(info.parent)) {
+                agg.get(info.parent).reply_count++;
+            }
+        }
+    }
+
+    const byComment = new Map();
+    for (const [id, a] of agg) {
+        byComment.set(id, {
+            reply_count: a.reply_count,
+            like_count: a.likers.size,
+            liked_by_me: a.liked_by_me,
+            my_like_id: a.my_like_id,
+        });
+    }
+    return {
+        post: {
+            comment_count,
+            like_count: post_likers.size,
+            liked_by_me: post_liked_by_me,
+            my_like_id: post_my_like_id,
+        },
+        byComment,
+    };
 }
 
 /**

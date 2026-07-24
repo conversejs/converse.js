@@ -136,6 +136,35 @@ export function commentItem(id, body, author = 'benvolio@montague.lit') {
 }
 
 /**
+ * Build a threaded-reply `<item>` for a comments node: a comment carrying an RFC
+ * 4685 `<thr:in-reply-to>` pointing at `parent` in the same node (XEP-0277 §
+ * Replying to a Post). A ♥ reply (a like on a comment) is just `body='♥'`.
+ * @param {string} id - The reply's item id.
+ * @param {string} body - The reply text (♥ for a like on the parent).
+ * @param {string} author - The replier's bare JID.
+ * @param {object} opts
+ * @param {string} opts.service - The comments service JID (the href's JID).
+ * @param {string} opts.node - The comments node (the href's `node=`).
+ * @param {string} opts.parent - The parent comment's item id (the href's `item=`).
+ * @param {string} [opts.ref] - The parent's atom:id (the pointer's `ref`).
+ * @returns {Element}
+ */
+export function replyItem(id, body, author, { service, node, parent, ref }) {
+    const href = `xmpp:${service}?;node=${encodeURIComponent(node)};item=${encodeURIComponent(parent)}`;
+    const thr = 'http://purl.org/syndication/thread/1.0';
+    return stx`
+        <item id="${id}">
+          <entry xmlns="${ATOM}" xmlns:thr="${thr}">
+            <author><name>${author}</name><uri>xmpp:${author}</uri></author>
+            <title type="text">${body}</title>
+            ${ref ? stx`<thr:in-reply-to ref="${ref}" href="${href}"/>` : stx`<thr:in-reply-to href="${href}"/>`}
+            <id>tag:capulet.lit,2024:comments-${id}</id>
+            <published>2024-01-01T19:05:00Z</published>
+          </entry>
+        </item>`.tree();
+}
+
+/**
  * Seed a timeline feed with a single post that advertises its comments node via
  * a `rel="replies"` link, so `getCommentsService`/`getCommentsNode` resolve to
  * `author` + `urn:xmpp:microblog:0:comments/<id>`. Returns the feed and the

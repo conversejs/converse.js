@@ -37,25 +37,31 @@ declare class CommentFeed extends PubSubFeed {
      */
     getComments(): import("./post-comment").default[];
     /**
-     * The ♥ likes in this thread authored by me. There should be at most one,
-     * but duplicates can accrue (e.g. liking from a second device).
-     * {@link _converse.api.microblog.unlike} retracts all of them.
+     * The ♥ likes authored by me that target `parent_id` (a comment's item id),
+     * or the *post* when `parent_id` is omitted. There should be at most one, but
+     * duplicates can accrue (e.g. liking from a second device);
+     * {@link _converse.api.microblog.unlike} retracts all of them. Matches on the
+     * raw `in_reply_to` since our own likes always carry the target's item id.
+     * @param {string} [parent_id] - A comment's item id; omit for the post.
      * @returns {import('./post-comment').default[]}
      */
-    getMyLikes(): import("./post-comment").default[];
+    getMyLikes(parent_id?: string): import("./post-comment").default[];
     /**
-     * Denormalised comment/like counts for this thread, partitioning its items
-     * into real comments and ♥ likes. Written onto the post by
-     * {@link syncCommentSummary} so the timeline can show counts without opening
-     * the thread.
+     * Denormalised counts for one target in this thread: the **post** (omit
+     * `parent_id`) or a specific **comment** (its item id). Written onto the post
+     * by {@link syncCommentSummary} and onto each comment by
+     * {@link syncCommentCounts}, so the timeline/thread can show counts without
+     * re-walking the node.
      *
-     * Likes are counted by **distinct liker**, not raw ♥ items: a post can carry
-     * several ♥ from the same person (e.g. liked from multiple devices, or a
-     * client that doesn't guard against it), and that's one like, not several.
-     * @returns {{ comment_count: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }}
+     * A ♥ is attributed to the item it targets, so a like on a comment no longer
+     * inflates the post's like count; likes are counted by **distinct liker** (a
+     * person liking from two devices is one like). See {@link computeThreadCounts}.
+     * @param {string} [parent_id] - A comment's item id; omit for the post.
+     * @returns {{ comment_count?: number, reply_count?: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }}
      */
-    summarize(): {
-        comment_count: number;
+    summarize(parent_id?: string): {
+        comment_count?: number;
+        reply_count?: number;
         like_count: number;
         liked_by_me: boolean;
         my_like_id: (string | undefined);
@@ -67,9 +73,9 @@ declare class CommentFeed extends PubSubFeed {
      */
     publishComment(attrs: import("./types").PubSubCommentAttrs): Promise<import("./message").default | undefined>;
     /**
-     * Construct the PubSub `<item>` for a new comment (XEP-0277 § Adding a
-     * Comment): an Atom entry carrying the commenter's `<author>` and text. The
-     * `<author><uri>` lets readers run the XEP-0277 § Comment Author check
+     * Construct the PubSub `<item>` for a new comment (XEP-0277 § Adding a Comment).
+     * an Atom entry carrying the commenter's `<author>` and text.
+     * The `<author><uri>` lets readers run the XEP-0277 § Comment Author check
      * (see {@link PubSubMessage.getAuthorMismatch}).
      * @param {import('./types').PubSubCommentAttrs} attrs
      * @returns {import('strophe.js').Stanza}

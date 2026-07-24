@@ -42,6 +42,9 @@ class SocialApp extends CustomElement {
         return {
             // The post whose detail view (comment thread) is open, or null.
             open_post: { type: Object, state: true },
+            // The comment focused within the open thread (the drill-down view), or
+            // null to focus the post itself. See routeForComment / resolveComment.
+            open_comment: { type: Object, state: true },
             // The JID whose profile view is open, or null.
             open_profile: { type: String, state: true },
             // The pubsub node the open profile shows: the microblog node (a
@@ -60,6 +63,7 @@ class SocialApp extends CustomElement {
     constructor() {
         super();
         this.open_post = null;
+        this.open_comment = null;
         this.open_profile = null;
         this.profile_node = MICROBLOG_NODE;
         this.profile_tab = 'posts';
@@ -86,6 +90,9 @@ class SocialApp extends CustomElement {
         this.addEventListener('closeprofile', () => this.onCloseProfile());
         this.addEventListener('profiletab', (ev) => this.onProfileTab(/** @type {CustomEvent} */ (ev).detail.tab));
         this.addEventListener('postselected', (ev) => this.onPostSelected(/** @type {CustomEvent} */ (ev).detail.post));
+        this.addEventListener('commentselected', (ev) =>
+            this.onCommentSelected(/** @type {CustomEvent} */ (ev).detail.comment),
+        );
         this.addEventListener('closepost', () => this.onClosePost());
         this.addEventListener('hashtagselected', (ev) =>
             this.onHashtagSelected(/** @type {CustomEvent} */ (ev).detail.tag),
@@ -180,6 +187,7 @@ class SocialApp extends CustomElement {
             return;
         }
         this.open_post = post;
+        this.open_comment = null;
     }
 
     onClosePost() {
@@ -188,6 +196,21 @@ class SocialApp extends CustomElement {
             return;
         }
         this.open_post = null;
+        this.open_comment = null;
+    }
+
+    /**
+     * Focus a comment within the open thread (the drill-down view), or the post
+     * itself when `comment` is null. With routing on each level is its own URL, so
+     * browser back/forward climb the thread; otherwise it's local state.
+     * @param {import('@converse/headless').PubSubMessage|null} comment
+     */
+    onCommentSelected(comment) {
+        if (this.router.enabled) {
+            this.navigate(comment ? this.routeForComment(comment) : this.routeForPost(this.open_post));
+            return;
+        }
+        this.open_comment = comment || null;
     }
 
     /** @param {string} tag */
@@ -236,6 +259,7 @@ class SocialApp extends CustomElement {
         // previous route) sees it's been superseded and bails.
         this._resolve_seq = (this._resolve_seq || 0) + 1;
         this.open_post = null;
+        this.open_comment = null;
         this.open_profile = null;
         this.profile_node = MICROBLOG_NODE;
         this.profile_tab = 'posts';
@@ -261,6 +285,27 @@ class SocialApp extends CustomElement {
     }
 
     /**
+     * The route for a comment focused within the open post's thread. Adds
+     * `commentId` to the post route; when the comment lives in a node other than
+     * the post's own comments node (a Libervia child node) it is addressed
+     * explicitly with `commentJid` / `commentNode`.
+     * @param {import('@converse/headless').PubSubMessage} comment
+     * @returns {import('./types.ts').SocialRoute}
+     */
+    routeForComment(comment) {
+        const route = this.routeForPost(this.open_post);
+        route.commentId = comment.get('id');
+        const feed = /** @type {any} */ (comment).collection?.feed;
+        const own_node = /** @type {any} */ (this.open_post)?.getCommentsNode?.();
+        const own_service = /** @type {any} */ (this.open_post)?.getCommentsService?.();
+        if (feed && (feed.get('node') !== own_node || feed.get('jid') !== own_service)) {
+            route.commentJid = feed.get('jid');
+            route.commentNode = feed.get('node');
+        }
+        return route;
+    }
+
+    /**
      * Whether an already-open post matches a post route (avoids a refetch/flicker).
      * @param {import('@converse/headless').PubSubMessage} post
      * @param {import('./types.ts').SocialRoute} route
@@ -282,15 +327,23 @@ class SocialApp extends CustomElement {
     async resolvePost(route) {
         const { feedJid, node, itemId } = route;
         if (!feedJid || !itemId) return;
-        if (this.open_post && this.postMatchesRoute(this.open_post, route)) return;
 
         // Token set by the applyRoute that called us; a newer navigation bumps it,
         // so an in-flight resolve that lost the race applies nothing.
         const seq = this._resolve_seq;
         const current = () => seq === this._resolve_seq;
 
+        // Same post already open (e.g. drilling between its comments): keep it and
+        // just (re)resolve the focused comment, avoiding a refetch/flicker.
+        if (this.open_post && this.postMatchesRoute(this.open_post, route)) {
+            await this.resolveComment(this.open_post, route, current);
+            if (current()) this.requestUpdate();
+            return;
+        }
+
         this._resolving = true;
         this.open_post = null;
+        this.open_comment = null;
         this.requestUpdate();
         try {
             const feed = await api.microblog.profile.getFeed(feedJid, node);
@@ -303,6 +356,7 @@ class SocialApp extends CustomElement {
             if (!current()) return; // Superseded by a newer navigation.
             if (post) {
                 this.open_post = post;
+                await this.resolveComment(post, route, current);
             } else {
                 // Unresolvable id: replace (not push) so a dead link leaves no
                 // back-stack entry, and fall back to the timeline.
@@ -316,6 +370,35 @@ class SocialApp extends CustomElement {
                 this._resolving = false;
                 this.requestUpdate();
             }
+        }
+    }
+
+    /**
+     * Resolve the focused comment for a post route into `open_comment` (null when
+     * the route has no `commentId`, i.e. the post itself is focused). Uses the
+     * already-loaded comment when present, else fetches the thread once. A comment
+     * that can't be found leaves the post focused rather than failing the route.
+     * @param {import('@converse/headless').PubSubMessage} post
+     * @param {import('./types.ts').SocialRoute} route
+     * @param {() => boolean} current - Guard against a superseded navigation.
+     */
+    async resolveComment(post, route, current) {
+        if (!route.commentId) {
+            if (current()) this.open_comment = null;
+            return;
+        }
+
+        try {
+            const feed = await api.microblog.comments.feed(post);
+            let comment = feed?.messages.get(route.commentId);
+            if (!comment) {
+                await api.microblog.comments.fetch(post);
+                comment = feed?.messages.get(route.commentId);
+            }
+            if (current()) this.open_comment = comment || null;
+        } catch (e) {
+            log.error(e);
+            if (current()) this.open_comment = null;
         }
     }
 }

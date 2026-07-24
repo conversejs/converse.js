@@ -11,13 +11,15 @@ class PasswordReset extends CustomElement {
     static get properties () {
         return {
             passwords_mismatched: { type: Boolean },
-            alert_message: { type: String }
+            alert_message: { type: String },
+            current_password_error: { type: String }
         }
     }
 
     initialize () {
         this.passwords_mismatched = false;
         this.alert_message = '';
+        this.current_password_error = '';
     }
 
     render () {
@@ -38,7 +40,21 @@ class PasswordReset extends CustomElement {
 
         if (this.checkPasswordsMatch(ev)) return;
 
+        const data = new FormData(ev.target);
+        const current_password = data.get('current_password');
+        const password = data.get('password');
+
+        if (!current_password) {
+            this.current_password_error = __('Please enter your current password');
+            return;
+        }
+        this.current_password_error = '';
+
+        const jid = _converse.session.get('jid');
         const domain = _converse.session.get('domain');
+        const connection = api.connection.get();
+        const bare_jid = Strophe.getBareJidFromJid(jid);
+
         const iq = stx`
             <iq type="get" to="${domain}" xmlns="jabber:client">
                 <query xmlns="${Strophe.NS.REGISTER}"></query>
@@ -60,9 +76,6 @@ class PasswordReset extends CustomElement {
 
         const username = iq_response.querySelector('username').textContent;
 
-        const data = new FormData(ev.target);
-        const password = data.get('password');
-
         const reset_iq = stx`
             <iq type="set" to="${domain}" xmlns="jabber:client">
                 <query xmlns="${Strophe.NS.REGISTER}">
@@ -74,6 +87,8 @@ class PasswordReset extends CustomElement {
         const iq_result = await api.sendIQ(reset_iq);
         if (iq_result === null) {
             this.alert_message = __('Timeout error while trying to set your password');
+        } else if (sizzle(`error not-authorized[xmlns="${Strophe.NS.STANZAS}"]`, iq_result).length) {
+            this.alert_message = __('The current password you provided is incorrect');
         } else if (sizzle(`error not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, iq_result).length) {
             this.alert_message = __('Your server does not allow password reset');
         } else if (sizzle(`error forbidden[xmlns="${Strophe.NS.STANZAS}"]`, iq_result).length) {

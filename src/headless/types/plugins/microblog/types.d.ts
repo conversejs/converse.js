@@ -1,3 +1,5 @@
+import CommentFeed from './comment-feed';
+import PubSubMessage from './message';
 /**
  * Attributes of a microblog post (a parsed Atom entry). A subset is persisted as
  * an offline cache; the PubSub node remains the source of truth.
@@ -120,5 +122,11 @@ export type PubSubFeedAttrs = {
     history_complete?: boolean;
     last_viewed?: number;
     pinned?: boolean;
+};
+export type LikeTarget = {
+    feed: CommentFeed;
+    model: PubSubMessage;
+    parent_id?: string;
+    reconcile: () => void;
 };
 //# sourceMappingURL=types.d.ts.map

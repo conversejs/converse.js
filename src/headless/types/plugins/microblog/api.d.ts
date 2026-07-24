@@ -224,29 +224,30 @@ declare namespace _default {
          */
         function repost(post: import("./message").default): Promise<void>;
         /**
-         * Like a post: publish a ♥ comment to the post's comments node.
+         * Like a post *or a comment*: publish a ♥ to the post's comments node,
+         * pointing at the comment when the target is one (see {@link resolveLikeTarget}).
          *
          * Optimistic: the like state flips immediately so that UI can update.
          * If the publish is refused the state is rolled back and the error
          * re-thrown for the caller to surface. A no-op if we already like it.
          * @method _converse.api.microblog.like
-         * @param {import('./message').default} post
-         * @returns {Promise<import('./message').default|undefined>} Our ♥ comment.
+         * @param {import('./message').default} target - A post or a comment.
+         * @returns {Promise<import('./message').default|undefined>} Our ♥ item.
          */
-        function like(post: import("./message").default): Promise<import("./message").default | undefined>;
+        function like(target: import("./message").default): Promise<import("./message").default | undefined>;
         /**
-         * Un-like a post: retract *every* ♥ of ours from the post's comments node
-         * (duplicates can accrue across devices / cache resets, so one tap clears
-         * the post regardless of how many accumulated).
+         * Un-like a post *or a comment*: retract *every* ♥ of ours for that target
+         * from the comments node (duplicates can accrue across devices / cache
+         * resets, so one tap clears it regardless of how many accumulated).
          *
          * Optimistic: the like is removed and the count reverts immediately, then
          * the retracts are sent; if any is refused the like is restored and the
          * error re-thrown for the caller to surface. A no-op if we don't like it.
          * @method _converse.api.microblog.unlike
-         * @param {import('./message').default} post
+         * @param {import('./message').default} target - A post or a comment.
          * @returns {Promise<void>}
          */
-        function unlike(post: import("./message").default): Promise<void>;
+        function unlike(target: import("./message").default): Promise<void>;
         namespace comments {
             /**
              * Get (creating it locally if necessary) the comments thread for a post.
@@ -258,7 +259,9 @@ declare namespace _default {
              */
             function feed(post: import("./message").default): Promise<import("./comment-feed").default | undefined>;
             /**
-             * Fetch a post's comments into its thread and return the thread.
+             * Fetch a post's comments into its thread and return the thread, then
+             * denormalise each comment's own counts (see {@link syncCommentCounts})
+             * so the drill-down view can show a reply/like tally per row.
              * @method _converse.api.microblog.comments.fetch
              * @param {import('./message').default} post
              * @returns {Promise<import('./comment-feed').default|undefined>}
@@ -294,14 +297,21 @@ declare namespace _default {
              */
             function pinRecentOwn(): Promise<void>;
             /**
-             * Add a comment to a post: publish an Atom entry, attributed to us,
-             * to the post's comments node.
+             * Add a comment to a post, or a threaded reply to one of its comments.
+             * Publishes an Atom entry attributed to us into the post's comments
+             * node; when `parent` is given, the entry carries a `<thr:in-reply-to>`
+             * pointing at it (RFC 4685), so the whole thread stays in one node.
              * @method _converse.api.microblog.comments.add
-             * @param {import('./message').default} post - The post being commented on.
+             * @param {import('./message').default} post - The post that owns the thread.
              * @param {string} body - The comment text.
+             * @param {object} [opts]
+             * @param {import('./post-comment').default} [opts.parent] - The comment
+             *      being replied to; omit for a direct comment on the post.
              * @returns {Promise<import('./message').default|undefined>}
              */
-            function add(post: import("./message").default, body: string): Promise<import("./message").default | undefined>;
+            function add(post: import("./message").default, body: string, { parent }?: {
+                parent?: import("./post-comment").default;
+            }): Promise<import("./message").default | undefined>;
         }
         /**
          * Read a durable XEP-0330 follow list (the server-side source of truth

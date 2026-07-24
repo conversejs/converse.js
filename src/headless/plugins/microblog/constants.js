@@ -177,3 +177,12 @@ export const LIKE_MARKER = '♥';
  * posts scroll into view rather than as a one-shot burst.
  */
 export const COMMENT_SUMMARY_CONCURRENCY = 4;
+
+/**
+ * Max rounds {@link CommentFeed.resolveOrphans} walks up the ancestor chain,
+ * fetching missing parents by id on a non-RSM node. Each round resolves one more
+ * generation, so this bounds how deep an out-of-window reply chain is reconnected
+ * (and backstops a pathological pointer cycle). Deeper ancestors than this stay
+ * orphaned until a later fetch reaches them.
+ */
+export const ORPHAN_RESOLVE_ROUNDS = 5;

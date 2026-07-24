@@ -2,7 +2,7 @@ import log from '@converse/log';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { getUniqueId } from '../../utils/index.js';
-import { COMMENTS_PUBLISH_OPTIONS, NS_THREAD, POSTS_MAX_WITHOUT_RSM } from './constants.js';
+import { COMMENTS_PUBLISH_OPTIONS, NS_THREAD, ORPHAN_RESOLVE_ROUNDS } from './constants.js';
 import PubSubFeed from './feed.js';
 import PostComments from './post-comments.js';
 import { buildTagId } from './utils.js';
@@ -29,23 +29,77 @@ class CommentFeed extends PubSubFeed {
     }
 
     /**
-     * Fetch this thread's comments (one shot, newest first). The node may not
-     * exist yet which surfaces as an error here, treated as an empty thread.
+     * Fetch this thread and make it complete enough to render as a tree. Drives
+     * the inherited {@link PubSubFeed.fetchPosts} paging (RSM where the comments
+     * service supports it, else the newest-`POSTS_MAX_WITHOUT_RSM` window with
+     * `history_complete`), then {@link resolveOrphans} to reconnect a reply whose
+     * parent fell outside the window on a non-RSM node. The node may not exist yet
+     * (an empty thread), which `fetchPosts` records as `fetch_error` rather than
+     * throwing.
      *
      * Marks the thread as fetching for the duration so a concurrent
      * {@link CommentFeeds.pruneThreads} can't evict it mid-fetch.
      * @returns {Promise<void>}
      */
     async fetchComments() {
-        const { jid, node } = this.attrs;
         this._fetching = true;
         try {
-            const result = await api.pubsub.items.get(jid, node, { max_items: POSTS_MAX_WITHOUT_RSM });
-            await this.addItems(result.items);
-        } catch (e) {
-            log.debug(`CommentFeed.fetchComments: no readable comments node ${node} at ${jid}: ${e}`);
+            await this.fetchPosts();
+            await this.resolveOrphans();
         } finally {
             this._fetching = false;
+        }
+    }
+
+    /**
+     * Reconnect orphans (replies whose in-thread parent isn't loaded) by fetching
+     * the missing ancestors by item id, walking up the chain until each branch
+     * reaches a loaded root or a retracted (not-found) ancestor.
+     *
+     * **Non-RSM only.** On an RSM-capable node normal "load older" paging brings
+     * parents in *in order*, so a targeted id-fetch is unnecessary and harmful: an
+     * out-of-order item carries no `rsm_cursor` and lands at an arbitrary time
+     * position, polluting the anchors and gap detection `fetchOlder` relies on. So
+     * this early-returns when the node paged via RSM and lets paging adopt orphans.
+     *
+     * A parent that comes back not-found is recorded in an in-memory absent-set so
+     * it isn't re-requested; its orphan stays kept-but-hidden (see buildCommentTree).
+     * @returns {Promise<void>}
+     */
+    async resolveOrphans() {
+        if (this.get('supports_rsm')) return; // paging adopts orphans in order
+
+        const { jid, node } = this.attrs;
+        this._absent_parents ||= new Set();
+        for (let round = 0; round < ORPHAN_RESOLVE_ROUNDS; round++) {
+            await this.messages.hydrated;
+            const present = new Set(this.messages.models.map((m) => m.get('id')));
+            const missing = new Set();
+            for (const m of this.messages.models) {
+                const parent = m.get('in_reply_to');
+                if (!parent || present.has(parent) || this._absent_parents.has(parent)) continue;
+                // Only chase a same-thread (nesting) pointer; a cross-node pointer
+                // is a Movim-style post-reply, not a missing thread ancestor.
+                const p_node = m.get('in_reply_to_node');
+                const p_jid = m.get('in_reply_to_jid');
+                if ((p_node && p_node !== node) || (p_jid && p_jid !== jid)) continue;
+                missing.add(parent);
+            }
+            if (!missing.size) return;
+
+            let result;
+            try {
+                result = await api.pubsub.items.get(jid, node, { item_ids: [...missing] });
+            } catch (e) {
+                log.debug(`CommentFeed.resolveOrphans: item fetch failed for ${node} at ${jid}: ${e}`);
+                return;
+            }
+            const fetched = new Set((result.items ?? []).map((el) => el.getAttribute('id')));
+            // A requested id the server didn't return is retracted: stop asking.
+            for (const id of missing) if (!fetched.has(id)) this._absent_parents.add(id);
+            if (!result.items?.length) return;
+            await this.addItems(result.items);
+            // Loop to resolve any grandparents the just-fetched items now reference.
         }
     }
 
@@ -69,11 +123,12 @@ class CommentFeed extends PubSubFeed {
     }
 
     /**
-     * This thread's real comments (every item except ♥ likes).
+     * This thread's real comments (every item except ♥ likes). Excludes any
+     * "load older" placeholders the inherited paging seeds into the collection.
      * @returns {import('./post-comment').default[]}
      */
     getComments() {
-        return this.comments.filter((m) => !m.isLike());
+        return this.comments.filter((m) => typeof m.isLike === 'function' && !m.isLike());
     }
 
     /**

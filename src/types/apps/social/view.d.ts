@@ -24,6 +24,10 @@ declare class SocialApp extends CustomElement {
             type: ObjectConstructor;
             state: boolean;
         };
+        open_comment: {
+            type: ObjectConstructor;
+            state: boolean;
+        };
         open_profile: {
             type: StringConstructor;
             state: boolean;
@@ -46,6 +50,7 @@ declare class SocialApp extends CustomElement {
         };
     };
     open_post: any;
+    open_comment: any;
     open_profile: string;
     profile_node: string;
     profile_tab: string;
@@ -83,6 +88,13 @@ declare class SocialApp extends CustomElement {
     /** @param {import('@converse/headless').PubSubMessage} post */
     onPostSelected(post: import("@converse/headless").PubSubMessage): void;
     onClosePost(): void;
+    /**
+     * Focus a comment within the open thread (the drill-down view), or the post
+     * itself when `comment` is null. With routing on each level is its own URL, so
+     * browser back/forward climb the thread; otherwise it's local state.
+     * @param {import('@converse/headless').PubSubMessage|null} comment
+     */
+    onCommentSelected(comment: import("@converse/headless").PubSubMessage | null): void;
     /** @param {string} tag */
     onHashtagSelected(tag: string): void;
     onClearFilter(): void;
@@ -113,6 +125,15 @@ declare class SocialApp extends CustomElement {
      */
     routeForPost(post: import("@converse/headless").PubSubMessage): import("./types.ts").SocialRoute;
     /**
+     * The route for a comment focused within the open post's thread. Adds
+     * `commentId` to the post route; when the comment lives in a node other than
+     * the post's own comments node (a Libervia child node) it is addressed
+     * explicitly with `commentJid` / `commentNode`.
+     * @param {import('@converse/headless').PubSubMessage} comment
+     * @returns {import('./types.ts').SocialRoute}
+     */
+    routeForComment(comment: import("@converse/headless").PubSubMessage): import("./types.ts").SocialRoute;
+    /**
      * Whether an already-open post matches a post route (avoids a refetch/flicker).
      * @param {import('@converse/headless').PubSubMessage} post
      * @param {import('./types.ts').SocialRoute} route
@@ -126,6 +147,16 @@ declare class SocialApp extends CustomElement {
      * @param {import('./types.ts').SocialRoute} route
      */
     resolvePost(route: import("./types.ts").SocialRoute): Promise<void>;
+    /**
+     * Resolve the focused comment for a post route into `open_comment` (null when
+     * the route has no `commentId`, i.e. the post itself is focused). Uses the
+     * already-loaded comment when present, else fetches the thread once. A comment
+     * that can't be found leaves the post focused rather than failing the route.
+     * @param {import('@converse/headless').PubSubMessage} post
+     * @param {import('./types.ts').SocialRoute} route
+     * @param {() => boolean} current - Guard against a superseded navigation.
+     */
+    resolveComment(post: import("@converse/headless").PubSubMessage, route: import("./types.ts").SocialRoute, current: () => boolean): Promise<void>;
 }
 import { CustomElement } from 'shared/components/element.js';
 import { HashRouter } from 'plugins/rootview/routing.js';

@@ -85,6 +85,37 @@ describe('Social hash routing grammar', function () {
         expect(parseSocialRoute('#converse/social/post/onlyfeedjid')).toEqual({ view: 'timeline' });
     });
 
+    it('round-trips a focused-comment route in the post\'s own comments node', function () {
+        const route = { view: 'post', feedJid: 'juliet@capulet.lit', node: MICROBLOG_NODE, itemId: 'post-1', commentId: 'c3' };
+        const hash = buildSocialRoute(route);
+        expect(hash).toBe('#converse/social/post/juliet%40capulet.lit/post-1/comment/c3');
+        expect(parseSocialRoute(hash)).toEqual(route);
+    });
+
+    it('round-trips a focused-comment route with an explicit post node', function () {
+        const route = { view: 'post', feedJid: 'pubsub.shakespeare.lit', node: 'party', itemId: 'i1', commentId: 'c3' };
+        const hash = buildSocialRoute(route);
+        expect(hash).toBe('#converse/social/post/pubsub.shakespeare.lit/party/i1/comment/c3');
+        expect(parseSocialRoute(hash)).toEqual(route);
+    });
+
+    it('round-trips a focused-comment route living in a Libervia child node', function () {
+        const route = {
+            view: 'post',
+            feedJid: 'juliet@capulet.lit',
+            node: MICROBLOG_NODE,
+            itemId: 'post-1',
+            commentJid: 'gw.example.org',
+            commentNode: 'urn:xmpp:microblog:0:comments/c3',
+            commentId: 'r7',
+        };
+        const hash = buildSocialRoute(route);
+        expect(hash).toBe(
+            '#converse/social/post/juliet%40capulet.lit/post-1/comment/gw.example.org/urn%3Axmpp%3Amicroblog%3A0%3Acomments%2Fc3/r7',
+        );
+        expect(parseSocialRoute(hash)).toEqual(route);
+    });
+
     it('round-trips a hashtag route, including unicode', function () {
         expect(buildSocialRoute({ view: 'tag', tag: 'xmpp' })).toBe('#converse/social/tag/xmpp');
         expect(parseSocialRoute('#converse/social/tag/xmpp')).toEqual({ view: 'tag', tag: 'xmpp' });

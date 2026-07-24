@@ -12,6 +12,9 @@ export type SocialRoute = {
     node?: string;
     itemId?: string;
     tag?: string;
+    commentId?: string;
+    commentJid?: string;
+    commentNode?: string;
 };
 /**
  * The view-model for one node in the "Browse a service" list — the UI's mirror of

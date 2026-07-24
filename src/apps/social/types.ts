@@ -15,6 +15,14 @@ export type SocialRoute = {
     node?: string; // post/profile: the feed's node (profile: a non-microblog community feed)
     itemId?: string; // post: the PubSub item id
     tag?: string; // tag: the hashtag, without a leading '#'
+
+    // post: a focused comment in the thread (the drill-down view). `commentId` is
+    // its item id; for a comment living in a Libervia child node, `commentJid` /
+    // `commentNode` locate that node (omitted for the common flat case, where the
+    // comment is in the post's own comments node).
+    commentId?: string;
+    commentJid?: string;
+    commentNode?: string;
 };
 
 /**

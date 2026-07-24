@@ -14,6 +14,8 @@
  *   #converse/social/feed/<jid>/<node>                  a followed community/topic feed
  *   #converse/social/post/<feedJid>/<itemId>            post detail (microblog node)
  *   #converse/social/post/<feedJid>/<node>/<itemId>     post detail (explicit node)
+ *   #converse/social/post/.../<itemId>/comment/<cId>    focused comment (flat thread)
+ *   #converse/social/post/.../<itemId>/comment/<cJid>/<cNode>/<cId>   focused comment (child node)
  *   #converse/social/tag/<tag>                          hashtag filter (tag without '#')
  */
 
@@ -70,10 +72,31 @@ export function parseSocialRoute(hash = location.hash) {
             const node = seg[2];
             return jid && node ? { view: 'profile', jid, node } : { view: 'timeline' };
         }
-        case 'post':
-            if (seg.length === 3) return { view: 'post', feedJid: seg[1], node: MICROBLOG_NODE, itemId: seg[2] };
-            if (seg.length >= 4) return { view: 'post', feedJid: seg[1], node: seg[2], itemId: seg[3] };
-            return { view: 'timeline' };
+        case 'post': {
+            // A `comment` marker splits the post part from the focused-comment part:
+            //   post/<feedJid>/<itemId>[/comment/...]
+            //   post/<feedJid>/<node>/<itemId>[/comment/...]
+            // The comment part is either a bare id (a comment in the post's own
+            // comments node) or <cJid>/<cNode>/<cId> (a Libervia child node).
+            const rest = seg.slice(1);
+            const ci = rest.indexOf('comment');
+            const post_part = ci === -1 ? rest : rest.slice(0, ci);
+            const comment_part = ci === -1 ? [] : rest.slice(ci + 1);
+
+            /** @type {import("./types.ts").SocialRoute} */
+            let route;
+            if (post_part.length === 2) route = { view: 'post', feedJid: post_part[0], node: MICROBLOG_NODE, itemId: post_part[1] };
+            else if (post_part.length >= 3) route = { view: 'post', feedJid: post_part[0], node: post_part[1], itemId: post_part[2] };
+            else return { view: 'timeline' };
+
+            if (comment_part.length === 1) route.commentId = comment_part[0];
+            else if (comment_part.length >= 3) {
+                route.commentJid = comment_part[0];
+                route.commentNode = comment_part[1];
+                route.commentId = comment_part[2];
+            }
+            return route;
+        }
         case 'tag': {
             const tag = seg[1];
             return tag ? { view: 'tag', tag } : { view: 'timeline' };
@@ -104,10 +127,24 @@ export function buildSocialRoute(route) {
         case 'post': {
             if (!route.feedJid || !route.itemId) return null;
             const node = route.node ?? MICROBLOG_NODE;
-            const base = `${SOCIAL_ROUTE_ROOT}/post/${encodeURIComponent(route.feedJid)}`;
-            return node === MICROBLOG_NODE
-                ? `${base}/${encodeURIComponent(route.itemId)}`
-                : `${base}/${encodeURIComponent(node)}/${encodeURIComponent(route.itemId)}`;
+            let base = `${SOCIAL_ROUTE_ROOT}/post/${encodeURIComponent(route.feedJid)}`;
+            base +=
+                node === MICROBLOG_NODE
+                    ? `/${encodeURIComponent(route.itemId)}`
+                    : `/${encodeURIComponent(node)}/${encodeURIComponent(route.itemId)}`;
+            // A focused comment: a bare id (post's own comments node) or the long
+            // <cJid>/<cNode>/<cId> form for a Libervia child node.
+            if (route.commentId) {
+                const cid = encodeURIComponent(route.commentId);
+                if (route.commentJid && route.commentNode) {
+                    const cj = encodeURIComponent(route.commentJid);
+                    const cn = encodeURIComponent(route.commentNode);
+                    base += `/comment/${cj}/${cn}/${cid}`;
+                } else {
+                    base += `/comment/${cid}`;
+                }
+            }
+            return base;
         }
         case 'tag':
             return route.tag ? `${SOCIAL_ROUTE_ROOT}/tag/${encodeURIComponent(route.tag)}` : null;

@@ -26,5 +26,11 @@
   "background_color": "#397491",
   "display": "standalone",
   "scope": "/",
-  "theme_color": "#397491"
+  "theme_color": "#397491",
+  "protocol_handlers": [
+    {
+      "protocol": "xmpp",
+      "url": "#converse/action?uri=%s"
+    }
+  ]
 }

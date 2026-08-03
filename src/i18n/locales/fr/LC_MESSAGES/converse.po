@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-26 10:16+0200\n"
-"PO-Revision-Date: 2026-03-03 15:09+0000\n"
+"PO-Revision-Date: 2026-08-05 00:01+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.17-dev\n"
+"X-Generator: Weblate 2026.8.1.dev0\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -68,7 +68,7 @@ msgstr "%1$s est en ligne"
 
 #: dist/converse-no-dependencies.js:46255
 msgid "Frequently used"
-msgstr ""
+msgstr "Utilisés fréquemment"
 
 #: dist/converse-no-dependencies.js:46256
 msgid "Smileys and emotions"
@@ -508,6 +508,8 @@ msgid ""
 "Received an OMEMO encrypted message which could not be decrypted, because it "
 "was not encrypted for this device."
 msgstr ""
+"Un message chiffré par OMEMO a été reçu mais n’a pas pu être déchiffré, "
+"parce qu’il n’a pas été chiffré pour ce client."
 
 #: dist/converse-no-dependencies.js:56819
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -574,6 +576,8 @@ msgid ""
 "Cannot use OMEMO in this groupchat — it must be non-anonymous and members-"
 "only."
 msgstr ""
+"Impossible d’utiliser OMEMO dans ce salon : il doit être non-anonyme et "
+"accessible uniquement aux membres."
 
 #: dist/converse-no-dependencies.js:60858
 msgid ""
@@ -1351,9 +1355,8 @@ msgid "Error loading audio"
 msgstr "Erreur en chargeant l’audio"
 
 #: dist/converse-no-dependencies.js:102425
-#, fuzzy
 msgid "Current time"
-msgstr "Version actuelle"
+msgstr "Heure actuelle"
 
 #: dist/converse-no-dependencies.js:102426
 msgid "Duration"
@@ -2639,9 +2642,8 @@ msgid "Clear status message"
 msgstr "Retirer le message de statut"
 
 #: dist/converse-no-dependencies.js:135837
-#, fuzzy
 msgid "Server"
-msgstr "Service"
+msgstr "Serveur"
 
 #: dist/converse-no-dependencies.js:135840
 msgid "Save and close"
@@ -2812,7 +2814,7 @@ msgstr "Voir les appareils inactifs"
 
 #: dist/converse-no-dependencies.js:141209
 msgid "Copy fingerprint to clipboard"
-msgstr ""
+msgstr "Copier l’empreinte vers le presse-papier"
 
 #: dist/converse-no-dependencies.js:141213
 msgid "Checkbox for selecting the following fingerprint"
@@ -3462,19 +3464,18 @@ msgstr "Refuser"
 
 #. "Alice, Bob and 1 other" / "Alice, Bob and 3 others"
 #: dist/converse-no-dependencies.js:152051
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and 1 other"
-msgstr "%1$s et %2$s"
+msgstr "%1$s et une autre personne"
 
 #: dist/converse-no-dependencies.js:152051
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and %2$d others"
-msgstr "%1$s et %2$s"
+msgstr "%1$s et %2$s autres"
 
 #: dist/converse-no-dependencies.js:152179
-#, fuzzy
 msgid "Add Reaction"
-msgstr "Ajouter un contact"
+msgstr "Ajouter une réaction"
 
 #~ msgid "This device's OMEMO fingerprint"
 #~ msgstr "Empreinte de clé OMEMO de ce client"

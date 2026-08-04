@@ -68,8 +68,15 @@ export type PubSubMessageAttrs = {
     // Denormalised comment-thread summary (XEP-0277 § Comments), synced from the
     // post's CommentFeed by syncCommentSummary so the timeline can show counts
     // without opening the thread. A cache; the comments node stays the source.
-    comment_count?: number; // Number of non-♥ comment items
-    like_count?: number; // Number of ♥ (like) items
+    comment_count?: number; // Number of real (non-reaction) comment items
+
+    // Reaction summary: single-emoji comments counted per emoji by distinct
+    // reactor (♥ included). `reactions` is sorted most-reacted first; the ♥ bucket
+    // is also surfaced via the legacy like_* fields below for backwards compat.
+    reactions?: Array<{ emoji: string; count: number; reacted_by_me: boolean }>;
+    my_reaction_ids?: Record<string, string>; // emoji -> our item id, to retract on un-react
+
+    like_count?: number; // Number of ♥ (like) reactors (the ♥ bucket's count)
     liked_by_me?: boolean; // Whether one of the ♥ items is ours
     my_like_id?: string; // That ♥ item's id, needed to retract on un-like
 

@@ -48,6 +48,54 @@ function geolocLabel(geoloc) {
     return geoloc.label || (geoloc.lat !== undefined ? `${geoloc.lat}, ${geoloc.lon}` : '');
 }
 
+// The heart marker (LIKE_MARKER). The ♥ reaction has its own dedicated Like
+// button, so it's excluded from the generic reaction chip row to avoid showing it
+// twice.
+const HEART = '♥';
+
+/**
+ * The "add reaction" picker button (reuses the shared emoji picker plumbing).
+ * @param {import('../message.js').default} el
+ */
+function tplReactionButton(el) {
+    // No visual class on the host: the inner toggle button carries
+    // `social-post__action--react`, so opacity/hover apply to the button, not the
+    // (potentially open) picker popup. The host aligns inline like the composer's.
+    // The picker only reads `.get('jid')` off the model, so the feed is ideal; fall
+    // back to the post itself so the picker never gets a null model.
+    return html`<converse-social-reaction-dropdown
+        class="social-post__react-dropdown"
+        .model=${el.model.collection?.feed ?? el.model}
+        @emojipicked=${(/** @type {CustomEvent} */ ev) => el.onReactionPicked(ev)}
+    ></converse-social-reaction-dropdown>`;
+}
+
+/**
+ * The reaction summary chips (every reaction except ♥), each toggling our own
+ * reaction of that emoji. Rendered from the denormalised `reactions` attr.
+ * @param {import('../message.js').default} el
+ */
+function tplReactions(el) {
+    if (el.compact) return ''; // context/ancestor rows stay minimal
+    const reactions = (el.model.get('reactions') || []).filter((r) => r.emoji !== HEART);
+    if (!reactions.length) return '';
+    return html`<div class="social-post__reactions">
+        ${reactions.map(
+            (r) => html`<button
+                type="button"
+                class="social-post__reaction ${r.reacted_by_me ? 'social-post__reaction--mine' : ''}"
+                title="${r.reacted_by_me ? __('Remove your reaction') : __('React with %1$s', r.emoji)}"
+                aria-pressed="${r.reacted_by_me ? 'true' : 'false'}"
+                ?disabled=${el._reacting}
+                @click=${() => el.onToggleReaction(r.emoji)}
+            >
+                <span class="social-post__reaction-emoji">${r.emoji}</span>
+                <span class="social-post__count">${r.count}</span>
+            </button>`,
+        )}
+    </div>`;
+}
+
 /**
  * @param {import('../message.js').default} el
  */
@@ -219,6 +267,7 @@ export default (el) => {
                                           ? html`<span class="social-post__count">${m.get('like_count')}</span>`
                                           : ''}
                                   </button>
+                                  ${tplReactionButton(el)}
                               `
                             : el.compact
                             ? ''
@@ -251,6 +300,7 @@ export default (el) => {
                                           ? html`<span class="social-post__count">${m.get('like_count')}</span>`
                                           : ''}
                                   </button>
+                                  ${tplReactionButton(el)}
                                   ${m.get('is_mine')
                                       ? html`${m.get('is_repost')
                                                 ? ''
@@ -351,6 +401,7 @@ export default (el) => {
                               </div>`
                             : ''}
                     </div>
+                    ${tplReactions(el)}
                           `}
                 </div>
             </div>

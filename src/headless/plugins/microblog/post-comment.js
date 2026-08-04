@@ -5,19 +5,40 @@
 import { Strophe } from 'strophe.js';
 import PubSubMessage from './message.js';
 import { LIKE_MARKER } from './constants.js';
+import { isSingleEmoji } from './utils/emoji.js';
 
 /**
  * @extends {PubSubMessage}
  */
 class PostComment extends PubSubMessage {
     /**
-     * Whether this comment is a "like": a ♥-comment (XEP-0277 convention) whose
-     * entry text is exactly the heart marker. Likes ride the comments node, so a
-     * single fetch of the node yields both comments and likes.
+     * The emoji this comment is a reaction with, or `null` if it is a real
+     * comment. A reaction is a comment whose entry text (`<title>`) is exactly one
+     * emoji (XEP-0277 convention, generalising the ♥ like). Reactions ride the
+     * comments node, so a single fetch of the node yields comments and reactions.
+     * @returns {string|null}
+     */
+    getReactionEmoji() {
+        const title = this.get('title');
+        return isSingleEmoji(title) ? title.trim() : null;
+    }
+
+    /**
+     * Whether this comment is a reaction (any single-emoji comment) rather than a
+     * real comment.
+     * @returns {boolean}
+     */
+    isReaction() {
+        return this.getReactionEmoji() !== null;
+    }
+
+    /**
+     * Whether this comment is a "like": the ♥ special case of a reaction (U+2665).
+     * Kept so existing like-specific code (counts, notifications) keeps working.
      * @returns {boolean}
      */
     isLike() {
-        return this.get('title') === LIKE_MARKER;
+        return this.getReactionEmoji() === LIKE_MARKER;
     }
 
     /**

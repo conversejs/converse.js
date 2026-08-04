@@ -5,7 +5,7 @@
  * @typedef {import('@converse/headless').RosterContact} RosterContact
  * @typedef {import('@converse/headless').PubSubMessage} PubSubMessage
  * @typedef {{ feedJid: string, node: string, itemId: string }} PostRef
- * @typedef {{ type: 'comment'|'like', post?: PubSubMessage, comment: PubSubMessage, ref: PostRef }} MicroblogNotificationData
+ * @typedef {{ type: 'comment'|'like'|'reaction', emoji?: string, post?: PubSubMessage, comment: PubSubMessage, ref: PostRef }} MicroblogNotificationData
  */
 import Favico from 'favico.js-slevomat';
 import { __, i18n } from 'i18n';
@@ -368,12 +368,12 @@ function showMicroblogNotification(title, body, ref) {
 
 /**
  * Event handler for on('microblogNotification'). Raises a desktop notification
- * (and sound) for a comment on, or a ♥ like of, one of the user's own posts,
- * subject to the same enabled/visibility gating as chat messages.
+ * (and sound) for a comment on, a ♥ like of, or an emoji reaction to one of the
+ * user's own posts, subject to the same enabled/visibility gating as chat messages.
  * @param {MicroblogNotificationData} data
  */
 export function handleMicroblogNotification(data) {
-    if (data?.type !== 'comment' && data?.type !== 'like') {
+    if (data?.type !== 'comment' && data?.type !== 'like' && data?.type !== 'reaction') {
         return;
     }
     if (!areDesktopNotificationsEnabled()) {
@@ -397,6 +397,11 @@ export function handleMicroblogNotification(data) {
         title = __('%1$s liked your post', name);
         // The ♥ marker makes a poor body; show what was liked (the post's text).
         body = post?.get('title') || post?.get('content') || __('Someone liked your post');
+    } else if (data.type === 'reaction') {
+        const emoji = data.emoji || comment.get('title') || '';
+        title = __('%1$s reacted %2$s to your post', name, emoji);
+        // The lone emoji makes a poor body; show what was reacted to (the post's text).
+        body = post?.get('title') || post?.get('content') || __('Someone reacted to your post');
     } else {
         title = __('%1$s commented on your post', name);
         body = comment.get('title') || comment.get('content') || __('New comment on your post');

@@ -934,7 +934,8 @@
                 }
 
                 &--repost:hover,
-                &--comment:hover {
+                &--comment:hover,
+                &--react:hover {
                     color: var(--link-color);
                 }
 
@@ -958,6 +959,55 @@
                 margin-inline-start: 0.35em;
                 font-size: 0.85em;
                 font-variant-numeric: tabular-nums;
+            }
+
+            // The add-reaction picker sits inline among the action buttons; the
+            // inner toggle carries `&__action--react`, so only its icon is styled.
+            &__react-dropdown {
+                display: inline-flex;
+                align-items: center;
+            }
+
+            // The reaction summary chips, a wrapped row below the post body.
+            &__reactions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.35em;
+                margin-block-start: 0.5em;
+            }
+
+            &__reaction {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25em;
+                padding: 0.1em 0.5em;
+                cursor: pointer;
+                border: 1px solid var(--chatbox-button-color, var(--foreground-color));
+                border-radius: 1em;
+                background: none;
+                color: var(--foreground-color);
+                opacity: 0.85;
+                font-size: 0.9em;
+                line-height: 1.4;
+
+                &:hover {
+                    opacity: 1;
+                }
+
+                &[disabled] {
+                    cursor: default;
+                }
+
+                .social-post__count {
+                    margin-inline-start: 0;
+                }
+
+                // A reaction we contributed is filled in the link colour.
+                &--mine {
+                    opacity: 1;
+                    border-color: var(--link-color);
+                    background: color-mix(in srgb, var(--link-color) 15%, transparent);
+                }
             }
 
             &__body {

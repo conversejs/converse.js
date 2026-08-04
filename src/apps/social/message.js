@@ -7,6 +7,7 @@ import log from '@converse/log';
 import { __ } from 'i18n';
 import { ObservableElement } from 'shared/components/observable.js';
 import 'shared/modals/image.js';
+import './reaction-dropdown.js';
 import tplMessage from './templates/message.js';
 
 const { Strophe } = converse.env;
@@ -35,6 +36,7 @@ export default class SocialMessage extends ObservableElement {
             hidesource: { type: Boolean },
             _reposting: { type: Boolean, state: true },
             _liking: { type: Boolean, state: true },
+            _reacting: { type: Boolean, state: true },
             // When set, the post body is swapped for an inline rich composer
             // prefilled with this post, so the author can edit it in place.
             _editing: { type: Boolean, state: true },
@@ -234,6 +236,44 @@ export default class SocialMessage extends ObservableElement {
         } finally {
             this._liking = false;
         }
+    }
+
+    /**
+     * Toggle our reaction with `emoji` on this post/comment: react if we haven't
+     * with this emoji, else remove it. Drives both the reaction summary chips and
+     * the picker. The heart still has its own dedicated Like button.
+     * @param {string} emoji
+     */
+    async onToggleReaction(emoji) {
+        if (!emoji || this._reacting) return;
+
+        this._reacting = true;
+        const reactions = this.model.get('reactions') || [];
+        const mine = reactions.find((r) => r.emoji === emoji)?.reacted_by_me;
+        try {
+            await (mine ? api.microblog.unreact(this.model, emoji) : api.microblog.react(this.model, emoji));
+        } catch (e) {
+            log.error(e);
+            api.toast.show('react-failed', {
+                type: 'danger',
+                body: __('Sorry, could not update your reaction'),
+            });
+        } finally {
+            this._reacting = false;
+        }
+    }
+
+    /**
+     * Handle a pick from the add-reaction picker: react with the chosen glyph.
+     * Custom (image) emoji come back as a `:shortname:` with no unicode glyph and
+     * can't ride a single-emoji comment, so they're ignored.
+     * @param {CustomEvent} ev
+     */
+    onReactionPicked(ev) {
+        ev.stopPropagation();
+        const emoji = ev.detail?.text?.trim();
+        if (!emoji || emoji.includes(':')) return;
+        this.onToggleReaction(emoji);
     }
 
     /**

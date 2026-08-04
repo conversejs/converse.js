@@ -11,6 +11,7 @@
  * list into a parent/child structure.
  */
 import { Strophe } from 'strophe.js';
+import { LIKE_MARKER } from '../constants.js';
 
 /**
  * The parent pointer of a comment if it nests within this thread.
@@ -153,73 +154,111 @@ export function resolveThreadParents(items) {
 }
 
 /**
- * The distinct-liker key for a ♥ item: its author's bare JID, or a per-item
- * fallback when the author is unknown (so unattributable likes count once each
- * rather than collapsing together).
- * @param {import('../post-comment').default} like
+ * The distinct-reactor key for a reaction item: its author's bare JID, or a
+ * per-item fallback when the author is unknown (so unattributable reactions count
+ * once each rather than collapsing together).
+ * @param {import('../post-comment').default} item
  * @returns {string}
  */
-function likerKey(like) {
-    const jid = like.getAuthorJID?.();
-    return jid ? Strophe.getBareJidFromJid(jid) : `id:${like.get('id')}`;
+function reactorKey(item) {
+    const jid = item.getAuthorJID?.();
+    return jid ? Strophe.getBareJidFromJid(jid) : `id:${item.get('id')}`;
+}
+
+/**
+ * @typedef {{ reactors: Set<string>, mine: boolean, my_id: (string|undefined) }} ReactionBucket
+ */
+
+/**
+ * Reduce a per-emoji reaction map into the denormalised shape stored on a model:
+ * a sorted `reactions` array, a `my_reaction_ids` lookup (for retract), and the
+ * legacy ♥ `like_*` fields derived from the heart bucket.
+ * @param {Map<string, ReactionBucket>} reaction_map
+ * @returns {{ reactions: Array<{emoji: string, count: number, reacted_by_me: boolean}>, my_reaction_ids: Record<string,string>, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }}
+ */
+function summariseReactions(reaction_map) {
+    const entries = [];
+    for (const [emoji, a] of reaction_map) {
+        entries.push({ emoji, count: a.reactors.size, reacted_by_me: a.mine, my_id: a.mine ? a.my_id : undefined });
+    }
+    // Most-reacted first, emoji ascending as a stable tie-break, so the serialised
+    // form is deterministic (the sync layer diffs `reactions` as JSON).
+    entries.sort((x, y) => y.count - x.count || x.emoji.localeCompare(y.emoji));
+
+    const reactions = entries.map(({ emoji, count, reacted_by_me }) => ({ emoji, count, reacted_by_me }));
+    const my_reaction_ids = {};
+    for (const e of entries) if (e.my_id) my_reaction_ids[e.emoji] = e.my_id;
+
+    const heart = entries.find((e) => e.emoji === LIKE_MARKER);
+    return {
+        reactions,
+        my_reaction_ids,
+        like_count: heart?.count ?? 0,
+        liked_by_me: heart?.reacted_by_me ?? false,
+        my_like_id: heart?.my_id,
+    };
 }
 
 /**
  * Partition a thread's items into denormalised counts in a single pass: the
  * post-level summary plus per-comment counts, keyed by comment id.
  *
- * Likes are attributed to their target (the post when they carry no nesting
- * pointer, else the comment they reply to) and counted by distinct liker, so a ♥
- * aimed at a comment never inflates the post's like count. `comment_count` is the
- * whole thread's reply total (every real comment, orphans included); a comment's
- * `reply_count` is its *direct* replies only.
- * @param {import('../post-comment').default[]} items - A thread's items (likes included).
+ * Reactions (single-emoji comments, ♥ included) are attributed to their target
+ * (the post when they carry no nesting pointer, else the comment they reply to)
+ * and counted **per emoji by distinct reactor**, so a reaction aimed at a comment
+ * never inflates the post's counts and one person reacting the same emoji twice
+ * counts once. `comment_count` is the whole thread's reply total (every real
+ * comment, orphans included); a comment's `reply_count` is its *direct* replies
+ * only. The legacy `like_*` fields carry the ♥ bucket for backwards compatibility.
+ * @param {import('../post-comment').default[]} items - A thread's items (reactions included).
  * @returns {{
- *   post: { comment_count: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) },
- *   byComment: Map<string, { reply_count: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }>
+ *   post: { comment_count: number, reactions: Array<{emoji: string, count: number, reacted_by_me: boolean}>, my_reaction_ids: Record<string,string>, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) },
+ *   byComment: Map<string, { reply_count: number, reactions: Array<{emoji: string, count: number, reacted_by_me: boolean}>, my_reaction_ids: Record<string,string>, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }>
  * }}
  */
 export function computeThreadCounts(items) {
-    const reals = items.filter((it) => typeof it.isLike === 'function');
+    const reals = items.filter((it) => typeof it.getReactionEmoji === 'function');
     const parents = resolveThreadParents(reals);
 
     let comment_count = 0;
-    const post_likers = new Set();
-    let post_liked_by_me = false;
-    let post_my_like_id;
+    /** @type {Map<string, ReactionBucket>} */
+    const post_reactions = new Map();
 
-    /** @type {Map<string, { reply_count: number, likers: Set<string>, liked_by_me: boolean, my_like_id: (string|undefined) }>} */
+    /** @type {Map<string, { reply_count: number, reactions: Map<string, ReactionBucket> }>} */
     const agg = new Map();
     const ensure = (/** @type {string} */ id) => {
         let a = agg.get(id);
         if (!a) {
-            a = { reply_count: 0, likers: new Set(), liked_by_me: false, my_like_id: undefined };
+            a = { reply_count: 0, reactions: new Map() };
             agg.set(id, a);
         }
         return a;
     };
-    // Seed every real comment so a childless, unliked comment still reports zeros.
-    for (const it of reals) if (!it.isLike()) ensure(it.get('id'));
+    const bucket = (/** @type {Map<string, ReactionBucket>} */ map, /** @type {string} */ emoji) => {
+        let a = map.get(emoji);
+        if (!a) {
+            a = { reactors: new Set(), mine: false, my_id: undefined };
+            map.set(emoji, a);
+        }
+        return a;
+    };
+    // Seed every real comment so a childless, un-reacted comment still reports zeros.
+    for (const it of reals) if (!it.getReactionEmoji()) ensure(it.get('id'));
 
     for (const it of reals) {
         const info = parents.get(it.get('id'));
-        if (it.isLike()) {
-            // A like belongs to exactly one target; an orphan like (whose target
-            // isn't loaded) is counted nowhere.
+        const emoji = it.getReactionEmoji();
+        if (emoji) {
+            // A reaction belongs to exactly one target; an orphan reaction (whose
+            // target isn't loaded), or one aimed at a non-comment, is counted nowhere.
             if (info.orphan) continue;
-            if (info.parent === null) {
-                post_likers.add(likerKey(it));
-                if (it.get('is_mine')) {
-                    post_liked_by_me = true;
-                    post_my_like_id = it.get('id');
-                }
-            } else if (agg.has(info.parent)) {
-                const a = agg.get(info.parent);
-                a.likers.add(likerKey(it));
-                if (it.get('is_mine')) {
-                    a.liked_by_me = true;
-                    a.my_like_id = it.get('id');
-                }
+            const target = info.parent === null ? post_reactions : agg.get(info.parent)?.reactions;
+            if (!target) continue;
+            const a = bucket(target, emoji);
+            a.reactors.add(reactorKey(it));
+            if (it.get('is_mine')) {
+                a.mine = true;
+                a.my_id = it.get('id');
             }
         } else {
             // Every real comment counts toward the thread total, orphans included;
@@ -233,20 +272,10 @@ export function computeThreadCounts(items) {
 
     const byComment = new Map();
     for (const [id, a] of agg) {
-        byComment.set(id, {
-            reply_count: a.reply_count,
-            like_count: a.likers.size,
-            liked_by_me: a.liked_by_me,
-            my_like_id: a.my_like_id,
-        });
+        byComment.set(id, { reply_count: a.reply_count, ...summariseReactions(a.reactions) });
     }
     return {
-        post: {
-            comment_count,
-            like_count: post_likers.size,
-            liked_by_me: post_liked_by_me,
-            my_like_id: post_my_like_id,
-        },
+        post: { comment_count, ...summariseReactions(post_reactions) },
         byComment,
     };
 }

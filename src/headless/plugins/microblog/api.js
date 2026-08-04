@@ -15,6 +15,7 @@ import MicroblogProfile from './profile.js';
 import PubSubFeed from './feed.js';
 import PubSubFeeds from './feeds.js';
 import { parseAtomEntry } from './parsers.js';
+import { isSingleEmoji } from './utils/emoji.js';
 import { getUniqueId } from '../../utils/index.js';
 import { safeSave } from '../../utils/init.js';
 import {
@@ -92,25 +93,101 @@ async function probeNodeMeta(jid, node) {
 }
 
 /**
- * Resolve what a like/unlike targets: a post or a comment.
+ * Resolve what a react/unreact targets: a post or a comment.
  *
- * A like is always on the post's comments node, the difference is what it points at
- * and where the denormalised like state lives.
+ * A reaction is always on the post's comments node; the difference is what it
+ * points at and where the denormalised reaction state lives.
  *
- *  - a post → the like is a post-level item (no `in_reply_to`)
+ *  - a post → the reaction is a post-level item (no `in_reply_to`)
  *      Its counts live on the post, reconciled by {@link syncCommentSummary}.
- *  - a comment (a {@link PostComment} with `isLike`) → the lie carries `in_reply_to`
+ *  - a comment (a {@link PostComment} with `isReaction`) → it carries `in_reply_to`
  *      Its counts live on the comment, reconciled by {@link syncCommentCounts}.
  * @param {import('./message').default} target - A post or a comment.
  * @returns {Promise<import('./types').LikeTarget>}
  */
-async function resolveLikeTarget(target) {
-    if (typeof (/** @type {import('./post-comment').default} */ (target).isLike) === 'function') {
+async function resolveReactionTarget(target) {
+    if (typeof (/** @type {import('./post-comment').default} */ (target).isReaction) === 'function') {
         const feed = target.collection?.feed;
         return { feed, model: target, parent_id: target.get('id'), reconcile: () => syncCommentCounts(feed) };
     }
     const feed = await api.microblog.comments.feed(target);
     return { feed, model: target, parent_id: undefined, reconcile: () => syncCommentSummary(target, feed) };
+}
+
+/** Most-reacted first, emoji ascending as a stable tie-break (see summariseReactions). */
+const sortReactions = (/** @type {Array<{emoji: string, count: number}>} */ reactions) =>
+    reactions.sort((a, b) => b.count - a.count || a.emoji.localeCompare(b.emoji));
+
+/**
+ * A snapshot of a model's denormalised reaction state, to revert an optimistic
+ * react/unreact if the publish or retract is refused.
+ * @param {import('./message').default} model
+ */
+function reactionSnapshot(model) {
+    return {
+        reactions: model.get('reactions'),
+        my_reaction_ids: model.get('my_reaction_ids'),
+        like_count: model.get('like_count'),
+        liked_by_me: model.get('liked_by_me'),
+        my_like_id: model.get('my_like_id'),
+    };
+}
+
+/**
+ * The attrs to optimistically reflect our new `emoji` reaction (item `id`) before
+ * the publish lands. `reconcile()` recomputes the exact state afterwards, so this
+ * only needs to be right enough for instant UI feedback.
+ * @param {import('./message').default} model
+ * @param {string} emoji
+ * @param {string} id
+ */
+function withReactionAdded(model, emoji, id) {
+    const reactions = (model.get('reactions') || []).map((r) => ({ ...r }));
+    const existing = reactions.find((r) => r.emoji === emoji);
+    if (existing) {
+        if (!existing.reacted_by_me) {
+            existing.count += 1;
+            existing.reacted_by_me = true;
+        }
+    } else {
+        reactions.push({ emoji, count: 1, reacted_by_me: true });
+    }
+    sortReactions(reactions);
+    const attrs = { reactions, my_reaction_ids: { ...(model.get('my_reaction_ids') || {}), [emoji]: id } };
+    if (emoji === LIKE_MARKER) {
+        attrs.liked_by_me = true;
+        attrs.my_like_id = id;
+        attrs.like_count = (model.get('like_count') || 0) + 1;
+    }
+    return attrs;
+}
+
+/**
+ * The attrs to optimistically remove our `emoji` reaction before the retract lands.
+ * @param {import('./message').default} model
+ * @param {string} emoji
+ */
+function withReactionRemoved(model, emoji) {
+    const reactions = (model.get('reactions') || []).map((r) => ({ ...r }));
+    const idx = reactions.findIndex((r) => r.emoji === emoji);
+    if (idx >= 0) {
+        const r = reactions[idx];
+        if (r.reacted_by_me) {
+            r.count = Math.max(0, r.count - 1);
+            r.reacted_by_me = false;
+        }
+        if (r.count <= 0) reactions.splice(idx, 1);
+    }
+    sortReactions(reactions);
+    const my_reaction_ids = { ...(model.get('my_reaction_ids') || {}) };
+    delete my_reaction_ids[emoji];
+    const attrs = { reactions, my_reaction_ids };
+    if (emoji === LIKE_MARKER) {
+        attrs.liked_by_me = false;
+        attrs.my_like_id = undefined;
+        attrs.like_count = Math.max(0, (model.get('like_count') || 0) - 1);
+    }
+    return attrs;
 }
 
 export default {
@@ -543,26 +620,35 @@ export default {
         },
 
         /**
-         * Like a post *or a comment*: publish a ♥ to the post's comments node,
-         * pointing at the comment when the target is one (see {@link resolveLikeTarget}).
+         * React to a post *or a comment* with an emoji: publish a single-emoji
+         * comment to the post's comments node, pointing at the comment when the
+         * target is one (see {@link resolveReactionTarget}). A ♥ is the default
+         * "like"; any single emoji works and rides the same node, so a
+         * non-supporting client just sees a one-character comment.
          *
-         * Optimistic: the like state flips immediately so that UI can update.
+         * Optimistic: the reaction state flips immediately so the UI can update.
          * If the publish is refused the state is rolled back and the error
-         * re-thrown for the caller to surface. A no-op if we already like it.
-         * @method _converse.api.microblog.like
+         * re-thrown for the caller to surface. A no-op if we already reacted with
+         * this emoji.
+         * @method _converse.api.microblog.react
          * @param {import('./message').default} target - A post or a comment.
-         * @returns {Promise<import('./message').default|undefined>} Our ♥ item.
+         * @param {string} emoji - The reaction emoji (exactly one emoji).
+         * @returns {Promise<import('./message').default|undefined>} Our reaction item.
+         * @throws {Error} if `emoji` is not a single emoji.
          */
-        async like(target) {
-            if (target.get('liked_by_me')) return undefined;
+        async react(target, emoji) {
+            if (!isSingleEmoji(emoji)) {
+                throw new Error(`api.microblog.react: not a single emoji: ${emoji}`);
+            }
+            emoji = emoji.trim();
 
-            const { feed, model, parent_id, reconcile } = await resolveLikeTarget(target);
+            const { feed, model, parent_id, reconcile } = await resolveReactionTarget(target);
             if (!feed) return undefined;
 
-            // The cached flag can be stale (another device already liked). If the
-            // thread we've loaded already holds a ♥ of ours for this target, don't
-            // publish a duplicate, just reconcile the denormalised state and bail.
-            if (feed.getMyLikes(parent_id).length) {
+            // The cached state can be stale (another device already reacted). If the
+            // loaded thread already holds a reaction of ours with this emoji for this
+            // target, don't publish a duplicate, just reconcile and bail.
+            if (feed.getMyReactions(parent_id, emoji).length) {
                 reconcile();
                 return undefined;
             }
@@ -571,25 +657,21 @@ export default {
             const author_name = _converse.state.profile?.getDisplayName?.() || author_jid;
             const id = getUniqueId();
 
-            // Optimistically reflect the like, keeping a snapshot to revert to.
-            const snapshot = {
-                like_count: model.get('like_count'),
-                liked_by_me: model.get('liked_by_me'),
-                my_like_id: model.get('my_like_id'),
-            };
-            safeSave(model, { liked_by_me: true, my_like_id: id, like_count: (model.get('like_count') || 0) + 1 });
+            // Optimistically reflect the reaction, keeping a snapshot to revert to.
+            const snapshot = reactionSnapshot(model);
+            safeSave(model, withReactionAdded(model, emoji, id));
 
             try {
-                const like = await feed.publishComment({
-                    body: LIKE_MARKER,
+                const reaction = await feed.publishComment({
+                    body: emoji,
                     author_jid,
                     author_name,
                     id,
                     ...(parent_id ? { in_reply_to: parent_id } : {}),
                 });
-                // Reconcile against the thread now the ♥ has actually landed.
+                // Reconcile against the thread now the reaction has actually landed.
                 reconcile();
-                return like;
+                return reaction;
             } catch (e) {
                 safeSave(model, snapshot);
                 throw e;
@@ -597,40 +679,36 @@ export default {
         },
 
         /**
-         * Un-like a post *or a comment*: retract *every* ♥ of ours for that target
-         * from the comments node (duplicates can accrue across devices / cache
-         * resets, so one tap clears it regardless of how many accumulated).
+         * Remove our `emoji` reaction from a post *or a comment*: retract *every*
+         * such reaction of ours from the comments node (duplicates can accrue across
+         * devices / cache resets, so one tap clears it regardless of how many
+         * accumulated).
          *
-         * Optimistic: the like is removed and the count reverts immediately, then
-         * the retracts are sent; if any is refused the like is restored and the
-         * error re-thrown for the caller to surface. A no-op if we don't like it.
-         * @method _converse.api.microblog.unlike
+         * Optimistic: the reaction is removed and the count reverts immediately,
+         * then the retracts are sent; if any is refused the reaction is restored and
+         * the error re-thrown. A no-op if we didn't react with this emoji.
+         * @method _converse.api.microblog.unreact
          * @param {import('./message').default} target - A post or a comment.
+         * @param {string} emoji - The reaction emoji to remove.
          * @returns {Promise<void>}
          */
-        async unlike(target) {
-            if (!target.get('liked_by_me') && !target.get('my_like_id')) return;
+        async unreact(target, emoji) {
+            if (!emoji) return;
+            emoji = emoji.trim();
 
-            const { feed, model, parent_id, reconcile } = await resolveLikeTarget(target);
+            const { feed, model, parent_id, reconcile } = await resolveReactionTarget(target);
             if (!feed) return;
 
-            // Every ♥ of ours for this target in the loaded thread, plus the cached
-            // id in case the thread isn't loaded (deduped into a set).
-            const ids = new Set(feed.getMyLikes(parent_id).map((m) => m.get('id')));
-            if (model.get('my_like_id')) ids.add(model.get('my_like_id'));
+            // Every reaction of ours with this emoji in the loaded thread, plus the
+            // cached id in case the thread isn't loaded (deduped into a set).
+            const ids = new Set(feed.getMyReactions(parent_id, emoji).map((m) => m.get('id')));
+            const cached = (model.get('my_reaction_ids') || {})[emoji];
+            if (cached) ids.add(cached);
             if (!ids.size) return;
 
-            // Optimistically remove the like, keeping a snapshot to revert to.
-            const snapshot = {
-                like_count: model.get('like_count'),
-                liked_by_me: model.get('liked_by_me'),
-                my_like_id: model.get('my_like_id'),
-            };
-            safeSave(model, {
-                liked_by_me: false,
-                my_like_id: undefined,
-                like_count: Math.max(0, (model.get('like_count') || 0) - 1),
-            });
+            // Optimistically remove the reaction, keeping a snapshot to revert to.
+            const snapshot = reactionSnapshot(model);
+            safeSave(model, withReactionRemoved(model, emoji));
 
             try {
                 for (const id of ids) {
@@ -640,9 +718,32 @@ export default {
                 safeSave(model, snapshot);
                 throw e;
             }
-            // Confirmed: drop our local ♥s and reconcile counts from the thread.
+            // Confirmed: drop our local reactions and reconcile counts from the thread.
             ids.forEach((id) => feed.messages.get(id)?.destroy());
             reconcile();
+        },
+
+        /**
+         * Like a post *or a comment*: the ♥ special case of {@link react}, kept as
+         * the one-tap default and for backwards compatibility.
+         * @method _converse.api.microblog.like
+         * @param {import('./message').default} target - A post or a comment.
+         * @returns {Promise<import('./message').default|undefined>} Our ♥ item.
+         */
+        like(target) {
+            if (target.get('liked_by_me')) return Promise.resolve(undefined);
+            return api.microblog.react(target, LIKE_MARKER);
+        },
+
+        /**
+         * Un-like a post *or a comment*: the ♥ special case of {@link unreact}.
+         * @method _converse.api.microblog.unlike
+         * @param {import('./message').default} target - A post or a comment.
+         * @returns {Promise<void>}
+         */
+        async unlike(target) {
+            if (!target.get('liked_by_me') && !target.get('my_like_id')) return;
+            await api.microblog.unreact(target, LIKE_MARKER);
         },
 
         /**

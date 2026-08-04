@@ -95,7 +95,26 @@ export class DedupeQueue {
 export const comment_summary_queue = new DedupeQueue();
 
 /**
- * Recompute a post's denormalised comment/like counts from its comment thread
+ * Whether persisting `attrs` onto `model` would actually change it. Scalars are
+ * compared by identity; object/array attrs (`reactions`, `my_reaction_ids`) by a
+ * stable JSON form (the summariser sorts them deterministically), so a recompute
+ * that yields an equal summary doesn't churn the store on every sync.
+ * @param {import('./message').default} model
+ * @param {Record<string, any>} attrs
+ * @returns {boolean}
+ */
+function summaryChanged(model, attrs) {
+    return Object.keys(attrs).some((k) => {
+        const next = attrs[k];
+        const cur = model.get(k);
+        if (cur === next) return false;
+        if (next && typeof next === 'object') return JSON.stringify(cur) !== JSON.stringify(next);
+        return true;
+    });
+}
+
+/**
+ * Recompute a post's denormalised comment/reaction counts from its comment thread
  * and persist them onto the post (the timeline's display source of truth). The
  * thread stays the source; these attrs are a synced cache that survives reload
  * and thread eviction. A no-op when the thread isn't materialised.
@@ -110,16 +129,16 @@ export function syncCommentSummary(post, feed) {
     feed = feed || _converse.state.commentfeeds?.getFeed(post.getCommentsService(), post.getCommentsNode(), false);
     if (!feed) return;
     const summary = feed.summarize();
-    const changed = Object.keys(summary).some((k) => post.get(k) !== summary[k]);
     // Detached browse-feed posts (a non-followed author's) are in-memory with no
     // store, so persist only when the post is store-backed; else set reactively.
-    if (changed) safeSave(post, summary);
+    if (summaryChanged(post, summary)) safeSave(post, summary);
 }
 
 /**
  * Recompute and persist each comment's own denormalised counts (`reply_count`,
- * `like_count`, `liked_by_me`, `my_like_id`) from the thread, so the drill-down
- * view can show a reply/like tally on every row without re-walking the node.
+ * `reactions`, `my_reaction_ids`, and the ♥ `like_*` fields) from the thread, so
+ * the drill-down view can show a reply/reaction tally on every row without
+ * re-walking the node.
  * @param {import('./comment-feed').default} [feed]
  */
 export function syncCommentCounts(feed) {
@@ -130,8 +149,7 @@ export function syncCommentCounts(feed) {
         const counts = byComment.get(comment.get('id'));
         if (!counts) continue;
 
-        const changed = Object.keys(counts).some((k) => comment.get(k) !== counts[k]);
-        if (changed) safeSave(comment, counts);
+        if (summaryChanged(comment, counts)) safeSave(comment, counts);
     }
 }
 
@@ -205,12 +223,13 @@ export function syncOwningComment(comment, child) {
     const { post } = computeThreadCounts(child.comments);
     const attrs = {
         reply_count: post.comment_count,
+        reactions: post.reactions,
+        my_reaction_ids: post.my_reaction_ids,
         like_count: post.like_count,
         liked_by_me: post.liked_by_me,
         my_like_id: post.my_like_id,
     };
-    const changed = Object.keys(attrs).some((k) => comment.get(k) !== attrs[k]);
-    if (changed) safeSave(comment, attrs);
+    if (summaryChanged(comment, attrs)) safeSave(comment, attrs);
 }
 
 /**

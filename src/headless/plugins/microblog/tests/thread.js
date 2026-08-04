@@ -21,16 +21,20 @@ function fakeComment(attrs) {
 }
 
 /**
- * A stand-in for a PostComment that also answers isLike()/getAuthorJID(), as the
- * count partitioning needs. `like:true` marks a ♥; `author` sets the liker/author.
+ * A stand-in for a PostComment that also answers the reaction classifiers and
+ * getAuthorJID(), as the count partitioning needs. `like:true` marks a ♥;
+ * `emoji:'😀'` marks a non-♥ reaction; `author` sets the reactor/author.
  * @param {object} attrs
  */
 function fakeItem(attrs) {
-    const { like = false, author, ...rest } = attrs;
+    const { like = false, emoji, author, ...rest } = attrs;
+    const reaction = like ? '♥' : (emoji ?? null);
     const data = { node: NODE, from: JID, ...rest };
     return {
         get: (/** @type {string} */ k) => data[k],
-        isLike: () => like,
+        getReactionEmoji: () => reaction,
+        isReaction: () => reaction !== null,
+        isLike: () => reaction === '♥',
         getAuthorJID: () => author,
     };
 }
@@ -193,6 +197,75 @@ describe('computeThreadCounts', () => {
         expect(post.comment_count).toBe(2); // orphan still a comment in the thread
         expect(byComment.get('c1').reply_count).toBe(0);
         expect(byComment.has('r9')).toBe(true); // seeded with zeros
+    });
+});
+
+describe('computeThreadCounts reactions', () => {
+    const at = (/** @type {string} */ jid) => `${jid}@example.org`;
+
+    it('aggregates post reactions per emoji by distinct reactor', () => {
+        const items = [
+            fakeItem({ id: 'c1', author: at('juliet') }),
+            fakeItem({ id: 'e1', emoji: '😀', author: at('bob') }),
+            fakeItem({ id: 'e2', emoji: '😀', author: at('eve') }),
+            // Bob reacted 😀 again from a second device: still one reactor for 😀.
+            fakeItem({ id: 'e3', emoji: '😀', author: at('bob') }),
+            fakeItem({ id: 'e4', emoji: '🔥', author: at('eve') }),
+        ];
+        const { post } = computeThreadCounts(items);
+        expect(post.comment_count).toBe(1); // reactions are not comments
+        // Sorted most-reacted first: 😀 (2) before 🔥 (1).
+        expect(post.reactions).toEqual([
+            { emoji: '😀', count: 2, reacted_by_me: false },
+            { emoji: '🔥', count: 1, reacted_by_me: false },
+        ]);
+    });
+
+    it('flags reacted_by_me and records my_reaction_ids per emoji', () => {
+        const items = [
+            fakeItem({ id: 'c1', author: at('juliet') }),
+            fakeItem({ id: 'e1', emoji: '😀', author: at('bob') }),
+            fakeItem({ id: 'e2', emoji: '😀', author: at('me'), is_mine: true }),
+            fakeItem({ id: 'e3', emoji: '🎉', author: at('me'), is_mine: true }),
+        ];
+        const { post } = computeThreadCounts(items);
+        expect(post.reactions).toContainEqual({ emoji: '😀', count: 2, reacted_by_me: true });
+        expect(post.reactions).toContainEqual({ emoji: '🎉', count: 1, reacted_by_me: true });
+        expect(post.my_reaction_ids).toEqual({ '😀': 'e2', '🎉': 'e3' });
+    });
+
+    it('keeps ♥ working as a like while also surfacing it as a reaction', () => {
+        const items = [
+            fakeItem({ id: 'c1', author: at('juliet') }),
+            fakeItem({ id: 'L1', like: true, author: at('me'), is_mine: true }),
+            fakeItem({ id: 'e1', emoji: '😀', author: at('bob') }),
+        ];
+        const { post } = computeThreadCounts(items);
+        // Legacy like fields still derive from the ♥ bucket.
+        expect(post.like_count).toBe(1);
+        expect(post.liked_by_me).toBe(true);
+        expect(post.my_like_id).toBe('L1');
+        // ♥ is also just another reaction bucket.
+        expect(post.reactions).toContainEqual({ emoji: '♥', count: 1, reacted_by_me: true });
+        expect(post.reactions).toContainEqual({ emoji: '😀', count: 1, reacted_by_me: false });
+    });
+
+    it('attributes a reaction aimed at a comment to that comment, not the post', () => {
+        const items = [
+            fakeItem({ id: 'c1', author: at('juliet') }),
+            fakeItem({ id: 'e1', emoji: '😀', author: at('bob'), in_reply_to: 'c1', in_reply_to_node: NODE }),
+        ];
+        const { post, byComment } = computeThreadCounts(items);
+        expect(post.reactions).toEqual([]);
+        expect(byComment.get('c1').reactions).toEqual([{ emoji: '😀', count: 1, reacted_by_me: false }]);
+    });
+
+    it('reports empty reactions for an un-reacted thread', () => {
+        const { post } = computeThreadCounts([fakeItem({ id: 'c1', author: at('juliet') })]);
+        expect(post.reactions).toEqual([]);
+        expect(post.my_reaction_ids).toEqual({});
+        expect(post.like_count).toBe(0);
+        expect(post.liked_by_me).toBe(false);
     });
 });
 

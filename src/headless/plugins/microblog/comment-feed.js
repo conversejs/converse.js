@@ -2,7 +2,7 @@ import log from '@converse/log';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { getUniqueId } from '../../utils/index.js';
-import { COMMENTS_PUBLISH_OPTIONS, NS_THREAD, ORPHAN_RESOLVE_ROUNDS } from './constants.js';
+import { COMMENTS_PUBLISH_OPTIONS, LIKE_MARKER, NS_THREAD, ORPHAN_RESOLVE_ROUNDS } from './constants.js';
 import PubSubFeed from './feed.js';
 import PostComments from './post-comments.js';
 import { buildTagId } from './utils.js';
@@ -123,31 +123,43 @@ class CommentFeed extends PubSubFeed {
     }
 
     /**
-     * This thread's real comments (every item except ♥ likes). Excludes any
+     * This thread's real comments (every item except reactions). Excludes any
      * "load older" placeholders the inherited paging seeds into the collection.
      * @returns {import('./post-comment').default[]}
      */
     getComments() {
-        return this.comments.filter((m) => typeof m.isLike === 'function' && !m.isLike());
+        return this.comments.filter((m) => typeof m.isReaction === 'function' && !m.isReaction());
     }
 
     /**
-     * The ♥ likes authored by me that target `parent_id` (a comment's item id),
-     * or the *post* when `parent_id` is omitted. There should be at most one, but
-     * duplicates can accrue (e.g. liking from a second device);
-     * {@link _converse.api.microblog.unlike} retracts all of them. Matches on the
-     * raw `in_reply_to` since our own likes always carry the target's item id.
+     * The reactions with `emoji` authored by me that target `parent_id` (a
+     * comment's item id), or the *post* when `parent_id` is omitted. There should
+     * be at most one, but duplicates can accrue (e.g. reacting from a second
+     * device); {@link _converse.api.microblog.unreact} retracts all of them.
+     * Matches on the raw `in_reply_to` since our own reactions always carry the
+     * target's item id.
+     * @param {string} [parent_id] - A comment's item id; omit for the post.
+     * @param {string} [emoji=LIKE_MARKER] - The reaction emoji; defaults to ♥.
+     * @returns {import('./post-comment').default[]}
+     */
+    getMyReactions(parent_id, emoji = LIKE_MARKER) {
+        return this.comments.filter(
+            (m) =>
+                typeof m.getReactionEmoji === 'function' &&
+                m.getReactionEmoji() === emoji &&
+                m.get('is_mine') &&
+                (parent_id ? m.get('in_reply_to') === parent_id : !m.get('in_reply_to')),
+        );
+    }
+
+    /**
+     * The ♥ likes authored by me that target `parent_id` (the ♥ case of
+     * {@link getMyReactions}), kept for the like/unlike compatibility path.
      * @param {string} [parent_id] - A comment's item id; omit for the post.
      * @returns {import('./post-comment').default[]}
      */
     getMyLikes(parent_id) {
-        return this.comments.filter(
-            (m) =>
-                typeof m.isLike === 'function' &&
-                m.isLike() &&
-                m.get('is_mine') &&
-                (parent_id ? m.get('in_reply_to') === parent_id : !m.get('in_reply_to')),
-        );
+        return this.getMyReactions(parent_id, LIKE_MARKER);
     }
 
     /**
@@ -157,16 +169,26 @@ class CommentFeed extends PubSubFeed {
      * {@link syncCommentCounts}, so the timeline/thread can show counts without
      * re-walking the node.
      *
-     * A ♥ is attributed to the item it targets, so a like on a comment no longer
-     * inflates the post's like count; likes are counted by **distinct liker** (a
-     * person liking from two devices is one like). See {@link computeThreadCounts}.
+     * A reaction is attributed to the item it targets, so one on a comment no
+     * longer inflates the post's counts; reactions are counted **per emoji by
+     * distinct reactor** (a person reacting from two devices is one).
+     * See {@link computeThreadCounts}.
      * @param {string} [parent_id] - A comment's item id; omit for the post.
-     * @returns {{ comment_count?: number, reply_count?: number, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }}
+     * @returns {{ comment_count?: number, reply_count?: number, reactions: Array<{emoji: string, count: number, reacted_by_me: boolean}>, my_reaction_ids: Record<string,string>, like_count: number, liked_by_me: boolean, my_like_id: (string|undefined) }}
      */
     summarize(parent_id) {
         const { post, byComment } = computeThreadCounts(this.comments);
         if (!parent_id) return post;
-        return byComment.get(parent_id) ?? { reply_count: 0, like_count: 0, liked_by_me: false, my_like_id: undefined };
+        return (
+            byComment.get(parent_id) ?? {
+                reply_count: 0,
+                reactions: [],
+                my_reaction_ids: {},
+                like_count: 0,
+                liked_by_me: false,
+                my_like_id: undefined,
+            }
+        );
     }
 
     /**

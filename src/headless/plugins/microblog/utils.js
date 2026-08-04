@@ -253,22 +253,25 @@ function notifyOfThreadActivity(service, node, comments, known) {
 
     for (const comment of comments) {
         if (known.has(comment.get('id')) || comment.get('is_mine')) continue;
-        // Notifiable when it lands on our own post, or replies to / likes one of
-        // our own comments in the loaded thread.
+        // Notifiable when it lands on our own post, or replies to / reacts to one
+        // of our own comments in the loaded thread.
         const parent_id = comment.get('in_reply_to');
         const parent = parent_id ? feed?.messages.get(parent_id) : null;
         if (!post_is_mine && !parent?.get('is_mine')) continue;
 
-        const type = comment.isLike?.() ? 'like' : 'comment';
+        // A ♥ keeps the dedicated 'like' wording; any other single emoji is a
+        // 'reaction' carrying its glyph; everything else is a text comment.
+        const emoji = comment.getReactionEmoji?.() || undefined;
+        const type = comment.isLike?.() ? 'like' : emoji ? 'reaction' : 'comment';
         /**
-         * Triggered for a notifiable microblog event: a comment or ♥ like on one of
-         * the user's own posts, or a reply to / like of one of their own comments.
-         * The notifications plugin listens for this to raise an HTML5 desktop
-         * notification.
+         * Triggered for a notifiable microblog event: a comment, ♥ like or emoji
+         * reaction on one of the user's own posts, or a reply to / reaction on one
+         * of their own comments. The notifications plugin listens for this to raise
+         * an HTML5 desktop notification.
          * @event _converse#microblogNotification
-         * @type {{ type: 'comment'|'like', post: import('./message').default, comment: import('./post-comment').default, ref: { feedJid: string, node: string, itemId: string } }}
+         * @type {{ type: 'comment'|'like'|'reaction', emoji?: string, post: import('./message').default, comment: import('./post-comment').default, ref: { feedJid: string, node: string, itemId: string } }}
          */
-        api.trigger('microblogNotification', { type, post, comment, ref });
+        api.trigger('microblogNotification', { type, emoji, post, comment, ref });
     }
 }
 

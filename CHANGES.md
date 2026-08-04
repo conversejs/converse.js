@@ -17,7 +17,7 @@
 - feat(toolbar): Allow hiding the file upload button via the `fileupload` key of `visible_toolbar_buttons`
 - feat(settings): `api.settings.extend` accepts a `deep_merge` option so an object setting fills in
   defaults instead of being replaced wholesale.
-- Optional browser back/forward and deep links via URL routing, gated behind the new `enable_url_routing` setting (default off)
+- Optional browser back/forward and deep links via URL routing, gated behind the new `enable_url_routing` setting
 - chore(types): Switch TypeScript `moduleResolution` to `bundler`; `@converse/headless` now exposes its
   type declarations via a `./types/*` export instead of consumer-side `paths` mappings.
 

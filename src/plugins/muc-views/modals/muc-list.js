@@ -108,7 +108,7 @@ export default class MUCListModal extends BaseModal {
         const jid = el.getAttribute('data-room-jid');
         const name = el.getAttribute('data-room-name');
         this.modal.hide();
-        api.rooms.open(jid, { name }, true);
+        api.trigger('openConversation', { view: 'room', jid, attrs: { name } });
     }
 
     /**

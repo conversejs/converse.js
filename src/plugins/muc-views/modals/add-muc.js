@@ -108,7 +108,7 @@ export default class AddMUCModal extends BaseModal {
             jid = `${escapeNode(getNodeFromJid(data.jid))}@${getDomainFromJid(data.jid)}`.toLowerCase();
         }
 
-        api.rooms.open(jid, { ...settings, jid }, true);
+        api.trigger('openConversation', { view: 'room', jid, attrs: { ...settings, jid } });
         form.reset();
         this.modal.hide();
     }

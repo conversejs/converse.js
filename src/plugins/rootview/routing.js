@@ -128,15 +128,64 @@ export function routeApp() {
 }
 
 /**
+ * The last hash each app was on, so switching away and back restores the app's
+ * sub-route (the open chat, a focused Social post) instead of dropping to its bare
+ * root. Session-scoped: reset on logout via {@link clearAppRoutes}.
+ * @type {Record<string, string>}
+ */
+let last_app_routes = {};
+
+/** Forget the remembered per-app routes (e.g. on logout, to avoid restoring the
+ * previous user's chat). */
+export function clearAppRoutes() {
+    last_app_routes = {};
+}
+
+/** Remember the sub-route the app currently in the hash is on, so a later switch
+ * back to it can restore it. */
+function rememberCurrentRoute() {
+    const current = appOfHash(location.hash);
+    if (current) last_app_routes[current] = location.hash;
+}
+
+/**
+ * The hash to open when switching to `name`: the app's last sub-route (the open
+ * chat, a focused Social post) if we've been there, else its bare root.
+ * @param {string} name
+ * @returns {string}
+ */
+export function appRouteFor(name) {
+    return last_app_routes[name] ?? `#converse/${name}`;
+}
+
+/**
+ * Switch to an app by pushing its remembered route into the hash (a history entry,
+ * so browser back/forward walks the app history and the app reopens where you left
+ * it). The outgoing app's route is stashed first so the reverse switch restores it
+ * too. Used by the app-switcher when URL routing is on.
+ * @param {string} name
+ */
+export function navigateToApp(name) {
+    rememberCurrentRoute();
+    location.hash = appRouteFor(name);
+}
+
+/**
  * `appSwitch` handler: reflect a programmatic app switch into the URL without a
  * loop. `replaceState` fires no `hashchange` (so `routeApp` doesn't re-run), and
  * comparing only the hash's leading segment avoids clobbering a sub-route such as
  * `#converse/social/profile/...`.
+ *
+ * The outgoing app's sub-route is stashed before it's overwritten, and the incoming
+ * app's last route restored, so a programmatic Chat -> Social -> Chat reopens the
+ * conversation you left. (The app-switcher UI takes {@link navigateToApp} instead,
+ * to get a history entry.)
  * @param {import('./types').App} app
  */
 export function syncAppToHash(app) {
     if (!isURLRoutingEnabled() || api.settings.get('view_mode') !== 'fullscreen') return;
     if (!app?.name || appOfHash(location.hash) === app.name) return;
 
-    history.replaceState(history.state, '', `#converse/${app.name}`);
+    rememberCurrentRoute();
+    history.replaceState(history.state, '', appRouteFor(app.name));
 }

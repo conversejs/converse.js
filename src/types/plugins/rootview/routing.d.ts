@@ -20,11 +20,34 @@ export function appOfHash(hash?: string): "chat" | "social" | null;
  * a plain reload preserves the persisted `active_app` instead of forcing chat.
  */
 export function routeApp(): void;
+/** Forget the remembered per-app routes (e.g. on logout, to avoid restoring the
+ * previous user's chat). */
+export function clearAppRoutes(): void;
+/**
+ * The hash to open when switching to `name`: the app's last sub-route (the open
+ * chat, a focused Social post) if we've been there, else its bare root.
+ * @param {string} name
+ * @returns {string}
+ */
+export function appRouteFor(name: string): string;
+/**
+ * Switch to an app by pushing its remembered route into the hash (a history entry,
+ * so browser back/forward walks the app history and the app reopens where you left
+ * it). The outgoing app's route is stashed first so the reverse switch restores it
+ * too. Used by the app-switcher when URL routing is on.
+ * @param {string} name
+ */
+export function navigateToApp(name: string): void;
 /**
  * `appSwitch` handler: reflect a programmatic app switch into the URL without a
  * loop. `replaceState` fires no `hashchange` (so `routeApp` doesn't re-run), and
  * comparing only the hash's leading segment avoids clobbering a sub-route such as
  * `#converse/social/profile/...`.
+ *
+ * The outgoing app's sub-route is stashed before it's overwritten, and the incoming
+ * app's last route restored, so a programmatic Chat -> Social -> Chat reopens the
+ * conversation you left. (The app-switcher UI takes {@link navigateToApp} instead,
+ * to get a history entry.)
  * @param {import('./types').App} app
  */
 export function syncAppToHash(app: import("./types").App): void;

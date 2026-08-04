@@ -130,6 +130,14 @@
     </implements>
     <implements>
       <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0147.html"/>
+        <xmpp:version>1.2</xmpp:version>
+        <xmpp:status>partial</xmpp:status>
+        <xmpp:note>Clicking an xmpp: URI dispatches the feasible query actions: message, join, roster (add a contact), subscribe/unsubscribe and remove. vCard, ad-hoc command, disco, register and file-transfer query types are not handled.</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0153.html"/>
         <xmpp:since>11.0.0</xmpp:since>
         <xmpp:status>complete</xmpp:status>

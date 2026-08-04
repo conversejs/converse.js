@@ -110,6 +110,12 @@ export async function onWindowStateChanged() {
  * @param {Event} [event]
  */
 export async function routeToRoom(event) {
+    // In fullscreen with URL routing on, the Chat app's own router owns the
+    // `#converse/room...` space (it also accepts this legacy `?jid=` form and
+    // canonicalizes it), so bow out to avoid double-opening.
+    if (api.settings.get('enable_url_routing') && api.settings.get('view_mode') === 'fullscreen') {
+        return;
+    }
     if (!location.hash.startsWith('#converse/room?jid=')) {
         return;
     }

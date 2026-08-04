@@ -9,7 +9,7 @@ export default class NewChatModal extends BaseModal {
      * @param {HTMLFormElement} _form
      * @param {string} jid
      */
-    afterSubmission(_form: HTMLFormElement, jid: string): Promise<void>;
+    afterSubmission(_form: HTMLFormElement, jid: string): void;
     /**
      * @param {SubmitEvent} ev
      */

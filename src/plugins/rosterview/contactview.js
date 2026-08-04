@@ -86,7 +86,7 @@ export default class RosterContactView extends ObservableElement {
      */
     openChat(ev) {
         ev?.preventDefault?.();
-        api.chats.open(this.model.get('jid'), {}, true);
+        api.trigger('openConversation', { view: 'chat', jid: this.model.get('jid') });
     }
 
     /**

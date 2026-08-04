@@ -295,6 +295,25 @@ api.listen.on('beforeMessageCreated', (chatbox, attrs, data) => {
 });
 ```
 
+**Apps own navigation; building blocks announce intent.** An app (`src/apps/*`, e.g.
+the Chat and Social apps) is itself a plugin that composes lower-level view plugins
+(`rosterview`, `muc-views`, etc.). Those building blocks must not import app modules to
+navigate: that inverts the dependency arrow (plugin -> app) and couples a reusable view
+to a specific app shell. Instead the building block triggers an event and the app
+handles it:
+
+```javascript
+// In a building block (e.g. rosterview/contactview.js):
+api.trigger('openConversation', { view: 'chat', jid });
+
+// In the app plugin (apps/chat/index.js), registered at initialize() so it fires
+// regardless of the view's mount state or the view_mode:
+api.listen.on('openConversation', ({ view, jid, attrs }) => openConversationRouted(view, jid, attrs));
+```
+
+The Social app follows the same convention (`openSocialFeed`, `openMicroblogPost`). Use
+a hook instead of an event only when the call site genuinely needs a return value.
+
 ### Import Patterns
 
 ```javascript

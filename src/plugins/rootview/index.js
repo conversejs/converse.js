@@ -2,7 +2,7 @@ import { _converse, api, converse } from '@converse/headless';
 import app_api from './api.js';
 import ConverseRoot from './root.js';
 import { ensureElement } from './utils.js';
-import { routeApp, syncAppToHash } from './routing.js';
+import { routeApp, syncAppToHash, clearAppRoutes } from './routing.js';
 import './background.js';
 import './app-container.js';
 
@@ -37,6 +37,7 @@ converse.plugins.add('converse-rootview', {
         api.listen.on('connected', routeApp);
         api.listen.on('reconnected', routeApp);
         api.listen.on('appSwitch', syncAppToHash);
+        api.listen.on('clearSession', clearAppRoutes);
 
         // Only define the element now, otherwise it it's already in the DOM
         // before `converse.initialized` has been called it will render too

@@ -3,6 +3,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { until } from 'lit/directives/until.js';
 import { __ } from 'i18n';
 import { _converse, u } from '@converse/headless';
+import { isJIDName, shortenJID } from '../utils.js';
 
 /**
  * Whether an Atom `<link rel="enclosure">` is an image, by its MIME type or,
@@ -48,6 +49,14 @@ export default (el) => {
     const posts = el.windowedItems; // Only render a window of the feed.
     const is_gallery = el.feed?.isGallery?.() ?? false; // Gallery posts render as a grid
 
+    // The heading and the address under it, elided the same way the timeline
+    // elides them: a gateway JID is opaque and long enough to lose its domain to
+    // a plain ellipsis. An author with no name to show is named by their JID, so
+    // the two lines would otherwise be the same string twice; show it once.
+    const name_is_jid = isJIDName(name, el.jid);
+    const heading = name_is_jid ? shortenJID(el.jid) : name;
+    const address = name_is_jid ? '' : shortenJID(el.jid);
+
     // Show the author's banner when they've published one and it loads. Otherwise
     // fall back to a Converse logo watermark.
     const banner_url = profile.get('banner_url');
@@ -92,8 +101,10 @@ export default (el) => {
             <div class="social-profile__header social-profile__header--with-banner">
                 <span class="social-profile__avatar">${avatar}</span>
                 <div class="social-profile__identity">
-                    <span class="social-profile__name" style="${author_style}">${name}</span>
-                    <span class="social-profile__jid">${el.jid}</span>
+                    <span class="social-profile__name" style="${author_style}" title="${name_is_jid ? el.jid : name}"
+                        >${heading}</span
+                    >
+                    ${address ? html`<span class="social-profile__jid" title="${el.jid}">${address}</span>` : ''}
                 </div>
                 ${el.isOwn
                     ? html`<button

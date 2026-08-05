@@ -857,6 +857,98 @@ describe('The social feed', function () {
             expect(reposted.querySelector('.social-post__repost').textContent).toContain('You');
         }),
     );
+
+    it(
+        "elides a bridged author's npub in the post header and the via line",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+            const bare_jid = _converse.bare_jid;
+
+            // A Nostr author bridged in by Renostr: a 63-character npub for a
+            // localpart and, for an author whose Nostr profile the bridge hasn't
+            // seen, that same npub as the Atom <name>. Each is a single
+            // unbreakable word wider than the whole post column.
+            const npub = 'npub1sn0wdenkukak0d94a5yjmwan4qk7zx4a58swp0kfrzhu9fs5ynnq5kctku';
+            const author_jid = `${npub}@renostr.chat`;
+            const short = 'npub1sn0wd…5kctku@renostr.chat';
+
+            vi.spyOn(api.pubsub, 'publish').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub, 'subscribe').mockResolvedValue(undefined);
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            // A topic node on the same gateway, so a post arriving through it is
+            // attributed to a service JID just as long.
+            const topic = await api.microblog.feeds.get(author_jid, 'Phoronix', true);
+
+            const el = mountSocialFeed();
+            await u.waitUntil(() => el.querySelector('.social-rich__editable'));
+            await api.microblog.follow(author_jid);
+
+            const makeNostrPost = (id, body, name, published) => stx`
+                <message xmlns="jabber:client" from="${author_jid}" to="${bare_jid}" type="headline">
+                  <event xmlns="${PUBSUB_EVENT}">
+                    <items node="${MICROBLOG_NODE}">
+                      <item id="${id}" publisher="${author_jid}">
+                        <entry xmlns="${ATOM}">
+                          <id>tag:renostr.chat,2024:${id}</id>
+                          <title type="text">${body}</title>
+                          <author><name>${name}</name><uri>xmpp:${author_jid}</uri></author>
+                          <published>${published}</published>
+                        </entry>
+                      </item>
+                    </items>
+                  </event>
+                </message>`;
+
+            // With no name to show, the name and the handle would be the same
+            // identifier twice: it's shown once instead, elided in the middle so
+            // the domain survives, with the whole JID a hover away.
+            receive(_converse, makeNostrPost('nostr-1', 'gm', npub, '2024-01-01T18:30:02Z'));
+            const post = await u.waitUntil(() =>
+                Array.from(el.querySelectorAll('.social-post')).find((a) => a.textContent.includes('gm')),
+            );
+            const author = post.querySelector('.social-post__author');
+            expect(author.textContent.trim()).toBe(short);
+            expect(author.getAttribute('title')).toBe(author_jid);
+            expect(post.querySelector('.social-post__jid')).toBe(null);
+
+            // Which is what keeps the timestamp and the action buttons on the
+            // row, rather than pushed off past the feed's right edge.
+            const header = post.querySelector('.social-post__header');
+            expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
+
+            // Once there's a name to show it heads the post, and the elided JID
+            // goes back to being the handle beside it.
+            receive(_converse, makeNostrPost('nostr-2', 'gn', 'Ed', '2024-01-02T18:30:02Z'));
+            const named = await u.waitUntil(() =>
+                Array.from(el.querySelectorAll('.social-post')).find((a) => a.textContent.includes('gn')),
+            );
+            expect(named.querySelector('.social-post__author').textContent.trim()).toBe('Ed');
+            const handle = named.querySelector('.social-post__jid');
+            expect(handle.textContent.trim()).toBe(short);
+            expect(handle.getAttribute('title')).toBe(author_jid);
+
+            // The source line elides the service the same way, hands its tooltip
+            // over to the unelided attribution, and stays inside the post.
+            await topic.addItems([
+                stx`
+                <item id="p1" publisher="${author_jid}">
+                  <entry xmlns="${ATOM}">
+                    <title type="text">OpenCL 3.1 on Asahi</title>
+                    <id>tag:renostr.chat,2026:p1</id>
+                    <published>2026-07-15T01:00:00Z</published>
+                  </entry>
+                </item>`.tree(),
+            ]);
+            const via = await u.waitUntil(() => el.querySelector('.social-post__via'));
+            expect(via.textContent.trim()).toBe(`via Phoronix on ${short}`);
+            expect(via.getAttribute('title')).toBe(`via Phoronix on ${author_jid}`);
+            const via_post = via.closest('.social-post');
+            expect(via.getBoundingClientRect().right).toBeLessThanOrEqual(
+                via_post.getBoundingClientRect().right + 1,
+            );
+        }),
+    );
 });
 
 describe('The Discover modal suggestions', function () {
@@ -2254,9 +2346,11 @@ describe('The profile Following tab', function () {
             expect(profile.getAttribute('jid')).toBe(_converse.bare_jid);
             const list = await u.waitUntil(() => profile.querySelector('converse-social-following'));
             await u.waitUntil(() => list.querySelectorAll('.social-following__item').length === 2);
-            const jids = Array.from(list.querySelectorAll('.social-following__jid')).map((n) => n.textContent.trim());
-            expect(jids).toContain('mercutio@montague.lit');
-            expect(jids).toContain('juliet@capulet.lit');
+            // Each row names the JID it follows: as the address under the label,
+            // or (as here, with no name resolved for either) as the label itself.
+            const rows = Array.from(list.querySelectorAll('.social-following__identity')).map((n) => n.textContent);
+            expect(rows.some((t) => t.includes('mercutio@montague.lit'))).toBe(true);
+            expect(rows.some((t) => t.includes('juliet@capulet.lit'))).toBe(true);
             expect(tab(profile, 'Following').classList.contains('social-profile__tab--active')).toBe(true);
         }),
     );
@@ -2394,9 +2488,11 @@ describe('The profile Following tab', function () {
             await u.waitUntil(() => list.querySelectorAll('.social-following__item').length === 2);
             // Another account's list is read-only (no Unfollow).
             expect(list.querySelector('.social-following__unfollow')).toBe(null);
-            const jids = Array.from(list.querySelectorAll('.social-following__jid')).map((n) => n.textContent.trim());
-            expect(jids).toContain('romeo@montague.lit');
-            expect(jids).toContain('juliet@capulet.lit');
+            // Each row names the JID it follows: as the address under the label,
+            // or (as here, with no name resolved for either) as the label itself.
+            const rows = Array.from(list.querySelectorAll('.social-following__identity')).map((n) => n.textContent);
+            expect(rows.some((t) => t.includes('romeo@montague.lit'))).toBe(true);
+            expect(rows.some((t) => t.includes('juliet@capulet.lit'))).toBe(true);
         }),
     );
 
@@ -2451,6 +2547,54 @@ describe('The profile Following tab', function () {
             );
             expect(addresses).toContain('alt.movim.eu');
             expect(addresses).toContain('pubsub.movim.eu');
+        }),
+    );
+
+    it(
+        "shows a bridged author's npub once, elided, in the profile header and the follow list",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            // A Nostr author with no profile for Renostr to name them by: the
+            // vCard's <FN> falls back to the npub (the JID's localpart), so the
+            // header and the row would each carry that same opaque string twice.
+            // The shared vCard mock would instead invent a name for any JID, so
+            // this author's vCard is served the way the bridge serves it.
+            const npub = 'npub1sn0wdenkukak0d94a5yjmwan4qk7zx4a58swp0kfrzhu9fs5ynnq5kctku';
+            const author_jid = `${npub}@renostr.chat`;
+            const short = 'npub1sn0wd…5kctku@renostr.chat';
+
+            const mock_vcard_get = api.vcard.get;
+            vi.spyOn(api.vcard, 'get').mockImplementation((model, force) => {
+                const jid = typeof model === 'string' ? model : model?.get?.('jid');
+                if (jid !== author_jid) return mock_vcard_get(model, force);
+                return Promise.resolve({ fullname: npub, vcard_updated: new Date().toISOString() });
+            });
+
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+            vi.spyOn(api.microblog, 'following').mockResolvedValue([
+                { server: author_jid, node: MICROBLOG_NODE, title: undefined },
+            ]);
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
+
+            /** @type {any} */ (el).onProfileSelected(author_jid, undefined, 'posts');
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+            const name = await u.waitUntil(() => profile.querySelector('.social-profile__name'));
+            expect(name.textContent.trim()).toBe(short);
+            expect(name.getAttribute('title')).toBe(author_jid);
+            expect(profile.querySelector('.social-profile__jid')).toBe(null);
+
+            // Same in a follow list: one line, elided, whole JID on hover.
+            /** @type {any} */ (el).onProfileSelected('somebody@renostr.chat', undefined, 'following');
+            const list = await u.waitUntil(() => el.querySelector('converse-social-following'));
+            const row = await u.waitUntil(() => list.querySelector('.social-following__item'));
+            const label = row.querySelector('.social-following__name');
+            expect(label.textContent.trim()).toBe(short);
+            expect(label.getAttribute('title')).toBe(author_jid);
+            expect(row.querySelector('.social-following__jid')).toBe(null);
         }),
     );
 

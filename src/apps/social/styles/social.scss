@@ -420,6 +420,15 @@
             min-width: 0;
         }
 
+        // Both identity lines are clipped at the row's edge, so a name that's
+        // really a gateway JID can't push the Unfollow button off it.
+        .social-following__name,
+        .social-following__jid {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .social-following__name {
             font-weight: bold;
         }
@@ -427,9 +436,6 @@
         .social-following__jid {
             font-size: 0.85em;
             color: var(--subdued-color);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
         .social-following__unfollow {
@@ -872,6 +878,20 @@
                 cursor: pointer;
             }
 
+            // The identity pair (name + handle) yields to the timestamp and the
+            // action buttons, which keep their size and their place at the end
+            // of the row. Both truncate rather than push the row wider than the
+            // post: a bridged author's name and JID are single unbreakable words
+            // (a Renostr localpart is a 63-character npub), and `min-width: 0`
+            // is what lets a flex item shrink below such a word at all.
+            &__author,
+            &__jid {
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
             &__author {
                 font-weight: bold;
 
@@ -891,10 +911,22 @@
             &__jid {
                 font-weight: normal;
                 color: var(--subdued-color);
+                // The handle takes only what the name, timestamp and buttons
+                // leave over: a zero flex basis it grows into, rather than a
+                // real width it would have to be shrunk back out of. Shrinking
+                // is proportional to basis and never prioritised, so a handle
+                // with a real basis would still nibble a fraction of a pixel off
+                // the name beside it, and half a pixel is a whole ellipsis:
+                // four characters lost from a name that had room to spare.
+                flex: 1 1 0;
             }
 
             &__time {
+                // The auto margin only has free space to absorb when there's no
+                // handle beside the name to have grown into it first.
                 margin-left: auto;
+                flex-shrink: 0;
+                white-space: nowrap;
                 font-size: 0.8em;
                 opacity: 0.6;
             }
@@ -905,6 +937,14 @@
             // source is distinct from the publisher shown above.
             &__via {
                 display: inline-block;
+                // One line, clipped at the post's edge: the node name is a raw
+                // node id for a feed we're only browsing, and the service can be
+                // a gateway JID, either of which is an unbreakable word wide
+                // enough to run past the column on its own.
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
                 margin-bottom: 0.5em;
                 font-size: 0.8em;
                 color: var(--subdued-color) !important;
@@ -921,6 +961,7 @@
                 background: none;
                 border: none;
                 cursor: pointer;
+                flex-shrink: 0;
                 padding: 0 0.25em;
                 color: var(--foreground-color);
                 opacity: 0.5;

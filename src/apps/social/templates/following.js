@@ -1,6 +1,7 @@
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { __ } from 'i18n';
+import { isJIDName, shortenJID } from '../utils.js';
 
 /**
  * One followed feed: avatar, label and the address it lives at, click to open it.
@@ -10,6 +11,12 @@ import { __ } from 'i18n';
  * @param {{ jid: string, node: string, profile: import('@converse/headless').MicroblogProfile, label: string }} entry
  */
 function tplRow(el, { jid, node, profile, label }) {
+    // Both lines are elided as in the timeline, and collapse to one when the
+    // label is nothing but the JID (a followed author with no name to show).
+    const label_is_jid = isJIDName(label, jid);
+    const heading = label_is_jid ? shortenJID(jid) : label;
+    const address = label_is_jid ? '' : shortenJID(jid);
+
     return html`<li
         class="social-following__item"
         role="button"
@@ -26,8 +33,8 @@ function tplRow(el, { jid, node, profile, label }) {
             width="40"
         ></converse-avatar>
         <span class="social-following__identity">
-            <span class="social-following__name">${label}</span>
-            <span class="social-following__jid">${jid}</span>
+            <span class="social-following__name" title="${label_is_jid ? jid : label}">${heading}</span>
+            ${address ? html`<span class="social-following__jid" title="${jid}">${address}</span>` : ''}
         </span>
         ${el.isOwn
             ? html`<button

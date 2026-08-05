@@ -9,6 +9,7 @@ import { renderImage } from 'shared/texture/directives/image.js';
 import tplVideo from 'shared/texture/templates/video.js';
 import tplAudio from 'shared/texture/templates/audio.js';
 import { getExtraCategories, tplHashtag } from '../texture.js';
+import { isJIDName, shortenJID } from '../utils.js';
 import 'shared/components/time.js';
 
 /**
@@ -56,10 +57,18 @@ export default (el) => {
     const time = m.get('time');
     const name = m.get('displayName');
 
+    const author_jid = m.get('author_jid');
+    const identity_jid = author_jid ?? m.getAuthorJID();
+    const name_is_jid = isJIDName(name, identity_jid);
+    const author = name_is_jid ? shortenJID(identity_jid) : name;
+    const handle = name_is_jid ? '' : shortenJID(author_jid);
+
     // The community/topic feed this post came through (a news/topic node, not a
     // personal microblog), so the reader can open its feed. Null for own-author
-    // posts, where naming the feed would just repeat the author. See getSourceFeed.
+    // posts, where naming the feed would just repeat the author.
     const source = m.getSourceFeed();
+    const via_full = source ? __('via %1$s on %2$s', source.title, source.jid) : '';
+    const via = source ? __('via %1$s on %2$s', source.title, shortenJID(source.jid)) : '';
 
     // For a repost the main author (avatar + name + handle) is the *original*
     // poster; this eyebrow names who repeated it into the feed, so the two are
@@ -69,8 +78,7 @@ export default (el) => {
     // Render one Atom text construct. Atom-native feeds (blogs, Movim) send
     // `type="html"`/`"xhtml"` markup, kept as the `_xhtml` variant: render it
     // sanitized so links and formatting survive rather than showing as literal
-    // tags. Plain-text constructs go through the shared texture pipeline: URLs,
-    // media, emojis and XEP-0393 styling, plus social-only hashtags.
+    // tags. Plain-text constructs go through the shared texture pipeline.
     const render_media = api.settings.get('render_media');
     const renderConstruct = (/** @type {string} */ text, /** @type {string} */ xhtml) =>
         xhtml
@@ -161,12 +169,14 @@ export default (el) => {
 
     return html`
         <article class="social-post ${m.get('is_mine') ? 'social-post--mine' : ''}">
-            ${m.get('is_repost')
-                ? html`<div class="social-post__repost">
-                      <converse-icon size="0.8em" class="fa fa-retweet"></converse-icon>
-                      <span>${__('%1$s reposted', reposter)}</span>
-                  </div>`
-                : ''}
+            ${
+                m.get('is_repost')
+                    ? html`<div class="social-post__repost">
+                          <converse-icon size="0.8em" class="fa fa-retweet"></converse-icon>
+                          <span>${__('%1$s reposted', reposter)}</span>
+                      </div>`
+                    : ''
+            }
             <div class="social-post__row">
                 <a
                     class="show-msg-author-modal social-post__avatar"
@@ -179,179 +189,246 @@ export default (el) => {
                         <a
                             class="show-msg-author-modal social-post__author"
                             style="${author_style}"
+                            title="${name_is_jid ? identity_jid : __('View profile')}"
                             @click=${(ev) => el.showProfile(ev)}
-                            >${name}</a
+                            >${author}</a
                         >
-                        <span class="social-post__jid">${m.get('author_jid')}</span>
-
-                        ${time
-                            ? html`<converse-time timestamp="${time}" class="social-post__time"></converse-time>`
-                            : ''}
-                        ${el._editing
-                            ? ''
-                            : el.threaditem
-                            ? html`
-                                  <button
-                                      type="button"
-                                      class="social-post__action social-post__action--comment"
-                                      title="${__('Reply')}"
-                                      aria-label="${__('Reply')}"
-                                      @click=${() => el.onDrillIn()}
-                                  >
-                                      <converse-icon size="1em" class="fa fa-comments"></converse-icon>
-                                      ${m.get('reply_count')
-                                          ? html`<span class="social-post__count">${m.get('reply_count')}</span>`
-                                          : ''}
-                                  </button>
-                                  <button
-                                      type="button"
-                                      class="social-post__action social-post__action--like ${m.get('liked_by_me')
-                                          ? 'social-post__action--liked'
-                                          : ''}"
-                                      title="${m.get('liked_by_me') ? __('Unlike') : __('Like')}"
-                                      aria-label="${m.get('liked_by_me') ? __('Unlike') : __('Like')}"
-                                      aria-pressed="${m.get('liked_by_me') ? 'true' : 'false'}"
-                                      ?disabled=${el._liking}
-                                      @click=${() => el.onToggleLike()}
-                                  >
-                                      <converse-icon size="1em" class="fa fa-heart"></converse-icon>
-                                      ${m.get('like_count')
-                                          ? html`<span class="social-post__count">${m.get('like_count')}</span>`
-                                          : ''}
-                                  </button>
-                              `
-                            : el.compact
-                            ? ''
-                            : html`
-                                  <button
-                                      type="button"
-                                      class="social-post__action social-post__action--comment"
-                                      title="${__('Comments')}"
-                                      aria-label="${__('Comments')}"
-                                      @click=${() => el.onComments()}
-                                  >
-                                      <converse-icon size="1em" class="fa fa-comments"></converse-icon>
-                                      ${m.get('comment_count')
-                                          ? html`<span class="social-post__count">${m.get('comment_count')}</span>`
-                                          : ''}
-                                  </button>
-                                  <button
-                                      type="button"
-                                      class="social-post__action social-post__action--like ${m.get('liked_by_me')
-                                          ? 'social-post__action--liked'
-                                          : ''}"
-                                      title="${m.get('liked_by_me') ? __('Unlike') : __('Like')}"
-                                      aria-label="${m.get('liked_by_me') ? __('Unlike') : __('Like')}"
-                                      aria-pressed="${m.get('liked_by_me') ? 'true' : 'false'}"
-                                      ?disabled=${el._liking}
-                                      @click=${() => el.onToggleLike()}
-                                  >
-                                      <converse-icon size="1em" class="fa fa-heart"></converse-icon>
-                                      ${m.get('like_count')
-                                          ? html`<span class="social-post__count">${m.get('like_count')}</span>`
-                                          : ''}
-                                  </button>
-                                  ${m.get('is_mine')
-                                      ? html`${m.get('is_repost')
-                                                ? ''
-                                                : html`<button
-                                                      type="button"
-                                                      class="social-post__action social-post__action--edit"
-                                                      title="${__('Edit')}"
-                                                      aria-label="${__('Edit')}"
-                                                      @click=${() => el.onEdit()}
-                                                  >
-                                                      <converse-icon size="1em" class="fa fa-pen"></converse-icon>
-                                                  </button>`}
-                                            <button
-                                                type="button"
-                                                class="social-post__action social-post__action--delete"
-                                                title="${__('Delete')}"
-                                                aria-label="${__('Delete')}"
-                                                @click=${() => el.onRetract()}
-                                            >
-                                                <converse-icon size="1em" class="fa fa-trash-alt"></converse-icon>
-                                            </button>`
-                                      : html`<button
+                        ${handle ? html`<span class="social-post__jid" title="${author_jid}">${handle}</span>` : ''}
+                        ${
+                            time
+                                ? html`<converse-time timestamp="${time}" class="social-post__time"></converse-time>`
+                                : ''
+                        }
+                        ${
+                            el._editing
+                                ? ''
+                                : el.threaditem
+                                  ? html`
+                                        <button
                                             type="button"
-                                            class="social-post__action social-post__action--repost"
-                                            title="${__('Repost')}"
-                                            aria-label="${__('Repost')}"
-                                            ?disabled=${el._reposting}
-                                            @click=${() => el.onRepost()}
+                                            class="social-post__action social-post__action--comment"
+                                            title="${__('Reply')}"
+                                            aria-label="${__('Reply')}"
+                                            @click=${() => el.onDrillIn()}
                                         >
-                                            <converse-icon size="1em" class="fa fa-retweet"></converse-icon>
-                                        </button>`}
-                              `}
+                                            <converse-icon size="1em" class="fa fa-comments"></converse-icon>
+                                            ${
+                                                m.get('reply_count')
+                                                    ? html`<span class="social-post__count"
+                                                          >${m.get('reply_count')}</span
+                                                      >`
+                                                    : ''
+                                            }
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="social-post__action social-post__action--like ${
+                                                m.get('liked_by_me') ? 'social-post__action--liked' : ''
+                                            }"
+                                            title="${m.get('liked_by_me') ? __('Unlike') : __('Like')}"
+                                            aria-label="${m.get('liked_by_me') ? __('Unlike') : __('Like')}"
+                                            aria-pressed="${m.get('liked_by_me') ? 'true' : 'false'}"
+                                            ?disabled=${el._liking}
+                                            @click=${() => el.onToggleLike()}
+                                        >
+                                            <converse-icon size="1em" class="fa fa-heart"></converse-icon>
+                                            ${
+                                                m.get('like_count')
+                                                    ? html`<span class="social-post__count"
+                                                          >${m.get('like_count')}</span
+                                                      >`
+                                                    : ''
+                                            }
+                                        </button>
+                                    `
+                                  : el.compact
+                                    ? ''
+                                    : html`
+                                          <button
+                                              type="button"
+                                              class="social-post__action social-post__action--comment"
+                                              title="${__('Comments')}"
+                                              aria-label="${__('Comments')}"
+                                              @click=${() => el.onComments()}
+                                          >
+                                              <converse-icon size="1em" class="fa fa-comments"></converse-icon>
+                                              ${
+                                                  m.get('comment_count')
+                                                      ? html`<span class="social-post__count"
+                                                            >${m.get('comment_count')}</span
+                                                        >`
+                                                      : ''
+                                              }
+                                          </button>
+                                          <button
+                                              type="button"
+                                              class="social-post__action social-post__action--like ${
+                                                  m.get('liked_by_me') ? 'social-post__action--liked' : ''
+                                              }"
+                                              title="${m.get('liked_by_me') ? __('Unlike') : __('Like')}"
+                                              aria-label="${m.get('liked_by_me') ? __('Unlike') : __('Like')}"
+                                              aria-pressed="${m.get('liked_by_me') ? 'true' : 'false'}"
+                                              ?disabled=${el._liking}
+                                              @click=${() => el.onToggleLike()}
+                                          >
+                                              <converse-icon size="1em" class="fa fa-heart"></converse-icon>
+                                              ${
+                                                  m.get('like_count')
+                                                      ? html`<span class="social-post__count"
+                                                            >${m.get('like_count')}</span
+                                                        >`
+                                                      : ''
+                                              }
+                                          </button>
+                                          ${
+                                              m.get('is_mine')
+                                                  ? html`${
+                                                            m.get('is_repost')
+                                                                ? ''
+                                                                : html`<button
+                                                                      type="button"
+                                                                      class="social-post__action social-post__action--edit"
+                                                                      title="${__('Edit')}"
+                                                                      aria-label="${__('Edit')}"
+                                                                      @click=${() => el.onEdit()}
+                                                                  >
+                                                                      <converse-icon
+                                                                          size="1em"
+                                                                          class="fa fa-pen"
+                                                                      ></converse-icon>
+                                                                  </button>`
+                                                        }
+                                                        <button
+                                                            type="button"
+                                                            class="social-post__action social-post__action--delete"
+                                                            title="${__('Delete')}"
+                                                            aria-label="${__('Delete')}"
+                                                            @click=${() => el.onRetract()}
+                                                        >
+                                                            <converse-icon
+                                                                size="1em"
+                                                                class="fa fa-trash-alt"
+                                                            ></converse-icon>
+                                                        </button>`
+                                                  : html`<button
+                                                        type="button"
+                                                        class="social-post__action social-post__action--repost"
+                                                        title="${__('Repost')}"
+                                                        aria-label="${__('Repost')}"
+                                                        ?disabled=${el._reposting}
+                                                        @click=${() => el.onRepost()}
+                                                    >
+                                                        <converse-icon size="1em" class="fa fa-retweet"></converse-icon>
+                                                    </button>`
+                                          }
+                                      `
+                        }
                     </header>
-                    ${source && !el.hidesource
-                        ? html`<a
-                              class="social-post__via"
-                              @click=${(/** @type {MouseEvent} */ ev) => el.showSourceFeed(ev)}
-                              title="${__('View this feed')}"
-                              >${__('via %1$s on %2$s', source.title, source.jid)}</a
-                          >`
-                        : ''}
-                    ${el._editing
-                        ? html`<converse-social-compose-rich
-                              class="social-post__edit"
-                              .model=${m.collection?.feed}
-                              .post=${m}
-                              @edited=${() => el.onEditDone()}
-                              @canceledit=${() => el.onEditDone()}
-                          ></converse-social-compose-rich>`
-                        : html`
-                    <div class="social-post__body" @click=${(/** @type {MouseEvent} */ ev) => el.onBodyClicked(ev)}>
-                        ${title || title_xhtml
-                            ? html`<div
-                                  class="social-post__title ${title_is_heading ? 'social-post__title--heading' : ''}"
-                              >
-                                  ${renderConstruct(title, title_xhtml)}
-                              </div>`
-                            : ''}
-                        ${summary || summary_xhtml
-                            ? html`<div class="social-post__summary ${content ? 'social-post__summary--excerpt' : ''}">
-                                  ${renderConstruct(summary, summary_xhtml)}
-                              </div>`
-                            : ''}
-                        ${content || content_xhtml
-                            ? html`<div class="social-post__content">${renderConstruct(content, content_xhtml)}</div>`
-                            : ''}
-                        ${enclosures.length
-                            ? html`<div class="social-post__media">
-                                  ${enclosures.map(
-                                      (enc) => html`<div class="social-post__enclosure">${renderEnclosure(enc)}</div>`,
-                                  )}
-                              </div>`
-                            : ''}
-                        ${extra_categories.length
-                            ? html`<div class="social-post__tags">
-                                  ${extra_categories.map((tag) => tplHashtag(tag))}
-                              </div>`
-                            : ''}
-                        ${geoloc
-                            ? html`<div class="social-post__location">
-                                  <converse-icon size="0.9em" class="fa fa-globe"></converse-icon>
-                                  ${geoloc.lat !== undefined
-                                      ? html`<a
-                                            href="${geolocMapUrl(geoloc)}"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            >${geolocLabel(geoloc)}</a
-                                        >`
-                                      : html`<span>${geolocLabel(geoloc)}</span>`}
-                              </div>`
-                            : ''}
-                        ${alternate_url && !body_links_to_source
-                            ? html`<div class="social-post__source">
-                                  <a href="${alternate_url}" target="_blank" rel="noopener noreferrer">
-                                      <converse-icon size="0.9em" class="fa fa-external-link-alt"></converse-icon>
-                                      <span>${__('Read more')}</span>
-                                  </a>
-                              </div>`
-                            : ''}
-                    </div>
-                          `}
+                    ${
+                        source && !el.hidesource
+                            ? html`<a
+                                  class="social-post__via"
+                                  @click=${(/** @type {MouseEvent} */ ev) => el.showSourceFeed(ev)}
+                                  title="${via === via_full ? __('View this feed') : via_full}"
+                                  >${via}</a
+                              >`
+                            : ''
+                    }
+                    ${
+                        el._editing
+                            ? html`<converse-social-compose-rich
+                                  class="social-post__edit"
+                                  .model=${m.collection?.feed}
+                                  .post=${m}
+                                  @edited=${() => el.onEditDone()}
+                                  @canceledit=${() => el.onEditDone()}
+                              ></converse-social-compose-rich>`
+                            : html`
+                                  <div
+                                      class="social-post__body"
+                                      @click=${(/** @type {MouseEvent} */ ev) => el.onBodyClicked(ev)}
+                                  >
+                                      ${
+                                          title || title_xhtml
+                                              ? html`<div
+                                                    class="social-post__title ${title_is_heading ? 'social-post__title--heading' : ''}"
+                                                >
+                                                    ${renderConstruct(title, title_xhtml)}
+                                                </div>`
+                                              : ''
+                                      }
+                                      ${
+                                          summary || summary_xhtml
+                                              ? html`<div
+                                                    class="social-post__summary ${content ? 'social-post__summary--excerpt' : ''}"
+                                                >
+                                                    ${renderConstruct(summary, summary_xhtml)}
+                                                </div>`
+                                              : ''
+                                      }
+                                      ${
+                                          content || content_xhtml
+                                              ? html`<div class="social-post__content">
+                                                    ${renderConstruct(content, content_xhtml)}
+                                                </div>`
+                                              : ''
+                                      }
+                                      ${
+                                          enclosures.length
+                                              ? html`<div class="social-post__media">
+                                                    ${enclosures.map(
+                                                        (enc) =>
+                                                            html`<div class="social-post__enclosure">
+                                                                ${renderEnclosure(enc)}
+                                                            </div>`,
+                                                    )}
+                                                </div>`
+                                              : ''
+                                      }
+                                      ${
+                                          extra_categories.length
+                                              ? html`<div class="social-post__tags">
+                                                    ${extra_categories.map((tag) => tplHashtag(tag))}
+                                                </div>`
+                                              : ''
+                                      }
+                                      ${
+                                          geoloc
+                                              ? html`<div class="social-post__location">
+                                                    <converse-icon size="0.9em" class="fa fa-globe"></converse-icon>
+                                                    ${
+                                                        geoloc.lat !== undefined
+                                                            ? html`<a
+                                                                  href="${geolocMapUrl(geoloc)}"
+                                                                  target="_blank"
+                                                                  rel="noopener noreferrer"
+                                                                  >${geolocLabel(geoloc)}</a
+                                                              >`
+                                                            : html`<span>${geolocLabel(geoloc)}</span>`
+                                                    }
+                                                </div>`
+                                              : ''
+                                      }
+                                      ${
+                                          alternate_url && !body_links_to_source
+                                              ? html`<div class="social-post__source">
+                                                    <a
+                                                        href="${alternate_url}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        <converse-icon
+                                                            size="0.9em"
+                                                            class="fa fa-external-link-alt"
+                                                        ></converse-icon>
+                                                        <span>${__('Read more')}</span>
+                                                    </a>
+                                                </div>`
+                                              : ''
+                                      }
+                                  </div>
+                              `
+                    }
                 </div>
             </div>
         </article>

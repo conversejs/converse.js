@@ -1,5 +1,6 @@
 import './brand-heading.js';
 import './brand-logo.js';
+import './copy-button.js';
 import './dropdown.js';
 import './font-awesome.js';
 import './icons.js';

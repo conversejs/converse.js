@@ -1,0 +1,18 @@
+converse-copy-button {
+    display: inline-flex;
+    flex-shrink: 0;
+    line-height: 1;
+
+    .copy-button {
+        padding: 0 0.25em;
+        border: none;
+        background: none;
+        line-height: 1;
+        color: var(--subdued-color);
+
+        &:hover,
+        &:focus {
+            color: var(--link-color);
+        }
+    }
+}

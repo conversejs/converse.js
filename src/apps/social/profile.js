@@ -8,6 +8,7 @@ import { collectionSignal } from 'shared/signals.js';
 import { WindowedListElement } from './windowed.js';
 import 'shared/components/logo.js';
 import 'shared/components/dropdown.js';
+import 'shared/components/copy-button.js';
 import 'shared/modals/image.js';
 import './following.js';
 import tplProfile from './templates/profile.js';

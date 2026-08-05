@@ -318,9 +318,19 @@
             min-width: 0; // let a long name/JID ellipsize rather than overflow
         }
 
+        // One line of the identity block: the text, then the copy button that
+        // belongs to it. The text shrinks (and ellipsizes); the button doesn't.
+        .social-profile__line {
+            display: flex;
+            align-items: center;
+            gap: 0.25em;
+            min-width: 0;
+        }
+
         .social-profile__name {
             font-weight: bold;
             font-size: 1.2em;
+            min-width: 0;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -329,9 +339,14 @@
         .social-profile__jid {
             color: var(--subdued-color);
             font-size: 0.9em;
+            min-width: 0;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+
+        .social-profile__copy {
+            font-size: 0.9em;
         }
 
         // The header action cluster, pushed to the trailing edge: the Follow

@@ -57,6 +57,14 @@ export default (el) => {
     const heading = name_is_jid ? shortenJID(el.jid) : name;
     const address = name_is_jid ? '' : shortenJID(el.jid);
 
+    // Since what we show is elided, offer the whole address for the clipboard,
+    // next to whichever of the two lines is carrying it.
+    const copy_button = html`<converse-copy-button
+        class="social-profile__copy"
+        .text=${el.jid}
+        label="${__('Copy address to clipboard')}"
+    ></converse-copy-button>`;
+
     // Show the author's banner when they've published one and it loads. Otherwise
     // fall back to a Converse logo watermark.
     const banner_url = profile.get('banner_url');
@@ -101,10 +109,20 @@ export default (el) => {
             <div class="social-profile__header social-profile__header--with-banner">
                 <span class="social-profile__avatar">${avatar}</span>
                 <div class="social-profile__identity">
-                    <span class="social-profile__name" style="${author_style}" title="${name_is_jid ? el.jid : name}"
-                        >${heading}</span
-                    >
-                    ${address ? html`<span class="social-profile__jid" title="${el.jid}">${address}</span>` : ''}
+                    <span class="social-profile__line">
+                        <span
+                            class="social-profile__name"
+                            style="${author_style}"
+                            title="${name_is_jid ? el.jid : name}"
+                            >${heading}</span
+                        >
+                        ${address ? '' : copy_button}
+                    </span>
+                    ${address
+                        ? html`<span class="social-profile__line">
+                              <span class="social-profile__jid" title="${el.jid}">${address}</span>${copy_button}
+                          </span>`
+                        : ''}
                 </div>
                 ${el.isOwn
                     ? html`<button

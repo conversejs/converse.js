@@ -2587,6 +2587,11 @@ describe('The profile Following tab', function () {
             expect(name.getAttribute('title')).toBe(author_jid);
             expect(profile.querySelector('.social-profile__jid')).toBe(null);
 
+            // What we show is elided, so the copy button offers the whole address.
+            const clipboard = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
+            /** @type {HTMLElement} */ (profile.querySelector('.social-profile__copy button')).click();
+            expect(clipboard).toHaveBeenCalledWith(author_jid);
+
             // Same in a follow list: one line, elided, whole JID on hover.
             /** @type {any} */ (el).onProfileSelected('somebody@renostr.chat', undefined, 'following');
             const list = await u.waitUntil(() => el.querySelector('converse-social-following'));

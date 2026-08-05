@@ -1,18 +1,61 @@
 .conversejs {
     converse-app-switcher {
+        // Paint the same surface colour as the other chat elements (controlbox,
+        // chat boxes, the Social app). Without this the switcher is transparent
+        // and falls through to the host page's background, which is only themed
+        // when `show_background` renders a `converse-bg`.
+        background-color: var(--background-color);
+        // Raise the rail so its shadow falls *on* the app beside it. Previously a
+        // `margin-right` held the app off and the shadow was cast into that gap,
+        // which meant it landed on the host page rather than on a Converse
+        // surface: invisible against white unless `show_background` happened to
+        // put a `converse-bg` behind it, and the gap itself showed up as a white
+        // stripe. With no gap there is nothing unthemed left to show through.
+        position: relative;
+        z-index: 1;
         box-shadow: 0 0 0.3em gray;
-        margin-right: 0.4em;
         padding: 0.5em;
         li {
             margin-bottom: 1em;
         }
         .nav-link {
+            position: relative;
+            border-radius: var(--button-border-radius);
+
+            // Give every app a resting tile, so each one reads as a button
+            // without needing a stray rule underneath it. A drop shadow can't do
+            // this job: on the dark themes it disappears into the surface.
+            // Tinting with the foreground colour lightens the tile on the dark
+            // themes and darkens it on the light ones, so a single declaration
+            // covers all four.
+            background-color: color-mix(in srgb, var(--foreground-color) 10%, transparent);
+
+            &:hover,
+            &:focus-visible {
+                background-color: color-mix(in srgb, var(--foreground-color) 20%, transparent);
+            }
+
             &.active {
                 // Use the theme's "selected/open item" colour. The previous
                 // `--highlight-color-hover` is the *hover* tint, which in dark
                 // themes (e.g. Dracula's `--darkgray`) sits almost on top of the
                 // background, leaving the active app looking unmarked.
                 background-color: var(--highlight-color) !important;
+
+                // On the light themes `--highlight-color` is only a shade off
+                // the surface, so now that the inactive apps carry a tile too,
+                // the colour alone no longer says "active". This bar, sitting in
+                // the switcher's own padding, does say it, in every theme.
+                &::before {
+                    content: '';
+                    position: absolute;
+                    inset-inline-start: -0.5em;
+                    top: 12%;
+                    bottom: 12%;
+                    width: 3px;
+                    border-radius: 3px;
+                    background-color: var(--primary-color);
+                }
             }
         }
     }

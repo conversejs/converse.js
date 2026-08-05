@@ -14,7 +14,7 @@ export default (el) => {
                     <li class="nav-item" title="${app.title}" aria-label="${app.title}">
                         <a
                             href="#"
-                            class="${is_active ? 'active' : ''} nav-link py-3 border-bottom"
+                            class="${is_active ? 'active' : ''} nav-link py-3"
                             data-app-name="${app.name}"
                             aria-current="${is_active ? 'page' : nothing}"
                             @click="${el.switchApp}"

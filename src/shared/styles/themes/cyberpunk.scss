@@ -4,6 +4,8 @@
 &[data-bs-theme='cyberpunk'] {
     $theme: 'vapor' !default;
 
+    color-scheme: dark;
+
     // Hex color values
     // ----------------
     --blue: #1ba2f6;

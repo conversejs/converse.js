@@ -88,6 +88,29 @@ converse.initialize({
 });
 ```
 
+### Declaring whether your theme is light or dark
+
+A few things can't be decided in CSS alone, such as which variant of an image
+to load. For those, Converse needs to know whether the theme currently in force
+is a light one or a dark one, and your theme says so itself, using the standard
+[`color-scheme`](https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme)
+property:
+
+```css
+.conversejs.theme-ocean {
+  color-scheme: light;
+
+  /* ... your colours ... */
+}
+```
+
+Use `dark` for a dark theme. The browser reads this too, and will render
+scrollbars, form controls and other native widgets to match.
+
+A theme that declares nothing is treated as light. There is no list of theme
+names anywhere in Converse, so a third-party theme is on exactly the same
+footing as a bundled one.
+
 ### Available CSS variables
 
 Here are the most commonly used CSS variables you can customize in your theme:

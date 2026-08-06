@@ -1,6 +1,8 @@
-&[data-converse-theme="classic"],
-&[data-bs-theme="classic"] {
+&[data-converse-theme='classic'],
+&[data-bs-theme='classic'] {
     $theme: 'classic' !default;
+
+    color-scheme: light;
 
     // Hex color values
     // ----------------
@@ -80,7 +82,7 @@
     --error-color: var(--red);
     --focus-color: var(--light-blue);
     --heading-color: var(--light-blue);
-    --link-color: #2D3991;
+    --link-color: #2d3991;
     --subdued-color: gray;
 
     // The background when selecting text with your mouse

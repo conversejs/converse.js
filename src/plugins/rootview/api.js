@@ -1,8 +1,36 @@
 import { _converse, api } from '@converse/headless';
+import { getTheme, isDarkTheme } from './utils.js';
 
 const apps = new Map();
 
 const apps_api = {
+    theme: {
+        /**
+         * The theme currently in force, which is the `dark_theme` setting when
+         * the user's system asks for a dark colour scheme, and the `theme`
+         * setting otherwise.
+         * @returns {string}
+         */
+        get() {
+            return getTheme();
+        },
+
+        /**
+         * Whether the theme currently in force is a dark one.
+         *
+         * Answered from the theme's own `color-scheme` declaration, so a
+         * third-party theme is treated the same as a bundled one and Converse
+         * never has to keep a list of theme names.
+         *
+         * @param {Element} [el] - The element to resolve the theme against.
+         *  Defaults to `converse-root`.
+         * @returns {boolean}
+         */
+        isDark(el) {
+            return isDarkTheme(el);
+        },
+    },
+
     apps: {
         /**
          * @param {import('./types').App} app

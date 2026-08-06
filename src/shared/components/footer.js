@@ -1,13 +1,13 @@
 import { _converse, api } from '@converse/headless';
 import { html } from 'lit';
 import { CustomElement } from './element.js';
-import { getTheme } from 'plugins/rootview/utils.js';
+import { isDarkTheme } from 'plugins/rootview/utils.js';
 import { __ } from 'i18n';
 
 export class ConverseFooter extends CustomElement {
     render() {
         const is_fullscreen = api.settings.get('view_mode') === 'fullscreen';
-        const is_dark_theme = ['dracula', 'cyberpunk'].includes(getTheme());
+        const is_dark_theme = isDarkTheme(this);
         const i18n_sponsors = __('A big thank you to our sponsors 🙏');
         return html`
             ${

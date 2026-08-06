@@ -2,6 +2,8 @@
 &[data-bs-theme='nordic'] {
     $theme: 'nordic' !default;
 
+    color-scheme: light;
+
     // Darker gray theme colors
     --polar-night-1: #2e3440;
     --polar-night-2: #3b4252;

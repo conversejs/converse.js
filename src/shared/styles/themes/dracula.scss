@@ -2,6 +2,8 @@
 &[data-bs-theme='dracula'] {
     $theme: 'dracula' !default;
 
+    color-scheme: dark;
+
     // Hex color values
     // ----------------
     --cyan: #8be9fd;

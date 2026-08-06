@@ -11,12 +11,13 @@
  * slot URLs and the progress on a message model as it goes, and reports failures as
  * messages in the conversation rather than as exceptions.
  */
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import { Strophe } from 'strophe.js';
 import log from '@converse/log';
 import _converse from './_converse.js';
 import api from './api/index.js';
 import converse from './api/public.js';
+import { IS_BROWSER } from '../utils/environment.js';
 
 const { stx } = converse.env;
 
@@ -82,6 +83,10 @@ export async function requestSlot(file, slot_request_url) {
 
 /**
  * PUT `file` to the slot's put URL (XEP-0363 § 5).
+ *
+ * The browser and Node take different paths because `XMLHttpRequest` is
+ * the only API that reports upload progress and Node has no `XMLHttpRequest`.
+ * Under Node the simpler `fetch` path is used and `onProgress` is ignored.
  * @param {File} file
  * @param {import('./types').UploadTarget} slot
  * @param {(fraction: number) => void} [onProgress]
@@ -90,6 +95,18 @@ export async function requestSlot(file, slot_request_url) {
  *      server's own complaint back to the user.
  */
 export function putFile(file, slot, onProgress) {
+    return IS_BROWSER ? putFileWithXHR(file, slot, onProgress) : putFileWithFetch(file, slot);
+}
+
+/**
+ * The browser upload: `XMLHttpRequest` so that `onProgress` can be driven from
+ * the `upload` progress events.
+ * @param {File} file
+ * @param {import('./types').UploadTarget} slot
+ * @param {(fraction: number) => void} [onProgress]
+ * @returns {Promise<void>}
+ */
+function putFileWithXHR(file, slot, onProgress) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const fail = (/** @type {string} */ msg) =>
@@ -115,6 +132,35 @@ export function putFile(file, slot, onProgress) {
 }
 
 /**
+ * The Node upload: `fetch` with the file as the body. No progress is reported,
+ * because `fetch` cannot without a streamed request body. Throws with the same
+ * `status`/`responseText` shape as the XHR path, so callers handle both alike.
+ * @param {File} file
+ * @param {import('./types').UploadTarget} slot
+ * @returns {Promise<void>}
+ */
+async function putFileWithFetch(file, slot) {
+    const headers = /** @type {Record<string, string>} */ ({ 'Content-type': file.type });
+    slot.headers?.forEach((h) => (headers[h.name] = h.value));
+
+    let response;
+    try {
+        response = await fetch(slot.put, { method: 'PUT', body: file, headers });
+    } catch (e) {
+        throw Object.assign(new Error('The file upload failed'), { status: 0, responseText: String(e) });
+    }
+
+    log.info(`http-upload: PUT status ${response.status}`);
+    if (response.status !== 200 && response.status !== 201) {
+        const responseText = await response.text().catch(() => '');
+        throw Object.assign(new Error(`Upload failed (HTTP ${response.status})`), {
+            status: response.status,
+            responseText,
+        });
+    }
+}
+
+/**
  * Upload `file` via XEP-0363 and resolve to its public URL plus metadata.
  * @param {File} file
  * @param {object} [opts]
@@ -133,5 +179,3 @@ export async function uploadFile(file, { domain, onProgress } = {}) {
     log.info(`http-upload: uploaded ${file.name} -> ${slot.get}`);
     return { url: slot.get, name: file.name, type: file.type, size: file.size };
 }
-
-

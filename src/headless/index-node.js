@@ -22,6 +22,8 @@ import './shims/node-dom.js';
 import './shims/node-storage.js';
 // Registers how libomemo.js and its WebAssembly get loaded under Node.
 import './shims/node-omemo.js';
+// Registers reading emoji.json from the package instead of fetching it.
+import './shims/node-emoji.js';
 
 export * from './index.js';
 export { default } from './index.js';

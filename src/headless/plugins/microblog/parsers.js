@@ -7,7 +7,7 @@
  * `createRepostStanza`), following the codebase convention of building stanzas
  * on the model that owns the resulting objects.
  */
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import { Strophe } from 'strophe.js';
 import { getItemFromURI, getJIDFromURI, getNodeFromURI } from '../../utils/jid.js';
 import { getUniqueId } from '../../utils/index.js';
@@ -63,7 +63,7 @@ function parseTextConstruct(el) {
     if (kind === 'html') {
         // The XML parser has already unescaped the fragment, so textContent is the
         // HTML markup itself. Keep it for rich rendering; derive plain text for
-        // previews (decodeHTMLEntities sanitizes and strips tags).
+        // previews (decodeHTMLEntities strips the tags).
         const markup = el.textContent?.trim() || undefined;
         return { text: markup ? decodeHTMLEntities(markup) : undefined, xhtml: markup };
     }

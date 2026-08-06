@@ -17,14 +17,6 @@ export function isEqualNode(actual: Element, expected: Element): boolean;
  */
 export function isTagEqual(stanza: Element | typeof Strophe.Builder, name: string): boolean;
 /**
- * Converts an HTML string into a DOM element.
- * Expects that the HTML string has only one top-level element,
- * i.e. not multiple ones.
- * @method u#stringToElement
- * @param {string} s - The HTML string
- */
-export function stringToElement(s: string): Element;
-/**
  * Returns a list of children of the DOM element that match the selector.
  * @method u#queryChildren
  * @param {HTMLElement} el - the DOM element
@@ -37,6 +29,8 @@ export function queryChildren(el: HTMLElement, selector: string): ChildNode[];
  */
 export function siblingIndex(el: Element): number;
 /**
+ * Strips tags and decodes HTML entities in `str`, returning plain text.
+ * Isomorphic: no DOM is involved, so this works under Node too.
  * @param {string} str
  * @return {string}
  */

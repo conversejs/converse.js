@@ -65,10 +65,6 @@
             .fa,
             .fa:hover {
                 color: var(--chat-color);
-                svg,
-                svg:hover {
-                    fill: var(--chat-color);
-                }
             }
             button {
                 &:focus {

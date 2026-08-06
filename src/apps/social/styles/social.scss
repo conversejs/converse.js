@@ -113,7 +113,6 @@
             color: var(--subdued-color);
 
             &:hover {
-                color: var(--link-color);
                 background-color: var(--highlight-color-hover);
             }
 
@@ -1018,6 +1017,9 @@
 
             &__body {
                 word-wrap: break-word;
+                // A post is a paragraph of prose, not a chat line: without leading,
+                // a body of hard-wrapped lines reads as one solid block.
+                line-height: 1.5;
 
                 // Inline media rendered by the texture pipeline shouldn't
                 // overflow the post column.
@@ -1025,6 +1027,32 @@
                 video {
                     max-width: 100%;
                     height: auto;
+                }
+
+                // An image in the body is the post's content, so give it its own line
+                // and the same rounded frame as an enclosure.
+                // Emoji are images too but they stay in the line.
+                img:not(.emoji) {
+                    display: block;
+                    // A tall image otherwise fills the viewport on its own; capped,
+                    // it still opens full-size in the lightbox on click.
+                    max-height: 32em;
+                    margin: 0.75em 0;
+                    border-radius: 0.5em;
+                    cursor: pointer;
+                    // Bootstrap's thumbnail chrome (a light border on a filled
+                    // background) frames a chat attachment; here it reads as a
+                    // border around the post's own content.
+                    padding: 0;
+                    border: 0;
+                    background: none;
+                }
+
+                // The link the texture pipeline wraps an image in, so the image's
+                // own box is what the line is sized to.
+                a.chat-image__link {
+                    display: block;
+                    width: fit-content;
                 }
             }
 

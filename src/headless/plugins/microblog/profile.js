@@ -2,7 +2,7 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import { Model } from '@converse/skeletor';
 import { Strophe } from 'strophe.js';
 import log from '@converse/log';

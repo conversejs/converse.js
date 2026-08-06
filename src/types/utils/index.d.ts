@@ -77,7 +77,6 @@ declare const _default: {
     isElement(el: unknown): boolean;
     isEqualNode(actual: Element, expected: Element): boolean;
     isTagEqual(stanza: Element | typeof import("strophe.js").Builder, name: string): boolean;
-    stringToElement(s: string): Element;
     queryChildren(el: HTMLElement, selector: string): ChildNode[];
     siblingIndex(el: Element): number;
     decodeHTMLEntities(str: string): string;
@@ -208,7 +207,6 @@ declare const _default: {
         isElement(el: unknown): boolean;
         isEqualNode(actual: Element, expected: Element): boolean;
         isTagEqual(stanza: Element | typeof import("strophe.js").Builder, name: string): boolean;
-        stringToElement(s: string): Element;
         queryChildren(el: HTMLElement, selector: string): ChildNode[];
         siblingIndex(el: Element): number;
         decodeHTMLEntities(str: string): string;

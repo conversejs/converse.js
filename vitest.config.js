@@ -96,7 +96,10 @@ export default defineConfig({
                 test: {
                     name: 'headless-node',
                     environment: 'node',
-                    include: ['shims/tests/**/*.js'],
+                    // The shims, plus the DOM-free utils that only they make
+                    // usable off-browser. Both also run in the `headless`
+                    // project, which is the point: they're isomorphic.
+                    include: ['shims/tests/**/*.js', 'utils/tests/**/*.js'],
                     exclude: [...commonExclude],
                 },
             },

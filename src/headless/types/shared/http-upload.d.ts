@@ -16,6 +16,10 @@ export function getUploadService(domain?: string): Promise<import("./types").Upl
 export function requestSlot(file: File, slot_request_url: string): Promise<import("./types").UploadSlot>;
 /**
  * PUT `file` to the slot's put URL (XEP-0363 § 5).
+ *
+ * The browser and Node take different paths because `XMLHttpRequest` is
+ * the only API that reports upload progress and Node has no `XMLHttpRequest`.
+ * Under Node the simpler `fetch` path is used and `onProgress` is ignored.
  * @param {File} file
  * @param {import('./types').UploadTarget} slot
  * @param {(fraction: number) => void} [onProgress]

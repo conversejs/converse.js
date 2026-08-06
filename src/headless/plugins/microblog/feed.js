@@ -4,7 +4,7 @@
  */
 import { Model } from '@converse/skeletor';
 import { Strophe } from 'strophe.js';
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import _converse from '../../shared/_converse.js';
 import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';

@@ -114,6 +114,16 @@ export class MockConnection extends Connection {
     IQ_stanzas: any[];
     IQ_ids: any[];
     mock: boolean;
+    /**
+     * Strophe's `Connection._dataRecv` unwraps an injected request into its
+     * stanza element via the transport's `_reqToData`, but only for BOSH; on
+     * websocket it expects the element directly. Tests inject a Request-shaped
+     * object on both transports (see `createRequest`), so unwrap it here for
+     * the websocket case before Strophe processes it.
+     * @param {any} req
+     * @param {string} [raw]
+     */
+    _dataRecv(req: any, raw?: string): void;
     get _sasl_mechanism(): import("../../../../node_modules/strophe.js/dist/types/sasl-sha256.js").default;
     _processRequest(): void;
     sendIQ(iq: any, callback: any, errback: any): string;

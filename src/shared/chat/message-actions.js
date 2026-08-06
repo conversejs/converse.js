@@ -94,10 +94,14 @@ class MessageActions extends CustomElement {
     }
 
     static getActionsDropdownItem(o) {
+        // No `color`: `converse-icon` resolves that attribute at render time into
+        // an inline style on the <svg>, which no stylesheet can reach past. Naming
+        // the foreground colour here therefore pinned these icons to it, while
+        // every other dropdown in a groupchat took the MUC colour from CSS. The
+        // colour is left to the stylesheet so this one follows suit.
         return html`
             <button type="button" class="dropdown-item chat-msg__action ${o.button_class}" @click=${o.handler}>
-                <converse-icon class="${o.icon_class}" color="var(--foreground-color)" size="1em"></converse-icon
-                >&nbsp;${o.i18n_text}
+                <converse-icon class="${o.icon_class}" size="1em"></converse-icon>&nbsp;${o.i18n_text}
             </button>
         `;
     }

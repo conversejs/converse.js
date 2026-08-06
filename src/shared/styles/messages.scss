@@ -259,9 +259,18 @@
                     padding-inline-end: 0.25em;
                     color: var(--secondary-color);
                 }
+                // The encryption padlock states a fact about the message; it is
+                // not a control. Held to the same colour as the timestamp it sits
+                // beside, so the heading's metadata reads as one quiet row rather
+                // than putting an accent-coloured mark next to the author's name.
+                //
+                // Said explicitly because it would otherwise take whichever
+                // blanket colour the surrounding conversation sets — the MUC
+                // colour in a groupchat, the chat colour in a 1:1.
                 .fa-lock {
                     svg {
                         padding-bottom: 2px;
+                        fill: var(--secondary-color);
                     }
                 }
             }

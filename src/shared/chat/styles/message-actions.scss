@@ -1,4 +1,8 @@
 converse-message-actions {
+    // The conversation's colour, named once. A 1:1 chat is the default; a
+    // groupchat overrides it below, the same way the chat toolbar does.
+    --msg-actions-accent: var(--chat-color);
+
     margin-inline-start: 0.5em;
 
     .chat-msg__actions {
@@ -30,6 +34,16 @@ converse-message-actions {
 
             converse-icon {
                 margin-inline-end: 0.25em;
+
+                // Matches the heading dropdowns, whose glyphs are the accent and
+                // whose labels are the text colour. Written deep enough to outrank
+                // the blanket `converse-muc.chatroom converse-icon svg` rule, which
+                // would otherwise reach these too — correctly in a MUC, but it has
+                // no counterpart for a 1:1 chat, which would fall back to the
+                // component default of `--secondary-color`.
+                svg {
+                    fill: var(--msg-actions-accent);
+                }
             }
 
             &:hover {
@@ -38,4 +52,8 @@ converse-message-actions {
             }
         }
     }
+}
+
+.chatroom converse-message-actions {
+    --msg-actions-accent: var(--muc-color);
 }

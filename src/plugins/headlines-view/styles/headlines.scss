@@ -4,6 +4,24 @@
         display: block;
     }
 
+    // A headlines feed colours its glyphs the way a chat and a groupchat do
+    // (see `converse-chat.chatbox` in chatbox.scss and `converse-muc.chatroom`
+    // in muc.scss). Without this, its icons fell back to `converse-icon`'s own
+    // `--secondary-color` while everything else in the feed carried
+    // `--headlines-color`.
+    //
+    // Matched on the element as well as the class, because `.headlines` alone
+    // would be a weaker selector than the siblings' and, more importantly, the
+    // controlbox and the chats carry `.chatbox` too. Same shape and specificity
+    // as those rules, so all three contexts resolve identically.
+    converse-headlines.headlines {
+        converse-icon {
+            svg {
+                fill: var(--headlines-color);
+            }
+        }
+    }
+
     .chatbox {
         &.headlines {
             .chat-body {

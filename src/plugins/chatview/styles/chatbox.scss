@@ -6,6 +6,26 @@
             }
         }
     }
+
+    // A 1:1 chat colours its glyphs the way a groupchat already did (see
+    // `converse-muc.chatroom` in muc.scss). Without this, only a MUC had a
+    // blanket rule, so shared parts of a message — the edited pencil, the
+    // encryption padlock — came out in the MUC colour in a groupchat but fell
+    // back to `converse-icon`'s own `--secondary-color` in a chat, leaving blue
+    // glyphs in a conversation whose every other control was green.
+    //
+    // Deliberately the same shape and specificity as the MUC rule, so the two
+    // contexts resolve identically against everything else. Icons that name a
+    // colour in their template are unaffected either way: `converse-icon` writes
+    // that out as an inline style, which outranks any stylesheet, so the glyphs
+    // that need to contrast with a fill keep doing so.
+    converse-chat.chatbox {
+        converse-icon {
+            svg {
+                fill: var(--chat-color);
+            }
+        }
+    }
 }
 
 .conversejs {

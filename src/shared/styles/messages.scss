@@ -125,6 +125,24 @@
             &:hover {
                 background-color: var(--highlight-color-hover);
             }
+
+            // Arrived in the clear while the conversation's encryption is on.
+            // Faint enough to read as a property of the row rather than as an
+            // error banner, and mixed from `--error-color` so each theme brings
+            // its own red rather than one hardcoded here.
+            //
+            // The hover state is restated because the plain `&:hover` above
+            // carries the same specificity as this rule: left alone, whichever
+            // came last would win outright, and the row would either lose its
+            // hover response or lose the mark while the pointer was on it.
+            &.chat-msg--unencrypted {
+                background-color: color-mix(in srgb, var(--error-color) 8%, transparent);
+
+                &:hover {
+                    background-color: color-mix(in srgb, var(--error-color) 14%, var(--highlight-color-hover));
+                }
+            }
+
             &.correcting {
                 background-color: var(--highlight-color);
             }

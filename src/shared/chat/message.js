@@ -53,6 +53,15 @@ export default class Message extends ObservableElement {
 
         this.listenTo(this.model_with_messages, 'change:first_unread_id', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
+
+        // Whether a message counts as unencrypted is a fact about the
+        // conversation, not about the message, so it changes without the message
+        // changing. Toggling encryption has to repaint the history that is
+        // already on screen.
+        if (this.model.chatbox) {
+            this.listenTo(this.model.chatbox, 'change:omemo_active', () => this.requestUpdate());
+        }
+
         this.listenTo(this.model, 'contact:change', () => this.requestUpdate());
         this.listenTo(this.model, 'occupant:add', () => this.requestUpdate());
         this.listenTo(this.model, 'occupant:change', () => this.requestUpdate());
@@ -195,6 +204,16 @@ export default class Message extends ObservableElement {
                 extra_classes.push('mentioned');
             }
         }
+        // A message that arrived in the clear while this conversation's
+        // encryption is switched on. That mismatch is the case worth marking:
+        // the composer says the conversation is encrypted, and this one message
+        // was not. `omemo_active` is enough on its own to test — it is forced
+        // back to false whenever `omemo_supported` goes away — so a chat that
+        // cannot be encrypted never marks anything.
+        if (this.model.chatbox?.get('omemo_active') && !this.model.get('is_encrypted')) {
+            extra_classes.push('chat-msg--unencrypted');
+        }
+
         if (this.model.get('correcting')) extra_classes.push('correcting');
         return extra_classes.filter((c) => c).join(' ');
     }

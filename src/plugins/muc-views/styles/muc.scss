@@ -1,7 +1,9 @@
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
 @import "shared/styles/_variables.scss";
-@import "plugins/chatview/styles/chatbox.scss";
+// No `chatbox.scss` here: this plugin declares `converse-chatview` as a
+// dependency, so that stylesheet is always in the bundle already. Importing it
+// a second time emitted every one of its rules twice.
 @import "./muc-forms.scss";
 
 .conversejs {

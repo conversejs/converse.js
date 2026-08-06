@@ -99,8 +99,7 @@ export class ChatToolbar extends CustomElement {
             buttons.push(
                 html`${until(
                     http_upload_promise.then(
-                        /** @param {boolean} is_supported */ (is_supported) =>
-                            this.getHTTPUploadButton(!!is_supported),
+                        /** @param {boolean} is_supported */ (is_supported) => this.getHTTPUploadButton(!!is_supported),
                     ),
                     '',
                 )}`,

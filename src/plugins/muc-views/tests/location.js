@@ -3,10 +3,12 @@ import converse from '../../../../dist/converse.js';
 
 const { stx, u } = converse.env;
 
+const settings = { 'view_mode': 'fullscreen', 'visible_toolbar_buttons': { 'location': true } };
+
 describe('The Location Button', function () {
     it(
         'shows a confirmation prompt and sends the geo URI as a message in a MUC',
-        mock.initConverse(converse, ['discoInitialized'], { 'view_mode': 'fullscreen' }, async function (_converse) {
+        mock.initConverse(converse, ['discoInitialized'], settings, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const nick = 'romeo';
 
@@ -44,7 +46,7 @@ describe('The Location Button', function () {
 
     it(
         'shows a confirmation prompt and sends the geo URI in a MUC private message',
-        mock.initConverse(converse, ['chatBoxesFetched'], { 'view_mode': 'fullscreen' }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             const muc_jid = 'coven@chat.shakespeare.lit';
             const nick = 'romeo';
 

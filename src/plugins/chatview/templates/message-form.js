@@ -1,8 +1,10 @@
 import { __ } from 'i18n';
-import { api, u } from '@converse/headless';
+import { api, constants, u } from '@converse/headless';
 import { html } from 'lit';
 import tplTypeahead from 'shared/rich-composer/templates/typeahead.js';
 import 'shared/chat/reply-preview.js';
+
+const { CHATROOMS_TYPE } = constants;
 
 /**
  * @param {import('../message-form').default} el
@@ -13,6 +15,7 @@ export default (el) => {
     const label_spoiler_hint = __('Optional hint');
     const message_limit = api.settings.get('message_limit');
     const toolbar_buttons = api.settings.get('visible_toolbar_buttons');
+    const is_groupchat = el.model.get('type') === CHATROOMS_TYPE;
     const {
         call: show_call_button,
         emoji: show_emoji_button,
@@ -23,23 +26,26 @@ export default (el) => {
     const show_send_button = api.settings.get('show_send_button');
     const show_toolbar = api.settings.get('show_toolbar');
 
-    return html` <converse-reply-preview .model=${el.model}></converse-reply-preview>
+    return html`<converse-reply-preview .model=${el.model}></converse-reply-preview>
         <form class="chat-message-form" @submit="${/** @param {SubmitEvent} ev */ (ev) => el.onFormSubmitted(ev)}">
-            ${show_toolbar
-                ? html` <converse-chat-toolbar
-                      class="btn-toolbar chat-toolbar no-text-select"
-                      .model=${el.model}
-                      ?composing_spoiler="${composing_spoiler}"
-                      ?show_call_button="${show_call_button}"
-                      ?show_emoji_button="${show_emoji_button}"
-                      ?show_fileupload_button="${show_fileupload_button}"
-                      ?show_location_button="${show_location_button}"
-                      ?show_send_button="${show_send_button}"
-                      ?show_spoiler_button="${show_spoiler_button}"
-                      ?show_toolbar="${show_toolbar}"
-                      message_limit="${message_limit}"
-                  ></converse-chat-toolbar>`
-                : ''}
+            ${
+                show_toolbar
+                    ? html`<converse-chat-toolbar
+                          class="btn-toolbar chat-toolbar no-text-select"
+                          .model=${el.model}
+                          ?composing_spoiler="${composing_spoiler}"
+                          ?is_groupchat="${is_groupchat}"
+                          ?show_call_button="${show_call_button}"
+                          ?show_emoji_button="${show_emoji_button}"
+                          ?show_fileupload_button="${show_fileupload_button}"
+                          ?show_location_button="${show_location_button}"
+                          ?show_send_button="${show_send_button}"
+                          ?show_spoiler_button="${show_spoiler_button}"
+                          ?show_toolbar="${show_toolbar}"
+                          message_limit="${message_limit}"
+                      ></converse-chat-toolbar>`
+                    : ''
+            }
 
             <input
                 type="text"

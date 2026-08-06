@@ -43,19 +43,38 @@
             }
         }
 
+        // Carried both by the standalone heading buttons and by the host of the
+        // heading's dropdown, so it holds only what they share. The box itself is
+        // shaped below, on whichever element is the actual button.
         .chatbox-btn {
-            border-radius: 25%;
             border: none;
             cursor: pointer;
             font-size: var(--chatbox-button-size);
             margin: 0 0.2em;
-            padding: 0 0 0 0.5em;
             text-decoration: none;
 
             &:active {
                 position: relative;
                 top: 1px;
             }
+        }
+
+        // A heading control is a tile around its glyph, whether it is a button
+        // itself or the toggle inside a dropdown host.
+        //
+        // Both were stretched and lopsided: a block-level button in a flex host
+        // that is itself stretched to the heading row took the row's full height,
+        // and `padding: 0 0 0 0.5em` put all of the horizontal space on one side.
+        // The glyph ended up in a 21x40 box, flush against the right edge, which
+        // is the shape the hover plate then traced.
+        button.chatbox-btn,
+        .chatbox-btn .btn--standalone {
+            display: inline-flex;
+            align-items: center;
+            align-self: center;
+            padding: 0.35em;
+            line-height: 1;
+            border-radius: var(--button-border-radius);
         }
 
         .box-flyout {

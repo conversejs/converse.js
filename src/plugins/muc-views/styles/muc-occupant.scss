@@ -49,15 +49,22 @@
                 .chat-message-form {
                     border-inline-end: none;
                     border-top: 0.2em solid var(--secondary-color);
-                    .send-button {
-                        background-color: var(--secondary-color);
+
+                    // This composer sends a private message, not a groupchat one,
+                    // so its toolbar drops the MUC colour it would inherit and
+                    // takes the sidebar's. Naming the accent is enough: the
+                    // glyphs, the send button and the buttons' hover plate all
+                    // read it.
+                    converse-chat-toolbar {
+                        --toolbar-accent: var(--secondary-color);
                     }
-                    .toolbar-buttons {
-                        converse-icon {
-                            svg {
-                                fill: var(--secondary-color) !important;
-                            }
-                        }
+
+                    // The glyphs themselves still need saying twice, because
+                    // `converse-icon` resolves its `color` attribute at render
+                    // time into an inline style on the <svg>, which only
+                    // `!important` can reach past.
+                    .toolbar-buttons converse-icon svg {
+                        fill: var(--secondary-color) !important;
                     }
                 }
                 .emoji-picker__header {

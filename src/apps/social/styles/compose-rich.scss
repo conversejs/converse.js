@@ -1,3 +1,5 @@
+@import "shared/styles/_mixins.scss";
+
 .conversejs {
     // The Lexical rich composer. A contenteditable host with an overlaid placeholder and an inline format
     // toolbar, styled to sit alongside the plain textarea variant.
@@ -96,23 +98,24 @@
             }
         }
 
+        // The format buttons. Quiet controls, so they take the shared treatment;
+        // the resting fade on top of it is this toolbar's own, keeping the
+        // formatting marks under the composer rather than beside it.
         .social-rich__fmt {
+            @include btn-quiet($transition: opacity 0.12s ease-out);
+
             display: inline-flex;
             align-items: center;
             justify-content: center;
             min-width: 1.9em;
             height: 1.9em;
             padding: 0 0.4em;
-            background: none;
-            border: none;
-            border-radius: 0.25em;
-            cursor: pointer;
             color: var(--foreground-color);
             opacity: 0.7;
 
-            &:hover {
+            &:hover,
+            &:focus-visible {
                 opacity: 1;
-                background-color: var(--highlight-color-hover);
             }
         }
 

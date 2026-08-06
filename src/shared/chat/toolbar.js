@@ -126,8 +126,13 @@ export class ChatToolbar extends CustomElement {
     getHTTPUploadButton(is_supported) {
         if (is_supported) {
             const i18n_choose_file = __('Choose a file to send');
+            // Coloured like its neighbours. `converse-icon` writes its `color`
+            // attribute out as an inline style, so a glyph that doesn't name one
+            // falls back to `--secondary-color` and stands out as the only button
+            // in the row not wearing the conversation's colour.
+            const color = this.is_groupchat ? '--muc-color' : '--chat-color';
             return html` <button type="button" class="btn" title="${i18n_choose_file}" @click=${this.toggleFileUpload}>
-                    <converse-icon class="fa fa-paperclip" size="1em"></converse-icon>
+                    <converse-icon color="var(${color})" class="fa fa-paperclip" size="1em"></converse-icon>
                 </button>
                 <input
                     type="file"

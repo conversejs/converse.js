@@ -1,3 +1,5 @@
+@import "shared/styles/_mixins.scss";
+
 .conversejs {
     converse-app-social {
         flex: 1;
@@ -100,21 +102,17 @@
         }
 
         // "Discover" and "Following" share the same slim look in the top bar.
+        // Quiet controls, so they take the shared treatment: neutral here, since
+        // nothing sets `--btn-quiet-tint` in the feed.
         .social-feed__following-btn,
         .social-discover__btn {
+            @include btn-quiet;
+
             display: inline-flex;
             align-items: center;
             gap: 0.4em;
             padding: 0.25em 0.5em;
-            background: none;
-            border: none;
-            border-radius: 0.4em;
-            cursor: pointer;
             color: var(--subdued-color);
-
-            &:hover {
-                background-color: var(--highlight-color-hover);
-            }
 
             converse-icon svg {
                 fill: currentColor;

@@ -105,7 +105,15 @@
         }
 
         &.chat-msg {
-            display: inline-flex;
+            // Block-level, not `inline-flex`. Each message sits inside its own
+            // `converse-chat-message`, which has no display of its own and so is
+            // inline, and an inline-level message therefore joined a line box: the
+            // leading around it left about 0.6px of unpainted space between one
+            // message and the next.
+            //
+            // Blockifying the host instead does not help, because the inline-flex
+            // child would still form a line box of its own inside it.
+            display: flex;
             width: 100%;
             flex-direction: row;
             padding: 0.25rem 1rem;

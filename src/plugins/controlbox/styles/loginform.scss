@@ -5,9 +5,6 @@
 .conversejs {
     #controlbox {
         converse-login-form {
-            .converse-fullscreen & {
-                background-color: rgba(var(--background-color-rgb), 0.9);
-            }
             .btn {
                 color: var(--button-text-color);
             }
@@ -144,6 +141,38 @@
                     input[type='submit'],
                     input[type='button'] {
                         width: auto;
+                    }
+                }
+            }
+        }
+
+        // In fullscreen these are cards floating on the page.
+        //
+        // They only ever had a fill, of the same colour as the page painted
+        // behind them, so no card was drawn at all and the fields simply hung
+        // in space. Cyberpunk alone escaped that, because its backdrop is a
+        // gradient and it adds a glow of its own. The shadow states the edge
+        // now, using the token every other raised surface in the app uses.
+        //
+        // Kept here rather than beside the other login form rules so that it
+        // follows `make-col-ready()` above: that gives the forms a horizontal
+        // padding of half a grid gutter, which is zero, since `converse-root`
+        // carries Bootstrap's `g-0`. The two selectors tie, so this one has to
+        // come second to win.
+        &.converse-fullscreen {
+            #controlbox {
+                converse-registration-form,
+                converse-login-form {
+                    background-color: rgba(var(--background-color-rgb), 0.9);
+                    box-shadow: var(--raised-el-shadow);
+                    padding: 2em;
+
+                    // The card supplies the bottom inset now, so the last row
+                    // doesn't need its own; left as is, the two stacked and the
+                    // card sat lopsided, twice as deep below the content as
+                    // above it.
+                    .switch-form {
+                        padding-bottom: 0;
                     }
                 }
             }

@@ -42,6 +42,17 @@
                 // background, leaving the active app looking unmarked.
                 background-color: var(--highlight-color) !important;
 
+                // The glyph has to answer that tile. Left to itself
+                // `converse-icon` fills with `--secondary-color`, which in
+                // cyberpunk is the very same purple as `--highlight-color`, so
+                // the active app's icon disappeared into its own tile; in
+                // Dracula it survived only at about 2:1. Lists already solve
+                // this the same way, giving a highlighted row's contents the
+                // foreground colour.
+                converse-icon svg {
+                    fill: var(--foreground-color);
+                }
+
                 // On the light themes `--highlight-color` is only a shade off
                 // the surface, so now that the inactive apps carry a tile too,
                 // the colour alone no longer says "active". This bar, sitting in

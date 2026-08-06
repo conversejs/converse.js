@@ -352,7 +352,10 @@
             .chat-msg__receipt {
                 margin-inline-start: 0.5em;
                 margin-inline-end: 0.5em;
-                color: var(--success-color);
+
+                svg {
+                    fill: var(--success-color);
+                }
             }
         }
 

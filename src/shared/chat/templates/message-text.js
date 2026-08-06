@@ -16,11 +16,7 @@ function tplEditedIcon(el) {
 }
 
 function tplCheckmark() {
-    return html`<converse-icon
-        size="0.75em"
-        color="var(--chat-color)"
-        class="fa fa-check chat-msg__receipt"
-    ></converse-icon>`;
+    return html`<converse-icon size="0.75em" class="fa fa-check chat-msg__receipt"></converse-icon>`;
 }
 
 /**
@@ -59,9 +55,9 @@ export default (el) => {
         ${el.model.get('subject') ? html`<div class="chat-msg__subject">${el.model.get('subject')}</div>` : ''}
         <span class="chat-msg__body--wrapper ${error_text ? 'error' : ''}">
             <converse-chat-message-body
-                class="chat-msg__text ${el.model.get('is_only_emojis')
-                    ? 'chat-msg__text--larger'
-                    : ''} ${spoiler_classes}"
+                class="chat-msg__text ${
+                    el.model.get('is_only_emojis') ? 'chat-msg__text--larger' : ''
+                } ${spoiler_classes}"
                 .model="${el.model}"
                 hide_url_previews=${el.model.get('hide_url_previews')}
                 ?is_me_message=${el.model.isMeCommand()}
@@ -70,17 +66,19 @@ export default (el) => {
             ${el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message ? tplCheckmark() : ''}
             ${el.model.get('edited') ? tplEditedIcon(el) : ''}
         </span>
-        ${show_oob
-            ? html`<div class="chat-msg__media">
-                  <converse-texture
-                      text="${el.model.get('oob_url')}"
-                      .onImgClick="${/** @param {MouseEvent} ev */ (ev) => el.onImgClick(ev)}"
-                      ?embed_audio="${render_media}"
-                      ?embed_videos="${render_media}"
-                      ?show_images="${render_media}"
-                  />
-              </div>`
-            : ''}
+        ${
+            show_oob
+                ? html`<div class="chat-msg__media">
+                      <converse-texture
+                          text="${el.model.get('oob_url')}"
+                          .onImgClick="${/** @param {MouseEvent} ev */ (ev) => el.onImgClick(ev)}"
+                          ?embed_audio="${render_media}"
+                          ?embed_videos="${render_media}"
+                          ?show_images="${render_media}"
+                      />
+                  </div>`
+                : ''
+        }
         ${error_text ? html`<div class="chat-msg__error">${i18n_error}</div>` : ''}
     `;
 };

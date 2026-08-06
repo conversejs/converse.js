@@ -15,6 +15,13 @@ $mobile_portrait_length: 480px !default;
 
     --raised-el-shadow: 1px 1px 10px black;
 
+    // The shadow a surface casts onto whatever the theme paints behind the app.
+    // `none` by default: most themes back the app with a flat fill of the page
+    // colour, and an edge drawn against that only fragments what should read as
+    // one surface. A theme that paints something back there (the cyberpunk
+    // theme's grid) sets this, and surfaces that sit on it gain an edge.
+    --backdrop-shadow: none;
+
     --fullpage-chat-height: calc(var(--vh, 1vh) * 100);
     --fullpage-chat-width: 100%;
     --fullpage-chatbox-button-size: 16px;

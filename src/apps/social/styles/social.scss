@@ -1,4 +1,4 @@
-@import "shared/styles/_mixins.scss";
+@import 'shared/styles/_mixins.scss';
 
 .conversejs {
     converse-app-social {
@@ -8,6 +8,44 @@
         height: 100%;
         overflow: hidden;
 
+        // The floor the app stands on. The views above are transparent, so this
+        // is what shows either side of the reading column when there is no
+        // `converse-bg`, which keeps the app looking exactly as it did.
+        background-color: var(--background-color);
+
+        // Contain the backdrop: `converse-bg` is absolutely positioned, and
+        // without a positioned ancestor here it would resolve against
+        // `converse-root` and spill across the whole viewport, under the app
+        // switcher's rail, rather than being clipped to the app.
+        //
+        // `z-index` rather than bare `position: relative` because this has to be
+        // a stacking context: the backdrop below is taken out of the flow with a
+        // negative index, and it can only stay above *this* element's background
+        // while still sitting under the posts if the two are ordered within a
+        // context that starts here.
+        position: relative;
+        z-index: 0;
+
+        // A positioned element paints above in-flow siblings whatever the source
+        // order, so left alone the backdrop covered the feed rather than backing
+        // it. A negative index puts it back where it belongs: over this
+        // element's own fill, under everything in the flow.
+        > converse-bg {
+            z-index: -1;
+
+            // Knock the backdrop back with a wash of the page colour, so it
+            // reads as scenery behind the column rather than competing with it.
+            // Themes whose backdrop is already the flat page colour are
+            // unaffected, the wash being that same colour.
+            &::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background-color: color-mix(in srgb, var(--background-color) 55%, transparent);
+                pointer-events: none;
+            }
+        }
+
         .social-placeholder {
             margin: auto;
             text-align: center;
@@ -15,20 +53,53 @@
         }
     }
 
-    converse-social-feed {
+    // The reading column, shared by all three Social views: the timeline, a
+    // post's thread, and an author's profile. One rule, so they can't drift.
+    //
+    // The scrolling views themselves are transparent and this carries the fill,
+    // so whatever `converse-app-social` puts behind them shows in the margins:
+    // the plain background colour normally, and the theme's backdrop (the
+    // cyberpunk grid) when there is a `converse-bg`.
+    .social-feed,
+    .social-post-detail,
+    .social-profile {
+        max-width: 42em;
+        margin: 0 auto;
+        padding: 1em;
         background-color: var(--background-color);
+        // Fill the viewport even when there is too little content to, so a short
+        // feed still reads as a column rather than a floating strip.
+        min-height: 100%;
+
+        // State the column's edge, but only where the theme has put something
+        // behind the app for it to sit on. Against a flat backdrop of the page
+        // colour there is nothing to cast onto and the edge only cuts up what
+        // should read as a single surface, so this resolves to `none` there.
+        box-shadow: var(--backdrop-shadow);
+
+        // Room to breathe either side. A post's text sits past the avatar
+        // gutter, so the left already has an inset the right doesn't; widening
+        // both is what stops the right edge reading as cramped, while leaving
+        // that deliberate offset intact.
+        //
+        // Only once there is width to spare. On a portrait phone the column is
+        // the whole screen, there are no margins to balance against, and the
+        // extra inset would come straight out of the line length. 480px is
+        // `$mobile_portrait_length` from shared/styles/_variables.scss, which
+        // isn't imported here because it would emit its whole variable block a
+        // second time.
+        @media screen and (min-width: 480px) {
+            padding-inline: 2em;
+        }
+    }
+
+    converse-social-feed {
         display: block;
         height: 100%;
         overflow-y: auto;
         // The windowed post list keeps the reading position itself (see
         // windowed.js); disable native scroll anchoring so both don't compensate.
         overflow-anchor: none;
-
-        .social-feed {
-            max-width: 42em;
-            margin: 0 auto;
-            padding: 1em;
-        }
 
         .social-feed__header {
             display: flex;
@@ -167,16 +238,8 @@
     converse-social-post,
     converse-social-profile {
         display: block;
-        background-color: var(--background-color);
         height: 100%;
         overflow-y: auto;
-
-        .social-post-detail,
-        .social-profile {
-            max-width: 42em;
-            margin: 0 auto;
-            padding: 1em;
-        }
 
         // XEP-0472 gallery node: the post list becomes a square-tile image grid.
         .social-gallery {

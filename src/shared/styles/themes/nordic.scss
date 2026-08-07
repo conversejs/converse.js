@@ -70,7 +70,6 @@
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--red);
-    --converse-border-color: lightgray;
 
     .form-check-input:checked {
         background-color: var(--purple);
@@ -78,6 +77,7 @@
     }
     .navbar-nav {
         --converse-nav-link-color: var(--link-color) !important;
+        --converse-nav-link-hover-color: var(--link-color-hover) !important;
     }
     .popover {
         --converse-popover-header-color: var(--background-color) !important;
@@ -143,8 +143,9 @@
     --global-background-color: var(--background-color);
     --link-color-hover: var(--link-color);
     --muc-color-hover: var(--muc-color);
-    --primary-color-hover: var(--purple);
+    // `--primary-color-hover` is declared with the Bootstrap variables above,
+    // and with `!important`, so it wins over a later declaration at the same
+    // specificity no matter the order. This second one has never applied.
     --secondary-color-hover: var(--snow-storm-1);
-    --success-color-hover: var(--success);
     --warning-color-hover: var(--orange);
 }

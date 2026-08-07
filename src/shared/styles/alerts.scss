@@ -30,7 +30,7 @@
     .alert-info {
         color: var(--background-color);
         background-color: var(--info-color);
-        border-color: var(--info-dark);
+        border-color: color-mix(in srgb, var(--info-color) 65%, var(--background-color));
     }
 
     .alert-danger {
@@ -39,7 +39,7 @@
         }
 
         color: var(--background-color);
-        border-color: var(--danger-color-dark);
+        border-color: color-mix(in srgb, var(--danger-color) 65%, var(--background-color));
         background-color: var(--danger-color);
     }
 }

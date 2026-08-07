@@ -50,7 +50,6 @@
         --converse-btn-active-bg: #{btn-fill-shade(var(--primary-color), 30%)};
     }
     .btn-outline-primary {
-        --converse-btn-bg: var(--background);
         --converse-btn-color: var(--primary-color);
     }
 
@@ -74,7 +73,6 @@
     }
     .btn-outline-secondary {
         --converse-btn-color: var(--secondary-color);
-        --converse-btn-bg: var(--background);
     }
 
     .btn-success,
@@ -97,7 +95,6 @@
     }
     .btn-outline-success {
         --converse-btn-color: var(--success-color);
-        --converse-btn-bg: var(--background);
     }
 
     .btn-warning,
@@ -120,7 +117,6 @@
     }
     .btn-outline-warning {
         --converse-btn-color: var(--warning-color);
-        --converse-btn-bg: var(--background);
     }
 
     .btn-danger,
@@ -143,7 +139,6 @@
     }
     .btn-outline-danger {
         --converse-btn-color: var(--danger-color);
-        --converse-btn-bg: var(--background);
     }
 
     .btn-info,
@@ -166,7 +161,6 @@
     }
     .btn-outline-info {
         --converse-btn-color: var(--info-color);
-        --converse-btn-bg: var(--background);
     }
 
     .btn--transparent {

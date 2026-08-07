@@ -1,14 +1,15 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/mixins";
-@import "shared/styles/_variables.scss";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+@import 'shared/styles/_variables.scss';
 
 .conversejs {
     .chatbox {
         .bottom-panel {
-
             .chat-content-sendbutton {
-                height: calc(100% - (var(--chat-textarea-height) + var(--send-button-height) + 2 * var(--send-button-margin)));
+                height: calc(
+                    100% - (var(--chat-textarea-height) + var(--send-button-height) + 2 * var(--send-button-margin))
+                );
             }
 
             .chat-message-form {
@@ -41,13 +42,15 @@
                     background-color: var(--background-color);
                 }
 
-                .chat-textarea, input {
+                .chat-textarea,
+                input {
                     outline: 1px solid var(--background-color);
-                    &:active, &:focus{
+                    &:active,
+                    &:focus {
                         outline-width: 2px;
                     }
                     &.correcting {
-                        background-color: var(--chat-correcting-color);
+                        background-color: rgba(var(--chat-rgb), 0.1);
                     }
                 }
 

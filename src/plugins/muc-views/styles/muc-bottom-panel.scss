@@ -45,8 +45,11 @@
                     &:active, &:focus{
                         outline-width: 2px !important;
                     }
+                    // As in the 1:1 composer, but answering in the MUC's
+                    // colour. `--chatroom-correcting-color` was declared by no
+                    // theme, so correcting a message showed no state at all.
                     &.correcting {
-                        background-color: var(--chatroom-correcting-color);
+                        background-color: rgba(var(--muc-rgb), 0.1);
                     }
                 }
                 .chat-textarea {

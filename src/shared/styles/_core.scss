@@ -12,7 +12,7 @@
     }
 
     textarea:disabled {
-        background-color: var(--disabled) !important;
+        background-color: var(--inset-bg-color) !important;
     }
 
     .subdued {
@@ -153,7 +153,7 @@
         font-size: var(--font-size-large);
         min-height: 0;
     }
-    
+
     button {
         font-size: var(--font-size);
         min-height: 0;

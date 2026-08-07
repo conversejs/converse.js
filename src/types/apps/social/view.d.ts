@@ -57,9 +57,7 @@ declare class SocialApp extends CustomElement {
     filter: string;
     _resolving: boolean;
     router: HashRouter;
-    render(): import("lit-html/directive.js").DirectiveResult<{
-        new (_partInfo: import("lit-html/directive.js").PartInfo): import("lit-html/directives/keyed.js").Keyed<import("lit-html").TemplateResult<1>>;
-    }>;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {string} jid
      * @param {string} [node=MICROBLOG_NODE] the node to show (a community feed if

@@ -14,9 +14,12 @@
     --green-rgb: 60, 242, 129;
     --indigo: #6610f2;
     --orange: #f1b633;
-    --orange-rgb: 255, 193, 7;
+    // Was `255, 193, 7`, which is `--yellow` below, so everything the MUC's
+    // accent glows through (its heading, its toolbar, its separators) came out
+    // yellow while the solid `--muc-color` beside it was this orange.
+    --orange-rgb: 241, 182, 51;
     --pink: #ea39b8;
-    --pink-rgb: 234, 57, 185;
+    --pink-rgb: 234, 57, 184;
     // A pale wash of the pink above, for the decorative grid. The grid is meant
     // to read as a distant horizon, so it wants the faded end of the hue rather
     // than the saturated accent the buttons and inputs wear.
@@ -30,9 +33,9 @@
     --purple-light: #a890d6;
     --purple-light-rgb: 168, 144, 214;
     --red: #e44c55;
-    --red-rgb: 228, 76, 84;
+    --red-rgb: 228, 76, 85;
     --teal: #3f81a2;
-    --teal-rgb: 63, 130, 162;
+    --teal-rgb: 63, 129, 162;
     --white: #efefef;
     --yellow: #ffc107;
     --yellow-rgb: 255, 193, 7;
@@ -156,7 +159,6 @@
     --muc-color-hover: var(--muc-color);
     --primary-color-hover: var(--purple);
     --secondary-color-hover: var(--secondary-color);
-    --success-color-hover: var(--success);
     --warning-color-hover: var(--orange);
 
     // The overlayed controlbox toggle is a tile filled with `--controlbox-color`

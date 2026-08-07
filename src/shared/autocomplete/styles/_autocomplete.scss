@@ -1,5 +1,7 @@
 .conversejs {
-    [hidden] { display: none; }
+    [hidden] {
+        display: none;
+    }
 
     .visually-hidden {
         position: absolute;
@@ -15,7 +17,9 @@
     .suggestion-box {
         position: relative;
         mark {
-            background: var(--completion-light-color);
+            background: var(--inset-bg-color);
+            color: inherit;
+            font-weight: bold;
         }
 
         > input {
@@ -25,12 +29,13 @@
         .suggestion-box__results,
         > ul {
             &:before {
-                content: "";
+                content: '';
                 position: absolute;
-                top: -.43em;
+                top: -0.43em;
                 left: 1em;
-                width: 0; height: 0;
-                padding: .4em;
+                width: 0;
+                height: 0;
+                padding: 0.4em;
                 background: var(--background-color);
                 border: inherit;
                 border-inline-end: 0;
@@ -39,13 +44,13 @@
                 transform: rotate(45deg);
                 z-index: -1;
             }
-            border-radius: .3em;
+            border-radius: 0.3em;
             border: 0.15em solid var(--secondary-color);
-            box-shadow: .05em .2em .6em rgba(0,0,0,.1);
+            box-shadow: 0.05em 0.2em 0.6em rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
             left: 0;
             list-style: none;
-            margin: .2em 0 0;
+            margin: 0.2em 0 0;
             min-width: 100%;
             padding: 0;
             position: absolute;
@@ -85,7 +90,7 @@
             }
             &:after {
                 z-index: -1;
-                content: "";
+                content: '';
                 position: absolute;
                 bottom: -0.43em;
                 left: 1em;
@@ -109,8 +114,8 @@
 
     @supports (transform: scale(0)) {
         .suggestion-box > ul {
-            transition: .3s cubic-bezier(.4,.2,.5,1.4);
-            transform-origin: 1.43em -.43em;
+            transition: 0.3s cubic-bezier(0.4, 0.2, 0.5, 1.4);
+            transform-origin: 1.43em -0.43em;
         }
 
         .suggestion-box > ul[hidden],
@@ -122,7 +127,7 @@
         }
     }
 
-    .suggestion-box > ul > li[aria-selected="true"] {
+    .suggestion-box > ul > li[aria-selected='true'] {
         background: var(--highlight-color);
         color: var(--foreground-color);
     }

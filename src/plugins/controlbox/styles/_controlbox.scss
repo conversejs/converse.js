@@ -103,7 +103,6 @@
         .controlbox-section {
             .controlbox-heading {
                 font-family: var(--heading-font);
-                color: var(--controlbox-heading-color);
                 font-weight: bold;
                 padding: 0;
                 font-size: 1.1em;
@@ -117,10 +116,6 @@
 
             .controlbox-heading--contacts {
                 color: var(--background-color);
-            }
-
-            .controlbox-heading--headline {
-                color: var(--headlines-head-color);
             }
         }
 
@@ -184,7 +179,6 @@
                     width: var(--controlbox-width);
                 }
             }
-
         }
 
         &.converse-embedded,

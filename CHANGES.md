@@ -8,6 +8,7 @@
 - fix(reactions): A reaction fetched from the message archive no longer moves the message it
   reacts to after later messages.
 - feat(notifications): Prepend `assets_path` to the notification logo path.
+- #3560: Emoji shortnames are now matched case-sensitively
 
 ## 14.0.0 (2026-06-26)
 

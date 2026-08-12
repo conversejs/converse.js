@@ -133,7 +133,7 @@
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0147.html"/>
         <xmpp:version>1.2</xmpp:version>
         <xmpp:status>partial</xmpp:status>
-        <xmpp:note>Clicking an xmpp: URI dispatches the feasible query actions: message, join, roster (add a contact), subscribe/unsubscribe and remove. vCard, ad-hoc command, disco, register and file-transfer query types are not handled.</xmpp:note>
+        <xmpp:note>Clicking an xmpp: URI dispatches the feasible query actions: message, join, roster (add a contact), subscribe/unsubscribe and remove. vCard, ad-hoc command, disco, register and file-transfer query types are not handled. Converse can also be registered as the browser's handler for the xmpp: URI scheme, so that links clicked outside Converse are dispatched the same way.</xmpp:note>
       </xmpp:SupportedXep>
     </implements>
     <implements>

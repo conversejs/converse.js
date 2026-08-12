@@ -1412,6 +1412,24 @@ converse.initialize({
 });
 ```
 
+### register_protocol_handler
+
+- Default: `false`
+
+Determines whether Converse asks the browser, once you have logged in, to handle `xmpp:` links ([XEP-0147](https://xmpp.org/extensions/xep-0147.html)) so that clicking one in another application opens it in Converse.
+
+Off by default, because registering claims a browser-wide URI scheme and prompts the user, which is rarely what you want from a Converse embedded in a larger page.
+
+The browser only accepts the request from a page served over HTTPS, and Firefox additionally requires that it happen during a user gesture. If you need to prompt from a button rather than on login, leave this setting off and call `_converse.api.protocolHandler.register()` from your click handler instead:
+
+```javascript
+document.querySelector('#enable-xmpp-links').addEventListener('click', () => {
+    _converse.api.protocolHandler.register();
+});
+```
+
+When Converse is installed as a progressive web app, the handler is declared in `manifest.json` and this setting is not involved.
+
 ### registration_domain
 
 - Default: `''`

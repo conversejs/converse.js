@@ -24,19 +24,20 @@
             });
 
             converse.initialize({
-                i18n: 'af',
-                theme: 'nordic',
-                enable_url_routing: true,
-                dark_theme: 'cyberpunk',
                 auto_away: 300,
+                dark_theme: 'cyberpunk',
+                enable_url_routing: true,
+                fetch_url_headers: true,
+                i18n: 'af',
                 loglevel: 'debug',
-                show_background: true,
                 message_archiving: 'always',
                 muc_show_logs_before_join: true,
                 notify_all_room_messages: ['discuss@conference.conversejs.org'],
-                fetch_url_headers: true,
-                whitelisted_plugins: ['converse-debug'],
+                register_protocol_handler: true,
+                show_background: true,
                 show_controlbox_by_default: true,
+                theme: 'nordic',
+                whitelisted_plugins: ['converse-debug'],
                 // view_mode: 'overlayed',
                 // bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
                 // websocket_url: 'wss://conversejs.org/xmpp-websocket',

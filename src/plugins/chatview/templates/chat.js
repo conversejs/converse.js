@@ -43,6 +43,7 @@ export default (el) => {
                                     </div>`
                                   : ''}
                           </div>
+                          <converse-entity-time-alert jid="${el.model.get('jid')}"></converse-entity-time-alert>
                           <converse-chat-bottom-panel .model="${el.model}" class="bottom-panel">
                           </converse-chat-bottom-panel>
                       </div>

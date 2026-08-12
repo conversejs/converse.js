@@ -1,0 +1,40 @@
+converse-entity-time-alert {
+    display: block;
+
+    .entity-time-alert {
+        display: flex;
+        align-items: center;
+        padding: 0.5em 0.75em;
+        margin-bottom: 0;
+        background-color: var(--chat-head-color);
+        border-left: 3px solid var(--warning-color);
+        border-top: 1px solid var(--chat-separator-border-color, rgba(0, 0, 0, 0.1));
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+        gap: 0.5em;
+
+        &__icon {
+            color: var(--warning-color);
+            flex-shrink: 0;
+        }
+
+        &__message {
+            flex: 1;
+            font-size: 0.85em;
+            color: var(--foreground-color);
+            overflow: hidden;
+        }
+
+        &__dismiss {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25em;
+            color: var(--foreground-color);
+            opacity: 0.7;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+}

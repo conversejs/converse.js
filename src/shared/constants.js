@@ -29,6 +29,7 @@ export const VIEW_PLUGINS = [
     'converse-rootview',
     'converse-rosterview',
     'converse-singleton',
+    'converse-time-views',
     'converse-reaction-views',
 ];
 

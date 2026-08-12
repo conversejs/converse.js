@@ -3,6 +3,7 @@
 ## 15.0.0 (Unreleased)
 
 - #194: Full support for XEP-0115: Entity capabilities
+- #3560: Emoji shortnames are now matched case-sensitively
 - #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds
 - Full XEP-0172 User Nickname support. Converse now publishes its own nickname to PEP and
   consumes a contact's nickname from a PEP event, a presence hint, or by retrieving their nick node, so

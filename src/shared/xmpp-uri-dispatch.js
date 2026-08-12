@@ -9,7 +9,7 @@
  */
 import { api, log } from '@converse/headless';
 import { __ } from 'i18n';
-import { parseXMPPURI, firstValue, HANDLED_ACTIONS } from './xmpp-uri.js';
+import { parseXMPPURI, firstValue, isHandledXMPPURI, DEFAULT_ACTION } from './xmpp-uri.js';
 
 /**
  * Show a confirmation dialog for a state-mutating action.
@@ -28,11 +28,17 @@ async function confirmAction(message) {
  * @returns {Promise<boolean>} Whether the URI was handled.
  */
 export async function dispatchXMPPURI(href) {
+    // Deliberately the same predicate the link template gates on, so a URI can
+    // never be advertised as handled and then quietly dropped here (or vice
+    // versa) depending on whether it was clicked in a message or handed over by
+    // the OS protocol handler.
+    if (!isHandledXMPPURI(href)) return false;
+
     const { jid, action, params } = parseXMPPURI(href);
-    if (!jid || !HANDLED_ACTIONS.includes(action)) return false;
+    const querytype = action ?? DEFAULT_ACTION;
 
     try {
-        switch (action) {
+        switch (querytype) {
             case 'message': {
                 // XEP-0147 says a message action opens a compose interface, not send.
                 // The `body` seeds the composer draft.

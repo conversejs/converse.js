@@ -1,5 +1,19 @@
 export default apps_api;
 declare namespace apps_api {
+    namespace protocolHandler {
+        /**
+         * Ask the browser to route `xmpp:` links (XEP-0147) to this Converse
+         * instance.
+         *
+         * Setting `register_protocol_handler` does this on login, but Firefox
+         * only honours the request during a user gesture, so call this from a
+         * click handler if you want it to work there.
+         *
+         * @returns {boolean} Whether the browser accepted the call.
+         * @example _converse.api.protocolHandler.register();
+         */
+        function register(): boolean;
+    }
     namespace theme {
         /**
          * The theme currently in force, which is the `dark_theme` setting when

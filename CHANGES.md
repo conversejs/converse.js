@@ -3,6 +3,13 @@
 ## 15.0.0 (Unreleased)
 
 - #194: Full support for XEP-0115: Entity capabilities
+- #1247: Register Converse as the browser's handler for `xmpp:` links
+  Declared in `manifest.json` for an installed PWA, and available at runtime via the new `register_protocol_handler`
+  setting or `api.protocolHandler.register()`.
+  Clicking a bare `xmpp:<jid>` link inside Converse now also opens a chat in Converse, instead of being handed to
+  whichever XMPP client owns the scheme on your system. URIs naming a query action Converse doesn't support
+  (`?vcard` and friends), or a JID without a localpart (a server, service or gateway, which Converse can't yet open
+  a chat with), are still left to the operating system's handler as before.
 - #3560: Emoji shortnames are now matched case-sensitively
 - #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds
 - Full XEP-0172 User Nickname support. Converse now publishes its own nickname to PEP and

@@ -193,4 +193,69 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
             expect(pres).toBeDefined();
         }),
     );
+
+    /**
+     * Render `body` as an incoming message and click the link it linkifies to,
+     * without rewriting the href. This exercises the link template's decision of
+     * whether to claim the URI at all, which `clickXMPPURI` deliberately bypasses.
+     * @param {any} _converse
+     * @param {string} body
+     * @returns {Promise<MouseEvent>} The dispatched click, for `defaultPrevented`.
+     */
+    async function clickLinkifiedURI(_converse, body) {
+        await mock.waitForRoster(_converse, 'current');
+        const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
+
+        _converse.handleMessageStanza(stx`<message
+                from="${contact_jid}"
+                to="${_converse.api.connection.get().jid}"
+                type="chat"
+                id="${u.getUniqueId()}"
+                xmlns="jabber:client">
+            <body>${body}</body>
+        </message>`);
+
+        const link = await u.waitUntil(() => view.querySelector('.chat-msg__text a'));
+        const ev = new MouseEvent('click', { bubbles: true, cancelable: true });
+        link.dispatchEvent(ev);
+        return ev;
+    }
+
+    it(
+        'handles a bare xmpp: JID in-app instead of handing it to the OS',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            // A query-less URI is what a "chat with me" link looks like in the
+            // wild. It used to render as a plain anchor, so the click escaped to
+            // the OS and opened whichever native client owned the xmpp: scheme.
+            const ev = await clickLinkifiedURI(_converse, 'xmpp:mercutio@montague.lit');
+
+            // preventDefault is the proof that the OS never sees the click.
+            expect(ev.defaultPrevented).toBe(true);
+            await u.waitUntil(() => _converse.chatboxes.get('mercutio@montague.lit'));
+            expect(_converse.chatboxes.get('mercutio@montague.lit')).toBeDefined();
+        }),
+    );
+
+    it(
+        'still leaves an unsupported query action to the OS handler',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            // Not in HANDLED_ACTIONS, so the anchor stays a plain link.
+            expect((await clickLinkifiedURI(_converse, 'xmpp:romeo@montague.lit?vcard')).defaultPrevented).toBe(false);
+        }),
+    );
+
+    it(
+        'leaves a domain-only JID to the OS handler rather than swallowing the click',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            // A service or XEP-0100 gateway has no localpart, and Converse can't
+            // open a chat with one (chat creation goes through api.contacts.add,
+            // which requires a localpart, so the chatbox is never created).
+            // Handing the click on is better than claiming it and doing nothing.
+            const ev = await clickLinkifiedURI(_converse, 'xmpp:montague.lit');
+            expect(ev.defaultPrevented).toBe(false);
+            expect(_converse.chatboxes.get('montague.lit')).toBeUndefined();
+        }),
+    );
 });

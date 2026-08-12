@@ -2,7 +2,8 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  *
- * Pure parse helpers for XEP-0147 (XMPP URI Scheme Query Components).
+ * Parse helpers for XEP-0147 (XMPP URI Scheme Query Components), plus the single
+ * definition of which URIs Converse claims.
  *
  * The dispatch (which performs the action and shows confirmations) lives in ./xmpp-uri-dispatch.js.
  *
@@ -10,10 +11,22 @@
  * SEMICOLON-separated pairs, so `URLSearchParams` (which splits on `&`) must not be
  * used: it would swallow `?join;password=x` as a single `join;password` key.
  */
+import { u } from '@converse/headless';
 
 // The query actions the dispatcher handles. Any other `xmpp:` URI is left to the
 // browser's default handler (a plain `target="_blank"` anchor).
 export const HANDLED_ACTIONS = ['message', 'join', 'roster', 'subscribe', 'remove', 'unsubscribe'];
+
+/**
+ * The action a query-less `xmpp:<jid>` implies. RFC-5122 gives a bare JID no
+ * query action, but it identifies an entity, and "talk to this entity" is what
+ * every client (and every user clicking one) takes that to mean.
+ *
+ * It matters that this is decided in one place: the same URI arrives both from a
+ * link rendered in a message and from the OS protocol handler, and the two must
+ * not disagree about what it does.
+ */
+export const DEFAULT_ACTION = 'message';
 
 /**
  * Decode one URI component, tolerating a malformed `%` sequence rather than throwing.
@@ -74,10 +87,20 @@ export function parseXMPPURI(href) {
 /**
  * Whether an `xmpp:` URI names an action the dispatcher handles (so the caller
  * attaches an in-app click handler instead of leaving it to the OS handler).
+ *
+ * Requiring a localpart is NOT a rule of RFC-5122 or XEP-0147. A domain-only JID
+ * is perfectly valid and names a server, a service or a XEP-0100 gateway, and
+ * URIs like `xmpp:irc.example.org?roster` are exactly how that registration flow
+ * is meant to be triggered. It is a limitation of Converse: both the roster API
+ * and chat creation (via `setModelContact` -> `api.contacts.add`) reject a JID
+ * without a localpart, so a chat with a service silently never opens. Claiming
+ * such a URI would swallow the click with `preventDefault()` and then do
+ * nothing, which is worse than letting the OS pass it to a client that copes.
+ *
  * @param {string} href
  * @returns {boolean}
  */
 export function isHandledXMPPURI(href) {
     const { jid, action } = parseXMPPURI(href);
-    return !!jid && HANDLED_ACTIONS.includes(action);
+    return u.isValidJID(jid) && HANDLED_ACTIONS.includes(action ?? DEFAULT_ACTION);
 }

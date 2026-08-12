@@ -6,14 +6,16 @@ converse-entity-time-alert {
         align-items: center;
         padding: 0.5em 0.75em;
         margin-bottom: 0;
-        background-color: var(--chat-head-color);
+        background-color: var(--inset-bg-color);
         border-left: 3px solid var(--warning-color);
         border-top: 1px solid var(--chat-separator-border-color, rgba(0, 0, 0, 0.1));
         box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
         gap: 0.5em;
 
+        // The glyph's fill is set by an attribute on <converse-icon> rather than
+        // here: converse-icon fills its <svg> from a custom property of its own,
+        // which an inherited `color` doesn't reach.
         &__icon {
-            color: var(--warning-color);
             flex-shrink: 0;
         }
 
@@ -21,7 +23,12 @@ converse-entity-time-alert {
             flex: 1;
             font-size: 0.85em;
             color: var(--foreground-color);
+            // A long display name would otherwise wrap the bar onto a second and
+            // third line, which in overlayed mode is a real bite out of the
+            // message list. The whole sentence is on the bar's title.
+            white-space: nowrap;
             overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         &__dismiss {
@@ -29,7 +36,6 @@ converse-entity-time-alert {
             border: none;
             cursor: pointer;
             padding: 0.25em;
-            color: var(--foreground-color);
             opacity: 0.7;
 
             &:hover {

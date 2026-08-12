@@ -103,6 +103,25 @@ export function isOwnJID(jid, include_resource = false) {
 }
 
 /**
+ * Resolves a JID to the full JID of the contact's highest-priority resource.
+ *
+ * Needed whenever a query has to reach the contact's client rather than their
+ * server. An IQ addressed to a bare JID is answered by the server on their
+ * behalf (RFC 6121 § 8.5.2), which is the wrong respondent for anything about
+ * the person, such as XEP-0202 entity time.
+ *
+ * @param {string} jid - Bare or full; only the bare part is used to look up
+ * @returns {string|null}
+ */
+export function getFullJID(jid) {
+    if (typeof jid !== 'string') return null;
+
+    const bare_jid = Strophe.getBareJidFromJid(jid);
+    const resource = _converse.state.presences?.get(bare_jid)?.getHighestPriorityResource();
+    return resource ? `${bare_jid}/${resource.get('name')}` : null;
+}
+
+/**
  * Appends locked_domain or default_domain to a JID if configured.
  * When locked_domain is set, it will:
  * - Strip the locked_domain if already present in the input

@@ -45,6 +45,18 @@ export function getItemFromURI(uri?: string): string | undefined;
  */
 export function isOwnJID(jid: string, include_resource?: boolean): boolean;
 /**
+ * Resolves a JID to the full JID of the contact's highest-priority resource.
+ *
+ * Needed whenever a query has to reach the contact's client rather than their
+ * server. An IQ addressed to a bare JID is answered by the server on their
+ * behalf (RFC 6121 § 8.5.2), which is the wrong respondent for anything about
+ * the person, such as XEP-0202 entity time.
+ *
+ * @param {string} jid - Bare or full; only the bare part is used to look up
+ * @returns {string|null}
+ */
+export function getFullJID(jid: string): string | null;
+/**
  * Appends locked_domain or default_domain to a JID if configured.
  * When locked_domain is set, it will:
  * - Strip the locked_domain if already present in the input

@@ -1,52 +1,78 @@
+/**
+ * Warns, above the composer of a 1:1 chat, that the user is writing to someone
+ * for whom it's the middle of the night.
+ *
+ * Held back until they actually start writing. Opening a chat to read it is no
+ * reason to be warned about sending, and a warning that arrives then would be
+ * dismissed out of the way long before there is anything to send.
+ *
+ * Which JID to query, when to query it, and what the answer means all live in
+ * the headless `converse-time` plugin, so that a non-browser client can reuse
+ * them. This element only paints the answer, keeps the displayed clock ticking,
+ * and lets the user dismiss it.
+ */
 export default class EntityTimeAlert extends CustomElement {
     static properties: {
-        jid: {
-            type: StringConstructor;
+        model: {
+            type: ObjectConstructor;
         };
     };
-    jid: any;
-    /** @type {import('@converse/headless/types/plugins/time/types').EntityTime|null} */
-    time_info: import("@converse/headless/types/plugins/time/types").EntityTime | null;
-    loading: boolean;
-    dismissed: boolean;
-    /** @type {ReturnType<typeof setTimeout>|null} */
-    _fetch_timeout: ReturnType<typeof setTimeout> | null;
+    model: any;
+    answered: boolean;
     /** @type {ReturnType<typeof setTimeout>|null} */
     _sync_timeout: ReturnType<typeof setTimeout> | null;
     /** @type {ReturnType<typeof setInterval>|null} */
     _update_interval: ReturnType<typeof setInterval> | null;
-    initialize(): Promise<void>;
-    model: any;
-    _setupAndFetch(): Promise<void>;
-    setupPresenceListeners(): void;
+    set dismissed(value: boolean);
     /**
-     * Get full JID (with resource) - needed because bare JID queries go to server.
-     * @returns {string|null}
+     * Whether the user has dismissed the warning for the window it's in. It
+     * lasts only as long as that window: see onTick, which forgets it once
+     * their local time has left it.
+     * @returns {boolean}
      */
-    getFullJid(): string | null;
+    get dismissed(): boolean;
     /**
-     * Fetch entity time with debouncing to prevent rapid re-queries on presence flapping.
+     * What we know about the contact's local time at this instant.
+     * @returns {import('@converse/headless/types/plugins/time/types').ContactTime|null}
      */
-    fetchEntityTime(): void;
+    getContactTime(): import("@converse/headless/types/plugins/time/types").ContactTime | null;
     /**
-     * @private
+     * Whether the user is writing to this contact right now.
+     *
+     * 'paused' counts as well as 'composing': it's where a chat lands ten
+     * seconds after the last keystroke, and stopping to think about the wording
+     * is not a reason for the warning to disappear.
+     * @returns {boolean}
      */
-    private _doFetch;
-    render(): import("lit-html").TemplateResult<1> | "";
+    isComposing(): boolean;
+    /**
+     * Ticks the displayed time over on the minute, so that it tracks the clock
+     * instead of freezing at whatever it read when the chat was opened, and so
+     * that the warning appears and disappears as their local time crosses into
+     * and out of the off-hours window.
+     *
+     * Only contacts whose offset differs from ours by enough to be warned about
+     * get a clock. For everyone else no hour of the day can produce a warning,
+     * so there is nothing for a timer to discover, and their offset changing is
+     * an event we already listen for.
+     */
+    startClockUpdates(): void;
+    stopClockUpdates(): void;
+    /**
+     * A dismissal silences the off-hours window it was made in, not every
+     * window from here on. Once their local time has left the window, forget
+     * it, so that tomorrow night warns again in a session left open overnight.
+     */
+    onTick(): void;
+    render(): import("lit-html").TemplateResult<1>;
     /**
      * @param {MouseEvent} ev
      */
     dismiss(ev: MouseEvent): void;
     /**
-     * Gets the display name for the contact
      * @returns {string}
      */
     getDisplayName(): string;
-    /**
-     * Gets the formatted current time in the remote contact's timezone
-     * @returns {string}
-     */
-    getFormattedTime(): string;
 }
 import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=entity-time-alert.d.ts.map

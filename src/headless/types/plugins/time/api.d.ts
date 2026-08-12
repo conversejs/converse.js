@@ -10,7 +10,11 @@ declare namespace _default {
          *  support XEP-0202.
          */
         function get(jid: string, timeout?: number): Promise<import("./types").EntityTime | null>;
+        namespace contact {
+            export { getContactTime as get };
+        }
     }
 }
 export default _default;
+import { getContactTime } from './entity-time.js';
 //# sourceMappingURL=api.d.ts.map

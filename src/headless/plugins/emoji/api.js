@@ -55,12 +55,14 @@ const emojis = {
             converse.emojis.list.sort((a, b) => (a.sn < b.sn ? -1 : a.sn > b.sn ? 1 : 0));
             converse.emojis.shortnames = converse.emojis.list.map((m) => m.sn);
             // Sort by length descending for the regex so longer shortnames
-            // match before shorter ones (e.g. :test1: before :test:).
-            // Fixes https://github.com/conversejs/converse.js/issues/3502
-            const getShortNames = () => converse.emojis.shortnames
-                .map((s) => s.replace(/[+]/g, '\\$&'))
-                .sort((a, b) => b.length - a.length)
-                .join('|');
+            // match before shorter ones.
+            const getShortNames = () =>
+                converse.emojis.shortnames
+                    // Escape every regex metacharacter, not just `+`, because
+                    // shortnames can also come from custom emoji added via the `loadEmojis` hook.
+                    .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+                    .sort((a, b) => b.length - a.length)
+                    .join('|');
             // Shortnames are matched case-sensitively, because `by_sn` is keyed on the exact
             // shortname and may legitimately contain both `:abc:` and `:ABC:` as distinct emoji.
             converse.emojis.shortnames_regex = new RegExp(getShortNames(), 'g');

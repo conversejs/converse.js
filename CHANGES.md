@@ -7,6 +7,9 @@
 - #1509: You can now chat with a bare-host JID.
 - #3560: Emoji shortnames are now matched case-sensitively
 - #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds
+- #3978: Add support for XEP-0202 Entity Time. Converse answers time queries (this can be turned off
+  with the new `send_entity_time` setting) and warns you in a 1:1 chat when it's off-hours for your
+  contact (see the new `show_entity_time` setting). No MUC occupant support yet.
 - Full XEP-0172 User Nickname support. Converse now publishes its own nickname to PEP and
   consumes a contact's nickname from a PEP event, a presence hint, or by retrieving their nick node, so
   a contact's display name updates live without an avatar change to trigger a vcard refetch. It also

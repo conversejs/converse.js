@@ -721,6 +721,33 @@ Recommended to set to `true` if a websocket connection is used. Please see the `
 
 Determines whether Converse reflects in-app navigation in the browser's URL, using hash fragments (for example `#converse/social/tag/xmpp`). When enabled, the browser's back and forward buttons move through the views you have visited, and a link to a particular view (such as an author's profile or an individual post) can be shared and reopened after a reload.
 
+### entity_time_min_diff_hours
+
+- Default: `0`
+
+The minimum timezone difference (in hours) between you and a contact before the off-hours warning is shown.
+
+- `0`: show the warning for any different timezone
+- `3`: only show the warning if the contact is 3 or more hours ahead or behind
+
+See also `show_entity_time`.
+
+### entity_time_warning_end
+
+- Default: `7`
+
+The hour (0-23) at which the "off-hours" warning period ends. Defaults to 7 (7 AM).
+
+See also `show_entity_time`.
+
+### entity_time_warning_start
+
+- Default: `22`
+
+The hour (0-23) at which the "off-hours" warning period starts. Defaults to 22 (10 PM).
+
+See also `show_entity_time`.
+
 ### fetch_url_headers
 
 - Default: `false`
@@ -1565,6 +1592,16 @@ Determines which (if any) of the [XEP-0333](https://xmpp.org/extensions/xep-0333
 
 It's still up to Converse to decide when to send out the relevant markers, the purpose of this setting is merely to turn on or off the sending of the individual markers.
 
+### send_entity_time
+
+- Default: `true`
+
+Determines whether Converse answers [XEP-0202](https://xmpp.org/extensions/xep-0202.html) entity time queries from other entities, telling them your current UTC offset.
+
+Set to `false` if you'd rather not share your timezone. Converse then responds with a `service-unavailable` error and stops advertising `urn:xmpp:time` in its service discovery features.
+
+Note that this setting controls _outgoing_ timezone information only. To stop Converse from querying your contacts, use `show_entity_time`.
+
 ### show_background
 
 - Default: `true`
@@ -1600,6 +1637,16 @@ By default this box is hidden and can be toggled by clicking on any element in t
 If this options is set to true, the controlbox will by default be shown upon page load.
 
 However, be aware that even if this value is set to `false`, if the controlbox is open, and the page is reloaded, then it will stay open on the new page as well.
+
+### show_entity_time
+
+- Default: `true`
+
+Determines whether Converse queries your contacts for their local time (per [XEP-0202](https://xmpp.org/extensions/xep-0202.html)) and shows a warning bar in a 1:1 chat when it's "off-hours" for them (nighttime in their timezone).
+
+This is useful for distributed teams, to avoid messaging colleagues at inappropriate times.
+
+Related settings: `entity_time_warning_start`, `entity_time_warning_end`, `entity_time_min_diff_hours`. To stop Converse from answering time queries about you, use `send_entity_time`.
 
 ### show_desktop_notifications
 

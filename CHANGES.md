@@ -7,13 +7,12 @@
 - #1509: You can now chat with a bare-host JID.
 - #3560: Emoji shortnames are now matched case-sensitively
 - #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds
-- #3978: Add support for XEP-0202 Entity Time. Converse answers time queries (this can be turned off
-  with the new `send_entity_time` setting) and warns you in a 1:1 chat when it's off-hours for your
-  contact (see the new `show_entity_time` setting). No MUC occupant support yet.
-- Full XEP-0172 User Nickname support. Converse now publishes its own nickname to PEP and
-  consumes a contact's nickname from a PEP event, a presence hint, or by retrieving their nick node, so
-  a contact's display name updates live without an avatar change to trigger a vcard refetch. It also
-  advertises `nick+notify` and attaches the nickname to outgoing subscription requests.
+- #3978: Add support for XEP-0202 Entity Time.
+- Full XEP-0172 User Nickname support.
+- fix(chatview): The contact's name and status message in a chat header were painted the same
+  colour as the header itself.
+- fix(chatview): Show the contact's status message in the chat header again. It was read off the
+  chat, while the presence handler keeps it on the contact, so it never rendered.
 - fix(vcard): Don't eagerly refetch cached vcards when a session resumes.
 - fix(vcard): Don't fetch a MUC's own vCard in response to an occupant presence.
 - refactor(smacks): XEP-0198 Stream Management is now implemented natively by Strophe.js (see its

@@ -725,10 +725,12 @@ Determines whether Converse reflects in-app navigation in the browser's URL, usi
 
 - Default: `0`
 
-The minimum timezone difference (in hours) between you and a contact before the off-hours warning is shown.
+The minimum timezone difference (in hours) between you and a contact before Converse says anything about their local time.
 
-- `0`: show the warning for any different timezone
-- `3`: only show the warning if the contact is 3 or more hours ahead or behind
+- `0`: say something for any different timezone, including the half-hour and quarter-hour ones (India is 30 minutes off from Pakistan, Nepal 15 minutes off from India)
+- `3`: only if the contact is 3 or more hours ahead or behind
+
+A contact in your own timezone never triggers the warning, whatever this is set to, since your own clock already tells you what time it is for them. Their profile is the exception: a value you went looking for is shown whatever the difference.
 
 See also `show_entity_time`.
 
@@ -1594,11 +1596,25 @@ It's still up to Converse to decide when to send out the relevant markers, the p
 
 ### send_entity_time
 
-- Default: `true`
+- Default: `'presence'`
 
-Determines whether Converse answers [XEP-0202](https://xmpp.org/extensions/xep-0202.html) entity time queries from other entities, telling them your current UTC offset.
+Determines who Converse answers [XEP-0202](https://xmpp.org/extensions/xep-0202.html) entity time queries from, telling them your current UTC offset.
 
-Set to `false` if you'd rather not share your timezone. Converse then responds with a `service-unavailable` error and stops advertising `urn:xmpp:time` in its service discovery features.
+| Value                     | Who gets an answer                                                                 |
+| ------------------------- | ---------------------------------------------------------------------------------- |
+| `'presence'`              | Only entities subscribed to your presence, plus your own other resources (default) |
+| `'public'`                | Anyone who asks                                                                     |
+| any falsy value           | Nobody                                                                              |
+
+Entities that don't qualify get a `service-unavailable` error, which is indistinguishable from the error sent by a client that doesn't implement the XEP at all.
+
+XEP-0202 notes that your numeric offset says something about where in the world you are, but is silent on who should be allowed to ask. The default therefore follows the rule [XEP-0012](https://xmpp.org/extensions/xep-0012.html) imposes on the comparable Last Activity data: only the people who can already see your presence. Set it to `'public'` if you'd rather answer everyone, which is what most other XMPP clients do.
+
+Any truthy value that isn't `'public'` is treated as `'presence'`, so a mistyped setting shares less rather than more.
+
+When sharing is turned off entirely, Converse also stops advertising `urn:xmpp:time` in its service discovery features. Both sharing modes do advertise it, since under `'presence'` the protocol is genuinely supported and it's the answer that's restricted.
+
+Changing this during a session takes effect immediately for the queries Converse answers. The advertised service discovery features are settled when the session starts, so those only catch up after reconnecting.
 
 Note that this setting controls _outgoing_ timezone information only. To stop Converse from querying your contacts, use `show_entity_time`.
 
@@ -1642,9 +1658,14 @@ However, be aware that even if this value is set to `false`, if the controlbox i
 
 - Default: `true`
 
-Determines whether Converse queries your contacts for their local time (per [XEP-0202](https://xmpp.org/extensions/xep-0202.html)) and shows a warning bar in a 1:1 chat when it's "off-hours" for them (nighttime in their timezone).
+Determines whether Converse queries your contacts for their local time, per [XEP-0202](https://xmpp.org/extensions/xep-0202.html). This is useful for distributed teams, to avoid messaging colleagues at inappropriate times.
 
-This is useful for distributed teams, to avoid messaging colleagues at inappropriate times.
+When it's on, Converse shows:
+
+- their local time in their profile
+- a warning above the composer, once you start writing to them, if it's "off-hours" for them (nighttime in their timezone) and their clock differs from yours
+
+A contact in your own timezone never triggers the warning, since your own clock already tells you what time it is for them.
 
 Related settings: `entity_time_warning_start`, `entity_time_warning_end`, `entity_time_min_diff_hours`. To stop Converse from answering time queries about you, use `send_entity_time`.
 

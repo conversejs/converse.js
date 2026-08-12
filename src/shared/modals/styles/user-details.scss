@@ -15,6 +15,16 @@
             }
         }
 
+        // The glyph and the time read as one thing. The gap has to sit on the
+        // row rather than on the icon, because the row switches between a
+        // clock and a moon as the contact's day turns, and a margin on one of
+        // them alone slides the time sideways when it does.
+        .local-time__value {
+            align-items: center;
+            display: flex;
+            gap: 0.5em;
+        }
+
         .remove-contact {
             margin-inline-end: 0.5em;
         }

@@ -136,6 +136,12 @@ export function tplUserDetailsModal(el) {
 
     const contact = el.getContact();
     const is_roster_contact = contact && !contact.isUnsaved();
+
+    // Shown whenever it's known, including for a contact in our own timezone:
+    // this is a detail view someone went looking in, not ambient chrome that
+    // has to earn its place. Only known for contacts we've asked, which is
+    // those with an open chat, so a MUC occupant simply doesn't get the row.
+    const contact_time = api.time?.contact.get(contact);
     const allow_contact_removal = api.settings.get('allow_contact_removal');
 
     const domain = _converse.session.get('domain');
@@ -256,6 +262,19 @@ export function tplUserDetailsModal(el) {
                     ? html` <div class="row mb-2">
                           <div class="col-sm-4"><label>${__('Presence')}:</label></div>
                           <div class="col-sm-8">${getPrettySubscription(contact)}</div>
+                      </div>`
+                    : ''}
+                ${contact_time
+                    ? html` <div class="row mb-2 local-time">
+                          <div class="col-sm-4"><label>${__('Local time')}:</label></div>
+                          <div class="col-sm-8 local-time__value">
+                              <converse-icon
+                                  class="fa ${contact_time.is_off_hours ? 'fa-moon' : 'fa-clock'}"
+                                  color="${contact_time.is_off_hours ? 'var(--warning-color)' : ''}"
+                                  size="1em"
+                              ></converse-icon>
+                              ${contact_time.time} (UTC${contact_time.tzo})
+                          </div>
                       </div>`
                     : ''}
                 ${o.nickname

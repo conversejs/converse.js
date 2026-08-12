@@ -79,6 +79,7 @@ declare const _default: {
     getNodeFromURI(uri?: string): string | undefined;
     getItemFromURI(uri?: string): string | undefined;
     isOwnJID(jid: string, include_resource?: boolean): boolean;
+    getFullJID(jid: string): string | null;
     maybeAppendDomain(jid: string): string;
     initPlugins(_converse: ConversePrivateGlobal): void;
     initClientConfig(_converse: ConversePrivateGlobal): Promise<void>;

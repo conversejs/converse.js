@@ -60,7 +60,10 @@ export default function ModelWithContact(BaseModel) {
                 contact = state.profile;
             } else {
                 contact = await api.contacts.get(jid);
-                if (!contact && create && !(await api.blocklist.get()).get(jid)) {
+
+                // A JID without a localpart (a server, a service or XEP-0100 gateway)
+                // can't be made into a roster contact, but we can still chat with it.
+                if (!contact && create && u.isValidJID(jid) && !(await api.blocklist.get()).get(jid)) {
                     contact = await api.contacts.add({ jid }, false, false);
                 }
             }

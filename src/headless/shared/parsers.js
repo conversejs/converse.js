@@ -7,7 +7,7 @@ import log from '@converse/log';
 import { decodeHTMLEntities } from '../utils/html.js';
 import { getAttributes } from '../utils/stanza.js';
 import { rejectMessage } from './actions.js';
-import { XFORM_TYPE_MAP, XFORM_VALIDATE_TYPE_MAP } from './constants.js';
+import { PRIVATE_CHAT_TYPE, XFORM_TYPE_MAP, XFORM_VALIDATE_TYPE_MAP } from './constants.js';
 import * as errors from './errors.js';
 import _converse from './_converse.js';
 import api from './api/index.js';
@@ -345,9 +345,7 @@ export function getFallbackAttributes(stanza) {
         const body = sizzle('> body', el).pop();
         const start = body?.getAttribute('start');
         const end = body?.getAttribute('end');
-        fallback[ns] = start != null && end != null
-            ? { start: Number(start), end: Number(end) }
-            : null;
+        fallback[ns] = start != null && end != null ? { start: Number(start), end: Number(end) } : null;
     }
 
     return Object.keys(fallback).length ? { fallback } : {};
@@ -492,10 +490,29 @@ export function isServerMessage(stanza) {
         // Some servers (e.g. Prosody) don't set the stanza
         // type to "headline" when sending server messages.
         // For now we check if an @ signal is included, and if not,
-        // we assume it's a headline stanza.
-        return true;
+        // we assume it's a headline stanza unless we have a relationship with that host.
+        //
+        // A bare-host JID can sometimes be chatted with, e.g. a pubsub text interface,
+        // a XEP-0100 gateway or a transport. When it's in our roster, or we already have a
+        // chat open with it, we asked to talk to it, so its own declared type is
+        // more trustworthy than this guess. See #1509.
+        return !hasChatRelationshipWith(from_jid);
     }
     return false;
+}
+
+/**
+ * Whether we've deliberately entered into a conversation with `jid`, which is
+ * what lets {@link isServerMessage} tell a correspondent that happens to be a
+ * host apart from an unsolicited server notice.
+ * @param {string} jid
+ * @returns {boolean}
+ */
+function hasChatRelationshipWith(jid) {
+    const { roster, chatboxes } = _converse.state;
+    if (roster?.get(jid)) return true;
+
+    return chatboxes?.get(jid)?.get('type') === PRIVATE_CHAT_TYPE;
 }
 
 /**

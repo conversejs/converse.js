@@ -265,6 +265,12 @@ describe('XEP-0202 Entity Time Views', function () {
                     const title = bar.getAttribute('title');
                     expect(title).toContain('UTC+06:00');
                     expect(title).toContain('UTC+00:00');
+
+                    // The dismiss control is the only thing on the bar to aim
+                    // at, and WCAG 2.2 asks for 24px of it.
+                    const dismiss = bar.querySelector('.entity-time-alert__dismiss').getBoundingClientRect();
+                    expect(dismiss.width).toBeGreaterThanOrEqual(24);
+                    expect(dismiss.height).toBeGreaterThanOrEqual(24);
                 },
             ),
         );

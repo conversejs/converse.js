@@ -123,6 +123,9 @@
     // 1:1 Chat-related colors
     --chat-color: var(--green-1);
     --chat-header-fg-color: var(--background-color);
+    // A saturated mid-green header: grey text on it measures 1.04:1, so the
+    // status message is a dimmed version of the header's own text instead.
+    --chat-header-subdued-color: color-mix(in srgb, var(--chat-header-fg-color) 75%, var(--chat-header-bg-color));
     --chat-header-bg-color: var(--chat-color);
 
     // MUC-related colors

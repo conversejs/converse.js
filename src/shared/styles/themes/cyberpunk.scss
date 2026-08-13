@@ -135,6 +135,9 @@
     --chat-color: var(--green);
     --chat-rgb: var(--green-rgb);
     --chat-header-fg-color: var(--chat-color);
+    // As in dracula: the page grey, lightened toward the theme's own text
+    // colour, so it reads as secondary without taking the header's hue.
+    --chat-header-subdued-color: color-mix(in srgb, var(--subdued-color) 60%, var(--foreground-color));
     --chat-header-bg-color: var(--background-color);
 
     // MUC-related colors

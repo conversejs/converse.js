@@ -34,6 +34,15 @@ body.converse-fullscreen {
     // body text above 4.5:1 on top of it.
     --inset-bg-color: color-mix(in srgb, var(--background-color) 92%, var(--foreground-color));
 
+    // Secondary text on a chat header: the contact's status message under
+    // their name. `--subdued-color` is the token for that job on the page, but
+    // a header carries a colour of its own and the greys don't all survive it:
+    // on the mid-green header that classic and nordic use, grey lands within
+    // 1.04:1 of the background and disappears. Each theme we ship therefore
+    // sets this itself. A theme that doesn't gets a dimmed version of its own
+    // header text, which is subdued on any header by construction.
+    --chat-header-subdued-color: color-mix(in srgb, var(--chat-header-fg-color) 75%, var(--chat-header-bg-color));
+
     // Bootstrap's own defaults for these two are light-mode greys, `#dee2e6`
     // and a wash of black, and they reach a long way: input, list-group,
     // table, nav-tabs, modal-header and pagination edges take the first, and

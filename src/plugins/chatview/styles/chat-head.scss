@@ -22,7 +22,7 @@
             }
 
             .chat-head__desc {
-                color: var(--chat-header-bg-color);
+                color: var(--chat-header-fg-color);
                 font-size: var(--font-size-small);
                 margin: 0;
                 overflow: hidden;
@@ -43,6 +43,30 @@
                 padding: 0.75rem 1rem;
             }
 
+            // A 1:1 chat puts the contact's name and status message in a
+            // column beside the avatar. Only that heading renders this, so
+            // scoping by it leaves the MUC and headlines headings, which keep
+            // their description on a row across the bottom, on the rules above.
+            .chatbox-title__details {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                // Lets the name and the status message ellipsise rather than
+                // push the heading buttons out of the row.
+                min-width: 0;
+
+                .chat-head__desc {
+                    // Secondary to the name above it.
+                    color: var(--chat-header-subdued-color);
+                    padding: 0;
+                    width: auto;
+                    // `text-overflow` above does nothing until the text is kept
+                    // to one line, and a wrapped status message would grow the
+                    // header a line at a time.
+                    white-space: nowrap;
+                }
+            }
+
             .chatbox-title--row {
                 display: flex;
                 flex-direction: row;
@@ -51,9 +75,16 @@
             }
 
             .chatbox-title__text {
-                color: var(--chat-header-bg-color);;
+                color: var(--chat-header-fg-color);
                 overflow: hidden;
                 text-overflow: ellipsis;
+                // `text-overflow` does nothing until the text is kept to one
+                // line, and a flex item won't shrink below its content without
+                // `min-width`. Between them, a long name wrapped and grew the
+                // heading rather than truncating, which is what the line above
+                // has been asking for all along.
+                min-width: 0;
+                white-space: nowrap;
             }
 
             .chatbox-title__buttons {

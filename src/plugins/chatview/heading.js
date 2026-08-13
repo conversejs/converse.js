@@ -23,7 +23,6 @@ export default class ChatHeading extends CustomElement {
     initialize() {
         const { chatboxes } = _converse.state;
         this.model = chatboxes.get(this.jid);
-        this.listenTo(this.model, 'change:status', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
         if (this.model.contact) {
@@ -31,6 +30,10 @@ export default class ChatHeading extends CustomElement {
         }
         this.model.rosterContactAdded?.then(() => {
             this.listenTo(this.model.contact, 'change:nickname', () => this.requestUpdate());
+            // The status message shown under the name is the contact's, not the
+            // chat's. `status_message` is where our own profile keeps it.
+            this.listenTo(this.model.contact, 'change:status', () => this.requestUpdate());
+            this.listenTo(this.model.contact, 'change:status_message', () => this.requestUpdate());
             this.requestUpdate();
         });
         this.requestUpdate();

@@ -35,7 +35,9 @@ converse-entity-time-alert {
             background: none;
             border: none;
             cursor: pointer;
-            padding: 0.25em;
+            // Padding rather than a width, so the glyph stays the size it is
+            // while the target around it clears the 24px WCAG 2.2 asks for.
+            padding: 0.5em;
             opacity: 0.7;
 
             &:hover {

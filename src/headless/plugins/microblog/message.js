@@ -115,12 +115,13 @@ class PubSubMessage extends BaseMessage {
         if (!vcard) return;
 
         const sync = () => {
-            if (this.contact) return; // a roster contact's nickname wins
-            const name = vcard.get('nickname') || vcard.get('fullname');
+            const name = this.contact?.get('nickname') || vcard.get('nickname') || vcard.get('fullname');
             if (name) this.set('nickname', name);
         };
         sync();
         this.listenTo(vcard, 'change', sync);
+        this.on('contact:add', sync);
+        this.on('contact:change', sync);
     }
 
     /**

@@ -37,11 +37,17 @@ export function shortenJID(jid) {
 /**
  * Whether a post's display name carries no more information than its author's
  * JID, which is the case for an author that has no human name to show.
+ *
+ * A name that is only the JID's localpart counts as one, but *only* for a
+ * localpart long enough to be machine-generated.
  * @param {string} [name]
  * @param {string} [jid]
  * @returns {boolean}
  */
 export function isJIDName(name, jid) {
     if (!name || !jid) return false;
-    return name === jid || name === Strophe.getNodeFromJid(jid);
+    if (name === jid) return true;
+
+    const local = Strophe.getNodeFromJid(jid);
+    return !!local && name === local && local.length > MAX_LOCALPART_LENGTH;
 }

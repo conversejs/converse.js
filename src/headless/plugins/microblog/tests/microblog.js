@@ -2710,8 +2710,19 @@ describe('The microblog plugin', function () {
             // and colours by the same JID as the avatar.
             expect(profile.getVCardJID()).toBe(jid);
             expect(profile.getIdentifier()).toBe(jid);
-            // With no vCard/contact name known yet, it falls back to the bare JID.
+            // With no vCard/contact name known yet, it falls back to the bare JID,
+            // and neither name a profile header shows is known.
             expect(profile.getDisplayName()).toBe(jid);
+            expect(profile.getFullname()).toBeUndefined();
+            expect(profile.getNickname()).toBeUndefined();
+
+            // Once the vCard resolves, the two are readable apart: a header shows
+            // the full name, the nickname and the address as separate lines.
+            const vcard = await profile.getVCard();
+            vcard.save({ fullname: 'Mercutio Montague', nickname: 'Merc' });
+            expect(profile.getFullname()).toBe('Mercutio Montague');
+            expect(profile.getNickname()).toBe('Merc');
+            expect(profile.getDisplayName()).toBe('Merc');
             // Cached: the same author (bare or full JID) yields the same instance.
             expect(api.microblog.profile.get(jid)).toBe(profile);
             expect(api.microblog.profile.get(`${jid}/phone`)).toBe(profile);

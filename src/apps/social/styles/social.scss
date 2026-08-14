@@ -356,15 +356,8 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        // With a banner, lift the avatar so it straddles the banner's lower edge
-        // (the familiar social-profile look), on a background ring for contrast.
-        // The lift uses `transform`, not a negative margin: a negative margin
-        // would raise the whole flex line, and `align-items: center` would then
-        // drag the name and follow toggle up into the banner too. A transform
-        // moves only the avatar, so the rest of the row stays clear of the banner.
         .social-profile__header--with-banner {
             .social-profile__avatar {
-                transform: translateY(-2.5em);
                 padding: 3px;
                 background-color: var(--background-color);
                 border-radius: var(--avatar-border-radius, 10%);
@@ -396,6 +389,15 @@
             white-space: nowrap;
         }
 
+        // A nickname reads as an aside to the name it follows, so give it more
+        // room than the line's own gap: twice it, to set the two names apart.
+        .social-profile__name + .social-profile__nickname {
+            margin-inline-start: 0.25em;
+        }
+
+        // The nickname beside the full name, and the address under both: the same
+        // subdued treatment, since neither is the heading.
+        .social-profile__nickname,
         .social-profile__jid {
             color: var(--subdued-color);
             font-size: 0.9em;

@@ -2604,6 +2604,63 @@ describe('The profile Following tab', function () {
     );
 
     it(
+        'heads the profile with the full name, then the nickname, then the address',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const { api } = _converse;
+
+            // Someone who publishes both names, and whose nickname happens to be
+            // their localpart. Unlike a bridge naming an author by their raw
+            // npub, "jc" is a name, so it earns its own line rather than being
+            // swallowed as "nothing more than the JID".
+            const jid = 'jc@opkode.com';
+
+            const mock_vcard_get = api.vcard.get;
+            vi.spyOn(api.vcard, 'get').mockImplementation((model, force) => {
+                const model_jid = typeof model === 'string' ? model : model?.get?.('jid');
+                if (model_jid !== jid) return mock_vcard_get(model, force);
+                return Promise.resolve({
+                    nickname: 'jc',
+                    fullname: 'JC Brand',
+                    vcard_updated: new Date().toISOString(),
+                });
+            });
+
+            vi.spyOn(api.pubsub.items, 'get').mockResolvedValue({ items: [] });
+
+            const el = mountSocialApp();
+            await u.waitUntil(() => el.querySelector('converse-social-feed .social-rich__editable'));
+
+            /** @type {any} */ (el).onProfileSelected(jid, undefined, 'posts');
+            const profile = await u.waitUntil(() => el.querySelector('converse-social-profile'));
+            const name = await u.waitUntil(() => profile.querySelector('.social-profile__name'));
+            await u.waitUntil(() => name.textContent.trim() === 'JC Brand');
+            expect(name.getAttribute('title')).toBe('JC Brand');
+            const handle = profile.querySelector('.social-profile__nickname');
+            expect(handle.textContent.trim()).toBe('jc');
+            // The nickname reads as an aside to the name, so it shares its line;
+            // the address keeps its own below them.
+            expect(handle.closest('.social-profile__line')).toBe(name.closest('.social-profile__line'));
+            const address = profile.querySelector('.social-profile__jid');
+            expect(address.textContent.trim()).toBe(jid);
+            expect(address.closest('.social-profile__line')).not.toBe(name.closest('.social-profile__line'));
+
+            // With only one of the two names, that name heads the profile and
+            // there's no nickname line to repeat it. The shared vCard mock gives
+            // this author a fullname and no nickname.
+            const fullname_only = 'mercutio.montague@montague.lit';
+            /** @type {any} */ (el).onProfileSelected(fullname_only, undefined, 'posts');
+            await u.waitUntil(() => el.querySelector('converse-social-profile')?.jid === fullname_only);
+            const second = el.querySelector('converse-social-profile');
+            await u.waitUntil(
+                () => second.querySelector('.social-profile__name')?.textContent.trim() === 'Mercutio Montague',
+            );
+            expect(second.querySelector('.social-profile__nickname')).toBe(null);
+            expect(second.querySelector('.social-profile__jid').textContent.trim()).toBe(fullname_only);
+        }),
+    );
+
+    it(
         'opens a followed community feed in feed mode (its node, no person chrome)',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');

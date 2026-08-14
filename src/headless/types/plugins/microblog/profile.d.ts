@@ -51,6 +51,19 @@ declare class MicroblogProfile extends Model<import("@converse/skeletor").ModelA
      */
     getDisplayName(): string;
     /**
+     * The author's full name (the vCard's `FN`), if they publish one. Kept apart
+     * from {@link getNickname} so a profile can show both.
+     * @returns {string|undefined}
+     */
+    getFullname(): string | undefined;
+    /**
+     * The author's nickname: the roster's, which the user chose for them, else
+     * the one the author publishes themselves (XEP-0172, or the vCard's
+     * `NICKNAME`).
+     * @returns {string|undefined}
+     */
+    getNickname(): string | undefined;
+    /**
      * Fetch the author's profile banner (a wide header image) from their
      * `urn:xmpp:movim-banner:0` PEP node and, if present, set `banner_url` so the
      * profile header renders it. Best-effort and reactive: absence, an

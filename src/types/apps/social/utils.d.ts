@@ -11,6 +11,9 @@ export function shortenJID(jid?: string): string;
 /**
  * Whether a post's display name carries no more information than its author's
  * JID, which is the case for an author that has no human name to show.
+ *
+ * A name that is only the JID's localpart counts as one, but *only* for a
+ * localpart long enough to be machine-generated.
  * @param {string} [name]
  * @param {string} [jid]
  * @returns {boolean}
